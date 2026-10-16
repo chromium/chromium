@@ -16,7 +16,8 @@ RemoteHostContactedSignalProcessor::~RemoteHostContactedSignalProcessor() =
 
 void RemoteHostContactedSignalProcessor::ProcessSignal(
     const ExtensionSignal& signal) {
-  DCHECK_EQ(ExtensionSignalType::kRemoteHostContacted, signal.GetType());
+  CHECK_EQ(ExtensionSignalType::kRemoteHostContacted, signal.GetType(),
+           base::NotFatalUntil::M162);
   const auto& rhc_signal =
       static_cast<const RemoteHostContactedSignal&>(signal);
 

@@ -34,7 +34,8 @@ CookiesGetAllSignalProcessor::~CookiesGetAllSignalProcessor() = default;
 void CookiesGetAllSignalProcessor::ProcessSignal(
     const ExtensionSignal& signal) {
   // Validate GetAllArgs signal.
-  DCHECK_EQ(ExtensionSignalType::kCookiesGetAll, signal.GetType());
+  CHECK_EQ(ExtensionSignalType::kCookiesGetAll, signal.GetType(),
+           base::NotFatalUntil::M162);
   const auto& cga_signal = static_cast<const CookiesGetAllSignal&>(signal);
 
   // Retrieve store entry for extension. If this is the first signal for an

@@ -58,14 +58,14 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
 
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
-  DCHECK(value);
+  CHECK(value, base::NotFatalUntil::M162);
   int item_index = 0;
   for (const auto& item : value->GetList()) {
     // The vendor and product ID descriptors of a USB devices should be
     // unsigned short integers.
     int device_index = 0;
     auto* devices_list = item.GetDict().FindList(kDevicesKey);
-    DCHECK(devices_list);
+    CHECK(devices_list, base::NotFatalUntil::M162);
     for (const auto& device : *devices_list) {
       std::optional<int> vendor_id = device.GetDict().FindInt(kVendorIdKey);
       std::optional<int> product_id = device.GetDict().FindInt(kProductIdKey);
@@ -85,11 +85,11 @@ bool WebUsbAllowDevicesForUrlsPolicyHandler::CheckPolicySettings(
     // The allowlisted URLs should be valid.
     int url_index = 0;
     auto* urls_list = item.GetDict().FindList(kUrlsKey);
-    DCHECK(urls_list);
+    CHECK(urls_list, base::NotFatalUntil::M162);
     for (const auto& url_value : *urls_list) {
       PolicyErrorPath url_error_path = {item_index, kUrlsKey, url_index};
 
-      DCHECK(url_value.is_string());
+      CHECK(url_value.is_string(), base::NotFatalUntil::M162);
       const std::vector<std::string> urls =
           base::SplitString(url_value.GetString(), ",", base::TRIM_WHITESPACE,
                             base::SPLIT_WANT_ALL);

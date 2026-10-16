@@ -102,8 +102,8 @@ void LogIncidentDataType(IncidentDisposition disposition,
   });
   static_assert(std::size(kHistogramNames) == NUM_DISPOSITIONS,
                 "Keep kHistogramNames in sync with enum IncidentDisposition.");
-  DCHECK_GE(disposition, 0);
-  DCHECK_LT(disposition, NUM_DISPOSITIONS);
+  CHECK_GE(disposition, 0, base::NotFatalUntil::M162);
+  CHECK_LT(disposition, NUM_DISPOSITIONS, base::NotFatalUntil::M162);
   base::LinearHistogram::FactoryGet(
       kHistogramNames[disposition],
       1,  // minimum
@@ -221,8 +221,8 @@ IncidentReportingService::Receiver::~Receiver() = default;
 void IncidentReportingService::Receiver::AddIncidentForProfile(
     Profile* profile,
     std::unique_ptr<Incident> incident) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(profile, base::NotFatalUntil::M162);
   AddIncidentOnMainThread(service_, profile, std::move(incident));
 }
 
@@ -314,7 +314,7 @@ IncidentReportingService::IncidentReportingService(
     : IncidentReportingService(safe_browsing_service,
                                base::Milliseconds(kDefaultCallbackIntervalMs),
                                GetBackgroundTaskRunner()) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   DownloadProtectionService* download_protection_service =
       (safe_browsing_service
            ? safe_browsing_service->download_protection_service()
@@ -329,7 +329,7 @@ IncidentReportingService::IncidentReportingService(
 }
 
 IncidentReportingService::~IncidentReportingService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CancelIncidentCollection();
 
   // Cancel all internal asynchronous tasks.
@@ -356,7 +356,7 @@ IncidentReportingService::GetIncidentReceiver() {
 
 std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
 IncidentReportingService::CreatePreferenceValidationDelegate(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (profile->IsOffTheRecord())
     return nullptr;
@@ -366,7 +366,7 @@ IncidentReportingService::CreatePreferenceValidationDelegate(Profile* profile) {
 
 void IncidentReportingService::RegisterDelayedAnalysisCallback(
     DelayedAnalysisCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // |callback| will be run on the blocking pool. The receiver will bounce back
   // to the origin thread if needed.
@@ -427,13 +427,13 @@ void IncidentReportingService::OnProfileAdded(Profile* profile) {
   // if a report is being assembled and the most recent has not been found.
   // Note that |profile| is assumed to outlive |this|.
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Track the addition of all profiles even when no report is being assembled
   // so that the service can determine whether or not it can evaluate a
   // profile's preferences at the time of incident addition.
   ProfileContext* context = GetOrCreateProfileContext(profile);
-  DCHECK(!context->added);
+  CHECK(!context->added, base::NotFatalUntil::M162);
   context->added = true;
   context->state_store = std::make_unique<StateStore>(profile);
   bool enabled_for_profile = IsEnabledForProfile(profile);
@@ -480,7 +480,7 @@ void IncidentReportingService::OnProfileAdded(Profile* profile) {
 }
 
 void IncidentReportingService::OnProfileWillBeDestroyed(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   profile->RemoveObserver(this);
 
@@ -556,7 +556,7 @@ Profile* IncidentReportingService::FindEligibleProfile() const {
 
 void IncidentReportingService::AddIncident(Profile* profile,
                                            std::unique_ptr<Incident> incident) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Ignore incidents from off-the-record profiles.
   if (profile && profile->IsOffTheRecord())
@@ -565,7 +565,7 @@ void IncidentReportingService::AddIncident(Profile* profile,
   ProfileContext* context = GetOrCreateProfileContext(profile);
   // If this is a process-wide incident, the context must not indicate that the
   // profile (which is NULL) has been added to the profile manager.
-  DCHECK(profile || !context->added);
+  CHECK(profile || !context->added, base::NotFatalUntil::M162);
 
   LogIncidentDataType(RECEIVED, *incident);
 
@@ -599,7 +599,7 @@ void IncidentReportingService::ClearIncident(
 }
 
 void IncidentReportingService::BeginReportProcessing() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Creates a new report if needed.
   if (!report_)
@@ -627,7 +627,7 @@ void IncidentReportingService::CancelIncidentCollection() {
 }
 
 void IncidentReportingService::OnCollationTimeout() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Exit early if collection was cancelled.
   if (!collation_timeout_pending_)
@@ -648,8 +648,8 @@ void IncidentReportingService::OnCollationTimeout() {
 }
 
 void IncidentReportingService::BeginEnvironmentCollection() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(report_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(report_, base::NotFatalUntil::M162);
   // Nothing to do if environment collection is pending or has already
   // completed, if there are no incidents to process, or if there is no eligible
   // profile.
@@ -670,7 +670,7 @@ void IncidentReportingService::BeginEnvironmentCollection() {
 
   // Posting the task will fail if the runner has been shut down. This should
   // never happen since the blocking pool is shut down after this service.
-  DCHECK(environment_collection_pending_);
+  CHECK(environment_collection_pending_, base::NotFatalUntil::M162);
 }
 
 bool IncidentReportingService::WaitingForEnvironmentCollection() {
@@ -685,9 +685,9 @@ void IncidentReportingService::CancelEnvironmentCollection() {
 
 void IncidentReportingService::OnEnvironmentDataCollected(
     std::unique_ptr<ClientIncidentReport_EnvironmentData> environment_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(environment_collection_pending_);
-  DCHECK(report_ && !report_->has_environment());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(environment_collection_pending_, base::NotFatalUntil::M162);
+  CHECK(report_ && !report_->has_environment(), base::NotFatalUntil::M162);
   environment_collection_pending_ = false;
 
 // Process::Current().CreationTime() is missing on some platforms.
@@ -703,8 +703,8 @@ void IncidentReportingService::OnEnvironmentDataCollected(
 }
 
 void IncidentReportingService::BeginDownloadCollection() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(report_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(report_, base::NotFatalUntil::M162);
   // Nothing to do if a search for the most recent download is already pending,
   // if one has already been found, or if there are no incidents to process.
   if (last_download_finder_ || report_->has_download() ||
@@ -721,7 +721,8 @@ void IncidentReportingService::BeginDownloadCollection() {
 }
 
 bool IncidentReportingService::WaitingForMostRecentDownload() {
-  DCHECK(report_);  // Only call this when a report is being assembled.
+  CHECK(report_, base::NotFatalUntil::M162);  // Only call this when a report is
+                                              // being assembled.
   // The easy case: not waiting if a download has already been found.
   if (report_->has_download())
     return false;
@@ -751,8 +752,8 @@ void IncidentReportingService::OnLastDownloadFound(
     std::unique_ptr<ClientIncidentReport_DownloadDetails> last_binary_download,
     std::unique_ptr<ClientIncidentReport_NonBinaryDownloadDetails>
         last_non_binary_download) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(report_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(report_, base::NotFatalUntil::M162);
 
   // Harvest the finder.
   last_download_finder_.reset();
@@ -769,7 +770,7 @@ void IncidentReportingService::OnLastDownloadFound(
 }
 
 void IncidentReportingService::ProcessIncidentsIfCollectionComplete() {
-  DCHECK(report_);
+  CHECK(report_, base::NotFatalUntil::M162);
   // Bail out if there are still outstanding collection tasks. Completion of any
   // of these will start another upload attempt.
   if (WaitingForEnvironmentCollection() || WaitingToCollateIncidents() ||
@@ -868,7 +869,7 @@ void IncidentReportingService::ProcessIncidentsIfCollectionComplete() {
         // Ownership of the payload is passed to the report.
         ClientIncidentReport_IncidentData* data =
             incident->TakePayload().release();
-        DCHECK(data->has_incident_time_msec());
+        CHECK(data->has_incident_time_msec(), base::NotFatalUntil::M162);
         report->mutable_incident()->AddAllocated(data);
         data = nullptr;
         states.push_back(state);
@@ -910,7 +911,7 @@ void IncidentReportingService::CancelAllReportUploads() {
 
 void IncidentReportingService::UploadReportIfUploadingEnabled(
     UploadContext* context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!base::FeatureList::IsEnabled(kIncidentReportingEnableUpload)) {
     OnReportUploadResult(context, IncidentReportUploader::UPLOAD_SUPPRESSED,
@@ -944,7 +945,7 @@ void IncidentReportingService::OnReportUploadResult(
     UploadContext* context,
     IncidentReportUploader::Result result,
     std::unique_ptr<ClientIncidentResponse> response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   UMA_HISTOGRAM_ENUMERATION(
       "SBIRS.UploadResult", result, IncidentReportUploader::NUM_UPLOAD_RESULTS);

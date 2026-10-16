@@ -119,13 +119,13 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
 
   // Get current enabled status. Must be called on IO thread.
   bool enabled() const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
     return enabled_;
   }
 
   // Whether the service is enabled by the current set of profiles.
   bool enabled_by_prefs() const {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     return enabled_by_prefs_;
   }
 

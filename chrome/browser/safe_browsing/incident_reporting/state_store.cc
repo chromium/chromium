@@ -21,7 +21,7 @@ namespace safe_browsing {
 
 StateStore::Transaction::Transaction(StateStore* store) : store_(store) {
 #if DCHECK_IS_ON()
-  DCHECK(!store_->has_transaction_);
+  CHECK(!store_->has_transaction_, base::NotFatalUntil::M162);
   store_->has_transaction_ = true;
 #endif
 }
@@ -128,7 +128,7 @@ StateStore::StateStore(Profile* profile)
 
 StateStore::~StateStore() {
 #if DCHECK_IS_ON()
-  DCHECK(!has_transaction_);
+  CHECK(!has_transaction_, base::NotFatalUntil::M162);
 #endif
 }
 

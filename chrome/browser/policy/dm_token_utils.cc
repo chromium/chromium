@@ -49,7 +49,7 @@ DMToken GetDMToken(Profile* const profile) {
     // Policy Manager for Device DM Token (Kiosk and Managed Guest Session).
     policy::BrowserPolicyConnectorAsh* connector =
         g_browser_process->platform_part()->browser_policy_connector_ash();
-    DCHECK(connector);
+    CHECK(connector, base::NotFatalUntil::M162);
     policy_manager = connector->GetDeviceCloudPolicyManager();
   } else {
     // Policy Manager for User DM Token.

@@ -15,8 +15,8 @@ TrackedPreferenceIncident::TrackedPreferenceIncident(
         tracked_preference_incident,
     bool is_personal)
     : is_personal_(is_personal) {
-  DCHECK(tracked_preference_incident);
-  DCHECK(tracked_preference_incident->has_path());
+  CHECK(tracked_preference_incident, base::NotFatalUntil::M162);
+  CHECK(tracked_preference_incident->has_path(), base::NotFatalUntil::M162);
   payload()->set_allocated_tracked_preference(
       tracked_preference_incident.release());
 }

@@ -142,7 +142,8 @@ void ApplicationAdvancedProtectionStatusDetector::OnProfileWillBeDestroyed(
   }
   // All KeyedServices are still valid during `OnProfileWillBeDestroyed`.
   auto profile_ap_observer_it = profile_ap_observers_.find(profile);
-  DCHECK(profile_ap_observer_it != profile_ap_observers_.end());
+  CHECK(profile_ap_observer_it != profile_ap_observers_.end(),
+        base::NotFatalUntil::M162);
   // Take ownership of the observation.
   std::unique_ptr<ProfileAdvancedProtectionObserver> profile_ap_observer =
       std::move(profile_ap_observer_it->second);
@@ -167,8 +168,9 @@ void ApplicationAdvancedProtectionStatusDetector::
 void ApplicationAdvancedProtectionStatusDetector::AddProfile(
     Profile* profile,
     ApplicationAdvancedProtectionEvent event) {
-  DCHECK(event == ApplicationAdvancedProtectionEvent::kInitialized ||
-         event == ApplicationAdvancedProtectionEvent::kProfileAdded);
+  CHECK(event == ApplicationAdvancedProtectionEvent::kInitialized ||
+            event == ApplicationAdvancedProtectionEvent::kProfileAdded,
+        base::NotFatalUntil::M162);
   if (IsIgnoredProfile(profile)) {
     return;
   }
@@ -180,7 +182,8 @@ void ApplicationAdvancedProtectionStatusDetector::AddProfile(
   if (profile_ap_observer->latest_status()) {
     HandleStatusChangedForSingleProfile(true, event);
   }
-  DCHECK(profile_ap_observers_.find(profile) == profile_ap_observers_.end());
+  CHECK(profile_ap_observers_.find(profile) == profile_ap_observers_.end(),
+        base::NotFatalUntil::M162);
   profile_ap_observers_[profile] = std::move(profile_ap_observer);
 }
 
@@ -204,7 +207,7 @@ void ApplicationAdvancedProtectionStatusDetector::
     }
   } else {
     advanced_protection_profile_count_--;
-    DCHECK_GE(advanced_protection_profile_count_, 0);
+    CHECK_GE(advanced_protection_profile_count_, 0, base::NotFatalUntil::M162);
     if (advanced_protection_profile_count_ == 0) {
       NotifyObservers();
       RecordApplicationAdvancedProtectionHistogram(

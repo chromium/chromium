@@ -13,8 +13,8 @@ namespace safe_browsing {
 ResourceRequestIncident::ResourceRequestIncident(
     std::unique_ptr<ClientIncidentReport_IncidentData_ResourceRequestIncident>
         script_request_incident) {
-  DCHECK(script_request_incident);
-  DCHECK(script_request_incident->has_digest());
+  CHECK(script_request_incident, base::NotFatalUntil::M162);
+  CHECK(script_request_incident->has_digest(), base::NotFatalUntil::M162);
   payload()->set_allocated_resource_request(script_request_incident.release());
 }
 

@@ -167,12 +167,12 @@ DownloadProtectionService::DownloadProtectionService(
           DownloadProtectionDelegate::CreateForPlatform()) {}
 
 DownloadProtectionService::~DownloadProtectionService() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   CancelPendingRequests();
 }
 
 void DownloadProtectionService::SetEnabled(bool enabled) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (enabled == enabled_) {
     return;
   }
@@ -252,7 +252,7 @@ bool DownloadProtectionService::MaybeCheckClientDownload(
   }
 
   if (settings.has_value()) {
-    DCHECK(report_only_scan);
+    CHECK(report_only_scan, base::NotFatalUntil::M162);
     // Since this branch implies that CheckClientDownload was not called, the
     // pre-deep scanning DownloadCheckResult is considered UNKNOWN.
     UploadForDeepScanning(
@@ -291,7 +291,7 @@ bool DownloadProtectionService::ShouldCheckDownloadUrl(
 void DownloadProtectionService::CheckDownloadUrl(
     download::DownloadItem* item,
     CheckDownloadCallback callback) {
-  DCHECK(!item->GetUrlChain().empty());
+  CHECK(!item->GetUrlChain().empty(), base::NotFatalUntil::M162);
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   // |web_contents| can be null in tests.
@@ -350,19 +350,19 @@ void DownloadProtectionService::CheckFileSystemAccessWrite(
 base::CallbackListSubscription
 DownloadProtectionService::RegisterClientDownloadRequestCallback(
     const ClientDownloadRequestCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   return client_download_request_callbacks_.Add(callback);
 }
 
 base::CallbackListSubscription
 DownloadProtectionService::RegisterFileSystemAccessWriteRequestCallback(
     const FileSystemAccessWriteRequestCallback& callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   return file_system_access_write_request_callbacks_.Add(callback);
 }
 
 void DownloadProtectionService::CancelPendingRequests() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   // It is sufficient to delete the list of CheckClientDownloadRequests.
   context_download_requests_.clear();
 }
@@ -371,10 +371,12 @@ void DownloadProtectionService::RequestFinished(
     CheckClientDownloadRequestBase* request,
     content::BrowserContext* browser_context,
     DownloadCheckResult result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   MaybeLogSecuritySensitiveDownloadEvent(browser_context, result);
-  DCHECK(context_download_requests_.contains(browser_context));
-  DCHECK(context_download_requests_[browser_context].contains(request));
+  CHECK(context_download_requests_.contains(browser_context),
+        base::NotFatalUntil::M162);
+  CHECK(context_download_requests_[browser_context].contains(request),
+        base::NotFatalUntil::M162);
   context_download_requests_[browser_context].erase(request);
 }
 
@@ -471,7 +473,7 @@ DownloadProtectionService::GetDownloadProtectionTailoredVerdict(
 void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
     download::DownloadItem* item,
     bool show_download_in_folder) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -704,13 +706,13 @@ void DownloadProtectionService::UploadForDeepScanning(
     DownloadCheckResult download_check_result,
     enterprise_connectors::AnalysisSettings analysis_settings,
     base::optional_ref<const std::string> password) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   content::BrowserContext* browser_context = metadata->GetBrowserContext();
   auto request = std::make_unique<DeepScanningRequest>(
       std::move(metadata), trigger, download_check_result, callback, this,
       std::move(analysis_settings), password);
   auto insertion_result = deep_scanning_requests_.insert(std::move(request));
-  DCHECK(insertion_result.second);
+  CHECK(insertion_result.second, base::NotFatalUntil::M162);
   insertion_result.first->get()->Start();
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -744,10 +746,10 @@ void DownloadProtectionService::UploadForConsumerDeepScanning(
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(
           content::DownloadItemUtils::GetBrowserContext(item));
-  DCHECK(download_core_service);
+  CHECK(download_core_service, base::NotFatalUntil::M162);
   ChromeDownloadManagerDelegate* delegate =
       download_core_service->GetDownloadManagerDelegate();
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M162);
 
   // Create an analysis settings object for UploadForDeepScanning().
   // Make sure it specifies a cloud analysis is required and does not
@@ -786,10 +788,10 @@ void DownloadProtectionService::CheckDownloadWithLocalDecryption(
   DownloadCoreService* download_core_service =
       DownloadCoreServiceFactory::GetForBrowserContext(
           content::DownloadItemUtils::GetBrowserContext(item));
-  DCHECK(download_core_service);
+  CHECK(download_core_service, base::NotFatalUntil::M162);
   ChromeDownloadManagerDelegate* delegate =
       download_core_service->GetDownloadManagerDelegate();
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M162);
 
   DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(item, true);
 
@@ -809,13 +811,13 @@ void DownloadProtectionService::UploadSavePackageForDeepScanning(
     base::flat_map<base::FilePath, base::FilePath> save_package_files,
     CheckDownloadRepeatingCallback callback,
     enterprise_connectors::AnalysisSettings analysis_settings) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   auto request = std::make_unique<DeepScanningRequest>(
       std::make_unique<DownloadItemMetadata>(item),
       DownloadCheckResult::UNKNOWN, callback, this,
       std::move(analysis_settings), std::move(save_package_files));
   auto insertion_result = deep_scanning_requests_.insert(std::move(request));
-  DCHECK(insertion_result.second);
+  CHECK(insertion_result.second, base::NotFatalUntil::M162);
   insertion_result.first->get()->Start();
 }
 

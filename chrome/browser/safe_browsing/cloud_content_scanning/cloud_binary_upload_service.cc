@@ -46,7 +46,7 @@ using ::enterprise_connectors::GetBrowserPolicyConnector;
 using ::enterprise_connectors::IsConsumerScanRequest;
 
 bool CanUseAccessToken(const BinaryUploadRequest& request, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   // Consumer requests never need to use the access token.
   if (IsConsumerScanRequest(request)) {
     return false;

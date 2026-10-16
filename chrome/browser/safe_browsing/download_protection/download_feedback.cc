@@ -78,13 +78,13 @@ DownloadFeedbackImpl::DownloadFeedbackImpl(
       file_size_(file_size),
       ping_request_(ping_request),
       ping_response_(ping_response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   DVLOG(1) << "DownloadFeedback constructed " << this << " for "
            << file_path.AsUTF8Unsafe();
 }
 
 DownloadFeedbackImpl::~DownloadFeedbackImpl() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   DVLOG(1) << "DownloadFeedback destructed " << this;
 
   if (uploader_) {
@@ -98,8 +98,8 @@ DownloadFeedbackImpl::~DownloadFeedbackImpl() {
 }
 
 void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!uploader_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(!uploader_, base::NotFatalUntil::M162);
 
   if (!url_loader_factory_) {
     std::move(finish_callback).Run();
@@ -110,14 +110,14 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
 
   bool r = report_metadata.mutable_download_request()->ParseFromString(
       ping_request_);
-  DCHECK(r);
+  CHECK(r, base::NotFatalUntil::M162);
   r = report_metadata.mutable_download_response()->ParseFromString(
       ping_response_);
-  DCHECK(r);
+  CHECK(r, base::NotFatalUntil::M162);
 
   std::string metadata_string;
   bool ok = report_metadata.SerializeToString(&metadata_string);
-  DCHECK(ok);
+  CHECK(ok, base::NotFatalUntil::M162);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("safe_browsing_feedback", R"(
@@ -166,7 +166,7 @@ void DownloadFeedbackImpl::FinishedUpload(base::OnceClosure finish_callback,
                                           bool success,
                                           int response_code,
                                           const std::string& response_data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   uploader_.reset();
 

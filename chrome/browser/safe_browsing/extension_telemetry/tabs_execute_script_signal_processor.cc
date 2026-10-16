@@ -25,7 +25,8 @@ TabsExecuteScriptSignalProcessor::~TabsExecuteScriptSignalProcessor() = default;
 
 void TabsExecuteScriptSignalProcessor::ProcessSignal(
     const ExtensionSignal& signal) {
-  DCHECK_EQ(ExtensionSignalType::kTabsExecuteScript, signal.GetType());
+  CHECK_EQ(ExtensionSignalType::kTabsExecuteScript, signal.GetType(),
+           base::NotFatalUntil::M162);
   const auto& tes_signal = static_cast<const TabsExecuteScriptSignal&>(signal);
   // Note that if this is the first signal for an extension, a new entry is
   // created in the store.

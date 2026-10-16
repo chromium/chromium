@@ -25,7 +25,7 @@ JNI_PolicyServiceFactory_GetGlobalPolicyService(JNIEnv* env) {
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_PolicyServiceFactory_GetProfilePolicyService(JNIEnv* env,
                                                  Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   return profile->GetProfilePolicyConnector()
       ->policy_service()
       ->GetPolicyServiceAndroid()

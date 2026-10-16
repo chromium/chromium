@@ -35,11 +35,11 @@ ServicesDelegate::ServicesDelegate(
     ServicesCreator* services_creator)
     : safe_browsing_service_(safe_browsing_service),
       services_creator_(services_creator) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 ServicesDelegate::~ServicesDelegate() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void ServicesDelegate::ShutdownServices() {

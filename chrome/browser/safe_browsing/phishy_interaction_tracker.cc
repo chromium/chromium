@@ -73,7 +73,7 @@ PhishyInteractionTracker::PhishyInteractionTracker(
 PhishyInteractionTracker::~PhishyInteractionTracker() {
   // If there was any data to log, `WebContentsDestroyed()` should have already
   // handled it.
-  DCHECK(!is_phishy_ || is_data_logged_);
+  CHECK(!is_phishy_ || is_data_logged_, base::NotFatalUntil::M162);
 }
 
 void PhishyInteractionTracker::WebContentsDestroyed() {

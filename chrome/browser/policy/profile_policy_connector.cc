@@ -196,7 +196,7 @@ class LocalTestInfoBarVisibilityManager :
   }
 #else
   void OnBrowserCreated(BrowserWindowInterface* browser) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     CHECK(browser);
 
     // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
@@ -204,7 +204,7 @@ class LocalTestInfoBarVisibilityManager :
   }
 
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     CHECK(browser);
 
     if (GlobalBrowserCollection::GetInstance()->IsEmpty()) {
@@ -216,7 +216,7 @@ class LocalTestInfoBarVisibilityManager :
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     if (change.type() == TabStripModelChange::kInserted) {
       for (const auto& contents : change.GetInsert()->contents) {
         EnsureInfobarForActiveLocalTestPolicies(contents.contents);
@@ -229,7 +229,7 @@ class LocalTestInfoBarVisibilityManager :
 #endif  // BUILDFLAG(IS_ANDROID)
 
   void AddInfobarsForActiveLocalTestPoliciesAllTabs() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_ANDROID)
     for (TabModel* model : TabModelList::models()) {
       for (int index = 0; index < model->GetTabCount(); ++index) {
@@ -281,7 +281,7 @@ class LocalTestInfoBarVisibilityManager :
   }
 
   void DismissInfobarsForActiveLocalTestPoliciesAllTabs() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_ANDROID)
     for (TabModel* model : TabModelList::models()) {
       for (int index = 0; index < model->GetTabCount(); ++index) {
@@ -493,9 +493,9 @@ void ProfilePolicyConnector::Init(
     const CloudPolicyStore* policy_store,
     policy::ChromeBrowserPolicyConnector* connector,
     bool force_immediate_load) {
-  DCHECK(!configuration_policy_provider_);
-  DCHECK(!policy_store_);
-  DCHECK(!policy_service_);
+  CHECK(!configuration_policy_provider_, base::NotFatalUntil::M162);
+  CHECK(!policy_store_, base::NotFatalUntil::M162);
+  CHECK(!policy_service_, base::NotFatalUntil::M162);
 
   configuration_policy_provider_ = configuration_policy_provider;
   policy_store_ = policy_store;
@@ -507,7 +507,7 @@ void ProfilePolicyConnector::Init(
   auto* browser_policy_connector =
       static_cast<BrowserPolicyConnectorAsh*>(connector);
 #else
-  DCHECK_EQ(nullptr, user);
+  CHECK_EQ(nullptr, user, base::NotFatalUntil::M162);
 #endif
 
   ConfigurationPolicyProvider* platform_provider =
@@ -541,7 +541,7 @@ void ProfilePolicyConnector::Init(
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!user) {
-    DCHECK(schema_registry);
+    CHECK(schema_registry, base::NotFatalUntil::M162);
     // This case occurs for the signin and the lock screen app profiles.
     special_user_policy_provider_ =
         std::make_unique<LoginProfilePolicyProvider>(
@@ -631,7 +631,7 @@ void ProfilePolicyConnector::Init(
 
 void ProfilePolicyConnector::InitForTesting(
     std::unique_ptr<PolicyService> service) {
-  DCHECK(!policy_service_);
+  CHECK(!policy_service_, base::NotFatalUntil::M162);
   policy_service_ = std::move(service);
   DoPostInit();
 }
@@ -707,12 +707,12 @@ void ProfilePolicyConnector::SetUserAffiliationIdsForTesting(
 }
 
 void ProfilePolicyConnector::OnPolicyServiceInitialized(PolicyDomain domain) {
-  DCHECK_EQ(domain, POLICY_DOMAIN_CHROME);
+  CHECK_EQ(domain, POLICY_DOMAIN_CHROME, base::NotFatalUntil::M162);
   RecordAffiliationMetrics();
 }
 
 void ProfilePolicyConnector::DoPostInit() {
-  DCHECK(policy_service_);
+  CHECK(policy_service_, base::NotFatalUntil::M162);
   policy_service_->AddObserver(POLICY_DOMAIN_CHROME, this);
 }
 
@@ -771,7 +771,7 @@ std::string ProfilePolicyConnector::GetTimeToFirstPolicyLoadMetricSuffix()
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(user_);
+  CHECK(user_, base::NotFatalUntil::M162);
   switch (user_->GetType()) {
     case user_manager::UserType::kRegular:
       if (user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
@@ -889,7 +889,7 @@ ProfilePolicyConnector::CreatePolicyServiceWithInitializationThrottled(
         policy_providers,
     std::vector<std::unique_ptr<PolicyMigrator>> migrators,
     ConfigurationPolicyProvider* user_policy_delegate) {
-  DCHECK(user_policy_delegate);
+  CHECK(user_policy_delegate, base::NotFatalUntil::M162);
 
   auto policy_service = PolicyServiceImpl::CreateWithThrottledInitialization(
       policy_providers, PolicyServiceImpl::ScopeForMetrics::kUser,

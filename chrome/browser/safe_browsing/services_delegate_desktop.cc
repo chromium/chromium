@@ -43,11 +43,11 @@ ServicesDelegateDesktop::ServicesDelegateDesktop(
     SafeBrowsingServiceImpl* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator)
     : ServicesDelegate(safe_browsing_service, services_creator) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 ServicesDelegateDesktop::~ServicesDelegateDesktop() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 ExtendedReportingLevel
@@ -61,7 +61,7 @@ ServicesDelegateDesktop::database_manager() const {
 }
 
 void ServicesDelegateDesktop::Initialize() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!database_manager_set_for_tests_) {
     if (services_creator_ && services_creator_->CanCreateDatabaseManager())
@@ -84,13 +84,13 @@ void ServicesDelegateDesktop::Initialize() {
 
 void ServicesDelegateDesktop::SetDatabaseManagerForTest(
     SafeBrowsingDatabaseManager* database_manager_to_set) {
-  DCHECK(!database_manager_);
+  CHECK(!database_manager_, base::NotFatalUntil::M162);
   database_manager_set_for_tests_ = true;
   database_manager_ = database_manager_to_set;
 }
 
 void ServicesDelegateDesktop::ShutdownServices() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   download_service_.reset();
 
@@ -100,31 +100,31 @@ void ServicesDelegateDesktop::ShutdownServices() {
 }
 
 void ServicesDelegateDesktop::RefreshState(bool enable) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (download_service_)
     download_service_->SetEnabled(enable);
 }
 
 std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
 ServicesDelegateDesktop::CreatePreferenceValidationDelegate(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return incident_service_->CreatePreferenceValidationDelegate(profile);
 }
 
 void ServicesDelegateDesktop::RegisterDelayedAnalysisCallback(
     DelayedAnalysisCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   incident_service_->RegisterDelayedAnalysisCallback(std::move(callback));
 }
 
 void ServicesDelegateDesktop::AddDownloadManager(
     content::DownloadManager* download_manager) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   incident_service_->AddDownloadManager(download_manager);
 }
 
 DownloadProtectionService* ServicesDelegateDesktop::GetDownloadService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   return download_service_.get();
 }
 

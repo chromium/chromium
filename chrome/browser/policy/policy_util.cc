@@ -19,7 +19,7 @@ bool IsOriginInAllowlist(const GURL& url,
                          const PrefService* prefs,
                          const char* allowlist_pref_name,
                          const char* always_allow_pref_name) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M162);
 
   if (always_allow_pref_name && prefs->GetBoolean(always_allow_pref_name)) {
     return true;

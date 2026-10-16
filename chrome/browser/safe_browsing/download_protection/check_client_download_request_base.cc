@@ -80,7 +80,7 @@ CheckClientDownloadRequestBase::CheckClientDownloadRequestBase(
       database_manager_(std::move(database_manager)),
       pingback_enabled_(service_->enabled()),
       download_request_maker_(std::move(download_request_maker)) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (browser_context) {
     Profile* profile = Profile::FromBrowserContext(browser_context);

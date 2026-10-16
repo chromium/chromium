@@ -169,7 +169,7 @@ std::string BrowserDMTokenStorageWin::InitDMToken() {
     if (result != ERROR_SUCCESS || dtype != REG_BINARY || size == 0)
       continue;
 
-    DCHECK_LE(size, installer::kMaxDMTokenLength);
+    CHECK_LE(size, installer::kMaxDMTokenLength, base::NotFatalUntil::M162);
     return std::string(base::TrimWhitespaceASCII(
         std::string_view(raw_value.data(), size), base::TRIM_ALL));
   }

@@ -37,7 +37,8 @@ TabsApiSignalProcessor::~TabsApiSignalProcessor() = default;
 
 void TabsApiSignalProcessor::ProcessSignal(const ExtensionSignal& signal) {
   // Validate TabsApi signal.
-  DCHECK_EQ(ExtensionSignalType::kTabsApi, signal.GetType());
+  CHECK_EQ(ExtensionSignalType::kTabsApi, signal.GetType(),
+           base::NotFatalUntil::M162);
   const auto& tabs_api_signal = static_cast<const TabsApiSignal&>(signal);
   // Ignore the signal if both URL (current and new) are empty (sanity check).
   if (tabs_api_signal.current_url().empty() &&

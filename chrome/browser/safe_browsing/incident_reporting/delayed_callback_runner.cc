@@ -15,20 +15,20 @@ DelayedCallbackRunner::DelayedCallbackRunner(
     : task_runner_(task_runner),
       has_work_(false),
       timer_(FROM_HERE, delay, this, &DelayedCallbackRunner::OnTimer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 DelayedCallbackRunner::~DelayedCallbackRunner() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void DelayedCallbackRunner::RegisterCallback(base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   callbacks_.push(std::move(callback));
 }
 
 void DelayedCallbackRunner::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Nothing to do if the runner is already running or nothing has been added.
   if (has_work_ || callbacks_.empty())

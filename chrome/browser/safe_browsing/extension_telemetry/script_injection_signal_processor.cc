@@ -34,7 +34,8 @@ ScriptInjectionSignalProcessor::~ScriptInjectionSignalProcessor() = default;
 
 void ScriptInjectionSignalProcessor::ProcessSignal(
     const ExtensionSignal& signal) {
-  DCHECK_EQ(signal.GetType(), ExtensionSignalType::kScriptInjection);
+  CHECK_EQ(signal.GetType(), ExtensionSignalType::kScriptInjection,
+           base::NotFatalUntil::M162);
   const auto& script_injection_signal =
       static_cast<const ScriptInjectionSignal&>(signal);
 

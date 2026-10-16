@@ -37,7 +37,8 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
       ui_manager_(ui_manager),
       creation_time_(base::Time::Now()),
       clock_(base::DefaultClock::GetInstance()) {
-  DCHECK(base::FeatureList::IsEnabled(kDelayedWarnings));
+  CHECK(base::FeatureList::IsEnabled(kDelayedWarnings),
+        base::NotFatalUntil::M162);
   key_press_callback_ =
       base::BindRepeating(&SafeBrowsingUserInteractionObserver::HandleKeyPress,
                           base::Unretained(this));
@@ -282,7 +283,7 @@ bool SafeBrowsingUserInteractionObserver::HandleMouseEvent(
 void SafeBrowsingUserInteractionObserver::ShowInterstitial(
     DelayedWarningEvent event) {
   // Show the interstitial.
-  DCHECK(!interstitial_shown_);
+  CHECK(!interstitial_shown_, base::NotFatalUntil::M162);
   interstitial_shown_ = true;
   CleanUp();
   ui_manager_->StartDisplayingBlockingPage(resource_);

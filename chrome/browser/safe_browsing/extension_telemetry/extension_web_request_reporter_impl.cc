@@ -45,8 +45,8 @@ const int ExtensionWebRequestReporterImpl::kUserDataKey;
 void ExtensionWebRequestReporterImpl::Create(
     content::RenderProcessHost* render_process_host,
     mojo::PendingReceiver<mojom::ExtensionWebRequestReporter> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(render_process_host);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(render_process_host, base::NotFatalUntil::M162);
 
   Profile* profile =
       Profile::FromBrowserContext(render_process_host->GetBrowserContext());

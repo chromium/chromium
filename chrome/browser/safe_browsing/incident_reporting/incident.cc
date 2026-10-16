@@ -24,12 +24,12 @@ Incident::Incident() : payload_(new ClientIncidentReport_IncidentData) {
 }
 
 ClientIncidentReport_IncidentData* Incident::payload() {
-  DCHECK(payload_);
+  CHECK(payload_, base::NotFatalUntil::M162);
   return payload_.get();
 }
 
 const ClientIncidentReport_IncidentData* Incident::payload() const {
-  DCHECK(payload_);
+  CHECK(payload_, base::NotFatalUntil::M162);
   return payload_.get();
 }
 

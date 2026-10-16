@@ -60,8 +60,8 @@ void RecordApkDownloadTelemetryOutcome(ApkDownloadTelemetryOutcome outcome) {
 
 AndroidTelemetryService::AndroidTelemetryService(Profile* profile)
     : TelemetryService(), profile_(profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(profile_, base::NotFatalUntil::M162);
 
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
@@ -70,7 +70,7 @@ AndroidTelemetryService::AndroidTelemetryService(Profile* profile)
 }
 
 AndroidTelemetryService::~AndroidTelemetryService() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
           profile_->GetProfileKey());
@@ -78,7 +78,7 @@ AndroidTelemetryService::~AndroidTelemetryService() {
 }
 
 void AndroidTelemetryService::OnDownloadCreated(download::DownloadItem* item) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   download::SimpleDownloadManagerCoordinator* coordinator =
       SimpleDownloadManagerCoordinatorFactory::GetForKey(
@@ -92,7 +92,7 @@ void AndroidTelemetryService::OnDownloadCreated(download::DownloadItem* item) {
 }
 
 void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!CanSendPing(item)) {
     return;
@@ -223,8 +223,8 @@ void AndroidTelemetryService::GetReport(
     download::DownloadItem* item,
     base::OnceCallback<void(std::unique_ptr<ClientSafeBrowsingReportRequest>)>
         callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(item->IsDone());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(item->IsDone(), base::NotFatalUntil::M162);
 
   reports_in_progress_.insert(item);
 

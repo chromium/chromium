@@ -44,7 +44,7 @@ extern void InitializeLocalState(
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kLoginManager)) {
     PrefService* local_state = chrome_feature_list_creator->local_state();
-    DCHECK(local_state);
+    CHECK(local_state, base::NotFatalUntil::M162);
 
     std::string owner_locale = local_state->GetString(ash::prefs::kOwnerLocale);
     // Ensure that we start with owner's locale.
@@ -66,7 +66,7 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 #if BUILDFLAG(IS_ANDROID)
   // In order for DetectAndSetLoadNonWebViewLocalePaks() to work ResourceBundle
   // must not have been created yet.
-  DCHECK(!ui::ResourceBundle::HasSharedInstance());
+  CHECK(!ui::ResourceBundle::HasSharedInstance(), base::NotFatalUntil::M162);
   ui::DetectAndSetLoadNonWebViewLocalePaks();
 #endif
 

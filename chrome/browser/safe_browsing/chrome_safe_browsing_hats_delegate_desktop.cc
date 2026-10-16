@@ -27,7 +27,7 @@ void ChromeSafeBrowsingHatsDelegateDesktop::LaunchRedWarningSurvey(
     SurveyStringData product_specific_string_data,
     SurveyBitsData /*product_specific_bits_data*/,
     bool /*is_tab_closed*/) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   HatsService* hats_service =
       HatsServiceFactory::GetForProfile(profile_, /*create_if_necessary=*/true);

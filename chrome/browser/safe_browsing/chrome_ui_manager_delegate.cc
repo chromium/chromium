@@ -166,7 +166,7 @@ history::HistoryService* ChromeSafeBrowsingUIManagerDelegate::GetHistoryService(
 
 PingManager* ChromeSafeBrowsingUIManagerDelegate::GetPingManager(
     content::BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   return ChromePingManagerFactory::GetForBrowserContext(browser_context);
 }

@@ -50,7 +50,7 @@ bool WebHidDevicePolicyHandler::CheckPolicySettings(const PolicyMap& policies,
 
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::LIST);
-  DCHECK(value);
+  CHECK(value, base::NotFatalUntil::M162);
   int item_index = 0;
   for (const auto& item : value->GetList()) {
     if (!item.is_dict())

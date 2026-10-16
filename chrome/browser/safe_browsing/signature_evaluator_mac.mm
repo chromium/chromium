@@ -198,7 +198,7 @@ bool MacSignatureEvaluator::Initialize() {
 
 bool MacSignatureEvaluator::PerformEvaluation(
     ClientIncidentReport_IncidentData_BinaryIntegrityIncident* incident) {
-  DCHECK(incident->contained_file_size() == 0);
+  CHECK(incident->contained_file_size() == 0, base::NotFatalUntil::M162);
   base::apple::ScopedCFTypeRef<CFErrorRef> errors;
   OSStatus err = SecStaticCodeCheckValidityWithErrors(
       code_.get(), kSecCSCheckAllArchitectures, requirement_.get(),

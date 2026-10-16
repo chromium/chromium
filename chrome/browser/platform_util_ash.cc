@@ -69,7 +69,7 @@ void ShowWarningOnOpenOperationResult(Profile* profile,
 }  // namespace
 
 void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   file_manager::util::ShowItemInFolder(
       profile, full_path,
       base::BindOnce(&ShowWarningOnOpenOperationResult, profile, full_path));
@@ -79,7 +79,7 @@ void OpenItem(Profile* profile,
               const base::FilePath& full_path,
               OpenItemType item_type,
               OpenOperationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   file_manager::util::OpenItem(
       profile, full_path, item_type,
       callback.is_null() ? base::BindOnce(&ShowWarningOnOpenOperationResult,
@@ -96,7 +96,7 @@ void OpenExternal(Profile* profile, const GURL& url) {
   // ExternalProtocolDialog::OnDialogAccepted invokes this, or the dialog has
   // previously been accepted with "Always allow ..." and this is called from
   // ChromeContentBrowserClient::HandleExternalProtocol.
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   std::optional<guest_os::GuestOsUrlHandler> handler =
       guest_os::GuestOsUrlHandler::GetForUrl(profile, url);

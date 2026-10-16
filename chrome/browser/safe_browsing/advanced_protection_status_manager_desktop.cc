@@ -192,7 +192,7 @@ void AdvancedProtectionStatusManagerDesktop::OnAccessTokenFetchComplete(
     CoreAccountId account_id,
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
-  DCHECK(access_token_fetcher_);
+  CHECK(access_token_fetcher_, base::NotFatalUntil::M162);
 
   if (error.state() == GoogleServiceAuthError::NONE) {
     OnGetIDToken(account_id, token_info.id_token);
@@ -308,8 +308,8 @@ AdvancedProtectionStatusManagerDesktop::AdvancedProtectionStatusManagerDesktop(
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
       minimum_delay_(min_delay) {
-  DCHECK(identity_manager_);
-  DCHECK(pref_service_);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
+  CHECK(pref_service_, base::NotFatalUntil::M162);
 
   Initialize();
   MaybeRefreshOnStartUp();

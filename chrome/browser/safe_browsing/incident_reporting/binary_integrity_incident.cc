@@ -13,8 +13,9 @@ namespace safe_browsing {
 BinaryIntegrityIncident::BinaryIntegrityIncident(
     std::unique_ptr<ClientIncidentReport_IncidentData_BinaryIntegrityIncident>
         binary_integrity_incident) {
-  DCHECK(binary_integrity_incident);
-  DCHECK(binary_integrity_incident->has_file_basename());
+  CHECK(binary_integrity_incident, base::NotFatalUntil::M162);
+  CHECK(binary_integrity_incident->has_file_basename(),
+        base::NotFatalUntil::M162);
   payload()->set_allocated_binary_integrity(
       binary_integrity_incident.release());
 }

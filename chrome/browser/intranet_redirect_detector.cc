@@ -121,7 +121,8 @@ void IntranetRedirectDetector::FinishSleep() {
   if (cmd_line->HasSwitch(switches::kDisableBackgroundNetworking))
     return;
 
-  DCHECK(simple_loaders_.empty() && resulting_origins_.empty());
+  CHECK(simple_loaders_.empty() && resulting_origins_.empty(),
+        base::NotFatalUntil::M162);
 
   // Create traffic annotation tag.
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -190,7 +191,7 @@ void IntranetRedirectDetector::OnSimpleLoaderComplete(
   // If any two loaders result in the same domain/host, we set the redirect
   // origin to that; otherwise we set it to nothing.
   if (response_body) {
-    DCHECK(source->GetFinalURL().is_valid());
+    CHECK(source->GetFinalURL().is_valid(), base::NotFatalUntil::M162);
     GURL origin(source->GetFinalURL().DeprecatedGetOriginAsURL());
     if (resulting_origins_.empty()) {
       resulting_origins_.push_back(origin);
@@ -203,7 +204,7 @@ void IntranetRedirectDetector::OnSimpleLoaderComplete(
       redirect_origin_ = origin;
       if (!simple_loaders_.empty()) {
         // Cancel remaining loader, we don't need it.
-        DCHECK(simple_loaders_.size() == 1);
+        CHECK(simple_loaders_.size() == 1, base::NotFatalUntil::M162);
         simple_loaders_.clear();
       }
     }
@@ -211,7 +212,7 @@ void IntranetRedirectDetector::OnSimpleLoaderComplete(
       resulting_origins_.push_back(origin);
       return;
     }
-    DCHECK(resulting_origins_.size() == 2);
+    CHECK(resulting_origins_.size() == 2, base::NotFatalUntil::M162);
     const bool same_domain_or_host =
         net::registry_controlled_domains::SameDomainOrHost(
             resulting_origins_.back(),
@@ -244,7 +245,7 @@ void IntranetRedirectDetector::OnDnsConfigChanged() {
 }
 
 void IntranetRedirectDetector::SetupDnsConfigClient() {
-  DCHECK(!dns_config_client_receiver_.is_bound());
+  CHECK(!dns_config_client_receiver_.is_bound(), base::NotFatalUntil::M162);
 
   mojo::Remote<network::mojom::DnsConfigChangeManager> manager_remote;
   content::GetNetworkService()->GetDnsConfigChangeManager(

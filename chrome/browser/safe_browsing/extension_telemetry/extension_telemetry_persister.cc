@@ -70,7 +70,7 @@ ExtensionTelemetryPersister::ExtensionTelemetryPersister(
     int max_num_files,
     base::FilePath profile_path)
     : dir_path_(profile_path), max_num_files_(max_num_files) {
-  DCHECK(max_num_files <= kMaxCacheSize);
+  CHECK(max_num_files <= kMaxCacheSize, base::NotFatalUntil::M162);
 }
 
 void ExtensionTelemetryPersister::PersisterInit() {

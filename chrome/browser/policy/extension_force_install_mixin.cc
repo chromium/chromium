@@ -143,7 +143,7 @@ bool ForceInstallPrefObserver::IsForceInstallPrefSet() const {
     // protects against, and there might be tests that simulate this scenario.
     return false;
   }
-  DCHECK_EQ(pref->GetType(), base::Value::Type::DICT);
+  CHECK_EQ(pref->GetType(), base::Value::Type::DICT, base::NotFatalUntil::M162);
   return pref->GetValue()->GetDict().contains(extension_id_);
 }
 
@@ -181,7 +181,7 @@ ForceInstallWaiter::ForceInstallWaiter(
     const extensions::ExtensionId& extension_id,
     Profile* profile)
     : wait_mode_(wait_mode), extension_id_(extension_id), profile_(profile) {
-  DCHECK(crx_file::id_util::IdIsValid(extension_id_));
+  CHECK(crx_file::id_util::IdIsValid(extension_id_), base::NotFatalUntil::M162);
   if (!profile_ && wait_mode_ != ExtensionForceInstallMixin::WaitMode::kNone) {
     ADD_FAILURE() << "No profile passed to the Init method";
     return;
@@ -460,10 +460,10 @@ ExtensionForceInstallMixin::~ExtensionForceInstallMixin() = default;
 void ExtensionForceInstallMixin::InitWithMockPolicyProvider(
     Profile* profile,
     policy::MockConfigurationPolicyProvider* mock_policy_provider) {
-  DCHECK(mock_policy_provider);
+  CHECK(mock_policy_provider, base::NotFatalUntil::M162);
   DCHECK(!initialized_) << "Init already called";
-  DCHECK(!profile_);
-  DCHECK(!mock_policy_provider_);
+  CHECK(!profile_, base::NotFatalUntil::M162);
+  CHECK(!mock_policy_provider_, base::NotFatalUntil::M162);
   initialized_ = true;
   profile_ = profile;
   mock_policy_provider_ = mock_policy_provider;
@@ -474,10 +474,10 @@ void ExtensionForceInstallMixin::InitWithMockPolicyProvider(
 void ExtensionForceInstallMixin::InitWithDeviceStateMixin(
     Profile* profile,
     ash::DeviceStateMixin* device_state_mixin) {
-  DCHECK(device_state_mixin);
+  CHECK(device_state_mixin, base::NotFatalUntil::M162);
   DCHECK(!initialized_) << "Init already called";
-  DCHECK(!profile_);
-  DCHECK(!device_state_mixin_);
+  CHECK(!profile_, base::NotFatalUntil::M162);
+  CHECK(!device_state_mixin_, base::NotFatalUntil::M162);
   initialized_ = true;
   profile_ = profile;
   device_state_mixin_ = device_state_mixin;
@@ -486,10 +486,10 @@ void ExtensionForceInstallMixin::InitWithDeviceStateMixin(
 void ExtensionForceInstallMixin::InitWithDevicePolicyCrosTestHelper(
     Profile* profile,
     policy::DevicePolicyCrosTestHelper* device_policy_cros_test_helper) {
-  DCHECK(device_policy_cros_test_helper);
+  CHECK(device_policy_cros_test_helper, base::NotFatalUntil::M162);
   DCHECK(!initialized_) << "Init already called";
-  DCHECK(!profile_);
-  DCHECK(!device_policy_cros_test_helper_);
+  CHECK(!profile_, base::NotFatalUntil::M162);
+  CHECK(!device_policy_cros_test_helper_, base::NotFatalUntil::M162);
   initialized_ = true;
   profile_ = profile;
   device_policy_cros_test_helper_ = device_policy_cros_test_helper;
@@ -501,16 +501,16 @@ void ExtensionForceInstallMixin::InitWithEmbeddedPolicyMixin(
     policy::UserPolicyBuilder* user_policy_builder,
     const std::string& account_id,
     const std::string& policy_type) {
-  DCHECK(policy_test_server_mixin);
-  DCHECK(user_policy_builder);
-  DCHECK(!account_id.empty());
-  DCHECK(!policy_type.empty());
+  CHECK(policy_test_server_mixin, base::NotFatalUntil::M162);
+  CHECK(user_policy_builder, base::NotFatalUntil::M162);
+  CHECK(!account_id.empty(), base::NotFatalUntil::M162);
+  CHECK(!policy_type.empty(), base::NotFatalUntil::M162);
   DCHECK(!initialized_) << "Init already called";
-  DCHECK(!profile_);
-  DCHECK(!policy_test_server_mixin_);
-  DCHECK(!user_policy_builder_);
-  DCHECK(account_id_.empty());
-  DCHECK(policy_type_.empty());
+  CHECK(!profile_, base::NotFatalUntil::M162);
+  CHECK(!policy_test_server_mixin_, base::NotFatalUntil::M162);
+  CHECK(!user_policy_builder_, base::NotFatalUntil::M162);
+  CHECK(account_id_.empty(), base::NotFatalUntil::M162);
+  CHECK(policy_type_.empty(), base::NotFatalUntil::M162);
   initialized_ = true;
   profile_ = profile;
   policy_test_server_mixin_ = policy_test_server_mixin;
@@ -640,7 +640,7 @@ const extensions::Extension* ExtensionForceInstallMixin::GetInstalledExtension(
   }
 
   const auto* const registry = extensions::ExtensionRegistry::Get(profile_);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M162);
   return registry->GetInstalledExtension(extension_id);
 }
 
@@ -653,7 +653,7 @@ const extensions::Extension* ExtensionForceInstallMixin::GetEnabledExtension(
   }
 
   const auto* const registry = extensions::ExtensionRegistry::Get(profile_);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M162);
   return registry->enabled_extensions().GetByID(extension_id);
 }
 

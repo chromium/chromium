@@ -40,7 +40,7 @@ namespace safe_browsing {
 
 SafeBrowsingPrefChangeHandler::SafeBrowsingPrefChangeHandler(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 #if BUILDFLAG(IS_ANDROID)
   retry_handler_ = std::make_unique<MessageRetryHandler>(
       profile_, prefs::kSafeBrowsingSyncedEnhancedProtectionRetryState,

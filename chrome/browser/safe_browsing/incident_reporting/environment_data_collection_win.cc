@@ -48,7 +48,7 @@ const std::array<RegistryKeyInfo, 1> kRegKeysToCollect = {{
 
 // Helper function to convert HKEYs to strings.
 std::wstring HKEYToString(HKEY key) {
-  DCHECK_EQ(HKEY_CURRENT_USER, key);
+  CHECK_EQ(HKEY_CURRENT_USER, key, base::NotFatalUntil::M162);
   return L"HKEY_CURRENT_USER";
 }
 

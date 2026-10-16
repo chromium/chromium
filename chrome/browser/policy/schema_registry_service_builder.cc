@@ -69,7 +69,7 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
     const Schema& chrome_schema,
     const Schema& extension_install_policy_schema,
     CombinedSchemaRegistry* global_registry) {
-  DCHECK(!context->IsOffTheRecord());
+  CHECK(!context->IsOffTheRecord(), base::NotFatalUntil::M162);
 
   std::unique_ptr<SchemaRegistry> registry;
 

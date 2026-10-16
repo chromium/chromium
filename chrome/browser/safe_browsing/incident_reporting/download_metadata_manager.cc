@@ -118,7 +118,7 @@ bool MetadataIsValid(const DownloadMetadata& metadata) {
 void ReadMetadataInBackground(const base::FilePath& metadata_path,
                               DownloadMetadata* metadata) {
   using base::File;
-  DCHECK(metadata);
+  CHECK(metadata, base::NotFatalUntil::M162);
   File metadata_file(metadata_path, File::FLAG_OPEN | File::FLAG_READ);
   base::File::Info info;
   if (metadata_file.IsValid() && metadata_file.GetInfo(&info) &&
@@ -328,11 +328,11 @@ void DownloadMetadataManager::AddDownloadManager(
 
 void DownloadMetadataManager::SetRequest(download::DownloadItem* item,
                                          const ClientDownloadRequest* request) {
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M162);
   download::SimpleDownloadManagerCoordinator* const coordinator =
       GetCoordinatorForBrowserContext(
           content::DownloadItemUtils::GetBrowserContext(item));
-  DCHECK(contexts_.contains(coordinator));
+  CHECK(contexts_.contains(coordinator), base::NotFatalUntil::M162);
   contexts_[coordinator]->SetRequest(
       item, std::make_unique<ClientDownloadRequest>(*request));
 }
@@ -340,7 +340,7 @@ void DownloadMetadataManager::SetRequest(download::DownloadItem* item,
 void DownloadMetadataManager::GetDownloadDetails(
     content::BrowserContext* browser_context,
     GetDownloadDetailsCallback callback) {
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M162);
   // The coordinator for |browser_context| may not have been created yet. In
   // this case, asking for it would cause history to load in the background and
   // wouldn't really help much. Instead, scan the contexts to see if one belongs
@@ -435,7 +435,7 @@ void DownloadMetadataManager::ManagerContext::Detach() {
 void DownloadMetadataManager::ManagerContext::SetRequest(
     download::DownloadItem* download,
     std::unique_ptr<ClientDownloadRequest> request) {
-  DCHECK(request);
+  CHECK(request, base::NotFatalUntil::M162);
   // Hold on to the request for completion time if the download is in progress.
   // Otherwise, commit the request.
   if (download->GetState() == download::DownloadItem::IN_PROGRESS)
@@ -488,14 +488,15 @@ void DownloadMetadataManager::ManagerContext::OnDownloadRemoved(
 
 DownloadMetadataManager::ManagerContext::~ManagerContext() {
   // A context should not be deleted while waiting for a load to complete.
-  DCHECK(pending_items_.empty());
-  DCHECK(get_details_callbacks_.empty());
+  CHECK(pending_items_.empty(), base::NotFatalUntil::M162);
+  CHECK(get_details_callbacks_.empty(), base::NotFatalUntil::M162);
 }
 
 void DownloadMetadataManager::ManagerContext::CommitRequest(
     download::DownloadItem* item,
     std::unique_ptr<ClientDownloadRequest> request) {
-  DCHECK_EQ(download::DownloadItem::COMPLETE, item->GetState());
+  CHECK_EQ(download::DownloadItem::COMPLETE, item->GetState(),
+           base::NotFatalUntil::M162);
   if (state_ != LOAD_COMPLETE) {
     // Abandon the read task since |item| is the new top dog.
     weak_factory_.InvalidateWeakPtrs();
@@ -517,7 +518,7 @@ void DownloadMetadataManager::ManagerContext::CommitRequest(
 }
 
 void DownloadMetadataManager::ManagerContext::ReadMetadata() {
-  DCHECK_NE(state_, LOAD_COMPLETE);
+  CHECK_NE(state_, LOAD_COMPLETE, base::NotFatalUntil::M162);
 
   DownloadMetadata* metadata = new DownloadMetadata();
   // Do not block shutdown on this read since nothing will come of it.
@@ -569,14 +570,15 @@ void DownloadMetadataManager::ManagerContext::RunCallbacks() {
 bool DownloadMetadataManager::ManagerContext::HasMetadataFor(
     const download::DownloadItem* item) const {
   // There must not be metadata if the load is not complete.
-  DCHECK(state_ == LOAD_COMPLETE || !download_metadata_);
+  CHECK(state_ == LOAD_COMPLETE || !download_metadata_,
+        base::NotFatalUntil::M162);
   return (download_metadata_ &&
           download_metadata_->download_id() == item->GetId());
 }
 
 void DownloadMetadataManager::ManagerContext::OnMetadataReady(
     std::unique_ptr<DownloadMetadata> download_metadata) {
-  DCHECK_NE(state_, LOAD_COMPLETE);
+  CHECK_NE(state_, LOAD_COMPLETE, base::NotFatalUntil::M162);
 
   const bool is_detached = (state_ == DETACHED_WAIT);
 

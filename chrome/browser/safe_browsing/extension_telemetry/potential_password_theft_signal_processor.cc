@@ -28,8 +28,9 @@ PotentialPasswordTheftSignalProcessor::
 
 void PotentialPasswordTheftSignalProcessor::ProcessSignal(
     const ExtensionSignal& signal) {
-  DCHECK(signal.GetType() == ExtensionSignalType::kRemoteHostContacted ||
-         signal.GetType() == ExtensionSignalType::kPasswordReuse);
+  CHECK(signal.GetType() == ExtensionSignalType::kRemoteHostContacted ||
+            signal.GetType() == ExtensionSignalType::kPasswordReuse,
+        base::NotFatalUntil::M162);
   base::Time signal_creation_time = base::Time::NowFromSystemTime();
   extensions::ExtensionId extension_id;
   // Process remote host contacted signal.

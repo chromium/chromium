@@ -36,8 +36,8 @@ DeclarativeNetRequestActionSignalProcessor::
 void DeclarativeNetRequestActionSignalProcessor::ProcessSignal(
     const ExtensionSignal& signal) {
   // Validate DeclarativeNetRequestAction signal.
-  DCHECK_EQ(ExtensionSignalType::kDeclarativeNetRequestAction,
-            signal.GetType());
+  CHECK_EQ(ExtensionSignalType::kDeclarativeNetRequestAction, signal.GetType(),
+           base::NotFatalUntil::M162);
   const auto& dnr_action_signal =
       static_cast<const DeclarativeNetRequestActionSignal&>(signal);
 
