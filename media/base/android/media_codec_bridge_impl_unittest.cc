@@ -26,6 +26,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
 
+using testing::ElementsAre;
 using testing::IsNull;
 using testing::NotNull;
 
@@ -178,7 +179,20 @@ AudioDecoderConfig NewAudioConfig(
   return config;
 }
 
-TEST(MediaCodecBridgeTest, CreateH264Decoder) {
+class MediaCodecBridgeTest : public testing::Test {
+ protected:
+  bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
+                                    std::vector<uint8_t>* output_csd0,
+                                    std::vector<uint8_t>* output_csd1,
+                                    std::vector<uint8_t>* output_csd2,
+                                    bool* output_frame_has_adts_header) {
+    return MediaCodecBridgeImpl::GetCodecSpecificDataForAudio(
+        config, output_csd0, output_csd1, output_csd2,
+        output_frame_has_adts_header);
+  }
+};
+
+TEST_F(MediaCodecBridgeTest, CreateH264Decoder) {
   VideoCodecConfig config;
   config.codec = VideoCodec::kH264;
   config.codec_type = CodecType::kAny;
@@ -187,7 +201,7 @@ TEST(MediaCodecBridgeTest, CreateH264Decoder) {
   MediaCodecBridgeImpl::CreateVideoDecoder(config);
 }
 
-TEST(MediaCodecBridgeTest, DoNormal) {
+TEST_F(MediaCodecBridgeTest, DoNormal) {
   std::unique_ptr<media::MediaCodecBridge> media_codec =
       MediaCodecBridgeImpl::CreateAudioDecoder(NewAudioConfig(AudioCodec::kMP3),
                                                nullptr);
@@ -242,7 +256,7 @@ TEST(MediaCodecBridgeTest, DoNormal) {
   ASSERT_LE(input_pts, kMaxInputPts);
 }
 
-TEST(MediaCodecBridgeTest, InvalidVorbisHeader) {
+TEST_F(MediaCodecBridgeTest, InvalidVorbisHeader) {
   // The first byte of the header is not 0x02.
   std::vector<uint8_t> invalid_first_byte = {{0x00, 0xff, 0xff, 0xff, 0xff}};
   ASSERT_THAT(
@@ -260,7 +274,7 @@ TEST(MediaCodecBridgeTest, InvalidVorbisHeader) {
               IsNull());
 }
 
-TEST(MediaCodecBridgeTest, InvalidOpusHeader) {
+TEST_F(MediaCodecBridgeTest, InvalidOpusHeader) {
   std::vector<uint8_t> dummy_extra_data = {{0, 0}};
 
   // Codec Delay is < 0.
@@ -278,7 +292,67 @@ TEST(MediaCodecBridgeTest, InvalidOpusHeader) {
               IsNull());
 }
 
-TEST(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
+TEST_F(MediaCodecBridgeTest, VorbisCodecSpecificData) {
+  const std::vector<uint8_t> extra_data = {0x02, 0x03, 0x02, 0x10, 0x11, 0x12,
+                                           0x20, 0x21, 0x30, 0x31, 0x32, 0x33};
+  std::vector<uint8_t> csd0;
+  std::vector<uint8_t> csd1;
+  std::vector<uint8_t> csd2;
+  bool has_adts = true;
+
+  ASSERT_TRUE(GetCodecSpecificDataForAudio(
+      NewAudioConfig(AudioCodec::kVorbis, extra_data), &csd0, &csd1, &csd2,
+      &has_adts));
+  EXPECT_THAT(csd0, ElementsAre(0x10, 0x11, 0x12));
+  EXPECT_THAT(csd1, ElementsAre(0x30, 0x31, 0x32, 0x33));
+  EXPECT_TRUE(csd2.empty());
+  EXPECT_FALSE(has_adts);
+}
+
+TEST_F(MediaCodecBridgeTest, OpusCodecSpecificData) {
+  const std::vector<uint8_t> extra_data = {0x4f, 0x70, 0x75, 0x73};
+  std::vector<uint8_t> csd0;
+  std::vector<uint8_t> csd1;
+  std::vector<uint8_t> csd2;
+  bool has_adts = true;
+
+  ASSERT_TRUE(GetCodecSpecificDataForAudio(
+      NewAudioConfig(AudioCodec::kOpus, extra_data, base::Microseconds(80000),
+                     441),
+      &csd0, &csd1, &csd2, &has_adts));
+  constexpr int64_t kExpectedDelayNs = 10000000;
+  constexpr int64_t kExpectedPrerollNs = 80000000;
+  EXPECT_EQ(csd0, extra_data);
+  EXPECT_EQ(csd1, base::ToVector(base::byte_span_from_ref(kExpectedDelayNs)));
+  EXPECT_EQ(csd2, base::ToVector(base::byte_span_from_ref(kExpectedPrerollNs)));
+  EXPECT_FALSE(has_adts);
+}
+
+TEST_F(MediaCodecBridgeTest, VorbisCodecSpecificDataMultiByteLength) {
+  const std::vector<uint8_t> expected_csd0(260, 0x10);
+  const std::vector<uint8_t> comment_header = {0x20, 0x21};
+  const std::vector<uint8_t> expected_csd1 = {0x30, 0x31, 0x32, 0x33};
+
+  std::vector<uint8_t> extra_data = {0x02, 0xff, 0x05, 0x02};
+  base::Extend(extra_data, expected_csd0);
+  base::Extend(extra_data, comment_header);
+  base::Extend(extra_data, expected_csd1);
+
+  std::vector<uint8_t> csd0;
+  std::vector<uint8_t> csd1;
+  std::vector<uint8_t> csd2;
+  bool has_adts = true;
+
+  ASSERT_TRUE(GetCodecSpecificDataForAudio(
+      NewAudioConfig(AudioCodec::kVorbis, extra_data), &csd0, &csd1, &csd2,
+      &has_adts));
+  EXPECT_EQ(csd0, expected_csd0);
+  EXPECT_EQ(csd1, expected_csd1);
+  EXPECT_TRUE(csd2.empty());
+  EXPECT_FALSE(has_adts);
+}
+
+TEST_F(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
   if (!MediaCodecUtil::IsVp8DecoderAvailable()) {
     VLOG(0) << "Could not run test - VP8 not supported on device.";
     return;
@@ -308,7 +382,7 @@ TEST(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
                    base::Microseconds(4900000));
 }
 
-TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
+TEST_F(MediaCodecBridgeTest, CreateUnsupportedCodec) {
   EXPECT_THAT(MediaCodecBridgeImpl::CreateAudioDecoder(
                   NewAudioConfig(AudioCodec::kUnknown), nullptr),
               IsNull());

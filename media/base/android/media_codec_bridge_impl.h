@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
@@ -152,12 +153,20 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   size_t GetMaxInputSize() override;
 
  private:
+  friend class MediaCodecBridgeTest;
+
   MediaCodecBridgeImpl(CodecType codec_type,
                        std::optional<VideoCodec> video_decoder_codec,
                        base::android::ScopedJavaGlobalRef<jobject> j_bridge,
                        bool use_block_model = false,
                        base::RepeatingClosure on_buffers_available_cb =
                            base::RepeatingClosure());
+
+  static bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
+                                           std::vector<uint8_t>* output_csd0,
+                                           std::vector<uint8_t>* output_csd1,
+                                           std::vector<uint8_t>* output_csd2,
+                                           bool* output_frame_has_adts_header);
 
   // Fills the given input buffer. Returns false if |data_size| exceeds the
   // input buffer's capacity (and doesn't touch the input buffer in that case).
