@@ -19,9 +19,11 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/selection/features.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -84,28 +86,16 @@ proto::SmartSelectionSuggestionsRequest BuildServerSuggestionsRequest(
   return request;
 }
 
-// Parses `result` and invokes the corresponding `tools` to create
-// `Suggestion`s.
+// Invokes the corresponding `tools` to create `Suggestion`s from `response`.
 std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
     const AreaOfInterest& aoi,
-    const optimization_guide::OptimizationGuideModelExecutionResult& result,
+    const proto::SmartSelectionSuggestionsResponse& response,
     const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
         tools) {
-  if (!result.response.has_value()) {
-    return {};
-  }
-
-  const std::optional<proto::SmartSelectionSuggestionsResponse> response =
-      optimization_guide::ParsedAnyMetadata<
-          proto::SmartSelectionSuggestionsResponse>(result.response.value());
-  if (!response.has_value()) {
-    return {};
-  }
-
   std::vector<std::unique_ptr<Suggestion>> suggestions;
-  suggestions.reserve(response->suggestions().size());
+  suggestions.reserve(response.suggestions().size());
   for (const proto::SmartSelectionSuggestion& server_suggestion :
-       response->suggestions()) {
+       response.suggestions()) {
     if (const raw_ptr<SuggestionTool>* tool =
             base::FindOrNull(tools, server_suggestion.tool())) {
       if (std::unique_ptr<Suggestion> suggestion =
@@ -115,6 +105,41 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
     }
   }
   return suggestions;
+}
+
+void LogLatencyMetrics(base::TimeTicks request_start_time,
+                       base::TimeTicks mes_request_start_time,
+                       const proto::SmartSelectionLatencyMetrics& metrics,
+                       size_t num_suggestions) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  struct {
+    base::TimeDelta end_to_end;
+    base::TimeDelta client_mes_rpc;
+    base::TimeDelta client_prep;
+    base::TimeDelta transmission;
+    base::TimeDelta mes_overhead;
+    base::TimeDelta model_run;
+  } durations = {
+      .end_to_end = now - request_start_time,
+      .client_mes_rpc = now - mes_request_start_time,
+      .client_prep = mes_request_start_time - request_start_time,
+  };
+  if (metrics.has_mes_total_ms()) {
+    const base::TimeDelta mes_total =
+        base::Milliseconds(metrics.mes_total_ms());
+    durations.transmission = durations.client_mes_rpc - mes_total;
+    if (metrics.has_model_execution_ms()) {
+      durations.model_run = base::Milliseconds(metrics.model_execution_ms());
+      durations.mes_overhead = mes_total - durations.model_run;
+    }
+  }
+  // TODO(crbug.com/571693803): Add UKM and UMA metrics.
+  VLOG(1) << "Suggestion latency: end-to-end: " << durations.end_to_end
+          << " (client prep: " << durations.client_prep
+          << ", transmission: " << durations.transmission
+          << ", MES overhead: " << durations.mes_overhead
+          << ", model run: " << durations.model_run
+          << ") (suggestions=" << num_suggestions << ")";
 }
 
 }  // namespace
@@ -172,6 +197,7 @@ void SuggestionService::UpdateScreenContent(
 
 void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
                                            SuggestionsCallback callback) {
+  const auto request_start_time = base::TimeTicks::Now();
   if (tools_.empty() || !remote_model_executor_ ||
       !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -195,7 +221,8 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
                      /*discard_transparency=*/false),
       base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
                      weak_factory_.GetWeakPtr(), std::move(processed_area),
-                     std::move(callback), std::move(request)));
+                     std::move(callback), request_start_time,
+                     std::move(request)));
 }
 
 bool SuggestionService::IsFeatureGroupEnabled(
@@ -208,6 +235,7 @@ bool SuggestionService::IsFeatureGroupEnabled(
 void SuggestionService::SendServerSuggestionsRequest(
     AreaOfInterest processed_area,
     SuggestionsCallback callback,
+    base::TimeTicks request_start_time,
     proto::SmartSelectionSuggestionsRequest request,
     std::optional<std::vector<uint8_t>> png_bytes) {
   if (png_bytes.has_value()) {
@@ -223,16 +251,31 @@ void SuggestionService::SendServerSuggestionsRequest(
       request, {.execution_timeout = kSmartSelectionServerTimeout.Get()},
       base::BindOnce(&SuggestionService::OnServerSuggestions,
                      weak_factory_.GetWeakPtr(), std::move(processed_area),
-                     std::move(callback)));
+                     std::move(callback), request_start_time,
+                     /*mes_request_start_time=*/base::TimeTicks::Now()));
 }
 
 void SuggestionService::OnServerSuggestions(
     AreaOfInterest processed_area,
     SuggestionsCallback callback,
+    base::TimeTicks request_start_time,
+    base::TimeTicks mes_request_start_time,
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  std::move(callback).Run(
-      ExtractSuggestionsFromResponse(processed_area, result, tools_));
+  std::optional<proto::SmartSelectionSuggestionsResponse> response;
+  if (result.response.has_value()) {
+    response = optimization_guide::ParsedAnyMetadata<
+        proto::SmartSelectionSuggestionsResponse>(result.response.value());
+  }
+  if (!response) {
+    std::move(callback).Run({});
+    return;
+  }
+  std::vector<std::unique_ptr<Suggestion>> suggestions =
+      ExtractSuggestionsFromResponse(processed_area, *response, tools_);
+  LogLatencyMetrics(request_start_time, mes_request_start_time,
+                    response->latency_metrics(), suggestions.size());
+  std::move(callback).Run(std::move(suggestions));
 }
 
 }  // namespace selection

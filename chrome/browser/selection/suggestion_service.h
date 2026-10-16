@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_tool.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -87,6 +88,7 @@ class SuggestionService {
   void SendServerSuggestionsRequest(
       AreaOfInterest processed_area,
       SuggestionsCallback callback,
+      base::TimeTicks request_start_time,
       optimization_guide::proto::SmartSelectionSuggestionsRequest request,
       std::optional<std::vector<uint8_t>> png_bytes);
 
@@ -95,6 +97,8 @@ class SuggestionService {
   void OnServerSuggestions(
       AreaOfInterest processed_area,
       SuggestionsCallback callback,
+      base::TimeTicks request_start_time,
+      base::TimeTicks mes_request_start_time,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
