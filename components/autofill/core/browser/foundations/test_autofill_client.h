@@ -79,8 +79,7 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
-#include "components/one_time_tokens/core/browser/sms_otp_backend.h"
-#include "components/one_time_tokens/core/browser/sms_otp_service_impl.h"
+#include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -864,18 +863,6 @@ class TestAutofillClientTemplate : public T {
     return identity_test_env_;
   }
 
-  // Allows to return an injected SMS OTP backend which can be set using the
-  // `set_sms_otp_backend`. If no backend is injected, it'll return null.
-  one_time_tokens::SmsOtpBackend* GetSmsOtpBackend() const {
-    return injected_sms_otp_backend_ ? injected_sms_otp_backend_.get()
-                                     : nullptr;
-  }
-
-  void set_sms_otp_backend(
-      std::unique_ptr<one_time_tokens::SmsOtpBackend> sms_otp_backend) {
-    injected_sms_otp_backend_ = std::move(sms_otp_backend);
-  }
-
   one_time_tokens::SmsOtpService* GetSmsOtpService() const override {
     return injected_sms_otp_service_ ? injected_sms_otp_service_.get()
                                      : T::GetSmsOtpService();
@@ -959,7 +946,6 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_history_manager_;
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
-  std::unique_ptr<one_time_tokens::SmsOtpBackend> injected_sms_otp_backend_;
   std::unique_ptr<one_time_tokens::SmsOtpService> injected_sms_otp_service_;
   std::unique_ptr<one_time_tokens::GmailOtpBackend> injected_gmail_otp_backend_;
 

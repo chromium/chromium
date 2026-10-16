@@ -109,12 +109,11 @@ static_library("test_support") {
   sources = [
     "fake_gmail_otp_backend.cc",
     "fake_gmail_otp_backend.h",
-    "mock_sms_otp_service.cc",
-    "mock_sms_otp_service.h",
+    "fake_sms_otp_service.cc",
+    "fake_sms_otp_service.h",
   ]
   public_deps = [
     ":browser",
     "//base",
-    "//testing/gmock",
   ]
 }
