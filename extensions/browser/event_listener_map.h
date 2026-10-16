@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/public/common/child_process_id.h"
@@ -276,11 +276,9 @@ class EventListenerMap {
                                  const base::DictValue& filtered);
 
  private:
-  // Removes all listeners for `extension_id` where `removal_predicate` is true.
-  void RemoveListenersForExtensionImpl(
-      const ExtensionId& extension_id,
-      base::RepeatingCallback<bool(const ExtensionId&, EventListener*)>
-          removal_predicate);
+  // Removes the listeners for which `removal_predicate` returns true.
+  void RemoveListenersIf(
+      base::FunctionRef<bool(const EventListener&)> removal_predicate);
 
   void CleanupListener(EventListener* listener);
   bool IsFilteredEvent(const Event& event) const;
