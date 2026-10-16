@@ -15,13 +15,6 @@
 
 namespace blink::cssvalue {
 
-// Percentage-to-absolute conversion factors
-static constexpr double kLabABBase = 125.0;
-static constexpr double kOklabABBase = 0.4;
-static constexpr double kLchChromaBase = 150.0;
-static constexpr double kOklchChromaBase = 0.4;
-static constexpr double kRGBBase = 255.0;
-
 // Maximum values for clamping
 static constexpr double kLabLightnessMax = 100.0;
 static constexpr double kOklabLightnessMax = 1.0;
@@ -29,11 +22,10 @@ static constexpr double kLchLightnessMax = 100.0;
 static constexpr double kOklchLightnessMax = 1.0;
 static constexpr double kRGBChannelMax = 255.0;
 
-// Apply color-space-specific clamping and percentage conversion
-static double ProcessChannelValue(double val,
-                                  bool is_percentage,
-                                  Color::ColorSpace color_space,
-                                  int channel_index) {
+// Apply color-space-specific clamping.
+static double ClampChannelValue(double val,
+                                Color::ColorSpace color_space,
+                                int channel_index) {
   switch (color_space) {
     case Color::ColorSpace::kHSL:
       // HSL: [0]=Hue, [1]=Saturation, [2]=Lightness
@@ -49,12 +41,6 @@ static double ProcessChannelValue(double val,
       if (channel_index == 0) {
         val = ClampTo<double>(val, 0.0, kLabLightnessMax);
       }
-      // L% stays as-is, a/b% need conversion (100% = 125).
-      if (is_percentage) {
-        if (channel_index == 1 || channel_index == 2) {
-          return val * kLabABBase / 100.0;
-        }
-      }
       return val;
 
     case Color::ColorSpace::kOklab:
@@ -62,14 +48,6 @@ static double ProcessChannelValue(double val,
       // Clamp lightness to its expected range.
       if (channel_index == 0) {
         val = ClampTo<double>(val, 0.0, kOklabLightnessMax);
-      }
-      // L% needs scaling (100% = 1), a/b% need conversion (100% = 0.4).
-      if (is_percentage) {
-        if (channel_index == 0) {
-          return val / 100.0;
-        } else {
-          return val * kOklabABBase / 100.0;
-        }
       }
       return val;
 
@@ -81,12 +59,6 @@ static double ProcessChannelValue(double val,
       } else if (channel_index == 1) {
         val = std::max(0.0, val);
       }
-      // L% stays as-is, C% needs conversion (100% = 150).
-      if (is_percentage) {
-        if (channel_index == 1) {
-          return val * kLchChromaBase / 100.0;
-        }
-      }
       return val;
 
     case Color::ColorSpace::kOklch:
@@ -97,30 +69,45 @@ static double ProcessChannelValue(double val,
       } else if (channel_index == 1) {
         val = std::max(0.0, val);
       }
-      // L% needs scaling (100% = 1), C% needs conversion (100% = 0.4)
-      if (is_percentage) {
-        if (channel_index == 0) {
-          return val / 100.0;
-        } else if (channel_index == 1) {
-          return val * kOklchChromaBase / 100.0;
-        }
-      }
       return val;
 
-    case Color::ColorSpace::kSRGB:
     case Color::ColorSpace::kSRGBLegacy:
-      // SRGB: [0]=Red, [1]=Green, [2]=Blue
-      // Convert percentages to 0-255 range (100% = 255).
-      if (is_percentage) {
-        val = val * kRGBBase / 100.0;
-      }
-      // Clamp to valid RGB range
+      // Clamp to valid RGB range.
       return ClampTo<double>(val, 0.0, kRGBChannelMax);
 
-    default:
-      // Other color spaces can pass through unchanged.
+    case Color::ColorSpace::kSRGB:
+    case Color::ColorSpace::kSRGBLinear:
+    case Color::ColorSpace::kDisplayP3:
+    case Color::ColorSpace::kDisplayP3Linear:
+    case Color::ColorSpace::kA98RGB:
+    case Color::ColorSpace::kProPhotoRGB:
+    case Color::ColorSpace::kRec2020:
+    case Color::ColorSpace::kRec2100Linear:
+    case Color::ColorSpace::kXYZD50:
+    case Color::ColorSpace::kXYZD65:
+    case Color::ColorSpace::kHWB:
+      // No clamping.
       return val;
+
+    case Color::ColorSpace::kNone:
+      NOTREACHED();
   }
+}
+
+static const CSSNumericLiteralValue* GetNumericLiteralValue(
+    const CSSValue& value,
+    bool unwrap_single_value_calc) {
+  if (const auto* literal = DynamicTo<CSSNumericLiteralValue>(value)) {
+    return literal;
+  }
+  if (unwrap_single_value_calc) {
+    auto* calc = DynamicTo<CSSMathFunctionValue>(value);
+    if (auto* numeric_literal_node = DynamicTo<CSSMathExpressionNumericLiteral>(
+            calc ? calc->ExpressionNode() : nullptr)) {
+      return &numeric_literal_node->GetValue();
+    }
+  }
+  return nullptr;
 }
 
 static void AppendChannel(const CSSPrimitiveValue* value,
@@ -132,24 +119,23 @@ static void AppendChannel(const CSSPrimitiveValue* value,
     return;
   }
 
-  // Numeric literals require specific processing depending on the color space.
-  if (const auto* literal = DynamicTo<CSSNumericLiteralValue>(value)) {
-    double val =
-        ProcessChannelValue(literal->DoubleValue(), value->IsPercentage(),
-                            color_space, channel_index);
-    result.AppendNumber(val);
-    return;
-  }
-
-  const CSSMathFunctionValue* calc = DynamicTo<CSSMathFunctionValue>(value);
   // https://drafts.csswg.org/css-color-4/#resolving-sRGB-values
   // “For historical reasons, when calc() in sRGB colors resolves
   // to a single value, the declared value serialises without the
   // "calc(" ")" wrapper.”
-  if (calc && calc->ExpressionNode()->IsNumericLiteral() &&
-      color_space == Color::ColorSpace::kSRGBLegacy) {
-    double val = calc->ExpressionNode()->DoubleValue();
-    val = ClampTo<double>(val, 0.0, kRGBChannelMax);
+  const bool unwrap_single_value_calc =
+      color_space == Color::ColorSpace::kSRGBLegacy;
+
+  // Numeric literals require specific processing depending on the color space.
+  if (const auto* literal =
+          GetNumericLiteralValue(*value, unwrap_single_value_calc)) {
+    double val = literal->DoubleValue();
+    if (value->IsPercentage()) {
+      const ColorFunction::Metadata& function_metadata =
+          ColorFunction::MetadataForColorSpace(color_space);
+      val = (val / 100.0) * function_metadata.channel_percentage[channel_index];
+    }
+    val = ClampChannelValue(val, color_space, channel_index);
     result.AppendNumber(val);
     return;
   }
@@ -189,20 +175,17 @@ String CSSUnresolvedColorValue::CustomCSSText() const {
     // known to be 1.0 or above. (Note: alpha_->IsOne() would return false for
     // e.g. 1.5.).
     std::optional<double> alpha;
+
+    // See corresponding comment in AppendChannel().
+    const bool unwrap_single_value_calc =
+        color_space_ == Color::ColorSpace::kSRGBLegacy;
     if (const auto* literal_alpha =
-            DynamicTo<CSSNumericLiteralValue>(*alpha_)) {
-      alpha = literal_alpha->ClampedDoubleValue();
-    } else {
-      // See corresponding code in AppendChannel().
-      const CSSMathFunctionValue* calc =
-          DynamicTo<CSSMathFunctionValue>(alpha_.Get());
-      if (calc && calc->ExpressionNode()->IsNumericLiteral() &&
-          color_space_ == Color::ColorSpace::kSRGBLegacy) {
-        alpha = calc->ExpressionNode()->DoubleValue();
+            GetNumericLiteralValue(*alpha_, unwrap_single_value_calc)) {
+      double alpha_value = literal_alpha->ClampedDoubleValue();
+      if (literal_alpha->IsPercentage()) {
+        alpha_value /= 100.0;
       }
-    }
-    if (alpha.has_value() && alpha_->IsPercentage()) {
-      *alpha /= 100.0;
+      alpha = alpha_value;
     }
 
     if (!alpha.has_value() || !std::isfinite(*alpha) || *alpha < 1.0) {
