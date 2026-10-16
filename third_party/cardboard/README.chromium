@@ -2,7 +2,7 @@ Name: Cardboard SDK
 Short Name: cardboard
 URL: https://github.com/googlevr/cardboard
 Version: N/A
-Revision: 5969239e7c87f4cd64c8ec170ce1e7f4eb559e37
+Revision: 8bd424da7f1e399255a1b6e7c02be8e281ecc974
 Update Mechanism: Autoroll
 License: Unity-Companion-License-1.3, Apache-2.0
 License File: LICENSE
