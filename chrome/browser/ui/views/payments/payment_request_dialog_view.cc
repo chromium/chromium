@@ -158,15 +158,7 @@ void PaymentRequestDialogView::ShowDialog() {
     VLOG(2) << "ShowDialog: Rejected because dialog does not fit";
     request_->SetWindowSizeCheckRejectionReason(
         JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtShow);
-
-    // To avoid tearing down the PaymentRequest class in the middle of showing
-    // the dialog, we post this call asynchronously.
-    //
-    // TODO(crbug.com/483395708): Refactor PaymentRequest::Show so that it can
-    // handle this case synchronously, e.g. via a bool return parameter.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&PaymentRequest::OnInternalError, request_,
-                                  errors::kBrowserWindowTooSmall));
+    request_->OnInternalError(errors::kBrowserWindowTooSmall);
 
     // Because we never handed over ownership of this object to the widget in
     // ShowWebModalDialogViews, we need to manually delete ourselves.
