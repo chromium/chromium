@@ -3383,6 +3383,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/cr_components/composebox:unit_tests",
       "//chrome/browser/ui/webui/cr_components/customize_color_scheme_mode:unit_tests",
       "//chrome/browser/ui/webui/cr_components/history_embeddings:unit_tests",
+      "//chrome/browser/ui/webui/cr_components/searchbox:unit_tests",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker:unit_tests",
       "//chrome/browser/ui/webui/discards:unit_tests",
       "//chrome/browser/ui/webui/downloads:unit_tests",

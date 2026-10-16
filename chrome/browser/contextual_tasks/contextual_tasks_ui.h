@@ -51,6 +51,7 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "components/guest_view/browser/slim_web_view/slim_web_view_page_handler_factory.h"  // nogncheck
@@ -160,6 +161,11 @@ class ContextualTasksUI
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
 
+  // Binds the plural_string::mojom::PluralStringProvider used by the shared
+  // searchbox and composebox components.
+  void BindInterface(
+      mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+          receiver);
 
   // contextual_tasks::mojom::PageHandlerFactory:
   void CreatePageHandler(

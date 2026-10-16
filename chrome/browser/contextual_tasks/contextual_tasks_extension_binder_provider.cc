@@ -23,6 +23,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
 #endif
 
 namespace contextual_tasks {
@@ -102,6 +103,14 @@ void ContextualTasksExtensionBinderProvider::PopulateFrameBinders(
             frame_host)
             ->BindComposeboxFactory(std::move(receiver));
       }));
+  binder_map.Add<plural_string::mojom::PluralStringProvider>(
+      base::BindRepeating(
+          [](content::RenderFrameHost* frame_host,
+             mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+                 receiver) {
+            PluralStringProvider::Create(std::move(receiver),
+                                         GetSearchboxPluralStringIds());
+          }));
 #endif
 }
 

@@ -46,6 +46,7 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+#include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -190,6 +191,12 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
           pending_receiver);
+
+  // Binds the plural_string::mojom::PluralStringProvider used by the shared
+  // searchbox and composebox components and the NTP modules.
+  void BindInterface(
+      mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+          receiver);
 
 #if !defined(OFFICIAL_BUILD)
   // Instantiates the implementor of the foo::mojom::FooHandler mojo interface

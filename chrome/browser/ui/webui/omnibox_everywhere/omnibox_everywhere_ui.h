@@ -23,6 +23,7 @@
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+#include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
 
 class ComposeboxEverywhereHandler;
 class ContextualSearchboxHandler;
@@ -112,6 +113,12 @@ class OmniboxEverywhereUI
       mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
       mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
           pending_page_handler) override;
+
+  // Binds the plural_string::mojom::PluralStringProvider used by the shared
+  // searchbox and composebox components.
+  void BindInterface(
+      mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+          receiver);
 
   // composebox::mojom::PageHandlerFactory:
   void BindInterface(

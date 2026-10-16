@@ -17,8 +17,9 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
+#include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
 
 class LensOverlayController;
 class LensSearchController;
@@ -80,6 +81,12 @@ class LensSidePanelUntrustedUI
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
+          receiver);
+
+  // Binds the plural_string::mojom::PluralStringProvider used by the shared
+  // searchbox and composebox components.
+  void BindInterface(
+      mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
           receiver);
 
   static constexpr std::string_view GetWebUIName() {

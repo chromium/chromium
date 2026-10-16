@@ -10,11 +10,11 @@ import {SmartTabSharingSurface} from 'chrome://resources/cr_components/composebo
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 import {DEFAULT_FLYOUT_WIDTH_PX, DEFAULT_MAX_MENU_HEIGHT_PX, MIN_MENU_HEIGHT_PX, SHARE_TABS_FLYOUT_GAP_PX, SHARE_TABS_FLYOUT_MAX_HEIGHT_PX, VIEWPORT_BUFFER_PX} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
+import {MojoPluralStringProxy} from 'chrome://resources/cr_components/search/mojo_plural_string_proxy.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrIconsetElement} from 'chrome://resources/cr_elements/cr_icon/cr_iconset.js';
 import {IconsetMap} from 'chrome://resources/cr_elements/cr_icon/iconset_map.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -89,7 +89,7 @@ suite('ContextualActionMenu', () => {
     });
 
     const pluralStringProxy = new TestPluralStringProxy();
-    PluralStringProxyImpl.setInstance(pluralStringProxy);
+    MojoPluralStringProxy.setInstance(pluralStringProxy);
 
     actionMenu = document.createElement('cr-composebox-contextual-action-menu');
     Object.assign(actionMenu, {

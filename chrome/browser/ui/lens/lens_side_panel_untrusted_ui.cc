@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
 #include "chrome/browser/ui/webui/searchbox/lens_searchbox_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/pref_names.h"
@@ -278,6 +279,13 @@ void LensSidePanelUntrustedUI::BindInterface(
     help_bubble_handler_factory_receiver_.reset();
   }
   help_bubble_handler_factory_receiver_.Bind(std::move(receiver));
+}
+
+void LensSidePanelUntrustedUI::BindInterface(
+    mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+        receiver) {
+  PluralStringProvider::Create(std::move(receiver),
+                               GetSearchboxPluralStringIds());
 }
 
 void LensSidePanelUntrustedUI::BindInterface(

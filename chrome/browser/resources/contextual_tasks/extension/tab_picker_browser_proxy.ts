@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
+import {MojoPluralStringProxy} from 'chrome://resources/cr_components/search/mojo_plural_string_proxy.js';
 import {TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
@@ -21,11 +22,8 @@ export class TabPickerBrowserProxyImpl implements TabPickerBrowserProxy {
   }
 
   getPluralString(messageName: string, count: number): Promise<string> {
-    if (messageName === 'sharingTabs') {
-      return Promise.resolve(
-          count === 1 ? 'Sharing 1 tab' : `Sharing ${count} tabs`);
-    }
-    return Promise.resolve('');
+    return MojoPluralStringProxy.getInstance().getPluralString(
+        messageName, count);
   }
 
   addTabContext(tabId: number): void {

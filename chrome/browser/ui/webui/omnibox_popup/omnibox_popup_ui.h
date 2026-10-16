@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
 
 class Profile;
 
@@ -102,6 +103,12 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   OmniboxPopupAimHandler* popup_aim_handler() {
     return popup_aim_handler_.get();
   }
+
+  // Binds the plural_string::mojom::PluralStringProvider used by the shared
+  // searchbox and composebox components.
+  void BindInterface(
+      mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+          receiver);
 
   // composebox::mojom::PageHandlerFactory:
   void BindInterface(

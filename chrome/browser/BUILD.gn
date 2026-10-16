@@ -633,6 +633,7 @@ if (!is_android) {
       "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
       "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
       "//ui/webui/resources/cr_components/most_visited:mojom",
+      "//ui/webui/resources/cr_components/search:mojo_bindings",
       "//ui/webui/resources/cr_components/theme_color_picker:mojom",
       "//ui/webui/resources/js/batch_upload_promo:mojo_bindings",
       "//ui/webui/resources/js/browser_command:mojo_bindings",
@@ -2073,7 +2074,10 @@ source_set("core") {
   }
 
   if (!is_android || enable_webui_ntp) {
-    deps += [ "//ui/webui/resources/cr_components/composebox:mojo_bindings" ]
+    deps += [
+      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+      "//ui/webui/resources/cr_components/search:mojo_bindings",
+    ]
   }
 
   if (!is_android || enable_webui_ntp || enable_pdf || enable_webui_history) {

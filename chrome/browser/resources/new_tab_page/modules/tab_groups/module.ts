@@ -12,9 +12,9 @@ import './icons.html.js';
 import './icon_container.js';
 
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {MojoPluralStringProxy} from 'chrome://resources/cr_components/search/mojo_plural_string_proxy.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {I18nMixinLit} from '../../i18n_setup.js';
@@ -118,7 +118,7 @@ export class TabGroupsModuleElement extends TabGroupsModuleElementBase {
   protected async computeTabGroupButtonAriaLabel_(group: TabGroup):
       Promise<string> {
     const totalTabsStr =
-        await PluralStringProxyImpl.getInstance().getPluralString(
+        await MojoPluralStringProxy.getInstance().getPluralString(
             'modulesTabGroupsTabsText', group.totalTabCount);
     const description =
         this.computeDescription_(group.updateTime, group.deviceName);

@@ -176,6 +176,7 @@ if (!is_android) {
       "//ui/base/unowned_user_data",
       "//ui/views",
       "//ui/webui/resources/cr_components/composebox:mojo_bindings",
+      "//ui/webui/resources/cr_components/search:mojo_bindings",
     ]
 
     if (enable_pdf) {
@@ -260,6 +261,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/ui/webui:webui_util",
+      "//chrome/browser/ui/webui/cr_components/searchbox:plural_string_provider",
       "//chrome/browser/ui/webui/new_tab_page",
       "//chrome/browser/ui/webui/new_tab_page_third_party",
       "//chrome/browser/ui/webui/ntp",

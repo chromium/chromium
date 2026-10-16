@@ -23,13 +23,13 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/omnibox_popup/full_webui_omnibox_layout_helper.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_handler.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
-#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/omnibox_composebox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_full_handler.h"
@@ -301,12 +301,6 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::MediaSrc,
       "media-src blob: data: 'self';");
 
-  // Add a handler to provide pluralized strings.
-  auto plural_string_handler = std::make_unique<PluralStringHandler>();
-  plural_string_handler->AddLocalizedString("sharingTabs",
-                                            IDS_COMPOSE_SHARING_TABS);
-  web_ui->AddMessageHandler(std::move(plural_string_handler));
-
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
   content::URLDataSource::Add(
@@ -417,6 +411,13 @@ void OmniboxPopupUI::CreatePageHandler(
   popup_aim_handler_ = std::make_unique<OmniboxPopupAimHandler>(
       std::move(receiver), std::move(page), web_ui()->GetWebContents());
   popup_aim_handler_->set_embedder(embedder());
+}
+
+void OmniboxPopupUI::BindInterface(
+    mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+        receiver) {
+  PluralStringProvider::Create(std::move(receiver),
+                               GetSearchboxPluralStringIds());
 }
 
 void OmniboxPopupUI::BindInterface(

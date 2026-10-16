@@ -137,6 +137,7 @@
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+#include "ui/webui/resources/cr_components/search/plural_string_provider.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #include "ui/webui/resources/js/batch_upload_promo/batch_upload_promo.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
@@ -491,6 +492,9 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
   RegisterWebUIControllerInterfaceBinder<
       composebox::mojom::PageHandlerFactory, NewTabPageUI, ContextualTasksUI,
       OmniboxPopupUI, OmniboxEverywhereUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      plural_string::mojom::PluralStringProvider, NewTabPageUI,
+      ContextualTasksUI, OmniboxPopupUI, OmniboxEverywhereUI>(map);
 
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {
@@ -653,7 +657,8 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
         .Add<lens::mojom::LensGhostLoaderPageHandlerFactory>()
         .Add<searchbox::mojom::PageHandlerFactory>()
         .Add<help_bubble::mojom::HelpBubbleHandlerFactory>()
-        .Add<composebox::mojom::PageHandlerFactory>();
+        .Add<composebox::mojom::PageHandlerFactory>()
+        .Add<plural_string::mojom::PluralStringProvider>();
   }
   if (lens::features::IsLensOverlayEnabled()) {
     registry.ForWebUI<lens::LensOverlayUntrustedUI>()

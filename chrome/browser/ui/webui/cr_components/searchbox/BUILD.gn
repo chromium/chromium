@@ -130,3 +130,34 @@ source_set("searchbox_impl") {
     deps += [ "//chrome/browser/ui/views/search_ai_mode" ]
   }
 }
+
+source_set("plural_string_provider") {
+  sources = [
+    "plural_string_provider.cc",
+    "plural_string_provider.h",
+  ]
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui/resources/cr_components/search:mojo_bindings",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "plural_string_provider_unittest.cc" ]
+  deps = [
+    ":plural_string_provider",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

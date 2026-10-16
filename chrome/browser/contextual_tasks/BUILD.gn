@@ -227,6 +227,7 @@ source_set("impl") {
 
   if (enable_extensions_core) {
     deps += [
+      "//chrome/browser/ui/webui/cr_components/searchbox:plural_string_provider",
       "//extensions/browser",
       "//extensions/common",
     ]
@@ -327,6 +328,7 @@ source_set("ui") {
     "//ui/webui",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    "//ui/webui/resources/cr_components/search:mojo_bindings",
     "//url",
   ]
 
@@ -460,10 +462,10 @@ source_set("ui_impl") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/browser/ui/tabs:tabs_public",
-    "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/composebox",
     "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/browser/ui/webui/cr_components/searchbox:plural_string_provider",
     "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",

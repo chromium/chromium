@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module plural_string.mojom;
+
+// Provides pluralized strings to a page. Works in any host (WebUI, untrusted
+// WebUI, extension pages) without relying on chrome.send. Each host decides
+// which message names it serves.
+interface PluralStringProvider {
+  // Returns the pluralized string for `message_name` with `count` items.
+  // `message_name` must be one of the names served by the host and `count`
+  // must be non-negative; otherwise the message is rejected as bad.
+  GetPluralString(string message_name, int32 count) => (string text);
+};

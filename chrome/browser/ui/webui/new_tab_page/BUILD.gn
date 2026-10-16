@@ -55,6 +55,7 @@ source_set("new_tab_page") {
     "//ui/webui",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
+    "//ui/webui/resources/cr_components/search:mojo_bindings",
     "//ui/webui/resources/js/browser_command:mojo_bindings",
   ]
   if (!is_android) {
@@ -118,12 +119,12 @@ source_set("impl") {
     "//chrome/browser/ui/search:impl",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui:favicon_source",
-    "//chrome/browser/ui/webui:plural_string_handler",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/cr_components/composebox",
     "//chrome/browser/ui/webui/cr_components/most_visited",
     "//chrome/browser/ui/webui/cr_components/searchbox",
+    "//chrome/browser/ui/webui/cr_components/searchbox:plural_string_provider",
     "//chrome/browser/ui/webui/cr_components/searchbox:searchbox_impl",
     "//chrome/browser/ui/webui/customize_buttons",
     "//chrome/browser/ui/webui/customize_buttons:impl",

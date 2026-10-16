@@ -55,6 +55,7 @@
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_pref_observer.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/plural_string_provider.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -66,7 +67,6 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
-#include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -980,14 +980,6 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 
   CreateAndAddNewTabPageUiHtmlSource(profile_, session_allows_drag_and_drop);
 
-  // Add a handler to provide pluralized strings.
-  auto plural_string_handler = std::make_unique<PluralStringHandler>();
-  plural_string_handler->AddLocalizedString("modulesTabGroupsTabsText",
-                                            IDS_SAVED_TAB_GROUP_TABS_COUNT);
-  plural_string_handler->AddLocalizedString("sharingTabs",
-                                            IDS_COMPOSE_SHARING_TABS);
-  web_ui->AddMessageHandler(std::move(plural_string_handler));
-
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
   content::URLDataSource::Add(
@@ -1172,6 +1164,16 @@ void NewTabPageUI::BindInterface(
         pending_page_handler) {
   google_calendar_handler_ = std::make_unique<GoogleCalendarPageHandler>(
       std::move(pending_page_handler), profile_);
+}
+
+void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
+        receiver) {
+  PluralStringProvider::MessageIdMap message_ids =
+      GetSearchboxPluralStringIds();
+  message_ids.emplace("modulesTabGroupsTabsText",
+                      IDS_SAVED_TAB_GROUP_TABS_COUNT);
+  PluralStringProvider::Create(std::move(receiver), std::move(message_ids));
 }
 
 void NewTabPageUI::BindInterface(
