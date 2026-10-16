@@ -58,17 +58,12 @@ bool WidgetViewAXCache::HasCachedChildren(ViewAccessibility* view_ax) const {
 
 void WidgetViewAXCache::CacheChildrenIfNeeded(ViewAccessibility* view_ax) {
   CHECK(view_ax);
-  if (HasCachedChildren(view_ax)) {
-    return;
-  }
-
-  const auto& children = view_ax->GetChildren();
-
   auto [it, inserted] = cached_children_.try_emplace(view_ax->GetUniqueId());
   if (!inserted) {
     return;
   }
 
+  const auto& children = view_ax->GetChildren();
   it->second.assign(children.begin(), children.end());
 }
 
