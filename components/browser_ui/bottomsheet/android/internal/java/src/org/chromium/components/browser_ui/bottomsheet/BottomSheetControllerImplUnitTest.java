@@ -993,12 +993,15 @@ public class BottomSheetControllerImplUnitTest {
         when(mBottomSheet.getOpeningState()).thenReturn(SheetState.PEEK);
 
         BottomSheetContent contentA = mock(BottomSheetContent.class);
+        when(contentA.getPriority()).thenReturn(BottomSheetContent.ContentPriority.LOW);
+        when(contentA.canBeSuppressed(any())).thenReturn(true);
         BottomSheetType typeA = new BottomSheetType.Builder().setSuppressible(true).build();
         when(contentA.getSheetType()).thenReturn(typeA);
         when(contentA.getBackPressStateChangedSupplier())
                 .thenReturn(ObservableSuppliers.alwaysFalse());
 
         BottomSheetContent contentB = mock(BottomSheetContent.class);
+        when(contentB.getPriority()).thenReturn(BottomSheetContent.ContentPriority.HIGH);
         BottomSheetType typeB =
                 new BottomSheetType.Builder().setUserInitiated(true).setModal(true).build();
         when(contentB.getSheetType()).thenReturn(typeB);
@@ -1582,5 +1585,53 @@ public class BottomSheetControllerImplUnitTest {
         when(mBottomSheet.getCurrentSheetContent()).thenReturn(null);
         assertTrue(mController.requestShowContent(mOtherSheetContent, /* animate= */ true));
         verify(mBottomSheet).showContent(mOtherSheetContent);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testUndoSuppression_WhilePendingContentSwap_ClearsSnapshot() {
+        mController.runSheetInitializerForTesting();
+        verify(mBottomSheet).addObserver(mBottomSheetObserverCaptor.capture());
+        when(mSheetContent.getBackPressStateChangedSupplier())
+                .thenReturn(ObservableSuppliers.alwaysFalse());
+        when(mSheetContent.shouldRestoreStateOnUnsuppress()).thenReturn(true);
+        when(mBottomSheet.getOpeningState()).thenReturn(SheetState.PEEK);
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.FULL);
+        when(mBottomSheet.getTargetSheetState()).thenReturn(SheetState.FULL);
+        when(mBottomSheet.getCurrentSheetContent()).thenReturn(mSheetContent);
+
+        // Hide requested while open, putting the controller in hide-processing state.
+        mController.hideContent(mSheetContent, true);
+
+        // Sheet is suppressed before reaching HIDDEN.
+        int token = mController.suppressSheet(StateChangeReason.NONE);
+
+        // Hide request finishes reaching HIDDEN while suppressed, leaving a content swap pending.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.HIDDEN);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
+
+        // Unsuppressing while pending content swap should clear the snapshot without reopening the
+        // sheet to FULL.
+        mController.unsuppressSheet(token);
+        verify(mBottomSheet, never()).setSheetState(SheetState.FULL, true);
+
+        // If the sheet is later suppressed while hiding (so mContentWhenSuppressed is not
+        // recaptured) and unsuppressed after the swap was cancelled, it opens to getOpeningState()
+        // (PEEK) rather than the cleared FULL snapshot.
+        when(mBottomSheet.getSheetState()).thenReturn(SheetState.PEEK);
+        commitSheetStateChange(SheetState.PEEK);
+        when(mBottomSheet.isHiding()).thenReturn(true);
+        int secondToken = mController.suppressSheet(StateChangeReason.NONE);
+        mController.unsuppressSheet(secondToken);
+        verify(mBottomSheet).setSheetState(SheetState.PEEK, true);
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_TYPES)
+    public void testShowContent_HighPriorityPreemptsAndRestores_LegacyPriority() {
+        doTestHighPrioritySheetPreemptsAndRestoresLowerPrioritySheet();
     }
 }
