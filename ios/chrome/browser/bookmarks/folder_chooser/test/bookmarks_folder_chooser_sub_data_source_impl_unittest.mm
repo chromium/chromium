@@ -30,15 +30,17 @@ using bookmarks::BookmarkNode;
 // The argument provided when `bookmarkNodeDeleted:` was called.
 @property(nonatomic, assign) const BookmarkNode* bookmarkNodeDeletedArg;
 
-- (instancetype)initWithNodes:(const std::set<const BookmarkNode*>&)nodes;
+- (instancetype)initWithNodes:
+    (const std::set<raw_ptr<const BookmarkNode>>&)nodes;
 
 @end
 
 @implementation FakeBookmarksFolderChooserParentDataSource {
-  std::set<const BookmarkNode*> _movedNodes;
+  std::set<raw_ptr<const BookmarkNode>> _movedNodes;
 }
 
-- (instancetype)initWithNodes:(const std::set<const BookmarkNode*>&)nodes {
+- (instancetype)initWithNodes:
+    (const std::set<raw_ptr<const BookmarkNode>>&)nodes {
   if ((self = [super init])) {
     _movedNodes = nodes;
   }
@@ -56,7 +58,7 @@ using bookmarks::BookmarkNode;
   _movedNodes.clear();
 }
 
-- (const std::set<const BookmarkNode*>)movedNodes {
+- (std::set<raw_ptr<const BookmarkNode>>)movedNodes {
   return _movedNodes;
 }
 
@@ -148,7 +150,7 @@ class BookmarksFolderChooserSubDataSourceImplTest
   FakeBookmarksFolderChooserParentDataSource* fake_parent_data_source_;
   NSString* test_folder_title_1 = @"Test Folder 1";
   NSString* test_folder_title_2 = @"Test Folder 2";
-  std::set<const BookmarkNode*> moved_nodes_;
+  std::set<raw_ptr<const BookmarkNode>> moved_nodes_;
 };
 
 // Tests that the sub data source correctly fetches visible folders.

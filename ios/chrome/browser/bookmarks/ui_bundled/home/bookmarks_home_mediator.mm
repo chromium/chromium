@@ -227,6 +227,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   _prefObserverBridge.reset();
   _bookmarkModel.reset();
   _bookmarkModelBridge.reset();
+  _selectedNodesForEditMode.clear();
 }
 
 - (void)dealloc {
@@ -520,6 +521,7 @@ bool IsABookmarkNodeSectionForIdentifier(
     [self.consumer displayRoot];
   }
   self.displayedNode = nullptr;
+  _selectedNodesForEditMode.clear();
 }
 
 // BookmarkModelBridgeObserver Callbacks

@@ -54,7 +54,7 @@ class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTestSupport {
     AddBookmark(f2, u"f2a");
     const BookmarkNode* f2b = AddBookmark(f2, u"f2b");
 
-    std::vector<const BookmarkNode*> to_move{a, f2b, f2};
+    NodeVector to_move{a, f2b, f2};
     EXPECT_TRUE(MoveBookmarks(to_move, bookmark_model_, f1));
 
     // Moving within one model shouldn't change pointers in `to_move`.
@@ -133,7 +133,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   AddBookmark(f2, u"f2a");
   const BookmarkNode* f2b = AddBookmark(f2, u"f2b");
 
-  std::set<const BookmarkNode*> toDelete;
+  NodeSet toDelete;
   toDelete.insert(a);
   toDelete.insert(f2b);
   toDelete.insert(f2);
@@ -174,7 +174,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodesBetweenStorages) {
   const BookmarkNode* f2 = AddFolder(account_mobile_node, u"f2");
   const BookmarkNode* f2a = AddBookmark(f2, u"f2a");
 
-  std::vector<const BookmarkNode*> to_move;
+  NodeVector to_move;
   to_move.push_back(f1);   // Cross-storage move.
   to_move.push_back(f1a);  // Cross-storage move, the parent is also moved.
   to_move.push_back(b);    // Cross-storage move, the parent is not moved.
@@ -244,7 +244,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
 
   AddFolder(bookmark_model_->other_node(), u"buildings");
 
-  std::set<const BookmarkNode*> obstructions;
+  NodeSet obstructions;
   // Editing a folder and a bookmark.
   obstructions.insert(gaga);
   obstructions.insert(lindsey);

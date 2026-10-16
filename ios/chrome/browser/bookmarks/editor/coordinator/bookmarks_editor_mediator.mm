@@ -285,18 +285,21 @@
   // removes all matching nodes.
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       nodesVector = _bookmarkModel->GetNodesByURL([self bookmark]->url());
-  std::set<const bookmarks::BookmarkNode*> nodes(nodesVector.begin(),
-                                                 nodesVector.end());
-  if (!nodesVector.empty()) {
-    // TODO (crbug.com/1445455): figure out why it is sometime empty and ensure
-    // it is not the case.
-    //  Temporary fix for crbug.com/1444667
-    [self.snackbarCommandsHandler
-        showSnackbarMessageOverBrowserToolbar:
-            bookmark_utils_ios::DeleteBookmarksWithUndoSnackbar(
-                nodes, _bookmarkModel.get(), self.profile, FROM_HERE)];
-    [self.delegate bookmarkEditorMediatorWantsDismissal:self];
+  if (nodesVector.empty()) {
+    return;
   }
+  bookmark_utils_ios::NodeSet nodes;
+  for (const bookmarks::BookmarkNode* node : nodesVector) {
+    nodes.insert(node);
+  }
+  // TODO (crbug.com/1445455): figure out why it is sometime empty and ensure
+  // it is not the case.
+  //  Temporary fix for crbug.com/1444667
+  [self.snackbarCommandsHandler
+      showSnackbarMessageOverBrowserToolbar:
+          bookmark_utils_ios::DeleteBookmarksWithUndoSnackbar(
+              nodes, _bookmarkModel.get(), self.profile, FROM_HERE)];
+  [self.delegate bookmarkEditorMediatorWantsDismissal:self];
 }
 
 #pragma mark - SyncObserverModelBridge

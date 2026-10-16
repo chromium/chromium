@@ -9,6 +9,7 @@
 
 #import <set>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/bookmarks/folder_chooser/ui/bookmarks_folder_chooser_consumer.h"
 
 enum class BookmarkStorageType;
@@ -30,7 +31,7 @@ class BookmarkNode;
 // Called before all the bookmark nodes in the model are deleted.
 - (void)bookmarkModelWillRemoveAllNodes;
 // The set of nodes that are being considered for a move by folder chooser.
-- (std::set<const bookmarks::BookmarkNode*>)movedNodes;
+- (std::set<raw_ptr<const bookmarks::BookmarkNode>>)movedNodes;
 
 @end
 

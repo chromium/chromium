@@ -302,7 +302,7 @@ const bookmarks::BookmarkNode* GetMobileNodeWithType(
             newFolderTitle]);
   }
 
-  std::vector<const bookmarks::BookmarkNode*> toMove{bookmark};
+  bookmark_utils_ios::NodeVector toMove{bookmark};
   if (!bookmark_utils_ios::MoveBookmarks(toMove, bookmarkModel, newFolder)) {
     return testing::NSErrorWithLocalizedDescription(
         [NSString stringWithFormat:@"Could not move bookmark with name %@",

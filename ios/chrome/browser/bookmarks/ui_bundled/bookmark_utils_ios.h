@@ -35,8 +35,8 @@ class SyncService;
 
 namespace bookmark_utils_ios {
 
-typedef std::vector<const bookmarks::BookmarkNode*> NodeVector;
-typedef std::set<const bookmarks::BookmarkNode*> NodeSet;
+using NodeVector = std::vector<raw_ptr<const bookmarks::BookmarkNode>>;
+using NodeSet = std::set<raw_ptr<const bookmarks::BookmarkNode>>;
 
 // Finds bookmark node passed in `id`, in the `model`. Returns null if the
 // node is found but not a folder.
@@ -46,20 +46,17 @@ const bookmarks::BookmarkNode* FindFolderById(
 
 // Finds bookmark nodes corresponding to `ids` in the `model`. Returns a set
 // containing the nodes that are found and not null.
-std::set<raw_ptr<const bookmarks::BookmarkNode>> GetBookmarkNodesByIds(
-    const bookmarks::BookmarkModel* model,
-    const std::set<int64_t>& ids);
+NodeSet GetBookmarkNodesByIds(const bookmarks::BookmarkModel* model,
+                              const std::set<int64_t>& ids);
 
 // Finds bookmark nodes corresponding to `ids` in the `model`. Returns a vector
 // containing the nodes that are found and not null.
-std::vector<raw_ptr<const bookmarks::BookmarkNode>> GetBookmarkNodesByIds(
-    const bookmarks::BookmarkModel* model,
-    const std::vector<int64_t>& ids);
+NodeVector GetBookmarkNodesByIds(const bookmarks::BookmarkModel* model,
+                                 const std::vector<int64_t>& ids);
 
 // Returns a vector containing the IDs of `nodes`. Pointers are assumed to be
 // non-null.
-std::vector<int64_t> GetBookmarkNodeIds(
-    const std::vector<raw_ptr<const bookmarks::BookmarkNode>>& nodes);
+std::vector<int64_t> GetBookmarkNodeIds(const NodeVector& nodes);
 
 // The iOS code is doing some munging of the bookmark folder names in order
 // to display a slighly different wording for the default folders.
@@ -132,13 +129,13 @@ SnackbarMessage* UpdateBookmarkPositionWithUndoSnackbar(
 // with an undo action. Returns nil if the operation wasn't successful or
 // there's nothing to undo.
 SnackbarMessage* DeleteBookmarksWithUndoSnackbar(
-    const std::set<const bookmarks::BookmarkNode*>& bookmarks,
+    const NodeSet& bookmarks,
     bookmarks::BookmarkModel* bookmark_model,
     ProfileIOS* profile,
     const base::Location& location);
 
 // Deletes all nodes in `bookmarks`.
-void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
+void DeleteBookmarks(const NodeSet& bookmarks,
                      bookmarks::BookmarkModel* bookmark_model,
                      const base::Location& location);
 
@@ -146,7 +143,7 @@ void DeleteBookmarks(const std::set<const bookmarks::BookmarkNode*>& bookmarks,
 // with an undo action. Returns nil if the operation wasn't successful or
 // there's nothing to undo.
 SnackbarMessage* MoveBookmarksWithUndoSnackbar(
-    const std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
+    const NodeVector& bookmarks_to_move,
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* destination_folder,
     ProfileIOS* profile,
@@ -156,10 +153,9 @@ SnackbarMessage* MoveBookmarksWithUndoSnackbar(
 // Move all `bookmarks` to the given `folder`.
 // Returns whether this method actually moved bookmarks (for example, only
 // moving a folder to its parent will return `false`).
-bool MoveBookmarks(
-    const std::vector<const bookmarks::BookmarkNode*>& bookmarks_to_move,
-    bookmarks::BookmarkModel* model,
-    const bookmarks::BookmarkNode* destination_folder);
+bool MoveBookmarks(const NodeVector& bookmarks_to_move,
+                   bookmarks::BookmarkModel* model,
+                   const bookmarks::BookmarkNode* destination_folder);
 
 // Sorts a vector full of folders by title.
 void SortFolders(NodeVector* vector);
@@ -169,7 +165,7 @@ void SortFolders(NodeVector* vector);
 // which are excluded, as well as their descendants. The returned list is
 // sorted depth-first, then alphabetically.
 // `search_terms` can be used to filter results.
-std::vector<raw_ptr<const bookmarks::BookmarkNode>> VisibleNonDescendantNodes(
+NodeVector VisibleNonDescendantNodes(
     const NodeSet& obstructions,
     const bookmarks::BookmarkModel* model,
     BookmarkStorageType type,
