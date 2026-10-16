@@ -11,44 +11,45 @@
 
 namespace content {
 
-bool IsPrefetchActivationBeaconEnabled(
+namespace {
+
+PreloadActivationBeaconFeatureState GetActivationBeaconFeatureState(
+    const base::Feature& feature,
     const GURL& request_url,
     const net::HttpResponseHeaders* response_headers) {
-  auto override_state = base::FeatureList::GetStateIfOverridden(
-      features::kPrefetchActivationBeacon);
+  auto override_state = base::FeatureList::GetStateIfOverridden(feature);
   if (override_state.has_value() && !override_state.value()) {
     // Explicitly disabled by kill switch.
-    return false;
+    return PreloadActivationBeaconFeatureState::kDisabledByFeatureFlag;
   }
-  if (base::FeatureList::IsEnabled(features::kPrefetchActivationBeacon)) {
+  if (base::FeatureList::IsEnabled(feature)) {
     // Enabled by Finch or default.
-    return true;
+    return PreloadActivationBeaconFeatureState::kEnabled;
   }
   // Otherwise, check if origin trial is enabled via response headers.
-  return response_headers &&
-         blink::TrialTokenValidator().RequestEnablesFeature(
-             request_url, response_headers,
-             "PrefetchAndPrerenderActivationBeacon", base::Time::Now());
+  if (response_headers &&
+      blink::TrialTokenValidator().RequestEnablesFeature(
+          request_url, response_headers, "PrefetchAndPrerenderActivationBeacon",
+          base::Time::Now())) {
+    return PreloadActivationBeaconFeatureState::kEnabled;
+  }
+  return PreloadActivationBeaconFeatureState::kNoOriginTrialToken;
 }
 
-bool IsPrerenderActivationBeaconEnabled(
+}  // namespace
+
+PreloadActivationBeaconFeatureState GetPrefetchActivationBeaconFeatureState(
     const GURL& request_url,
     const net::HttpResponseHeaders* response_headers) {
-  auto override_state = base::FeatureList::GetStateIfOverridden(
-      features::kPrerenderActivationBeacon);
-  if (override_state.has_value() && !override_state.value()) {
-    // Explicitly disabled by kill switch.
-    return false;
-  }
-  if (base::FeatureList::IsEnabled(features::kPrerenderActivationBeacon)) {
-    // Enabled by Finch or default.
-    return true;
-  }
-  // Otherwise, check if origin trial is enabled via response headers.
-  return response_headers &&
-         blink::TrialTokenValidator().RequestEnablesFeature(
-             request_url, response_headers,
-             "PrefetchAndPrerenderActivationBeacon", base::Time::Now());
+  return GetActivationBeaconFeatureState(features::kPrefetchActivationBeacon,
+                                         request_url, response_headers);
+}
+
+PreloadActivationBeaconFeatureState GetPrerenderActivationBeaconFeatureState(
+    const GURL& request_url,
+    const net::HttpResponseHeaders* response_headers) {
+  return GetActivationBeaconFeatureState(features::kPrerenderActivationBeacon,
+                                         request_url, response_headers);
 }
 
 }  // namespace content

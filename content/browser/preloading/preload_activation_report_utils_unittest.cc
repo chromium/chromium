@@ -43,11 +43,13 @@ TEST_F(PreloadActivationReportUtilsTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
 
   // No trial token -> disabled.
-  EXPECT_FALSE(IsPrefetchActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrefetchActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kNoOriginTrialToken);
 
   // With trial token -> enabled.
   headers->AddHeader("Origin-Trial", kSharedToken);
-  EXPECT_TRUE(IsPrefetchActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrefetchActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kEnabled);
 }
 
 TEST_F(PreloadActivationReportUtilsTest,
@@ -60,7 +62,8 @@ TEST_F(PreloadActivationReportUtilsTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
 
   // Enabled by default (no token required).
-  EXPECT_TRUE(IsPrefetchActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrefetchActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kEnabled);
 }
 
 TEST_F(PreloadActivationReportUtilsTest,
@@ -76,7 +79,8 @@ TEST_F(PreloadActivationReportUtilsTest,
 
   // Even with trial token, the kill-switch (override to disabled) keeps it
   // disabled.
-  EXPECT_FALSE(IsPrefetchActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrefetchActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kDisabledByFeatureFlag);
 }
 
 TEST_F(PreloadActivationReportUtilsTest,
@@ -89,11 +93,13 @@ TEST_F(PreloadActivationReportUtilsTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
 
   // No trial token -> disabled.
-  EXPECT_FALSE(IsPrerenderActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrerenderActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kNoOriginTrialToken);
 
   // With trial token -> enabled.
   headers->AddHeader("Origin-Trial", kSharedToken);
-  EXPECT_TRUE(IsPrerenderActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrerenderActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kEnabled);
 }
 
 TEST_F(PreloadActivationReportUtilsTest,
@@ -106,7 +112,8 @@ TEST_F(PreloadActivationReportUtilsTest,
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
 
   // Enabled by default (no token required).
-  EXPECT_TRUE(IsPrerenderActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrerenderActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kEnabled);
 }
 
 TEST_F(PreloadActivationReportUtilsTest,
@@ -121,7 +128,8 @@ TEST_F(PreloadActivationReportUtilsTest,
   headers->AddHeader("Origin-Trial", kSharedToken);
 
   // Even with trial token, the kill-switch keeps it disabled.
-  EXPECT_FALSE(IsPrerenderActivationBeaconEnabled(url, headers.get()));
+  EXPECT_EQ(GetPrerenderActivationBeaconFeatureState(url, headers.get()),
+            PreloadActivationBeaconFeatureState::kDisabledByFeatureFlag);
 }
 
 }  // namespace content

@@ -5033,28 +5033,90 @@ void NavigationRequest::OnResponseStarted(
   // request that happened to return the header) by checking `is_prefetched`.
   // `was_in_prefetch_cache` and `kNavigationalPrefetch` are browser-controlled
   // flags set by the prefetch serving loaders, so they are safe from server
-  // spoofing. Prerender commits are excluded here because the page is not yet
-  // presented to the user; the beacon should be sent when the prerender is
-  // activated.
-  if (IsPrefetchActivationBeaconEnabled(GetURL(),
-                                        response_head_->headers.get()) &&
-      !IsInPrerenderedMainFrame() && response_head_->parsed_headers &&
+  // spoofing. Back-forward cache restorations and subframes are excluded
+  // because prefetch activation only occurs on primary main frame navigations
+  // and back-forward restorations should not re-trigger beacons. Prerender
+  // initial commits are also excluded because the page is not yet presented to
+  // the user; the beacon should be sent when the prerender is activated.
+  if (IsInPrimaryMainFrame() && response_head_->parsed_headers &&
       response_head_->parsed_headers->prefetch_activation_beacon_endpoint
           .has_value()) {
     const GURL& endpoint =
         *response_head_->parsed_headers->prefetch_activation_beacon_endpoint;
-    bool is_prefetched =
-        response_head_->was_in_prefetch_cache ||
-        response_head_->navigation_delivery_type ==
-            network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
-    bool is_prerender_activation_sending_beacon =
-        IsPrerenderedPageActivation() &&
-        base::FeatureList::IsEnabled(features::kPrerenderActivationBeacon);
-    if (is_prefetched && endpoint.is_valid() &&
-        url::Origin::Create(endpoint).IsSameOriginWith(
-            url::Origin::Create(GetURL())) &&
-        !is_prerender_activation_sending_beacon) {
-      activation_beacon_url_ = endpoint;
+    if (endpoint.is_valid()) {
+      bool is_prefetched =
+          !IsServedFromBackForwardCache() &&
+          (response_head_->was_in_prefetch_cache ||
+           response_head_->navigation_delivery_type ==
+               network::mojom::NavigationDeliveryType::kNavigationalPrefetch);
+      const GURL& target_url = IsPrerenderedPageActivation()
+                                   ? GetPrerenderHostRegistry()
+                                         .GetRenderFrameHostForReservedHost(
+                                             *activating_prerender_host_id_)
+                                         ->GetLastCommittedURL()
+                                   : GetURL();
+      // A prerender activation is handled by `PrerenderActivationBeacon` unless
+      // it was upgraded from a prefetch and `PrerenderActivationBeacon` is not
+      // enabled, in which case it falls back to `PrefetchActivationBeacon`.
+      bool use_prerender_beacon = false;
+      PreloadActivationBeaconFeatureState feature_state;
+      if (IsPrerenderedPageActivation()) {
+        PreloadActivationBeaconFeatureState prerender_state =
+            GetPrerenderActivationBeaconFeatureState(
+                target_url, response_head_->headers.get());
+        if (!is_prefetched ||
+            prerender_state == PreloadActivationBeaconFeatureState::kEnabled) {
+          use_prerender_beacon = true;
+          feature_state = prerender_state;
+        } else {
+          feature_state = GetPrefetchActivationBeaconFeatureState(
+              target_url, response_head_->headers.get());
+        }
+      } else {
+        feature_state = GetPrefetchActivationBeaconFeatureState(
+            target_url, response_head_->headers.get());
+      }
+
+      PreloadActivationBeaconStatus beacon_status;
+      if (feature_state ==
+          PreloadActivationBeaconFeatureState::kDisabledByFeatureFlag) {
+        beacon_status = PreloadActivationBeaconStatus::kDisabledByFeatureFlag;
+      } else if (feature_state ==
+                 PreloadActivationBeaconFeatureState::kNoOriginTrialToken) {
+        beacon_status = PreloadActivationBeaconStatus::kNoOriginTrialToken;
+      } else if (!url::Origin::Create(endpoint).IsSameOriginWith(
+                     url::Origin::Create(target_url))) {
+        beacon_status = PreloadActivationBeaconStatus::kCrossOrigin;
+      } else if (use_prerender_beacon) {
+        beacon_status = PreloadActivationBeaconStatus::kHandledByPrerender;
+      } else if (is_prefetched) {
+        activation_beacon_url_ = endpoint;
+        beacon_status = PreloadActivationBeaconStatus::kHandledByPrefetch;
+      } else {
+        beacon_status = PreloadActivationBeaconStatus::kNotInPreloadContext;
+      }
+      base::UmaHistogramEnumeration(
+          "Preloading.ActivationBeacon.StatusOnResponseStarted", beacon_status);
+      if (beacon_status ==
+          PreloadActivationBeaconStatus::kNotInPreloadContext) {
+        // Check `IsRestore()` and `IsReload()` before `IsHistory()` because
+        // session/tab restore and reload navigations can also be marked as
+        // history navigations, and we want to attribute them to their more
+        // specific navigation type.
+        PreloadActivationBeaconNonPreloadNavigationType nav_type =
+            PreloadActivationBeaconNonPreloadNavigationType::kCommonNavigation;
+        if (IsRestore()) {
+          nav_type =
+              PreloadActivationBeaconNonPreloadNavigationType::kTabRestore;
+        } else if (IsReload()) {
+          nav_type = PreloadActivationBeaconNonPreloadNavigationType::kRefresh;
+        } else if (IsHistory()) {
+          nav_type =
+              PreloadActivationBeaconNonPreloadNavigationType::kBackForward;
+        }
+        base::UmaHistogramEnumeration(
+            "Preloading.ActivationBeacon.NonPreloadNavigationType", nav_type);
+      }
     }
   }
   ssl_info_ = response_head_->ssl_info;

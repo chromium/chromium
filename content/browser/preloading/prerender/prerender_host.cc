@@ -736,9 +736,10 @@ void PrerenderHost::ReadyToCommitNavigation(
           blink::mojom::WebFeature::kPrerender2CrossOriginIframes);
     }
 
-    if (IsPrerenderActivationBeaconEnabled(
+    if (GetPrerenderActivationBeaconFeatureState(
             navigation_request->GetURL(),
-            navigation_request->GetResponseHeaders())) {
+            navigation_request->GetResponseHeaders()) ==
+        PreloadActivationBeaconFeatureState::kEnabled) {
       activation_beacon_url_ = FindActivationBeaconURL(*navigation_request);
     }
   }

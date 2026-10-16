@@ -49,6 +49,7 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
+#include "content/browser/preloading/preload_activation_report_utils.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_data_impl.h"
@@ -18675,6 +18676,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderActivationBeaconBrowserTest,
   beacon_run_loop.Run();
 
   EXPECT_TRUE(WasBeaconSeen(beacon_url));
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.ActivationBeacon.StatusOnResponseStarted",
+      PreloadActivationBeaconStatus::kHandledByPrerender, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(PrerenderActivationBeaconBrowserTest,
@@ -18701,6 +18705,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderActivationBeaconBrowserTest,
   run_loop.Run();
 
   EXPECT_FALSE(WasBeaconSeen(cross_origin_beacon_url));
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.ActivationBeacon.StatusOnResponseStarted",
+      PreloadActivationBeaconStatus::kCrossOrigin, 1);
 }
 
 class PrerenderActivationBeaconRedirectBrowserTest
@@ -19036,6 +19043,9 @@ IN_PROC_BROWSER_TEST_P(
   beacon_run_loop.Run();
 
   EXPECT_TRUE(beacon_seen());
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.ActivationBeacon.StatusOnResponseStarted",
+      PreloadActivationBeaconStatus::kHandledByPrerender, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(

@@ -24975,6 +24975,30 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Read /proc/self/maps successfully"/>
 </enum>
 
+<!-- LINT.IfChange(PreloadActivationBeaconNonPreloadNavigationType) -->
+
+<enum name="PreloadActivationBeaconNonPreloadNavigationType">
+  <int value="0" label="Tab restore"/>
+  <int value="1" label="Refresh"/>
+  <int value="2" label="Back/forward"/>
+  <int value="3" label="Common navigation"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/preload_activation_report_utils.h:PreloadActivationBeaconNonPreloadNavigationType) -->
+
+<!-- LINT.IfChange(PreloadActivationBeaconStatus) -->
+
+<enum name="PreloadActivationBeaconStatus">
+  <int value="0" label="Disabled by local feature flag"/>
+  <int value="1" label="No origin trial token"/>
+  <int value="2" label="Handled by prefetch"/>
+  <int value="3" label="Handled by prerender"/>
+  <int value="4" label="Not in preload context"/>
+  <int value="5" label="Cross-origin endpoint"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/preload_activation_report_utils.h:PreloadActivationBeaconStatus) -->
+
 <enum name="PreloadingTriggeringOutcome">
   <int value="0" label="Unspecified"/>
   <int value="2" label="Duplicate"/>

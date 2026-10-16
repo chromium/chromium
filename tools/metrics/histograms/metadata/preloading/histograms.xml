@@ -243,6 +243,35 @@ chromium-metrics-reviews@google.com.
       summary="Recorded for a navigation used prerender."/>
 </variants>
 
+<histogram name="Preloading.ActivationBeacon.NonPreloadNavigationType"
+    enum="PreloadActivationBeaconNonPreloadNavigationType"
+    expires_after="2027-04-01">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the type of navigation (tab restore, refresh, back-forward, or
+    common navigation) when a valid same-origin activation beacon response
+    header is received in `NavigationRequest::OnResponseStarted` with the
+    activation beacon feature enabled, but the navigation itself is not in a
+    prefetch or preload context. Recorded in
+    `NavigationRequest::OnResponseStarted` whenever
+    `Preloading.ActivationBeacon.StatusOnResponseStarted` records
+    `kNotInPreloadContext`.
+  </summary>
+</histogram>
+
+<histogram name="Preloading.ActivationBeacon.StatusOnResponseStarted"
+    enum="PreloadActivationBeaconStatus" expires_after="2027-04-01">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether and why the preload activation beacon is handled or not
+    handled when a valid activation beacon response header is received. Recorded
+    in `NavigationRequest::OnResponseStarted` for primary main frame navigations
+    that include a valid `On-Prefetch-Activation` response header.
+  </summary>
+</histogram>
+
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
     expires_after="2024-09-29">
