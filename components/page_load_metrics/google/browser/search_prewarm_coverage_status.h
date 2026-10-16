@@ -12,7 +12,7 @@ namespace page_load_metrics {
 // prerender was activated, a prewarmed process was reused, the current tab's
 // renderer process was reused (with or without prewarm), an initial blank/empty
 // process was reused (e.g. about:blank, NTP), another existing process was
-// reused, or a cold process was allocated.
+// reused, a spare process was used, or a cold process was allocated.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -59,7 +59,13 @@ enum class SearchPrewarmPrerenderCoverageStatus {
   // (e.g. about:blank or NTP).
   kBlankProcessReused = 6,
 
-  kMaxValue = kBlankProcessReused,
+  // =========================================================================
+  // Tier 7: Spare Process Used
+  // =========================================================================
+  // 7: Primary nav used a spare renderer process.
+  kSpareProcessUsed = 7,
+
+  kMaxValue = kSpareProcessUsed,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:SearchPrewarmPrerenderCoverageStatus)
 

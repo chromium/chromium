@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/page_load_metrics/observers/chrome_gws_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -167,6 +167,10 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   // Wait until the browser init is complete.
   AfterStartupTaskUtils::SetBrowserStartupIsCompleteForTesting();
 
+  // Clean up any spare renderer implicitly warmed during test harness setup so
+  // the navigation deterministically allocates a cold process on all platforms.
+  content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
+
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
 
   tester()->SimulateTimingUpdate(timing);
@@ -236,7 +240,7 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSLargestContentfulPaint, 100, 1);
   tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kColdProcessAllocated,
@@ -1318,11 +1322,25 @@ TEST_F(GWSPageLoadMetricsObserverTest, SessionDetails_ResponseCached) {
 }
 
 TEST_F(GWSPageLoadMetricsObserverTest,
-       PrewarmPrerenderCoverageStatus_ColdProcessAllocated) {
+       PrewarmPrerenderCoverageStatus_SpareProcessUsed) {
+  content::SpareRenderProcessHostManager::Get().WarmupSpare(browser_context());
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
 
   tester()->histogram_tester().ExpectUniqueSample(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
+      "BrowserInitiated",
+      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
+          kSpareProcessUsed,
+      1);
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest,
+       PrewarmPrerenderCoverageStatus_ColdProcessAllocated) {
+  content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
+  NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
+
+  tester()->histogram_tester().ExpectUniqueSample(
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kColdProcessAllocated,
@@ -1338,7 +1356,7 @@ TEST_F(GWSPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
 
   tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kBlankProcessReused,
@@ -1350,13 +1368,15 @@ TEST_F(GWSPageLoadMetricsObserverTest,
   // Start on an unrelated cross-site page.
   NavigateAndCommit(GURL("https://example.com"));
 
+  content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
+
   // Navigate to SRP. Because starting site is not same-site with the search
-  // URL, this is classified as a cold process allocation, not current process
-  // reuse.
+  // URL and no spare is available, this is classified as a cold process
+  // allocation, not current process reuse.
   NavigateAndCommit(GURL(kGoogleSearchResultsUrl));
 
   tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kColdProcessAllocated,
@@ -1372,7 +1392,7 @@ TEST_F(GWSPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL("https://www.google.com/search?q=another"));
 
   tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kCurrentProcessReused,
@@ -1391,7 +1411,7 @@ TEST_F(GWSPageLoadMetricsObserverTest,
   NavigateAndCommit(GURL("https://www.google.com/search?q=another"));
 
   tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kCurrentProcessReused_Prewarm,
@@ -1432,7 +1452,7 @@ TEST_F(GWSPageLoadMetricsObserverTest,
   content::RenderProcessHost::SetMaxRendererProcessCount(0);
 
   tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kOtherProcessReused,
@@ -1474,7 +1494,7 @@ TEST_F(GWSPageLoadMetricsObserverTest,
   content::RenderProcessHost::SetMaxRendererProcessCount(0);
 
   tester()->histogram_tester().ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kPreloadProcessReused_Prewarm,

@@ -241,8 +241,8 @@ const char kHistogramGWSActivationToFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToFirstContentfulPaint";
 const char kHistogramGWSActivationToLargestContentfulPaint[] =
     HISTOGRAM_PREFIX "Prerender.ActivationToLargestContentfulPaint";
-const char kHistogramGWSPrewarmPrerenderCoverageStatus[] =
-    HISTOGRAM_PREFIX "PrewarmPrerenderCoverageStatus";
+const char kHistogramGWSPrewarmPrerenderCoverageStatus2[] =
+    HISTOGRAM_PREFIX "PrewarmPrerenderCoverageStatus2";
 
 const char kHistogramBrowserInitiatedSuffix[] = ".BrowserInitiated";
 const char kHistogramRendererInitiatedSuffix[] = ".RendererInitiated";
@@ -730,6 +730,9 @@ GWSPageLoadMetricsObserver::OnCommit(
         (render_process_assignment ==
              content::SiteInstanceProcessAssignment::REUSED_EXISTING_PROCESS ||
          is_starting_process_reused);
+    const bool is_spare_process_used =
+        render_process_assignment ==
+        content::SiteInstanceProcessAssignment::USED_SPARE_PROCESS;
 
     if (is_current_process_reused) {
       coverage_status =
@@ -747,13 +750,20 @@ GWSPageLoadMetricsObserver::OnCommit(
     } else if (is_other_process_reused) {
       coverage_status = page_load_metrics::
           SearchPrewarmPrerenderCoverageStatus::kOtherProcessReused;
+    } else if (is_spare_process_used) {
+      // Note: `is_spare_process_used` must be checked after the process-reuse
+      // branches because `GetLastProcessAssignmentOutcome()` is stored per
+      // `SiteInstance` and remains `USED_SPARE_PROCESS` on subsequent
+      // navigations that reuse the same `SiteInstance`.
+      coverage_status = page_load_metrics::
+          SearchPrewarmPrerenderCoverageStatus::kSpareProcessUsed;
     } else {
       coverage_status = page_load_metrics::
           SearchPrewarmPrerenderCoverageStatus::kColdProcessAllocated;
     }
 
     base::UmaHistogramEnumeration(
-        base::StrCat({internal::kHistogramGWSPrewarmPrerenderCoverageStatus,
+        base::StrCat({internal::kHistogramGWSPrewarmPrerenderCoverageStatus2,
                       initiator_suffix}),
         coverage_status);
 
@@ -828,7 +838,7 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
           kPrerenderActivated;
 
   base::UmaHistogramEnumeration(
-      base::StrCat({internal::kHistogramGWSPrewarmPrerenderCoverageStatus,
+      base::StrCat({internal::kHistogramGWSPrewarmPrerenderCoverageStatus2,
                     initiator_suffix}),
       coverage_status);
   // |navigation_handle| here is for the activation navigation, while

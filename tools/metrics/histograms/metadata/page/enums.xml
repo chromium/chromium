@@ -375,6 +375,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Cold process allocated"/>
   <int value="6"
       label="Blank process reused (empty process of about:blank, NTP, etc.)"/>
+  <int value="7" label="Spare process used"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/google/browser/search_prewarm_coverage_status.h:SearchPrewarmPrerenderCoverageStatus) -->

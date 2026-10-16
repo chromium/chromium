@@ -11,6 +11,7 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
@@ -34,6 +35,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -633,17 +635,43 @@ class GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest,
-                       PrewarmPrerenderCoverageStatus_NoPrewarmOrPrerender) {
+IN_PROC_BROWSER_TEST_F(
+    GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest,
+    PrewarmPrerenderCoverageStatus_NoPrewarmOrPrerender_SpareProcessUsed) {
   base::HistogramTester histogram_tester;
 
   // Navigate to a cross-site non-SRP page first.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitialUrl()));
 
+  // Ensure a spare renderer process is available before navigating to SRP.
+  content::SpareRenderProcessHostManager::Get().WarmupSpare(
+      browser()->GetProfile());
+
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetSearchUrl()));
 
   histogram_tester.ExpectUniqueSample(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
+      "BrowserInitiated",
+      page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
+          kSpareProcessUsed,
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest,
+    PrewarmPrerenderCoverageStatus_NoPrewarmOrPrerender_ColdProcessAllocated) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a cross-site non-SRP page first.
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetInitialUrl()));
+
+  // Discard the spare renderer so the navigation allocates a cold process.
+  content::SpareRenderProcessHostManager::Get().CleanupSparesForTesting();
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GetSearchUrl()));
+
+  histogram_tester.ExpectUniqueSample(
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kColdProcessAllocated,
@@ -670,7 +698,7 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest,
   EXPECT_TRUE(activation_manager.was_activated());
 
   histogram_tester.ExpectUniqueSample(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "RendererInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kPrerenderActivated,
@@ -702,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetSearchUrl()));
 
   histogram_tester.ExpectUniqueSample(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kPreloadProcessReused_Prewarm,
@@ -733,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetSearchUrl()));
 
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kPreloadProcessReused_Prewarm,
@@ -745,13 +773,13 @@ IN_PROC_BROWSER_TEST_F(GWSPageLoadMetricsObserverPrewarmCoverageBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), second_srp_url));
 
   histogram_tester.ExpectBucketCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
           kCurrentProcessReused_Prewarm,
       1);
   histogram_tester.ExpectTotalCount(
-      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+      "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
       "BrowserInitiated",
       2);
 }
@@ -826,7 +854,7 @@ IN_PROC_BROWSER_TEST_P(
     // existing warm locked prewarm process instead of staying in the empty
     // unlocked process.
     histogram_tester.ExpectUniqueSample(
-        "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+        "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
         "BrowserInitiated",
         page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
             kPreloadProcessReused_Prewarm,
@@ -838,7 +866,7 @@ IN_PROC_BROWSER_TEST_P(
     // reuse rather than cold process allocation or in-tab current process
     // reuse.
     histogram_tester.ExpectUniqueSample(
-        "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus."
+        "PageLoad.Clients.GoogleSearch.PrewarmPrerenderCoverageStatus2."
         "BrowserInitiated",
         page_load_metrics::SearchPrewarmPrerenderCoverageStatus::
             kBlankProcessReused,
