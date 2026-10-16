@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<meta name="flags" content="ahem">
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css">
+<style>
+  :root {
+    print-color-adjust: exact;
+    font: 16px/1 Ahem;
+  }
+  @page {
+    margin: 6em;
+    width: 20em;
+    height: 16em;
+
+    @top-left {
+      text-align: left;
+      vertical-align: top;
+      content: "xxxxxxxxxxxx xxxxxxxxxxxx";
+      background: hotpink;
+    }
+    @top-right {
+      text-align: left;
+      vertical-align: top;
+      content: "xxxx";
+      background: yellow;
+    }
+
+    @left-top {
+      text-align: left;
+      vertical-align: top;
+      writing-mode: vertical-rl;
+      content: "xxxxxxxxx xxxxxxxxx";
+      background: yellow;
+    }
+    @left-bottom {
+      text-align: left;
+      vertical-align: top;
+      writing-mode: vertical-rl;
+      content: "xxx";
+      background: hotpink;
+    }
+  }
+</style>
+<!-- Ensure the Ahem web font is fetched and loaded before printing starts
+     (workaround for crbug.com/40331504). -->
+<span style="visibility: hidden;">x</span>

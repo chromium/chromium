@@ -563,9 +563,11 @@ PageContainerLayoutAlgorithm::EdgeMarginNodePreferredSize(
           GetConstraintSpace(), child.Style().GetWritingDirection(),
           /*is_new_fc=*/true);
       intrinsic_space_builder.SetCacheSlot(LayoutResultCacheSlot::kMeasure);
+      // We pass MinMaxSizesInput::Unconstrained() because page-margin boxes
+      // are not IFCs.
       minmax = ComputeMinAndMaxContentContributionForSelf(
                    child, intrinsic_space_builder.ToConstraintSpace(),
-                   MinMaxSizesInput::UnconstrainedUntriaged())
+                   MinMaxSizesInput::Unconstrained())
                    .sizes;
     } else {
       BoxStrut border_padding = ComputeBorders(child_space, child) +
