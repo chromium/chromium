@@ -4799,7 +4799,16 @@ source_set("unexpire_flags") {
   ]
 }
 
-# This target no longer has any compiled sources of its own; it only aggregates
+source_set("global_features_test_support") {
+  testonly = true
+  sources = [ "global_features_test_support.h" ]
+  public_deps = [
+    ":global_features",
+    "//base",
+  ]
+}
+
+# This target no longer has any sources of its own; it only aggregates
 # dependencies. It must be a source_set (not a static_library) because an empty
 # static_library produces an empty archive, which the Windows librarian
 # (lld-link /lib) rejects with "lib failed".
@@ -4826,10 +4835,9 @@ source_set("test_support") {
     "//chrome/test:test_support",
   ]
 
-  sources = [ "global_features_test_support.h" ]
-
   public_deps = [
     ":browser",
+    ":global_features_test_support",
     "//chrome/browser/autofill:test_support",
     "//chrome/browser/history:test_support",
     "//chrome/browser/interstitials:test_support",
@@ -4935,7 +4943,6 @@ source_set("test_support") {
   }
 
   if (is_chromeos) {
-    configs += [ "//build/config/linux/dbus" ]
     public_deps += [ "//chrome/browser/media_galleries:test_support" ]
     deps += [
       "//chrome/browser/ash/file_manager",
@@ -4991,6 +4998,12 @@ source_set("test_support") {
     deps += [ "//components/permissions" ]
     public_deps += [ "//chrome/browser/ui/permission_bubble:test_support" ]
   }
+
+  # This target intentionally has no sources of its own; it only aggregates
+  # dependencies. Do NOT add sources here -- new code belongs in a dedicated,
+  # properly-scoped target. Kept last so an accidental `sources += [...]`
+  # above is reset to empty and is easy to catch in review.
+  sources = []
 }
 
 # Unit tests for top-level //chrome/browser code that does not live in a
