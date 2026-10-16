@@ -440,7 +440,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 - (void)setIncognitoNavigationBrowserAgent:
     (WebNavigationBrowserAgent*)navigationBrowserAgent {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   if (navigationBrowserAgent == _incognitoNavigationBrowserAgent) {
     return;
   }
@@ -450,7 +450,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 - (void)setIncognitoTabBasedIPHBrowserAgent:
     (TabBasedIPHBrowserAgent*)iphBrowserAgent {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   _incognitoTabBasedIPHAgent = iphBrowserAgent;
 }
 
@@ -832,7 +832,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 }
 
 - (void)navigateBack {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   if (!self.currentWebStateList) {
     return;
   }
@@ -854,7 +854,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 }
 
 - (void)navigateForward {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   if (!self.currentWebStateList) {
     return;
   }
@@ -1041,6 +1041,21 @@ inline LayoutStateAssistantPassKey PassKey() {
   ToolbarButtonMenuFactory* buttonMenuFactory =
       incognito ? _incognitoButtonMenuFactory : _regularButtonMenuFactory;
 
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    [self.consumer
+              setMenu:[buttonMenuFactory
+                          menuForNavigationButton:activeWebState
+                                                      ->GetNavigationManager()
+                                                      ->GetBackwardItems()]
+        forButtonType:AppBarButtonTypeBack];
+    [self.consumer
+              setMenu:[buttonMenuFactory
+                          menuForNavigationButton:activeWebState
+                                                      ->GetNavigationManager()
+                                                      ->GetForwardItems()]
+        forButtonType:AppBarButtonTypeForward];
+  }
+
   [self.consumer setMenu:[buttonMenuFactory menuForNewTabButton]
            forButtonType:AppBarButtonTypeNewTab];
   [self.consumer setMenu:[buttonMenuFactory menuForTabGridButton]
@@ -1058,10 +1073,10 @@ inline LayoutStateAssistantPassKey PassKey() {
         incognito ? _incognitoNavigationBrowserAgent
                   : _regularNavigationBrowserAgent;
     if (navigationBrowserAgent) {
-      [self.consumer setCanNavigateBack:navigationBrowserAgent->CanGoBack(
-                                            [self activeWebState])
-                                forward:navigationBrowserAgent->CanGoForward(
-                                            [self activeWebState])];
+      [self.consumer
+          setCanNavigateBack:navigationBrowserAgent->CanGoBack(activeWebState)
+                     forward:navigationBrowserAgent->CanGoForward(
+                                 activeWebState)];
     }
   }
   [self updateAssistantButton];

@@ -177,6 +177,8 @@ UIColor* AssistantHighlightBackgroundColor() {
   BOOL _canNavigateBack;
   BOOL _canNavigateForward;
   // Context menus for the App Bar buttons.
+  UIMenu* _backButtonMenu;
+  UIMenu* _forwardButtonMenu;
   UIMenu* _assistantButtonMenu;
   UIMenu* _openNewTabButtonMenu;
   UIMenu* _tabGridButtonMenu;
@@ -624,12 +626,12 @@ UIColor* AssistantHighlightBackgroundColor() {
       _tabGridButtonMenu = menu;
       return;
     case AppBarButtonTypeBack:
-      CHECK(IsFiveButtonAppBarLayoutEnabled());
-      // TODO(crbug.com/573542581): Implement back button long press menu.
+      CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
+      _backButtonMenu = menu;
       return;
     case AppBarButtonTypeForward:
-      CHECK(IsFiveButtonAppBarLayoutEnabled());
-      // TODO(crbug.com/573542581): Implement forward button long press menu.
+      CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
+      _forwardButtonMenu = menu;
       return;
   }
   NOTREACHED();
@@ -637,7 +639,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 - (void)setCanNavigateBack:(BOOL)canNavigateBack
                    forward:(BOOL)canNavigateForward {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   if (canNavigateBack == _canNavigateBack &&
       canNavigateForward == _canNavigateForward) {
     return;
@@ -737,7 +739,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 // Updates the enabled state of the forward and back navigation buttons in the
 // toolbar.
 - (void)updateNavigationButtons {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   _backButton.enabled =
       _buttonsEnabled && !_isTabGridVisible && _canNavigateBack;
   _forwardButton.enabled =
@@ -1197,7 +1199,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Returns a back button for web navigation.
 - (UIButton*)createBackButton {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   UIButton* button = [self buttonWithTitle:nil image:AppBarSymbol(SymbolBack)];
   button.accessibilityIdentifier = kAppBarBackButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
@@ -1206,12 +1208,14 @@ UIColor* AssistantHighlightBackgroundColor() {
   [button addTarget:self
                 action:@selector(didTapBackButton)
       forControlEvents:UIControlEventTouchUpInside];
+  [button
+      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
   return button;
 }
 
 // Returns a forward button for web navigation.
 - (UIButton*)createForwardButton {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   UIButton* button = [self buttonWithTitle:nil
                                      image:AppBarSymbol(SymbolForward)];
   button.accessibilityIdentifier = kAppBarForwardButtonIdentifier;
@@ -1221,6 +1225,8 @@ UIColor* AssistantHighlightBackgroundColor() {
   [button addTarget:self
                 action:@selector(didTapForwardButton)
       forControlEvents:UIControlEventTouchUpInside];
+  [button
+      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
   return button;
 }
 
@@ -1471,7 +1477,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Called when the back button for web navigation is tapped.
 - (void)didTapBackButton {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   if (_isNtpVisible) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarBackOnNTP"));
   }
@@ -1481,7 +1487,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 
 // Called when the forward button for web navigation is tapped.
 - (void)didTapForwardButton {
-  CHECK(IsFiveButtonAppBarLayoutEnabled());
+  CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
   if (_isNtpVisible) {
     base::RecordAction(base::UserMetricsAction("MobileToolbarForwardOnNTP"));
   }
@@ -1553,13 +1559,19 @@ UIColor* AssistantHighlightBackgroundColor() {
     menu = _openNewTabButtonMenu;
   } else if (view == _tabGridButton) {
     menu = _tabGridButtonMenu;
+  } else if (view == _backButton) {
+    CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
+    menu = _backButton.isEnabled ? _backButtonMenu : nil;
+  } else if (view == _forwardButton) {
+    CHECK(IsFiveButtonAppBarLayoutEnabled(), base::NotFatalUntil::M163);
+    menu = _forwardButton.isEnabled ? _forwardButtonMenu : nil;
   }
 
   if (!menu) {
     return nil;
   }
 
-  return [UIContextMenuConfiguration
+  UIContextMenuConfiguration* configuration = [UIContextMenuConfiguration
       configurationWithIdentifier:nil
                   previewProvider:nil
                    actionProvider:^UIMenu*(
@@ -1568,6 +1580,17 @@ UIColor* AssistantHighlightBackgroundColor() {
                          "MobileMenuToolbarMenuTriggered"));
                      return menu;
                    }];
+
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    // Preserve priority order (top-to-bottom) for navigation history menus,
+    // matching the Toolbar's presentation.
+    if (view == _backButton || view == _forwardButton) {
+      configuration.preferredMenuElementOrder =
+          UIContextMenuConfigurationElementOrderPriority;
+    }
+  }
+
+  return configuration;
 }
 
 - (UITargetedPreview*)contextMenuInteraction:
