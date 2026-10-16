@@ -4242,10 +4242,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.ApplyForStartLoggingSuccess" enum="Boolean"
-    expires_after="2026-11-06">
+    expires_after="2027-10-15">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Success or failure of a call to ApplyForStartLogging(). Failures indicate
     too many logs are already running.
@@ -4253,10 +4253,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRtcTextLogging.ConcurrentLogCount" units="counts"
-    expires_after="2026-11-06">
+    expires_after="2027-10-15">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Count of the number of concurrent webrtc loggers running, recorded at the
     start of a new log.
@@ -4267,7 +4267,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Calls to WebRtcTextLogHandler::StartLogging, as a denominator for
     WebRtcTextLogging.StartError and WebRtcTextLogging.Started. Logged
@@ -4279,7 +4279,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Rate of webrtc text log start attemps which successfully reach the STARTED
     state, on returning a successful response to the JS call.
@@ -4290,7 +4290,7 @@ chromium-metrics-reviews@google.com.
     enum="WebRtcTextLoggingStartError" expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Breakdown of errors encountered starting webrtc text logging which prevent
     us from successfully reaching the STARTED state, recorded when failing the

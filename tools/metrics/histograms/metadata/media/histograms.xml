@@ -1267,7 +1267,7 @@ chromium-metrics-reviews@google.com.
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceFirstFailure"
     units="ms" expires_after="2024-03-17">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time from the first microphone access failure due to blocked system
@@ -1282,7 +1282,7 @@ chromium-metrics-reviews@google.com.
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceLastFailure"
     units="ms" expires_after="2024-01-14">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The time from the last microphone access failure due to blocked system
@@ -1294,9 +1294,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Mac.MicSystemPermission.Startup"
-    enum="SystemMediaCapturePermission" expires_after="2026-10-04">
+    enum="SystemMediaCapturePermission" expires_after="2027-10-15">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The Mac system permission state for microphone. Logged once at browser
@@ -1311,7 +1311,7 @@ chromium-metrics-reviews@google.com.
     name="Media.Audio.Capture.Mac.MicSystemPermission.StartupAfterFailure"
     enum="SystemMediaCapturePermission" expires_after="2024-01-14">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The Mac system permission state for microphone. Logged once at browser
@@ -1327,7 +1327,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.Audio.Capture.Mac.MicSystemPermission.UserMedia"
     enum="SystemMediaCapturePermission" expires_after="2024-03-17">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     The Mac system permission state for microphone at the time of a user media
@@ -5670,7 +5670,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.MediaDevices.GetAllScreensMedia.Result3"
     enum="UserMediaRequestResult" expires_after="2026-12-31">
   <owner>simonha@google.com</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     The results of all calls to the navigator.mediaDevices.GetAllScreensMedia()
     API, including successful promise resolutions, error codes, or kTimedOut, if
@@ -5684,7 +5684,7 @@ chromium-metrics-reviews@google.com.
     name="Media.MediaDevices.GetDisplayMedia.Audio.PermissionDeniedBySystem"
     enum="Boolean" expires_after="2027-05-01">
   <owner>kron@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Tracks the number of attempts to start an audio track from getDisplayMedia
     that results in PermissionDeniedBySystem. This is recorded in
@@ -5711,7 +5711,7 @@ chromium-metrics-reviews@google.com.
     enum="UserMediaRequestResult" expires_after="2027-02-14">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     The results of all calls to the navigator.mediaDevices.GetDisplayMedia()
     API, including successful promise resolutions, error codes, or kTimedOut, if
@@ -5735,7 +5735,7 @@ chromium-metrics-reviews@google.com.
     enum="EchoCancellationMode" expires_after="2027-01-03">
   <owner>henrika@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     When getUserMedia() is called for audio, the utilized echoCancellationMode
     is logged. The mode controls how much of the user system playout is removed
@@ -5747,7 +5747,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     The latency of calls to the navigator.mediaDevices.GetUserMedia() API which
     resolve, including both successes and failures. Note very long calls which
@@ -5760,7 +5760,7 @@ chromium-metrics-reviews@google.com.
     enum="UserMediaRequestResult" expires_after="2027-03-21">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     The results of all calls to the navigator.mediaDevices.GetUserMedia() API,
     including successful promise resolutions, error codes, or kTimedOut, if the
@@ -5772,7 +5772,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.MediaDevices.SaltDatabaseErrors"
     enum="SqliteLoggedResultCode" expires_after="2027-01-17">
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Errors reported by SQLite while initializing or using the media-device salt
     database.
@@ -5790,10 +5790,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaDevicesManager.VideoDeviceEnumeration.Start"
-    enum="Boolean" expires_after="2026-10-23">
+    enum="Boolean" expires_after="2027-10-15">
   <owner>toprice@chromium.org</owner>
   <owner>agpalak@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Count of MediaDevicesManager starting enumerating video devices (ie cameras)
     with the camera capture service, including enumerations which never
@@ -7820,7 +7820,7 @@ chromium-metrics-reviews@google.com.
     name="Media.Ui.GetDisplayMedia.AudioCapturePermissionChecker.Interactions"
     enum="AudioCapturePermissionCheckerInteractions" expires_after="2027-01-10">
   <owner>kron@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Records the flow and user interactions related to checking system audio
     capture permission on macOS during getDisplayMedia. This includes whether
@@ -8174,7 +8174,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.Video.Capture.Mac.CameraSystemPermission.Startup"
     enum="SystemMediaCapturePermission" expires_after="2024-02-04">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     The Mac system permission state for camera. Logged once at browser startup.
     For more information on the values, see
@@ -8187,7 +8187,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.Video.Capture.Mac.CameraSystemPermission.UserMedia"
     enum="SystemMediaCapturePermission" expires_after="2027-02-28">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     The Mac system permission state for camera at the time of a user media
     request. Logged when the system permission is checked. If the permission is
@@ -8263,7 +8263,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.VideoCapture.CreateDeviceSuccessLatency" units="ms"
     expires_after="2027-02-15">
   <owner>herre@google.com</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Time during VideoSourceImpl startup taken to create a video_capture::Device
     object. Only recorded if the creation was successful. Is a subset of
@@ -8385,9 +8385,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.Mac.Device.ReactionEffectsGesturesState"
-    enum="ReactionEffectsGesturesState" expires_after="2026-09-21">
+    enum="ReactionEffectsGesturesState" expires_after="2027-10-15">
   <owner>guidou@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     An enumeration count of whether reaction effects are enabled and can be
     triggered by gestures. This is recorded once per opening of the camera.
@@ -8472,12 +8472,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.VideoCapture.StartSourceSuccessLatency" units="ms"
-    expires_after="2026-07-05">
+    expires_after="2027-10-15">
   <owner>herre@google.com</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Total time for a VideoSourceImpl to start a device to serve the first push
     subscription mojo connection. Only recorded if starting is successful.
+
+    Warning: this histogram was expired from 2026-07-05 to 2026-10-15; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -8614,7 +8617,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Media.VideoCapture.Win.ErrorEvent" enum="Hresult"
     expires_after="2027-04-11">
   <owner>toprice@chromium.org</owner>
-  <owner>video-cmi-apis@google.com</owner>
+  <owner>rtc-meet-in-chrome@google.com</owner>
   <summary>
     Error codes received by VideoCaptureDeviceMFWin on Windows which caused a
     kWinMediaFoundationGetMediaEventStatusFailed error, ending video capture.
