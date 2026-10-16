@@ -36,6 +36,8 @@ BASE_FEATURE(kComputeRasterTranslateForExternalScale,
 BASE_FEATURE(kSizeOopifEffectSurfacesAtExternalScale,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kOptimizeRemoveRenderPasses, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDeferImplInvalidation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // TODO(crbug.com/446920991): Reduce back to 1 frame delay once we have a

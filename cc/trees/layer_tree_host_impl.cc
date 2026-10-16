@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iterator>
 #include <limits>
 #include <map>
 #include <memory>
@@ -388,6 +389,113 @@ gfx::Rect CalculateVisibleBounds(
     }
   }
   return element_screen_rect;
+}
+
+void RemoveRenderPassesOptimized(FrameData* frame) {
+  // There is always at least a root RenderPass.
+  DCHECK_GE(frame->render_passes.size(), 1u);
+
+  // TODO(crbug.com/444264038): Consider merging this pre-scan with one of the
+  // loops below to avoid an extra walk over all draw quads.
+  // A set of RenderPasses that have filters or backdrop filters applied to
+  // them.
+  base::flat_set<viz::CompositorRenderPassId> pass_with_filters;
+  // RenderPasses referenced by a viz::RenderPassDrawQuad in a retained pass.
+  base::flat_set<viz::CompositorRenderPassId> referenced_passes;
+  // A set of viz::SharedElementDrawQuad references that we have seen.
+  base::flat_set<viz::ViewTransitionElementResourceId>
+      view_transition_quad_references;
+
+  // Remove RenderPasses that are not referenced by any draw quads or copy
+  // requests (except the root RenderPass).
+  for (auto pass_it = frame->render_passes.rbegin();
+       pass_it != frame->render_passes.rend();) {
+    // Iterating from the back of the list to the front, in order to remove each
+    // qualified RenderPass, and drop references to earlier RenderPasses
+    // allowing them to be removed to.
+    viz::CompositorRenderPass* pass = pass_it->get();
+
+    const bool is_root_pass = pass->id == frame->render_passes.back()->id;
+    // Retain render passes generating ViewTransition snapshots if they are
+    // referenced by a quad or this frame will process a save directive. We need
+    // to render and screenshot offscreen content as well, which won't be
+    // referenced by a quad.
+    const bool does_contribute_to_view_transition_snapshot =
+        pass->view_transition_element_resource_id.IsValid() &&
+        (frame->has_view_transition_save_directive ||
+         view_transition_quad_references.contains(
+             pass->view_transition_element_resource_id));
+    if (is_root_pass || !pass->copy_requests.empty() ||
+        referenced_passes.contains(pass->id) ||
+        does_contribute_to_view_transition_snapshot) {
+      for (const auto* quad : pass->quad_list) {
+        if (quad->material == viz::DrawQuad::Material::kSharedElement) {
+          view_transition_quad_references.insert(
+              viz::SharedElementDrawQuad::MaterialCast(quad)
+                  ->element_resource_id);
+        } else if (quad->material ==
+                   viz::DrawQuad::Material::kCompositorRenderPass) {
+          const viz::CompositorRenderPassDrawQuad* render_pass_quad =
+              viz::CompositorRenderPassDrawQuad::MaterialCast(quad);
+          if (!render_pass_quad->filters.IsEmpty() ||
+              !render_pass_quad->backdrop_filters.IsEmpty()) {
+            pass_with_filters.insert(render_pass_quad->render_pass_id);
+          }
+          referenced_passes.insert(render_pass_quad->render_pass_id);
+        }
+      }
+      ++pass_it;
+      continue;
+    }
+
+    pass_it = std::make_reverse_iterator(
+        frame->render_passes.erase(std::next(pass_it).base()));
+  }
+
+  // A set of RenderPasses that we have seen.
+  base::flat_set<viz::CompositorRenderPassId> pass_exists;
+  // Iterate RenderPasses in draw order, removing empty render passes (except
+  // the root RenderPass).
+  for (auto pass_it = frame->render_passes.begin();
+       pass_it != frame->render_passes.end();) {
+    viz::CompositorRenderPass* pass = pass_it->get();
+
+    // Remove orphan viz::RenderPassDrawQuads.
+    for (auto it = pass->quad_list.begin(); it != pass->quad_list.end();) {
+      if (it->material == viz::DrawQuad::Material::kCompositorRenderPass) {
+        const viz::CompositorRenderPassDrawQuad* quad =
+            viz::CompositorRenderPassDrawQuad::MaterialCast(*it);
+        // If the RenderPass doesn't exist, we can remove the quad.
+        if (pass_exists.count(quad->render_pass_id)) {
+          ++it;
+        } else {
+          it = pass->quad_list.EraseAndInvalidateAllPointers(it);
+        }
+      } else {
+        ++it;
+      }
+    }
+
+    if (pass_it == frame->render_passes.end() - 1) {
+      // Don't remove the root RenderPass.
+      break;
+    }
+
+    const bool is_no_op_pass =
+        pass->quad_list.empty() && pass->copy_requests.empty() &&
+        !pass->subtree_capture_id.is_valid() &&
+        !pass_with_filters.contains(pass->id) &&
+        // TODO(khushalsagar) : Send information about no-op passes to viz to
+        // retain this optimization for shared elements. See crbug.com/1265178.
+        !pass->view_transition_element_resource_id.IsValid();
+    if (is_no_op_pass) {
+      pass_it = frame->render_passes.erase(pass_it);
+      continue;
+    }
+
+    pass_exists.insert(pass->id);
+    ++pass_it;
+  }
 }
 
 #define VERBOSE_LOG() \
@@ -1641,6 +1749,11 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame,
 }
 
 void LayerTreeHostImpl::RemoveRenderPasses(FrameData* frame) {
+  if (base::FeatureList::IsEnabled(features::kOptimizeRemoveRenderPasses)) {
+    RemoveRenderPassesOptimized(frame);
+    return;
+  }
+
   // There is always at least a root RenderPass.
   DCHECK_GE(frame->render_passes.size(), 1u);
 

@@ -17,6 +17,11 @@ namespace features {
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kComputeRasterTranslateForExternalScale);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSizeOopifEffectSurfacesAtExternalScale);
 
+// Optimizes removal of empty and orphan render passes by combining reference
+// collection with the unreferenced-pass traversal. This is a killswitch for the
+// optimized path; disable it to fall back to the previous implementation.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOptimizeRemoveRenderPasses);
+
 // When enabled, the scheduler will allow deferring impl invalidation frames
 // for N frames (default 1) to reduce contention with main frames, allowing
 // main a chance to commit.
