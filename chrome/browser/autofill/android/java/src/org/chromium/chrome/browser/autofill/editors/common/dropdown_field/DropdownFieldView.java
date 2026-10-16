@@ -206,7 +206,7 @@ public class DropdownFieldView implements FieldView {
 
         Drawable drawable =
                 TraceEventVectorDrawableCompat.create(
-                        mContext.getResources(), R.drawable.ic_error, mContext.getTheme());
+                        mContext.getResources(), R.drawable.ic_error_24dp, mContext.getTheme());
         assumeNonNull(drawable);
         drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
         if (view != null && view instanceof TextView) {

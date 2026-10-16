@@ -102,7 +102,7 @@ public class SafetyHubModuleMediatorTest {
         private static final @DrawableRes int SAFE_ICON = R.drawable.material_ic_check_24dp;
         private static final @DrawableRes int INFO_ICON = R.drawable.btn_info;
         private static final @DrawableRes int MANAGED_ICON = R.drawable.ic_domain;
-        private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error;
+        private static final @DrawableRes int WARNING_ICON = R.drawable.ic_error_24dp;
 
         private Activity mActivity;
 

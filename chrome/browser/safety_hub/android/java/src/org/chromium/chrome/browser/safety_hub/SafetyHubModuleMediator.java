@@ -146,7 +146,7 @@ interface SafetyHubModuleMediator {
                 return isManaged()
                         ? SafetyHubUtils.getManagedIcon(context)
                         : SettingsUtils.getTintedIcon(
-                                context, R.drawable.ic_error, R.color.default_red);
+                                context, R.drawable.ic_error_24dp, R.color.default_red);
             case ModuleState.LOADING:
                 return null;
             default:

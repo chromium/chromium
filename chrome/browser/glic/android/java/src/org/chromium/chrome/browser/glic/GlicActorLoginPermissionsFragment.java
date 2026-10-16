@@ -128,7 +128,7 @@ public class GlicActorLoginPermissionsFragment extends ChromeBaseSettingsFragmen
             mEmptyCard.setSummary(
                     getString(R.string.settings_glic_login_permissions_offline_warning));
             Drawable offlineIcon =
-                    AppCompatResources.getDrawable(getContext(), R.drawable.ic_error);
+                    AppCompatResources.getDrawable(getContext(), R.drawable.ic_error_24dp);
             if (offlineIcon != null) {
                 offlineIcon.setTint(SemanticColorUtils.getDefaultIconColor(getContext()));
                 mEmptyCard.setIconDrawable(offlineIcon);

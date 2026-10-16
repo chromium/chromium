@@ -31,7 +31,7 @@ public class IdentityErrorCardViewBinder {
         ImageView image = errorCardView.findViewById(R.id.signin_settings_card_icon);
         image.setContentDescription(
                 context.getString(R.string.accessibility_account_management_row_account_error));
-        image.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_error));
+        image.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_error_24dp));
 
         TextView description = errorCardView.findViewById(R.id.signin_settings_card_description);
         Button button = errorCardView.findViewById(R.id.signin_settings_card_button);

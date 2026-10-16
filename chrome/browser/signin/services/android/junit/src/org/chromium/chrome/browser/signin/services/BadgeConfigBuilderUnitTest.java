@@ -18,12 +18,12 @@ public class BadgeConfigBuilderUnitTest {
     @Test
     public void testDefaultSizeChildAccountBadgeConfig() {
         BadgeConfig childAccountConfig =
-                BadgeConfig.create(R.drawable.ic_error)
+                BadgeConfig.create(R.drawable.ic_error_24dp)
                         .withDefaultSizeChildAccountConfig()
                         .build(RuntimeEnvironment.application.getApplicationContext());
 
         BadgeConfig expectedConfig =
-                BadgeConfig.create(R.drawable.ic_error)
+                BadgeConfig.create(R.drawable.ic_error_24dp)
                         .withBadgeSize(R.dimen.badge_size)
                         .withBorderSize(R.dimen.badge_border_size)
                         .withXPosition(R.dimen.badge_position_x)
