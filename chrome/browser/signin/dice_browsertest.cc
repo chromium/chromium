@@ -1842,12 +1842,24 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, BrowserSignInFromAddAccountTab) {
       signin_metrics::AccessPoint::kAddressBubble,
       /*email_hint=*/std::string());
 
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
+            tab_helper->signin_reason());
+  EXPECT_TRUE(tab_helper->IsChromeSigninInProgress());
+
   // Receive token.
   EXPECT_FALSE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
   SendRefreshTokenResponse();
   EXPECT_TRUE(
       GetIdentityManager()->HasAccountWithRefreshToken(GetMainAccountID()));
+
+  // Interception is aborted because this is a Chrome sign-in tab.
+  histogram_tester.ExpectBucketCount(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortChromeSignin, 1);
 
   // Receive ENABLE_SYNC.
   SendEnableSyncResponse();

@@ -8,6 +8,9 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/signin/dice_tab_helper.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor.h"
+#include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/process_dice_header_delegate_impl.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -529,7 +532,8 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param ? "Unrestricted" : "Restricted";
     });
 
-class HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncService
+class
+    HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncService
     : public HistorySyncOptinScreenFromPromoEntryPointInteractiveTest {
  protected:
   void OnWillCreateBrowserContextServices(
@@ -539,7 +543,81 @@ class HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncServic
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating(&BuildTestSyncService));
   }
+
+  void TestShowsErrorDialogFromPromoSignIn(
+      signin_metrics::AccessPoint access_point,
+      syncer::UserSelectableType disabled_type) {
+    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
+
+    // Mark the management as accepted, so that the disclaimer service
+    // progresses the flow immediately on the present profile when
+    // `EnsureManagedProfileForAccount` is invoked.
+    enterprise_util::SetUserAcceptedAccountManagement(browser()->GetProfile(),
+                                                      true);
+
+    syncer::TestSyncService* sync_service =
+        static_cast<syncer::TestSyncService*>(
+            SyncServiceFactory::GetForProfile(browser()->GetProfile()));
+    sync_service->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false,
+        /*types=*/{});
+    sync_service->GetUserSettings()->SetTypeIsManagedByPolicy(disabled_type,
+                                                              /*managed=*/true);
+
+    RunTestSequence(
+        InstrumentTab(kTabId, 0, browser()), Do([&]() {
+          signin_ui_util::SignInAndEnableHistorySync(
+              browser(), browser()->GetProfile(), access_point);
+        }),
+        Do([&]() {
+          content::WebContents* active_contents =
+              browser()->GetTabStripModel()->GetActiveWebContents();
+          DiceTabHelper* tab_helper =
+              DiceTabHelper::FromWebContents(active_contents);
+          ASSERT_NE(tab_helper, nullptr);
+          EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
+                    tab_helper->signin_reason());
+          EXPECT_TRUE(tab_helper->IsChromeSigninInProgress());
+
+          std::unique_ptr<ProcessDiceHeaderDelegateImpl>
+              process_dice_header_delegate_impl =
+                  ProcessDiceHeaderDelegateImpl::Create(active_contents);
+          AccountInfo account_info =
+              identity_test_env()->MakeAccountAvailable(kMainEmail);
+          account_info = AccountInfo::Builder(account_info)
+                             .SetFullName("fullname")
+                             .SetGivenName("givenname")
+                             .SetHostedDomain("example.com")
+                             .SetLocale("en")
+                             .SetAvatarUrl("https://example.com")
+                             .Build();
+          AccountCapabilitiesTestMutator mutator(&account_info);
+          mutator.set_is_subject_to_enterprise_features(true);
+          identity_test_env()->UpdateAccountInfoForAccount(account_info);
+          SetHistorySyncOptinRestrictionModeCapability(
+              *identity_test_env(), account_info, /*is_unrestricted=*/true);
+          process_dice_header_delegate_impl->HandleTokenExchangeSuccess(
+              account_info.GetAccountId(), /*is_new_account=*/true,
+              signin::Tribool::kUnknown);
+          auto* interceptor = DiceWebSigninInterceptorFactory::GetForProfile(
+              browser()->GetProfile());
+          if (!interceptor->is_interception_in_progress()) {
+            process_dice_header_delegate_impl
+                ->CompleteChromeSignInAfterGaiaSignin(
+                    account_info.GetCoreAccountInfo());
+          }
+        }),
+        WaitForShow(signin_util::kSigninErrorDialogId),
+        WaitForShow(signin_util::kSigninErrorDialogOkButtonId),
+        PressButton(signin_util::kSigninErrorDialogOkButtonId),
+        WaitForHide(signin_util::kSigninErrorDialogOkButtonId));
+
+    histogram_tester_.ExpectBucketCount(
+        "Signin.Intercept.HeuristicOutcome",
+        SigninInterceptionHeuristicOutcome::kAbortChromeSignin, 1);
+  }
 };
+
 IN_PROC_BROWSER_TEST_F(
     HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncService,
     ShowsErrorDialog) {
@@ -571,6 +649,20 @@ IN_PROC_BROWSER_TEST_F(
       WaitForShow(signin_util::kSigninErrorDialogOkButtonId),
       PressButton(signin_util::kSigninErrorDialogOkButtonId),
       WaitForHide(signin_util::kSigninErrorDialogOkButtonId));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncService,
+    ShowsErrorDialogFromRecentTabsPromoSignIn) {
+  TestShowsErrorDialogFromPromoSignIn(signin_metrics::AccessPoint::kRecentTabs,
+                                      syncer::UserSelectableType::kTabs);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HistorySyncOptinScreenFromPromoEntryPointInteractiveTestWithTestSyncService,
+    ShowsErrorDialogFromHistoryPagePromoSignIn) {
+  TestShowsErrorDialogFromPromoSignIn(signin_metrics::AccessPoint::kHistoryPage,
+                                      syncer::UserSelectableType::kHistory);
 }
 
 }  // namespace

@@ -858,6 +858,71 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
       browser(), signin_metrics::AccessPoint::kPasswordBubble));
 }
 
+// When signed out, `ShowDiceAddAccountTab()` uses the `kSigninPrimaryAccount`
+// reason and marks Chrome sign-in as in progress.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowDiceAddAccountTabReasonSignedOut) {
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::kRecentTabs, std::string());
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
+            tab_helper->signin_reason());
+  EXPECT_TRUE(tab_helper->IsChromeSigninInProgress());
+}
+
+// When signed out and `email_hint` matches an existing account, it is a reauth.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowDiceAddAccountTabReasonSignedOutReauth) {
+  identity_test_env()->MakeAccountAvailable(kTestEmail);
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::kRecentTabs, kTestEmail);
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(signin_metrics::Reason::kReauthentication,
+            tab_helper->signin_reason());
+  EXPECT_FALSE(tab_helper->IsChromeSigninInProgress());
+}
+
+// When signed in, `ShowDiceAddAccountTab()` uses the `kAddSecondaryAccount`
+// reason and does not mark Chrome sign-in as in progress.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowDiceAddAccountTabReasonSignedIn) {
+  SetPrimaryAccount();
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::kRecentTabs, std::string());
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(signin_metrics::Reason::kAddSecondaryAccount,
+            tab_helper->signin_reason());
+  EXPECT_FALSE(tab_helper->IsChromeSigninInProgress());
+}
+
+// When signed in and `email_hint` matches an existing account, it is a reauth.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       ShowDiceAddAccountTabReasonSignedInReauth) {
+  SetPrimaryAccount();
+  SigninViewController::From(browser())->ShowDiceAddAccountTab(
+      signin_metrics::AccessPoint::kRecentTabs, kTestEmail);
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(active_contents);
+  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(active_contents);
+  ASSERT_TRUE(tab_helper);
+  EXPECT_EQ(signin_metrics::Reason::kReauthentication,
+            tab_helper->signin_reason());
+  EXPECT_FALSE(tab_helper->IsChromeSigninInProgress());
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class AsyncMockBluetoothAdapter : public device::MockBluetoothAdapter {
  public:
@@ -1239,9 +1304,8 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerCrossDeviceSigninBrowserTest,
     content::WaitForLoadStop(web_contents);
   }
 
-  EXPECT_EQ(
-      content::EvalJs(web_contents, "document.title"),
-      l10n_util::GetStringUTF8(IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE));
+  EXPECT_EQ(content::EvalJs(web_contents, "document.title"),
+            l10n_util::GetStringUTF8(IDS_QR_CODE_BUBBLE_SIGNIN_ON_PHONE_TITLE));
   EXPECT_EQ(
       content::EvalJs(
           web_contents,

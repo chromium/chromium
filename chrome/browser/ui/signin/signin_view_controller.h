@@ -31,6 +31,7 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/signin/cross_device_signin_promo_manager.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #endif
@@ -49,7 +50,6 @@ struct CoreAccountInfo;
 namespace content {
 class WebContents;
 }
-
 
 namespace signin_metrics {
 enum class AccessPoint;
@@ -275,7 +275,8 @@ class SigninViewController {
                          signin_metrics::AccessPoint access_point,
                          signin_metrics::PromoAction promo_action,
                          const std::string& email_hint,
-                         const GURL& redirect_url);
+                         const GURL& redirect_url,
+                         signin::Flow signin_flow = signin::Flow::NONE);
 
   // Called by `SignoutOrReauthWithPrompt()` once the unsynced datatypes are
   // fetched.

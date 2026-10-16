@@ -318,7 +318,8 @@ GURL GetSigninUrlForDiceSigninTab(
     signin_metrics::AccessPoint access_point,
     signin_metrics::Reason signin_reason,
     const std::string& email_hint,
-    const GURL& continue_url) {
+    const GURL& continue_url,
+    signin::Flow signin_flow = signin::Flow::NONE) {
   // Use the add account URL if it's a reauthentication, or if we are adding a
   // secondary account and already have a primary account.
   // TODO(crbug.com/425645725): Investigates simplifying the params such as the
@@ -348,12 +349,8 @@ GURL GetSigninUrlForDiceSigninTab(
     return signin::GetAddAccountURLForDice(email_hint, continue_url);
   }
 
-  signin::ChromeSyncUrlArgs sync_url_args{.email = email_hint,
-                                          .continue_url = continue_url};
-  if (access_point == signin_metrics::AccessPoint::kExtensions &&
-      signin_reason == signin_metrics::Reason::kAddSecondaryAccount) {
-    sync_url_args.flow = signin::Flow::PROMO;
-  }
+  signin::ChromeSyncUrlArgs sync_url_args{
+      .email = email_hint, .continue_url = continue_url, .flow = signin_flow};
   return signin::GetChromeSyncURLForDice(sync_url_args);
 }
 
@@ -765,7 +762,8 @@ void SigninViewController::ShowDiceSigninTab(
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action,
     const std::string& email_hint,
-    const GURL& redirect_url) {
+    const GURL& redirect_url,
+    signin::Flow signin_flow) {
 #if DCHECK_IS_ON()
   if (!AccountConsistencyModeManager::IsDiceEnabledForProfile(GetProfile())) {
     // Developers often fall into the trap of not configuring the OAuth client
@@ -802,7 +800,7 @@ void SigninViewController::ShowDiceSigninTab(
 
   const GURL signin_url = GetSigninUrlForDiceSigninTab(
       *IdentityManagerFactory::GetForProfile(GetProfile()), access_point,
-      signin_reason, email_hint, continue_url);
+      signin_reason, email_hint, continue_url, signin_flow);
 
   // Check if there is already a signin-tab open.
   const int dice_tab_index = FindDiceSigninTab(GetTabStripModel(), signin_url);
@@ -890,20 +888,27 @@ void SigninViewController::ShowDiceEnableSyncTab(
 void SigninViewController::ShowDiceAddAccountTab(
     signin_metrics::AccessPoint access_point,
     const std::string& email_hint) {
-  signin_metrics::Reason reason = signin_metrics::Reason::kAddSecondaryAccount;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(GetProfile());
+  signin_metrics::Reason reason =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)
+          ? signin_metrics::Reason::kAddSecondaryAccount
+          : signin_metrics::Reason::kSigninPrimaryAccount;
   if (!email_hint.empty() &&
       !identity_manager->FindExtendedAccountInfoByEmailAddress(email_hint)
            .IsEmpty()) {
-    // Use more precise `signin_metrics::Reason` if we know that it's a reauth.
-    // This only has an impact on metrics.
+    // If the account is already known, this is a reauth. Besides metrics, this
+    // selects the reauth/add-account Gaia URL, and (when signed out) means the
+    // tab does not track a Chrome sign-in flow in `DiceTabHelper`.
     reason = signin_metrics::Reason::kReauthentication;
   }
 
+  signin::Flow flow = (access_point == signin_metrics::AccessPoint::kExtensions)
+                          ? signin::Flow::PROMO
+                          : signin::Flow::NONE;
   ShowDiceSigninTab(reason, access_point,
                     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
-                    email_hint, /*redirect_url=*/GURL());
+                    email_hint, /*redirect_url=*/GURL(), flow);
 }
 
 void SigninViewController::ShowGaiaLogoutTab(
