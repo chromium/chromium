@@ -274,6 +274,10 @@ export class GlicSelectionOverlayElement extends
   // The action whose card is showing, if any.
   private shownInlineAction_: SuggestedAction|null = null;
 
+  // Height of `.action-chips-row` before the inline fulfillment card replaced
+  // it, used to keep the card's top-left corner at the row's top-left corner.
+  private replacedChipsRowHeight_ = 0;
+
   private clearInlineFulfillment_() {
     this.shownInlineAction_ = null;
     this.inlineFulfillmentHost_?.clear();
@@ -375,7 +379,9 @@ export class GlicSelectionOverlayElement extends
       }
 
       // When the prompt box is not shown, anchor the bottom-left of the row at
-      // the region's top-right corner (selRight, selTop).
+      // the region's top-right corner (selRight, selTop). When an inline
+      // fulfillment card replaces the row, keep the card's top-left corner at
+      // the row's top-left corner so it expands downward.
       const idealCenterX = selRight + effectiveWidth / 2;
       let clampedCenterX: number;
       if (effectiveWidth >= maxAvailableWidth) {
@@ -386,7 +392,8 @@ export class GlicSelectionOverlayElement extends
         clampedCenterX = Math.max(minCenter, Math.min(idealCenterX, maxCenter));
       }
 
-      const idealTop = selTop - height;
+      const idealTop = selTop -
+          (this.shownInlineAction_ ? this.replacedChipsRowHeight_ : height);
       const targetTop = Math.max(
           margin, Math.min(idealTop, viewportHeight - height - margin));
       return `left: ${clampedCenterX}px; top: ${
@@ -564,6 +571,9 @@ export class GlicSelectionOverlayElement extends
     // selection replaced it. Otherwise nothing is sent, since the browser
     // rejects an inline action without a channel.
     await host.show(inlineFulfillment.resourceName, channel => {
+      this.replacedChipsRowHeight_ =
+          this.shadowRoot.querySelector<HTMLElement>(
+                             '.action-chips-row')!.offsetHeight;
       this.shownInlineAction_ = action;
       handler.executeSuggestedAction(action.id, channel);
     });
