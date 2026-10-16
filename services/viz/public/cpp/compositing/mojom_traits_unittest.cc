@@ -1957,6 +1957,62 @@ TEST_F(CompositingStructTraitsTest, FrameIntervalInputs) {
             output.has_only_content_frame_interval_updates);
 }
 
+TEST_F(CompositingStructTraitsTest,
+       ContentFrameIntervalInfoRejectsNegativeInterval) {
+  auto round_trips = [](ContentFrameIntervalType type,
+                        base::TimeDelta interval) {
+    ContentFrameIntervalInfo input;
+    input.type = type;
+    input.frame_interval = interval;
+    ContentFrameIntervalInfo output;
+    const bool ok =
+        mojo::test::SerializeAndDeserialize<mojom::ContentFrameIntervalInfo>(
+            input, output);
+    if (ok) {
+      EXPECT_EQ(output.type, type);
+      EXPECT_EQ(output.frame_interval, interval);
+    }
+    return ok;
+  };
+  // Serializes the mojom struct directly, so a negative interval bypasses the
+  // sender-side CHECK, like it would from a misbehaving client.
+  auto deserializes_unchecked = [](ContentFrameIntervalType type,
+                                   base::TimeDelta interval) {
+    auto input = mojom::ContentFrameIntervalInfo::New(
+        mojo::EnumTraits<mojom::ContentFrameIntervalType,
+                         ContentFrameIntervalType>::ToMojom(type),
+        interval, /*duplicate_count=*/0u);
+    ContentFrameIntervalInfo output;
+    return mojo::test::SerializeAndDeserialize<mojom::ContentFrameIntervalInfo>(
+        input, output);
+  };
+
+  for (ContentFrameIntervalType type :
+       {ContentFrameIntervalType::kVideo,
+        ContentFrameIntervalType::kAnimatingImage,
+        ContentFrameIntervalType::kScrollBarFadeOutAnimation,
+        ContentFrameIntervalType::kCompositorScroll,
+        ContentFrameIntervalType::kSteppedCompositorAnimation}) {
+    SCOPED_TRACE(ContentFrameIntervalTypeToString(type));
+    // Zero and positive intervals are valid, however large.
+    EXPECT_TRUE(round_trips(type, base::TimeDelta()));
+    EXPECT_TRUE(round_trips(type, base::Microseconds(1)));
+    EXPECT_TRUE(round_trips(type, base::Milliseconds(100)));
+    EXPECT_TRUE(round_trips(type, base::TimeDelta::FiniteMax()));
+    EXPECT_TRUE(round_trips(type, base::TimeDelta::Max()));
+    EXPECT_TRUE(deserializes_unchecked(type, base::Milliseconds(100)));
+    // Negative intervals are rejected.
+    EXPECT_FALSE(deserializes_unchecked(type, base::Microseconds(-1)));
+    EXPECT_FALSE(deserializes_unchecked(type, base::Milliseconds(-100)));
+    EXPECT_FALSE(deserializes_unchecked(type, base::TimeDelta::FiniteMin()));
+    EXPECT_FALSE(deserializes_unchecked(type, base::TimeDelta::Min()));
+  }
+
+  // Sending a negative interval CHECKs.
+  EXPECT_CHECK_DEATH(
+      round_trips(ContentFrameIntervalType::kVideo, base::Microseconds(-1)));
+}
+
 TEST_F(CompositingStructTraitsTest, Thread) {
   Thread input{base::PlatformThreadId::ForTest(123), Thread::Type::kCompositor};
   Thread output;
@@ -1987,6 +2043,12 @@ auto AnyTimeDelta() {
   return fuzztest::Map(
       [](int64_t micros) { return base::Microseconds(micros); },
       fuzztest::Arbitrary<int64_t>());
+}
+
+auto AnyNonNegativeTimeDelta() {
+  return fuzztest::Map(
+      [](int64_t micros) { return base::Microseconds(micros); },
+      fuzztest::NonNegative<int64_t>());
 }
 
 class CompositingStructTraitsFuzzTest {
@@ -2738,7 +2800,8 @@ auto AnyContentFrameIntervalType() {
       {ContentFrameIntervalType::kVideo,
        ContentFrameIntervalType::kAnimatingImage,
        ContentFrameIntervalType::kScrollBarFadeOutAnimation,
-       ContentFrameIntervalType::kCompositorScroll});
+       ContentFrameIntervalType::kCompositorScroll,
+       ContentFrameIntervalType::kSteppedCompositorAnimation});
 }
 
 auto AnyContentFrameIntervalInfo() {
@@ -2751,7 +2814,8 @@ auto AnyContentFrameIntervalInfo() {
         info.duplicate_count = count;
         return info;
       },
-      AnyContentFrameIntervalType(), AnyTimeDelta(),
+      // Sending a negative frame interval CHECKs.
+      AnyContentFrameIntervalType(), AnyNonNegativeTimeDelta(),
       fuzztest::Arbitrary<uint32_t>());
 }
 

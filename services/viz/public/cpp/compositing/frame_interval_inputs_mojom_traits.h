@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/check.h"
 #include "base/types/expected.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "mojo/public/cpp/bindings/deserialization_error.h"
@@ -33,6 +34,9 @@ struct StructTraits<viz::mojom::ContentFrameIntervalInfoDataView,
 
   static base::TimeDelta frame_interval(
       const viz::ContentFrameIntervalInfo& info) {
+    // Read() rejects negative intervals. Also check here, so a client bug that
+    // produces one crashes in the client, where the stack shows its source.
+    CHECK(!info.frame_interval.is_negative());
     return info.frame_interval;
   }
 

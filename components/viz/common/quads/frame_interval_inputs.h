@@ -44,7 +44,10 @@ struct VIZ_COMMON_EXPORT ContentFrameIntervalInfo {
   // Type of content that has fixed content frame interval.
   ContentFrameIntervalType type = ContentFrameIntervalType::kVideo;
 
-  // Content frame interval. 0 for kCompositorScroll.
+  // Content frame interval. Must not be negative; negative values are
+  // rejected when deserializing. 0 for kCompositorScroll, and can be 0 for
+  // kVideo, e.g. while its frame rate is unknown. Can be very large, up to
+  // base::TimeDelta::Max().
   base::TimeDelta frame_interval;
 
   // Number of _additional_ content this entry refers to. Eg if there are 2

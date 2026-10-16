@@ -24,6 +24,8 @@ enum ContentFrameIntervalType {
 // components/viz/common/quads/frame_interval_inputs.h.
 struct ContentFrameIntervalInfo {
   ContentFrameIntervalType type;
+  // Must not be negative; the receiver rejects negative values. Can be zero,
+  // e.g. for kCompositorScroll, or very large, up to TimeDelta::Max().
   mojo_base.mojom.TimeDelta frame_interval;
   uint32 duplicate_count = 0;
 };

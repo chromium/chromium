@@ -57,6 +57,12 @@ StructTraits<viz::mojom::ContentFrameIntervalInfoDataView,
   if (!info.ReadFrameInterval(&out->frame_interval)) {
     return base::unexpected(DeserializationError());
   }
+  // Clients never send a negative frame interval. Zero is valid: compositor
+  // scroll always sends it, and video sends it, e.g. while its frame rate is
+  // unknown.
+  if (out->frame_interval.is_negative()) {
+    return base::unexpected(DeserializationError());
+  }
   out->duplicate_count = info.duplicate_count();
   return base::ok();
 }
