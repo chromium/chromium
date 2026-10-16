@@ -22,6 +22,7 @@
 #import "testing/platform_test.h"
 
 class ProfileIOS;
+@protocol SystemIdentity;
 
 namespace policy {
 class MachineLevelUserCloudPolicyManager;
@@ -56,10 +57,11 @@ class MockIOSRealtimeReportingClient
 };
 
 // Base class for unit tests of real-time event uploaders on iOS.
-// Provides helpers for creating managed profiles and mocking reporting clients.
+// Provides helpers for creating profiles and mocking reporting clients.
 class RealTimeEventUploaderIOSTestBase : public PlatformTest {
  public:
   static constexpr char kTestDmToken[] = "browser_dm_token";
+  static constexpr char kTestUserDmToken[] = "user_dm_token";
 
   RealTimeEventUploaderIOSTestBase();
   ~RealTimeEventUploaderIOSTestBase() override;
@@ -73,11 +75,16 @@ class RealTimeEventUploaderIOSTestBase : public PlatformTest {
                          bool set_affiliation = false,
                          const std::string& dm_token = kTestDmToken);
 
-  // Creates a testing profile with optional management and affiliation.
-  ProfileIOS* CreateProfile(const std::string& name,
-                            bool is_managed,
-                            bool is_affiliated,
-                            bool create_reporting_client);
+  // Creates the personal (unmanaged) testing profile.
+  ProfileIOS* CreatePersonalProfile(bool create_reporting_client);
+
+  // Creates a managed testing profile with optional affiliation. The personal
+  // profile must have been created first via `CreatePersonalProfile()`.
+  ProfileIOS* CreateManagedProfile(
+      id<SystemIdentity> identity,
+      bool is_affiliated,
+      bool create_reporting_client,
+      const std::string& user_dm_token = kTestUserDmToken);
 
   // Returns the mock reporting client for the given profile.
   MockIOSRealtimeReportingClient* GetMockClient(ProfileIOS* profile);

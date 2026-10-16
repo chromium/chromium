@@ -17,15 +17,11 @@
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace {
-
-const char kProfileName[] = "Test";
-
-}
-
 EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
     const base::FilePath& data_dir) {
-  const base::FilePath state_directory_path = data_dir.Append(kProfileName);
+  // "Test" matches the default profile subdirectory used by
+  // `TestProfileIOS::Builder::Build(data_dir)`.
+  const base::FilePath state_directory_path = data_dir.Append("Test");
   policy_provider_.SetDefaultReturns(
       true /* is_initialization_complete_return */,
       true /* is_first_policy_load_complete_return */);
@@ -64,7 +60,6 @@ EnterprisePolicyTestHelper::EnterprisePolicyTestHelper(
           /*async=*/false);
 
   TestProfileIOS::Builder builder;
-  builder.SetName(kProfileName);
   builder.SetPrefService(std::move(pref_service));
   profile_ = std::move(builder).Build(data_dir);
 }

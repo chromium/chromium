@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "services/network/test/test_network_connection_tracker.h"
 
 namespace enterprise_reporting {
@@ -37,6 +38,22 @@ namespace {
 constexpr char kTestAffiliationId[] = "test_affiliation_id";
 constexpr char kTestClientId[] = "browser_client_id";
 constexpr char kTestDomain[] = "example.com";
+
+TestProfileIOS::Builder CreateProfileBuilder(bool create_reporting_client) {
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      enterprise_connectors::IOSRealtimeReportingClientFactory::GetInstance(),
+      base::BindOnce(
+          [](bool create_client,
+             ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+            return create_client
+                       ? std::make_unique<MockIOSRealtimeReportingClient>(
+                             profile)
+                       : nullptr;
+          },
+          create_reporting_client));
+  return builder;
+}
 
 }  // namespace
 
@@ -124,55 +141,58 @@ void RealTimeEventUploaderIOSTestBase::SetBrowserManaged(
   }
 }
 
-ProfileIOS* RealTimeEventUploaderIOSTestBase::CreateProfile(
-    const std::string& name,
-    bool is_managed,
-    bool is_affiliated,
+ProfileIOS* RealTimeEventUploaderIOSTestBase::CreatePersonalProfile(
     bool create_reporting_client) {
-  TestProfileIOS::Builder builder;
-  builder.SetName(name);
+  CHECK(profile_manager_.GetLoadedProfiles().empty());
+  TestProfileIOS::Builder builder =
+      CreateProfileBuilder(create_reporting_client);
 
-  if (create_reporting_client) {
-    builder.AddTestingFactory(
-        enterprise_connectors::IOSRealtimeReportingClientFactory::GetInstance(),
-        base::BindOnce(
-            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<MockIOSRealtimeReportingClient>(profile);
-            }));
+  builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
+      std::make_unique<policy::MockPolicyService>(), &schema_registry_,
+      /*policy_store=*/nullptr));
+
+  return profile_manager_.AddProfileWithBuilder(std::move(builder));
+}
+
+ProfileIOS* RealTimeEventUploaderIOSTestBase::CreateManagedProfile(
+    id<SystemIdentity> identity,
+    bool is_affiliated,
+    bool create_reporting_client,
+    const std::string& user_dm_token) {
+  CHECK(!profile_manager_.GetLoadedProfiles().empty());
+
+  TestProfileIOS::Builder builder =
+      CreateProfileBuilder(create_reporting_client);
+
+  auto user_policy_data = std::make_unique<enterprise_management::PolicyData>();
+  user_policy_data->set_request_token(user_dm_token);
+  user_policy_data->set_policy_type(
+      policy::dm_protocol::GetChromeUserPolicyType());
+  user_policy_data->set_state(enterprise_management::PolicyData::ACTIVE);
+  if (is_affiliated) {
+    user_policy_data->add_user_affiliation_ids(kTestAffiliationId);
   }
-  policy::MockUserCloudPolicyStore* policy_store = nullptr;
-  if (is_managed) {
-    auto user_policy_data =
-        std::make_unique<enterprise_management::PolicyData>();
-    user_policy_data->set_request_token("user_dm_token_" + name);
-    user_policy_data->set_policy_type(
-        policy::dm_protocol::GetChromeUserPolicyType());
-    user_policy_data->set_state(enterprise_management::PolicyData::ACTIVE);
-    if (is_affiliated) {
-      user_policy_data->add_user_affiliation_ids(kTestAffiliationId);
-    }
 
-    auto user_store = std::make_unique<policy::MockUserCloudPolicyStore>(
-        policy::dm_protocol::GetChromeUserPolicyType());
-    user_store->set_policy_data_for_testing(std::move(user_policy_data));
-    policy_store = user_store.get();
+  auto user_store = std::make_unique<policy::MockUserCloudPolicyStore>(
+      policy::dm_protocol::GetChromeUserPolicyType());
+  user_store->set_policy_data_for_testing(std::move(user_policy_data));
+  policy::MockUserCloudPolicyStore* policy_store = user_store.get();
 
-    auto cloud_policy_manager =
-        std::make_unique<policy::UserCloudPolicyManager>(
-            std::move(user_store), /*extension_install_store=*/nullptr,
-            base::FilePath(),
-            /*cloud_external_data_manager=*/nullptr,
-            base::SingleThreadTaskRunner::GetCurrentDefault(),
-            network::TestNetworkConnectionTracker::CreateGetter());
+  auto cloud_policy_manager = std::make_unique<policy::UserCloudPolicyManager>(
+      std::move(user_store), /*extension_install_store=*/nullptr,
+      base::FilePath(),
+      /*cloud_external_data_manager=*/nullptr,
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      network::TestNetworkConnectionTracker::CreateGetter());
 
-    builder.SetUserCloudPolicyManager(std::move(cloud_policy_manager));
-  }
+  builder.SetUserCloudPolicyManager(std::move(cloud_policy_manager));
 
   builder.SetPolicyConnector(std::make_unique<ProfilePolicyConnectorMock>(
       std::make_unique<policy::MockPolicyService>(), &schema_registry_,
       policy_store));
 
-  return profile_manager_.AddProfileWithBuilder(std::move(builder));
+  return AddManagedProfileWithBuilder(profile_manager_, identity,
+                                      std::move(builder));
 }
 
 MockIOSRealtimeReportingClient* RealTimeEventUploaderIOSTestBase::GetMockClient(

@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/policy/model/reporting/saas_usage/saas_usage_report_scheduler_delegate_ios.h"
 
 #import <memory>
-#import <string>
 
 #import "base/functional/bind.h"
 #import "base/test/mock_callback.h"
@@ -14,6 +13,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -35,9 +36,21 @@ class SaasUsageReportSchedulerDelegateIOSTest : public PlatformTest {
   SaasUsageReportSchedulerDelegateIOSTest() = default;
   ~SaasUsageReportSchedulerDelegateIOSTest() override = default;
 
-  ProfileIOS* CreateProfile(const std::string& name, bool has_client) {
+  ProfileIOS* CreatePersonalProfile(bool has_client) {
+    CHECK(profile_manager_.GetLoadedProfiles().empty());
+    return profile_manager_.AddProfileWithBuilder(
+        CreateProfileBuilder(has_client));
+  }
+
+  ProfileIOS* CreateManagedProfile(bool has_client) {
+    return AddManagedProfileWithBuilder(
+        profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
+        CreateProfileBuilder(has_client));
+  }
+
+ protected:
+  TestProfileIOS::Builder CreateProfileBuilder(bool has_client) {
     TestProfileIOS::Builder builder;
-    builder.SetName(name);
     if (has_client) {
       builder.AddTestingFactory(
           enterprise_connectors::IOSRealtimeReportingClientFactory::
@@ -50,10 +63,9 @@ class SaasUsageReportSchedulerDelegateIOSTest : public PlatformTest {
               GetInstance(),
           base::BindRepeating(&CreateNullService));
     }
-    return profile_manager_.AddProfileWithBuilder(std::move(builder));
+    return builder;
   }
 
- protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
@@ -66,21 +78,21 @@ TEST_F(SaasUsageReportSchedulerDelegateIOSTest, IsReady_NoProfiles) {
 
 TEST_F(SaasUsageReportSchedulerDelegateIOSTest, IsReady_ProfileWithoutClient) {
   SaasUsageReportSchedulerDelegateIOS delegate;
-  CreateProfile("p1", /*has_client=*/false);
+  CreatePersonalProfile(/*has_client=*/false);
   EXPECT_FALSE(delegate.IsReady());
 }
 
 TEST_F(SaasUsageReportSchedulerDelegateIOSTest, IsReady_ProfileWithClient) {
   SaasUsageReportSchedulerDelegateIOS delegate;
-  CreateProfile("p1", /*has_client=*/true);
+  CreatePersonalProfile(/*has_client=*/true);
   EXPECT_TRUE(delegate.IsReady());
 }
 
 TEST_F(SaasUsageReportSchedulerDelegateIOSTest, IsReady_MixedProfiles) {
   SaasUsageReportSchedulerDelegateIOS delegate;
-  CreateProfile("p1", /*has_client=*/false);
+  CreatePersonalProfile(/*has_client=*/false);
   EXPECT_FALSE(delegate.IsReady());
-  CreateProfile("p2", /*has_client=*/true);
+  CreateManagedProfile(/*has_client=*/true);
   EXPECT_TRUE(delegate.IsReady());
 }
 
@@ -91,7 +103,7 @@ TEST_F(SaasUsageReportSchedulerDelegateIOSTest,
   delegate.SetReadyStateChangedCallback(callback.Get());
 
   EXPECT_CALL(callback, Run()).Times(1);
-  CreateProfile("p1", /*has_client=*/true);
+  CreatePersonalProfile(/*has_client=*/true);
 }
 
 TEST_F(SaasUsageReportSchedulerDelegateIOSTest,
@@ -101,7 +113,7 @@ TEST_F(SaasUsageReportSchedulerDelegateIOSTest,
   delegate.SetReadyStateChangedCallback(callback.Get());
 
   EXPECT_CALL(callback, Run()).Times(0);
-  CreateProfile("p1", /*has_client=*/false);
+  CreatePersonalProfile(/*has_client=*/false);
 }
 
 TEST_F(SaasUsageReportSchedulerDelegateIOSTest,
@@ -112,34 +124,34 @@ TEST_F(SaasUsageReportSchedulerDelegateIOSTest,
 
   // Callback should be called when the first profile with a client is added.
   EXPECT_CALL(callback, Run()).Times(1);
-  ProfileIOS* p1 = CreateProfile("p1", /*has_client=*/true);
+  ProfileIOS* personal_profile = CreatePersonalProfile(/*has_client=*/true);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
   // Callback should not be called again if the delegate is already ready.
   EXPECT_CALL(callback, Run()).Times(0);
-  ProfileIOS* p2 = CreateProfile("p2", /*has_client=*/true);
+  ProfileIOS* managed_profile = CreateManagedProfile(/*has_client=*/true);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
   // Callback should not be called when there are still profiles with client.
   EXPECT_CALL(callback, Run()).Times(0);
-  delegate.OnProfileUnloaded(&profile_manager_, p2);
+  delegate.OnProfileUnloaded(&profile_manager_, managed_profile);
   testing::Mock::VerifyAndClearExpectations(&callback);
 
   // Callback should be called when the last profile with a client is removed.
   EXPECT_CALL(callback, Run()).Times(1);
-  delegate.OnProfileUnloaded(&profile_manager_, p1);
+  delegate.OnProfileUnloaded(&profile_manager_, personal_profile);
   testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
 TEST_F(SaasUsageReportSchedulerDelegateIOSTest, PreExistingProfileWithClient) {
-  CreateProfile("p1", /*has_client=*/true);
+  CreatePersonalProfile(/*has_client=*/true);
   SaasUsageReportSchedulerDelegateIOS delegate;
   EXPECT_TRUE(delegate.IsReady());
 }
 
 TEST_F(SaasUsageReportSchedulerDelegateIOSTest,
        PreExistingProfileWithoutClient) {
-  CreateProfile("p1", /*has_client=*/false);
+  CreatePersonalProfile(/*has_client=*/false);
   SaasUsageReportSchedulerDelegateIOS delegate;
   EXPECT_FALSE(delegate.IsReady());
 }
