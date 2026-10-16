@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -131,7 +132,6 @@ class RemoteModelExecutionSessionImpl
   OptimizationGuideModelExecutionStreamingCallback callback_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
-  // TODO(crbug.com/553134125): Add debug logging with the logger.
   const raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   ConnectionState connection_state_ = ConnectionState::kDisconnected;
@@ -140,7 +140,7 @@ class RemoteModelExecutionSessionImpl
   base::RetainingOneShotTimer idle_timer_;
   std::string access_token_;
 
-  std::vector<std::vector<uint8_t>> pending_requests_;
+  base::circular_deque<std::vector<uint8_t>> pending_requests_;
 
   std::unique_ptr<streaming_client::StreamingWebSocketClient> client_;
 
