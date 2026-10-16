@@ -59,9 +59,14 @@ class IndigoToolbarTest : public ChromeViewsTestBase {
     widget_->Init(std::move(params));
     widget_->SetBounds(gfx::Rect(0, 0, 800, 600));
 
-    overlay_view_ =
-        widget_->GetContentsView()->AddChildView(CreateIndigoOverlayView());
-    overlay_view_->SetBoundsRect(gfx::Rect(0, 0, 800, 600));
+    // For TYPE_WINDOW widgets, GetContentsView() returns the NonClientView,
+    // whose Layout() does not propagate to arbitrary children. Host the
+    // overlay inside the ClientView's contents view instead so that the
+    // widget's root layout (e.g. RunScheduledLayout) reaches it.
+    auto* contents_view =
+        widget_->SetClientContentsView(std::make_unique<views::View>());
+    contents_view->SetUseDefaultFillLayout(true);
+    overlay_view_ = contents_view->AddChildView(CreateIndigoOverlayView());
 
     widget_->Show();
 
@@ -131,7 +136,7 @@ class IndigoToolbarTest : public ChromeViewsTestBase {
         }
       }
     }
-    overlay_view()->DeprecatedLayoutImmediately();
+    views::test::RunScheduledLayout(overlay_view());
   }
 
   void ExpandAndWait() {
@@ -201,7 +206,7 @@ TEST_F(IndigoToolbarTest, ExpandCollapseInteractions) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
   EXPECT_CALL(delegate, OnClose(toolbar.get())).Times(0);
 
   views::View* toolbar_view = GetToolbarView();
@@ -258,7 +263,7 @@ TEST_F(IndigoToolbarTest, AutoCompactsAfterTimer) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -292,7 +297,7 @@ TEST_F(IndigoToolbarTest, CompactToolbarExpandsOnHover) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -326,7 +331,7 @@ TEST_F(IndigoToolbarTest, CompactToolbarExpandsOnKeyboardFocus) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -368,7 +373,7 @@ TEST_F(IndigoToolbarTest, HoverCloseButtonInCompactDoesNotExpand) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -400,7 +405,7 @@ TEST_F(IndigoToolbarTest, HoverExpandThenHoverCloseKeepsExpanded) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -452,7 +457,7 @@ TEST_F(IndigoToolbarTest, ToolbarBounds) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   // Show with empty rect (production initial state)
   toolbar->Show(overlay_view());
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -462,7 +467,7 @@ TEST_F(IndigoToolbarTest, ToolbarBounds) {
 
   // Now simulate compositor update with real bounds
   toolbar->UpdateTrackedPosition(gfx::Rect(100, 100, 400, 300));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   // Should now be visible and moved away from fallback position
   EXPECT_TRUE(toolbar_view->GetVisible());
@@ -473,7 +478,7 @@ TEST_F(IndigoToolbarTest, ToolbarBounds) {
 
   // Simulate compositor update with empty bounds (image out of view)
   toolbar->UpdateTrackedPosition(gfx::Rect());
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   // Should be hidden again
   EXPECT_FALSE(toolbar_view->GetVisible());
@@ -549,7 +554,7 @@ TEST_F(IndigoToolbarTest, OptionsAutoClose_Regenerate) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -568,7 +573,7 @@ TEST_F(IndigoToolbarTest, OptionsAutoClose_ReplacePhoto) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
@@ -587,7 +592,7 @@ TEST_F(IndigoToolbarTest, OptionsAutoClose_DeletePhoto) {
   auto toolbar = std::make_unique<IndigoToolbar>(&delegate);
   toolbar->Show(overlay_view());
   toolbar->UpdateTrackedPosition(gfx::Rect(10, 10, 100, 100));
-  overlay_view()->DeprecatedLayoutImmediately();
+  views::test::RunScheduledLayout(overlay_view());
 
   views::View* toolbar_view = GetToolbarView();
   ASSERT_NE(toolbar_view, nullptr);
