@@ -213,12 +213,15 @@ int main(int argc, char** argv) {
   ScopedSymbolPath scoped_symbol_path_user(/*is_system=*/false);
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Assume all test bots have the {ISOLATED_OUTDIR} environment variable set.
+  // Assume all test bots have the {ISOLATED_OUTDIR} environment variable set or
+  // run in bot mode (`--test-launcher-bot-mode` or `CHROME_HEADLESS`).
   // Otherwise, don't run branded updater tests on a developer's system because
   // doing so breaks the updater on the system.
   using std::operator""sv;
   if constexpr ("ChromiumUpdater"sv.compare(PRODUCT_FULLNAME_STRING)) {
-    if (!getenv("ISOLATED_OUTDIR")) {
+    if (!getenv("ISOLATED_OUTDIR") && !getenv("CHROME_HEADLESS") &&
+        !base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kTestLauncherBotMode)) {
       LOG(ERROR)
           << "Running branded updater tests breaks the updater for "
              "the branded browser. This is unavoidable in the current "
