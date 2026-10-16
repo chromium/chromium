@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 enum class AssistantAimEntrypoint;
+enum class AssistantAimHeaderAction;
 enum class AssistantContainerDetent : NSInteger;
 
 // Metrics recorder for user activity and session lifecycle during an Assistant
@@ -27,6 +28,9 @@ enum class AssistantContainerDetent : NSInteger;
 // Records whether the snackbar to undo closing the session resolved with
 // `didUndo`
 - (void)recordClosedSnackbarResolvedWithUndo:(BOOL)didUndo;
+
+// Records a header button or overflow menu `action`.
+- (void)recordHeaderAction:(AssistantAimHeaderAction)action;
 
 // Finalizes and flushes all session-level metrics when the session ends.
 - (void)recordSessionEnded;

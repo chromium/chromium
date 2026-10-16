@@ -98,6 +98,16 @@ AssistantAimStateTransition AssistantAimStateTransitionFromDetent(
   }
 }
 
+- (void)recordHeaderAction:(AssistantAimHeaderAction)action {
+  if (!_sessionActive) {
+    return;
+  }
+  if (action != AssistantAimHeaderAction::kCloseButtonTapped) {
+    _hasPositiveEngagement = YES;
+  }
+  base::UmaHistogramEnumeration(kAssistantAimHeaderActionHistogram, action);
+}
+
 - (void)recordSessionEnded {
   if (!_sessionActive) {
     return;

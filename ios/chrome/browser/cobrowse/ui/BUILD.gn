@@ -21,6 +21,8 @@ source_set("ui") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/cobrowse/shared/metrics",
+    "//ios/chrome/browser/cobrowse/shared/metrics:metrics_constants",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
@@ -57,11 +59,14 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/cobrowse/shared/metrics",
+    "//ios/chrome/browser/cobrowse/shared/metrics:metrics_constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]

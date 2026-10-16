@@ -24,6 +24,8 @@ inline constexpr std::string_view kAssistantAimTimeSpentAbandonedHistogram =
     "IOS.SicBottomSheet.TimeSpent.Abandoned";
 inline constexpr std::string_view kAssistantAimImmediateDismissalHistogram =
     "IOS.SicBottomSheet.ImmediateDismissal";
+inline constexpr std::string_view kAssistantAimHeaderActionHistogram =
+    "IOS.SicBottomSheet.HeaderAction";
 
 // Entrypoints for starting an Assistant AIM bottom sheet session.
 enum class AssistantAimEntrypoint {
@@ -51,6 +53,16 @@ enum class AssistantAimStateTransition {
   kRestoredWithUndo = 4,
   kDismissedOther = 5,
   kMaxValue = kDismissedOther,
+};
+
+// Actions available in the Assistant AIM bottom sheet header and overflow menu.
+enum class AssistantAimHeaderAction {
+  kCloseButtonTapped = 0,
+  kNewThreadTapped = 1,
+  kThreadHistoryTapped = 2,
+  kMyActivityTapped = 3,
+  kHelpTapped = 4,
+  kMaxValue = kHelpTapped,
 };
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_SHARED_METRICS_ASSISTANT_AIM_METRICS_CONSTANTS_H_
