@@ -362,6 +362,36 @@
       <message name="IDS_IOS_ACTOR_WORKLOG_CHIP_WAITING" desc="Worklog chip label indicating the actor is waiting. [iOS only]">
         Waiting
       </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_ADDRESS_TITLE" desc="Title of worklog card prompting the user to select an address. [iOS only]">
+        Select address
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_ALLOW_BUTTON" desc="Primary button label allowing Gemini to fill the selected form suggestion. [iOS only]">
+        Allow
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CONTACT_TITLE" desc="Title of worklog card prompting the user to select personal info. [iOS only]">
+        Select personal info
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_MANUAL_FILL_BUTTON" desc="Button label allowing the user to manually sign in instead of letting Gemini autofill the form. [iOS only]">
+        Manual sign in
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_SUBTITLE" desc="Subtitle of worklog card explaining that Gemini can use Google Password Manager to sign in. [iOS only]">
+        Gemini can use Google Password Manager to sign in for you
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_TITLE" desc="Title of worklog card prompting the user to sign in. [iOS only]">
+        Sign in
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_TITLE_WITH_SITE" desc="Title of worklog card prompting the user to sign in to a specific site. [iOS only]">
+        Sign in to <ph name="SITE_DOMAIN">$1<ex>camera.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_MANUAL_FILL_BUTTON" desc="Secondary button label allowing the user to manually enter form info. [iOS only]">
+        Manually enter
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_PAYMENT_SUBTITLE" desc="Subtitle of worklog card explaining that Gemini can ask Google Wallet to fill payment info. [iOS only]">
+        To continue the task, Gemini can ask Google Wallet to fill out your credit card info
+      </message>
+      <message name="IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_PAYMENT_TITLE" desc="Title of worklog card prompting the user to fill payment info. [iOS only]">
+        Filling payment info
+      </message>
       <message name="IDS_IOS_ADDRESSES_NOT_ENCRYPTED_DIALOG_TEXT" desc="Text of a dialog shown to users when they turn on the ability to use and save addresses in their Google Account. This is shown to users who encrypt their data with their own passphrase in order to explain that addresses they will save in the future will not be encrypted. [iOS only]">
         Addresses aren't encrypted with your passphrase. This lets you use them in other Google services.
       </message>

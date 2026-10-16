@@ -13,10 +13,13 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/ios/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
@@ -27,6 +30,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
+    "//url",
   ]
 }
 
@@ -41,10 +45,13 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/actor/core",
+    "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
+    "//components/password_manager/core/browser/actor_login:common",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/chrome/browser/intelligence/actor/ui",
     "//ios/chrome/browser/intelligence/actor/util:test_support",
     "//ios/chrome/browser/intelligence/features",

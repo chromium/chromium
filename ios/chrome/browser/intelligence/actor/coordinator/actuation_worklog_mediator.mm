@@ -8,8 +8,13 @@
 
 #import "base/check.h"
 #import "base/memory/raw_ptr.h"
+#import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_form_suggestion.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_consumer.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -21,8 +26,21 @@ namespace {
 // Icon size for SF symbols in chips and labeled items.
 constexpr CGFloat kIconSize = 16.0;
 
-// Identifier of the action resuming the task from a user intervention card.
-constexpr NSInteger kUserInterventionContinueActionIdentifier = 0;
+// Icon size for SF symbols in accessory items.
+constexpr CGFloat kAccessoryIconSize = 24.0;
+
+// Masked password field to be displayed in credential selection card.
+NSString* const kMaskedPassword = @"••••••••";
+
+// Identifiers for known intervention actions.
+enum class InterventionActionIdentifier : NSInteger {
+  // Continue the current task.
+  kContinue,
+  // "Allow this suggestion" action.
+  kAllow,
+  // "Manually enter" or "Manual sign in" action.
+  kManuallyEnter,
+};
 
 // Generates an `ActuationWorklogChip` based on the executed tool type. Returns
 // `nil` for tool types that don't display a chip.
@@ -76,6 +94,122 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   }
 }
 
+// Creates an `ActuationWorklogItem` card for a non-federated credential
+// suggestion.
+ActuationWorklogItem* CardItemForNonFederatedCredential(
+    FormSuggestion* suggestion) {
+  NSString* username = suggestion.value;
+  NSString* site = suggestion.displayDescription;
+  UIImage* accessoryIcon = suggestion.icon;
+  if (!accessoryIcon) {
+    // TODO(crbug.com/571139088): Use favicon loader to update favicon.
+    accessoryIcon =
+        SymbolWithPointSize(SymbolPersonCropCircle, kAccessoryIconSize);
+  }
+
+  NSString* cardTitle =
+      site.length > 0
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_TITLE_WITH_SITE,
+                base::SysNSStringToUTF16(site))
+          : l10n_util::GetNSString(
+                IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_TITLE);
+  NSString* cardSubtitle = l10n_util::GetNSString(
+      IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_SUBTITLE);
+
+  ActuationWorklogAccessoryItem* credentialAccessory =
+      [[ActuationWorklogAccessoryItem alloc] initWithIcon:accessoryIcon
+                                                    title:username ?: @""
+                                                 subtitle:nil
+                                               detailText:kMaskedPassword
+                                               hasChevron:NO];
+
+  return [ActuationWorklogItem
+      cardItemWithTitle:cardTitle
+               subtitle:cardSubtitle
+                   icon:SymbolWithPointSize(SymbolPassword, kIconSize)
+                 active:YES
+          accessoryItem:credentialAccessory];
+}
+
+// Creates an `ActuationWorklogItem` card for an address suggestion.
+ActuationWorklogItem* CardItemForAddress(FormSuggestion* suggestion) {
+  NSString* title = suggestion.value;
+  NSString* description = suggestion.displayDescription;
+
+  UIImage* accessoryIcon = nil;
+  switch (suggestion.suggestionIconType) {
+    case SuggestionIconType::kAccountHome:
+      accessoryIcon = SymbolWithPointSize(SymbolHome, kAccessoryIconSize);
+      break;
+    case SuggestionIconType::kAccountWork:
+      accessoryIcon = SymbolWithPointSize(SymbolWork, kAccessoryIconSize);
+      break;
+    case SuggestionIconType::kContact:
+      accessoryIcon =
+          SymbolWithPointSize(SymbolPersonCropCircle, kAccessoryIconSize);
+      break;
+    case SuggestionIconType::kNone:
+      accessoryIcon = SymbolWithPointSize(SymbolLocation, kAccessoryIconSize);
+      break;
+    case SuggestionIconType::kUndoAutofill:
+    case SuggestionIconType::kBackupPassword:
+      NOTREACHED(base::NotFatalUntil::M165);
+      break;
+  }
+
+  ActuationWorklogAccessoryItem* addressAccessory =
+      [[ActuationWorklogAccessoryItem alloc]
+          initWithIcon:accessoryIcon
+                 title:title ?: @""
+              subtitle:nil
+            detailText:description.length > 0 ? description : nil
+            hasChevron:NO];
+
+  int cardTitleId =
+      (suggestion.suggestionIconType == SuggestionIconType::kContact)
+          ? IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CONTACT_TITLE
+          : IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_ADDRESS_TITLE;
+
+  return [ActuationWorklogItem
+      cardItemWithTitle:l10n_util::GetNSString(cardTitleId)
+               subtitle:nil
+                   icon:nil
+                 active:YES
+          accessoryItem:addressAccessory];
+}
+
+// Creates an `ActuationWorklogItem` card for a credit card suggestion.
+ActuationWorklogItem* CardItemForCreditCard(FormSuggestion* suggestion) {
+  NSString* title = suggestion.value;
+  NSString* description = suggestion.displayDescription;
+
+  UIImage* accessoryIcon = suggestion.icon;
+  if (!accessoryIcon) {
+    accessoryIcon = SymbolWithPointSize(SymbolCreditCard, kAccessoryIconSize);
+  }
+
+  NSString* cardTitle =
+      l10n_util::GetNSString(IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_PAYMENT_TITLE);
+  NSString* cardSubtitle = l10n_util::GetNSString(
+      IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_PAYMENT_SUBTITLE);
+
+  ActuationWorklogAccessoryItem* paymentAccessory =
+      [[ActuationWorklogAccessoryItem alloc]
+          initWithIcon:accessoryIcon
+                 title:title ?: @""
+              subtitle:nil
+            detailText:description.length > 0 ? description : nil
+            hasChevron:NO];
+
+  return [ActuationWorklogItem
+      cardItemWithTitle:cardTitle
+               subtitle:cardSubtitle
+                   icon:SymbolWithPointSize(SymbolCreditCard, kIconSize)
+                 active:YES
+          accessoryItem:paymentAccessory];
+}
+
 }  // namespace
 
 @implementation ActuationWorklogMediator {
@@ -90,9 +224,10 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
   NSString* _taskTitle;
   // Current state of the observed task.
   actor::ActorTaskState _taskState;
-  // Pending completion block for the active intervention. Only called when a
-  // user interacts with the UI associated with it.
-  void (^_pendingInterventionCompletion)(void);
+  // Pending completion block for the intervention action with the given
+  // identifier. Only called when a user interacts with the UI associated with
+  // it.
+  void (^_pendingInterventionCompletion)(InterventionActionIdentifier);
 }
 
 - (instancetype)initWithActorService:(actor::ActorService*)actorService {
@@ -153,17 +288,6 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 }
 
 #pragma mark - Private
-
-// Resolves the pending intervention by calling its completion handler and
-// clearing the UI. Should only be called upon explicit user interaction.
-- (void)resolvePendingIntervention {
-  if (_pendingInterventionCompletion) {
-    void (^completion)(void) = _pendingInterventionCompletion;
-    _pendingInterventionCompletion = nil;
-    completion();
-  }
-  [_consumer setIntervention:nil];
-}
 
 // Dismisses the active intervention card and discards the pending completion
 // handler without calling it (task cancellation, replacement, or disconnect).
@@ -298,8 +422,66 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
         completionHandler:
             (void (^)(ActorFormSuggestion* selectedSuggestion,
                       BOOL shouldStorePermission))completionHandler {
-  CHECK(_currentTaskId == taskID);
-  completionHandler(suggestions.firstObject, NO);
+  CHECK(_currentTaskId == taskID, base::NotFatalUntil::M165);
+  CHECK(!_pendingInterventionCompletion, base::NotFatalUntil::M165);
+
+  ActorFormSuggestion* firstSuggestion = suggestions.firstObject;
+  CHECK(firstSuggestion.formSuggestion, base::NotFatalUntil::M165);
+
+  ActuationWorklogItem* cardItem = nil;
+  NSString* manuallyEnterButtonText;
+  switch (firstSuggestion.type) {
+    case autofill::SuggestionType::kPasswordEntry:
+      cardItem =
+          CardItemForNonFederatedCredential(firstSuggestion.formSuggestion);
+      manuallyEnterButtonText = l10n_util::GetNSString(
+          IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_CREDENTIAL_MANUAL_FILL_BUTTON);
+      break;
+    case autofill::SuggestionType::kAddressEntry:
+      cardItem = CardItemForAddress(firstSuggestion.formSuggestion);
+      manuallyEnterButtonText = l10n_util::GetNSString(
+          IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_MANUAL_FILL_BUTTON);
+      break;
+    case autofill::SuggestionType::kCreditCardEntry:
+      cardItem = CardItemForCreditCard(firstSuggestion.formSuggestion);
+      manuallyEnterButtonText = l10n_util::GetNSString(
+          IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_MANUAL_FILL_BUTTON);
+      break;
+    default:
+      NOTREACHED(base::NotFatalUntil::M165);
+      break;
+  }
+
+  [_consumer updateWorklogWithItem:cardItem chip:nil animated:YES];
+  if (completionHandler) {
+    _pendingInterventionCompletion =
+        ^(InterventionActionIdentifier actionIdentifier) {
+          // TODO(crbug.com/571139088): Implement credential picker modal and
+          // execute with the chose suggestion.
+          ActorFormSuggestion* selected =
+              (actionIdentifier == InterventionActionIdentifier::kAllow)
+                  ? firstSuggestion
+                  : nil;
+          completionHandler(selected, NO);
+        };
+  }
+
+  // TODO(crbug.com/571139088): Prefix the secondary button with the SF symbol
+  // "hand.tap".
+  ActuationInterventionAction* manualAction =
+      [[ActuationInterventionAction alloc]
+          initWithIdentifier:static_cast<NSInteger>(
+                                 InterventionActionIdentifier::kManuallyEnter)
+                       title:manuallyEnterButtonText];
+  ActuationInterventionAction* allowAction = [[ActuationInterventionAction
+      alloc]
+      initWithIdentifier:static_cast<NSInteger>(
+                             InterventionActionIdentifier::kAllow)
+                   title:l10n_util::GetNSString(
+                             IDS_IOS_ACTOR_WORKLOG_SUGGESTIONS_ALLOW_BUTTON)];
+  ActuationInterventionData* data = [ActuationInterventionData
+      rowItemWithActions:@[ manualAction, allowAction ]];
+  [_consumer setIntervention:data];
 }
 
 - (void)actorTask:(actor::ActorTaskId)taskID
@@ -307,14 +489,20 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
                             subtitle:(NSString*)subtitle
                           buttonText:(NSString*)buttonText
                    completionHandler:(void (^)(void))completionHandler {
-  CHECK(_currentTaskId == taskID);
+  CHECK(_currentTaskId == taskID, base::NotFatalUntil::M165);
   [self discardPendingIntervention];
   if (completionHandler) {
-    _pendingInterventionCompletion = [completionHandler copy];
+    _pendingInterventionCompletion =
+        ^(InterventionActionIdentifier actionIdentifier) {
+          if (actionIdentifier == InterventionActionIdentifier::kContinue) {
+            completionHandler();
+          }
+        };
   }
 
   ActuationInterventionAction* action = [[ActuationInterventionAction alloc]
-      initWithIdentifier:kUserInterventionContinueActionIdentifier
+      initWithIdentifier:static_cast<NSInteger>(
+                             InterventionActionIdentifier::kContinue)
                    title:buttonText];
   ActuationInterventionData* data =
       [ActuationInterventionData cardItemWithTitle:title
@@ -334,10 +522,13 @@ ActuationWorklogChip* ChipForToolType(std::optional<actor::ToolType> toolType) {
 }
 
 - (void)didTriggerInterventionAction:(ActuationInterventionAction*)action {
-  // TODO(crbug.com/573145076): Map `action.identifier` to its matching
-  // completion handler and parameters once interventions offer multiple
-  // actions. Every action currently resumes the task.
-  [self resolvePendingIntervention];
+  if (_pendingInterventionCompletion) {
+    void (^completion)(InterventionActionIdentifier) =
+        _pendingInterventionCompletion;
+    _pendingInterventionCompletion = nil;
+    completion(static_cast<InterventionActionIdentifier>(action.identifier));
+  }
+  [_consumer setIntervention:nil];
 }
 
 @end
