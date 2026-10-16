@@ -987,6 +987,7 @@ source_set("browser_tests") {
     "host/glic_api_zss_browsertest.cc",
     "host/glic_chrome_tools_browsertest.cc",
     "host/glic_drag_and_drop_browsertest.cc",
+    "host/glic_file_picker_browsertest.cc",
     "host/glic_internals_browsertest.cc",
     "host/glic_no_webview_contents_manager_browsertest.cc",
     "host/glic_overlay_browsertest.cc",
@@ -1057,6 +1058,7 @@ source_set("browser_tests") {
     "//pdf:buildflags",
     "//third_party/blink/public/common:headers",
     "//ui/gfx/geometry",
+    "//ui/shell_dialogs",
   ]
 
   if (!is_android) {
