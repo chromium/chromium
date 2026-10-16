@@ -10,6 +10,9 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -202,7 +205,7 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
           FROM_HERE, auto_dismiss_duration,
           base::BindOnce(
               &ContextualTasksEphemeralButtonController::
-                  DismissEphemeralButtonForTab,
+                  OnAutoDismissTimerFired,
               base::Unretained(this), tab_id));
     }
   }
@@ -348,6 +351,16 @@ ContextualTasksEphemeralButtonController::GetAutoDismissDuration() const {
   const int minutes =
       contextual_tasks::GetContextualTasksEphemeralButtonAutoDismissTimeMinutes();
   return minutes > 0 ? base::Minutes(minutes) : base::TimeDelta();
+}
+
+void ContextualTasksEphemeralButtonController::OnAutoDismissTimerFired(
+    SessionID tab_id) {
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.EphemeralToolbarButton.AutoDismissed"));
+  base::UmaHistogramSparse(
+      "ContextualTasks.EphemeralToolbarButton.AutoDismissed",
+      GetAutoDismissDuration().InMinutes());
+  DismissEphemeralButtonForTab(tab_id);
 }
 
 void ContextualTasksEphemeralButtonController::DismissEphemeralButtonForTab(

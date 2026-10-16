@@ -317,6 +317,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.EphemeralToolbarButton.AutoDismissed"
+    units="minutes" expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the ephemeral (unpinned) contextual tasks toolbar button is
+    automatically dismissed after its auto-dismiss timeout expires. Records the
+    auto-dismiss timeout duration in minutes.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.EphemeralToolbarButton.Shown" enum="Boolean"
     expires_after="2027-03-07">
   <owner>dianaou@chromium.org</owner>

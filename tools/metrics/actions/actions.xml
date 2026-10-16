@@ -10282,6 +10282,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.EphemeralToolbarButton.AutoDismissed">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the ephemeral contextual tasks toolbar button is automatically
+    dismissed after its auto-dismiss timeout expires.
+  </description>
+</action>
+
 <action name="ContextualTasks.EphemeralToolbarButton.Shown">
   <owner>dianaou@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
