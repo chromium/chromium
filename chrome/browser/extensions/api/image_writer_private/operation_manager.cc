@@ -169,10 +169,11 @@ void OperationManager::OnProgress(const ExtensionId& extension_id,
   info.stage = stage;
   info.percent_complete = progress;
 
-  auto args(image_writer_api::OnWriteProgress::Create(info));
-  std::unique_ptr<Event> event(new Event(
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      image_writer_api::OnWriteProgress::Create(info));
+  auto event = std::make_unique<Event>(
       events::IMAGE_WRITER_PRIVATE_ON_WRITE_PROGRESS,
-      image_writer_api::OnWriteProgress::kEventName, std::move(args)));
+      image_writer_api::OnWriteProgress::kEventName, std::move(event_args));
 
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
@@ -181,10 +182,11 @@ void OperationManager::OnProgress(const ExtensionId& extension_id,
 void OperationManager::OnComplete(const ExtensionId& extension_id) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
 
-  auto args(image_writer_api::OnWriteComplete::Create());
-  std::unique_ptr<Event> event(new Event(
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      image_writer_api::OnWriteComplete::Create());
+  auto event = std::make_unique<Event>(
       events::IMAGE_WRITER_PRIVATE_ON_WRITE_COMPLETE,
-      image_writer_api::OnWriteComplete::kEventName, std::move(args)));
+      image_writer_api::OnWriteComplete::kEventName, std::move(event_args));
 
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
@@ -204,10 +206,11 @@ void OperationManager::OnError(const ExtensionId& extension_id,
   info.stage = stage;
   info.percent_complete = progress;
 
-  auto args(image_writer_api::OnWriteError::Create(info, error_message));
-  std::unique_ptr<Event> event(
-      new Event(events::IMAGE_WRITER_PRIVATE_ON_WRITE_ERROR,
-                image_writer_api::OnWriteError::kEventName, std::move(args)));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      image_writer_api::OnWriteError::Create(info, error_message));
+  auto event = std::make_unique<Event>(
+      events::IMAGE_WRITER_PRIVATE_ON_WRITE_ERROR,
+      image_writer_api::OnWriteError::kEventName, std::move(event_args));
 
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));

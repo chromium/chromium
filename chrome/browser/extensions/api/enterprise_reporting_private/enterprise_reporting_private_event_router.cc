@@ -62,12 +62,14 @@ void EnterpriseReportingPrivateEventRouter::OnUrlFilteringVerdict(
     return;
   }
 
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::enterprise_reporting_private::OnDataMaskingRulesTriggered::Create(
+          std::move(data_masking_rules)));
   event_router_->BroadcastEvent(std::make_unique<Event>(
       events::ENTERPRISE_REPORTING_PRIVATE_ON_DATA_MASKING_RULES_TRIGGERED,
       api::enterprise_reporting_private::OnDataMaskingRulesTriggered::
           kEventName,
-      api::enterprise_reporting_private::OnDataMaskingRulesTriggered::Create(
-          std::move(data_masking_rules))));
+      std::move(event_args)));
 }
 
 // static

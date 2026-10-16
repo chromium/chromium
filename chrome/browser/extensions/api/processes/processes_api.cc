@@ -14,6 +14,7 @@
 #include "base/byte_size.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,6 +34,7 @@
 #include "extensions/browser/api/constants.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/event_args.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 
 namespace extensions {
@@ -221,9 +223,10 @@ void ProcessesEventRouter::OnTaskAdded(task_manager::TaskId id) {
                   observed_task_manager(),
                   false,  // include_optional
                   &process);
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::processes::OnCreated::Create(process));
   DispatchEvent(events::PROCESSES_ON_CREATED,
-                api::processes::OnCreated::kEventName,
-                api::processes::OnCreated::Create(process));
+                api::processes::OnCreated::kEventName, std::move(event_args));
 }
 
 void ProcessesEventRouter::OnTaskToBeRemoved(task_manager::TaskId id) {
@@ -240,11 +243,11 @@ void ProcessesEventRouter::OnTaskToBeRemoved(task_manager::TaskId id) {
   base::TerminationStatus status = base::TERMINATION_STATUS_STILL_RUNNING;
   observed_task_manager()->GetTerminationStatus(id, &status, &exit_code);
 
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(api::processes::OnExited::Create(
+          child_process_host_id, status, exit_code));
   DispatchEvent(events::PROCESSES_ON_EXITED,
-                api::processes::OnExited::kEventName,
-                api::processes::OnExited::Create(child_process_host_id,
-                                                 status,
-                                                 exit_code));
+                api::processes::OnExited::kEventName, std::move(event_args));
 }
 
 void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
@@ -307,20 +310,23 @@ void ProcessesEventRouter::OnTasksRefreshedWithBackgroundCalculations(
   if (has_on_updated_listeners) {
     api::processes::OnUpdated::Processes processes;
     processes.additional_properties.Merge(processes_dictionary.Clone());
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        api::processes::OnUpdated::Create(processes));
     // NOTE: If there are listeners to the updates with memory as well,
     // listeners to onUpdated (without memory) will also get the memory info
     // of processes as an added bonus.
     DispatchEvent(events::PROCESSES_ON_UPDATED,
-                  api::processes::OnUpdated::kEventName,
-                  api::processes::OnUpdated::Create(processes));
+                  api::processes::OnUpdated::kEventName, std::move(event_args));
   }
 
   if (has_on_updated_with_memory_listeners) {
     api::processes::OnUpdatedWithMemory::Processes processes;
     processes.additional_properties.Merge(std::move(processes_dictionary));
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        api::processes::OnUpdatedWithMemory::Create(processes));
     DispatchEvent(events::PROCESSES_ON_UPDATED_WITH_MEMORY,
                   api::processes::OnUpdatedWithMemory::kEventName,
-                  api::processes::OnUpdatedWithMemory::Create(processes));
+                  std::move(event_args));
   }
 }
 
@@ -334,18 +340,21 @@ void ProcessesEventRouter::OnTaskUnresponsive(task_manager::TaskId id) {
                   observed_task_manager(),
                   false,  // include_optional
                   &process);
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::processes::OnUnresponsive::Create(process));
   DispatchEvent(events::PROCESSES_ON_UNRESPONSIVE,
                 api::processes::OnUnresponsive::kEventName,
-                api::processes::OnUnresponsive::Create(process));
+                std::move(event_args));
 }
 
-void ProcessesEventRouter::DispatchEvent(events::HistogramValue histogram_value,
-                                         const std::string& event_name,
-                                         base::ListValue event_args) const {
+void ProcessesEventRouter::DispatchEvent(
+    events::HistogramValue histogram_value,
+    const std::string& event_name,
+    scoped_refptr<const EventArgs> event_args) const {
   EventRouter* event_router = EventRouter::Get(browser_context_);
   if (event_router) {
-    std::unique_ptr<Event> event(
-        new Event(histogram_value, event_name, std::move(event_args)));
+    auto event = std::make_unique<Event>(histogram_value, event_name,
+                                         std::move(event_args));
     event_router->BroadcastEvent(std::move(event));
   }
 }

@@ -94,9 +94,9 @@ void SaveToDriveEventDispatcher::Notify(
   CHECK_NE(progress.status, SaveToDriveStatus::kNone);
   recorder_->Record(progress);
   progress.file_metadata = GetFileMetadataString(progress);
-  base::ListValue args;
-  args.Append(stream_url_.spec());
-  args.Append(progress.ToValue());
+  auto args = base::MakeRefCounted<extensions::EventArgs>();
+  args->data.Append(stream_url_.spec());
+  args->data.Append(progress.ToValue());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::PDF_VIEWER_PRIVATE_ON_SAVE_TO_DRIVE_PROGRESS,
       extensions::api::pdf_viewer_private::OnSaveToDriveProgress::kEventName,

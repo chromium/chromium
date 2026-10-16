@@ -254,10 +254,10 @@ void PrefChanged(Profile* profile, const std::string& pref_name) {
   if (!event_router) {
     return;
   }
-  base::ListValue args;
+  auto args = base::MakeRefCounted<extensions::EventArgs>();
   base::DictValue prefs;
   prefs.Set(pref_name, profile->GetPrefs()->GetValue(pref_name).Clone());
-  args.Append(std::move(prefs));
+  args->data.Append(std::move(prefs));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TERMINAL_PRIVATE_ON_PREF_CHANGED,
       terminal_private::OnPrefChanged::kEventName, std::move(args));

@@ -803,10 +803,11 @@ void ExtensionDevToolsClientHost::SendDetachedEvent() {
     return;
   }
 
-  auto args(OnDetach::Create(debuggee_, detach_reason_));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      OnDetach::Create(debuggee_, detach_reason_));
   auto event =
       std::make_unique<Event>(events::DEBUGGER_ON_DETACH, OnDetach::kEventName,
-                              std::move(args), profile_);
+                              std::move(event_args), profile_);
   EventRouter::Get(profile_)->DispatchEventToExtension(extension_id(),
                                                        std::move(event));
 }
@@ -863,10 +864,11 @@ void ExtensionDevToolsClientHost::DispatchProtocolMessage(
     DebuggerSessionFromDebugee(session, debuggee_,
                                dictionary.FindString("sessionId"));
 
-    auto args(OnEvent::Create(session, *method_name, params));
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        OnEvent::Create(session, *method_name, params));
     auto event =
         std::make_unique<Event>(events::DEBUGGER_ON_EVENT, OnEvent::kEventName,
-                                std::move(args), profile_);
+                                std::move(event_args), profile_);
     EventRouter::Get(profile_)->DispatchEventToExtension(extension_id(),
                                                          std::move(event));
   } else {

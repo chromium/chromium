@@ -77,6 +77,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -272,7 +273,7 @@ BookmarkManagerPrivateEventRouter::~BookmarkManagerPrivateEventRouter() {
 void BookmarkManagerPrivateEventRouter::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue event_args) {
+    scoped_refptr<const EventArgs> event_args) {
   EventRouter::Get(browser_context_)
       ->BroadcastEvent(std::make_unique<Event>(histogram_value, event_name,
                                                std::move(event_args)));
@@ -337,14 +338,14 @@ BookmarkManagerPrivateDragEventRouter::
 void BookmarkManagerPrivateDragEventRouter::DispatchEvent(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue args) {
+    scoped_refptr<const EventArgs> args) {
   EventRouter* event_router = EventRouter::Get(profile_);
   if (!event_router) {
     return;
   }
 
-  std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(args)));
+  auto event =
+      std::make_unique<Event>(histogram_value, event_name, std::move(args));
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -353,10 +354,12 @@ void BookmarkManagerPrivateDragEventRouter::OnDragEnter(
   if (!data.is_valid()) {
     return;
   }
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bookmark_manager_private::OnDragEnter::Create(
+          CreateApiBookmarkNodeData(profile_, data)));
   DispatchEvent(events::BOOKMARK_MANAGER_PRIVATE_ON_DRAG_ENTER,
                 bookmark_manager_private::OnDragEnter::kEventName,
-                bookmark_manager_private::OnDragEnter::Create(
-                    CreateApiBookmarkNodeData(profile_, data)));
+                std::move(event_args));
 }
 
 void BookmarkManagerPrivateDragEventRouter::OnDragOver(
@@ -370,10 +373,12 @@ void BookmarkManagerPrivateDragEventRouter::OnDragLeave(
   if (!data.is_valid()) {
     return;
   }
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      bookmark_manager_private::OnDragLeave::Create(
+          CreateApiBookmarkNodeData(profile_, data)));
   DispatchEvent(events::BOOKMARK_MANAGER_PRIVATE_ON_DRAG_LEAVE,
                 bookmark_manager_private::OnDragLeave::kEventName,
-                bookmark_manager_private::OnDragLeave::Create(
-                    CreateApiBookmarkNodeData(profile_, data)));
+                std::move(event_args));
 }
 
 void BookmarkManagerPrivateDragEventRouter::OnDrop(
@@ -381,10 +386,12 @@ void BookmarkManagerPrivateDragEventRouter::OnDrop(
   if (!data.is_valid()) {
     return;
   }
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(bookmark_manager_private::OnDrop::Create(
+          CreateApiBookmarkNodeData(profile_, data)));
   DispatchEvent(events::BOOKMARK_MANAGER_PRIVATE_ON_DROP,
                 bookmark_manager_private::OnDrop::kEventName,
-                bookmark_manager_private::OnDrop::Create(
-                    CreateApiBookmarkNodeData(profile_, data)));
+                std::move(event_args));
 
   // Make a copy that is owned by this instance.
   ClearBookmarkNodeData();

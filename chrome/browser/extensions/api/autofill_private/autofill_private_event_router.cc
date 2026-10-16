@@ -107,8 +107,8 @@ void AutofillPrivateEventRouter::OnEntityInstancesChanged() {
       pref_service &&
       autofill::prefs::IsAutofillAiReauthBeforeFillingEnabled(pref_service);
 
-  base::ListValue args;
-  args.Append(
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(
       ToValueList(extensions::autofill_ai_util::
                       EntityInstancesToPrivateApiEntityInstancesWithLabels(
                           autofill::GetEntityInstancesForSettings(
@@ -117,7 +117,7 @@ void AutofillPrivateEventRouter::OnEntityInstancesChanged() {
                           obfuscate_sensitive_types,
                           g_browser_process->GetApplicationLocale())));
 
-  std::unique_ptr<Event> extension_event = std::make_unique<Event>(
+  auto extension_event = std::make_unique<Event>(
       events::AUTOFILL_PRIVATE_ON_ENTITY_INSTANCES_CHANGED,
       api::autofill_private::OnEntityInstancesChanged::kEventName,
       std::move(args));
@@ -160,16 +160,16 @@ void AutofillPrivateEventRouter::BroadcastCurrentData() {
       extensions::autofill_util::GetAccountInfo(
           personal_data_->address_data_manager());
 
-  base::ListValue args;
-  args.Append(ToValueList(address_list));
-  args.Append(ToValueList(credit_card_list));
-  args.Append(ToValueList(iban_list));
-  args.Append(ToValueList(pay_over_time_issuer_list));
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(ToValueList(address_list));
+  args->data.Append(ToValueList(credit_card_list));
+  args->data.Append(ToValueList(iban_list));
+  args->data.Append(ToValueList(pay_over_time_issuer_list));
   if (account_info.has_value()) {
-    args.Append(account_info->ToValue());
+    args->data.Append(account_info->ToValue());
   }
 
-  std::unique_ptr<Event> extension_event = std::make_unique<Event>(
+  auto extension_event = std::make_unique<Event>(
       events::AUTOFILL_PRIVATE_ON_PERSONAL_DATA_CHANGED,
       api::autofill_private::OnPersonalDataChanged::kEventName,
       std::move(args));

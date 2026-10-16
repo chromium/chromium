@@ -102,14 +102,16 @@ class MessageSender : public ExtensionHostRegistry::Observer {
   }
 
  private:
-  static base::ListValue BuildEventArguments(const bool last_message,
-                                             const std::string& data) {
-    return base::ListValue().Append(
+  static scoped_refptr<EventArgs> BuildEventArguments(const bool last_message,
+                                                      const std::string& data) {
+    auto args = base::MakeRefCounted<EventArgs>();
+    args->data.Append(
         base::DictValue().Set("lastMessage", last_message).Set("data", data));
+    return args;
   }
 
   static std::unique_ptr<Event> BuildEvent(
-      base::ListValue event_args,
+      scoped_refptr<const EventArgs> event_args,
       content::BrowserContext* browser_context,
       GURL event_url) {
     auto event =

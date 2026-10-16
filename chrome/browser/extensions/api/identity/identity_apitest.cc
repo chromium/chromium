@@ -4889,8 +4889,7 @@ class OnSignInChangedEventTest : public IdentityTestWithSignin {
   // event fires it will be checked against all of the expected events that have
   // been added. This is because the order of multiple events firing due to the
   // same underlying state change is undefined in the
-  // chrome.identity.onSignInEventChanged() API.
-  void AddExpectedEvent(base::ListValue args) {
+  void AddExpectedEvent(scoped_refptr<const EventArgs> args) {
     expected_events_.insert(
         std::make_unique<Event>(events::IDENTITY_ON_SIGN_IN_CHANGED,
                                 api::identity::OnSignInChanged::kEventName,
@@ -4941,7 +4940,8 @@ class OnSignInChangedEventTest : public IdentityTestWithSignin {
 IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignIn) {
   api::identity::AccountInfo account_info;
   account_info.id = "gaia_id_for_primary_example.com";
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
 
   // Sign in and verify that the callback fires.
   SignIn("primary@example.com");
@@ -4961,11 +4961,13 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireOnPrimaryAccountSignOut) {
 
   api::identity::AccountInfo account_info;
   account_info.id = "gaia_id_for_primary_example.com";
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
 
   SignIn("primary@example.com");
 
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, false));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, false)));
 
   // Sign out and verify that the callback fires.
   ClearPrimaryAccount();
@@ -4980,11 +4982,13 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest,
                        FireOnPrimaryAccountRefreshTokenInvalidated) {
   api::identity::AccountInfo account_info;
   account_info.id = "gaia_id_for_primary_example.com";
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
 
   CoreAccountId primary_account_id = SignIn("primary@example.com");
 
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
 
   // Revoke the refresh token and verify that the callback fires.
   SetInvalidRefreshTokenForPrimaryAccount();
@@ -4998,15 +5002,18 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest,
                        FireOnPrimaryAccountRefreshTokenAvailable) {
   api::identity::AccountInfo account_info;
   account_info.id = "gaia_id_for_primary_example.com";
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
 
   CoreAccountId primary_account_id = SignIn("primary@example.com");
 
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
   SetInvalidRefreshTokenForPrimaryAccount();
 
   account_info.id = "gaia_id_for_primary_example.com";
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
 
   // Make the primary account available again and check that the callback fires.
   SetRefreshTokenForPrimaryAccount();
@@ -5017,11 +5024,13 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest,
 IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireForSecondaryAccount) {
   api::identity::AccountInfo account_info;
   account_info.id = "gaia_id_for_primary_example.com";
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
   SignIn("primary@example.com");
 
   account_info.id = "gaia_id_for_secondary_example.com";
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, true));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, true)));
 
   // Make a secondary account available again and check that the callback fires.
   CoreAccountId secondary_account_id =
@@ -5031,7 +5040,8 @@ IN_PROC_BROWSER_TEST_F(OnSignInChangedEventTest, FireForSecondaryAccount) {
 
   // Revoke the secondary account's refresh token and check that the callback
   // fires.
-  AddExpectedEvent(api::identity::OnSignInChanged::Create(account_info, false));
+  AddExpectedEvent(base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(account_info, false)));
 
   RemoveRefreshTokenForAccount(secondary_account_id);
   EXPECT_FALSE(HasExpectedEvent());

@@ -1119,9 +1119,9 @@ void SessionsEventRouter::OnRecentlyClosedUpdated(int64_t j_browser_context) {
 // static
 void SessionsEventRouter::BroadcastOnChangedEvent(Profile* profile) {
   CHECK(profile);
-  EventRouter::Get(profile)->BroadcastEvent(std::make_unique<Event>(
-      events::SESSIONS_ON_CHANGED, api::sessions::OnChanged::kEventName,
-      base::ListValue()));
+  EventRouter::Get(profile)->BroadcastEvent(
+      std::make_unique<Event>(events::SESSIONS_ON_CHANGED,
+                              api::sessions::OnChanged::kEventName, nullptr));
 }
 
 SessionsAPI::SessionsAPI(content::BrowserContext* context)

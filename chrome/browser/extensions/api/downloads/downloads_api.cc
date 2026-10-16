@@ -2273,8 +2273,8 @@ void ExtensionDownloadsEventRouter::DispatchEvent(
   if (!EventRouter::Get(profile_)) {
     return;
   }
-  base::ListValue args;
-  args.Append(std::move(arg));
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(std::move(arg));
   // The downloads system wants to share on-record events with off-record
   // extension renderers even in incognito_split_mode because that's how
   // chrome://downloads works. The "restrict_to_profile" mechanism does not

@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_NOTIFICATIONS_EXTENSION_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_EXTENSIONS_API_NOTIFICATIONS_EXTENSION_NOTIFICATION_HANDLER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -58,7 +60,7 @@ class ExtensionNotificationHandler : public NotificationHandler {
                          events::HistogramValue histogram_value,
                          const std::string& name,
                          EventRouter::UserGestureState user_gesture,
-                         base::ListValue args);
+                         scoped_refptr<const EventArgs> args);
 };
 
 }  // namespace extensions

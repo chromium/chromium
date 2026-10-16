@@ -659,10 +659,11 @@ void QuickUnlockPrivateSetModesFunction::FireEvent(
     return;
   }
 
-  auto args = OnActiveModesChanged::Create(modes);
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(OnActiveModesChanged::Create(modes));
   auto event = std::make_unique<Event>(
       events::QUICK_UNLOCK_PRIVATE_ON_ACTIVE_MODES_CHANGED,
-      OnActiveModesChanged::kEventName, std::move(args));
+      OnActiveModesChanged::kEventName, std::move(event_args));
   EventRouter::Get(browser_context())->BroadcastEvent(std::move(event));
 }
 

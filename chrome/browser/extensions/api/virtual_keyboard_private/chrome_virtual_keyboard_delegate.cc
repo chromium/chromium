@@ -493,12 +493,12 @@ void ChromeVirtualKeyboardDelegate::OnClipboardHistoryItemsUpdated() {
 
   auto item_ids = clipboard_history_controller->GetHistoryItemIds();
 
-  auto ids = keyboard_api::OnClipboardHistoryChanged::Create(item_ids);
-
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      keyboard_api::OnClipboardHistoryChanged::Create(item_ids));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_CLIPBOARD_HISTORY_CHANGED,
-      keyboard_api::OnClipboardHistoryChanged::kEventName, std::move(ids),
-      browser_context_);
+      keyboard_api::OnClipboardHistoryChanged::kEventName,
+      std::move(event_args), browser_context_);
   router->BroadcastEvent(std::move(event));
 }
 
@@ -560,8 +560,8 @@ void ChromeVirtualKeyboardDelegate::DispatchConfigChangeEvent(
     return;
   }
 
-  base::ListValue event_args;
-  event_args.Append(std::move(*settings));
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>();
+  event_args->data.Append(std::move(*settings));
 
   auto event = std::make_unique<extensions::Event>(
       extensions::events::VIRTUAL_KEYBOARD_PRIVATE_ON_KEYBOARD_CONFIG_CHANGED,

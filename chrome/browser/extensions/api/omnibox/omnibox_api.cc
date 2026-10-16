@@ -120,7 +120,7 @@ void ExtensionOmniboxEventRouter::OnInputStarted(
     const ExtensionId& extension_id) {
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_STARTED,
                                        omnibox::OnInputStarted::kEventName,
-                                       base::ListValue(), profile);
+                                       nullptr, profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -136,9 +136,9 @@ bool ExtensionOmniboxEventRouter::OnInputChanged(
           extension_id, omnibox::OnInputChanged::kEventName))
     return false;
 
-  base::ListValue args;
-  args.Append(input);
-  args.Append(suggest_id);
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(input);
+  args->data.Append(suggest_id);
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_CHANGED,
                                        omnibox::OnInputChanged::kEventName,
@@ -163,14 +163,14 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
   extensions::ActiveTabPermissionGranter::FromWebContents(web_contents)
       ->GrantIfRequested(extension);
 
-  base::ListValue args;
-  args.Append(input);
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(input);
   if (disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-    args.Append(kForegroundTabDisposition);
+    args->data.Append(kForegroundTabDisposition);
   } else if (disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB) {
-    args.Append(kBackgroundTabDisposition);
+    args->data.Append(kBackgroundTabDisposition);
   } else {
-    args.Append(kCurrentTabDisposition);
+    args->data.Append(kCurrentTabDisposition);
   }
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_ENTERED,
@@ -190,7 +190,7 @@ void ExtensionOmniboxEventRouter::OnInputCancelled(
     const ExtensionId& extension_id) {
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_INPUT_CANCELLED,
                                        omnibox::OnInputCancelled::kEventName,
-                                       base::ListValue(), profile);
+                                       nullptr, profile);
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -199,8 +199,8 @@ void ExtensionOmniboxEventRouter::OnDeleteSuggestion(
     Profile* profile,
     const ExtensionId& extension_id,
     const std::string& suggestion_text) {
-  base::ListValue args;
-  args.Append(suggestion_text);
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(suggestion_text);
 
   auto event = std::make_unique<Event>(events::OMNIBOX_ON_DELETE_SUGGESTION,
                                        omnibox::OnDeleteSuggestion::kEventName,
@@ -225,9 +225,11 @@ void ExtensionOmniboxEventRouter::OnActionExecuted(
   omnibox::ActionExecution action_execution;
   action_execution.action_name = action_name;
   action_execution.content = content;
-  auto event = std::make_unique<Event>(
-      events::OMNIBOX_ON_ACTION_EXECUTED, omnibox::OnActionExecuted::kEventName,
-      omnibox::OnActionExecuted::Create(std::move(action_execution)), profile);
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      omnibox::OnActionExecuted::Create(std::move(action_execution)));
+  auto event = std::make_unique<Event>(events::OMNIBOX_ON_ACTION_EXECUTED,
+                                       omnibox::OnActionExecuted::kEventName,
+                                       std::move(event_args), profile);
   event->user_gesture = EventRouter::UserGestureState::kEnabled;
   event_router->DispatchEventToExtension(extension_id, std::move(event));
 }

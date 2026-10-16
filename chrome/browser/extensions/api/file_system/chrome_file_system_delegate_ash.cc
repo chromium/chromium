@@ -169,6 +169,8 @@ void DispatchVolumeListChangeEventAsh(
 
   file_system::VolumeListChangedEvent event_args;
   FillVolumeList(browser_context, &event_args.volumes);
+  auto args_ptr = base::MakeRefCounted<EventArgs>(
+      file_system::OnVolumeListChanged::Create(event_args));
   for (const auto& extension : registry->enabled_extensions()) {
     if (!consent_provider->IsGrantable(*extension.get())) {
       continue;
@@ -176,10 +178,9 @@ void DispatchVolumeListChangeEventAsh(
 
     event_router->DispatchEventToExtension(
         extension->id(),
-        std::make_unique<Event>(
-            events::FILE_SYSTEM_ON_VOLUME_LIST_CHANGED,
-            file_system::OnVolumeListChanged::kEventName,
-            file_system::OnVolumeListChanged::Create(event_args)));
+        std::make_unique<Event>(events::FILE_SYSTEM_ON_VOLUME_LIST_CHANGED,
+                                file_system::OnVolumeListChanged::kEventName,
+                                args_ptr));
   }
 }
 

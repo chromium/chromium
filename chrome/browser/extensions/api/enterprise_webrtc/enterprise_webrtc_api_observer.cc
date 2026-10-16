@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/enterprise_webrtc.h"
@@ -19,6 +20,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/common/event_args.h"
 
 namespace extensions {
 
@@ -98,11 +100,12 @@ void EnterpriseWebrtcApiObserver::DispatchPeerConnectionAdded(
     const std::string& id,
     const api::enterprise_webrtc::PeerConnectionRecord& data,
     const std::string& extension_id) {
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::enterprise_webrtc::OnPeerConnectionAdded::Create(id, data));
   auto event = std::make_unique<Event>(
       events::ENTERPRISE_WEBRTC_ON_PEER_CONNECTION_ADDED,
       api::enterprise_webrtc::OnPeerConnectionAdded::kEventName,
-      api::enterprise_webrtc::OnPeerConnectionAdded::Create(id, data),
-      browser_context_);
+      std::move(event_args), browser_context_);
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -118,11 +121,12 @@ void EnterpriseWebrtcApiObserver::OnPeerConnectionRemoved(
 void EnterpriseWebrtcApiObserver::DispatchPeerConnectionRemoved(
     const std::string& id,
     const std::string& extension_id) {
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::enterprise_webrtc::OnPeerConnectionRemoved::Create(id));
   auto event = std::make_unique<Event>(
       events::ENTERPRISE_WEBRTC_ON_PEER_CONNECTION_REMOVED,
       api::enterprise_webrtc::OnPeerConnectionRemoved::kEventName,
-      api::enterprise_webrtc::OnPeerConnectionRemoved::Create(id),
-      browser_context_);
+      std::move(event_args), browser_context_);
   EventRouter::Get(browser_context_)
       ->DispatchEventToExtension(extension_id, std::move(event));
 }
@@ -134,10 +138,12 @@ void EnterpriseWebrtcApiObserver::OnCaptureStopped(
 
 void EnterpriseWebrtcApiObserver::DispatchCaptureStopped(
     const std::string& extension_id) {
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::enterprise_webrtc::OnCaptureStopped::Create());
   auto event = std::make_unique<Event>(
       events::ENTERPRISE_WEBRTC_ON_CAPTURE_STOPPED,
       api::enterprise_webrtc::OnCaptureStopped::kEventName,
-      api::enterprise_webrtc::OnCaptureStopped::Create(), browser_context_);
+      std::move(event_args), browser_context_);
   // The extension may no longer be enabled, e.g. when the capture stopped
   // because it was unloaded. EventRouter drops the event in that case.
   EventRouter::Get(browser_context_)
@@ -156,11 +162,12 @@ void EnterpriseWebrtcApiObserver::OnSnapshotTruncated(int dropped_log,
   for (const std::string& extension_id :
        content::WebRtcDiagnostics::GetInstance()->GetCapturingClients(
            browser_context_)) {
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        api::enterprise_webrtc::OnSnapshotTruncated::Create(info));
     auto event = std::make_unique<Event>(
         events::ENTERPRISE_WEBRTC_ON_SNAPSHOT_TRUNCATED,
         api::enterprise_webrtc::OnSnapshotTruncated::kEventName,
-        api::enterprise_webrtc::OnSnapshotTruncated::Create(info),
-        browser_context_);
+        std::move(event_args), browser_context_);
     router->DispatchEventToExtension(extension_id, std::move(event));
   }
 }

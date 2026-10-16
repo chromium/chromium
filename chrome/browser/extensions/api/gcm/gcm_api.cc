@@ -240,17 +240,21 @@ void GcmJsEventRouter::OnMessage(const std::string& app_id,
     message_arg.collapse_key = message.collapse_key;
   }
 
-  std::unique_ptr<Event> event(
-      new Event(events::GCM_ON_MESSAGE, api::gcm::OnMessage::kEventName,
-                api::gcm::OnMessage::Create(message_arg), profile_));
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(api::gcm::OnMessage::Create(message_arg));
+  auto event = std::make_unique<Event>(events::GCM_ON_MESSAGE,
+                                       api::gcm::OnMessage::kEventName,
+                                       std::move(event_args), profile_);
   EventRouter::Get(profile_)
       ->DispatchEventToExtension(app_id, std::move(event));
 }
 
 void GcmJsEventRouter::OnMessagesDeleted(const std::string& app_id) {
-  std::unique_ptr<Event> event(new Event(
-      events::GCM_ON_MESSAGES_DELETED, api::gcm::OnMessagesDeleted::kEventName,
-      api::gcm::OnMessagesDeleted::Create(), profile_));
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(api::gcm::OnMessagesDeleted::Create());
+  auto event = std::make_unique<Event>(events::GCM_ON_MESSAGES_DELETED,
+                                       api::gcm::OnMessagesDeleted::kEventName,
+                                       std::move(event_args), profile_);
   EventRouter::Get(profile_)
       ->DispatchEventToExtension(app_id, std::move(event));
 }
@@ -263,9 +267,11 @@ void GcmJsEventRouter::OnSendError(
   error.error_message = GcmResultToError(send_error_details.result);
   error.details.additional_properties = send_error_details.additional_data;
 
-  std::unique_ptr<Event> event(
-      new Event(events::GCM_ON_SEND_ERROR, api::gcm::OnSendError::kEventName,
-                api::gcm::OnSendError::Create(error), profile_));
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(api::gcm::OnSendError::Create(error));
+  auto event = std::make_unique<Event>(events::GCM_ON_SEND_ERROR,
+                                       api::gcm::OnSendError::kEventName,
+                                       std::move(event_args), profile_);
   EventRouter::Get(profile_)
       ->DispatchEventToExtension(app_id, std::move(event));
 }

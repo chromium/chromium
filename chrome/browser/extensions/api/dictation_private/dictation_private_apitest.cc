@@ -69,9 +69,8 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
     flags.web_speech_api_backend = dictation::kWebSpeechApiBackend.Get();
     details.flags = std::move(flags);
 
-    base::ListValue event_args =
-        api::dictation_private::OnStartStream::Create(details);
-
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        api::dictation_private::OnStartStream::Create(details));
     auto event = std::make_unique<Event>(
         events::DICTATION_PRIVATE_ON_START_STREAM,
         api::dictation_private::OnStartStream::kEventName,
@@ -85,9 +84,8 @@ class ExtensionApiTestStreamProvider : public dictation::StreamProvider {
     api::dictation_private::EndStreamDetails details;
     details.stream_id = stream_id_.value();
 
-    base::ListValue event_args =
-        api::dictation_private::OnEndStream::Create(details);
-
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        api::dictation_private::OnEndStream::Create(details));
     auto event =
         std::make_unique<Event>(events::DICTATION_PRIVATE_ON_END_STREAM,
                                 api::dictation_private::OnEndStream::kEventName,

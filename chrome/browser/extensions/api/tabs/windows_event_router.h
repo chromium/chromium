@@ -9,13 +9,14 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/extensions/api/tabs/app_window_helper.h"
@@ -77,7 +78,7 @@ class WindowsEventRouter :
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
                      WindowController* window_controller,
-                     base::ListValue args);
+                     scoped_refptr<const EventArgs> args);
   bool HasEventListener(const std::string& event_name);
 
   // The main profile that owns this event router.

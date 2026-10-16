@@ -134,12 +134,12 @@ bool GetStringList(const base::DictValue& dict,
 void DispatchEventWithGuestView(const MenuItem& item,
                                 const events::HistogramValue& event_type,
                                 const std::string& event_name,
-                                base::ListValue* args,
+                                scoped_refptr<const EventArgs> args,
                                 content::BrowserContext* context,
                                 WebViewGuest* webview_guest,
                                 EventRouter* event_router) {
-  auto event = std::make_unique<Event>(event_type, event_name, std::move(*args),
-                                       context);
+  auto event =
+      std::make_unique<Event>(event_type, event_name, std::move(args), context);
   event->user_gesture = EventRouter::UserGestureState::kEnabled;
 
   if (webview_guest) {
@@ -163,11 +163,11 @@ void DispatchEventWithGuestView(const MenuItem& item,
 void DispatchEvent(const MenuItem& item,
                    const events::HistogramValue& event_type,
                    const std::string& event_name,
-                   base::ListValue* args,
+                   scoped_refptr<const EventArgs> args,
                    content::BrowserContext* context,
                    EventRouter* event_router) {
-  auto event = std::make_unique<Event>(event_type, event_name, std::move(*args),
-                                       context);
+  auto event =
+      std::make_unique<Event>(event_type, event_name, std::move(args), context);
   event->user_gesture = EventRouter::UserGestureState::kEnabled;
 
   if (!item.extension_id().empty()) {
@@ -748,8 +748,8 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     }
   }
 
-  base::ListValue args;
-  args.Append(std::move(properties));
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(std::move(properties));
 
   // Add the tab info to the argument list.
   // No tab info in a platform app.
@@ -759,7 +759,7 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
     if (web_contents) {
       int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
       if (frame_id != ExtensionApiFrameIdMap::kInvalidFrameId) {
-        args[0].GetDict().Set("frameId", frame_id);
+        args->data[0].GetDict().Set("frameId", frame_id);
       }
 
       // The contextMenus API is only available to privileged extension
@@ -769,25 +769,25 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
       ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
           ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                                 web_contents);
-      args.Append(ExtensionTabUtil::CreateTabObject(
-                      web_contents, scrub_tab_behavior, extension)
-                      .ToValue());
+      args->data.Append(ExtensionTabUtil::CreateTabObject(
+                            web_contents, scrub_tab_behavior, extension)
+                            .ToValue());
     } else {
-      args.Append(base::Value(base::Value::Type::DICT));
+      args->data.Append(base::Value(base::Value::Type::DICT));
     }
   }
 
   if (item->type() == MenuItem::CHECKBOX ||
       item->type() == MenuItem::RADIO) {
     bool was_checked = item->checked();
-    args[0].GetDict().Set("wasChecked", was_checked);
+    args->data[0].GetDict().Set("wasChecked", was_checked);
 
     // RADIO items always get set to true when you click on them, but CHECKBOX
     // items get their state toggled.
     bool checked = item->type() == MenuItem::RADIO || !was_checked;
 
     item->SetChecked(checked);
-    args[0].GetDict().Set("checked", item->checked());
+    args->data[0].GetDict().Set("checked", item->checked());
 
     if (extension) {
       WriteToStorage(extension, item->id().extension_key);
@@ -796,14 +796,18 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
   {
     // Dispatch to menu item's .onclick handler (this is the legacy API, from
     // before chrome.contextMenus.onClicked existed).
-    auto args_cloned = args.Clone();
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
+    scoped_refptr<const EventArgs> onclick_args;
     if (webview_guest) {
       // This is used in
       // extensions/renderer/resources/context_menus_handlers.js.
       // The property is not exposed to developer API.
-      args_cloned[0].GetDict().Set("webviewInstanceId",
-                                   webview_guest->view_instance_id());
+      auto guest_args = base::MakeRefCounted<EventArgs>(args->data.Clone());
+      guest_args->data[0].GetDict().Set("webviewInstanceId",
+                                        webview_guest->view_instance_id());
+      onclick_args = std::move(guest_args);
+    } else {
+      onclick_args = args;
     }
     DispatchEventWithGuestView(
         *item,
@@ -813,10 +817,10 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                              ? "controlledFrameInternal.contextMenus"
                              : kOnWebviewContextMenus)
                       : kOnContextMenus,
-        &args_cloned, context, webview_guest, event_router);
+        std::move(onclick_args), context, webview_guest, event_router);
 #else
-    DispatchEvent(*item, events::CONTEXT_MENUS, kOnContextMenus, &args_cloned,
-                  context, event_router);
+    DispatchEvent(*item, events::CONTEXT_MENUS, kOnContextMenus, args, context,
+                  event_router);
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   }
   {
@@ -828,11 +832,11 @@ void MenuManager::ExecuteCommand(content::BrowserContext* context,
                       : events::CONTEXT_MENUS_ON_CLICKED,
         webview_guest ? api::chrome_web_view_internal::OnClicked::kEventName
                       : api::context_menus::OnClicked::kEventName,
-        &args, context, webview_guest, event_router);
+        std::move(args), context, webview_guest, event_router);
 #else
     DispatchEvent(*item, events::CONTEXT_MENUS_ON_CLICKED,
-                  api::context_menus::OnClicked::kEventName, &args, context,
-                  event_router);
+                  api::context_menus::OnClicked::kEventName, std::move(args),
+                  context, event_router);
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
   }
 }

@@ -19,6 +19,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -56,6 +57,7 @@
 #include "extensions/browser/blob_reader.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -332,15 +334,15 @@ void MediaGalleriesEventRouter::DispatchEventToExtension(
     const std::string& extension_id,
     extensions::events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue event_args) {
+    scoped_refptr<const extensions::EventArgs> event_args) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   extensions::EventRouter* router = extensions::EventRouter::Get(profile_);
   if (!router->ExtensionHasEventListener(extension_id, event_name))
     return;
 
-  std::unique_ptr<extensions::Event> event(new extensions::Event(
-      histogram_value, event_name, std::move(event_args)));
+  auto event = std::make_unique<extensions::Event>(histogram_value, event_name,
+                                                   std::move(event_args));
   router->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -350,10 +352,11 @@ void MediaGalleriesEventRouter::OnGalleryChanged(
   MediaGalleries::GalleryChangeDetails details;
   details.type = MediaGalleries::GalleryChangeType::kContentsChanged;
   details.gallery_id = base::NumberToString(gallery_id);
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      MediaGalleries::OnGalleryChanged::Create(details));
   DispatchEventToExtension(
       extension_id, extensions::events::MEDIA_GALLERIES_ON_GALLERY_CHANGED,
-      MediaGalleries::OnGalleryChanged::kEventName,
-      MediaGalleries::OnGalleryChanged::Create(details));
+      MediaGalleries::OnGalleryChanged::kEventName, std::move(event_args));
 }
 
 void MediaGalleriesEventRouter::OnGalleryWatchDropped(
@@ -362,10 +365,11 @@ void MediaGalleriesEventRouter::OnGalleryWatchDropped(
   MediaGalleries::GalleryChangeDetails details;
   details.type = MediaGalleries::GalleryChangeType::kWatchDropped;
   details.gallery_id = base::NumberToString(gallery_id);
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      MediaGalleries::OnGalleryChanged::Create(details));
   DispatchEventToExtension(
       extension_id, extensions::events::MEDIA_GALLERIES_ON_GALLERY_CHANGED,
-      MediaGalleries::OnGalleryChanged::kEventName,
-      MediaGalleries::OnGalleryChanged::Create(details));
+      MediaGalleries::OnGalleryChanged::kEventName, std::move(event_args));
 }
 
 void MediaGalleriesEventRouter::OnListenerRemoved(

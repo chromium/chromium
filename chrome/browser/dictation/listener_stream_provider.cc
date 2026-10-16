@@ -118,9 +118,8 @@ void ListenerStreamProvider::StartStream(
   flags.web_speech_api_backend = kWebSpeechApiBackend.Get();
   details.flags = std::move(flags);
 
-  base::ListValue event_args =
-      extensions::api::dictation_private::OnStartStream::Create(details);
-
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::dictation_private::OnStartStream::Create(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::DICTATION_PRIVATE_ON_START_STREAM,
       extensions::api::dictation_private::OnStartStream::kEventName,
@@ -142,9 +141,8 @@ void ListenerStreamProvider::OnAsyncContextCaptured(DictationContext result) {
   details.stream_id = stream_id_.value();
   details.context = ConvertToApiContext(std::move(result));
 
-  base::ListValue event_args =
-      extensions::api::dictation_private::OnContextUpdate::Create(details);
-
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::dictation_private::OnContextUpdate::Create(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::DICTATION_PRIVATE_ON_CONTEXT_UPDATE,
       extensions::api::dictation_private::OnContextUpdate::kEventName,
@@ -170,9 +168,8 @@ void ListenerStreamProvider::Stop(DictationStreamEndTrigger trigger) {
   extensions::api::dictation_private::EndStreamDetails details;
   details.stream_id = stream_id_.value();
 
-  base::ListValue event_args =
-      extensions::api::dictation_private::OnEndStream::Create(details);
-
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::dictation_private::OnEndStream::Create(details));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::DICTATION_PRIVATE_ON_END_STREAM,
       extensions::api::dictation_private::OnEndStream::kEventName,

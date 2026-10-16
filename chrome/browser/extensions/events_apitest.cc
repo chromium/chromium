@@ -222,9 +222,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
           api::extension_types::FrameType::kOutermostFrame;
       event_details.transition_type =
           api::web_navigation::TransitionType::kLink;
-      event_router->BroadcastEvent(std::make_unique<Event>(
-          events::FOR_TEST, "webNavigation.onCommitted",
-          api::web_navigation::OnCommitted::Create(event_details)));
+      auto event_args = base::MakeRefCounted<EventArgs>(
+          api::web_navigation::OnCommitted::Create(event_details));
+      auto event = std::make_unique<Event>(
+          events::FOR_TEST, "webNavigation.onCommitted", std::move(event_args));
+      event_router->BroadcastEvent(std::move(event));
     }
 
     // The tabs.onActivated event listener in the extension will send a message
@@ -232,9 +234,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventAfterPermissionRemoved) {
     {
       auto event_details = api::tabs::OnActivated::ActiveInfo();
       ExtensionTestMessageListener listener_listener("onActivated called");
-      event_router->BroadcastEvent(std::make_unique<Event>(
-          events::FOR_TEST, "tabs.onActivated",
-          api::tabs::OnActivated::Create(event_details)));
+      auto event_args = base::MakeRefCounted<EventArgs>(
+          api::tabs::OnActivated::Create(event_details));
+      auto event = std::make_unique<Event>(events::FOR_TEST, "tabs.onActivated",
+                                           std::move(event_args));
+      event_router->BroadcastEvent(std::move(event));
       ASSERT_TRUE(listener_listener.WaitUntilSatisfied());
     }
   };
@@ -331,8 +335,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_DispatchEventDuringShutdown) {
 
   // Broadcast an event to the event router. Since a shutdown is occurring, it
   // should be ignored and cause no problems.
-  event_router->BroadcastEvent(std::make_unique<Event>(
-      events::FOR_TEST, "tabs.onActivated", base::ListValue()));
+  event_router->BroadcastEvent(
+      std::make_unique<Event>(events::FOR_TEST, "tabs.onActivated", nullptr));
 }
 
 class EventsApiTest : public ExtensionApiTest {

@@ -115,12 +115,13 @@ WebAuthenticationProxyRemoteSessionStateChangeNotifier::
 void WebAuthenticationProxyRemoteSessionStateChangeNotifier::
     BroadcastRemoteSessionStateChangeEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  event_router_->DispatchEventToExtension(
-      extension_id_,
-      std::make_unique<Event>(
-          events::WEB_AUTHENTICATION_PROXY_ON_REMOTE_SESSION_STATE_CHANGE,
-          api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName,
-          api::web_authentication_proxy::OnRemoteSessionStateChange::Create()));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::web_authentication_proxy::OnRemoteSessionStateChange::Create());
+  auto event = std::make_unique<Event>(
+      events::WEB_AUTHENTICATION_PROXY_ON_REMOTE_SESSION_STATE_CHANGE,
+      api::web_authentication_proxy::OnRemoteSessionStateChange::kEventName,
+      std::move(event_args));
+  event_router_->DispatchEventToExtension(extension_id_, std::move(event));
 }
 
 }  // namespace extensions

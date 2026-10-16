@@ -184,8 +184,8 @@ void NotifierStateTracker::FirePermissionLevelChangedEvent(
   extensions::api::notifications::PermissionLevel permission =
       enabled ? extensions::api::notifications::PermissionLevel::kGranted
               : extensions::api::notifications::PermissionLevel::kDenied;
-  base::ListValue args;
-  args.Append(extensions::api::notifications::ToString(permission));
+  auto args = base::MakeRefCounted<extensions::EventArgs>();
+  args->data.Append(extensions::api::notifications::ToString(permission));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::NOTIFICATIONS_ON_PERMISSION_LEVEL_CHANGED,
       extensions::api::notifications::OnPermissionLevelChanged::kEventName,

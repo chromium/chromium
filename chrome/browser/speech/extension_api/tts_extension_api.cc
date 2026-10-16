@@ -157,8 +157,8 @@ class TtsExtensionEventHandler : public content::UtteranceEventDelegate {
     details.Set(constants::kSrcIdKey, utterance->GetSrcId());
     details.Set(constants::kIsFinalEventKey, utterance->IsFinished());
 
-    base::ListValue arguments;
-    arguments.Append(std::move(details));
+    auto arguments = base::MakeRefCounted<extensions::EventArgs>();
+    arguments->data.Append(std::move(details));
 
     auto event = std::make_unique<extensions::Event>(
         ::extensions::events::TTS_ON_EVENT, ::events::kOnEvent,
@@ -423,8 +423,7 @@ void TtsAPI::OnVoicesChanged() {
     return;
   }
   auto event = std::make_unique<extensions::Event>(
-      events::TTS_ON_VOICES_CHANGED, ::events::kOnVoicesChanged,
-      base::ListValue());
+      events::TTS_ON_VOICES_CHANGED, ::events::kOnVoicesChanged, nullptr);
   event_router_->BroadcastEvent(std::move(event));
 }
 

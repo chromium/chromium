@@ -237,8 +237,8 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   if (!extension)
     return;
 
-  base::ListValue args;
-  args.Append(command);
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(command);
 
   base::Value tab_value;
   if (tab_list_interface_) {
@@ -271,7 +271,7 @@ void ExtensionKeybindingRegistry::CommandExecuted(
     }
   }
 
-  args.Append(std::move(tab_value));
+  args->data.Append(std::move(tab_value));
 
   auto event =
       std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,

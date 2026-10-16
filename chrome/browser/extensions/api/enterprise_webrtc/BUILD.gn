@@ -20,6 +20,7 @@ source_set("enterprise_webrtc") {
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",
+    "//extensions/common",
     "//extensions/common:mojom",
     "//extensions/common/api",
   ]

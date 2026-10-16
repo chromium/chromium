@@ -208,10 +208,12 @@ bool IndigoImageReplacementManager::RegenerateImage() {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      extensions::api::indigo_private::OnRegenerateStarted::Create());
   auto event = std::make_unique<extensions::Event>(
       extensions::events::INDIGO_PRIVATE_ON_REGENERATE_STARTED,
       extensions::api::indigo_private::OnRegenerateStarted::kEventName,
-      extensions::api::indigo_private::OnRegenerateStarted::Create());
+      std::move(event_args));
 
   // Enable browser-side filtering by populating EventFilteringInfo with
   // instance_id (set to invocation_id).

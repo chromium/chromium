@@ -91,14 +91,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionUserActivationServiceBrowserTest,
 
   // Event dispatch without a user gesture.
   auto event1 = std::make_unique<Event>(events::FOR_TEST, "storage.onChanged",
-                                        base::ListValue(), profile());
+                                        nullptr, profile());
   event1->user_gesture = EventRouter::UserGestureState::kNotEnabled;
   event_router->DispatchEventToExtension(extension()->id(), std::move(event1));
   EXPECT_FALSE(service->HasTransientActivation(extension()->id()));
 
   // Event dispatch with a user gesture.
   auto event2 = std::make_unique<Event>(events::FOR_TEST, "storage.onChanged",
-                                        base::ListValue(), profile());
+                                        nullptr, profile());
   event2->user_gesture = EventRouter::UserGestureState::kEnabled;
   event_router->DispatchEventToExtension(extension()->id(), std::move(event2));
   EXPECT_TRUE(service->HasTransientActivation(extension()->id()));

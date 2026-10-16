@@ -158,23 +158,23 @@ void LanguageSettingsPrivateDelegate::InputMethodChanged(
 
 void LanguageSettingsPrivateDelegate::OnInputMethodExtensionAdded(
     const std::string& extension_id) {
-  auto args(
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
       language_settings_private::OnInputMethodAdded::Create(extension_id));
-  std::unique_ptr<extensions::Event> extension_event(new extensions::Event(
+  auto extension_event = std::make_unique<extensions::Event>(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_INPUT_METHOD_ADDED,
       language_settings_private::OnInputMethodAdded::kEventName,
-      std::move(args)));
+      std::move(event_args));
   EventRouter::Get(context_)->BroadcastEvent(std::move(extension_event));
 }
 
 void LanguageSettingsPrivateDelegate::OnInputMethodExtensionRemoved(
     const std::string& extension_id) {
-  auto args(
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
       language_settings_private::OnInputMethodRemoved::Create(extension_id));
-  std::unique_ptr<extensions::Event> extension_event(new extensions::Event(
+  auto extension_event = std::make_unique<extensions::Event>(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_INPUT_METHOD_REMOVED,
       language_settings_private::OnInputMethodRemoved::kEventName,
-      std::move(args)));
+      std::move(event_args));
   EventRouter::Get(context_)->BroadcastEvent(std::move(extension_event));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -208,12 +208,13 @@ void LanguageSettingsPrivateDelegate::OnCustomDictionaryChanged(
                                   change.to_add().end());
   std::vector<std::string> to_remove(change.to_remove().begin(),
                                      change.to_remove().end());
-  auto args(language_settings_private::OnCustomDictionaryChanged::Create(
-      to_add, to_remove));
-  std::unique_ptr<Event> extension_event(new Event(
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      language_settings_private::OnCustomDictionaryChanged::Create(to_add,
+                                                                   to_remove));
+  auto extension_event = std::make_unique<Event>(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_CUSTOM_DICTIONARY_CHANGED,
       language_settings_private::OnCustomDictionaryChanged::kEventName,
-      std::move(args)));
+      std::move(event_args));
   EventRouter::Get(context_)->BroadcastEvent(std::move(extension_event));
 }
 
@@ -326,12 +327,13 @@ void LanguageSettingsPrivateDelegate::BroadcastDictionariesChangedEvent() {
   std::vector<language_settings_private::SpellcheckDictionaryStatus> statuses =
       GetHunspellDictionaryStatuses();
 
-  auto args(language_settings_private::OnSpellcheckDictionariesChanged::Create(
-      statuses));
-  std::unique_ptr<extensions::Event> extension_event(new extensions::Event(
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      language_settings_private::OnSpellcheckDictionariesChanged::Create(
+          statuses));
+  auto extension_event = std::make_unique<extensions::Event>(
       events::LANGUAGE_SETTINGS_PRIVATE_ON_SPELLCHECK_DICTIONARIES_CHANGED,
       language_settings_private::OnSpellcheckDictionariesChanged::kEventName,
-      std::move(args)));
+      std::move(event_args));
   EventRouter::Get(context_)->BroadcastEvent(std::move(extension_event));
 }
 

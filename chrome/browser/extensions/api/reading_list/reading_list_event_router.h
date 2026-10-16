@@ -8,8 +8,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
-#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -17,6 +17,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -47,7 +48,7 @@ class ReadingListEventRouter : public KeyedService,
 
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::ListValue args);
+                     scoped_refptr<const EventArgs> args);
 
   base::ScopedObservation<ReadingListModel, ReadingListModelObserver>
       reading_list_observation_{this};

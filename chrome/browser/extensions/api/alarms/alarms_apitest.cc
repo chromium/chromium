@@ -104,9 +104,10 @@ IN_PROC_BROWSER_TEST_P(AlarmsClearAllApiTest, MAYBE_IncognitoSplit) {
   // Open incognito window.
   PlatformOpenURLOffTheRecord(profile(), GURL("about:blank"));
 
+  auto event_args = base::MakeRefCounted<EventArgs>(BuildEventArguments(true));
   event_router->BroadcastEvent(std::make_unique<Event>(
       events::FOR_TEST, api::test::OnMessage::kEventName,
-      BuildEventArguments(true)));
+      std::move(event_args)));
 
   EXPECT_TRUE(catcher.GetNextResult());
   EXPECT_TRUE(catcher_incognito.GetNextResult());

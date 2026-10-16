@@ -177,10 +177,11 @@ void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
     args.push_back(std::move(mdns_service));
   }
 
-  auto results = mdns::OnServiceList::Create(args);
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(mdns::OnServiceList::Create(args));
   auto event = std::make_unique<Event>(events::MDNS_ON_SERVICE_LIST,
                                        mdns::OnServiceList::kEventName,
-                                       std::move(results), browser_context_);
+                                       std::move(event_args), browser_context_);
   event->filter_info->service_type = service_type;
 
   // TODO(justinlin): To avoid having listeners without filters getting all

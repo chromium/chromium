@@ -308,11 +308,12 @@ void IdentityAPI::FireOnAccountSignInChanged(const GaiaId& gaia_id,
   api::identity::AccountInfo api_account_info;
   api_account_info.id = gaia_id.ToString();
 
-  auto args =
-      api::identity::OnSignInChanged::Create(api_account_info, is_signed_in);
-  std::unique_ptr<Event> event(new Event(
-      events::IDENTITY_ON_SIGN_IN_CHANGED,
-      api::identity::OnSignInChanged::kEventName, std::move(args), profile_));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::identity::OnSignInChanged::Create(api_account_info, is_signed_in));
+  auto event =
+      std::make_unique<Event>(events::IDENTITY_ON_SIGN_IN_CHANGED,
+                              api::identity::OnSignInChanged::kEventName,
+                              std::move(event_args), profile_);
 
   if (on_signin_changed_callback_for_testing_) {
     on_signin_changed_callback_for_testing_.Run(event.get());

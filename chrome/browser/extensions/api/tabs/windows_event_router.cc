@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
@@ -22,6 +23,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 
@@ -205,12 +207,12 @@ void WindowsEventRouter::OnWindowControllerAdded(
     return;
   }
 
-  base::ListValue args;
+  auto args = base::MakeRefCounted<EventArgs>();
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr WindowController::PopulateTabBehavior populate_behavior =
       WindowController::kDontPopulateTabs;
   constexpr mojom::ContextType context_type = mojom::ContextType::kUnspecified;
-  args.Append(window_controller->CreateWindowValueForExtension(
+  args->data.Append(window_controller->CreateWindowValueForExtension(
       nullptr, populate_behavior, context_type));
   DispatchEvent(events::WINDOWS_ON_CREATED, windows::OnCreated::kEventName,
                 window_controller, std::move(args));
@@ -230,8 +232,8 @@ void WindowsEventRouter::OnWindowControllerRemoved(
   }
 
   int window_id = window_controller->GetWindowId();
-  base::ListValue args;
-  args.Append(window_id);
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(window_id);
   DispatchEvent(events::WINDOWS_ON_REMOVED, windows::OnRemoved::kEventName,
                 window_controller, std::move(args));
 }
@@ -249,12 +251,12 @@ void WindowsEventRouter::OnWindowBoundsChanged(
     return;
   }
 
-  base::ListValue args;
+  auto args = base::MakeRefCounted<EventArgs>();
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr WindowController::PopulateTabBehavior populate_behavior =
       WindowController::kDontPopulateTabs;
   constexpr mojom::ContextType context_type = mojom::ContextType::kUnspecified;
-  args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
+  args->data.Append(ExtensionTabUtil::CreateWindowValueForExtension(
       *window_controller->GetBrowserWindowInterface(), nullptr,
       populate_behavior, context_type));
   DispatchEvent(events::WINDOWS_ON_BOUNDS_CHANGED,
@@ -300,9 +302,9 @@ void WindowsEventRouter::OnActiveWindowChanged(
     return;
   }
 
-  std::unique_ptr<Event> event = std::make_unique<Event>(
-      events::WINDOWS_ON_FOCUS_CHANGED, windows::OnFocusChanged::kEventName,
-      base::ListValue());
+  std::unique_ptr<Event> event =
+      std::make_unique<Event>(events::WINDOWS_ON_FOCUS_CHANGED,
+                              windows::OnFocusChanged::kEventName, nullptr);
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowFocusedEvent, window_controller);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
@@ -311,7 +313,7 @@ void WindowsEventRouter::OnActiveWindowChanged(
 void WindowsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                        const std::string& event_name,
                                        WindowController* window_controller,
-                                       base::ListValue args) {
+                                       scoped_refptr<const EventArgs> args) {
   auto event =
       std::make_unique<Event>(histogram_value, event_name, std::move(args),
                               window_controller->profile());

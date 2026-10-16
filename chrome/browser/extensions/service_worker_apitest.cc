@@ -867,15 +867,15 @@ class EarlyWorkerMessageSender : public EventRouter::Observer {
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, EarlyEventDispatch) {
   const ExtensionId kId("pkplfbidichfdicaijlchgnapepdginl");
 
-  // Build "test.onMessage" event for dispatch.
-  auto event = std::make_unique<Event>(
-      events::FOR_TEST, api::test::OnMessage::kEventName,
+  auto event_args = base::MakeRefCounted<EventArgs>(
       std::move(
-          base::JSONReader::Read(R"([{"data": "hello", "lastMessage": true}])",
-                                 base::JSON_PARSE_CHROMIUM_EXTENSIONS)
-              .value()
-              .GetList()),
-      profile());
+          *base::JSONReader::Read(R"([{"data": "hello", "lastMessage": true}])",
+                                  base::JSON_PARSE_CHROMIUM_EXTENSIONS))
+          .TakeList());
+  // Build "test.onMessage" event for dispatch.
+  auto event = std::make_unique<Event>(events::FOR_TEST,
+                                       api::test::OnMessage::kEventName,
+                                       std::move(event_args), profile());
 
   EarlyWorkerMessageSender sender(profile(), kId, std::move(event));
   // pkplfbidichfdicaijlchgnapepdginl
@@ -899,10 +899,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   details.frame_type = api::extension_types::FrameType::kOutermostFrame;
   details.document_lifecycle = api::extension_types::DocumentLifecycle::kActive;
 
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::web_navigation::OnCommitted::Create(details));
   // Build a dummy onCommited event to dispatch.
   auto on_committed_event = std::make_unique<Event>(
       events::WEB_NAVIGATION_ON_COMMITTED, "webNavigation.onCommitted",
-      api::web_navigation::OnCommitted::Create(details), profile());
+      std::move(event_args), profile());
   // The filter will match the listener filter registered from the extension.
   mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
   info->url = GURL("http://foo.com/a.html");

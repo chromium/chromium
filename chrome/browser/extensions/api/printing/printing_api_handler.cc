@@ -213,10 +213,11 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
     return;
   }
 
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::printing::OnJobStatusChanged::Create(cups_id, job_status));
   auto event = std::make_unique<Event>(
       events::PRINTING_ON_JOB_STATUS_CHANGED,
-      api::printing::OnJobStatusChanged::kEventName,
-      api::printing::OnJobStatusChanged::Create(cups_id, job_status));
+      api::printing::OnJobStatusChanged::kEventName, std::move(event_args));
   event_router_->DispatchEventToExtension(extension_id, std::move(event));
 }
 
@@ -435,10 +436,11 @@ void PrintingAPIHandler::UpdateJobStatus(const std::string& printer_id,
 
   const std::string& extension_id = it->second.extension_id;
   if (extension_registry_->enabled_extensions().Contains(extension_id)) {
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        api::printing::OnJobStatusChanged::Create(cups_id, job_status));
     auto event = std::make_unique<Event>(
         events::PRINTING_ON_JOB_STATUS_CHANGED,
-        api::printing::OnJobStatusChanged::kEventName,
-        api::printing::OnJobStatusChanged::Create(cups_id, job_status));
+        api::printing::OnJobStatusChanged::kEventName, std::move(event_args));
     event_router_->DispatchEventToExtension(extension_id, std::move(event));
   }
 

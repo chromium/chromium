@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/values.h"
@@ -20,6 +21,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -49,7 +51,7 @@ class HistoryEventRouter : public history::HistoryServiceObserver {
   void DispatchEvent(Profile* profile,
                      events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::ListValue event_args);
+                     scoped_refptr<const EventArgs> event_args);
 
   raw_ptr<Profile> profile_;
   base::ScopedObservation<history::HistoryService,

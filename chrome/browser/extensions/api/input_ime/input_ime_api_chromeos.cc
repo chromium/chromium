@@ -279,12 +279,12 @@ class ImeObserverChromeOS
         break;
     }
 
-    auto args(input_ime::OnCandidateClicked::Create(component_id, candidate_id,
-                                                    button_enum));
-
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnCandidateClicked::Create(component_id, candidate_id,
+                                              button_enum));
     DispatchEventToExtension(extensions::events::INPUT_IME_ON_CANDIDATE_CLICKED,
                              input_ime::OnCandidateClicked::kEventName,
-                             std::move(args));
+                             std::move(event_args));
   }
 
   void OnMenuItemActivated(const std::string& component_id,
@@ -293,11 +293,11 @@ class ImeObserverChromeOS
         !HasListener(input_ime::OnMenuItemActivated::kEventName))
       return;
 
-    auto args(input_ime::OnMenuItemActivated::Create(component_id, menu_id));
-
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnMenuItemActivated::Create(component_id, menu_id));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_MENU_ITEM_ACTIVATED,
-        input_ime::OnMenuItemActivated::kEventName, std::move(args));
+        input_ime::OnMenuItemActivated::kEventName, std::move(event_args));
   }
 
   void OnScreenProjectionChanged(bool is_projected) override {
@@ -306,8 +306,8 @@ class ImeObserverChromeOS
       return;
     }
     // Note: this is a private API event.
-    base::ListValue args;
-    args.Append(is_projected);
+    auto args = base::MakeRefCounted<extensions::EventArgs>();
+    args->data.Append(is_projected);
 
     DispatchEventToExtension(
         extensions::events::INPUT_METHOD_PRIVATE_ON_SCREEN_PROJECTION_CHANGED,
@@ -321,12 +321,12 @@ class ImeObserverChromeOS
       return;
     }
 
-    auto args(input_ime::OnActivate::Create(
-        component_id, input_ime::ParseScreenType(GetCurrentScreenType())));
-
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnActivate::Create(
+            component_id, input_ime::ParseScreenType(GetCurrentScreenType())));
     DispatchEventToExtension(extensions::events::INPUT_IME_ON_ACTIVATE,
                              input_ime::OnActivate::kEventName,
-                             std::move(args));
+                             std::move(event_args));
   }
 
   void OnBlur(const std::string& engine_id, int context_id) override {
@@ -334,10 +334,11 @@ class ImeObserverChromeOS
       return;
     }
 
-    auto args(input_ime::OnBlur::Create(context_id));
-
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnBlur::Create(context_id));
     DispatchEventToExtension(extensions::events::INPUT_IME_ON_BLUR,
-                             input_ime::OnBlur::kEventName, std::move(args));
+                             input_ime::OnBlur::kEventName,
+                             std::move(event_args));
   }
 
   void OnKeyEvent(const std::string& component_id,
@@ -391,12 +392,12 @@ class ImeObserverChromeOS
     keyboard_event.shift_key = event.IsShiftDown();
     keyboard_event.caps_lock = event.IsCapsLockOn();
 
-    auto args(input_ime::OnKeyEvent::Create(component_id, keyboard_event,
-                                            request_id));
-
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnKeyEvent::Create(component_id, keyboard_event,
+                                      request_id));
     DispatchEventToExtension(extensions::events::INPUT_IME_ON_KEY_EVENT,
                              input_ime::OnKeyEvent::kEventName,
-                             std::move(args));
+                             std::move(event_args));
   }
 
   void OnReset(const std::string& component_id) override {
@@ -404,10 +405,11 @@ class ImeObserverChromeOS
       return;
     }
 
-    auto args(input_ime::OnReset::Create(component_id));
-
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnReset::Create(component_id));
     DispatchEventToExtension(extensions::events::INPUT_IME_ON_RESET,
-                             input_ime::OnReset::kEventName, std::move(args));
+                             input_ime::OnReset::kEventName,
+                             std::move(event_args));
   }
 
   void OnDeactivated(const std::string& component_id) override {
@@ -415,11 +417,11 @@ class ImeObserverChromeOS
         !HasListener(input_ime::OnDeactivated::kEventName))
       return;
 
-    auto args(input_ime::OnDeactivated::Create(component_id));
-
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnDeactivated::Create(component_id));
     DispatchEventToExtension(extensions::events::INPUT_IME_ON_DEACTIVATED,
                              input_ime::OnDeactivated::kEventName,
-                             std::move(args));
+                             std::move(event_args));
   }
 
   void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {
@@ -435,10 +437,12 @@ class ImeObserverChromeOS
     caret_bounds_arg.w = caret_bounds.width();
     caret_bounds_arg.h = caret_bounds.height();
 
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_method_private::OnCaretBoundsChanged::Create(caret_bounds_arg));
     DispatchEventToExtension(
         extensions::events::INPUT_METHOD_PRIVATE_ON_CARET_BOUNDS_CHANGED,
         input_method_private::OnCaretBoundsChanged::kEventName,
-        input_method_private::OnCaretBoundsChanged::Create(caret_bounds_arg));
+        std::move(event_args));
   }
 
   void OnFocus(const std::string& engine_id,
@@ -480,11 +484,11 @@ class ImeObserverChromeOS
       ash::input_method::GetTextFieldAppTypeAndKey(info);
       private_api_input_context.app_key = info.app_key;
 
-      auto args(
+      auto event_args = base::MakeRefCounted<extensions::EventArgs>(
           input_method_private::OnFocus::Create(private_api_input_context));
       DispatchEventToExtension(
           extensions::events::INPUT_METHOD_PRIVATE_ON_FOCUS,
-          input_method_private::OnFocus::kEventName, std::move(args));
+          input_method_private::OnFocus::kEventName, std::move(event_args));
     } else if (HasListener(input_ime::OnFocus::kEventName)) {
       input_ime::InputContext public_api_input_context;
       public_api_input_context.context_id = context_id;
@@ -502,9 +506,11 @@ class ImeObserverChromeOS
       public_api_input_context.should_do_learning =
           ConvertPersonalizationMode(context);
 
-      auto args(input_ime::OnFocus::Create(public_api_input_context));
+      auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+          input_ime::OnFocus::Create(public_api_input_context));
       DispatchEventToExtension(extensions::events::INPUT_IME_ON_FOCUS,
-                               input_ime::OnFocus::kEventName, std::move(args));
+                               input_ime::OnFocus::kEventName,
+                               std::move(event_args));
     }
   }
 
@@ -528,11 +534,12 @@ class ImeObserverChromeOS
     info.focus = selection_range.start();
     info.anchor = selection_range.end();
     info.offset = offset_pos;
-    auto args(input_ime::OnSurroundingTextChanged::Create(component_id, info));
 
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnSurroundingTextChanged::Create(component_id, info));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_SURROUNDING_TEXT_CHANGED,
-        input_ime::OnSurroundingTextChanged::kEventName, std::move(args));
+        input_ime::OnSurroundingTextChanged::kEventName, std::move(event_args));
   }
 
   void OnAssistiveWindowButtonClicked(
@@ -545,10 +552,12 @@ class ImeObserverChromeOS
     details.button_id = ConvertAssistiveWindowButton(button.id);
     details.window_type = ConvertAssistiveWindowType(button.window_type);
 
-    auto args(input_ime::OnAssistiveWindowButtonClicked::Create(details));
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_ime::OnAssistiveWindowButtonClicked::Create(details));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_ASSISTIVE_WINDOW_BUTTON_CLICKED,
-        input_ime::OnAssistiveWindowButtonClicked::kEventName, std::move(args));
+        input_ime::OnAssistiveWindowButtonClicked::kEventName,
+        std::move(event_args));
   }
 
   void OnAssistiveWindowChanged(
@@ -556,20 +565,21 @@ class ImeObserverChromeOS
 
   void OnSuggestionsChanged(
       const std::vector<std::string>& suggestions) override {
-    auto args(input_method_private::OnSuggestionsChanged::Create(suggestions));
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        input_method_private::OnSuggestionsChanged::Create(suggestions));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_SUGGESTIONS_CHANGED,
         input_method_private::OnSuggestionsChanged::kEventName,
-        std::move(args));
+        std::move(event_args));
   }
 
   void OnInputMethodOptionsChanged(const std::string& engine_id) override {
-    auto args(
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
         input_method_private::OnInputMethodOptionsChanged::Create(engine_id));
     DispatchEventToExtension(
         extensions::events::INPUT_IME_ON_INPUT_METHOD_OPTIONS_CHANGED,
         input_method_private::OnInputMethodOptionsChanged::kEventName,
-        std::move(args));
+        std::move(event_args));
   }
 
  private:
@@ -578,7 +588,7 @@ class ImeObserverChromeOS
   void DispatchEventToExtension(
       extensions::events::HistogramValue histogram_value,
       const std::string& event_name,
-      base::ListValue args) {
+      scoped_refptr<const extensions::EventArgs> args) {
     if (event_name == input_ime::OnActivate::kEventName) {
       // Send onActivate event regardless of it's listened by the IME.
       auto event = std::make_unique<extensions::Event>(

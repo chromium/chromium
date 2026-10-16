@@ -193,9 +193,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebUITest, OnMessage) {
   OnMessage::Info info;
   info.data = "hi";
   info.last_message = true;
-  EventRouter::Get(profile())->BroadcastEvent(base::WrapUnique(
-      new Event(events::RUNTIME_ON_MESSAGE, OnMessage::kEventName,
-                OnMessage::Create(info))));
+  auto event_args = base::MakeRefCounted<EventArgs>(OnMessage::Create(info));
+  auto event = std::make_unique<Event>(
+      events::RUNTIME_ON_MESSAGE, OnMessage::kEventName, std::move(event_args));
+  EventRouter::Get(profile())->BroadcastEvent(std::move(event));
 
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
   EXPECT_EQ("true", result_listener.message());

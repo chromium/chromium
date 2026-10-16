@@ -169,9 +169,9 @@ void DispatchAccessibilityFocusChangedEvent(
 
   if (histogram_value ==
       extensions::events::ACCESSIBILITY_PRIVATE_ON_CHROMEVOX_FOCUS_CHANGED) {
-    auto event_args =
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
         extensions::api::accessibility_private::OnChromeVoxFocusChanged::Create(
-            bounds);
+            bounds));
     event = std::make_unique<extensions::Event>(
         histogram_value,
         extensions::api::accessibility_private::OnChromeVoxFocusChanged::
@@ -180,8 +180,9 @@ void DispatchAccessibilityFocusChangedEvent(
   } else if (histogram_value ==
              extensions::events::
                  ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED) {
-    auto event_args = extensions::api::accessibility_private::
-        OnSelectToSpeakFocusChanged::Create(bounds);
+    auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+        extensions::api::accessibility_private::OnSelectToSpeakFocusChanged::
+            Create(bounds));
     event = std::make_unique<extensions::Event>(
         histogram_value,
         extensions::api::accessibility_private::OnSelectToSpeakFocusChanged::

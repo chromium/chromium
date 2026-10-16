@@ -238,8 +238,8 @@ void DeveloperPrivateEventRouter::OnUserPermissionsSettingsChanged(
     const PermissionsManager::UserPermissionsSettings& settings) {
   developer::UserSiteSettings user_site_settings =
       ConvertToUserSiteSettings(settings);
-  base::ListValue args;
-  args.Append(user_site_settings.ToValue());
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(user_site_settings.ToValue());
 
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_USER_SITE_SETTINGS_CHANGED,
@@ -256,8 +256,8 @@ void DeveloperPrivateEventRouter::OnExtensionPermissionsUpdated(
 }
 
 void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {
-  base::ListValue args;
-  args.Append(CreateProfileInfo(profile_).ToValue());
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(CreateProfileInfo(profile_).ToValue());
 
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
@@ -301,8 +301,8 @@ void DeveloperPrivateEventRouter::OnExtensionsUploadabilityChanged() {
 }
 
 void DeveloperPrivateEventRouter::OnProfilePrefChanged() {
-  base::ListValue args;
-  args.Append(CreateProfileInfo(profile_).ToValue());
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(CreateProfileInfo(profile_).ToValue());
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_PROFILE_STATE_CHANGED,
       developer::OnProfileStateChanged::kEventName, std::move(args));
@@ -354,8 +354,8 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
     event_data.extension_info = std::move(infos[0]);
   }
 
-  base::ListValue args;
-  args.Append(event_data.ToValue());
+  auto args = base::MakeRefCounted<EventArgs>();
+  args->data.Append(event_data.ToValue());
   auto event = std::make_unique<Event>(
       events::DEVELOPER_PRIVATE_ON_ITEM_STATE_CHANGED,
       developer::OnItemStateChanged::kEventName, std::move(args));

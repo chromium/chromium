@@ -29,7 +29,7 @@ void DispatchEventToExtension(
     const ExtensionId& extension_id,
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    base::ListValue event_args,
+    scoped_refptr<const EventArgs> event_args,
     EventRouter::UserGestureState user_gesture_state) {
   auto* event_router = EventRouter::Get(context);
   if (!event_router) {
@@ -104,7 +104,7 @@ void ExtensionActionDispatcher::DispatchExtensionActionClicked(
   }
 
   if (event_name) {
-    base::ListValue args;
+    auto args = base::MakeRefCounted<EventArgs>();
     // The action APIs (browserAction, pageAction, action) are only available
     // to privileged extension contexts. As such, we deterministically know that
     // the right context type here is privileged.
@@ -113,9 +113,9 @@ void ExtensionActionDispatcher::DispatchExtensionActionClicked(
     ExtensionTabUtil::ScrubTabBehavior scrub_tab_behavior =
         ExtensionTabUtil::GetScrubTabBehavior(extension, context_type,
                                               web_contents);
-    args.Append(ExtensionTabUtil::CreateTabObject(web_contents,
-                                                  scrub_tab_behavior, extension)
-                    .ToValue());
+    args->data.Append(ExtensionTabUtil::CreateTabObject(
+                          web_contents, scrub_tab_behavior, extension)
+                          .ToValue());
 
     DispatchEventToExtension(web_contents->GetBrowserContext(),
                              extension_action.extension_id(), histogram_value,
@@ -174,10 +174,10 @@ void ExtensionActionDispatcher::OnActionPinnedStateChanged(
   // TODO(crbug.com/360916928): Today, no action APIs are compiled.
   // Unfortunately, this means we miss out on the compiled types, which would be
   // rather helpful here.
-  base::ListValue args;
+  auto args = base::MakeRefCounted<EventArgs>();
   base::DictValue change;
   change.Set("isOnToolbar", is_pinned);
-  args.Append(std::move(change));
+  args->data.Append(std::move(change));
   DispatchEventToExtension(browser_context_, extension_id,
                            events::ACTION_ON_USER_SETTINGS_CHANGED,
                            "action.onUserSettingsChanged", std::move(args),

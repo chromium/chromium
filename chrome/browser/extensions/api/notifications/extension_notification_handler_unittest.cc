@@ -9,12 +9,14 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,10 +47,10 @@ class TestExtensionNotificationHandler : public ExtensionNotificationHandler {
                  events::HistogramValue histogram_value,
                  const std::string& event_name,
                  EventRouter::UserGestureState user_gesture,
-                 base::ListValue args) final {
+                 scoped_refptr<const EventArgs> args) final {
     EXPECT_EQ(event_name_, event_name);
     EXPECT_EQ(extension_id_, extension_id);
-    EXPECT_EQ(param_count_, args.size());
+    EXPECT_EQ(param_count_, args ? args->data.size() : 0);
   }
 
  private:

@@ -56,7 +56,8 @@ void DictationLogBuffer::Flush() {
     details.message = entry.message;
   }
 
-  auto event_args = dictation_api::OnBrowserLog::Create(details_list);
+  auto event_args = base::MakeRefCounted<extensions::EventArgs>(
+      dictation_api::OnBrowserLog::Create(details_list));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::DICTATION_PRIVATE_ON_BROWSER_LOG_EVENT,
       dictation_api::OnBrowserLog::kEventName, std::move(event_args),

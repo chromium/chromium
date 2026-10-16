@@ -169,9 +169,12 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, CanReceiveEvents) {
     api::management::ExtensionInfo info;
     info.install_type = api::management::ExtensionInstallType::kNormal;
     info.type = api::management::ExtensionType::kExtension;
-    event_router->BroadcastEvent(std::make_unique<Event>(
+    auto event_args = base::MakeRefCounted<EventArgs>(
+        api::management::OnInstalled::Create(info));
+    auto event = std::make_unique<Event>(
         events::FOR_TEST, api::management::OnInstalled::kEventName,
-        api::management::OnInstalled::Create(info)));
+        std::move(event_args));
+    event_router->BroadcastEvent(std::move(event));
 
     std::string message;
     EXPECT_TRUE(message_queue.WaitForMessage(&message));

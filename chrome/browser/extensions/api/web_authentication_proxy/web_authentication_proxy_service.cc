@@ -396,13 +396,14 @@ void WebAuthenticationProxyService::CancelRequest(RequestId request_id) {
     return;
   }
   pending_callbacks_.erase(request_id);
-  event_router_->DispatchEventToExtension(
-      proxy_extension->id(),
-      std::make_unique<Event>(
-          events::WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED,
-          api::web_authentication_proxy::OnRequestCanceled::kEventName,
-          api::web_authentication_proxy::OnRequestCanceled::Create(request_id),
-          browser_context_));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::web_authentication_proxy::OnRequestCanceled::Create(request_id));
+  auto event = std::make_unique<Event>(
+      events::WEB_AUTHENTICATION_PROXY_REQUEST_CANCELLED,
+      api::web_authentication_proxy::OnRequestCanceled::kEventName,
+      std::move(event_args), browser_context_);
+  event_router_->DispatchEventToExtension(proxy_extension->id(),
+                                          std::move(event));
 }
 
 void WebAuthenticationProxyService::SetRequestProxy(
@@ -553,13 +554,14 @@ WebAuthenticationProxyService::SignalCreateRequest(
   CHECK(request_json);
   request.request_details_json = *std::move(request_json);
 
-  event_router_->DispatchEventToExtension(
-      proxy_extension->id(),
-      std::make_unique<Event>(
-          events::WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST,
-          api::web_authentication_proxy::OnCreateRequest::kEventName,
-          api::web_authentication_proxy::OnCreateRequest::Create(request),
-          browser_context_));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::web_authentication_proxy::OnCreateRequest::Create(request));
+  auto event = std::make_unique<Event>(
+      events::WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST,
+      api::web_authentication_proxy::OnCreateRequest::kEventName,
+      std::move(event_args), browser_context_);
+  event_router_->DispatchEventToExtension(proxy_extension->id(),
+                                          std::move(event));
   return request_id;
 }
 
@@ -583,13 +585,14 @@ WebAuthenticationProxyService::SignalGetRequest(
   CHECK(request_json);
   request.request_details_json = *std::move(request_json);
 
-  event_router_->DispatchEventToExtension(
-      proxy_extension->id(),
-      std::make_unique<Event>(
-          events::WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST,
-          api::web_authentication_proxy::OnGetRequest::kEventName,
-          api::web_authentication_proxy::OnGetRequest::Create(request),
-          browser_context_));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::web_authentication_proxy::OnGetRequest::Create(request));
+  auto event = std::make_unique<Event>(
+      events::WEB_AUTHENTICATION_PROXY_ON_GET_REQUEST,
+      api::web_authentication_proxy::OnGetRequest::kEventName,
+      std::move(event_args), browser_context_);
+  event_router_->DispatchEventToExtension(proxy_extension->id(),
+                                          std::move(event));
   return request_id;
 }
 
@@ -604,13 +607,14 @@ WebAuthenticationProxyService::SignalIsUvpaaRequest(IsUvpaaCallback callback) {
   pending_callbacks_.emplace(request_id, std::move(callback));
   api::web_authentication_proxy::IsUvpaaRequest request;
   request.request_id = request_id;
-  event_router_->DispatchEventToExtension(
-      proxy_extension->id(),
-      std::make_unique<Event>(
-          events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST,
-          api::web_authentication_proxy::OnIsUvpaaRequest::kEventName,
-          api::web_authentication_proxy::OnIsUvpaaRequest::Create(request),
-          browser_context_));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      api::web_authentication_proxy::OnIsUvpaaRequest::Create(request));
+  auto event = std::make_unique<Event>(
+      events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST,
+      api::web_authentication_proxy::OnIsUvpaaRequest::kEventName,
+      std::move(event_args), browser_context_);
+  event_router_->DispatchEventToExtension(proxy_extension->id(),
+                                          std::move(event));
   return request_id;
 }
 

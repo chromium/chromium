@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -35,6 +36,7 @@
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "ui/base/page_transition_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -153,9 +155,10 @@ void HistoryEventRouter::OnURLVisited(
       history::VisitResponseCodeCategory::k404) {
     return;
   }
-  auto args = OnVisited::Create(GetHistoryItem(visited_url_info.url_row));
+  auto event_args = base::MakeRefCounted<EventArgs>(
+      OnVisited::Create(GetHistoryItem(visited_url_info.url_row)));
   DispatchEvent(profile_, events::HISTORY_ON_VISITED,
-                api::history::OnVisited::kEventName, std::move(args));
+                api::history::OnVisited::kEventName, std::move(event_args));
 }
 
 void HistoryEventRouter::OnHistoryDeletions(
@@ -169,15 +172,18 @@ void HistoryEventRouter::OnHistoryDeletions(
     removed.urls->push_back(row.url().spec());
   }
 
-  auto args = OnVisitRemoved::Create(removed);
+  auto event_args =
+      base::MakeRefCounted<EventArgs>(OnVisitRemoved::Create(removed));
   DispatchEvent(profile_, events::HISTORY_ON_VISIT_REMOVED,
-                api::history::OnVisitRemoved::kEventName, std::move(args));
+                api::history::OnVisitRemoved::kEventName,
+                std::move(event_args));
 }
 
-void HistoryEventRouter::DispatchEvent(Profile* profile,
-                                       events::HistogramValue histogram_value,
-                                       const std::string& event_name,
-                                       base::ListValue event_args) {
+void HistoryEventRouter::DispatchEvent(
+    Profile* profile,
+    events::HistogramValue histogram_value,
+    const std::string& event_name,
+    scoped_refptr<const EventArgs> event_args) {
   if (profile && EventRouter::Get(profile)) {
     auto event = std::make_unique<Event>(histogram_value, event_name,
                                          std::move(event_args), profile);

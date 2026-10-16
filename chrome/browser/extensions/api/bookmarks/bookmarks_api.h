@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
@@ -22,6 +23,7 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/event_args.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -88,7 +90,7 @@ class BookmarkEventRouter : public bookmarks::BookmarkModelObserver {
   // Helper to actually dispatch an event to extension listeners.
   void DispatchEvent(events::HistogramValue histogram_value,
                      const std::string& event_name,
-                     base::ListValue event_args);
+                     scoped_refptr<const extensions::EventArgs> event_args);
 
   raw_ptr<content::BrowserContext> browser_context_;
   raw_ptr<bookmarks::BookmarkModel> model_;

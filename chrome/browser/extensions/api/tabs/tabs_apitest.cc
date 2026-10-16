@@ -1102,8 +1102,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabDSERedirectTest,
   ASSERT_TRUE(extension);
 
   auto event = std::make_unique<extensions::Event>(
-      extensions::events::FOR_TEST, "test.onMessage", base::ListValue(),
-      profile());
+      extensions::events::FOR_TEST, "test.onMessage", nullptr, profile());
   event->user_gesture = extensions::EventRouter::UserGestureState::kEnabled;
   // Dispatch the event which will ultimately trigger RouteDispatchEvent
   // with `params->is_user_gesture` = true.
