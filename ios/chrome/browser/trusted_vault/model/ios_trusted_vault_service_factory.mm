@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_service_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -13,28 +12,13 @@
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_client.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-trusted_vault::TrustedVaultService*
-IOSTrustedVaultServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<trusted_vault::TrustedVaultService>(
-          profile, /*create=*/true);
-}
-
-// static
-IOSTrustedVaultServiceFactory* IOSTrustedVaultServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSTrustedVaultServiceFactory> instance;
-  return instance.get();
-}
-
-IOSTrustedVaultServiceFactory::IOSTrustedVaultServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("TrustedVaultService") {
+IOSTrustedVaultServiceFactory::IOSTrustedVaultServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "TrustedVaultService") {
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(TrustedVaultClientBackendFactory::GetInstance());
 }
-
-IOSTrustedVaultServiceFactory::~IOSTrustedVaultServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSTrustedVaultServiceFactory::BuildServiceInstanceFor(
