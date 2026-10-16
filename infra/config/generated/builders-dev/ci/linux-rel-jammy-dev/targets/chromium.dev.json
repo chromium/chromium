@@ -31,7 +31,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 16
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -84,7 +84,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester-dev@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 6
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"

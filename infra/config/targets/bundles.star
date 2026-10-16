@@ -1397,7 +1397,7 @@ targets.bundle(
         ),
         "browser_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 8,
+                shards = 16,
                 dimensions = {
                     "cores": "8",
                 },
@@ -1420,7 +1420,7 @@ targets.bundle(
         ),
         "interactive_ui_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 3,
+                shards = 6,
                 dimensions = {
                     "cores": "8",
                 },
