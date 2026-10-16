@@ -232,15 +232,9 @@ using PasswordSuggestionBottomSheetExitReason::kUsePasswordSuggestion;
     (FormSuggestion*)formSuggestion {
   _dismissing = YES;
 
-  CredentialSuggestionBottomSheetMediator*
-      credentialSuggestionBottomSheetMediator =
-          base::apple::ObjCCastStrict<CredentialSuggestionBottomSheetMediator>(
-              _mediator);
-
-  [credentialSuggestionBottomSheetMediator logExitReason:kShowPasswordDetails];
+  [_mediator logExitReason:kShowPasswordDetails];
   std::optional<password_manager::CredentialUIEntry> credential =
-      [credentialSuggestionBottomSheetMediator
-          getCredentialForFormSuggestion:formSuggestion];
+      [_mediator getCredentialForFormSuggestion:formSuggestion];
 
   __weak __typeof(self) weakSelf = self;
   [_navigationController.presentingViewController

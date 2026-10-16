@@ -8,6 +8,7 @@
 #import "base/memory/weak_ptr.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base+Subclassing.h"
@@ -32,14 +33,16 @@
 - (void)setWebAuthnCredentialsDelegate:
     (base::WeakPtr<webauthn::IOSWebAuthnCredentialsDelegate>)delegate {
   [super setWebAuthnCredentialsDelegate:delegate];
+  [self clearCredentials];
   if (delegate) {
     base::expected<const std::vector<password_manager::PasskeyCredential>*,
                    password_manager::WebAuthnCredentialsDelegate::
                        PasskeysUnavailableReason>
         passkeys = delegate->GetPasskeys();
-    if (passkeys.has_value()) {
+    if (passkeys.has_value() && *passkeys) {
       self.suggestions =
           webauthn::FormSuggestionsFromPasskeyCredentials(**passkeys);
+      [self fetchPasskeyCredentials];
     }
   }
 }

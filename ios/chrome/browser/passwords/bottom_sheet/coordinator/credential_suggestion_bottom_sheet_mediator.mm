@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
 
-#import "base/base64.h"
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
@@ -19,6 +18,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher_impl.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
+#import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
@@ -338,9 +338,6 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
   scoped_refptr<password_manager::PasswordStoreInterface> _profilePasswordStore;
   scoped_refptr<password_manager::PasswordStoreInterface> _accountPasswordStore;
 
-  // Vector of credentials related to the current page.
-  std::vector<password_manager::CredentialUIEntry> _credentials;
-
   // Vector of credentials that have been received via the password sharing
   // feature and the user has not been notified about them yet.
   std::vector<password_manager::StoredCredential> _sharedUnnotifiedCredentials;
@@ -441,31 +438,6 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
     _engagementTracker = engagementTracker;
   }
   return self;
-}
-
-- (std::optional<password_manager::CredentialUIEntry>)
-    getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion {
-  NSString* username = formSuggestion.value;
-  auto it = std::ranges::find_if(
-      _credentials,
-      [username](const password_manager::CredentialUIEntry& credential) {
-        CHECK(!credential.facets.empty());
-        for (auto facet : credential.facets) {
-          if ([base::SysUTF16ToNSString(credential.username)
-                  isEqualToString:username]) {
-            return true;
-          }
-        }
-        return false;
-      });
-  return it != _credentials.end()
-             ? std::optional<password_manager::CredentialUIEntry>(*it)
-             : std::nullopt;
-}
-
-- (void)setCredentialsForTesting:
-    (std::vector<password_manager::CredentialUIEntry>)credentials {
-  _credentials = credentials;
 }
 
 #pragma mark - CredentialSuggestionBottomSheetMediatorBase
@@ -665,11 +637,13 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
 // Fetches all credentials for the current form.
 - (void)fetchCredentialsForForm:(autofill::FormRendererId)formId
                        webState:(web::WebState*)webState {
-  _credentials.clear();
+  [self clearCredentials];
 
   if (![self hasSuggestions]) {
     return;
   }
+
+  [self fetchPasskeyCredentials];
 
   password_manager::PasswordManager* passwordManager =
       GetPasswordManager(webState);
@@ -710,8 +684,8 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
           }),
           params);
     }
-    _credentials.push_back(password_manager::CredentialUIEntry(
-        password_manager::CloneStoredCredential(cred)));
+    [self addCredential:password_manager::CredentialUIEntry(
+                            password_manager::CloneStoredCredential(cred))];
   }
 }
 

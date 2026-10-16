@@ -4,12 +4,17 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator_base.h"
 
+#import <algorithm>
+
+#import "base/base64.h"
 #import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
@@ -70,6 +75,9 @@
 
   // Information about the pending passkey request.
   std::optional<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
+
+  // Vector of credentials related to the current page.
+  std::vector<password_manager::CredentialUIEntry> _credentials;
 }
 
 - (instancetype)
@@ -152,6 +160,41 @@
   return [self.suggestions count] > 0;
 }
 
+- (std::optional<password_manager::CredentialUIEntry>)
+    getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion {
+  if (formSuggestion.type == autofill::SuggestionType::kWebauthnCredential) {
+    std::optional<std::vector<uint8_t>> credentialId = base::Base64Decode(
+        webauthn::GetPasskeySuggestionEncodedCredentialId(formSuggestion));
+    if (!credentialId || credentialId->empty()) {
+      return std::nullopt;
+    }
+    auto it = std::ranges::find_if(
+        _credentials,
+        [&credentialId](const password_manager::CredentialUIEntry& credential) {
+          return credential.passkey_credential_id == *credentialId;
+        });
+    return it != _credentials.end()
+               ? std::optional<password_manager::CredentialUIEntry>(*it)
+               : std::nullopt;
+  }
+
+  std::u16string username = base::SysNSStringToUTF16(formSuggestion.value);
+  auto it = std::ranges::find_if(
+      _credentials,
+      [&username](const password_manager::CredentialUIEntry& credential) {
+        return credential.passkey_credential_id.empty() &&
+               credential.username == username;
+      });
+  return it != _credentials.end()
+             ? std::optional<password_manager::CredentialUIEntry>(*it)
+             : std::nullopt;
+}
+
+- (void)setCredentialsForTesting:
+    (std::vector<password_manager::CredentialUIEntry>)credentials {
+  _credentials = std::move(credentials);
+}
+
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
@@ -185,6 +228,32 @@
               completion:(ProceduralBlock)completion {
   // Must be implemented by subclasses.
   NOTREACHED();
+}
+
+- (void)clearCredentials {
+  _credentials.clear();
+}
+
+- (void)addCredential:(const password_manager::CredentialUIEntry&)credential {
+  _credentials.push_back(credential);
+}
+
+- (void)fetchPasskeyCredentials {
+  webauthn::IOSWebAuthnCredentialsDelegate* delegate =
+      self.webAuthnCredentialsDelegate.get();
+  if (!delegate) {
+    return;
+  }
+
+  base::expected<
+      const std::vector<password_manager::PasskeyCredential>*,
+      password_manager::WebAuthnCredentialsDelegate::PasskeysUnavailableReason>
+      passkeys = delegate->GetPasskeys();
+  if (passkeys.has_value() && *passkeys) {
+    for (const password_manager::PasskeyCredential& passkey : **passkeys) {
+      _credentials.push_back(password_manager::CredentialUIEntry(passkey));
+    }
+  }
 }
 
 - (void)selectSuggestion:(FormSuggestion*)suggestion

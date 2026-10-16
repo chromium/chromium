@@ -12,6 +12,7 @@
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
@@ -250,4 +251,38 @@ TEST_F(PasskeySuggestionBottomSheetMediatorTest, DismissDefersToRenderer) {
       static_cast<web::FakeWebFrame*>(frames_manager->GetMainWebFrame());
   EXPECT_NE(main_frame->GetLastJavaScriptCall().find(u"deferToRenderer"),
             std::u16string::npos);
+}
+
+// Tests that passkey credentials are fetched and can be retrieved for a passkey
+// suggestion.
+TEST_F(PasskeySuggestionBottomSheetMediatorTest, FetchesPasskeyCredentials) {
+  PasskeyCredential passkey = CreatePasskeyCredential();
+  webauthn_credentials_delegate_->OnCredentialsReceived({passkey}, kRequestId);
+
+  CreateMediator();
+
+  __block FormSuggestion* passkeySuggestion = nil;
+  OCMExpect([consumer_
+      setSuggestions:[OCMArg checkWithBlock:^BOOL(
+                                 NSArray<FormSuggestion*>* suggestions) {
+        EXPECT_EQ(suggestions.count, 1u);
+        passkeySuggestion = suggestions[0];
+        return YES;
+      }]
+           andDomain:[OCMArg isNotNil]]);
+  OCMExpect([consumer_
+      setPrimaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_CONTINUE)
+       secondaryActionString:l10n_util::GetNSString(
+                                 IDS_IOS_CREDENTIAL_BOTTOM_SHEET_MORE_PASSKEYS)
+        secondaryActionImage:[OCMArg any]]);
+
+  [mediator_ setConsumer:consumer_];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+  ASSERT_TRUE(passkeySuggestion);
+
+  std::optional<password_manager::CredentialUIEntry> credential =
+      [mediator_ getCredentialForFormSuggestion:passkeySuggestion];
+  ASSERT_TRUE(credential.has_value());
+  EXPECT_EQ(credential.value(), password_manager::CredentialUIEntry(passkey));
 }

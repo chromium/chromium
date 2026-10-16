@@ -8,10 +8,15 @@
 #import <Foundation/Foundation.h>
 
 #import <optional>
+#import <vector>
 
 #import "base/ios/block_types.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/ui/credential_suggestion_bottom_sheet_delegate.h"
+
+namespace password_manager {
+struct CredentialUIEntry;
+}  // namespace password_manager
 
 class WebStateList;
 enum class PasswordSuggestionBottomSheetExitReason;
@@ -53,6 +58,11 @@ enum class PasswordSuggestionBottomSheetExitReason;
 // Whether the mediator has any suggestions for the user.
 - (BOOL)hasSuggestions;
 
+// Returns the credential associated with the form suggestion. It is an
+// optional, in case the credential can't be found.
+- (std::optional<password_manager::CredentialUIEntry>)
+    getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion;
+
 // Sends the information about which suggestion from the bottom sheet was
 // selected by the user, which is expected to fill the relevant fields.
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion
@@ -74,6 +84,10 @@ enum class PasswordSuggestionBottomSheetExitReason;
 // Cancels the passkey request and defers to the renderer to save the passkey,
 // potentially using a different credential provider.
 - (void)deferPasskeyRequestToRenderer;
+
+// Sets the vector of credentials that is used for testing.
+- (void)setCredentialsForTesting:
+    (std::vector<password_manager::CredentialUIEntry>)credentials;
 
 @end
 
