@@ -663,6 +663,7 @@ class ContentSettingNotificationsBubbleModel
 
   // ContentSettingBubbleModel:
   void OnDoneButtonClicked() override;
+  void OnCancelButtonClicked() override;
 };
 #endif
 

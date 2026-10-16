@@ -1513,6 +1513,7 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
       /*has_blocked_badge=*/false, 0));
   set_manage_text_style(ContentSettingBubbleModel::ManageTextStyle::kNone);
   set_done_button_text(l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
+  set_cancel_button_text(l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
 }
 
 ContentSettingNotificationsBubbleModel::
@@ -1528,6 +1529,24 @@ void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
   }
   base::mac::OpenSystemSettingsPane(
       base::mac::SystemSettingsPane::kNotifications, bundle_identifier);
+}
+
+void ContentSettingNotificationsBubbleModel::OnCancelButtonClicked() {
+  if (!web_contents() || !GetProfile()) {
+    return;
+  }
+
+  const GURL& url = GetPage().GetMainDocument().GetLastCommittedURL();
+  permissions::PermissionUmaUtil::ScopedRevocationReporter
+      scoped_revocation_reporter(GetProfile(), url, GURL(),
+                                 ContentSettingsType::NOTIFICATIONS,
+                                 permissions::PermissionSourceUI::PAGE_ACTION);
+  HostContentSettingsMapFactory::GetForProfile(GetProfile())
+      ->SetContentSettingDefaultScope(
+          url, GURL(), ContentSettingsType::NOTIFICATIONS,
+          CONTENT_SETTING_BLOCK,
+          CreateConstraintsForAutoRevocation(ContentSettingsType::NOTIFICATIONS,
+                                             CONTENT_SETTING_BLOCK));
 }
 #endif
 
