@@ -61,11 +61,12 @@ TEST(SidebarPromosTest, SkipsExpiredPromos) {
 }
 
 TEST(SidebarPromosTest, NothingToShow) {
-  EXPECT_FALSE(PickSidebarPromo({}, Expiry() - base::Days(60)));
+  EXPECT_EQ(std::nullopt, PickSidebarPromo({}, Expiry() - base::Days(60)));
 
-  EXPECT_EQ(kExpiringId, PickedId(base::span(kPromos).first(1u),
-                                  Expiry() - base::Seconds(1)));
-  EXPECT_FALSE(PickSidebarPromo(base::span(kPromos).first(1u), Expiry()));
+  const base::span<const SidebarPromo> all_expired =
+      base::span(kPromos).first(1u);
+  EXPECT_EQ(kExpiringId, PickedId(all_expired, Expiry() - base::Seconds(1)));
+  EXPECT_EQ(std::nullopt, PickSidebarPromo(all_expired, Expiry()));
 }
 
 }  // namespace extensions
