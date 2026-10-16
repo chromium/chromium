@@ -6,9 +6,6 @@
 
 #include <array>
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
-
 namespace zucchini {
 
 namespace {
@@ -30,14 +27,12 @@ std::array<uint32_t, 256> MakeCrc32Table() {
 
 // Minimalistic CRC-32 implementation for Zucchini usage. Adapted from LZMA SDK
 // (found at third_party/lzma_sdk/src/C/7zCrc.c), which is public domain.
-uint32_t CalculateCrc32(const uint8_t* first, const uint8_t* last) {
-  DCHECK_GE(last, first);
-
+uint32_t CalculateCrc32(base::span<const uint8_t> data) {
   static const std::array<uint32_t, 256> kCrc32Table = MakeCrc32Table();
 
   uint32_t ret = 0xFFFFFFFF;
-  for (; first != last; UNSAFE_TODO(++first)) {
-    ret = kCrc32Table[(ret ^ *first) & 0xFF] ^ (ret >> 8);
+  for (uint8_t byte : data) {
+    ret = kCrc32Table[(ret ^ byte) & 0xFF] ^ (ret >> 8);
   }
   return ret ^ 0xFFFFFFFF;
 }

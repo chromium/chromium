@@ -261,9 +261,9 @@ EnsemblePatchWriter::EnsemblePatchWriter(ConstBufferView old_image,
   header_.major_version = kMajorVersion;
   header_.minor_version = kMinorVersion;
   header_.old_size = base::checked_cast<uint32_t>(old_image.size());
-  header_.old_crc = CalculateCrc32(old_image.begin(), old_image.end());
+  header_.old_crc = CalculateCrc32(old_image);
   header_.new_size = base::checked_cast<uint32_t>(new_image.size());
-  header_.new_crc = CalculateCrc32(new_image.begin(), new_image.end());
+  header_.new_crc = CalculateCrc32(new_image);
 }
 
 void EnsemblePatchWriter::AddElement(PatchElementWriter&& patch_element) {

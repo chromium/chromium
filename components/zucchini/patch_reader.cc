@@ -390,12 +390,12 @@ bool EnsemblePatchReader::Initialize(BufferSource* source) {
 
 bool EnsemblePatchReader::CheckOldFile(ConstBufferView old_image) const {
   return old_image.size() == header_.old_size &&
-         CalculateCrc32(old_image.begin(), old_image.end()) == header_.old_crc;
+         CalculateCrc32(old_image) == header_.old_crc;
 }
 
 bool EnsemblePatchReader::CheckNewFile(ConstBufferView new_image) const {
   return new_image.size() == header_.new_size &&
-         CalculateCrc32(new_image.begin(), new_image.end()) == header_.new_crc;
+         CalculateCrc32(new_image) == header_.new_crc;
 }
 
 }  // namespace zucchini

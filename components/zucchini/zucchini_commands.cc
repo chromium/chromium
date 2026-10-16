@@ -148,8 +148,7 @@ zucchini::status::Code MainCrc32(MainParams params) {
   if (input.status != kStatusSuccess)
     return input.status;
 
-  uint32_t crc =
-      zucchini::CalculateCrc32(input.region().begin(), input.region().end());
+  uint32_t crc = zucchini::CalculateCrc32(input.region());
   *params.out << "CRC32: " << zucchini::AsHex<8>(crc) << std::endl;
   return kStatusSuccess;
 }

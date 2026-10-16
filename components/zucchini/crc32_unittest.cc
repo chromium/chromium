@@ -6,46 +6,37 @@
 
 #include <stdint.h>
 
-#include <iterator>
+#include <array>
 
-#include "base/compiler_specific.h"
-#include "base/test/gtest_util.h"
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace zucchini {
 
-constexpr uint8_t bytes[] = {0x10, 0x32, 0x54, 0x76, 0x98,
-                             0xBA, 0xDC, 0xFE, 0x10, 0x00};
+constexpr auto kBytes = std::to_array<uint8_t>(
+    {0x10, 0x32, 0x54, 0x76, 0x98, 0xBA, 0xDC, 0xFE, 0x10, 0x00});
 
 TEST(Crc32Test, All) {
   // Results can be verified with any CRC-32 calculator found online.
+  const base::span<const uint8_t> data(kBytes);
 
   // Empty region.
-  EXPECT_EQ(0x00000000U, CalculateCrc32(std::begin(bytes), std::begin(bytes)));
+  EXPECT_EQ(0x00000000U, CalculateCrc32(data.first(0u)));
 
   // Single byte.
-  UNSAFE_TODO(EXPECT_EQ(
-      0xCFB5FFE9U, CalculateCrc32(std::begin(bytes), std::begin(bytes) + 1)));
+  EXPECT_EQ(0xCFB5FFE9U, CalculateCrc32(data.first(1u)));
 
   // Same byte (0x10) appearing at different location.
-  UNSAFE_TODO(EXPECT_EQ(0xCFB5FFE9U, CalculateCrc32(std::begin(bytes) + 8,
-                                                    std::begin(bytes) + 9)));
+  EXPECT_EQ(0xCFB5FFE9U, CalculateCrc32(data.subspan(8u, 1u)));
 
   // Single byte of 0.
-  UNSAFE_TODO(EXPECT_EQ(
-      0xD202EF8DU, CalculateCrc32(std::begin(bytes) + 9, std::end(bytes))));
+  EXPECT_EQ(0xD202EF8DU, CalculateCrc32(data.subspan(9u)));
 
   // Whole region.
-  EXPECT_EQ(0xA86FD7D6U, CalculateCrc32(std::begin(bytes), std::end(bytes)));
+  EXPECT_EQ(0xA86FD7D6U, CalculateCrc32(data));
 
   // Whole region excluding 0 at end.
-  UNSAFE_TODO(EXPECT_EQ(
-      0x0762F38BU, CalculateCrc32(std::begin(bytes), std::begin(bytes) + 9)));
-
-#if GTEST_HAS_DEATH_TEST
-  UNSAFE_TODO(EXPECT_DCHECK_DEATH(
-      CalculateCrc32(std::begin(bytes) + 1, std::begin(bytes))));
-#endif
+  EXPECT_EQ(0x0762F38BU, CalculateCrc32(data.first(9u)));
 }
 
 }  // namespace zucchini
