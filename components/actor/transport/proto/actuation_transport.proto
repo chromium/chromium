@@ -9,6 +9,389 @@ option optimize_for = LITE_RUNTIME;
 package actor.proto;
 
 import "components/optimization_guide/proto/features/actions_data.proto";
+import "components/optimization_guide/proto/features/common_quality_data.proto";
+
+// Root container for downstream actuation messages sent from the server to the
+// browser.
+// Next ID: 8
+message ServerToBrowserPayload {
+  // Unique task identifier, supporting multi-task multiplexing in one session.
+  // Empty on StartTaskRequest before a task is created.
+  string task_id = 1;
+
+  // Unique request correlation identifier echoed back in the corresponding
+  // BrowserToServerPayload.request_id.
+  string request_id = 2;
+
+  oneof payload {
+    // Request to create and start a new actor task.
+    StartTaskRequest start_task = 3;
+
+    // Request to execute a sequence of actions on an active task.
+    PerformActionsRequest perform_actions = 4;
+
+    // Request to terminate an active task.
+    StopTaskRequest stop_task = 5;
+
+    // Request to pause an active task.
+    PauseTaskRequest pause_task = 6;
+
+    // Request to resume a paused task.
+    ResumeTaskRequest resume_task = 7;
+  }
+}
+
+// Root container for upstream actuation messages sent from the browser to the
+// server.
+// Next ID: 8
+message BrowserToServerPayload {
+  // Unique task identifier matching the originating task.
+  string task_id = 1;
+
+  // Request correlation identifier matching the originating
+  // ServerToBrowserPayload.request_id.
+  string request_id = 2;
+
+  oneof payload {
+    // Result of a StartTaskRequest.
+    StartTaskResponse start_task = 3;
+
+    // Result and captured observations from a PerformActionsRequest.
+    PerformActionsResponse perform_actions = 4;
+
+    // Result of a StopTaskRequest.
+    StopTaskResponse stop_task = 5;
+
+    // Result of a PauseTaskRequest.
+    PauseTaskResponse pause_task = 6;
+
+    // Result and captured observations from a ResumeTaskRequest.
+    ResumeTaskResponse resume_task = 7;
+  }
+}
+
+// Downstream request to initiate a task on the target browser instance.
+// Next ID: 5
+message StartTaskRequest {
+  // Human-readable title displayed in browser task UI and indicators.
+  string task_title = 1;
+
+  // Optional target surfaces to claim or pre-allocate at task start. If empty,
+  // no surface is claimed upfront and tabs are claimed lazily when actions
+  // execute.
+  repeated TargetSurface target_surfaces = 2;
+
+  // Agent container policy defining allowed locations, accessible resources,
+  // and actuation capabilities.
+  optimization_guide.proto.AgentContainerConfig agent_container_config = 3;
+
+  // Level of observation to collect upon task creation.
+  ObservationConfig initial_observation_config = 4;
+}
+
+// Specification of a browser surface to bind to an actor task.
+// Next ID: 3
+message TargetSurface {
+  // Existing tab ID to claim at task start. If 0 or omitted, the browser
+  // creates a new surface when needed.
+  optional int32 tab_id = 1;
+
+  enum ExecutionMode {
+    EXECUTION_MODE_UNSPECIFIED = 0;
+
+    // Standard user-visible actuation with window focus and UI indicators.
+    HEADED = 1;
+
+    // Background actuation without stealing user focus.
+    HEADLESS = 2;
+  }
+
+  // Whether actuation on this surface runs visibly or in a background surface.
+  ExecutionMode execution_mode = 2;
+}
+
+// Upstream response confirming task initialization and reporting initial state.
+// Next ID: 4
+message StartTaskResponse {
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_OK = 1;
+    STATUS_TARGET_TAB_NOT_FOUND = 2;
+  }
+
+  // Outcome of the task initialization request.
+  Status status = 1;
+
+  // Details of a surface claimed or created at task start.
+  // Next ID: 3
+  message BoundSurface {
+    // Identifier of the bound browser tab.
+    int32 tab_id = 1;
+
+    // Execution mode active on the bound surface.
+    TargetSurface.ExecutionMode execution_mode = 2;
+  }
+
+  // Surfaces claimed or created at task start.
+  repeated BoundSurface bound_surfaces = 2;
+
+  // Initial surface observations populated when requested in
+  // initial_observation_config.
+  repeated BrowserObservation initial_observations = 3;
+}
+
+// Downstream request to execute one or more browser actions sequentially.
+// Next ID: 4
+message PerformActionsRequest {
+  // Atomic sequence of actions to perform.
+  repeated optimization_guide.proto.Action actions = 1;
+
+  // Configuration controlling what observations the browser returns after
+  // completing the actions.
+  ObservationConfig observation_config = 2;
+
+  // Optional updated agent container policy to apply before executing actions.
+  optional optimization_guide.proto.AgentContainerConfig
+      agent_container_config = 3;
+}
+
+// Configures observation collection to control latency and payload size.
+// Next ID: 2
+message ObservationConfig {
+  enum ObservationLevel {
+    // Default value.
+    OBSERVATION_LEVEL_UNSPECIFIED = 0;
+
+    // Collect no page observation.
+    OBSERVATION_LEVEL_NONE = 1;
+
+    // Collect only basic tab status and current URL.
+    OBSERVATION_LEVEL_STATUS_ONLY = 2;
+
+    // Collect tab status and visual screenshot without DOM content.
+    OBSERVATION_LEVEL_SCREENSHOT_ONLY = 3;
+
+    // Collect tab status and AnnotatedPageContent DOM tree without screenshot.
+    OBSERVATION_LEVEL_APC_ONLY = 4;
+
+    // Collect tab status, screenshot, and AnnotatedPageContent DOM tree.
+    OBSERVATION_LEVEL_FULL = 5;
+  }
+
+  // Detail level of observation data to capture.
+  ObservationLevel level = 1;
+}
+
+// Upstream response returning the outcome and observations of executed actions.
+// Next ID: 6
+message PerformActionsResponse {
+  enum Status {
+    // Unset status; treated as a failure by consumers.
+    STATUS_UNSPECIFIED = 0;
+    STATUS_OK = 1;
+    STATUS_ACTION_FAILED = 2;
+    STATUS_TASK_CANCELLED = 3;
+    STATUS_TASK_PAUSED_BY_USER = 4;
+    STATUS_TAB_DISCONNECTED = 5;
+    STATUS_SECURITY_VIOLATION = 6;
+  }
+
+  // High-level outcome of the action sequence execution.
+  Status status = 1;
+
+  // Granular ActionResultCode from
+  // components/actor/public/mojom/actor_types.mojom.
+  int32 action_status_code = 2;
+
+  // Zero-based index of the action that failed in the batch. Unset if all
+  // actions succeeded.
+  optional int32 failed_action_index = 3;
+
+  // Per-action extra information strings for succeeded actions.
+  repeated string extra_information = 4;
+
+  // Resulting browser tab observations.
+  repeated BrowserObservation observations = 5;
+}
+
+// Observation of a single browser tab. One entry is returned per observed tab,
+// even if observing it failed.
+// Next ID: 9
+message BrowserObservation {
+  // Identifier of the observed browser tab.
+  int32 tab_id = 1;
+
+  // Committed URL of the tab's main frame after redirects.
+  string current_url = 2;
+
+  // Outcome of observing the tab as a whole.
+  enum Status {
+    // Unset status; treated as a failure by consumers.
+    STATUS_UNSPECIFIED = 0;
+
+    // The tab was observed. Each requested part holds either its data or an
+    // ObservationError.
+    STATUS_OBSERVED = 1;
+
+    // The tab is no longer available.
+    STATUS_TAB_WENT_AWAY = 2;
+
+    // The page crashed.
+    STATUS_PAGE_CRASHED = 3;
+
+    // The tab's web contents changed during observation, so it was abandoned.
+    STATUS_WEB_CONTENTS_CHANGED = 4;
+
+    // The page is not eligible for observation.
+    STATUS_NOT_ELIGIBLE = 5;
+
+    // An unknown error occurred.
+    STATUS_UNKNOWN_ERROR = 6;
+  }
+
+  // Overall tab observation status. If not STATUS_OBSERVED, screenshot and
+  // page_content are unset.
+  Status status = 3;
+
+  // Viewport screenshot. Set when requested and status is STATUS_OBSERVED.
+  oneof screenshot {
+    // Captured screenshot payload.
+    BinaryData screenshot_data = 4;
+
+    // Error details when screenshot capture failed.
+    ObservationError screenshot_error = 5;
+  }
+
+  // Page content. Set when requested and status is STATUS_OBSERVED.
+  oneof page_content {
+    // Structured AnnotatedPageContent when inlined as a proto message.
+    optimization_guide.proto.AnnotatedPageContent
+        inline_annotated_page_content = 6;
+
+    // Serialized AnnotatedPageContent bytes or URI reference.
+    BinaryData annotated_page_content_data = 7;
+
+    // Error details when page content capture failed.
+    ObservationError page_content_error = 8;
+  }
+}
+
+// Backend-neutral binary observation data such as a screenshot or serialized
+// AnnotatedPageContent.
+// Next ID: 4
+message BinaryData {
+  oneof source {
+    // Data inlined in the payload.
+    bytes inline_data = 1;
+
+    // URI of data stored out of band.
+    string uri = 2;
+  }
+
+  // MIME type of the data, such as "image/webp" or "application/x-protobuf".
+  string mime_type = 3;
+}
+
+// Reason a requested part of a BrowserObservation could not be collected.
+// Next ID: 3
+message ObservationError {
+  enum Code {
+    // Unset error code; treated as a failure by consumers.
+    CODE_UNSPECIFIED = 0;
+
+    // Collection timed out.
+    CODE_TIMEOUT = 1;
+
+    // Collection failed for another reason.
+    CODE_FAILED = 2;
+  }
+
+  // Category of observation failure.
+  Code code = 1;
+
+  // Developer-facing diagnostic detail. Must not contain page content.
+  string debug_message = 2;
+}
+
+// Downstream request to stop an active task.
+// Next ID: 2
+message StopTaskRequest {
+  enum Reason {
+    REASON_UNSPECIFIED = 0;
+    TASK_COMPLETED = 1;
+    USER_CANCELLED = 2;
+    TIMEOUT = 3;
+    POLICY_ABORT = 4;
+  }
+
+  // Reason why the task is being stopped.
+  Reason reason = 1;
+}
+
+// Upstream response acknowledging that a task has been stopped.
+// Next ID: 2
+message StopTaskResponse {
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_OK = 1;
+    STATUS_FAILED = 2;
+  }
+
+  // Outcome of the stop task request.
+  Status status = 1;
+}
+
+// Downstream request to pause an active task.
+// Next ID: 2
+message PauseTaskRequest {
+  enum Reason {
+    REASON_UNSPECIFIED = 0;
+    USER_REQUESTED = 1;
+    YIELD_TO_USER = 2;
+    AWAITING_USER_CONFIRMATION = 3;
+  }
+
+  // Reason why the task is being paused.
+  Reason reason = 1;
+}
+
+// Upstream response acknowledging that a task has been paused.
+// Next ID: 2
+message PauseTaskResponse {
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_OK = 1;
+    STATUS_FAILED = 2;
+  }
+
+  // Outcome of the pause task request.
+  Status status = 1;
+}
+
+// Downstream request to resume a paused task and optionally capture a fresh
+// page observation.
+// Next ID: 2
+message ResumeTaskRequest {
+  // Configuration for capturing fresh tab observations upon resuming.
+  ObservationConfig observation_config = 1;
+}
+
+// Upstream response acknowledging that a task has been resumed and returning
+// fresh observations if requested.
+// Next ID: 3
+message ResumeTaskResponse {
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_OK = 1;
+    STATUS_FAILED = 2;
+  }
+
+  // Outcome of the resume task request.
+  Status status = 1;
+
+  // Fresh tab observations captured upon resuming the task.
+  repeated BrowserObservation observations = 2;
+}
 
 // Request to stop an active actor task.
 message StopTask {
