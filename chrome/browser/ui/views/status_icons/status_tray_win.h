@@ -9,8 +9,14 @@
 
 #include <memory>
 
-#include "base/gtest_prod_util.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/status_icons/status_tray.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 class StatusIconWin;
 
@@ -28,6 +34,29 @@ class StatusTrayStateChangerProxy {
 
 class StatusTrayWin : public StatusTray {
  public:
+  // Keeps the notification HWND alive while Shell requests are in flight.
+  // The HWND must be destroyed on its creating (UI) sequence.
+  class Window : public base::RefCountedDeleteOnSequence<Window> {
+   public:
+    explicit Window(StatusTrayWin* tray);
+
+    HWND hwnd() const { return hwnd_; }
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner() const {
+      return task_runner_;
+    }
+    void Detach();
+
+   private:
+    friend class base::RefCountedDeleteOnSequence<Window>;
+    friend class base::DeleteHelper<Window>;
+    ~Window();
+
+    class MessageWindow;
+    const std::unique_ptr<MessageWindow> message_window_;
+    const HWND hwnd_;
+    const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  };
+
   StatusTrayWin();
 
   StatusTrayWin(const StatusTrayWin&) = delete;
@@ -36,6 +65,9 @@ class StatusTrayWin : public StatusTray {
   ~StatusTrayWin() override;
 
   void UpdateIconVisibilityInBackground(StatusIconWin* status_icon);
+
+  void SetStatusTrayStateChangerProxyForTest(
+      std::unique_ptr<StatusTrayStateChangerProxy> proxy);
 
   // Exposed for testing.
   LRESULT CALLBACK WndProc(HWND hwnd,
@@ -51,30 +83,13 @@ class StatusTrayWin : public StatusTray {
       const std::u16string& tool_tip) override;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(StatusTrayWinTest, EnsureVisibleTest);
-
-  // Static callback invoked when a message comes in to our messaging window.
-  static LRESULT CALLBACK WndProcStatic(HWND hwnd,
-                                        UINT message,
-                                        WPARAM wparam,
-                                        LPARAM lparam);
-
   UINT NextIconId();
-
-  void SetStatusTrayStateChangerProxyForTest(
-      std::unique_ptr<StatusTrayStateChangerProxy> proxy);
 
   // The unique icon ID we will assign to the next icon.
   UINT next_icon_id_;
 
-  // The window class of |window_|.
-  ATOM atom_;
-
-  // The handle of the module that contains the window procedure of |window_|.
-  HMODULE instance_;
-
-  // The window used for processing events.
-  HWND window_;
+  // Shared with icons and outstanding Shell requests.
+  scoped_refptr<Window> window_;
 
   // The message ID of the "TaskbarCreated" message, sent to us when we need to
   // reset our status icons.
@@ -83,6 +98,8 @@ class StatusTrayWin : public StatusTray {
   // Manages changes performed on a background thread to manipulate visibility
   // of notification icons.
   std::unique_ptr<StatusTrayStateChangerProxy> state_changer_proxy_;
+
+  base::WeakPtrFactory<StatusTrayWin> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_TRAY_WIN_H_
