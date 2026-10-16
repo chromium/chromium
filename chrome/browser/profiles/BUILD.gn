@@ -1321,6 +1321,7 @@ if (!is_android) {
 
     if (is_mac || is_win || is_linux) {
       sources += [ "profile_statistics_browsertest.cc" ]
+      deps += [ "//chrome/browser/autofill" ]
     }
 
     if (is_win) {

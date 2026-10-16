@@ -9,8 +9,12 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/test/test_file_util.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/in_memory_entity_suppression_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -44,6 +48,20 @@ scoped_refptr<autofill::AutofillWebDataService> BuildFakeAutofillWebDataService(
       std::move(web_database_service),
       /*ui_task_runner=*/task_runner);
 }
+
+class AutofillStatHelper {
+ public:
+  void StatsCallback(profiles::ProfileCategoryStats stats) {
+    if (stats.back().category == profiles::kProfileStatisticsAutofill) {
+      autofill_count_ = stats.back().count;
+    }
+  }
+
+  int GetAutofillCount() { return autofill_count_; }
+
+ private:
+  int autofill_count_ = -1;
+};
 
 class BookmarkStatHelper {
  public:
@@ -79,17 +97,25 @@ class ProfileStatisticsAggregatorTest : public testing::Test {
       base::OnceClosure done_callback) {
     return std::make_unique<ProfileStatisticsAggregator>(
         autofill_web_data_service_, &personal_data_manager_,
-        /*entity_data_manager=*/nullptr, &bookmark_model_, &history_service_,
-        profile_password_store_, &pref_service_,
+        /*entity_data_manager=*/nullptr, &entity_suppression_manager_,
+        &bookmark_model_, &history_service_, profile_password_store_,
+        &pref_service_,
         /*platform_credential_store=*/nullptr, std::move(done_callback));
   }
 
   bookmarks::BookmarkModel* bookmark_model() { return &bookmark_model_; }
+  autofill::TestPersonalDataManager& personal_data_manager() {
+    return personal_data_manager_;
+  }
+  autofill::InMemoryEntitySuppressionManager& entity_suppression_manager() {
+    return entity_suppression_manager_;
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   autofill::TestPersonalDataManager personal_data_manager_;
+  autofill::InMemoryEntitySuppressionManager entity_suppression_manager_;
   bookmarks::BookmarkModel bookmark_model_{
       std::make_unique<bookmarks::TestBookmarkClient>()};
   history::HistoryService history_service_;
@@ -135,4 +161,32 @@ TEST_F(ProfileStatisticsAggregatorTest, WaitOrCountBookmarks) {
 
   run_loop_aggregator_done.Run();
   EXPECT_EQ(1, bookmark_stat_helper.GetNumOfTimesCalled());
+}
+
+// Tests that the Autofill statistic covers all Autofill data deleted with the
+// profile: addresses, payment methods and entity suppression metadata, not
+// just autocomplete entries.
+TEST_F(ProfileStatisticsAggregatorTest, AutofillStatCountsAllAutofillData) {
+  personal_data_manager().test_address_data_manager().AddProfile(
+      autofill::test::GetFullProfile());
+  personal_data_manager().test_address_data_manager().AddProfile(
+      autofill::test::GetFullProfile2());
+  personal_data_manager().test_payments_data_manager().AddCreditCard(
+      autofill::test::GetCreditCard());
+  // The passport satisfies a single merge constraint, i.e. one entry.
+  ASSERT_TRUE(entity_suppression_manager().SuppressEntity(
+      autofill::test::GetPassportEntityInstance()));
+  bookmark_model()->LoadEmptyForTest();
+
+  AutofillStatHelper autofill_stat_helper;
+  base::RunLoop run_loop;
+  std::unique_ptr<ProfileStatisticsAggregator> aggregator =
+      CreateAggregator(run_loop.QuitClosure());
+  aggregator->AddCallbackAndStartAggregator(
+      base::BindRepeating(&AutofillStatHelper::StatsCallback,
+                          base::Unretained(&autofill_stat_helper)));
+  run_loop.Run();
+
+  // 2 addresses + 1 payment method + 1 suppression.
+  EXPECT_EQ(4, autofill_stat_helper.GetAutofillCount());
 }

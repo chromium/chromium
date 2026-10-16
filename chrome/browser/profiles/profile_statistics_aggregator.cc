@@ -11,6 +11,7 @@
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_suppression_manager.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/bookmark_counter.h"
 #include "components/browsing_data/core/counters/history_counter.h"
@@ -23,6 +24,7 @@ ProfileStatisticsAggregator::ProfileStatisticsAggregator(
     scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
     autofill::PersonalDataManager* personal_data_manager,
     const autofill::EntityDataManager* entity_data_manager,
+    const autofill::EntitySuppressionManager* entity_suppression_manager,
     bookmarks::BookmarkModel* bookmark_model,
     history::HistoryService* history_service,
     scoped_refptr<password_manager::PasswordStoreInterface>
@@ -34,6 +36,7 @@ ProfileStatisticsAggregator::ProfileStatisticsAggregator(
     : autofill_web_data_service_(std::move(autofill_web_data_service)),
       personal_data_manager_(personal_data_manager),
       entity_data_manager_(entity_data_manager),
+      entity_suppression_manager_(entity_suppression_manager),
       bookmark_model_(bookmark_model),
       history_service_(history_service),
       profile_password_store_(profile_password_store),
@@ -86,7 +89,7 @@ void ProfileStatisticsAggregator::StartAggregator() {
   // Initiate autofill counting.
   AddCounter(std::make_unique<browsing_data::AutofillCounter>(
       personal_data_manager_, autofill_web_data_service_, entity_data_manager_,
-      /*entity_suppression_manager=*/nullptr,
+      entity_suppression_manager_,
       /*sync_service=*/nullptr));
 }
 
@@ -114,7 +117,17 @@ void ProfileStatisticsAggregator::OnCounterResult(
     StatisticsCallback(profiles::kProfileStatisticsPasswords,
                        profile_passwords + signin_data_count);
   } else if (pref_name == browsing_data::prefs::kDeleteFormData) {
-    StatisticsCallback(profiles::kProfileStatisticsAutofill, count);
+    // Report all Autofill data that is deleted together with the profile, not
+    // just autocomplete entries: addresses, payment methods, Autofill AI
+    // entities and entity suppressions.
+    const auto* autofill_result =
+        static_cast<const browsing_data::AutofillCounter::AutofillResult*>(
+            result.get());
+    StatisticsCallback(
+        profiles::kProfileStatisticsAutofill,
+        autofill_result->Value() + autofill_result->num_credit_cards() +
+            autofill_result->num_addresses() + autofill_result->num_entities() +
+            autofill_result->num_suppressions());
   } else {
     NOTREACHED();
   }

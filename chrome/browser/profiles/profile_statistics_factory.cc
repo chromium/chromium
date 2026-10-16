@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/entity_suppression_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -49,6 +50,7 @@ ProfileStatisticsFactory::ProfileStatisticsFactory()
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
+  DependsOn(autofill::EntitySuppressionManagerFactory::GetInstance());
   DependsOn(BookmarkModelFactory::GetInstance());
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(ProfilePasswordStoreFactory::GetInstance());
@@ -75,6 +77,7 @@ ProfileStatisticsFactory::BuildServiceInstanceForBrowserContext(
           profile, ServiceAccessType::EXPLICIT_ACCESS),
       autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
       autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
+      autofill::EntitySuppressionManagerFactory::GetForProfile(profile),
       BookmarkModelFactory::GetForBrowserContext(profile),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
