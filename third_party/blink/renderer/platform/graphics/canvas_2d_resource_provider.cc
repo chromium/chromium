@@ -1004,25 +1004,18 @@ sk_sp<SkSurface> Canvas2DResourceProvider::CreateSkSurface() const {
 
   CHECK(!IsAccelerated());
 
-  if (is_software_) {
-    const auto props = GetSkSurfaceProps();
-    const auto info = SkImageInfo::Make(
-        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-        alpha_type_, color_space_.ToSkColorSpace());
-    return SkSurfaces::Raster(info, &props);
-  }
-
-  if (IsGpuContextLost() || !resource_) {
+  if (!is_software_ && (IsGpuContextLost() || !resource_)) {
     return nullptr;
   }
 
+  // When using software raster, we render into CPU memory managed internally by
+  // SkSurface and copy the rendered results to the backing SharedImage before
+  // dispatching that SharedImage to the display compositor.
   const auto props = GetSkSurfaceProps();
-
-  // When using software raster with GPU compositing, we render into CPU memory
-  // managed internally by SkSurface and copy the rendered results to the
-  // current resource's backing SharedImage before dispatching that SharedImage
-  // to the display compositor.
-  return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
+  const auto info = SkImageInfo::Make(
+      size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
+      alpha_type_, color_space_.ToSkColorSpace());
+  return SkSurfaces::Raster(info, &props);
 }
 
 SkSurfaceProps Canvas2DResourceProvider::GetSkSurfaceProps() const {
