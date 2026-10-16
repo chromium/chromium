@@ -1694,8 +1694,6 @@ void Shell::Init(
   mouse_keys_controller_ = std::make_unique<MouseKeysController>();
   AddPreTargetHandler(mouse_keys_controller_.get());
 
-  // TODO(crbug.com/414450865): Toggle mouse shake-to-locate with a preference
-  // rather than having it always on.
   if (::features::IsAccessibilityShakeToLocateEnabled()) {
     mouse_shake_to_locate_controller_ =
         std::make_unique<MouseShakeToLocateController>();

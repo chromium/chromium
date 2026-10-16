@@ -140,21 +140,40 @@ class MouseShakeToLocateController::ScopedEnlargedCursor
   base::OnceClosure on_shrink_ended_;
 };
 
-MouseShakeToLocateController::MouseShakeToLocateController() {
-  shake_observation_.Observe(&detector_);
-  Shell::Get()->AddAccessibilityEventHandler(
-      this, AccessibilityEventHandlerManager::HandlerType::kMouseShakeToLocate);
-}
+MouseShakeToLocateController::MouseShakeToLocateController() = default;
 
 MouseShakeToLocateController::~MouseShakeToLocateController() {
-  Shell::Get()->RemoveAccessibilityEventHandler(this);
-  shake_observation_.Reset();
-  CancelEffect();
+  Reset(enabled_);
+}
+
+void MouseShakeToLocateController::SetEnabled(bool enabled) {
+  if (enabled_ == enabled) {
+    return;
+  }
+  const bool was_enabled = enabled_;
+  enabled_ = enabled;
+
+  if (enabled_) {
+    shake_observation_.Observe(&detector_);
+    Shell::Get()->AddAccessibilityEventHandler(
+        this,
+        AccessibilityEventHandlerManager::HandlerType::kMouseShakeToLocate);
+  } else {
+    Reset(was_enabled);
+  }
 }
 
 void MouseShakeToLocateController::CancelEffect() {
   scoped_enlarged_cursor_.reset();
   effect_state_ = EffectState::kNone;
+}
+
+void MouseShakeToLocateController::Reset(bool was_enabled) {
+  if (was_enabled) {
+    Shell::Get()->RemoveAccessibilityEventHandler(this);
+  }
+  shake_observation_.Reset();
+  CancelEffect();
 }
 
 void MouseShakeToLocateController::OnMouseEvent(ui::MouseEvent* event) {

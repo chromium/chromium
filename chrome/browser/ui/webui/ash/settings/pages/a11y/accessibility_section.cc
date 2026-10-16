@@ -1239,6 +1239,8 @@ void AccessibilitySection::AddLoadTimeData(
       {"keyboardSettingsTitle",
        IDS_SETTINGS_ACCESSIBILITY_KEYBOARD_SETTINGS_TITLE},
       {"largeMouseCursorLabel", IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL},
+      {"shakeToLocateLabel",
+       IDS_OS_SETTINGS_ACCESSIBILITY_SHAKE_TO_LOCATE_LABEL},
       {"largeMouseCursorSizeDefaultLabel",
        IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_DEFAULT_LABEL},
       {"largeMouseCursorSizeLabel", IDS_SETTINGS_LARGE_MOUSE_CURSOR_SIZE_LABEL},
@@ -1569,6 +1571,9 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddBoolean("showTabletModeShelfNavigationButtonsSettings",
                           AreTabletNavigationButtonsAllowed());
+
+  html_source->AddBoolean("isAccessibilityShakeToLocateEnabled",
+                          ::features::IsAccessibilityShakeToLocateEnabled());
 
   html_source->AddString("tabletModeShelfNavigationButtonsLearnMoreUrl",
                          ash::external_urls::kTabletModeGesturesLearnMoreURL);

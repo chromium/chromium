@@ -26,6 +26,9 @@ class ASH_EXPORT MouseShakeToLocateController
       delete;
   ~MouseShakeToLocateController() override;
 
+  // Enables or disables observing mouse movements for shake gestures.
+  void SetEnabled(bool enabled);
+
   // Cancels any active effect and restores the runtime cursor state.
   void CancelEffect();
 
@@ -56,12 +59,14 @@ class ASH_EXPORT MouseShakeToLocateController
   void OnMouseShakeStarted(const gfx::PointF& location_in_screen) override;
   void OnMouseShakeEnded() override;
 
+  void Reset(bool was_enabled);
   void OnShrinkAnimationEnded();
 
   MouseShakeDetector detector_;
   base::ScopedObservation<MouseShakeDetector, MouseShakeDetector::Observer>
       shake_observation_{this};
 
+  bool enabled_ = false;
   EffectState effect_state_ = EffectState::kNone;
   std::unique_ptr<ScopedEnlargedCursor> scoped_enlarged_cursor_;
 };

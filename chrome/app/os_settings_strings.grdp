@@ -1264,6 +1264,9 @@
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL" desc="Label for checkbox which enables showing a larger mouse cursor than normal.">
     Show large mouse cursor
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SHAKE_TO_LOCATE_LABEL" desc="Label for toggle which enlarges the mouse cursor when shaken rapidly." translateable="false">
+    Shake the mouse cursor to make it bigger
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements.">
     Face control
   </message>

@@ -474,6 +474,10 @@ inline constexpr char kAccessibilityLargeCursorEnabled[] =
 // An integer pref that specifies the size of large cursor for accessibility.
 inline constexpr char kAccessibilityLargeCursorDipSize[] =
     "settings.a11y.large_cursor_dip_size";
+// A boolean pref which determines whether the shake cursor to locate feature
+// is enabled.
+inline constexpr char kAccessibilityShakeToLocateEnabled[] =
+    "settings.a11y.shake_to_locate_enabled";
 // A boolean pref which determines whether the bounce keys feature is enabled.
 inline constexpr char kAccessibilityBounceKeysEnabled[] =
     "settings.a11y.bounce_keys_enabled";

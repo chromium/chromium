@@ -4,10 +4,13 @@
 
 #include "ash/accessibility/mouse_locator/mouse_shake_to_locate_controller.h"
 
+#include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/prefs/pref_service.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/events/event_constants.h"
@@ -26,9 +29,9 @@ constexpr base::TimeDelta kReversalInterval = base::Milliseconds(100);
 
 }  // namespace
 
-// Runs through the production path: with the feature enabled, `Shell` creates
-// the `MouseShakeToLocateController`, which receives mouse moves as an
-// accessibility event handler.
+// Runs through the production path: with the feature and preference enabled,
+// `Shell` creates the `MouseShakeToLocateController`, which receives mouse
+// moves as an accessibility event handler.
 class MouseShakeToLocateControllerTest : public AshTestBase {
  public:
   MouseShakeToLocateControllerTest()
@@ -38,10 +41,16 @@ class MouseShakeToLocateControllerTest : public AshTestBase {
 
   void SetUp() override {
     AshTestBase::SetUp();
+    SetShakeToLocatePrefEnabled(true);
     GetEventGenerator()->MoveMouseTo(gfx::Point(kLeftX, kY));
   }
 
  protected:
+  void SetShakeToLocatePrefEnabled(bool enabled) {
+    Shell::Get()->accessibility_controller()->GetActiveUserPrefs()->SetBoolean(
+        prefs::kAccessibilityShakeToLocateEnabled, enabled);
+  }
+
   // Moves the mouse back and forth so that the detector confirms
   // `reversal_count` reversals, one every `kReversalInterval`.
   void Shake(int reversal_count) {
@@ -128,6 +137,23 @@ TEST_F(MouseShakeToLocateControllerTest, CancelEffectDuringShake) {
 
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+}
+
+// Disabling the preference cancels an active shake effect and stops observing
+// future shakes until re-enabled.
+TEST_F(MouseShakeToLocateControllerTest, DisablingPrefCancelsAndIgnoresShake) {
+  Shake(10);
+  ASSERT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
+
+  SetShakeToLocatePrefEnabled(false);
+  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+
+  Shake(15);
+  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kNormal);
+
+  SetShakeToLocatePrefEnabled(true);
+  Shake(11);
+  EXPECT_EQ(GetCursorSize(), ui::CursorSize::kLarge);
 }
 
 // Synthesized mouse moves do not count toward a shake.

@@ -1235,6 +1235,8 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAccessibilityHoverTextEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityMonoAudioEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilityMouseKeysEnabled, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityShakeToLocateEnabled,
+                                false);
   registry->RegisterBooleanPref(prefs::kAccessibilityShortcutsEnabled, true);
   registry->RegisterBooleanPref(prefs::kAccessibilitySlowKeysEnabled, false);
   registry->RegisterBooleanPref(prefs::kAccessibilitySpokenFeedbackEnabled,
@@ -2747,6 +2749,11 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
       base::BindRepeating(&AccessibilityController::UpdateLargeCursorFromPref,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
+      prefs::kAccessibilityShakeToLocateEnabled,
+      base::BindRepeating(
+          &AccessibilityController::UpdateMouseShakeToLocateFromPref,
+          base::Unretained(this)));
+  pref_change_registrar_->Add(
       prefs::kAccessibilityShortcutsEnabled,
       base::BindRepeating(
           &AccessibilityController::UpdateShortcutsEnabledFromPref,
@@ -2845,6 +2852,7 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   UpdateMouseKeysDominantHandFromPref();
   UpdateFloatingMenuPositionFromPref();
   UpdateLargeCursorFromPref();
+  UpdateMouseShakeToLocateFromPref();
   UpdateCursorColorFromPrefs(/*notify=*/true);
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
@@ -3057,6 +3065,15 @@ FloatingMenuPosition AccessibilityController::GetFloatingMenuPosition() {
   DCHECK(active_user_prefs_);
   return static_cast<FloatingMenuPosition>(active_user_prefs_->GetInteger(
       prefs::kAccessibilityFloatingMenuPosition));
+}
+
+void AccessibilityController::UpdateMouseShakeToLocateFromPref() {
+  DCHECK(active_user_prefs_);
+  if (auto* mouse_shake_to_locate =
+          Shell::Get()->mouse_shake_to_locate_controller()) {
+    mouse_shake_to_locate->SetEnabled(active_user_prefs_->GetBoolean(
+        prefs::kAccessibilityShakeToLocateEnabled));
+  }
 }
 
 void AccessibilityController::MaybeCancelMouseShakeToLocateEffect() {

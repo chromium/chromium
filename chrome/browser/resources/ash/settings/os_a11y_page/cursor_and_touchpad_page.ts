@@ -202,6 +202,13 @@ export class SettingsCursorAndTouchpadPageElement extends
         },
       },
 
+      isAccessibilityShakeToLocateEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isAccessibilityShakeToLocateEnabled');
+        },
+      },
+
       /**
        * Whether a setting for enabling shelf navigation buttons in tablet mode
        * should be displayed in the accessibility settings.
@@ -291,6 +298,7 @@ export class SettingsCursorAndTouchpadPageElement extends
   declare private cursorColorOptions_: Option[];
   private deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   declare private disableTouchpadOptions_: Option[];
+  declare private readonly isAccessibilityShakeToLocateEnabled_: boolean;
   declare private readonly isKioskModeActive_: boolean;
   declare private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   declare private shelfNavigationButtonsPref_:

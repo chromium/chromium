@@ -1286,6 +1286,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilitySelectToSpeakEnabled] =
       settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kAccessibilityShakeToLocateEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilitySpokenFeedbackEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kAccessibilityStickyKeysEnabled] =

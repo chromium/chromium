@@ -170,6 +170,14 @@
     label="$i18n{cursorHighlightLabel}"
     deep-link-focus-id$="[[Setting.kHighlightCursorWhileMoving]]">
 </settings-toggle-button>
+<template is="dom-if" if="[[isAccessibilityShakeToLocateEnabled_]]">
+  <settings-toggle-button
+      id="shakeToLocateToggle"
+      class="hr"
+      pref="{{prefs.settings.a11y.shake_to_locate_enabled}}"
+      label="$i18n{shakeToLocateLabel}">
+  </settings-toggle-button>
+</template>
 <settings-toggle-button id="overscrollToggle"
     class="hr"
     pref="{{prefs.settings.a11y.overscroll_history_navigation}}"

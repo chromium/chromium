@@ -834,6 +834,7 @@ class ASH_EXPORT AccessibilityController
   void UpdateMouseKeysDominantHandFromPref();
   void UpdateFloatingMenuPositionFromPref();
   void UpdateLargeCursorFromPref();
+  void UpdateMouseShakeToLocateFromPref();
   // Cancels any ongoing mouse shake-to-locate effect if active.
   void MaybeCancelMouseShakeToLocateEffect();
   void UpdateLiveCaptionFromPref();
