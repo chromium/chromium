@@ -223,7 +223,7 @@ CGFloat DoodleHeight(SearchEngineLogoState logo_state,
                : 0;
   }
   if ((logo_state == SearchEngineLogoState::kDoodle) ||
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
+      IsRegularXRegularSizeClass(trait_collection)) {
     return kGoogleSearchDoodleShrunkHeight;
   }
   if (IsAimEnabledInNtp()) {
@@ -244,8 +244,7 @@ CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
     top_inset = kGoogleSearchLogoHeight - kLargeFakeboxGoogleSearchLogoHeight;
   }
 
-  if (IsConsistentLogoDoodleHeightEnabled() &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (IsConsistentLogoDoodleHeightEnabled()) {
     if (logo_state == SearchEngineLogoState::kDoodle) {
       top_inset -= kDoodleTopMarginAdjustment;
     } else if (logo_state == SearchEngineLogoState::kLogo) {
@@ -267,11 +266,12 @@ CGFloat HeaderSeparatorHeight() {
   return AlignValueToUpperPixel(kToolbarSeparatorHeight);
 }
 
-CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state) {
+CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state,
+                             UITraitCollection* trait_collection) {
   CGFloat margin =
       IsAimEnabledInNtp() ? kMIASearchFieldTopMargin : kSearchFieldTopMargin;
   if (IsConsistentLogoDoodleHeightEnabled() &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+      !IsRegularXRegularSizeClass(trait_collection)) {
     if (logo_state == SearchEngineLogoState::kDoodle) {
       margin -= kDoodleBottomMarginAdjustment;
     }
@@ -400,8 +400,7 @@ CGFloat BaseLogoTopPadding(SearchEngineLogoState logo_state,
     case NTPUICleanupVariation::kDisabled:
       NOTREACHED();
   }
-  if (IsConsistentLogoDoodleHeightEnabled() &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET && is_doodle) {
+  if (IsConsistentLogoDoodleHeightEnabled() && is_doodle) {
     padding -= kCleanupDoodleTopMarginAdjustment;
   }
   return padding;
@@ -499,7 +498,7 @@ CGFloat LogoTopPadding(SearchEngineLogoState logo_state,
 CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
                              UITraitCollection* trait_collection) {
   if (!IsNewTabPageUICleanupEnabled()) {
-    return SearchFieldTopMargin(logo_state);
+    return SearchFieldTopMargin(logo_state, trait_collection);
   }
 
   const bool is_doodle = (logo_state == SearchEngineLogoState::kDoodle);
@@ -526,8 +525,7 @@ CGFloat LogoToFakeboxPadding(SearchEngineLogoState logo_state,
     case NTPUICleanupVariation::kDisabled:
       NOTREACHED();
   }
-  if (IsConsistentLogoDoodleHeightEnabled() &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET && is_doodle) {
+  if (IsConsistentLogoDoodleHeightEnabled() && is_doodle) {
     padding -= kCleanupDoodleBottomMarginAdjustment;
   }
   return padding;

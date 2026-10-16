@@ -72,7 +72,8 @@ CGFloat HeaderSeparatorHeight();
 // to the bottom of the doodle for the search field.
 // TODO(crbug.com/542594099): Remove legacy helpers once
 // `kNewTabPageUICleanup` is launched.
-CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state);
+CGFloat SearchFieldTopMargin(SearchEngineLogoState logo_state,
+                             UITraitCollection* trait_collection);
 // Returns the height of the Fake Omnibox on Home when it is not scrolled.
 CGFloat FakeOmniboxHeight();
 // Returns the height of the Fake Omnibox on Home when it is pinned / scrolled.

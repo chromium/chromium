@@ -57,9 +57,6 @@ class ContentSuggestionsCollectionUtilsTest : public PlatformTest {
 };
 
 TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPad) {
-  if (IsIPhone()) {
-    GTEST_SKIP() << "Test unsupported on iPhone";
-  }
   // Action.
   CGFloat heightDoodle =
       DoodleHeight(SearchEngineLogoState::kDoodle, IPadTraitCollection());
@@ -73,7 +70,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, doodleFrameIPad) {
   // Test.
   EXPECT_EQ(68, heightDoodle);
   EXPECT_EQ(162, topMarginDoodle);
-  EXPECT_EQ(IsIPad() ? 68 : 36, heightLogo);
+  EXPECT_EQ(68, heightLogo);
   EXPECT_EQ(162, topMarginLogo);
 }
 
@@ -158,7 +155,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPad) {
   CGFloat resultWidth = SearchFieldWidth(width, IPadTraitCollection());
   CGFloat resultWidthLargeIPad =
       SearchFieldWidth(largeIPadWidth, IPadTraitCollection());
-  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
+  CGFloat topMargin =
+      SearchFieldTopMargin(SearchEngineLogoState::kLogo, IPadTraitCollection());
 
   // Test.
   EXPECT_EQ(29, topMargin);
@@ -176,7 +174,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhonePortrait) {
   // Action.
   CGFloat resultWidth =
       SearchFieldWidth(width, IPhonePortraitTraitCollection());
-  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
+  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo,
+                                           IPhonePortraitTraitCollection());
 
   // Test.
   EXPECT_EQ(IsAimEnabledInNtp() ? 29 : 22, topMargin);
@@ -193,7 +192,8 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, searchFieldFrameIPhoneLandscape) {
   // Action.
   CGFloat resultWidth =
       SearchFieldWidth(width, IPhoneLandscapeTraitCollection());
-  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo);
+  CGFloat topMargin = SearchFieldTopMargin(SearchEngineLogoState::kLogo,
+                                           IPhoneLandscapeTraitCollection());
 
   // Test.
   EXPECT_EQ(IsAimEnabledInNtp() ? 29 : 22, topMargin);
@@ -363,10 +363,12 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
                             IPhonePortraitTraitCollection()),
             LogoTopPadding(SearchEngineLogoState::kDoodle,
                            IPhonePortraitTraitCollection()));
-  EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
+  EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo,
+                                 IPhonePortraitTraitCollection()),
             LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
                                  IPhonePortraitTraitCollection()));
-  EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
+  EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle,
+                                 IPhonePortraitTraitCollection()),
             LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
                                  IPhonePortraitTraitCollection()));
   EXPECT_EQ(kQuickActionsTopPaddingControl,
@@ -476,10 +478,12 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpers) {
                               IPhonePortraitTraitCollection()),
               LogoTopPadding(SearchEngineLogoState::kDoodle,
                              IPhonePortraitTraitCollection()));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
+    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo,
+                                   IPhonePortraitTraitCollection()),
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
                                    IPhonePortraitTraitCollection()));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
+    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle,
+                                   IPhonePortraitTraitCollection()),
               LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
                                    IPhonePortraitTraitCollection()));
     EXPECT_EQ(kQuickActionsTopPaddingControl,
@@ -500,9 +504,10 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
   // Control (Disabled).
   EXPECT_FALSE(IsNewTabPageUICleanupEnabled());
   EXPECT_FALSE(ShouldApplyFakeboxBackgroundAndShadow());
-  EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
-            LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
-                                 IPadTraitCollection()));
+  EXPECT_EQ(
+      SearchFieldTopMargin(SearchEngineLogoState::kLogo, IPadTraitCollection()),
+      LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
+                           IPadTraitCollection()));
   EXPECT_EQ(kQuickActionsTopPaddingControl,
             QuickActionsTopPadding(IPadTraitCollection()));
   EXPECT_EQ(kMostVisitedTopPaddingControl,
@@ -620,10 +625,12 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, NTPPaddingExperimentHelpersIPad) {
     EXPECT_EQ(
         DoodleTopMargin(SearchEngineLogoState::kDoodle, IPadTraitCollection()),
         LogoTopPadding(SearchEngineLogoState::kDoodle, IPadTraitCollection()));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo),
+    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kLogo,
+                                   IPadTraitCollection()),
               LogoToFakeboxPadding(SearchEngineLogoState::kLogo,
                                    IPadTraitCollection()));
-    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle),
+    EXPECT_EQ(SearchFieldTopMargin(SearchEngineLogoState::kDoodle,
+                                   IPadTraitCollection()),
               LogoToFakeboxPadding(SearchEngineLogoState::kDoodle,
                                    IPadTraitCollection()));
     EXPECT_EQ(kQuickActionsTopPaddingControl,

@@ -1789,18 +1789,19 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   BOOL horizontalSizeClassChanged =
       previousTraitCollection.horizontalSizeClass !=
       self.traitCollection.horizontalSizeClass;
+  BOOL verticalSizeClassChanged = previousTraitCollection.verticalSizeClass !=
+                                  self.traitCollection.verticalSizeClass;
   BOOL preferredContentSizeCategoryChanged =
       previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory;
 
-  if (horizontalSizeClassChanged || preferredContentSizeCategoryChanged) {
+  if (horizontalSizeClassChanged || verticalSizeClassChanged ||
+      preferredContentSizeCategoryChanged) {
     [self updateFakeboxDisplay];
   }
 
   if (IsChromeNextIaEnabled()) {
-    if (horizontalSizeClassChanged ||
-        previousTraitCollection.verticalSizeClass !=
-            self.traitCollection.verticalSizeClass) {
+    if (horizontalSizeClassChanged || verticalSizeClassChanged) {
       [self resetSplitToolbarResizing];
       if (!CanShowTabStrip(self) && !IsRegularXRegularSizeClass(self)) {
         [self addToolsMenu];
@@ -2226,6 +2227,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [self.doodleHeightConstraint
       setConstant:content_suggestions::DoodleHeight(self.searchEngineLogoState,
                                                     self.traitCollection)];
+  self.fakeOmniboxTopMarginConstraint.constant =
+      -content_suggestions::LogoToFakeboxPadding(self.searchEngineLogoState,
+                                                 self.traitCollection);
   self.fakeOmniboxContainer.hidden =
       CanShowTabStrip(self) &&
       (self.searchEngineLogoState == SearchEngineLogoState::kNone);
