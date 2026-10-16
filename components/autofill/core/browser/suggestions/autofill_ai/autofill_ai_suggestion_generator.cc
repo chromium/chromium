@@ -31,6 +31,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -543,27 +544,26 @@ std::u16string PayloadSourceToAppName(SourceType source_type) {
   }
 }
 
-// Returns the (at most) `kMaxSourceAttributionCitations` most recent sources
-// with a valid URL, newest first. Sources with a null timestamp sort last;
-// ties keep their original (server) order.
+// Returns the (at most) `kMaxSourceAttributionCitations` most recent sources,
+// newest first. Sources with a null timestamp sort last; ties keep their
+// original (server) order.
 //
 // The returned pointers point into `payload_sources` and must not outlive it.
 std::vector<const EntityPayload::Source*> SelectMostRecentSources(
     base::span<const EntityPayload::Source> payload_sources) {
-  std::vector<const EntityPayload::Source*> sources;
-  for (const EntityPayload::Source& source : payload_sources) {
-    if (source.url.is_valid()) {
-      sources.push_back(&source);
-    }
-  }
+  CHECK(std::ranges::all_of(payload_sources, &GURL::is_valid,
+                            &EntityPayload::Source::url));
+  std::vector<const EntityPayload::Source*> sources = base::ToVector(
+      payload_sources,
+      [](const EntityPayload::Source& source) { return &source; });
   std::ranges::stable_sort(sources, std::ranges::greater(),
                            &EntityPayload::Source::timestamp);
   sources.resize(std::min(sources.size(), kMaxSourceAttributionCitations));
   return sources;
 }
 
-// Groups the at most `kMaxSourceAttributionCitations` most recent valid sources
-// by `SourceType`, with URLs within each app ordered newest first.
+// Groups the at most `kMaxSourceAttributionCitations` most recent sources by
+// `SourceType`, with URLs within each app ordered newest first.
 //
 // Returns a `base::flat_map` which keeps entries sorted by `SourceType`.
 base::flat_map<SourceType, std::vector<GURL>> GroupSourcesByApp(
@@ -641,6 +641,17 @@ std::optional<AttributionData> BuildAttributionData(
                                         base_offset + badge_range.end()));
     }
     needs_separator = true;
+  }
+
+  if (payload_sources.size() > citations.size()) {
+    // `PopupRowFactoryUtils` relies on the leading space here to isolate the
+    // suffix into its own `views::StyledLabel` range for RTL layout.
+    base::StrAppend(
+        &sources_text,
+        {u" ", l10n_util::GetPluralStringFUTF16(
+                   IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_MORE_SOURCES_SUFFIX,
+                   base::saturated_cast<int>(payload_sources.size() -
+                                             citations.size()))});
   }
 
   std::u16string full_text = l10n_util::GetStringFUTF16(

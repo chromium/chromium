@@ -968,6 +968,11 @@
   <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_WITH_SOURCES" desc="Header for Autofill AI personal context child menu attributing the information to source applications. $1 is the formatted list of sources with citation badges (e.g. Gmail [1] [2] · Photos [1])." translateable="false">
     From Gemini and connected apps · <ph name="SOURCES">$1<ex>Gmail [1] [2] · Photos [1]</ex></ph>
   </message>
+  <message name="IDS_AUTOFILL_AI_SUGGESTED_BY_GEMINI_MORE_SOURCES_SUFFIX" desc="Suffix appended to the source attribution header in the Autofill AI personal context child menu when there are more sources than the maximum number of citation badges shown. The plural selector is the number of additional sources not shown as citation badges.">
+    {NUM_SOURCES, plural,
+     =1 {+ 1 other source}
+     other {+ # other sources}}
+  </message>
   <message name="IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS" desc="App name for Google Photos." formatter_data="android_java">
     Photos
   </message>
