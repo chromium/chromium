@@ -131,10 +131,8 @@ class AlphaVideoEncoderWrapperTest
     enforcer->location = loc.ToString();
     auto check_callback = base::BindLambdaForTesting(
         [enforcer{std::move(enforcer)}](EncoderStatus s) {
-          EXPECT_TRUE(s.is_ok())
-              << " Callback created: " << enforcer->location
-              << " Code: " << std::hex << static_cast<StatusCodeType>(s.code())
-              << " Error: " << s.message();
+          EXPECT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
+                                 << " Error: " << MediaSerializeForTesting(s);
           enforcer->called = true;
         });
 

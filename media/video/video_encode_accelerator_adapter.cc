@@ -1052,9 +1052,7 @@ void VideoEncodeAcceleratorAdapter::NotifyErrorStatus(
     const EncoderStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(accelerator_sequence_checker_);
   CHECK(!status.is_ok());
-  MEDIA_LOG(ERROR, media_log_)
-      << "VEA adapter error. Code: " << static_cast<int32_t>(status.code())
-      << ". Message: " << status.message();
+  media_log_->NotifyError(status);
   if (state_ == State::kInitializing) {
     InitCompleted(status);
     return;
@@ -1100,10 +1098,7 @@ void VideoEncodeAcceleratorAdapter::InitCompleted(EncoderStatus status) {
   }
 
   if (!status.is_ok()) {
-    MEDIA_LOG(ERROR, media_log_) << "VEA adapter initialization error. Code: "
-                                 << static_cast<int32_t>(status.code())
-                                 << ". Message: " << status.message();
-
+    media_log_->NotifyError(status);
     // Report the error to all encoding-done callbacks
     for (auto& encode : pending_encodes_) {
       std::move(encode->done_callback).Run(status);

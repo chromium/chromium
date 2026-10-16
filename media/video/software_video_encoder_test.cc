@@ -199,10 +199,8 @@ class SoftwareVideoEncoderTest
     enforcer->location = loc.ToString();
     auto check_callback = base::BindLambdaForTesting(
         [enforcer{std::move(enforcer)}](EncoderStatus s) {
-          ASSERT_TRUE(s.is_ok())
-              << " Callback created: " << enforcer->location
-              << " Code: " << std::hex << static_cast<StatusCodeType>(s.code())
-              << " Error: " << s.message();
+          ASSERT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
+                                 << " Error: " << MediaSerializeForTesting(s);
           enforcer->called = true;
         });
 
@@ -231,8 +229,7 @@ class SoftwareVideoEncoderTest
     return base::BindLambdaForTesting(
         [enforcer{std::move(enforcer)}](DecoderStatus s) {
           EXPECT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
-                                 << " Code: " << static_cast<int>(s.code())
-                                 << " Error: " << s.message();
+                                 << " Error: " << MediaSerializeForTesting(s);
           enforcer->called = true;
         });
   }
@@ -245,8 +242,7 @@ class SoftwareVideoEncoderTest
                      base::BindLambdaForTesting([&](DecoderStatus status) {
                        EXPECT_TRUE(status.is_ok())
                            << " Callback created: " << location.ToString()
-                           << " Code: " << static_cast<int>(status.code())
-                           << " Error: " << status.message();
+                           << " Error: " << MediaSerializeForTesting(status);
                        run_loop.Quit();
                      }));
     run_loop.Run(location);

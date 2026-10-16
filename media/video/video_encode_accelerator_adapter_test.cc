@@ -278,7 +278,7 @@ class VideoEncodeAcceleratorAdapterTest
         [this, enforcer{std::move(enforcer)}](EncoderStatus s) {
           EXPECT_TRUE(callback_runner_->RunsTasksInCurrentSequence());
           EXPECT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
-                                 << " Error: " << s.message();
+                                 << " Error: " << MediaSerializeForTesting(s);
           enforcer->called = true;
         });
   }
