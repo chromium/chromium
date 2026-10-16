@@ -2,6 +2,7 @@ include_rules = [
   "+components/grit/components_resources.h",
   "+components/keyed_service/core",
   "+components/metrics",
+  "+components/optimization_guide/proto",
   "+components/prefs",
   "+components/version_info",
   "+google_apis/google_api_keys.h",

@@ -11,6 +11,29 @@ source_set("features") {
   public_deps = [ "//base" ]
 }
 
+source_set("contextual_cue_log_event_builder") {
+  sources = [
+    "contextual_cue_log_event_builder.h",
+    "contextual_cue_log_event_builder.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/application_locale_storage",
+    "//components/private_insights:private_insights_logger",
+    "//components/private_insights/events:coarse_system_profile_proto",
+    "//components/variations/service",
+    "//components/version_info",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/common",
+    "//ios/web/public",
+  ]
+  public_deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/private_insights/events:contextual_cue_log_event_proto",
+    "//url",
+  ]
+}
+
 source_set("contextual_cueing") {
   sources = [
     "contextual_cue_infobar_delegate.h",
@@ -82,6 +105,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "contextual_cue_infobar_delegate_unittest.mm",
+    "contextual_cue_log_event_builder_unittest.mm",
     "contextual_cueing_browser_agent_unittest.mm",
     "contextual_cueing_cap_tracker_service_unittest.mm",
     "contextual_cueing_evaluator_unittest.mm",
@@ -89,9 +113,12 @@ source_set("unit_tests") {
     "features_unittest.mm",
   ]
   deps = [
+    ":contextual_cue_log_event_builder",
     ":contextual_cueing",
     ":features",
+    "//base",
     "//base/test:test_support",
+    "//components/application_locale_storage",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
     "//components/feature_engagement/test:test_support",
@@ -101,8 +128,11 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/page_content_annotations/core",
     "//components/prefs:test_support",
+    "//components/private_insights/events:coarse_system_profile_proto",
+    "//components/private_insights/events:contextual_cue_log_event_proto",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
+    "//components/version_info",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/model:public",
@@ -115,6 +145,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/location_bar/badge/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/optimization_guide/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
@@ -123,8 +154,10 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
     "//url",

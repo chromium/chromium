@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
 #include "components/contextual_cueing/contextual_cueing_enums.h"
-#include "components/metrics/version_utils.h"
 #include "components/private_insights/contextual_cue_log_event_helpers.h"
 #include "components/private_insights/events/contextual_cue_log_event.pb.h"
 #include "components/private_insights/private_insights_features.h"
@@ -51,22 +50,15 @@ int BucketTabCount(int raw_count) {
 
 void PopulateSystemProfile(
     private_insights::events::CoarseSystemProfile* profile) {
-  profile->set_chrome_version(version_info::GetVersionNumber());
-  profile->set_milestone(version_info::GetMajorVersionNumber());
+  private_insights::PopulateCommonSystemProfile(profile);
   profile->set_chrome_channel(
       std::string(version_info::GetChannelString(chrome::GetChannel())));
-  profile->set_platform(metrics::GetOperatingSystemName());
   if (g_browser_process) {
     profile->set_language(g_browser_process->GetApplicationLocale());
     if (auto* variations_service = g_browser_process->variations_service()) {
       profile->set_country(variations_service->GetStoredPermanentCountry());
     }
   }
-}
-
-std::optional<std::pair<std::string, std::string>> ExtractFromProtoTab(
-    const optimization_guide::proto::Tab& tab) {
-  return std::make_pair(tab.url(), tab.title());
 }
 
 std::optional<std::pair<std::string, std::string>> ExtractFromTabHandle(
@@ -100,35 +92,21 @@ private_insights::events::ContextualCueLogEvent CreateContextualCueLogEvent(
   PopulateSystemProfile(event.mutable_system_profile());
 
   if (active_tab) {
-    event.mutable_cue_context()->mutable_active_page()->set_url(
-        active_tab->GetURL().spec());
-    event.mutable_cue_context()->mutable_active_page()->set_title(
-        base::UTF16ToUTF8(active_tab->GetTitle()));
-    event.mutable_cue_context()->mutable_active_page()->set_hostname(
-        active_tab->GetURL().host());
+    private_insights::PopulateActivePage(
+        active_tab->GetURL(), base::UTF16ToUTF8(active_tab->GetTitle()),
+        event.mutable_cue_context()->mutable_active_page());
   }
 
   event.mutable_cue_context()->set_recent_pages(
-      private_insights::SerializeCollectionToPageInfoJson(background_tabs,
-                                                          ExtractFromProtoTab));
+      private_insights::SerializeCollectionToPageInfoJson(
+          background_tabs, private_insights::ExtractFromProtoTab));
 
   event.mutable_cue_context()->set_tabs_shown(
       private_insights::SerializeCollectionToPageInfoJson(
           tabs_to_show, ExtractFromTabHandle));
 
-  event.mutable_cue_details()->set_cuj_type(cuj);
-  event.mutable_cue_details()->set_suggestion_text(
-      cue.anchored_message_cue().anchored_message_text());
-  event.mutable_cue_details()->set_promoted_feature(GetName(cue_type));
-  event.mutable_cue_details()->set_button_text(
-      cue.anchored_message_cue().action_text());
-  if (cue.has_gemini_in_chrome_surface()) {
-    event.mutable_cue_details()->set_prompt(
-        cue.gemini_in_chrome_surface().prompt());
-  } else if (cue.has_contextual_search_surface()) {
-    event.mutable_cue_details()->set_prompt(
-        cue.contextual_search_surface().query());
-  }
+  private_insights::PopulateCueDetails(cue, cuj, GetName(cue_type),
+                                       event.mutable_cue_details());
 
   return event;
 }

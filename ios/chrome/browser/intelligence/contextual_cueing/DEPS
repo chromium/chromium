@@ -7,6 +7,7 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+components/page_content_annotations/core",
+  "+components/private_insights",
   "+components/signin/public/identity_manager",
   "+components/sync/service",
   "+ios/chrome/browser/feature_engagement/model",

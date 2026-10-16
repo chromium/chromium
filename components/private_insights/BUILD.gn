@@ -38,9 +38,18 @@ component("private_insights") {
 
 source_set("private_insights_logger") {
   public = [ "contextual_cue_log_event_helpers.h" ]
-  public_deps =
-      [ "//components/private_insights/events:contextual_cue_log_event_proto" ]
-  deps = [ "//base" ]
+  sources = [ "contextual_cue_log_event_helpers.cc" ]
+  public_deps = [
+    "//base",
+    "//components/private_insights/events:coarse_system_profile_proto",
+    "//components/private_insights/events:contextual_cue_log_event_proto",
+  ]
+  deps = [
+    "//components/metrics",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/version_info",
+    "//url",
+  ]
 }
 
 source_set("fcp_utils") {
@@ -132,11 +141,16 @@ source_set("unit_tests") {
     "//base:i18n",
     "//base/test:test_support",
     "//components/metrics",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//components/private_insights/events:coarse_system_profile_proto",
     "//components/private_insights/events:contextual_cue_log_event_proto",
+    "//components/version_info",
     "//services/network:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/federated_compute:confidential_compute_crypto_test_util",
     "//ui/base",
+    "//url",
   ]
 }
