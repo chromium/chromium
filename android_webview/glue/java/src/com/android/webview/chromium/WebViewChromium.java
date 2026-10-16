@@ -612,8 +612,6 @@ class WebViewChromium
     @UiThread
     public void loadUrl(final String url, final Map<String, String> additionalHttpHeaders) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS);
         checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL_ADDITIONAL_HEADERS")) {
@@ -624,7 +622,7 @@ class WebViewChromium
                     ApiCall.LOAD_URL_ADDITIONAL_HEADERS,
                     ApiCallUserAction.WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS);
             long startTime = SystemClock.uptimeMillis();
-            mAwContents.loadUrl(url, additionalHttpHeaders);
+            mAwWebContent.loadUrl(url, additionalHttpHeaders);
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.ApiCall.Duration.Framework.LOAD_URL_ADDITIONAL_HEADERS",
                     SystemClock.uptimeMillis() - startTime);
@@ -635,8 +633,6 @@ class WebViewChromium
     @UiThread
     public void loadUrl(final String url) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_LOAD_URL);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.LOAD_URL")) {
             // These two histograms (the API call one and the timing one) are important for
@@ -645,7 +641,7 @@ class WebViewChromium
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.LOAD_URL, ApiCallUserAction.WEBVIEW_INSTANCE_LOAD_URL);
             long startTime = SystemClock.uptimeMillis();
-            mAwContents.loadUrl(url);
+            mAwWebContent.loadUrl(url);
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.ApiCall.Duration.Framework.LOAD_URL",
                     SystemClock.uptimeMillis() - startTime);
@@ -656,13 +652,11 @@ class WebViewChromium
     @UiThread
     public void postUrl(final String url, final byte[] postData) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_POST_URL);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.POST_URL")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.POST_URL, ApiCallUserAction.WEBVIEW_INSTANCE_POST_URL);
-            mAwContents.postUrl(url, postData);
+            mAwWebContent.postUrl(url, postData);
         }
     }
 
@@ -670,13 +664,11 @@ class WebViewChromium
     @UiThread
     public void loadData(final String data, final String mimeType, final String encoding) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_LOAD_DATA);
         checkThread();
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.LOAD_DATA")) {
             ApiCallLogger.recordWebViewApiCall(
                     ApiCall.LOAD_DATA, ApiCallUserAction.WEBVIEW_INSTANCE_LOAD_DATA);
-            mAwContents.loadData(data, mimeType, encoding);
+            mAwWebContent.loadData(data, mimeType, encoding);
         }
     }
 
@@ -689,8 +681,6 @@ class WebViewChromium
             final String encoding,
             final String historyUrl) {
         forbidBuilderConfiguration();
-        mStartupController.triggerAndWaitForChromiumStarted(
-                StartupCallSite.WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL);
         checkThread();
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.LOAD_DATA_WITH_BASE_URL")) {
@@ -698,7 +688,7 @@ class WebViewChromium
                     ApiCall.LOAD_DATA_WITH_BASE_URL,
                     ApiCallUserAction.WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL);
             long startTime = SystemClock.uptimeMillis();
-            mAwContents.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+            mAwWebContent.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.ApiCall.Duration.Framework.LOAD_DATA_WITH_BASE_URL",
                     SystemClock.uptimeMillis() - startTime);

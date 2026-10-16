@@ -30,6 +30,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHistory;
 
+import java.util.Map;
+
 /**
  * Represents underlying Chromium web contents state that can survive moving across WebViews.
  *
@@ -322,6 +324,35 @@ public class AwWebContent {
 
     public boolean pageDown(boolean bottom) {
         return ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_PAGE_DOWN).pageDown(bottom);
+    }
+
+    public void loadUrl(@Nullable String url) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_LOAD_URL).loadUrl(url);
+    }
+
+    public void loadUrl(@Nullable String url, @Nullable Map<String, String> additionalHttpHeaders) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS)
+                .loadUrl(url, additionalHttpHeaders);
+    }
+
+    public void postUrl(String url, byte[] postData) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_POST_URL).postUrl(url, postData);
+    }
+
+    public void loadData(
+            @Nullable String data, @Nullable String mimeType, @Nullable String encoding) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_LOAD_DATA)
+                .loadData(data, mimeType, encoding);
+    }
+
+    public void loadDataWithBaseURL(
+            @Nullable String baseUrl,
+            @Nullable String data,
+            @Nullable String mimeType,
+            @Nullable String encoding,
+            @Nullable String historyUrl) {
+        ensureAwContents(StartupCallSite.WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL)
+                .loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
     }
 
     // The following methods don't trigger startup. They queue the action to run once Chromium has
