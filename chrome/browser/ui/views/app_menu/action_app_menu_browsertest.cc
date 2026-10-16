@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -100,14 +102,12 @@ class ActionAppMenuBrowserTest : public InProcessBrowserTest {
   }
   ~ActionAppMenuBrowserTest() override = default;
 
-  BrowserAppMenuButton* GetMenuButton(
+  AppMenuControl* GetMenuControl(
       BrowserWindowInterface* target_browser = nullptr) {
-    return views::AsViewClass<BrowserAppMenuButton>(
-        views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
-            kToolbarAppMenuButtonElementId,
-            BrowserView::GetBrowserViewForBrowser(
-                target_browser ? target_browser : browser())
-                ->GetElementContext()));
+    return BrowserView::GetBrowserViewForBrowser(target_browser ? target_browser
+                                                                : browser())
+        ->toolbar_button_provider()
+        ->GetAppMenuControl();
   }
 
  private:
@@ -115,18 +115,21 @@ class ActionAppMenuBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenu) {
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
 
-  EXPECT_FALSE(menu_button->IsMenuShowing());
-  EXPECT_FALSE(menu_button->action_app_menu());
+  EXPECT_FALSE(menu_control->IsMenuShowing());
+  EXPECT_FALSE(menu_control->GetActionAppMenuForTesting());
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
 
-  EXPECT_TRUE(menu_button->IsMenuShowing());
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  EXPECT_TRUE(menu_control->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
-  EXPECT_FALSE(menu_button->app_menu());
+  if (auto* menu_button = views::AsViewClass<BrowserAppMenuButton>(
+          menu_control->GetFocusablePaneView())) {
+    EXPECT_FALSE(menu_button->app_menu());
+  }
 
   views::MenuItemView* root = action_menu->root_menu_item_for_testing();
   ASSERT_TRUE(root);
@@ -146,20 +149,20 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenu) {
   EXPECT_TRUE(password_item->GetMenuItemBackground().has_value());
   EXPECT_TRUE(print_item->GetMenuItemBackground().has_value());
 
-  menu_button->CloseMenu();
-  EXPECT_FALSE(menu_button->IsMenuShowing());
+  menu_control->CloseMenu();
+  EXPECT_FALSE(menu_control->IsMenuShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenuDarkMode) {
   ThemeServiceFactory::GetForProfile(browser()->GetProfile())
       ->SetBrowserColorScheme(ThemeService::BrowserColorScheme::kDark);
 
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu_button->IsMenuShowing());
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_control->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   views::MenuItemView* root = action_menu->root_menu_item_for_testing();
@@ -179,8 +182,8 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, ShowActionAppMenuDarkMode) {
     }
   }
 
-  menu_button->CloseMenu();
-  EXPECT_FALSE(menu_button->IsMenuShowing());
+  menu_control->CloseMenu();
+  EXPECT_FALSE(menu_control->IsMenuShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, BookmarksDragAndDropReorder) {
@@ -193,10 +196,10 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, BookmarksDragAndDropReorder) {
   const bookmarks::BookmarkNode* node_b =
       model->AddURL(bb_node, 1, u"Bookmark B", GURL("https://b.example.com"));
 
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   views::MenuItemView* root = action_menu->root_menu_item_for_testing();
@@ -235,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest, BookmarksDragAndDropReorder) {
   EXPECT_LT(bookmarks_item->GetSubmenu()->GetIndexOf(updated_b),
             bookmarks_item->GetSubmenu()->GetIndexOf(updated_a));
 
-  menu_button->CloseMenu();
+  menu_control->CloseMenu();
 }
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest,
@@ -249,10 +252,10 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest,
   const bookmarks::BookmarkNode* folder_b =
       model->AddFolder(bb_node, 1, u"Folder B");
 
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   views::MenuItemView* root = action_menu->root_menu_item_for_testing();
@@ -289,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuBrowserTest,
   EXPECT_EQ(bb_node->children()[0].get(), node_a);
   EXPECT_EQ(bb_node->children()[1].get(), folder_b);
 
-  menu_button->CloseMenu();
+  menu_control->CloseMenu();
 }
 
 class ActionAppMenuWithSearchBrowserTest : public ActionAppMenuBrowserTest {
@@ -305,16 +308,16 @@ class ActionAppMenuWithSearchBrowserTest : public ActionAppMenuBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
                        ShowActionAppMenuWithSearch) {
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
 
-  EXPECT_FALSE(menu_button->IsMenuShowing());
-  EXPECT_FALSE(menu_button->action_app_menu());
+  EXPECT_FALSE(menu_control->IsMenuShowing());
+  EXPECT_FALSE(menu_control->GetActionAppMenuForTesting());
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
 
-  EXPECT_TRUE(menu_button->IsMenuShowing());
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  EXPECT_TRUE(menu_control->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
@@ -327,8 +330,8 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchBrowserTest,
   ASSERT_TRUE(search_icon);
   EXPECT_TRUE(search_icon->GetVisible());
 
-  menu_button->CloseMenu();
-  EXPECT_FALSE(menu_button->IsMenuShowing());
+  menu_control->CloseMenu();
+  EXPECT_FALSE(menu_control->IsMenuShowing());
 }
 
 class ActionAppMenuWithSearchQueryBrowserTest
@@ -346,35 +349,35 @@ class ActionAppMenuWithSearchQueryBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithSearchQueryBrowserTest,
                        ShowActionAppMenuWithExtensionsSearchTwice) {
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
 
-  EXPECT_FALSE(menu_button->IsMenuShowing());
-  EXPECT_FALSE(menu_button->action_app_menu());
+  EXPECT_FALSE(menu_control->IsMenuShowing());
+  EXPECT_FALSE(menu_control->GetActionAppMenuForTesting());
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu_button->IsMenuShowing());
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_control->IsMenuShowing());
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   AppMenuSearchBarView* search_bar = action_menu->search_bar_for_testing();
   ASSERT_TRUE(search_bar);
   EXPECT_EQ(search_bar->GetText(), u"extensions");
 
-  menu_button->CloseMenu();
-  EXPECT_FALSE(menu_button->IsMenuShowing());
+  menu_control->CloseMenu();
+  EXPECT_FALSE(menu_control->IsMenuShowing());
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  EXPECT_TRUE(menu_button->IsMenuShowing());
-  action_menu = menu_button->action_app_menu();
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  EXPECT_TRUE(menu_control->IsMenuShowing());
+  action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   search_bar = action_menu->search_bar_for_testing();
   ASSERT_TRUE(search_bar);
   EXPECT_EQ(search_bar->GetText(), u"extensions");
 
-  menu_button->CloseMenu();
-  EXPECT_FALSE(menu_button->IsMenuShowing());
+  menu_control->CloseMenu();
+  EXPECT_FALSE(menu_control->IsMenuShowing());
 }
 
 class ActionAppMenuWithOtherDeviceTabsBrowserTest
@@ -396,12 +399,12 @@ class ActionAppMenuWithoutOtherDeviceTabsBrowserTest
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
                        OtherDeviceTabsSubmenu) {
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
 
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   views::MenuItemView* root = action_menu->root_menu_item_for_testing();
@@ -441,33 +444,33 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
   EXPECT_EQ(recent_tabs_index.value() + 1, other_device_tabs_index.value());
   EXPECT_EQ(other_device_tabs_index.value() + 1, downloads_index.value());
 
-  menu_button->CloseMenu();
+  menu_control->CloseMenu();
 }
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithOtherDeviceTabsBrowserTest,
                        OtherDeviceTabsSubmenuIncognito) {
-  BrowserAppMenuButton* menu_button = GetMenuButton(CreateIncognitoBrowser());
-  ASSERT_TRUE(menu_button);
+  AppMenuControl* menu_control = GetMenuControl(CreateIncognitoBrowser());
+  ASSERT_TRUE(menu_control);
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   views::MenuItemView* root = action_menu->root_menu_item_for_testing();
   ASSERT_TRUE(root);
   EXPECT_EQ(nullptr, root->GetMenuItemByID(kActionOtherDeviceTabsSubmenu));
 
-  menu_button->CloseMenu();
+  menu_control->CloseMenu();
 }
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuWithoutOtherDeviceTabsBrowserTest,
                        OtherDeviceTabsSubmenuFlagOff) {
-  BrowserAppMenuButton* menu_button = GetMenuButton();
-  ASSERT_TRUE(menu_button);
+  AppMenuControl* menu_control = GetMenuControl();
+  ASSERT_TRUE(menu_control);
 
-  menu_button->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
+  menu_control->ShowMenuWithFlags(views::MenuRunner::NO_FLAGS);
 
-  ActionAppMenu* action_menu = menu_button->action_app_menu();
+  ActionAppMenu* action_menu = menu_control->GetActionAppMenuForTesting();
   ASSERT_TRUE(action_menu);
 
   views::MenuItemView* root = action_menu->root_menu_item_for_testing();
@@ -492,5 +495,5 @@ IN_PROC_BROWSER_TEST_F(ActionAppMenuWithoutOtherDeviceTabsBrowserTest,
   ASSERT_TRUE(downloads_index.has_value());
   EXPECT_EQ(recent_tabs_index.value() + 1, downloads_index.value());
 
-  menu_button->CloseMenu();
+  menu_control->CloseMenu();
 }

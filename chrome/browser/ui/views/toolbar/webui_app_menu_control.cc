@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_app_menu_control.h"
 
+#include "chrome/browser/ui/actions/command_action_updater.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/app_menu/action_app_menu.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
@@ -99,7 +102,8 @@ bool WebUIAppMenuControl::IsDrawn() const {
 }
 
 bool WebUIAppMenuControl::IsMenuShowing() const {
-  return menu_ && menu_->IsShowing();
+  return (action_menu_ && action_menu_->IsShowing()) ||
+         (menu_ && menu_->IsShowing());
 }
 
 views::DialogDelegate* WebUIAppMenuControl::GetDialogDelegate() {
@@ -108,6 +112,9 @@ views::DialogDelegate* WebUIAppMenuControl::GetDialogDelegate() {
 }
 
 void WebUIAppMenuControl::CloseMenu() {
+  if (action_menu_) {
+    action_menu_->CloseMenu();
+  }
   if (menu_) {
     menu_->CloseMenu();
   }
@@ -129,18 +136,38 @@ void WebUIAppMenuControl::ShowMenuWithFlags(int run_types) {
 }
 
 views::MenuItemView* WebUIAppMenuControl::GetRootMenuItemViewForTesting() {
+  if (action_menu_) {
+    return action_menu_->root_menu_item_for_testing();  // IN-TEST
+  }
   return menu_ ? menu_->root_menu_item() : nullptr;
+}
+
+ActionAppMenu* WebUIAppMenuControl::GetActionAppMenuForTesting() {
+  return action_menu_.get();
 }
 
 void WebUIAppMenuControl::ExecuteCommandForTesting(int command_id,
                                                    int mouse_event_flags) {
+  if (action_menu_) {
+    int id = command_id;
+    if (std::optional<actions::ActionId> action_id =
+            chrome::CommandActionUpdater::GetActionId(command_id)) {
+      id = action_id.value();
+    }
+    action_menu_->ExecuteCommand(id, mouse_event_flags);
+    return;
+  }
   CHECK(menu_);
   menu_->ExecuteCommand(command_id, mouse_event_flags);
 }
 
 void WebUIAppMenuControl::SetMenuTimerForTesting(base::ElapsedTimer timer) {
-  CHECK(menu_);
-  menu_->SetTimerForTesting(std::move(timer));
+  if (action_menu_) {
+    action_menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
+  } else {
+    CHECK(menu_);
+    menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
+  }
 }
 
 void WebUIAppMenuControl::AddObserver(AppMenuButtonObserver* observer) {
@@ -190,6 +217,17 @@ void WebUIAppMenuControl::RunMenu(const gfx::Rect& anchor_bounds,
   ToolbarView* toolbar_view = browser_view->toolbar();
   CHECK(toolbar_view);
   BrowserWindowInterface* browser = browser_window;
+
+  if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
+    action_menu_.reset();
+    action_menu_ = std::make_unique<ActionAppMenu>(
+        browser, base::BindRepeating(&WebUIAppMenuControl::UpdateOpenState,
+                                     weak_ptr_factory_.GetWeakPtr()));
+    action_menu_->RunMenu(delegate_->GetView()->GetWidget(), anchor_bounds,
+                          run_flags, source);
+    UpdateOpenState();
+    return;
+  }
 
   // Explicitly destroy the old menu UI before recreating the model. `AppMenu`
   // holds a `raw_ptr` to `AppMenuModel`. If we don't reset `menu_` first,

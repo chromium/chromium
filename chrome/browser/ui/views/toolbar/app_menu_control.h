@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
+class ActionAppMenu;
 class AppMenuButtonObserver;
 namespace views {
 class AccessiblePaneView;
@@ -48,6 +49,7 @@ class AppMenuControl {
 
   // Test hooks for inspecting and interacting with the open menu.
   virtual views::MenuItemView* GetRootMenuItemViewForTesting() = 0;
+  virtual ActionAppMenu* GetActionAppMenuForTesting() = 0;
   virtual void ExecuteCommandForTesting(int command_id,
                                         int mouse_event_flags) = 0;
   virtual void SetMenuTimerForTesting(base::ElapsedTimer timer) = 0;

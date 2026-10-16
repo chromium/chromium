@@ -102,6 +102,10 @@ views::MenuItemView* AppMenuButton::GetRootMenuItemViewForTesting() {
   return menu_ ? menu_->root_menu_item() : nullptr;
 }
 
+ActionAppMenu* AppMenuButton::GetActionAppMenuForTesting() {
+  return action_menu_.get();
+}
+
 void AppMenuButton::ExecuteCommandForTesting(int command_id,
                                              int mouse_event_flags) {
   if (action_menu_) {

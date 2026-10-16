@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/command_id_constants.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
@@ -34,10 +35,15 @@ class ActionItem;
 class BaseAction;
 }  // namespace actions
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace views {
 class MenuButtonController;
 class MenuItemView;
 class MenuRunner;
+class Widget;
 }  // namespace views
 
 // Coordinator class for the Block Style ChroMenu.
@@ -51,6 +57,11 @@ class ActionAppMenu : public views::MenuDelegate,
   ~ActionAppMenu() override;
 
   void RunMenu(views::MenuButtonController* host, int run_types);
+  void RunMenu(
+      views::Widget* parent,
+      const gfx::Rect& anchor_screen_bounds,
+      int run_types,
+      ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone);
   bool IsShowing() const;
 
   // AppMenuDragAndDropDelegate::Host:
@@ -95,6 +106,11 @@ class ActionAppMenu : public views::MenuDelegate,
   void ClearItemsBelowSearchBarForTesting();
 
  private:
+  void RunMenu(views::Widget* parent,
+               views::MenuButtonController* host,
+               const gfx::Rect& anchor_screen_bounds,
+               int run_types,
+               ui::mojom::MenuSourceType source_type);
   actions::BaseAction* GetActionForMenuItem(views::MenuItemView* menu) const;
   views::MenuItemView* GetMenuItemForAction(actions::BaseAction* action) const;
   AppMenuDragAndDropDelegate* GetDragAndDropDelegate(

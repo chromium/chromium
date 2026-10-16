@@ -198,6 +198,23 @@ ActionAppMenu::~ActionAppMenu() {
 }
 
 void ActionAppMenu::RunMenu(views::MenuButtonController* host, int run_types) {
+  RunMenu(host->button()->GetWidget(), host,
+          host->button()->GetAnchorBoundsInScreen(), run_types,
+          ui::mojom::MenuSourceType::kNone);
+}
+
+void ActionAppMenu::RunMenu(views::Widget* parent,
+                            const gfx::Rect& anchor_screen_bounds,
+                            int run_types,
+                            ui::mojom::MenuSourceType source_type) {
+  RunMenu(parent, nullptr, anchor_screen_bounds, run_types, source_type);
+}
+
+void ActionAppMenu::RunMenu(views::Widget* parent,
+                            views::MenuButtonController* host,
+                            const gfx::Rect& anchor_screen_bounds,
+                            int run_types,
+                            ui::mojom::MenuSourceType source_type) {
   auto root = std::make_unique<views::MenuItemView>(/*delegate=*/this);
   // Stash the raw pointer before transferring the unique_ptr ownership to
   // `menu_runner_`. This allows us to reference the root menu item view later.
@@ -231,10 +248,8 @@ void ActionAppMenu::RunMenu(views::MenuButtonController* host, int run_types) {
 
   metrics_.OnMenuOpened();
 
-  menu_runner_->RunMenuAt(host->button()->GetWidget(), host,
-                          host->button()->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::mojom::MenuSourceType::kNone,
+  menu_runner_->RunMenuAt(parent, host, anchor_screen_bounds,
+                          views::MenuAnchorPosition::kTopRight, source_type,
                           /*native_view_for_gestures=*/gfx::NativeView(),
                           /*corners=*/std::nullopt,
                           "Chrome.AppMenu.MenuHostInitToNextFramePresented");
