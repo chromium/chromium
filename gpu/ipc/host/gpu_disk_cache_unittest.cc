@@ -4,16 +4,21 @@
 
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
+#include <string>
+
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -27,6 +32,24 @@ const char kCacheKey[] = "key";
 const char kCacheValue[] = "cached value";
 const char kCacheKey2[] = "key2";
 const char kCacheValue2[] = "cached value2";
+
+// Creates `dir` containing a single file of `size_kb` KB.
+[[nodiscard]] bool CreateDirWithSize(const base::FilePath& dir, int size_kb) {
+  return base::CreateDirectory(dir) &&
+         base::WriteFile(dir.AppendASCII("data"),
+                         std::string(size_kb * 1024, 'x'));
+}
+
+// Creates a cache for `handle`, waits until it is available and then releases
+// it.
+void CreateAndReleaseCache(GpuDiskCacheFactory* factory,
+                           const GpuDiskCacheHandle& handle) {
+  scoped_refptr<GpuDiskCache> cache = factory->Create(handle);
+  ASSERT_TRUE(cache);
+  net::TestCompletionCallback available_cb;
+  ASSERT_EQ(net::OK, available_cb.GetResult(
+                         cache->SetAvailableCallback(available_cb.callback())));
+}
 
 }  // namespace
 
@@ -651,5 +674,118 @@ TEST_F(GpuDiskCacheTest,
                 testing::ElementsAre(std::pair(kCacheKey2, kCacheValue2)));
   }
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(GpuDiskCacheTest, RecordsDiskSizeWhenCacheIsCreated) {
+  constexpr char kGlHistogram[] = "GPU.ShaderCache.DiskSize.GlShaders";
+  constexpr char kWebGpuHistogram[] = "GPU.ShaderCache.DiskSize.DawnWebGPU";
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  const base::FilePath gl_path = cache_path().AppendASCII("GPUCache");
+  const base::FilePath webgpu_path =
+      cache_path().AppendASCII("DawnWebGPUCache");
+  ASSERT_TRUE(CreateDirWithSize(gl_path, 10));
+  ASSERT_TRUE(CreateDirWithSize(webgpu_path, 20));
+
+  const GpuDiskCacheHandle gl_handle =
+      factory()->GetCacheHandle(GpuDiskCacheType::kGlShaders, gl_path);
+  factory()->GetCacheHandle(GpuDiskCacheType::kDawnWebGPU, webgpu_path);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Registering a cache doesn't record its size.
+  histogram_tester.ExpectTotalCount(kGlHistogram, 0);
+  histogram_tester.ExpectTotalCount(kWebGpuHistogram, 0);
+
+  ASSERT_NO_FATAL_FAILURE(CreateAndReleaseCache(factory(), gl_handle));
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // The size can include files created by the cache backend, so only check a
+  // lower bound.
+  histogram_tester.ExpectTotalCount(kGlHistogram, 1);
+  EXPECT_GE(histogram_tester.GetTotalSum(kGlHistogram), 10);
+  histogram_tester.ExpectTotalCount(kWebGpuHistogram, 0);
+}
+
+TEST_F(GpuDiskCacheTest, RecordsDiskSizeOncePerPath) {
+  constexpr char kHistogram[] = "GPU.ShaderCache.DiskSize.GlShaders";
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  const base::FilePath gl_path = cache_path().AppendASCII("GPUCache");
+  ASSERT_TRUE(CreateDirWithSize(gl_path, 10));
+
+  const GpuDiskCacheHandle gl_handle =
+      factory()->GetCacheHandle(GpuDiskCacheType::kGlShaders, gl_path);
+  {
+    scoped_refptr<GpuDiskCache> cache = factory()->Create(gl_handle);
+    ASSERT_TRUE(cache);
+    net::TestCompletionCallback available_cb;
+    ASSERT_EQ(net::OK, available_cb.GetResult(cache->SetAvailableCallback(
+                           available_cb.callback())));
+    // Release the only reference to `gl_handle`, which unregisters `gl_path`.
+    factory()->ReleaseCacheHandle(cache.get());
+  }
+
+  // Registering `gl_path` again creates a new handle, but creating a cache for
+  // it must not record the size again.
+  const GpuDiskCacheHandle new_gl_handle =
+      factory()->GetCacheHandle(GpuDiskCacheType::kGlShaders, gl_path);
+  EXPECT_NE(gl_handle, new_gl_handle);
+  ASSERT_NO_FATAL_FAILURE(CreateAndReleaseCache(factory(), new_gl_handle));
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(kHistogram, 1);
+}
+
+TEST_F(GpuDiskCacheTest, RecordsDiskSizeForReservedHandles) {
+  constexpr char kCompositorHistogram[] =
+      "GPU.ShaderCache.DiskSize.DisplayCompositor";
+  constexpr char kGrShaderHistogram[] = "GPU.ShaderCache.DiskSize.GrShader";
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  const base::FilePath compositor_path =
+      cache_path().AppendASCII("ShaderCache");
+  const base::FilePath gr_shader_path =
+      cache_path().AppendASCII("GrShaderCache");
+  ASSERT_TRUE(CreateDirWithSize(compositor_path, 10));
+  ASSERT_TRUE(CreateDirWithSize(gr_shader_path, 20));
+
+  GpuDiskCacheFactory::HandleToPathMap reserved_handles;
+  reserved_handles.emplace(kDisplayCompositorGpuDiskCacheHandle,
+                           compositor_path);
+  reserved_handles.emplace(kGrShaderGpuDiskCacheHandle, gr_shader_path);
+  // Leaked on purpose, like `factory_`.
+  GpuDiskCacheFactory* reserved_factory =
+      new GpuDiskCacheFactory(reserved_handles);
+  ANNOTATE_LEAKING_OBJECT_PTR(reserved_factory);
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Registering the reserved handles doesn't record their sizes.
+  histogram_tester.ExpectTotalCount(kCompositorHistogram, 0);
+  histogram_tester.ExpectTotalCount(kGrShaderHistogram, 0);
+
+  ASSERT_NO_FATAL_FAILURE(
+      CreateAndReleaseCache(reserved_factory, kGrShaderGpuDiskCacheHandle));
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  histogram_tester.ExpectTotalCount(kGrShaderHistogram, 1);
+  EXPECT_GE(histogram_tester.GetTotalSum(kGrShaderHistogram), 20);
+  histogram_tester.ExpectTotalCount(kCompositorHistogram, 0);
+}
+#else
+TEST_F(GpuDiskCacheTest, DoesNotRecordDiskSize) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  const base::FilePath gl_path = cache_path().AppendASCII("GPUCache");
+  ASSERT_TRUE(CreateDirWithSize(gl_path, 10));
+
+  ASSERT_NO_FATAL_FAILURE(CreateAndReleaseCache(
+      factory(),
+      factory()->GetCacheHandle(GpuDiskCacheType::kGlShaders, gl_path)));
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // The sizes are only recorded on Windows.
+  histogram_tester.ExpectTotalCount("GPU.ShaderCache.DiskSize.GlShaders", 0);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace gpu

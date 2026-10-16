@@ -535,6 +535,11 @@ void GpuHostImpl::SetChannelPersistentCachePendingBackend(
     }
     return;
   }
+  // Only record the size of the caches that the GPU process uses.
+  if (auto* factory = PersistentCacheSandboxedFileFactory::GetInstance()) {
+    factory->RecordDiskSizeAsync(
+        GetGpuDiskCacheSubdir(gpu::GetHandleType(handle)));
+  }
   gpu_service()->SetChannelPersistentCachePendingBackend(
       client_id, handle, std::move(pending_backend));
 }

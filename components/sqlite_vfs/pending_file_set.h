@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SQLITE_VFS_PENDING_FILE_SET_H_
 #define COMPONENTS_SQLITE_VFS_PENDING_FILE_SET_H_
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -29,6 +30,17 @@ struct COMPONENT_EXPORT(PENDING_FILE_SET) PendingFileSet {
   PendingFileSet(PendingFileSet&&);
   PendingFileSet& operator=(PendingFileSet&&);
   ~PendingFileSet();
+
+  // Returns the total size of the database file and its rollback journal and
+  // write-ahead log, if present. The temporary WAL-index file isn't included.
+  // Files whose size can't be read are skipped. Performs blocking I/O.
+  base::ByteSize ComputeTotalFileSize() const;
+
+  // Returns true if `db_file` was newly created when this instance was made,
+  // rather than an existing database file being opened. This is only known in
+  // the process that made this instance; it is always false once the instance
+  // has been sent to another process.
+  bool IsNewDatabase() const;
 
   base::File db_file;
   base::File journal_file;

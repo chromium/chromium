@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -544,6 +545,10 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   std::unique_ptr<webnn::WebNNContextProviderImpl> webnn_context_provider_;
 
   gpu::GpuPersistentCacheCollection persistent_caches_;
+
+  // Total size of the persistent cache databases passed to
+  // SetChannelPersistentCachePendingBackend(). Only accessed on the IO thread.
+  base::ByteSize persistent_cache_db_size_;
 
   // An event that will be signalled when we shutdown. On some platforms it
   // comes from external sources.

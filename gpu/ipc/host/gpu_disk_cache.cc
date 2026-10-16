@@ -4,18 +4,25 @@
 
 #include "gpu/ipc/host/gpu_disk_cache.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/ipc/host/shader_cache_metrics.h"
 #include "net/base/cache_type.h"
 #include "net/base/features.h"
 #include "net/base/io_buffer.h"
@@ -26,7 +33,31 @@ namespace {
 
 constexpr int kCacheIndex = 1;
 
+// Returns the GpuShaderCache token variant of the GPU.ShaderCache.DiskSize
+// histogram for the cache identified by `handle`. Keep in sync with
+// tools/metrics/histograms/metadata/gpu/histograms.xml.
+std::string_view GetCacheNameForMetrics(const GpuDiskCacheHandle& handle) {
+  if (handle == GpuDiskCacheHandle(kDisplayCompositorGpuDiskCacheHandle)) {
+    return "DisplayCompositor";
+  }
+  if (handle == GpuDiskCacheHandle(kGrShaderGpuDiskCacheHandle)) {
+    return "GrShader";
+  }
+  if (handle == GpuDiskCacheHandle(kGraphiteDawnGpuDiskCacheHandle)) {
+    return "GraphiteDawn";
+  }
+  switch (GetHandleType(handle)) {
+    case GpuDiskCacheType::kGlShaders:
+      return "GlShaders";
+    case GpuDiskCacheType::kDawnWebGPU:
+      return "DawnWebGPU";
+    case GpuDiskCacheType::kDawnGraphite:
+      return "DawnGraphite";
+  }
+  NOTREACHED();
 }
+
+}  // namespace
 
 // GpuDiskCacheEntry handles the work of caching/updating the cached
 // blobs.
@@ -548,6 +579,7 @@ scoped_refptr<GpuDiskCache> GpuDiskCacheFactory::Create(
   if (it == handle_to_path_map_.end()) {
     return nullptr;
   }
+  MaybeRecordCacheSize(handle, it->second);
   return GetOrCreateByPath(
       it->second, base::BindRepeating(blob_loaded_cb, handle),
       base::BindOnce(std::move(cache_destroyed_cb), handle), reset_handling);
@@ -579,6 +611,31 @@ void GpuDiskCacheFactory::AddToCache(const base::FilePath& key,
 void GpuDiskCacheFactory::RemoveFromCache(const base::FilePath& key) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   gpu_cache_map_.erase(key);
+}
+
+void GpuDiskCacheFactory::MaybeRecordCacheSize(const GpuDiskCacheHandle& handle,
+                                               const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!kRecordShaderCacheDiskSize) {
+    return;
+  }
+  if (!paths_with_recorded_size_.insert(path).second) {
+    return;
+  }
+
+  // Computing the size of a large cache can be slow, so use BEST_EFFORT to
+  // avoid competing with startup. Such tasks don't run until browser startup
+  // completes, so the size may include data written during this session.
+  // This is called on the UI thread, where blocking isn't allowed, so whether
+  // the directory exists is only checked when the task runs. By then, the
+  // cache backend has usually created the directory, so a cache that is new in
+  // this session is recorded too, with the size of its initial files.
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&RecordShaderCacheDiskSize,
+                     std::string(GetCacheNameForMetrics(handle)), path));
 }
 
 void GpuDiskCacheFactory::ClearByCache(scoped_refptr<GpuDiskCache> cache,

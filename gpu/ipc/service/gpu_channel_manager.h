@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -379,6 +380,9 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   // Count of context lost.
   int context_lost_count_ = 0;
+
+  // Total size of the shader cache entries passed to PopulateCache().
+  base::ByteSize loaded_shader_cache_size_;
 
   bool application_backgrounded_ = false;
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERSISTENT_CACHE_PENDING_BACKEND_H_
 #define COMPONENTS_PERSISTENT_CACHE_PENDING_BACKEND_H_
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "components/sqlite_vfs/pending_file_set.h"
@@ -32,6 +33,16 @@ struct COMPONENT_EXPORT(PERSISTENT_CACHE) PendingBackend {
   PendingBackend(PendingBackend&&);
   PendingBackend& operator=(PendingBackend&&);
   ~PendingBackend();
+
+  // Returns the total size of the database file and its journal or write-ahead
+  // log. Files whose size can't be read are skipped. Performs blocking I/O.
+  base::ByteSize ComputeTotalFileSize() const;
+
+  // Returns true if the database file was newly created when this instance was
+  // made, rather than an existing one being opened. This is only known in the
+  // process that made this instance; it is always false once the instance has
+  // been sent to another process.
+  bool IsNewDatabase() const;
 
  private:
   friend class SqliteBackendImpl;

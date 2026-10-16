@@ -4,8 +4,12 @@
 
 #include "components/persistent_cache/sqlite/backend_storage_delegate.h"
 
+#include <stdint.h>
+
+#include <initializer_list>
 #include <tuple>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -135,6 +139,63 @@ TEST_P(SqliteBackendStorageDelegateParamTest, CreateAndDelete) {
 
   // The files should now be gone.
   ASSERT_TRUE(base::IsDirectoryEmpty(temp_path()));
+}
+
+TEST_P(SqliteBackendStorageDelegateParamTest, ComputeTotalFileSize) {
+  base::FilePath base_name = base::FilePath::FromASCII("base_name");
+  {
+    // Create the database.
+    ASSERT_OK_AND_ASSIGN(auto pending_backend,
+                         delegate().MakePendingBackend(
+                             Client::kTest, temp_path(), base_name,
+                             is_single_connection(), journal_mode_wal()));
+    ASSERT_OK_AND_ASSIGN(
+        auto backend,
+        SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest));
+    ASSERT_NE(backend, nullptr);
+  }
+
+  ASSERT_OK_AND_ASSIGN(auto pending_backend,
+                       delegate().MakePendingBackend(
+                           Client::kTest, temp_path(), base_name,
+                           is_single_connection(), journal_mode_wal()));
+
+  // The size includes the database, journal and WAL files, but not the
+  // WAL-index file.
+  const base::FilePath root_path = temp_path().Append(base_name);
+  int64_t expected_size = 0;
+  for (const base::FilePath::CharType* extension :
+       {sqlite_vfs::kDbFileExtension, sqlite_vfs::kJournalFileExtension,
+        sqlite_vfs::kWalJournalFileExtension}) {
+    expected_size +=
+        base::GetFileSize(root_path.AddExtension(extension)).value_or(0);
+  }
+  EXPECT_GT(expected_size, 0);
+  EXPECT_EQ(pending_backend.ComputeTotalFileSize(),
+            base::ByteSize(static_cast<uint64_t>(expected_size)));
+}
+
+TEST_P(SqliteBackendStorageDelegateParamTest, IsNewDatabase) {
+  base::FilePath base_name = base::FilePath::FromASCII("base_name");
+  {
+    // Create the database.
+    ASSERT_OK_AND_ASSIGN(auto pending_backend,
+                         delegate().MakePendingBackend(
+                             Client::kTest, temp_path(), base_name,
+                             is_single_connection(), journal_mode_wal()));
+    EXPECT_TRUE(pending_backend.IsNewDatabase());
+    ASSERT_OK_AND_ASSIGN(
+        auto backend,
+        SqliteBackendImpl::Bind(std::move(pending_backend), Client::kTest));
+    ASSERT_NE(backend, nullptr);
+  }
+
+  // Open the existing database.
+  ASSERT_OK_AND_ASSIGN(auto pending_backend,
+                       delegate().MakePendingBackend(
+                           Client::kTest, temp_path(), base_name,
+                           is_single_connection(), journal_mode_wal()));
+  EXPECT_FALSE(pending_backend.IsNewDatabase());
 }
 
 INSTANTIATE_TEST_SUITE_P(

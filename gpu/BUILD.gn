@@ -524,6 +524,7 @@ test("gpu_unittests") {
     "ipc/client/command_buffer_proxy_impl_unittest.cc",
     "ipc/common/mojom_traits_unittest.cc",
     "ipc/host/gpu_disk_cache_unittest.cc",
+    "ipc/host/shader_cache_metrics_unittest.cc",
     "ipc/service/gpu_channel_test_common.cc",
     "ipc/service/gpu_channel_test_common.h",
     "ipc/service/gpu_watchdog_thread_unittest.cc",

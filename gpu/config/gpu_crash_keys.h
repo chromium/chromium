@@ -41,6 +41,14 @@ extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<128> gpu_renderer;
 #endif
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<20>
     available_physical_memory_in_mb;
+// The total size of the shader disk cache entries that have been loaded into
+// the GPU process so far, in KB.
+extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<32>
+    shader_cache_loaded_kb;
+// The total size of the persistent cache databases that have been passed to
+// the GPU process, in KB.
+extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<32>
+    persistent_cache_db_kb;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<1024> current_shader_0;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<1024> current_shader_1;
 extern GPU_CONFIG_EXPORT crash_reporter::CrashKeyString<1024>

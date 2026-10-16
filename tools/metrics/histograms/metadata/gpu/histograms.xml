@@ -1929,6 +1929,64 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="GPU.ShaderCache.DiskSize.{GpuShaderCache}" units="KB"
+    expires_after="2027-10-07">
+  <owner>geofflang@chromium.org</owner>
+  <owner>chrdavis@microsoft.com</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The total on-disk size of {GpuShaderCache}, including all files in its
+    subdirectories. Only recorded on Windows. Recorded in the browser process at
+    most once per cache directory per browser session, when the cache is first
+    used: when the browser opens the cache for the GPU process, or for the
+    Persistent* variants, when the browser passes the cache to the GPU process.
+    Caches that the GPU process doesn't use aren't reported, such as the cache
+    of the Skia backend that isn't running, or legacy cache directories left
+    behind when the persistent cache is used instead. The size is computed in a
+    BEST_EFFORT task, which usually doesn't run until browser startup completes,
+    so it can include data written during the current session, and sessions that
+    end before then don't report it. Nothing is recorded if the directory
+    doesn't exist. The Persistent* variants are also only reported if the cache
+    database already existed when the browser first opened it in the current
+    session, so caches created during the current session aren't reported. The
+    other variants only check whether the directory exists when the size is
+    computed, so a cache created during the current session can be reported with
+    the size of its initial files.
+  </summary>
+  <token key="GpuShaderCache">
+    <variant name="DawnGraphite"
+        summary="a per-storage-partition DawnGraphiteCache directory (one
+                 sample per storage partition)"/>
+    <variant name="DawnWebGPU"
+        summary="a per-storage-partition DawnWebGPUCache directory, used for
+                 WebGPU (Dawn) pipeline caching (one sample per storage
+                 partition)"/>
+    <variant name="DisplayCompositor"
+        summary="the ShaderCache directory in the user data directory, used
+                 by the display compositor in the GPU process"/>
+    <variant name="GlShaders"
+        summary="a per-storage-partition GPUCache directory, used for GL
+                 program caching by renderer clients such as WebGL (one
+                 sample per storage partition)"/>
+    <variant name="GraphiteDawn"
+        summary="the GraphiteDawnCache directory in the user data directory,
+                 used by Skia Graphite (Dawn) in the GPU process"/>
+    <variant name="GrShader"
+        summary="the GrShaderCache directory in the user data directory, used
+                 by Skia Ganesh in the GPU process"/>
+    <variant name="PersistentDawnGraphiteCache"
+        summary="the current version's GPUPersistentCache/DawnGraphiteCache
+                 directory in the user data directory, the SQLite-based
+                 persistent cache used by Skia Graphite (Dawn) when the
+                 SkiaGraphiteUsePersistentCache feature is enabled"/>
+    <variant name="PersistentGPUCache"
+        summary="the current version's GPUPersistentCache/GPUCache directory
+                 in the user data directory, the SQLite-based persistent
+                 cache used by the display compositor and Skia Ganesh when
+                 the GpuPersistentCache feature is enabled"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.ShaderLoadPrefixOK" enum="BooleanMatched"
     expires_after="2026-06-28">
   <owner>vikassoni@chromium.org</owner>

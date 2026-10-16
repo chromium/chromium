@@ -11,11 +11,13 @@
 #include <unordered_map>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/types/expected.h"
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
@@ -167,7 +169,9 @@ class GpuDiskCacheFactory {
 
   // Creates an non-existing gpu cache given a handle that was previously
   // registered via GetCacheHandle. Returns nullptr if there was no associated
-  // path.
+  // path. The first time a cache is created for a path, its on-disk size is
+  // recorded to UMA asynchronously. Recording here rather than when the path is
+  // registered means that only caches that are used get recorded.
   scoped_refptr<GpuDiskCache> Create(
       const GpuDiskCacheHandle& handle,
       const BlobLoadedForCacheCallback& blob_loaded_cb = base::DoNothing(),
@@ -191,6 +195,12 @@ class GpuDiskCacheFactory {
       disk_cache::ResetHandling reset_handling);
 
   void CacheCleared(GpuDiskCache* cache);
+
+  // Records the on-disk size of the cache at `path` asynchronously, at most
+  // once per path per session. Does nothing if kRecordShaderCacheDiskSize is
+  // false.
+  void MaybeRecordCacheSize(const GpuDiskCacheHandle& handle,
+                            const base::FilePath& path);
 
   THREAD_CHECKER(thread_checker_);
 
@@ -221,6 +231,11 @@ class GpuDiskCacheFactory {
   using CacheToClearHelperQueueMap =
       base::flat_map<GpuDiskCache*, ClearHelperQueue>;
   CacheToClearHelperQueueMap gpu_clear_map_;
+
+  // Paths whose on-disk size has already been recorded. Unlike the maps above,
+  // this is never culled so that each path is only recorded once.
+  base::flat_set<base::FilePath> paths_with_recorded_size_
+      GUARDED_BY_CONTEXT(thread_checker_);
 
   // Handles are all int32_t types underneath so we can allocate them all via
   // this incrementing internal counter.

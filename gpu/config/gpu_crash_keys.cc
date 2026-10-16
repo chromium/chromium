@@ -34,6 +34,10 @@ crash_reporter::CrashKeyString<128> gpu_renderer("gpu-gl-renderer");
 #endif
 crash_reporter::CrashKeyString<20> available_physical_memory_in_mb(
     "available-physical-memory-in-mb");
+crash_reporter::CrashKeyString<32> shader_cache_loaded_kb(
+    "gpu-shader-cache-loaded-kb");
+crash_reporter::CrashKeyString<32> persistent_cache_db_kb(
+    "gpu-persistent-cache-db-kb");
 crash_reporter::CrashKeyString<1024> current_shader_0("current-shader-0");
 crash_reporter::CrashKeyString<1024> current_shader_1("current-shader-1");
 crash_reporter::CrashKeyString<1024> gpu_gl_error_message(

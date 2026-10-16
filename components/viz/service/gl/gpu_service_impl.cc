@@ -21,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/task/bind_post_task.h"
@@ -46,6 +47,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_crash_keys.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_preferences.h"
@@ -998,6 +1000,13 @@ void GpuServiceImpl::SetChannelPersistentCachePendingBackend(
   scoped_refptr<gpu::GpuPersistentCache> cache =
       persistent_caches_.GetCache(handle);
   CHECK(cache);
+
+  // Record the size of the persistent caches, to help diagnose crashes and
+  // hangs while they are being loaded.
+  persistent_cache_db_size_ += pending_backend.ComputeTotalFileSize();
+  gpu::crash_keys::persistent_cache_db_kb.Set(
+      base::NumberToString(persistent_cache_db_size_.InKiB()));
+
   cache->InitializeCache(std::move(pending_backend),
                          use_shader_cache_shm_count_);
 }

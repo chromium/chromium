@@ -15,4 +15,12 @@ PendingBackend::PendingBackend(PendingBackend&&) = default;
 PendingBackend& PendingBackend::operator=(PendingBackend&&) = default;
 PendingBackend::~PendingBackend() = default;
 
+base::ByteSize PendingBackend::ComputeTotalFileSize() const {
+  return pending_file_set.ComputeTotalFileSize();
+}
+
+bool PendingBackend::IsNewDatabase() const {
+  return pending_file_set.IsNewDatabase();
+}
+
 }  // namespace persistent_cache
