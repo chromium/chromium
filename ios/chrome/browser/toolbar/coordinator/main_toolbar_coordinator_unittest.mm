@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
@@ -181,6 +182,11 @@ class MainToolbarCoordinatorTest : public PlatformTest {
     [browser->GetCommandDispatcher()
         startDispatchingToTarget:mock_page_action_menu_commands
                      forProtocol:@protocol(PageActionMenuCommands)];
+
+    id mock_page_info_commands = OCMProtocolMock(@protocol(PageInfoCommands));
+    [browser->GetCommandDispatcher()
+        startDispatchingToTarget:mock_page_info_commands
+                     forProtocol:@protocol(PageInfoCommands)];
 
     id mock_gemini_commands = OCMProtocolMock(@protocol(GeminiCommands));
     [browser->GetCommandDispatcher()

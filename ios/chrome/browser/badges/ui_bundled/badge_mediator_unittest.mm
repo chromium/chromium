@@ -10,6 +10,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/badges/model/features.h"
+#import "ios/chrome/browser/badges/ui_bundled/badge_button.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_consumer.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_item.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_type.h"
@@ -31,11 +32,16 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 namespace {
 // The two infobar types used in tests.  Both support badges.
@@ -347,6 +353,26 @@ TEST_P(BadgeMediatorTest, BadgeMediatorTestNoBadge) {
 
   AddInfobar(InfobarType::kInfobarTypeSaveCard, u"FakeInfobar4");
   EXPECT_FALSE(badge_consumer_.displayedBadge);
+}
+
+// Tests that tapping the permissions badge dispatches `showPageInfo` when
+// `kDomainLevelSitePermissions` is enabled.
+TEST_P(BadgeMediatorTest, PermissionsBadgeButtonTappedShowsPageInfo) {
+  base::test::ScopedFeatureList feature_list{kDomainLevelSitePermissions};
+
+  AppendActivatedWebState();
+
+  id mock_page_info_handler =
+      OCMStrictProtocolMock(@protocol(PageInfoCommands));
+  badge_mediator_.pageInfoHandler = mock_page_info_handler;
+
+  OCMExpect([mock_page_info_handler showPageInfo]);
+
+  BadgeButton* button =
+      [BadgeButton badgeButtonWithType:kBadgeTypePermissionsCamera];
+  [badge_mediator_ permissionsBadgeButtonTapped:button];
+
+  EXPECT_OCMOCK_VERIFY(mock_page_info_handler);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,

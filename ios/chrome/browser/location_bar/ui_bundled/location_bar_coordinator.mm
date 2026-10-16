@@ -99,6 +99,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_entry_point_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
 #import "ios/chrome/browser/shared/public/commands/send_tab_to_self_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -1039,6 +1040,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   self.badgeMediator.dispatcher =
       static_cast<id<BrowserCoordinatorCommands, LocationBarBadgeCommands>>(
           self.browser->GetCommandDispatcher());
+  self.badgeMediator.pageInfoHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageInfoCommands);
   buttonFactory.delegate = self.badgeMediator;
 
   if (!IsFullscreenRefactoringEnabled()) {

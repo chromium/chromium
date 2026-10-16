@@ -26,6 +26,9 @@ class Tracker;
 // Feature engagement tracker for notifying promo events.
 @property(nonatomic, assign) feature_engagement::Tracker* engagementTracker;
 
+// Whether the banner is presented in an incognito browser.
+@property(nonatomic, assign) BOOL incognito;
+
 // Handler for executing NonModalSignInPromoCommands.
 @property(nonatomic, weak) id<NonModalSignInPromoCommands>
     nonModalSignInPromoHandler;

@@ -12,6 +12,7 @@
 @protocol BadgeConsumer;
 @protocol BrowserCoordinatorCommands;
 @protocol LocationBarBadgeCommands;
+@protocol PageInfoCommands;
 class OverlayPresenter;
 class WebStateList;
 
@@ -22,6 +23,9 @@ class WebStateList;
 @property(nonatomic, weak)
     id<BrowserCoordinatorCommands, LocationBarBadgeCommands>
         dispatcher;
+
+// The handler for Page Info commands.
+@property(nonatomic, weak) id<PageInfoCommands> pageInfoHandler;
 
 // The consumer being set up by this mediator.  Setting to a new value updates
 // the new consumer.

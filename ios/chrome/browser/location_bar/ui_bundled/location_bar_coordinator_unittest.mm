@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -209,6 +210,10 @@ class LocationBarCoordinatorTest : public PlatformTest {
         OCMProtocolMock(@protocol(PageActionMenuCommands));
     [dispatcher startDispatchingToTarget:mock_page_action_menu_handler
                              forProtocol:@protocol(PageActionMenuCommands)];
+
+    id mock_page_info_handler = OCMProtocolMock(@protocol(PageInfoCommands));
+    [dispatcher startDispatchingToTarget:mock_page_info_handler
+                             forProtocol:@protocol(PageInfoCommands)];
 
     id mock_gemini_handler = OCMProtocolMock(@protocol(GeminiCommands));
     [dispatcher startDispatchingToTarget:mock_gemini_handler
