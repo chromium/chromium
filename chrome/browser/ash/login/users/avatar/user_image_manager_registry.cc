@@ -53,13 +53,11 @@ UserImageManagerRegistry::~UserImageManagerRegistry() {
 
 UserImageManagerImpl* UserImageManagerRegistry::GetManager(
     const AccountId& account_id) {
-  auto it = map_.find(account_id);
-  if (it == map_.end()) {
-    it = map_.emplace(account_id,
-                      std::make_unique<UserImageManagerImpl>(
-                          &local_state_.get(), account_id, user_manager_.get(),
-                          user_image_loader_delegate_.get()))
-             .first;
+  auto [it, inserted] = map_.try_emplace(account_id);
+  if (inserted) {
+    it->second = std::make_unique<UserImageManagerImpl>(
+        &local_state_.get(), account_id, user_manager_.get(),
+        user_image_loader_delegate_.get());
   }
   return it->second.get();
 }

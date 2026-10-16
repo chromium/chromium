@@ -1258,14 +1258,11 @@ bool PopulateTabIdsForScriptToolActions(
     const std::string& doc_token =
         script_tool.document_identifier().serialized_token();
 
-    tabs::TabInterface* tab = nullptr;
-    auto it = resolved_tabs.find(doc_token);
-    if (it != resolved_tabs.end()) {
-      tab = it->second;
-    } else {
-      tab = FindTabForDocumentIdentifier(profile, doc_token, active_tab);
-      resolved_tabs.emplace(doc_token, tab);
+    auto [it, inserted] = resolved_tabs.try_emplace(doc_token, nullptr);
+    if (inserted) {
+      it->second = FindTabForDocumentIdentifier(profile, doc_token, active_tab);
     }
+    tabs::TabInterface* tab = it->second;
 
     if (!tab) {
       return false;
