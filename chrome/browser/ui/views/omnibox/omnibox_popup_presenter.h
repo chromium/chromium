@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -42,6 +43,7 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   bool ShouldEvictOnHide() const override;
   bool ShouldDestroyWidgetOnHide() const override;
   bool ShouldSizeWebViewToPreferredHeight() const override;
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent() override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

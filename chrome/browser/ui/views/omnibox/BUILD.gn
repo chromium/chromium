@@ -288,6 +288,7 @@ source_set("browser_tests") {
     "omnibox_popup_view_views_browsertest.cc",
     "omnibox_row_grouped_view_browsertest.cc",
     "omnibox_suggestion_button_row_browsertest.cc",
+    "omnibox_webui_popup_defer_creation_browsertest.cc",
   ]
 
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -331,6 +332,7 @@ source_set("browser_tests") {
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/metrics_proto",
     "//ui/compositor",
     "//ui/events:test_support",
     "//ui/shell_dialogs:test_support",
