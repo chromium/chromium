@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
@@ -22,6 +23,7 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -61,6 +63,14 @@ class ReadbackTestRasterInterface : public viz::TestRasterInterface {
       base::OnceCallback<void(bool)> readback_done) override {
     readback_done_ = std::move(readback_done);
     readback_started_.SetValue();
+  }
+
+  void GenSyncTokenCHROMIUM(GLbyte* sync_token) override {
+    viz::TestRasterInterface::GenSyncTokenCHROMIUM(sync_token);
+    gpu::SyncToken sync_token_data = SyncTokenFromPointer(sync_token);
+    if (sync_token_data.HasData()) {
+      generated_sync_tokens_.push_back(sync_token_data);
+    }
   }
 
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override {
@@ -142,7 +152,12 @@ TEST_F(NavigationEntryScreenshotTest, DestroyedDuringReadBackWaitsForRead) {
   ASSERT_TRUE(release_future.IsReady());
   EXPECT_THAT(raster_interface_->waited_sync_tokens(), testing::IsEmpty());
   EXPECT_EQ(raster_interface_->generated_sync_tokens().size(), 1u);
-  EXPECT_EQ(release_future.Get<0>(), Verified(read_token));
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(release_future.Get<0>().HasData());
+  } else {
+    EXPECT_EQ(release_future.Get<0>(), Verified(read_token));
+  }
   EXPECT_FALSE(release_future.Get<1>());
 }
 
@@ -169,15 +184,25 @@ TEST_F(NavigationEntryScreenshotTest,
   gpu::SyncToken viz_token(gpu::CommandBufferNamespace::GPU_IO,
                            gpu::CommandBufferId::FromUnsafeValue(99u), 1u);
   viz_token.SetVerifyFlush();
-  std::move(layer_release_callback).Run(viz_token, /*is_lost=*/false);
+  gpu::SyncToken release_sync_token = shared_image_->EndExport(
+      gpu::SharedImageExportResult::CreateForTesting(viz_token));
+  std::move(layer_release_callback).Run(release_sync_token, /*is_lost=*/false);
   screenshot.reset();
 
   ASSERT_TRUE(release_future.IsReady());
-  EXPECT_THAT(raster_interface_->waited_sync_tokens(),
-              testing::ElementsAre(viz_token));
-  ASSERT_EQ(raster_interface_->generated_sync_tokens().size(), 2u);
-  gpu::SyncToken combined_token = raster_interface_->generated_sync_tokens()[1];
-  EXPECT_EQ(release_future.Get<0>(), Verified(combined_token));
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_THAT(raster_interface_->waited_sync_tokens(), testing::IsEmpty());
+    EXPECT_EQ(raster_interface_->generated_sync_tokens().size(), 1u);
+    EXPECT_FALSE(release_future.Get<0>().HasData());
+  } else {
+    EXPECT_THAT(raster_interface_->waited_sync_tokens(),
+                testing::ElementsAre(viz_token));
+    ASSERT_EQ(raster_interface_->generated_sync_tokens().size(), 2u);
+    gpu::SyncToken combined_token =
+        raster_interface_->generated_sync_tokens()[1];
+    EXPECT_EQ(release_future.Get<0>(), Verified(combined_token));
+  }
 }
 
 TEST_F(NavigationEntryScreenshotTest,
@@ -203,13 +228,20 @@ TEST_F(NavigationEntryScreenshotTest,
   gpu::SyncToken viz_token(gpu::CommandBufferNamespace::GPU_IO,
                            gpu::CommandBufferId::FromUnsafeValue(99u), 1u);
   viz_token.SetVerifyFlush();
-  std::move(layer_release_callback).Run(viz_token, /*is_lost=*/false);
+  gpu::SyncToken release_sync_token = shared_image_->EndExport(
+      gpu::SharedImageExportResult::CreateForTesting(viz_token));
+  std::move(layer_release_callback).Run(release_sync_token, /*is_lost=*/false);
   screenshot.reset();
 
   ASSERT_TRUE(release_future.IsReady());
   EXPECT_THAT(raster_interface_->waited_sync_tokens(), testing::IsEmpty());
   EXPECT_EQ(raster_interface_->generated_sync_tokens().size(), 1u);
-  EXPECT_EQ(release_future.Get<0>(), viz_token);
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(release_future.Get<0>().HasData());
+  } else {
+    EXPECT_EQ(release_future.Get<0>(), viz_token);
+  }
 }
 
 }  // namespace
