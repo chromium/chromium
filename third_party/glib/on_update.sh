@@ -32,6 +32,33 @@ sed -Ei \
 sed -Ei 's/#define (G_HAVE_FREE_SIZED)( .*)?$/#undef \1/' \
   ../include/glib/glibconfig.h
 
+# config.h and glibconfig.h are checked in as templates, with the values that
+# depend on the glib version replaced by placeholders that are filled in at
+# build time (see configure_version_header.py), so that they don't change when
+# glib is rolled.
+sed -E \
+  -e 's/^(#define (GLIB_(MAJOR|MINOR|MICRO)_VERSION|GLIB_INTERFACE_AGE|GLIB_BINARY_AGE)) .*/\1 @\2@/' \
+  -e 's/^(#define PACKAGE_STRING) "glib .*"/\1 "glib @VERSION@"/' \
+  -e 's/^(#define PACKAGE_VERSION) ".*"/\1 "@VERSION@"/' \
+  ../include/config.h > ../include/config.h.in
+sed -E 's/^(#define GLIB_(MAJOR|MINOR|MICRO)_VERSION) .*/\1 @GLIB_\2_VERSION@/' \
+  ../include/glib/glibconfig.h > ../include/glib/glibconfig.h.in
+
+# Make sure that filling in the templates reproduces meson's output exactly, in
+# case upstream changes how it derives these values from the version or adds
+# new version-dependent values.
+for file in config.h glib/glibconfig.h; do
+  python3 ../configure_version_header.py --template "../include/$file.in" \
+    --output "$TMP_DIR/filled.h"
+  if ! cmp -s "../include/$file" "$TMP_DIR/filled.h"; then
+    echo "Filling in include/$file.in doesn't reproduce meson's $file." \
+      "Update configure_version_header.py or the templating above." >&2
+    diff -u "../include/$file" "$TMP_DIR/filled.h" >&2 || true
+    exit 1
+  fi
+done
+rm ../include/config.h ../include/glib/glibconfig.h
+
 rm -rf "$TMP_DIR"
 
 popd

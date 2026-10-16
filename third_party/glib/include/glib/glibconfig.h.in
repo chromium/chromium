@@ -111,9 +111,9 @@ typedef unsigned long guintptr;
 #define G_GINTPTR_FORMAT        "li"
 #define G_GUINTPTR_FORMAT       "lu"
 
-#define GLIB_MAJOR_VERSION 2
-#define GLIB_MINOR_VERSION 90
-#define GLIB_MICRO_VERSION 1
+#define GLIB_MAJOR_VERSION @GLIB_MAJOR_VERSION@
+#define GLIB_MINOR_VERSION @GLIB_MINOR_VERSION@
+#define GLIB_MICRO_VERSION @GLIB_MICRO_VERSION@
 
 #define G_OS_UNIX
 

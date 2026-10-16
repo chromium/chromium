@@ -14,6 +14,39 @@ _visibility_macros_inputs = [
   "src/tools/gen-visibility-macros.py",
 ]
 
+# config.h and glibconfig.h come from meson's host configuration checks and are
+# checked in as templates (see on_update.sh). Fill in the glib version.
+_configure_version_inputs = [
+  "glib_version.py",
+  "src/meson.build",
+]
+
+# config.h is private to glib, so generate the output in a private include
+# directory instead of in a public include dir.
+action("config_h") {
+  script = "configure_version_header.py"
+  inputs = _configure_version_inputs + [ "include/config.h.in" ]
+  outputs = [ "$target_gen_dir/private_include/config.h" ]
+  args = [
+    "--template",
+    rebase_path("include/config.h.in", root_build_dir),
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
+action("glibconfig_h") {
+  script = "configure_version_header.py"
+  inputs = _configure_version_inputs + [ "include/glib/glibconfig.h.in" ]
+  outputs = [ "$_gen_include_dir/glib/glibconfig.h" ]
+  args = [
+    "--template",
+    rebase_path("include/glib/glibconfig.h.in", root_build_dir),
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
 action("gversionmacros") {
   script = "gen_visibility_macros.py"
   inputs = _visibility_macros_inputs + [ "src/glib/gversionmacros.h.in" ]
@@ -271,8 +304,10 @@ gdbus_codegen("gdbus_daemon_generated") {
 # target that uses glib needs them to be generated first.
 group("generated_headers") {
   public_deps = [
+    ":config_h",
     ":gioenumtypes_h",
     ":glib_enumtypes_h",
+    ":glibconfig_h",
     ":gversionmacros",
   ]
   foreach(ns, _visibility_namespaces) {
@@ -319,6 +354,7 @@ config("glib_common_config") {
   cflags_c += [ "-Wno-alloc-size" ]
 
   include_dirs = [
+    "$target_gen_dir/private_include",
     "include",
     _gen_include_dir,
   ]

@@ -19,7 +19,10 @@ None.
 Generated code (enum types, D-Bus code, and visibility and version macros) is
 generated at build time from the in-tree glib using the codegen wrappers and
 templates in this directory (see codegen.gni). Only the headers produced by
-meson's host configuration checks are checked in, under include/.
+meson's host configuration checks are checked in, under include/. config.h and
+glibconfig.h are checked in as templates with the version-dependent values
+replaced by placeholders, which are filled in at build time from
+src/meson.build, so they don't change when glib is rolled.
 
 When updating to a new version, update the Revision above with the new commit hash,
 and perform the following steps:
