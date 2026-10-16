@@ -13,7 +13,10 @@ export function getHtml(this: TabPickerAppElement) {
         aria-haspopup="menu"
         aria-expanded="${this.tabMenuOpen}"
         @pointerenter="${this.onShareTabsRowPointerenter_}"
+        @pointermove="${this.onShareTabsRowPointermove_}"
+        @pointerdown="${this.onShareTabsRowPointerdown_}"
         @pointerleave="${this.onShareTabsRowPointerleave_}"
+        @focus="${this.onShareTabsRowFocus_}"
         @click="${this.onShareTabsRowClick_}"
         @keydown="${this.onShareTabsRowKeydown_}">
       <cr-icon icon="composebox:tab"></cr-icon>
@@ -28,9 +31,12 @@ export function getHtml(this: TabPickerAppElement) {
 
     <cr-action-menu id="tabMenu"
         role-description="menu"
+        non-modal
         @close="${this.onMenuClose_}"
         @pointerenter="${this.onMenuPointerenter_}"
-        @pointerleave="${this.onMenuPointerleave_}">
+        @pointermove="${this.onMenuPointermove_}"
+        @pointerleave="${this.onMenuPointerleave_}"
+        @keydown="${this.onMenuKeydown_}">
       ${this.tabSuggestions.map((tab, index) => html`
         <div class="suggestion-container" role="presentation">
           <button class="dropdown-item"

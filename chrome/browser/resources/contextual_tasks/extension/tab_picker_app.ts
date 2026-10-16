@@ -14,6 +14,7 @@ import {recordTabPickerTabSelected, TabPickerSurface} from 'chrome://resources/c
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -74,12 +75,14 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   protected accessor sharingTabsText_: string = '';
 
   private closeTimer_: number|null = null;
+  private pointerDownOnTrigger_: boolean = false;
   private listenerIds_: number[] = [];
   private browserProxy_: TabPickerBrowserProxy =
       TabPickerBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
+    this.setFocusOutlineVisible_(false);
     this.darkMode = this.isDarkModeEnabled_();
     this.updateSharingTabsText_();
     this.fetchTabSuggestions_();
@@ -191,25 +194,54 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     return this.selectedTabs.some(t => t.tabId === tab.tabId);
   }
 
+  // FocusOutlineManager defaults to visible=true and only listens to keydown
+  // and mousedown (not pointerenter/pointermove), while cr-action-menu checks
+  // FocusOutlineManager.visible on open and calls .focus() on mouseover.
+  // Explicitly sync outline visibility on pointer vs. keyboard interactions.
+  private setFocusOutlineVisible_(visible: boolean) {
+    FocusOutlineManager.forDocument(document).visible = visible;
+  }
+
   protected onShareTabsRowPointerenter_() {
+    this.pointerDownOnTrigger_ = false;
+    this.setFocusOutlineVisible_(false);
     this.cancelCloseTimer_();
     this.openTabMenu_();
   }
 
+  protected onShareTabsRowPointermove_() {
+    this.setFocusOutlineVisible_(false);
+  }
+
+  protected onShareTabsRowPointerdown_() {
+    this.pointerDownOnTrigger_ = true;
+    this.setFocusOutlineVisible_(false);
+  }
+
   protected onShareTabsRowPointerleave_() {
+    this.pointerDownOnTrigger_ = false;
     this.$.shareTabsTrigger.blur();
     this.scheduleCloseTimer_();
   }
 
+  protected onShareTabsRowFocus_() {
+    if (!this.tabMenuOpen && !this.pointerDownOnTrigger_) {
+      this.setFocusOutlineVisible_(true);
+    }
+  }
+
   protected onShareTabsRowClick_() {
+    this.setFocusOutlineVisible_(false);
     if (this.$.tabMenu.open) {
       this.$.tabMenu.close();
     } else {
       this.openTabMenu_();
     }
+    this.pointerDownOnTrigger_ = false;
   }
 
   protected onShareTabsRowKeydown_(e: KeyboardEvent) {
+    this.setFocusOutlineVisible_(true);
     if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       this.openTabMenu_();
@@ -220,15 +252,28 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.cancelCloseTimer_();
   }
 
+  protected onMenuPointermove_() {
+    this.setFocusOutlineVisible_(false);
+  }
+
   protected onMenuPointerleave_() {
     this.scheduleCloseTimer_();
   }
 
+  protected onMenuKeydown_(e: KeyboardEvent) {
+    this.setFocusOutlineVisible_(true);
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      e.stopPropagation();
+      this.$.tabMenu.close();
+    }
+  }
+
   protected onMenuClose_() {
     this.tabMenuOpen = false;
-    requestAnimationFrame(() => {
+    if (!FocusOutlineManager.forDocument(document).visible) {
       this.$.shareTabsTrigger.blur();
-    });
+    }
   }
 
   protected onTabClick_(e: Event) {
