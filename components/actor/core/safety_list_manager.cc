@@ -12,6 +12,9 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -23,12 +26,14 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "components/actor/core/actor_features.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
+#include "safety_list_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -54,26 +59,13 @@ struct SafetyListEntry {
   ContentSettingsPattern destination;
 };
 
-// Returns a span of elements from an expected vector. If the `expected` is an
-// error, then the result span is empty.
-//
-// This returns a span that references `elts`, so the span is only valid as long
-// as `elts` is valid.
-base::span<const SafetyListEntry> SpanOverExpected(
-    const base::expected<std::vector<SafetyListEntry>,
-                         SafetyListManager::ParseResult>& elts) {
-  return elts.has_value() ? *elts : base::span<const SafetyListEntry>();
-}
-
-void SetAll(base::span<const SafetyListEntry> entries,
-            ContentSetting setting,
-            content_settings::HostIndexedContentSettings& indexed_settings) {
-  const base::Value setting_value =
-      content_settings::ContentSettingToValue(setting);
-  for (const auto& entry : entries) {
-    indexed_settings.SetValue(entry.source, entry.destination,
-                              setting_value.Clone(), {});
-  }
+// Matches `https://<exact-host>:*`. Rules with explicit ports, non-HTTPS
+// schemes, or domain wildcards return false and route to `fallback_settings_`.
+bool IsSimpleHttpsHostPattern(const ContentSettingsPattern& pattern) {
+  return pattern.GetSchemeType() == ContentSettingsPattern::SCHEME_HTTPS &&
+         pattern.GetScope() ==
+             ContentSettingsPattern::Scope::kWithPortWildcard &&
+         !pattern.HasDomainWildcard() && !pattern.GetHost().empty();
 }
 
 // Parses a list of entries from a JSON list. Returns the parsed vector on
@@ -143,24 +135,177 @@ ParsePaymentIframeAllowedFromList(const base::ListValue& json_list) {
     }
     origins.push_back(std::move(origin));
   }
-  return base::flat_set<url::Origin>(std::move(origins));
-}
-
-base::expected<base::flat_set<url::Origin>, SafetyListManager::ParseResult>
-ParsePaymentIframeAllowedFromDict(const base::DictValue& json_dict) {
-  const base::Value* value = json_dict.Find(kPaymentIframeAllowedFieldName);
-  if (!value) {
-    return base::flat_set<url::Origin>();
-  }
-  const base::ListValue* list = value->GetIfList();
-  if (!list) {
-    return base::unexpected(
-        SafetyListManager::ParseResult::kJsonKeyValueNotAList);
-  }
-  return ParsePaymentIframeAllowedFromList(*list);
+  return origins;
 }
 
 }  // namespace
+
+SafetyListManager::SettingsStore::SettingsStore(
+    base::flat_set<std::string> owned_hosts,
+    content_settings::HostIndexedContentSettings fallback_settings,
+    base::flat_set<url::Origin> payment_iframe_allowed_origins)
+    : owned_hosts_(std::move(owned_hosts)),
+      fallback_settings_(std::move(fallback_settings)),
+      payment_iframe_allowed_origins_(payment_iframe_allowed_origins) {}
+SafetyListManager::SettingsStore::~SettingsStore() = default;
+
+class SafetyListManager::SettingsStore::Builder {
+ public:
+  bool empty() const {
+    return https_host_rules_.empty() && fallback_settings_.empty() &&
+           payment_iframe_allowed_origins_.empty();
+  }
+
+  std::unique_ptr<SettingsStore> Build() && {
+    auto store = std::make_unique<SettingsStore>(
+        CollectUniqueHosts(), std::move(fallback_settings_),
+        std::move(payment_iframe_allowed_origins_));
+
+    if (https_host_rules_.empty()) {
+      return store;
+    }
+
+    std::vector<std::pair<std::string_view, DestSettingsMap>> elems(
+        https_host_rules_.size());
+
+    std::ranges::transform(
+        https_host_rules_, elems.begin(), [&](const auto& pair) {
+          std::vector<std::pair<std::string_view, ContentSetting>> inner_elems(
+              pair.second.size());
+          std::ranges::transform(
+              pair.second, inner_elems.begin(), [&](const auto& inner) {
+                return std::make_pair(store->GetViewFromPool(inner.first),
+                                      inner.second);
+              });
+          return std::make_pair(
+              store->GetViewFromPool(pair.first),
+              base::flat_map<std::string_view, ContentSetting>(
+                  base::sorted_unique_t(), std::move(inner_elems)));
+        });
+
+    store->https_host_scoped_settings_ =
+        base::flat_map<std::string_view, DestSettingsMap>(
+            base::sorted_unique_t(), std::move(elems));
+    return store;
+  }
+
+  ParseResult ParseListFromDict(const base::DictValue& json_dict,
+                                std::string_view field_name,
+                                ContentSetting setting) {
+    const base::Value* value = json_dict.Find(field_name);
+    if (!value) {
+      return ParseResult::kSuccess;
+    }
+    const base::ListValue* list = value->GetIfList();
+    if (!list) {
+      return ParseResult::kJsonKeyValueNotAList;
+    }
+    ASSIGN_OR_RETURN(std::vector<SafetyListEntry> result,
+                     ParseEntriesFromJson(*list));
+    AddEntries(result, setting);
+    return ParseResult::kSuccess;
+  }
+
+  SafetyListManager::ParseResult ParsePaymentIframeAllowedFromDict(
+      const base::DictValue& json_dict) {
+    const base::Value* value = json_dict.Find(kPaymentIframeAllowedFieldName);
+    if (!value) {
+      return ParseResult::kSuccess;
+    }
+    const base::ListValue* list = value->GetIfList();
+    if (!list) {
+      return ParseResult::kJsonKeyValueNotAList;
+    }
+    ASSIGN_OR_RETURN(payment_iframe_allowed_origins_,
+                     ParsePaymentIframeAllowedFromList(*list));
+    return ParseResult::kSuccess;
+  }
+
+ private:
+  base::flat_set<std::string> CollectUniqueHosts() const {
+    std::vector<std::string> hosts;
+    for (const auto& [src_host, dst_map] : https_host_rules_) {
+      hosts.push_back(src_host);
+      for (const auto& [dst_host, _] : dst_map) {
+        hosts.push_back(dst_host);
+      }
+    }
+    return hosts;
+  }
+
+  void AddEntries(base::span<const SafetyListEntry> entries,
+                  ContentSetting setting) {
+    for (const auto& entry : entries) {
+      if (IsSimpleHttpsHostPattern(entry.source) &&
+          IsSimpleHttpsHostPattern(entry.destination)) {
+        https_host_rules_[entry.source.GetHost()][entry.destination.GetHost()] =
+            setting;
+      } else {
+        fallback_settings_.SetValue(
+            entry.source, entry.destination,
+            content_settings::ContentSettingToValue(setting), {});
+      }
+    }
+  }
+
+  std::map<std::string, std::map<std::string, ContentSetting>>
+      https_host_rules_;
+  content_settings::HostIndexedContentSettings fallback_settings_;
+  base::flat_set<url::Origin> payment_iframe_allowed_origins_;
+};
+
+SafetyListManager::Decision SafetyListManager::SettingsStore::Find(
+    const GURL& source,
+    const GURL& destination) const {
+  std::optional<ContentSetting> found_setting;
+  if (source.SchemeIs(url::kHttpsScheme) &&
+      destination.SchemeIs(url::kHttpsScheme)) {
+    if (const DestSettingsMap* dst_map =
+            base::FindOrNull(https_host_scoped_settings_, source.host())) {
+      if (const ContentSetting* setting =
+              base::FindOrNull(*dst_map, destination.host())) {
+        found_setting = *setting;
+      }
+    }
+  }
+  if (!found_setting.has_value()) {
+    const content_settings::RuleEntry* rule_entry =
+        fallback_settings_.Find(source, destination);
+    if (!rule_entry) {
+      return Decision::kNone;
+    }
+    found_setting =
+        content_settings::ParseContentSettingValue(rule_entry->second.value)
+            .value();
+  }
+
+  switch (found_setting.value()) {
+    case CONTENT_SETTING_ALLOW:
+      return Decision::kAllow;
+    case CONTENT_SETTING_BLOCK:
+      return kGlicEnforceComponentUpdaterBlockListEntries.Get()
+                 ? Decision::kBlock
+                 : Decision::kNone;
+    case CONTENT_SETTING_DEFAULT:
+    case CONTENT_SETTING_ASK:
+    case CONTENT_SETTING_SESSION_ONLY:
+    case CONTENT_SETTING_NUM_SETTINGS:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
+bool SafetyListManager::SettingsStore::IsPaymentIframeOriginAllowed(
+    const url::Origin& origin) const {
+  return payment_iframe_allowed_origins_.contains(origin);
+}
+
+std::string_view SafetyListManager::SettingsStore::GetViewFromPool(
+    std::string_view host) const {
+  auto it = owned_hosts_.find(host);
+  CHECK(it != owned_hosts_.end() && *it == host);
+  return std::string_view(*it);
+}
 
 // static
 SafetyListManager* SafetyListManager::GetInstance() {
@@ -208,34 +353,18 @@ void SafetyListManager::IsPaymentIframeOriginAllowed(
 SafetyListManager::Decision SafetyListManager::FindSync(
     const GURL& source,
     const GURL& destination) const {
-  const content_settings::RuleEntry* rule_entry =
-      navigation_settings_->Find(source, destination);
-
-  if (!rule_entry) {
+  if (!store_) {
     return Decision::kNone;
   }
-  ContentSetting setting =
-      content_settings::ParseContentSettingValue(rule_entry->second.value)
-          .value();
-  switch (setting) {
-    case CONTENT_SETTING_ALLOW:
-      return Decision::kAllow;
-    case CONTENT_SETTING_BLOCK:
-      return kGlicEnforceComponentUpdaterBlockListEntries.Get()
-                 ? Decision::kBlock
-                 : Decision::kNone;
-    case CONTENT_SETTING_DEFAULT:
-    case CONTENT_SETTING_ASK:
-    case CONTENT_SETTING_SESSION_ONLY:
-    case CONTENT_SETTING_NUM_SETTINGS:
-      NOTREACHED();
-  }
-  NOTREACHED();
+  return store_->Find(source, destination);
 }
 
 bool SafetyListManager::IsPaymentIframeOriginAllowedSync(
     const url::Origin& origin) const {
-  return payment_iframe_allowed_origins_.contains(origin);
+  if (!store_) {
+    return false;
+  }
+  return store_->IsPaymentIframeOriginAllowed(origin);
 }
 
 SafetyListManager::SafetyListManager() = default;
@@ -249,61 +378,38 @@ SafetyListManager::ParseSafetyListsInternal(std::string_view json_string) {
   if (!json.has_value()) {
     return {SafetyListManager::ParseResult::kInvalidJson,
             SafetyListManager::ParseResult::kInvalidJson,
-            SafetyListManager::ParseResult::kInvalidJson,
-            {}};
+            SafetyListManager::ParseResult::kInvalidJson, nullptr};
   }
 
   base::DictValue* json_dict = json->GetIfDict();
   if (!json_dict) {
-    return {ParseResult::kInvalidJson,
-            ParseResult::kInvalidJson,
-            ParseResult::kInvalidJson,
-            {}};
+    return {ParseResult::kInvalidJson, ParseResult::kInvalidJson,
+            ParseResult::kInvalidJson, nullptr};
   }
 
-  auto parse_one_list = [&json_dict](std::string_view field_name)
-      -> base::expected<std::vector<SafetyListEntry>,
-                        SafetyListManager::ParseResult> {
-    if (const base::Value* value = json_dict->Find(field_name)) {
-      if (const base::ListValue* list = value->GetIfList()) {
-        return ParseEntriesFromJson(*list);
-      }
-      return base::unexpected(ParseResult::kJsonKeyValueNotAList);
-    }
-    return std::vector<SafetyListEntry>();
-  };
+  SettingsStore::Builder builder;
 
-  base::expected<std::vector<SafetyListEntry>, SafetyListManager::ParseResult>
-      allowed_result = parse_one_list(kNavigationAllowedFieldName);
-  base::expected<std::vector<SafetyListEntry>, SafetyListManager::ParseResult>
-      blocked_result = parse_one_list(kNavigationBlockedFieldName);
-  std::unique_ptr<content_settings::HostIndexedContentSettings>
-      navigation_settings;
-  if (allowed_result.has_value() || blocked_result.has_value()) {
-    navigation_settings =
-        std::make_unique<content_settings::HostIndexedContentSettings>();
-    SetAll(SpanOverExpected(allowed_result),
-           ContentSetting::CONTENT_SETTING_ALLOW, *navigation_settings);
-    SetAll(SpanOverExpected(blocked_result),
-           ContentSetting::CONTENT_SETTING_BLOCK, *navigation_settings);
+  ParseResult allowed_result =
+      builder.ParseListFromDict(*json_dict, kNavigationAllowedFieldName,
+                                ContentSetting::CONTENT_SETTING_ALLOW);
+  ParseResult blocked_result =
+      builder.ParseListFromDict(*json_dict, kNavigationBlockedFieldName,
+                                ContentSetting::CONTENT_SETTING_BLOCK);
+  ParseResult payment_iframe_allowed_result =
+      builder.ParsePaymentIframeAllowedFromDict(*json_dict);
+
+  std::unique_ptr<SettingsStore> store = nullptr;
+  if (!builder.empty()) {
+    store = std::move(builder).Build();
   }
 
-  base::expected<base::flat_set<url::Origin>, SafetyListManager::ParseResult>
-      payment_iframe_allowed_result =
-          ParsePaymentIframeAllowedFromDict(*json_dict);
-
-  return {
-      allowed_result.error_or(ParseResult::kSuccess),
-      blocked_result.error_or(ParseResult::kSuccess),
-      payment_iframe_allowed_result.error_or(ParseResult::kSuccess),
-      {std::move(navigation_settings),
-       base::OptionalFromExpected(std::move(payment_iframe_allowed_result))},
-  };
+  return {allowed_result, blocked_result, payment_iframe_allowed_result,
+          std::move(store)};
 }
 
 // static
-SafetyListManager::ParsedSafetyLists SafetyListManager::DoParseSafetyLists(
-    LoadSafetyListsClosure closure) {
+std::unique_ptr<SafetyListManager::SettingsStore>
+SafetyListManager::DoParseSafetyLists(LoadSafetyListsClosure closure) {
   base::AssertBlockingAllowed();
   std::optional<std::string> json_string = std::move(closure).Run();
   if (!json_string.has_value()) {
@@ -317,10 +423,11 @@ SafetyListManager::ParsedSafetyLists SafetyListManager::DoParseSafetyLists(
                                 result.blocked_result);
   base::UmaHistogramEnumeration(kPaymentIframeAllowedHistogramName,
                                 result.payment_iframe_allowed_result);
-  return std::move(result.parsed_lists);
+  return std::move(result.store);
 }
 
-void SafetyListManager::OnParsedSafetyLists(ParsedSafetyLists parsed_lists) {
+void SafetyListManager::OnParsedSafetyLists(
+    std::unique_ptr<SafetyListManager::SettingsStore> new_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Need to explicitly invalidate weak pointers here so that
@@ -328,12 +435,8 @@ void SafetyListManager::OnParsedSafetyLists(ParsedSafetyLists parsed_lists) {
   // operations.
   parse_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (parsed_lists.settings) {
-    navigation_settings_ = std::move(parsed_lists.settings);
-  }
-  if (parsed_lists.payment_iframe_allowed_origins.has_value()) {
-    payment_iframe_allowed_origins_ =
-        *std::move(parsed_lists.payment_iframe_allowed_origins);
+  if (new_store) {
+    store_ = std::move(new_store);
   }
   PendingFinds pending = std::exchange(pending_finds_, {});
   for (base::OnceClosure& closure : pending) {

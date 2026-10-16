@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -113,16 +114,50 @@ class SafetyListManager {
 
   using PendingFinds = std::vector<base::OnceClosure>;
 
-  struct ParsedSafetyLists {
-    std::unique_ptr<content_settings::HostIndexedContentSettings> settings;
-    std::optional<base::flat_set<url::Origin>> payment_iframe_allowed_origins;
+  // Stores the setting rules. Optimizes for storing common rule types
+  // efficiently in memory.
+  class SettingsStore {
+   public:
+    class Builder;
+
+    SettingsStore(
+        base::flat_set<std::string> owned_hosts,
+        content_settings::HostIndexedContentSettings fallback_settings,
+        base::flat_set<url::Origin> payment_iframe_allowed_origins);
+    SettingsStore() = delete;
+    ~SettingsStore();
+
+    SettingsStore(SettingsStore&&) = delete;
+    SettingsStore& operator=(SettingsStore&&) = delete;
+
+    Decision Find(const GURL& source, const GURL& destination) const;
+    bool IsPaymentIframeOriginAllowed(const url::Origin& origin) const;
+
+   private:
+    using DestSettingsMap = base::flat_map<std::string_view, ContentSetting>;
+
+    // Get a view of a string from the `owned_hosts_` pool. This CHECKs the host
+    // is already in the pool.
+    std::string_view GetViewFromPool(std::string_view host) const;
+
+    // Owns one copy of each unique hostname.
+    const base::flat_set<std::string> owned_hosts_;
+
+    // Fast path for `https://<exact-host>:* -> https://<exact-host>:*` rules.
+    base::flat_map<std::string_view, DestSettingsMap>
+        https_host_scoped_settings_;
+
+    // Fallback for wildcards, non-HTTPS schemes, paths, and custom ports.
+    const content_settings::HostIndexedContentSettings fallback_settings_;
+
+    const base::flat_set<url::Origin> payment_iframe_allowed_origins_;
   };
 
   struct ParseResultsAndSettings {
     ParseResult allowed_result;
     ParseResult blocked_result;
     ParseResult payment_iframe_allowed_result;
-    ParsedSafetyLists parsed_lists;
+    std::unique_ptr<SettingsStore> store;
   };
 
   // Private static so it can use ParseResultsAndSettings.
@@ -130,9 +165,10 @@ class SafetyListManager {
       std::string_view json_string);
 
   // Private static so it can use ParseSafetyListsInternal.
-  static ParsedSafetyLists DoParseSafetyLists(LoadSafetyListsClosure closure);
+  static std::unique_ptr<SettingsStore> DoParseSafetyLists(
+      LoadSafetyListsClosure closure);
 
-  void OnParsedSafetyLists(ParsedSafetyLists parsed_lists);
+  void OnParsedSafetyLists(std::unique_ptr<SettingsStore> new_store);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -153,13 +189,8 @@ class SafetyListManager {
   // Calls to `Find` that have been deferred until parsing is complete.
   PendingFinds pending_finds_;
 
-  // Settings for allowing/blocking navigations. Must not be nullptr.
-  std::unique_ptr<content_settings::HostIndexedContentSettings>
-      navigation_settings_ =
-          std::make_unique<content_settings::HostIndexedContentSettings>();
-
-  // Allowed origins for cross-origin payment iframes.
-  base::flat_set<url::Origin> payment_iframe_allowed_origins_;
+  // Settings for allowing/blocking navigations.
+  std::unique_ptr<SettingsStore> store_ = nullptr;
 
   // Used for `OnParsedSafetyLists` replies so in-flight parses can be
   // invalidated if a newer closure is provided before parsing finishes.
