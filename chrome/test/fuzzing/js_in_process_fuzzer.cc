@@ -186,6 +186,7 @@ JsInProcessFuzzer::GetChromiumCommandLineArguments() {
                         "--expose-gc --fuzzing --future --harmony"),
       FILE_PATH_LITERAL("--enable-blink-features=MojoJS,MojoJSTest"),
       FILE_PATH_LITERAL("--enable-experimental-web-platform-features"),
+      FILE_PATH_LITERAL("--enable-features=WebMachineLearningNeuralNetwork"),
       // Disable this to avoid crashing the testing framework when invalid Mojo
       // messages are received which happens a lot for some interfaces. We're
       // trading off worse runtime accuracy for better fuzzer performance.
