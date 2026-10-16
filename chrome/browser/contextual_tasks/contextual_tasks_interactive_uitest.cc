@@ -117,6 +117,7 @@
 #include "third_party/lens_server_proto/aim_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
+#include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -4584,6 +4585,312 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksExtensionLensButtonInteractiveUiTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksExtensionLensButtonInteractiveUiTest,
+                         testing::Values(UserVariation::kSignedIn,
+                                         UserVariation::kSignedOut,
+                                         UserVariation::kIncognito),
+                         &UserVariationToString);
+
+class ContextualTasksExtensionTabPickerInteractiveUiTest
+    : public ContextualTasksInteractiveUiTest {
+ public:
+  ContextualTasksExtensionTabPickerInteractiveUiTest() {
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+  }
+  ~ContextualTasksExtensionTabPickerInteractiveUiTest() override = default;
+
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    enabled.push_back({kContextualTasksRearchitecture, {}});
+    enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
+    enabled.push_back({kContextualTasksTabBasedSuggestions, {}});
+    enabled.push_back({kEnableContextualTasksPinButtonInToolbar, {}});
+    enabled.push_back({kContextualTasksForceEntryPointEligibility, {}});
+    enabled.push_back({extensions_features::kApiContextualTasksPrivate, {}});
+    feature_list_.InitWithFeaturesAndParameters(enabled,
+                                                GetDefaultDisabledFeatures());
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksInteractiveUiTest::SetUpOnMainThread();
+    ContextualTasksExtensionBridge::Get(browser()->GetProfile());
+    PinnedToolbarActionsModel::Get(browser()->GetProfile())
+        ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+  }
+
+  static content::RenderFrameHost* MountAndWaitForTabPickerFrame(
+      content::WebContents* host_contents) {
+    EXPECT_EQ(true, content::EvalJs(host_contents, R"(
+      new Promise((resolve) => {
+        const check = () => {
+          if (Array.isArray(window.receivedMessages)) {
+            resolve(true);
+            return;
+          }
+          setTimeout(check, 10);
+        };
+        check();
+      })
+    )"));
+
+    const GURL tab_picker_url(
+        base::StringPrintf("chrome-extension://%s/tab_picker.html?cs=0",
+                           extension_misc::kContextualTasksExtensionId));
+    EXPECT_TRUE(content::ExecJs(host_contents, R"(
+      (() => {
+        if (!Array.isArray(window.receivedSearchMessages)) {
+          window.receivedSearchMessages = [];
+          window.searchMessageWaiters = [];
+          window.addEventListener('message', (event) => {
+            if (event.data instanceof Uint8Array ||
+                event.data instanceof ArrayBuffer) {
+              const bytes = event.data instanceof Uint8Array ?
+                  event.data : new Uint8Array(event.data);
+              window.receivedSearchMessages.push(
+                  btoa(Array.from(bytes, b => String.fromCharCode(b))
+                      .join('')));
+              const waiters = window.searchMessageWaiters.splice(0);
+              for (const w of waiters) {
+                w();
+              }
+            }
+          });
+        }
+        let iframe = document.getElementById('tab-picker-iframe');
+        if (!iframe) {
+          iframe = document.createElement('iframe');
+          iframe.id = 'tab-picker-iframe';
+          document.body.appendChild(iframe);
+        }
+      })();
+    )"));
+    EXPECT_TRUE(content::NavigateIframeToURL(host_contents, "tab-picker-iframe",
+                                             tab_picker_url));
+
+    content::RenderFrameHost* picker_rfh = nullptr;
+    EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+      picker_rfh = content::FrameMatchingPredicateOrNullptr(
+          host_contents->GetPrimaryPage(),
+          base::BindRepeating([](content::RenderFrameHost* rfh) {
+            return rfh->GetLastCommittedURL().ExtractFileName() ==
+                   "tab_picker.html";
+          }));
+      return picker_rfh != nullptr;
+    }));
+    if (!picker_rfh) {
+      return nullptr;
+    }
+
+    EXPECT_EQ(true, content::EvalJs(picker_rfh, R"(
+      new Promise((resolve) => {
+        const check = () => {
+          const app = document.querySelector('tab-picker-app');
+          const trigger = app?.shadowRoot?.querySelector('#shareTabsTrigger');
+          const item = app?.shadowRoot?.querySelector(
+              'button.dropdown-item[data-index="0"]');
+          if (trigger && item && window.__extensionBrowserProxyInstance &&
+              document.readyState === 'complete') {
+            window.__handshakeCompletePromise = new Promise((res) => {
+              window.__extensionBrowserProxyInstance.callbackRouter
+                  .onHandshakeComplete.addListener(() => res(true));
+            });
+            resolve(true);
+            return;
+          }
+          setTimeout(check, 10);
+        };
+        check();
+      })
+    )"));
+
+    EXPECT_TRUE(content::ExecJs(host_contents, R"(
+      (() => {
+        const iframe = document.getElementById('tab-picker-iframe');
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.postMessage(new Uint8Array([10, 0]), '*');
+        }
+      })();
+    )"));
+
+    EXPECT_EQ(true,
+              content::EvalJs(picker_rfh, "window.__handshakeCompletePromise"));
+    return picker_rfh;
+  }
+
+  static bool WaitForOnSuggestInputsChanged(
+      content::WebContents* host_contents,
+      int expected_contexts_count,
+      lens::ClientToSearchMessage* out_message = nullptr) {
+    for (int attempt = 0; attempt < 20; ++attempt) {
+      auto result = content::EvalJs(host_contents, content::JsReplace(
+                                                       R"(
+        new Promise((resolve) => {
+          const minLen = $1;
+          const check = () => {
+            if (Array.isArray(window.receivedSearchMessages) &&
+                window.receivedSearchMessages.length >= minLen) {
+              resolve(window.receivedSearchMessages.slice());
+              return;
+            }
+            window.searchMessageWaiters.push(check);
+          };
+          check();
+        })
+      )",
+                                                       attempt + 1));
+      if (!result.is_ok()) {
+        return false;
+      }
+      const auto& list = result.ExtractList();
+      for (auto it = list.rbegin(); it != list.rend(); ++it) {
+        if (!it->is_string()) {
+          continue;
+        }
+        std::string decoded;
+        if (!base::Base64Decode(it->GetString(), &decoded)) {
+          continue;
+        }
+        lens::ClientToSearchMessage message;
+        if (!message.ParseFromString(decoded) ||
+            !message.has_on_suggest_inputs_changed()) {
+          continue;
+        }
+        if (message.on_suggest_inputs_changed().added_contexts_size() ==
+            expected_contexts_count) {
+          if (out_message) {
+            *out_message = std::move(message);
+          }
+          return true;
+        }
+        break;
+      }
+    }
+    return false;
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User navigates a browser tab to an eligible webpage.
+//  (2) User clicks the pinned Contextual Tasks toolbar button to open the
+//      Contextual Tasks side panel on an AI Mode page.
+//  (3) The AI Mode page mounts the Contextual Tasks extension's
+//      tab_picker.html iframe.
+//  (4) User clicks the tab picker trigger to open the tab menu and selects
+//      the open browser tab to attach its context.
+//  (5) The tab item shows as selected in the tab picker and the AI Mode page
+//      receives an OnSuggestInputsChanged message with the uploaded tab's
+//      AddedContext.
+//  (6) User clicks the selected tab item in the tab picker again to unselect
+//      and remove its context.
+//  (7) The tab item updates to unselected and the AI Mode page receives an
+//      empty OnSuggestInputsChanged message.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksExtensionTabPickerInteractiveUiTest,
+    TabPickerSelectAndUnselectTabEmitsOnSuggestInputsChanged) {
+  SkipIfIncognito(
+      "Contextual Tasks component extension is not enabled in Incognito.");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  const GURL kArticleUrl = embedded_test_server()->GetURL("/title1.html");
+  content::RenderFrameHost* tab_picker_rfh = nullptr;
+
+  RunTestSequence(
+      // (1) Navigate the primary tab to an eligible webpage.
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      NavigateWebContents(kPrimaryTab, kArticleUrl),
+      WaitForWebContentsPainted(kPrimaryTab),
+      WaitForWebContentsReady(kPrimaryTab, kArticleUrl),
+
+      // (2) Click the pinned Contextual Tasks toolbar button to open the side
+      // panel on the AI Mode page.
+      WaitForShow(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "TabPickerSidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "TabPickerSidePanelContentWebViewName"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+
+      // (3)-(5) Mount tab_picker.html in the AI Mode page, open the tab menu,
+      // select the tab, and verify the UI selection state and emitted
+      // OnSuggestInputsChanged message.
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            ContextualTasksPanelController::From(browser())
+                ->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        tab_picker_rfh = MountAndWaitForTabPickerFrame(side_panel_contents);
+        ASSERT_NE(tab_picker_rfh, nullptr);
+
+        EXPECT_EQ(true, content::EvalJs(tab_picker_rfh, R"(
+          (async () => {
+            const app = document.querySelector('tab-picker-app');
+            const trigger = app.shadowRoot.querySelector('#shareTabsTrigger');
+            trigger.click();
+            const item = app.shadowRoot.querySelector(
+                'button.dropdown-item[data-index="0"]');
+            item.click();
+            await app.updateComplete;
+            return app.selectedTabs.length === 1 &&
+                Boolean(item.querySelector('.share-tabs-check'));
+          })();
+        )"));
+
+        lens::ClientToSearchMessage add_message;
+        ASSERT_TRUE(WaitForOnSuggestInputsChanged(
+            side_panel_contents, /*expected_contexts_count=*/1, &add_message));
+        ASSERT_EQ(add_message.on_suggest_inputs_changed().added_contexts_size(),
+                  1);
+        const auto& added =
+            add_message.on_suggest_inputs_changed().added_contexts(0);
+        EXPECT_EQ(added.search_session_id(), "test_search_session_id");
+        EXPECT_GT(added.request_id().uuid(), 0u);
+        EXPECT_EQ(added.request_id().media_type(),
+                  lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
+        EXPECT_EQ(added.contextual_input_upload_type(),
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+      }),
+
+      // (6)-(7) Click the selected tab item again to unselect it and verify
+      // the tab is unselected and an empty OnSuggestInputsChanged message is
+      // emitted.
+      Do([&]() {
+        content::WebContents* side_panel_contents =
+            ContextualTasksPanelController::From(browser())
+                ->GetActiveWebContents();
+        ASSERT_NE(side_panel_contents, nullptr);
+        ASSERT_NE(tab_picker_rfh, nullptr);
+
+        EXPECT_TRUE(content::ExecJs(side_panel_contents,
+                                    "window.receivedSearchMessages = [];"));
+
+        EXPECT_EQ(true, content::EvalJs(tab_picker_rfh, R"(
+          (async () => {
+            const app = document.querySelector('tab-picker-app');
+            const item = app.shadowRoot.querySelector(
+                'button.dropdown-item[data-index="0"]');
+            item.click();
+            await app.updateComplete;
+            return app.selectedTabs.length === 0 &&
+                !item.querySelector('.share-tabs-check');
+          })();
+        )"));
+
+        lens::ClientToSearchMessage clear_message;
+        ASSERT_TRUE(WaitForOnSuggestInputsChanged(side_panel_contents,
+                                                  /*expected_contexts_count=*/0,
+                                                  &clear_message));
+        EXPECT_EQ(
+            clear_message.on_suggest_inputs_changed().added_contexts_size(), 0);
+      }));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksExtensionTabPickerInteractiveUiTest,
                          testing::Values(UserVariation::kSignedIn,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
