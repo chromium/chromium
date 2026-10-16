@@ -866,7 +866,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         if self._test_instance.run_pre_tests:
             all_tests = pre_tests + other_tests
 
-        return self._SortTests(all_tests)
+        return all_tests
 
     def _UploadTestArtifacts(self, device, test_artifacts_device_dir):
         # TODO(jbudorick): Reconcile this with the output manager once
