@@ -176,8 +176,8 @@
   AppBarPosition position = self.sceneLayoutState.appBarPosition;
   switch (position) {
     case AppBarPosition::kBottom: {
-      agent->AddObscuredInsetRange(UIRectEdgeBottom, 0,
-                                   [self appBarHeightPortrait]);
+      CGFloat maxInset = [self appBarHeightAboveSafeAreaPortrait];
+      agent->AddObscuredInsetRange(UIRectEdgeBottom, 0, maxInset);
       break;
     }
     case AppBarPosition::kLeft:
@@ -198,8 +198,8 @@
   switch (position) {
     case AppBarPosition::kBottom: {
       _fullscreenProgress = agent->bottom_progress();
-      CGFloat currentHeight =
-          [self appBarHeightPortrait] * agent->bottom_progress();
+      CGFloat maxInset = [self appBarHeightAboveSafeAreaPortrait];
+      CGFloat currentHeight = maxInset * agent->bottom_progress();
       agent->AddObscuredInset(UIRectEdgeBottom, currentHeight);
       [self updateLayout];
       // If this is inside an animation, layout immediately.
@@ -279,6 +279,13 @@
 
 - (CGFloat)appBarHeightPortrait {
   return [_appBar currentAppBarHeightPortrait];
+}
+
+// Returns the portrait App Bar height above the bottom safe area inset, since
+// the bottom safe area inset is owned and reported by `BrowserViewController`.
+- (CGFloat)appBarHeightAboveSafeAreaPortrait {
+  return std::max<CGFloat>(0.0, [self appBarHeightPortrait] -
+                                    self.view.window.safeAreaInsets.bottom);
 }
 
 @end

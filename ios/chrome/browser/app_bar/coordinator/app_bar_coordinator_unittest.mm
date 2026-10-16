@@ -11,6 +11,7 @@
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/app_bar/coordinator/app_bar_mediator.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_container_view_controller.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
@@ -19,6 +20,8 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -45,12 +48,24 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+
+// Window subclass that returns configurable `safeAreaInsets` for testing.
+@interface AppBarCoordinatorTestSafeAreaWindow : UIWindow
+@property(nonatomic, assign) UIEdgeInsets fakeSafeAreaInsets;
+@end
+
+@implementation AppBarCoordinatorTestSafeAreaWindow
+- (UIEdgeInsets)safeAreaInsets {
+  return _fakeSafeAreaInsets;
+}
+@end
 
 class AppBarCoordinatorTest : public PlatformTest {
  protected:
@@ -267,4 +282,39 @@ TEST_F(AppBarCoordinatorTest, TestAssistantButtonTappedInIncognitoTabGrid) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "MobileToolbarAssistantIncognitoSwitchModesTapped"),
             1);
+}
+
+// Tests that `AppBarContainerViewController` reports only the App Bar height
+// above the bottom safe area inset to `FullscreenBrowserAgent` in portrait.
+TEST_F(AppBarCoordinatorTest,
+       TestObscuredInsetRangeExcludesSafeAreaInPortrait) {
+  static constexpr CGFloat kSafeAreaTop = 59.0;
+  static constexpr CGFloat kSafeAreaBottom = 34.0;
+
+  [scene_state_.layoutState
+      setAppBarPosition:AppBarPosition::kBottom
+                passKey:layout_state::LayoutStateTestPassKeyFactory::
+                            CreateSceneKey()];
+
+  [coordinator_ start];
+  ASSERT_TRUE(coordinator_.viewController);
+
+  AppBarCoordinatorTestSafeAreaWindow* window =
+      [[AppBarCoordinatorTestSafeAreaWindow alloc]
+          initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.fakeSafeAreaInsets =
+      UIEdgeInsetsMake(kSafeAreaTop, 0.0, kSafeAreaBottom, 0.0);
+  [window addSubview:coordinator_.viewController.view];
+
+  FullscreenBrowserAgent* fullscreen_agent =
+      FullscreenBrowserAgent::FromBrowser(regular_browser_.get());
+  ASSERT_TRUE(fullscreen_agent);
+  fullscreen_agent->InvalidateInsetRange();
+
+  CGFloat expected_max_inset = AppBarHeightPortrait() - kSafeAreaBottom;
+  EXPECT_EQ(fullscreen_agent->min_insets().bottom, 0.0);
+  EXPECT_EQ(fullscreen_agent->max_insets().bottom, expected_max_inset);
+  EXPECT_EQ(fullscreen_agent->insets().bottom, expected_max_inset);
+  EXPECT_LE(fullscreen_agent->min_insets().bottom,
+            fullscreen_agent->max_insets().bottom);
 }

@@ -157,6 +157,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
     "//ios/chrome/browser/toolbar/ui",
+    "//ios/chrome/browser/toolbar/ui:constants",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",

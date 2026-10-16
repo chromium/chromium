@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/browser_layout_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -56,6 +57,8 @@
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size_browser_agent.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/legacy_toolbar_mediator.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_type.h"
+#import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/toolbar_utils.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -77,6 +80,17 @@
                                              ToolbarMediatorDelegate>
 @property(nonatomic, strong, readonly)
     LegacyToolbarMediator* legacyToolbarMediator;
+@end
+
+// Window subclass that returns configurable `safeAreaInsets` for testing.
+@interface MainToolbarCoordinatorTestSafeAreaWindow : UIWindow
+@property(nonatomic, assign) UIEdgeInsets fakeSafeAreaInsets;
+@end
+
+@implementation MainToolbarCoordinatorTestSafeAreaWindow
+- (UIEdgeInsets)safeAreaInsets {
+  return _fakeSafeAreaInsets;
+}
 @end
 
 @interface TestBrowserLayoutStateObserver
@@ -462,4 +476,67 @@ TEST_F(MainToolbarCoordinatorTest,
   EXPECT_GT([coordinator_ expandedSecondaryToolbarHeight], 0.0);
   EXPECT_LE([coordinator_ collapsedSecondaryToolbarHeight],
             [coordinator_ expandedSecondaryToolbarHeight]);
+}
+
+// Tests that `collapsedSecondaryToolbarHeight` excludes the bottom safe area
+// inset in portrait when `ChromeNextIa` is enabled, ensuring collapsed height
+// never exceeds expanded height even at the largest accessibility Dynamic Type
+// size.
+TEST_F(MainToolbarCoordinatorTest,
+       TestSecondaryToolbarHeightsExcludeSafeAreaInPortrait_ChromeNextIa) {
+  if (!IsBottomOmniboxAvailable()) {
+    return;
+  }
+
+  static constexpr CGFloat kSafeAreaTop = 59.0;
+  static constexpr CGFloat kSafeAreaBottom = 34.0;
+
+  feature_list_.InitAndEnableFeature(kChromeNextIa);
+  [scene_state_.layoutState
+      setAppBarPosition:AppBarPosition::kBottom
+                passKey:layout_state::LayoutStateTestPassKeyFactory::
+                            CreateSceneKey()];
+
+  coordinator_ = [[MainToolbarCoordinator alloc] initWithBrowser:browser()];
+  [coordinator_ start];
+
+  auto test_web_state = std::make_unique<web::FakeWebState>();
+  test_web_state->SetBrowserState(profile_.get());
+  test_web_state->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  WebViewProxyTabHelper::CreateForWebState(test_web_state.get());
+  InfoBarManagerImpl::CreateForWebState(test_web_state.get());
+  InfobarBadgeTabHelper::CreateForWebState(test_web_state.get());
+  test_web_state->SetCurrentURL(GURL("https://chromium.org"));
+  test_web_state->SetLoading(true);
+  browser()->GetWebStateList()->InsertWebState(
+      std::move(test_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      omnibox::kIsOmniboxInBottomPosition, true);
+
+  MainToolbarCoordinatorTestSafeAreaWindow* window =
+      [[MainToolbarCoordinatorTestSafeAreaWindow alloc]
+          initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.fakeSafeAreaInsets =
+      UIEdgeInsetsMake(kSafeAreaTop, 0.0, kSafeAreaBottom, 0.0);
+  window.traitOverrides.preferredContentSizeCategory =
+      UIContentSizeCategoryAccessibilityExtraExtraExtraLarge;
+  [window addSubview:coordinator_.primaryToolbarViewController.view];
+  [window addSubview:coordinator_.secondaryToolbarViewController.view];
+
+  EXPECT_EQ([coordinator_ collapsedSecondaryToolbarHeight],
+            ToolbarCollapsedHeight(
+                UIContentSizeCategoryAccessibilityExtraExtraExtraLarge));
+  EXPECT_EQ([coordinator_ expandedSecondaryToolbarHeight], kToolbarHeight);
+  EXPECT_LE([coordinator_ collapsedSecondaryToolbarHeight],
+            [coordinator_ expandedSecondaryToolbarHeight]);
+
+  FullscreenBrowserAgent* fullscreen_agent =
+      FullscreenBrowserAgent::FromBrowser(browser());
+  ASSERT_TRUE(fullscreen_agent);
+  fullscreen_agent->InvalidateInsetRange();
+  EXPECT_LE(fullscreen_agent->min_insets().bottom,
+            fullscreen_agent->max_insets().bottom);
 }

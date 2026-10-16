@@ -731,14 +731,8 @@ inline LayoutStateToolbarPassKey PassKey() {
     if ([self isToolbarPositionBottom]) {
       if (self.browser->GetSceneState().layoutState.appBarPosition ==
           AppBarPosition::kBottom) {
-        CGFloat safeAreaBottom = 0.0;
-        if (self.browser->GetSceneState().window) {
-          safeAreaBottom =
-              self.browser->GetSceneState().window.safeAreaInsets.bottom;
-        }
-        return ToolbarCollapsedHeight(self.traitEnvironment.traitCollection
-                                          .preferredContentSizeCategory) +
-               safeAreaBottom;
+        return ToolbarCollapsedHeight(
+            self.traitEnvironment.traitCollection.preferredContentSizeCategory);
       }
       if (IsGlassToolbarEnabled()) {
         return kGlassCollapsedHeight + 2 * kGlassFullscreenMargin;

@@ -1672,11 +1672,13 @@ bool IsFullscreenNextIAEnabled() {
 // Calls `callback` for each edge that has a safe area inset.
 - (void)getSafeAreaInsets:(void (^)(UIRectEdge edge, CGFloat amount))callback {
   callback(UIRectEdgeTop, [self topInset]);
-  if (IsSplitToolbarMode(self) && !IsChromeNextIaEnabled() &&
-      self.rootSafeAreaInsets.bottom > 0) {
-    // Avoid adding the bottom safe area inset when Chrome Next is enabled
-    // because the bottom UI elements report heights that already include the
-    // safe area.
+  if (self.rootSafeAreaInsets.bottom > 0 &&
+      (IsChromeNextIaEnabled()
+           ? (self.layoutState.appBarPosition == AppBarPosition::kBottom)
+           : IsSplitToolbarMode(self))) {
+    // Report `UIRectEdgeBottom` in portrait (`AppBarPosition::kBottom`) when
+    // Chrome Next IA is enabled (bottom UI elements report only their height
+    // above the bottom safe area) and in `IsSplitToolbarMode` otherwise.
     callback(UIRectEdgeBottom, self.rootSafeAreaInsets.bottom);
   }
 }
@@ -2261,15 +2263,20 @@ bool IsFullscreenNextIAEnabled() {
 // The minimum amount by which the bottom toolbar overlaps the browser content
 // area.
 - (CGFloat)collapsedBottomToolbarHeight {
-  if (IsChromeNextIaEnabled()) {
-    return self.toolbarCoordinator.collapsedSecondaryToolbarHeight;
-  }
   CGFloat height = self.toolbarCoordinator.collapsedSecondaryToolbarHeight;
   if (!height) {
     return 0.0;
   }
-  // Height is non-zero only when bottom omnibox is enabled.
-  return self.rootSafeAreaInsets.bottom + height;
+  // `collapsedSecondaryToolbarHeight` returns only the toolbar height above
+  // the safe area. Include the bottom safe area inset for legacy fullscreen
+  // (`!IsChromeNextIaEnabled()`) and for the view-height constraint
+  // calculation in `updateNextIASecondaryToolbarForFullscreenProgress:` when
+  // `AppBarPosition::kBottom`.
+  if (!IsChromeNextIaEnabled() ||
+      self.layoutState.appBarPosition == AppBarPosition::kBottom) {
+    return self.rootSafeAreaInsets.bottom + height;
+  }
+  return height;
 }
 
 // The maximum amount by which the top toolbar overlaps the browser content

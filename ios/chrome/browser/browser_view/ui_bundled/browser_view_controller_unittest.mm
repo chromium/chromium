@@ -11,6 +11,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/keyed_service/core/keyed_service.h"
@@ -34,7 +35,9 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/lens/model/lens_browser_agent.h"
@@ -53,6 +56,8 @@
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -64,6 +69,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -76,6 +82,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_coordinator.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
@@ -103,6 +110,21 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/device_form_factor.h"
+
+// Subclass of `SafeAreaProvider` with configurable safe area insets for
+// testing.
+@interface TestSafeAreaProvider : SafeAreaProvider
+@property(nonatomic, assign) UIEdgeInsets fakeSafeArea;
+@end
+
+@implementation TestSafeAreaProvider
+- (UIEdgeInsets)safeArea {
+  if (!UIEdgeInsetsEqualToEdgeInsets(_fakeSafeArea, UIEdgeInsetsZero)) {
+    return _fakeSafeArea;
+  }
+  return [super safeArea];
+}
+@end
 
 // Scoped clipboard recent content so its destroyed after the profile. This
 // allows the autocomplete keyed service to cleanup before the clipboard
@@ -197,6 +219,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     // must be created first. Please maintain this order.
     ToolbarsSizeBrowserAgent::CreateForBrowser(browser_.get());
     FullscreenController::CreateForBrowser(browser_.get());
+    FullscreenBrowserAgent::CreateForBrowser(browser_.get());
     DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser_.get());
     BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(browser_.get());
 
@@ -215,6 +238,10 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         OCMProtocolMock(@protocol(FindInPageCommands));
     [dispatcher startDispatchingToTarget:mock_find_in_page_handler
                              forProtocol:@protocol(FindInPageCommands)];
+    id mock_fullscreen_commands_handler =
+        OCMProtocolMock(@protocol(FullscreenCommands));
+    [dispatcher startDispatchingToTarget:mock_fullscreen_commands_handler
+                             forProtocol:@protocol(FullscreenCommands)];
     id mock_lens_handler = OCMProtocolMock(@protocol(LensCommands));
     [dispatcher startDispatchingToTarget:mock_lens_handler
                              forProtocol:@protocol(LensCommands)];
@@ -301,7 +328,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     key_commands_provider_ =
         [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
     safe_area_provider_ =
-        [[SafeAreaProvider alloc] initWithBrowser:browser_.get()];
+        [[TestSafeAreaProvider alloc] initWithBrowser:browser_.get()];
 
     popup_menu_coordinator_ =
         [[PopupMenuCoordinator alloc] initWithBrowser:browser_.get()];
@@ -332,6 +359,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.toolbarCoordinator = toolbar_coordinator_;
     dependencies.sideSwipeCoordinator = side_swipe_coordinator_;
     dependencies.bookmarksCoordinator = bookmarks_coordinator_;
+    dependencies.fullscreenBrowserAgent =
+        FullscreenBrowserAgent::FromBrowser(browser_.get());
     dependencies.fullscreenController = fullscreen_controller_;
     dependencies.tabUsageRecorderBrowserAgent =
         tab_usage_recorder_browser_agent_;
@@ -347,6 +376,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         initWithBrowserContentViewController:container_
                          keyCommandsProvider:key_commands_provider_
                                 dependencies:dependencies];
+    bvc_.layoutState = scene_state_.layoutState;
     bvc_.webUsageEnabled = YES;
     bvc_.browserViewVisibilityStateChangedCallback =
         BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get())
@@ -480,7 +510,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabEventsMediator* tab_events_mediator_;
   NewTabPageCoordinator* NTPCoordinator_;
   raw_ptr<TabUsageRecorderBrowserAgent> tab_usage_recorder_browser_agent_;
-  SafeAreaProvider* safe_area_provider_;
+  TestSafeAreaProvider* safe_area_provider_;
   id mock_application_handler_;
 };
 
@@ -658,4 +688,107 @@ TEST_F(BrowserViewControllerTest, ActivityReporting) {
 
   [bvc_ setActive:NO];
   [mockInstance stopMocking];
+}
+
+// Test fixture for `BrowserViewController` with `kChromeNextIa` enabled during
+// initialization.
+class BrowserViewControllerChromeNextIaTest : public BrowserViewControllerTest {
+ protected:
+  BrowserViewControllerChromeNextIaTest() {
+    scoped_feature_list_.InitAndEnableFeature(kChromeNextIa);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that `BrowserViewController` reports the bottom safe area inset to
+// `FullscreenBrowserAgent` and includes it in the collapsed secondary toolbar
+// height constraint in portrait (`AppBarPosition::kBottom`) when
+// `kChromeNextIa` is enabled, collapses both to `0.0` when
+// `collapsedSecondaryToolbarHeight` is `0.0`, and omits the bottom safe area
+// inset in landscape (`AppBarPosition::kLeft`).
+TEST_F(BrowserViewControllerChromeNextIaTest,
+       TestGetSafeAreaInsetsInPortrait_ChromeNextIa) {
+  static constexpr CGFloat kSafeAreaTop = 59.0;
+  static constexpr CGFloat kSafeAreaBottom = 34.0;
+  static constexpr CGFloat kExpandedToolbarHeight = 64.0;
+  static constexpr CGFloat kCollapsedToolbarHeight = 25.0;
+
+  safe_area_provider_.fakeSafeArea =
+      UIEdgeInsetsMake(kSafeAreaTop, 0.0, kSafeAreaBottom, 0.0);
+
+  id toolbar_coordinator_mock = OCMPartialMock(toolbar_coordinator_);
+  OCMStub([toolbar_coordinator_mock expandedSecondaryToolbarHeight])
+      .andReturn(kExpandedToolbarHeight);
+  __block CGFloat stubbed_collapsed_height = kCollapsedToolbarHeight;
+  OCMStub([toolbar_coordinator_mock collapsedSecondaryToolbarHeight])
+      .andDo(^(NSInvocation* invocation) {
+        [invocation setReturnValue:&stubbed_collapsed_height];
+      });
+
+  UIView* secondary_toolbar_view =
+      toolbar_coordinator_.secondaryToolbarViewController.view;
+  ASSERT_TRUE(secondary_toolbar_view);
+  NSLayoutConstraint* height_constraint = nil;
+  for (NSLayoutConstraint* constraint in secondary_toolbar_view.constraints) {
+    if (constraint.firstItem == secondary_toolbar_view &&
+        constraint.firstAttribute == NSLayoutAttributeHeight &&
+        constraint.secondItem == nil &&
+        constraint.priority == UILayoutPriorityRequired - 1) {
+      height_constraint = constraint;
+      break;
+    }
+  }
+  ASSERT_TRUE(height_constraint);
+
+  id<FullscreenUIElement> fullscreen_element =
+      static_cast<id<FullscreenUIElement>>(bvc_);
+
+  FullscreenBrowserAgent* fullscreen_agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+  ASSERT_TRUE(fullscreen_agent);
+
+  // Portrait (`AppBarPosition::kBottom`) with non-zero collapsed toolbar height
+  // reports `kSafeAreaBottom` from `BrowserViewController` plus the toolbar's
+  // own height range from `MainToolbarCoordinator`, and includes
+  // `kSafeAreaBottom` in the collapsed secondary toolbar height constraint.
+  [scene_state_.layoutState
+      setAppBarPosition:AppBarPosition::kBottom
+                passKey:layout_state::LayoutStateTestPassKeyFactory::
+                            CreateSceneKey()];
+  fullscreen_agent->InvalidateInsetRange();
+  EXPECT_EQ(fullscreen_agent->min_insets().bottom,
+            kSafeAreaBottom + kCollapsedToolbarHeight);
+  EXPECT_EQ(fullscreen_agent->max_insets().bottom,
+            kSafeAreaBottom + kExpandedToolbarHeight);
+  [fullscreen_element updateForFullscreenProgress:0.0];
+  EXPECT_EQ(height_constraint.constant,
+            kSafeAreaBottom + kCollapsedToolbarHeight);
+
+  // Portrait (`AppBarPosition::kBottom`) with a toolbar that collapses to `0.0`
+  // collapses `min` and the height constraint to `0.0` while keeping `max` at
+  // `kSafeAreaBottom + kExpandedToolbarHeight`.
+  stubbed_collapsed_height = 0.0;
+  fullscreen_agent->InvalidateInsetRange();
+  EXPECT_EQ(fullscreen_agent->min_insets().bottom, 0.0);
+  EXPECT_EQ(fullscreen_agent->max_insets().bottom,
+            kSafeAreaBottom + kExpandedToolbarHeight);
+  [fullscreen_element updateForFullscreenProgress:0.0];
+  EXPECT_EQ(height_constraint.constant, 0.0);
+
+  // Landscape (`AppBarPosition::kLeft`) omits `BrowserViewController`'s bottom
+  // safe area inset from both `FullscreenBrowserAgent` and the secondary
+  // toolbar height constraint.
+  stubbed_collapsed_height = kCollapsedToolbarHeight;
+  [scene_state_.layoutState
+      setAppBarPosition:AppBarPosition::kLeft
+                passKey:layout_state::LayoutStateTestPassKeyFactory::
+                            CreateSceneKey()];
+  fullscreen_agent->InvalidateInsetRange();
+  EXPECT_EQ(fullscreen_agent->min_insets().bottom, kCollapsedToolbarHeight);
+  EXPECT_EQ(fullscreen_agent->max_insets().bottom, kExpandedToolbarHeight);
+  [fullscreen_element updateForFullscreenProgress:0.0];
+  EXPECT_EQ(height_constraint.constant, kCollapsedToolbarHeight);
+
+  [toolbar_coordinator_mock stopMocking];
 }
