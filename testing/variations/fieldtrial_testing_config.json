@@ -13700,7 +13700,7 @@
                 {
                     "name": "enabled",
                     "params": {
-                        "text-annotations": "true"
+                        "text-annotations-extra-styles": "true"
                     },
                     "enable_features": [
                         "PdfInk2"

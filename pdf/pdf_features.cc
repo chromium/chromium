@@ -79,7 +79,7 @@ const base::FeatureParam<bool> kPdfInk2Signatures{&kPdfInk2, "signatures",
 
 // Enables text annotations.
 const base::FeatureParam<bool> kPdfInk2TextAnnotations{
-    &kPdfInk2, "text-annotations", false};
+    &kPdfInk2, "text-annotations", true};
 
 // Enables extra text styling (e.g. strikethrough, underline).
 const base::FeatureParam<bool> kPdfInk2TextAnnotationsExtraStyles{
