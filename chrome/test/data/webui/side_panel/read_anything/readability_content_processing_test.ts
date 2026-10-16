@@ -233,4 +233,79 @@ suite('Remove Extraneous Elements', function() {
     assertNotEquals(null, document.getElementById('keep1'));
     assertEquals('Keep Me', (testContainer.textContent || '').trim());
   });
+
+  test(
+      'replaces inline whitespace spans between non-empty siblings with spaces',
+      () => {
+        const paragraph = addElement(testContainer, 'p');
+
+        // Leading whitespace span should be removed.
+        addElement(paragraph, 'span', {
+          id: 'leadingSpace',
+          text: '\u00A0',
+          attrs: {style: 'width: 0; height: 0;'},
+        });
+
+        const word1Outer = addElement(
+            paragraph, 'span', {attrs: {style: 'width: 0; height: 0;'}});
+        addElement(
+            word1Outer, 'span',
+            {text: 'Blood', attrs: {style: 'width: 0; height: 0;'}});
+
+        // Nested whitespace span + empty <wbr> wrapper between two word spans.
+        const spaceOuter = addElement(
+            paragraph, 'span',
+            {id: 'spaceOuter', attrs: {style: 'width: 0; height: 0;'}});
+        const spaceMid = addElement(
+            spaceOuter, 'span', {attrs: {style: 'width: 0; height: 0;'}});
+        addElement(spaceMid, 'span', {
+          id: 'normalSpace',
+          text: '\u00A0',
+          attrs: {style: 'width: 0; height: 0;'},
+        });
+        const wbrSpan = addElement(
+            spaceOuter, 'span',
+            {id: 'wbrSpan', attrs: {style: 'width: 0; height: 0;'}});
+        addElement(wbrSpan, 'wbr');
+
+        const word2Outer = addElement(
+            paragraph, 'span', {attrs: {style: 'width: 0; height: 0;'}});
+        addElement(
+            word2Outer, 'span',
+            {text: 'is', attrs: {style: 'width: 0; height: 0;'}});
+
+        // Trailing whitespace span should be removed.
+        addElement(paragraph, 'span', {
+          id: 'trailingSpace',
+          text: '\u00A0',
+          attrs: {style: 'width: 0; height: 0;'},
+        });
+
+        const elements = testContainer.querySelectorAll('*');
+        for (const el of elements) {
+          const htmlEl = el as HTMLElement;
+          htmlEl.getBoundingClientRect = function() {
+            return {
+              width: 0,
+              height: 0,
+              top: 0,
+              left: 0,
+              bottom: 0,
+              right: 0,
+              x: 0,
+              y: 0,
+              toJSON: () => {},
+            } as DOMRect;
+          };
+        }
+
+        removeExtraneousElementsFrom(testContainer);
+
+        assertEquals(null, document.getElementById('spaceOuter'));
+        assertEquals(null, document.getElementById('normalSpace'));
+        assertEquals(null, document.getElementById('wbrSpan'));
+        assertEquals(null, document.getElementById('leadingSpace'));
+        assertEquals(null, document.getElementById('trailingSpace'));
+        assertEquals('Blood is', paragraph.textContent);
+      });
 });

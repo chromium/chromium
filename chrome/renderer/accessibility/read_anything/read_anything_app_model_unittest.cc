@@ -2505,6 +2505,57 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_PartialNodeMapping) {
   EXPECT_EQ(mapping[2].ax_node_offset, 0);
 }
 
+TEST_F(ReadAnythingAppModelTest,
+       MapRenderedTextToTree_NonBreakingSpaceWhitespaceNodes) {
+  // Setup AXTree where words are separated by whitespace-only "\u00A0" nodes:
+  // "Blood", "\u00A0", "is", "\u00A0", "vital." (Nodes 2, 3, 4, 5, 6)
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  ui::AXNodeData root = test::GenericContainerNode(1);
+  ui::AXNodeData n2 = test::TextNode(2, u"Blood");
+  ui::AXNodeData n3 = test::TextNode(3, u"\u00A0");
+  ui::AXNodeData n4 = test::TextNode(4, u"is");
+  ui::AXNodeData n5 = test::TextNode(5, u"\u00A0");
+  ui::AXNodeData n6 = test::TextNode(6, u"vital.");
+  root.child_ids = {2, 3, 4, 5, 6};
+  update.root_id = 1;
+  update.nodes = {root, n2, n3, n4, n5, n6};
+  ApplyAccessibilityUpdates(tree_id_, {update});
+  model().SetActiveTreeId(tree_id_);
+
+  // In Readability, inline whitespace separators are replaced with regular
+  // spaces (' '), producing "Blood is vital.".
+  std::vector<std::u16string> blocks = {u"Blood is vital."};
+
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+  EXPECT_TRUE(model().MapRenderedTextToTree(blocks));
+
+  // Verify the entire block (including short words and whitespace nodes) maps
+  // cleanly across all 5 AXNodes.
+  auto mapping = model().GetAXMapping(0);
+  ASSERT_EQ(mapping.size(), 5u);
+
+  EXPECT_EQ(mapping[0].id, 2);
+  EXPECT_EQ(mapping[0].start, 0);
+  EXPECT_EQ(mapping[0].end, 5);
+
+  EXPECT_EQ(mapping[1].id, 3);
+  EXPECT_EQ(mapping[1].start, 5);
+  EXPECT_EQ(mapping[1].end, 6);
+
+  EXPECT_EQ(mapping[2].id, 4);
+  EXPECT_EQ(mapping[2].start, 6);
+  EXPECT_EQ(mapping[2].end, 8);
+
+  EXPECT_EQ(mapping[3].id, 5);
+  EXPECT_EQ(mapping[3].start, 8);
+  EXPECT_EQ(mapping[3].end, 9);
+
+  EXPECT_EQ(mapping[4].id, 6);
+  EXPECT_EQ(mapping[4].start, 9);
+  EXPECT_EQ(mapping[4].end, 15);
+}
+
 TEST_F(ReadAnythingAppModelTest, FlattenAXTree_BuildsContiguousString) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);

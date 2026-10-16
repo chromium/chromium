@@ -267,7 +267,15 @@ std::u16string GetTextContent(const ui::AXNode* ax_node,
     return filtered_string;
   }
 
-  return ax_node->GetTextContentUTF16();
+  std::u16string text(ax_node->GetTextContentUTF16());
+  // Whitespace only characters should be treated as spaces to prevent
+  // reading mode from displaying paragraphs as a single block of text with
+  // no spaces. This is necessary for selection matching to work properly
+  // on a Readability distillation.
+  if (!text.empty() && base::ContainsOnlyChars(text, base::kWhitespaceUTF16)) {
+    std::ranges::replace(text, u'\u00A0', u' ');
+  }
+  return text;
 }
 
 std::u16string GetPrefixText(const ui::AXNode* ax_node,

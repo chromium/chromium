@@ -10,13 +10,46 @@ const UI_KEYWORDS = [
   'supported by',
   'skip advertisement',
 ];
+const INLINE_TAGS = [
+  'SPAN',
+  'B',
+  'I',
+  'STRONG',
+  'EM',
+];
 const REMOVABLE_TAGS = [
-  'DIV',     'SPAN', 'P',   'SECTION', 'ASIDE',      'HEADER', 'FOOTER',
-  'ARTICLE', 'MAIN', 'NAV', 'FIGURE',  'FIGCAPTION', 'UL',     'OL',
-  'LI',      'B',    'I',   'STRONG',  'EM',
+  'DIV',
+  'P',
+  'SECTION',
+  'ASIDE',
+  'HEADER',
+  'FOOTER',
+  'ARTICLE',
+  'MAIN',
+  'NAV',
+  'FIGURE',
+  'FIGCAPTION',
+  'UL',
+  'OL',
+  'LI',
+  ...INLINE_TAGS,
 ];
 function hasImage(elt: HTMLElement): boolean {
   return elt.querySelector('img, canvas, picture') !== null;
+}
+
+// Some sites use inline whitespace to separate words, which can cause the
+// words to be displayed with no whitespace between them when Readability
+// filters out empty elements.
+function isInlineWhitespaceSeparator(elt: HTMLElement): boolean {
+  if (!INLINE_TAGS.includes(elt.tagName) || elt.textContent.length === 0 ||
+      elt.textContent.trim().length > 0) {
+    return false;
+  }
+
+  const prevText = elt.previousSibling?.textContent?.trim() ?? '';
+  const nextText = elt.nextSibling?.textContent?.trim() ?? '';
+  return prevText.length > 0 && nextText.length > 0;
 }
 
 function shouldRemoveNode(elt: HTMLElement): boolean {
@@ -65,7 +98,15 @@ export function removeExtraneousElementsFrom(container: HTMLElement) {
     if (shouldRemoveNode(elt)) {
       // Rewind to safety.
       walker.currentNode = prevElt;
-      elt.remove();
+      if (isInlineWhitespaceSeparator(elt)) {
+        // If an element is an inline whitespace separator, it shouldn't be
+        // entirely removed. Instead, it should be replaced with a regular
+        // space. This prevents readability from distilling an entire paragraph
+        // as a single block of text with no spaces.
+        elt.replaceWith(' ');
+      } else {
+        elt.remove();
+      }
     } else {
       // Can advance.
       prevElt = elt;

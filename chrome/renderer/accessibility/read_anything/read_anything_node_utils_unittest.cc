@@ -309,6 +309,19 @@ TEST_F(ReadAnythingNodeUtilsTest,
   EXPECT_NE(text.find('\r'), std::string::npos);
 }
 
+TEST_F(ReadAnythingNodeUtilsTest,
+       GetTextContent_WhitespaceOnlyNode_NormalizesNonBreakingSpace) {
+  static constexpr ui::AXNodeID kId = 2;
+  ui::AXNodeData data = test::TextNode(kId, u"\u00A0");
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, kId, 0);
+  node.SetData(std::move(data));
+
+  std::u16string text =
+      a11y::GetTextContent(&node, /*is_pdf=*/false, /*is_docs=*/false);
+  EXPECT_EQ(text, u" ");
+}
+
 TEST_F(ReadAnythingNodeUtilsTest, IsIgnored_ReturnsTrueWhenAXNodeIsIgnored) {
   static constexpr ui::AXNodeID kId = 2;
   ui::AXNodeData data = test::TextNode(kId);
