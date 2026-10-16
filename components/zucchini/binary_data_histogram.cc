@@ -9,7 +9,7 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 
@@ -63,19 +63,19 @@ BinaryDataHistogram::BinaryDataHistogram() = default;
 BinaryDataHistogram::~BinaryDataHistogram() = default;
 
 bool BinaryDataHistogram::Compute(ConstBufferView region) {
-  DCHECK(!histogram_);
+  DCHECK(histogram_.empty());
   // Binary data with size < 2 are invalid.
   if (region.size() < sizeof(uint16_t))
     return false;
   DCHECK_LE(region.size(),
             static_cast<size_t>(std::numeric_limits<int32_t>::max()));
 
-  histogram_ = std::make_unique<int32_t[]>(kNumBins);
+  histogram_ = base::HeapArray<int32_t>::WithSize(kNumBins);
   size_ = region.size();
   // Number of 2-byte intervals fully contained in |region|.
   size_t bound = size_ - sizeof(uint16_t) + 1;
   for (size_t i = 0; i < bound; ++i) {
-    UNSAFE_TODO(++histogram_[region.read<uint16_t>(i)]);
+    ++histogram_[region.read<uint16_t>(i)];
   }
   return true;
 }
@@ -84,8 +84,14 @@ double BinaryDataHistogram::Distance(const BinaryDataHistogram& other) const {
   DCHECK(IsValid() && other.IsValid());
   // Compute Manhattan (L1) distance between respective histograms.
   double total_diff = 0;
-  for (int i = 0; i < kNumBins; ++i) {
-    total_diff += std::abs(UNSAFE_TODO(histogram_[i] - other.histogram_[i]));
+  // Fixed-extent spans let the compiler prove that every index is in bounds, so
+  // no per-element bounds check remains in this hot loop (crbug.com/381332105).
+  // Avoid std::views::zip here: base::CheckedContiguousIterator CHECKs every
+  // step, which made this loop ~4x slower even in plain release builds.
+  auto bins = histogram_.as_span().first<kNumBins>();
+  auto other_bins = other.histogram_.as_span().first<kNumBins>();
+  for (size_t i = 0; i < kNumBins; ++i) {
+    total_diff += std::abs(bins[i] - other_bins[i]);
   }
   // Normalize by total size, so result lies in [0, 1].
   return total_diff / (size_ + other.size_);
