@@ -98,6 +98,14 @@ class ClientSideDetectionHostIOS
   bool IsAccountSignedIn() override;
   bool IsErrorDocument() override;
   void GetInnerText(HostInnerTextCallback callback) override;
+  // Note: On iOS, the tab screenshot is captured alongside inner text in
+  // `GetInnerText()` via `PageContextWrapper` and cached in
+  // `intelligent_scan_tab_screenshot_`, rather than being captured here.
+  void MaybeCaptureScreenshotAndStartIntelligentScan(
+      std::unique_ptr<ClientPhishingRequest> verdict,
+      std::optional<bool> did_match_high_confidence_allowlist,
+      bool is_invalid_ip,
+      std::string inner_text) override;
   void ClassifyPhishingThroughThresholds(
       ClientPhishingRequest* verdict) override;
   void MaybeStartImageEmbedding(
@@ -249,8 +257,10 @@ class ClientSideDetectionHostIOS
       const safe_browsing::ImageFeatureEmbedding& image_embedding,
       const safe_browsing::VisualFeatures& visual_features);
 
-  // Callback invoked when `PageContextWrapper` completes inner text extraction.
-  void OnInnerTextExtracted(std::string inner_text);
+  // Callback invoked when `PageContextWrapper` completes inner text (and
+  // optional tab screenshot) extraction.
+  void OnInnerTextExtracted(std::string inner_text,
+                            std::optional<std::string> tab_screenshot);
 
   // Associated WebState.
   raw_ptr<web::WebState> web_state_ = nullptr;
@@ -263,6 +273,10 @@ class ClientSideDetectionHostIOS
 
   // In-flight callback for inner text extraction.
   HostInnerTextCallback pending_inner_text_callback_;
+
+  // Raw PNG bytes of the tab screenshot extracted alongside inner text for
+  // multimodal intelligent scan.
+  std::optional<std::string> intelligent_scan_tab_screenshot_;
 
   // `PageContextWrapper` for inner text extraction.
   __strong PageContextWrapper* page_context_wrapper_ = nil;

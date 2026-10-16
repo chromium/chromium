@@ -8,6 +8,8 @@
 
 #import <string>
 
+#import "base/base64.h"
+#import "base/base_switches.h"
 #import "base/command_line.h"
 #import "base/containers/span.h"
 #import "base/strings/strcat.h"
@@ -72,6 +74,8 @@
 @property(nonatomic, readonly) BOOL populateCalled;
 
 - (void)respondWithInnerText:(const std::string&)innerText;
+- (void)respondWithInnerText:(const std::string&)innerText
+               tabScreenshot:(const std::string&)tabScreenshot;
 - (void)respondWithError:(PageContextWrapperError)error;
 - (void)respondWithEmptyProto;
 
@@ -102,6 +106,17 @@
     auto page_context =
         std::make_unique<optimization_guide::proto::PageContext>();
     page_context->set_inner_text(innerText);
+    std::move(_callback).Run(base::ok(std::move(page_context)));
+  }
+}
+
+- (void)respondWithInnerText:(const std::string&)innerText
+               tabScreenshot:(const std::string&)tabScreenshot {
+  if (_callback) {
+    auto page_context =
+        std::make_unique<optimization_guide::proto::PageContext>();
+    page_context->set_inner_text(innerText);
+    page_context->set_tab_screenshot(tabScreenshot);
     std::move(_callback).Run(base::ok(std::move(page_context)));
   }
 }
@@ -137,6 +152,7 @@ constexpr char kPrivateIpStr[] = "192.168.1.1";
 constexpr char kPrivateIpUrl[] = "http://192.168.1.1";
 constexpr char kLocalhostUrl[] = "http://localhost";
 constexpr char kTestInnerText[] = "Test page inner text content";
+constexpr char kTestScreenshotPngBytes[] = "\x89PNG\r\n\x1a\nfake_png_bytes";
 
 class MockIntelligentScanDelegate
     : public safe_browsing::IntelligentScanDelegate {
@@ -452,6 +468,11 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
 
   PageContextWrapper* page_context_wrapper(ClientSideDetectionHostIOS* host) {
     return host->page_context_wrapper_;
+  }
+
+  const std::optional<std::string>& intelligent_scan_tab_screenshot(
+      ClientSideDetectionHostIOS* host) {
+    return host->intelligent_scan_tab_screenshot_;
   }
 
   std::optional<bool> did_match_high_confidence_allowlist(
@@ -4270,6 +4291,306 @@ TEST_F(ClientSideDetectionHostIOSTest,
       .WillRepeatedly(testing::Return(true));
 
   host->CancelPendingRequests();
+}
+
+// Tests that `GetInnerText` sets `shouldGetSnapshot` on `PageContextWrapper`
+// and decodes the Base64-encoded `tab_screenshot` when
+// `kClientSideDetectionServerModelMultimodal` is enabled.
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetInnerTextRequestsSnapshotAndDecodesBase64WhenMultimodalEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionServerModelMultimodal);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
+  EXPECT_TRUE(fake_wrapper.shouldGetSnapshot);
+  EXPECT_FALSE(fake_wrapper.shouldGetFullPagePDF);
+  EXPECT_FALSE(fake_wrapper.shouldGetAnnotatedPageContent);
+
+  std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
+  [fake_wrapper respondWithInnerText:kTestInnerText
+                       tabScreenshot:encoded_screenshot];
+
+  EXPECT_EQ(future.Get(), kTestInnerText);
+  ASSERT_TRUE(intelligent_scan_tab_screenshot(host.get()).has_value());
+  EXPECT_EQ(*intelligent_scan_tab_screenshot(host.get()),
+            kTestScreenshotPngBytes);
+}
+
+// Tests that `GetInnerText` does not request a snapshot on low-end devices by
+// default when `kClientSideDetectionServerModelMultimodal` is enabled.
+TEST_F(ClientSideDetectionHostIOSTest,
+       GetInnerTextSkipsSnapshotOnLowEndDeviceByDefault) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      ::switches::kEnableLowEndDeviceMode);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionServerModelMultimodal);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
+  EXPECT_FALSE(fake_wrapper.shouldGetSnapshot);
+
+  [fake_wrapper respondWithInnerText:kTestInnerText];
+  EXPECT_EQ(future.Get(), kTestInnerText);
+  EXPECT_FALSE(intelligent_scan_tab_screenshot(host.get()).has_value());
+}
+
+// Tests that an intelligent scan captures and passes the decoded PNG screenshot
+// when `kClientSideDetectionServerModelMultimodal` is enabled.
+TEST_F(ClientSideDetectionHostIOSTest,
+       IntelligentScanCapturesScreenshotWhenMultimodalEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionServerModelMultimodal);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+      });
+
+  EXPECT_CALL(mock_delegate, ShouldRequestIntelligentScan(testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
+      .WillOnce(testing::Return(
+          safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
+  EXPECT_CALL(mock_delegate,
+              StartIntelligentScan(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](std::string rendered_texts, std::string url,
+             safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
+                 callback) {
+            EXPECT_EQ(rendered_texts, std::string(100, 'a'));
+            EXPECT_EQ(url, GURL(kPhishingUrl).spec());
+            std::move(callback).Run(
+                safe_browsing::IntelligentScanDelegate::IntelligentScanResult::
+                    Success("ExampleBrand", "ExampleIntent", 1000,
+                            safe_browsing::IntelligentScanDelegate::ModelType::
+                                kServerSide,
+                            0.9f));
+            return base::UnguessableToken::Create();
+          });
+
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .Times(1);
+
+  host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
+  EXPECT_TRUE(fake_wrapper.shouldGetSnapshot);
+
+  std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
+  [fake_wrapper respondWithInnerText:std::string(100, 'a')
+                       tabScreenshot:encoded_screenshot];
+
+  ASSERT_TRUE(
+      host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
+  EXPECT_EQ(*host->last_intelligent_scan_tab_screenshot_for_testing(),
+            kTestScreenshotPngBytes);
+}
+
+// Tests that an intelligent scan does not request or pass a screenshot when
+// `kClientSideDetectionServerModelMultimodal` is disabled.
+TEST_F(ClientSideDetectionHostIOSTest,
+       IntelligentScanDoesNotCaptureScreenshotWhenMultimodalDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      safe_browsing::kClientSideDetectionServerModelMultimodal);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+      });
+
+  EXPECT_CALL(mock_delegate, ShouldRequestIntelligentScan(testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
+      .WillOnce(testing::Return(
+          safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
+  EXPECT_CALL(mock_delegate,
+              StartIntelligentScan(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](std::string rendered_texts, std::string url,
+             safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
+                 callback) {
+            EXPECT_EQ(rendered_texts, std::string(100, 'a'));
+            EXPECT_EQ(url, GURL(kPhishingUrl).spec());
+            std::move(callback).Run(
+                safe_browsing::IntelligentScanDelegate::IntelligentScanResult::
+                    Success("ExampleBrand", "ExampleIntent", 1000,
+                            safe_browsing::IntelligentScanDelegate::ModelType::
+                                kServerSide,
+                            0.9f));
+            return base::UnguessableToken::Create();
+          });
+
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .Times(1);
+
+  host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_TRUE(fake_wrapper.shouldGetInnerText);
+  EXPECT_FALSE(fake_wrapper.shouldGetSnapshot);
+
+  std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
+  [fake_wrapper respondWithInnerText:std::string(100, 'a')
+                       tabScreenshot:encoded_screenshot];
+
+  EXPECT_FALSE(
+      host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
+}
+
+// Tests that when `kClientSideDetectionServerModelMultimodal` is enabled, an
+// intelligent scan still proceeds with the captured screenshot even when the
+// extracted inner text is empty.
+TEST_F(ClientSideDetectionHostIOSTest,
+       IntelligentScanWithEmptyInnerTextProceedsWhenMultimodalEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionServerModelMultimodal);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+      });
+
+  EXPECT_CALL(mock_delegate, ShouldRequestIntelligentScan(testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
+      .WillOnce(testing::Return(
+          safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
+  EXPECT_CALL(mock_delegate,
+              StartIntelligentScan(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](std::string rendered_texts, std::string url,
+             safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
+                 callback) {
+            EXPECT_TRUE(rendered_texts.empty());
+            EXPECT_EQ(url, GURL(kPhishingUrl).spec());
+            return base::UnguessableToken::Create();
+          });
+
+  host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  EXPECT_TRUE(fake_wrapper.shouldGetSnapshot);
+
+  std::string encoded_screenshot = base::Base64Encode(kTestScreenshotPngBytes);
+  [fake_wrapper respondWithInnerText:"" tabScreenshot:encoded_screenshot];
+
+  ASSERT_TRUE(
+      host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
+  EXPECT_EQ(*host->last_intelligent_scan_tab_screenshot_for_testing(),
+            kTestScreenshotPngBytes);
+}
+
+// Tests that when `PageContextWrapper` returns an invalid Base64 screenshot
+// string, `StartIntelligentScan` still runs with `std::nullopt` for the
+// screenshot.
+TEST_F(ClientSideDetectionHostIOSTest,
+       IntelligentScanInvalidBase64ScreenshotPassesNullopt) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionServerModelMultimodal);
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+      });
+
+  EXPECT_CALL(mock_delegate, ShouldRequestIntelligentScan(testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
+      .WillOnce(testing::Return(
+          safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
+  EXPECT_CALL(mock_delegate,
+              StartIntelligentScan(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](std::string rendered_texts, std::string url,
+             safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
+                 callback) { return base::UnguessableToken::Create(); });
+
+  host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
+
+  [fake_wrapper respondWithInnerText:std::string(100, 'a')
+                       tabScreenshot:"!not_valid_base64!"];
+
+  EXPECT_FALSE(
+      host->last_intelligent_scan_tab_screenshot_for_testing().has_value());
+}
+
+// Tests that `CancelPendingRequests` clears any extracted tab screenshot.
+TEST_F(ClientSideDetectionHostIOSTest,
+       CancelPendingRequestsClearsExtractedTabScreenshot) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      safe_browsing::kClientSideDetectionServerModelMultimodal);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::test::TestFuture<std::string> future;
+  host->GetInnerText(future.GetCallback());
+  [fake_wrapper
+      respondWithInnerText:kTestInnerText
+             tabScreenshot:base::Base64Encode(kTestScreenshotPngBytes)];
+  ASSERT_TRUE(intelligent_scan_tab_screenshot(host.get()).has_value());
+
+  host->CancelPendingRequests();
+  EXPECT_FALSE(intelligent_scan_tab_screenshot(host.get()).has_value());
 }
 
 }  // namespace safe_browsing

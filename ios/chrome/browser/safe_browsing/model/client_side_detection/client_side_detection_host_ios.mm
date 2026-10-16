@@ -8,6 +8,7 @@
 
 #import <algorithm>
 
+#import "base/base64.h"
 #import "base/check.h"
 #import "base/command_line.h"
 #import "base/functional/bind.h"
@@ -194,6 +195,7 @@ bool ClientSideDetectionHostIOS::IsErrorDocument() {
 }
 
 void ClientSideDetectionHostIOS::GetInnerText(HostInnerTextCallback callback) {
+  intelligent_scan_tab_screenshot_.reset();
   if (!web_state_) {
     std::move(callback).Run("");
     return;
@@ -212,18 +214,51 @@ void ClientSideDetectionHostIOS::GetInnerText(HostInnerTextCallback callback) {
           return;
         }
         std::string inner_text;
-        if (response.has_value() && response.value() &&
-            response.value()->has_inner_text()) {
-          inner_text = std::move(*response.value()->mutable_inner_text());
+        std::optional<std::string> tab_screenshot;
+        if (response.has_value() && response.value()) {
+          if (response.value()->has_inner_text()) {
+            inner_text = std::move(*response.value()->mutable_inner_text());
+          }
+          if (response.value()->has_tab_screenshot()) {
+            std::string decoded_screenshot;
+            if (base::Base64Decode(response.value()->tab_screenshot(),
+                                   &decoded_screenshot) &&
+                !decoded_screenshot.empty()) {
+              tab_screenshot = std::move(decoded_screenshot);
+            }
+          }
         }
-        weak_host->OnInnerTextExtracted(std::move(inner_text));
+        weak_host->OnInnerTextExtracted(std::move(inner_text),
+                                        std::move(tab_screenshot));
       },
       inner_text_weak_factory_.GetWeakPtr());
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state_
       completionCallback:std::move(completion_callback)];
   [page_context_wrapper_ setShouldGetInnerText:YES];
+  if (ShouldCaptureScreenshotForIntelligentScan()) {
+    [page_context_wrapper_ setShouldGetSnapshot:YES];
+  }
   [page_context_wrapper_ populatePageContextFieldsAsync];
+}
+
+void ClientSideDetectionHostIOS::MaybeCaptureScreenshotAndStartIntelligentScan(
+    std::unique_ptr<ClientPhishingRequest> verdict,
+    std::optional<bool> did_match_high_confidence_allowlist,
+    bool is_invalid_ip,
+    std::string inner_text) {
+  // On iOS, the screenshot is already captured alongside inner text in
+  // `GetInnerText()` via `PageContextWrapper`, so this method only consumes the
+  // cached screenshot rather than triggering a new capture.
+  std::optional<std::string> tab_screenshot =
+      std::move(intelligent_scan_tab_screenshot_);
+  intelligent_scan_tab_screenshot_.reset();
+  if (!ShouldCaptureScreenshotForIntelligentScan() || !web_state_) {
+    tab_screenshot.reset();
+  }
+  StartIntelligentScan(std::move(verdict), did_match_high_confidence_allowlist,
+                       is_invalid_ip, std::move(inner_text),
+                       std::move(tab_screenshot));
 }
 
 void ClientSideDetectionHostIOS::ClassifyPhishingThroughThresholds(
@@ -361,6 +396,7 @@ void ClientSideDetectionHostIOS::CancelPendingRequests() {
   classification_image_ = gfx::Image();
   inner_text_weak_factory_.InvalidateWeakPtrs();
   pending_inner_text_callback_.Reset();
+  intelligent_scan_tab_screenshot_.reset();
   page_context_wrapper_ = nil;
   ClientSideDetectionHostBase::CancelPendingRequests();
 }
@@ -1173,8 +1209,11 @@ void ClientSideDetectionHostIOS::OnImageEmbeddingDone(
       translated_result, std::move(embedding), std::move(visual));
 }
 
-void ClientSideDetectionHostIOS::OnInnerTextExtracted(std::string inner_text) {
+void ClientSideDetectionHostIOS::OnInnerTextExtracted(
+    std::string inner_text,
+    std::optional<std::string> tab_screenshot) {
   page_context_wrapper_ = nil;
+  intelligent_scan_tab_screenshot_ = std::move(tab_screenshot);
 
   if (!pending_inner_text_callback_) {
     return;
