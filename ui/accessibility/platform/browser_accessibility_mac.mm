@@ -266,6 +266,11 @@ gfx::NativeViewAccessible BrowserAccessibilityMac::GetNativeViewAccessible() {
   return gfx::NativeViewAccessible(GetNativeWrapper());
 }
 
+gfx::NativeViewAccessible BrowserAccessibilityMac::GetNSWindow() {
+  id window = [GetNativeWrapper() window];
+  return gfx::NativeViewAccessible(window);
+}
+
 AXPlatformNode* BrowserAccessibilityMac::GetAXPlatformNode() const {
   return platform_node_.get();
 }

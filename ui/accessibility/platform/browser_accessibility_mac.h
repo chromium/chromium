@@ -34,6 +34,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityMac
   BrowserAccessibility* PlatformGetPreviousSibling() const override;
 
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
+  gfx::NativeViewAccessible GetNSWindow() override;
   AXPlatformNode* GetAXPlatformNode() const override;
 
   // The BrowserAccessibilityCocoa associated with us.
