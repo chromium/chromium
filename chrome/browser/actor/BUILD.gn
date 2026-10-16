@@ -70,6 +70,7 @@ source_set("actor") {
     "tools/tool_delegate.h",
     "tools/tool_request.h",
     "tools/tool_request_visitor_functor.h",
+    "tools/tool_result.h",
     "tools/translate_page_tool_request.h",
     "tools/type_tool_request.h",
     "tools/wait_tool_request.h",
@@ -234,6 +235,7 @@ source_set("impl") {
     "tools/tool_callbacks.h",
     "tools/tool_controller.cc",
     "tools/tool_request.cc",
+    "tools/tool_result.cc",
     "tools/translate_page_tool.cc",
     "tools/translate_page_tool.h",
     "tools/translate_page_tool_request.cc",
@@ -402,6 +404,8 @@ source_set("types") {
   sources = [
     "actor_task_delegate.h",
     "autofill_selection_dialog_event_handler.h",
+    "tool_result_data.cc",
+    "tool_result_data.h",
   ]
   public_deps = [
     "//base",
