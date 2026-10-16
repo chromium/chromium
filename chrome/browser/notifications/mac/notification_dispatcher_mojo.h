@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_NOTIFICATIONS_MAC_NOTIFICATION_DISPATCHER_MOJO_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 
@@ -73,6 +74,9 @@ class NotificationDispatcherMojo
   };
 
   void CheckIfServiceCanBeTerminated();
+  void OnServiceCanBeTerminated(base::OnceClosure disconnect_closure,
+                                bool can_terminate);
+  void OnServiceResponded();
   void OnServiceDisconnectedGracefully(ShutdownType shutdown_type);
   bool HasNoDisplayedNotifications() const;
 
@@ -94,6 +98,7 @@ class NotificationDispatcherMojo
       handler_{this};
   base::CancelableOnceClosure no_notifications_checker_;
   base::TimeTicks service_start_time_;
+  std::optional<base::TimeTicks> service_first_response_time_;
   base::OneShotTimer service_restart_timer_;
   base::TimeDelta next_service_restart_timer_delay_;
 };

@@ -912,6 +912,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.macOS.{ProcessType}.TimeToFirstResponse"
+    units="ms" expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The time elapsed from launching or connecting to a macOS notification
+    service in {ProcessType} until the first response or action is received over
+    Mojo from that service instance. Logged at most once per service connection,
+    when the first response is received.
+  </summary>
+  <token key="ProcessType">
+    <variant name="AppShimProcess" summary="an app shim (PWA) process"/>
+    <variant name="ServiceProcess"
+        summary="the alert notification utility process"/>
+  </token>
+</histogram>
+
 <histogram name="Notifications.NonPersistentNotificationThirdPartyCount"
     enum="Boolean" expires_after="2026-11-15">
   <owner>awillia@chromium.org</owner>

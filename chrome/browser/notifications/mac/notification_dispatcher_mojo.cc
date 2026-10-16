@@ -173,6 +173,7 @@ void NotificationDispatcherMojo::GetAllDisplayedNotifications(
 
 void NotificationDispatcherMojo::OnNotificationAction(
     mac_notifications::mojom::NotificationActionInfoPtr info) {
+  OnServiceResponded();
   ProcessMacNotificationResponse(provider_factory_->notification_style(),
                                  std::move(info));
   CheckIfServiceCanBeTerminated();
@@ -192,13 +193,40 @@ void NotificationDispatcherMojo::CheckIfServiceCanBeTerminated() {
   // there are no pending permission requests either.
   // If this happens, we close the mojo connection (only if the callback has not
   // been canceled yet).
+  // base::Unretained(this) is safe here because |this| owns |service_|.
   GetOrCreateService()->OkayToTerminateService(base::BindOnce(
-      [](base::OnceClosure disconnect_closure, bool can_terminate) {
-        if (can_terminate) {
-          std::move(disconnect_closure).Run();
-        }
-      },
-      no_notifications_checker_.callback()));
+      &NotificationDispatcherMojo::OnServiceCanBeTerminated,
+      base::Unretained(this), no_notifications_checker_.callback()));
+}
+
+void NotificationDispatcherMojo::OnServiceCanBeTerminated(
+    base::OnceClosure disconnect_closure,
+    bool can_terminate) {
+  OnServiceResponded();
+  if (can_terminate) {
+    std::move(disconnect_closure).Run();
+  }
+}
+
+void NotificationDispatcherMojo::OnServiceResponded() {
+  if (service_first_response_time_) {
+    return;
+  }
+  service_first_response_time_ = base::TimeTicks::Now();
+  base::TimeDelta elapsed = *service_first_response_time_ - service_start_time_;
+  switch (provider_factory_->notification_style()) {
+    case mac_notifications::NotificationStyle::kBanner:
+      // No need to collect metrics for in-process notifications.
+      break;
+    case mac_notifications::NotificationStyle::kAlert:
+      base::UmaHistogramMediumTimes(
+          "Notifications.macOS.ServiceProcess.TimeToFirstResponse", elapsed);
+      break;
+    case mac_notifications::NotificationStyle::kAppShim:
+      base::UmaHistogramMediumTimes(
+          "Notifications.macOS.AppShimProcess.TimeToFirstResponse", elapsed);
+      break;
+  }
 }
 
 void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
@@ -234,16 +262,19 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     }
   }
 
-  // If the service ran for more than 10 seconds or completed successfully we
-  // restore the next delay to the initial value. If it failed sooner than that
-  // then double the next time until we hit a maximum value so we don't end up
-  // restarting it a lot.
-  if (elapsed > kServiceRestartTimerResetDelay ||
+  std::optional<base::TimeDelta> elapsed_since_first_response;
+  if (service_first_response_time_.has_value()) {
+    elapsed_since_first_response =
+        base::TimeTicks::Now() - *service_first_response_time_;
+  }
+
+  // If the service responded and ran for more than 10 seconds or completed
+  // successfully we restore the next delay to the initial value. If it failed
+  // sooner than that then double the next time until we hit a maximum value so
+  // we don't end up restarting it a lot.
+  if (elapsed_since_first_response > kServiceRestartTimerResetDelay ||
       shutdown_type == ShutdownType::kChromeInitiated) {
     next_service_restart_timer_delay_ = kInitialServiceRestartTimerDelay;
-  } else if (next_service_restart_timer_delay_ <
-             kMaximumServiceRestartTimerDelay) {
-    next_service_restart_timer_delay_ = next_service_restart_timer_delay_ * 2;
   }
 
   if (shutdown_type == ShutdownType::kUnexpected) {
@@ -255,10 +286,14 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
         base::BindOnce(
             &NotificationDispatcherMojo::CheckIfServiceCanBeTerminated,
             base::Unretained(this)));
+    if (next_service_restart_timer_delay_ < kMaximumServiceRestartTimerDelay) {
+      next_service_restart_timer_delay_ = next_service_restart_timer_delay_ * 2;
+    }
   } else {
     service_restart_timer_.Stop();
   }
 
+  service_first_response_time_.reset();
   no_notifications_checker_.Cancel();
   provider_.reset();
   service_.reset();
@@ -291,6 +326,7 @@ void NotificationDispatcherMojo::DispatchGetNotificationsReply(
     GetDisplayedNotificationsCallback callback,
     std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
         notifications) {
+  OnServiceResponded();
   std::set<std::string> notification_ids;
 
   for (const auto& notification : notifications)
@@ -308,6 +344,7 @@ void NotificationDispatcherMojo::DispatchGetAllNotificationsReply(
     GetAllDisplayedNotificationsCallback callback,
     std::vector<mac_notifications::mojom::NotificationIdentifierPtr>
         notifications) {
+  OnServiceResponded();
   std::vector<MacNotificationIdentifier> notification_ids;
 
   for (const auto& notification : notifications) {

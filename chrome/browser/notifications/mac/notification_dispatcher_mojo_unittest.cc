@@ -353,10 +353,14 @@ TEST_F(NotificationDispatcherMojoTest, CloseAndDisconnectTiming) {
   notification_dispatcher_->CloseNotificationWithId(
       {kNotificationId, kProfileId, /*incognito=*/true});
 
-  // Verify that we log the runtime length and no unexpected kill.
+  // Verify that we log the runtime length, time to first response, and no
+  // unexpected kill.
   run_loop.Run();
   histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessRuntime",
                                     delay, /*expected_count=*/1);
+  histograms.ExpectUniqueTimeSample(
+      "Notifications.macOS.ServiceProcess.TimeToFirstResponse", delay,
+      /*expected_count=*/1);
   histograms.ExpectTotalCount("Notifications.macOS.ServiceProcessKilled",
                               /*count=*/0);
 }
@@ -377,11 +381,15 @@ TEST_F(NotificationDispatcherMojoTest, KillServiceTiming) {
 
   // Run remaining tasks as we can't observe the disconnect callback.
   task_environment_.RunUntilIdle();
-  // Verify that we log the runtime length and an unexpected kill.
+  // Verify that we log the runtime length and an unexpected kill, and no
+  // first-response time since the service never responded.
   histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessRuntime",
                                     delay, /*expected_count=*/1);
   histograms.ExpectUniqueTimeSample("Notifications.macOS.ServiceProcessKilled",
                                     delay, /*expected_count=*/1);
+  histograms.ExpectTotalCount(
+      "Notifications.macOS.ServiceProcess.TimeToFirstResponse",
+      /*count=*/0);
 }
 
 TEST_F(NotificationDispatcherMojoTest, DidActivateNotification) {
@@ -439,6 +447,16 @@ TEST_F(NotificationDispatcherMojoTest, TestReconnectBackoff) {
   task_environment_.FastForwardBy(base::Milliseconds(999));
   EXPECT_FALSE(provider_factory_->is_service_connected());
   // Expect the service to be restarted after a short timeout.
+  EmulateOkayToTerminate(/*can_terminate=*/false);
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+
+  // After the service has responded and remained connected for > 10 seconds,
+  // a subsequent disconnect should reset the restart timeout back to 500ms.
+  task_environment_.FastForwardBy(base::Seconds(30));
+  provider_factory_->Disconnect();
+  task_environment_.FastForwardBy(base::Milliseconds(499));
+  EXPECT_FALSE(provider_factory_->is_service_connected());
   EmulateOkayToTerminate(/*can_terminate=*/false);
   task_environment_.FastForwardBy(base::Milliseconds(1));
   EXPECT_TRUE(provider_factory_->is_service_connected());
@@ -540,4 +558,48 @@ TEST_F(NotificationDispatcherMojoTest,
   EXPECT_THAT(origin_future.Get<0>(), testing::IsEmpty());
   EXPECT_FALSE(origin_future.Get<1>());
   EXPECT_THAT(all_future.Get(), testing::IsEmpty());
+}
+
+TEST_F(NotificationDispatcherMojoTest,
+       NeverRespondingServiceBacksOffToMaximumDelay) {
+  DisplayNotificationSync();
+  EXPECT_TRUE(provider_factory_->is_service_connected());
+
+  // Simulate a service (such as a background AppShim) that repeatedly times out
+  // after 120 seconds (> 10s reset threshold) without ever responding to
+  // OkayToTerminateService(). The restart delay should double on each attempt
+  // (500ms, 1s, 2s, ..., 256s) rather than resetting to 500ms, and stay capped
+  // at 256s.
+  MockNotificationService::OkayToTerminateServiceCallback unanswered_callback;
+  for (base::TimeDelta expected_delay = base::Milliseconds(500);
+       expected_delay <= base::Seconds(256); expected_delay *= 2) {
+    EXPECT_CALL(service(), OkayToTerminateService)
+        .WillOnce(
+            [&](MockNotificationService::OkayToTerminateServiceCallback cb) {
+              unanswered_callback = std::move(cb);
+            });
+    task_environment_.FastForwardBy(base::Seconds(120));
+    provider_factory_->Disconnect();
+    unanswered_callback.Reset();
+    EXPECT_FALSE(provider_factory_->is_service_connected());
+
+    task_environment_.FastForwardBy(expected_delay - base::Milliseconds(1));
+    EXPECT_FALSE(provider_factory_->is_service_connected());
+    task_environment_.FastForwardBy(base::Milliseconds(1));
+    EXPECT_TRUE(provider_factory_->is_service_connected());
+    testing::Mock::VerifyAndClearExpectations(&service());
+  }
+
+  // Once the 256s cap is reached, another failure should still retry after
+  // 256s.
+  task_environment_.FastForwardBy(base::Seconds(120));
+  provider_factory_->Disconnect();
+  unanswered_callback.Reset();
+  EXPECT_FALSE(provider_factory_->is_service_connected());
+
+  EmulateOkayToTerminate(/*can_terminate=*/false);
+  task_environment_.FastForwardBy(base::Seconds(256) - base::Milliseconds(1));
+  EXPECT_FALSE(provider_factory_->is_service_connected());
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(provider_factory_->is_service_connected());
 }
