@@ -1,0 +1,19 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=./toolbar_button.css.js
+ * #include=toolbar-button
+ * #css_wrapper_metadata_end */
+
+/* When we're focused, we need to push ourselves above the container in the
+ * stacking order, since otherwise its border will paint over our focus ring,
+ * and that looks bad.
+*/
+cr-button:focus-within {
+  position: relative;
+  z-index: 1;
+}

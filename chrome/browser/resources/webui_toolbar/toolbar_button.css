@@ -40,6 +40,9 @@ cr-button {
   font-size: 0;
   line-height: 0;
   margin: 0;
+  /* cr-button would normally paint the focus ring outset, but that would clip
+   * against the toolbar bounds, so we paint it inset instead. */
+  outline-offset: -2px;
   padding: 0;
   min-width: var(--toolbar-button-height);
   --cr-button-size: var(--toolbar-button-height);

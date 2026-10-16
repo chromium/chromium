@@ -93,6 +93,7 @@ build_webui("build") {
     "back_forward_button.css",
     "content_setting_icon.css",
     "content_settings_icons.css",
+    "extension.css",
     "overflowable_action.css",
     "glic_button.css",
     "page_action_icon.css",

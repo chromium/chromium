@@ -56,9 +56,11 @@
  * exceptions carved out - keeps the menu button, the divider, and all of the
  * spacing around them outside the hover region by construction. The extensions
  * menu button is the action with an empty id, so :not([data-key='']) selects
- * exactly the pinned actions. */
+ * exactly the pinned actions. It should also show up in the case where the
+ * regular buttons have keyboard focus. */
 :host(webui-toolbar-extensions):has(
-                webui-toolbar-extension:not([data-key='']):hover)::after {
+    webui-toolbar-extension:not([data-key='']):hover,
+    webui-toolbar-extension:not([data-key='']):focus-within)::after {
   border-color: var(--color-toolbar-icon-container-border,
                     var(--color-toolbar-button-border));
 }

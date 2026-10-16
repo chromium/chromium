@@ -14,10 +14,10 @@ import {getContextMenuSourceType, setHasHelpBubble} from '/shared/toolbar_button
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {getCss} from './extension.css.js';
 import {getHtml} from './extension.html.js';
 import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixin.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
-import {getCss} from './toolbar_button.css.js';
 
 const initialState: ExtensionActionInfo = {
   id: '',
