@@ -18,6 +18,10 @@
   width: var(--icon-size);
 }
 
+:host-context([dir=rtl]):host([flip-in-rtl]:not([is-full-color])) {
+  transform: scaleX(-1);
+}
+
 #container {
   display: inline-block;
   height: 100%;

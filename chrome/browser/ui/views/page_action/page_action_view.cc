@@ -419,8 +419,12 @@ void PageActionView::UpdateIconImage() {
     SetImageModel(ui::ImageModel::FromVectorIcon(
         *icon_image.GetVectorIcon().vector_icon(), icon_color,
         drawing_icon_size));
+    image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
   } else {
     SetImageModel(icon_image);
+    // Non-vector icons (such as site favicons or PWA/app icons) should not be
+    // mirrored in RTL layouts.
+    image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
     // For non-vector icons, the border needs to be updated to accommodate the
     // icon, as the icon size may vary. For vector icons, the border gets
     // set on instantiation and does not need to be updated again.

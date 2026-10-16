@@ -16,6 +16,9 @@ import type {PageActionIconElement, PageActionState} from 'chrome://webui-toolba
 import {TestToolbarBrowserProxy} from './test_toolbar_browser_proxy.js';
 import type {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
 
+// Computed 2D matrix for scaleX(-1).
+const FLIPPED_X_MATRIX = 'matrix(-1, 0, 0, 1, 0, 0)';
+
 interface StartTrackingCall {
   element: HTMLElement;
   nativeId: string;
@@ -113,6 +116,10 @@ suite('PageActionIconTest', function() {
     icon.state = createBaseState();
     document.body.appendChild(icon);
     await microtasksFinished();
+  });
+
+  teardown(function() {
+    document.documentElement.dir = 'ltr';
   });
 
   test('Render', function() {
@@ -911,6 +918,131 @@ suite('PageActionIconTest', function() {
         assertEquals(PageActionId.kActionShowTranslate, actionId);
         assertFalse(isShowing);
       });
+
+  [false, true].forEach(glowUpEnabled => {
+    test(
+        `Flips icon in RTL when glowUpEnabled is ${glowUpEnabled}`,
+        async function() {
+          icon.glowUpEnabled = glowUpEnabled;
+          const iconTable = IconTable.getInstance();
+          iconTable.applyUpdates([
+            {
+              handleId: 1n,
+              iconUrlOrName: 'webui-toolbar:star',
+              iconType: IconType.kIconSet,
+              color: null,
+            },
+            {
+              handleId: 2n,
+              iconUrlOrName: 'webui-toolbar:star_filled',
+              iconType: IconType.kIconSet,
+              color: null,
+            },
+          ]);
+
+          icon.state = {
+            ...createBaseState(),
+            pageActionId: PageActionId.kActionBookmarkThisTab,
+            icon: {handleId: 1n},
+          };
+          await microtasksFinished();
+
+          const staticIcon =
+              icon.shadowRoot.querySelector<HTMLElement>('#icon');
+          assertTrue(!!staticIcon);
+          assertEquals('none', window.getComputedStyle(staticIcon).transform);
+
+          document.documentElement.dir = 'rtl';
+          assertEquals(
+              FLIPPED_X_MATRIX, window.getComputedStyle(staticIcon).transform);
+
+          // Transition to starred; with glowUpEnabled = false, #icon stays
+          // mounted and remains flipped. With glowUpEnabled = true,
+          // #animatedIcon also flips.
+          icon.state = {
+            ...icon.state,
+            icon: {handleId: 2n},
+          };
+          await icon.updateComplete;
+
+          if (!glowUpEnabled) {
+            assertEquals(null, icon.shadowRoot.querySelector('#animatedIcon'));
+            assertEquals(
+                FLIPPED_X_MATRIX,
+                window.getComputedStyle(staticIcon).transform);
+          } else {
+            const animatedIcon =
+                icon.shadowRoot.querySelector<CrIconElement>('#animatedIcon');
+            assertTrue(!!animatedIcon);
+            assertEquals(
+                FLIPPED_X_MATRIX,
+                window.getComputedStyle(animatedIcon).transform);
+
+            await animatedIcon.updateComplete;
+            await nextFrame();
+            await triggerAnimationEndAndVerify(animatedIcon);
+          }
+        });
+  });
+
+  test('Does not flip full-color favicon icon in RTL', async function() {
+    const iconTable = IconTable.getInstance();
+    iconTable.applyUpdates([
+      {
+        handleId: 10n,
+        iconUrlOrName: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB',
+        iconType: IconType.kFullColorUrl,
+        color: null,
+      },
+    ]);
+
+    icon.state = {
+      ...createBaseState(),
+      pageActionId: PageActionId.kActionShowIntentPicker,
+      icon: {handleId: 10n},
+    };
+    await microtasksFinished();
+
+    const staticIcon = icon.shadowRoot.querySelector<HTMLElement>('#icon');
+    assertTrue(!!staticIcon);
+    assertTrue(staticIcon.hasAttribute('is-full-color'));
+    assertEquals('none', window.getComputedStyle(staticIcon).transform);
+
+    document.documentElement.dir = 'rtl';
+    assertEquals('none', window.getComputedStyle(staticIcon).transform);
+  });
+
+  test('Flips trailing icon in RTL', async function() {
+    const iconTable = IconTable.getInstance();
+    iconTable.applyUpdates([
+      {
+        handleId: 123n,
+        iconUrlOrName: 'webui-toolbar:arrow_forward',
+        iconType: IconType.kIconSet,
+        color: null,
+      },
+    ]);
+
+    icon.state = {
+      ...createBaseState(),
+      pageActionId: PageActionId.kActionAiMode,
+      text: 'AI Mode',
+      shouldShowChip: true,
+      animationStyle: PageActionAnimationStyle.kSlideAndCrossfade,
+      trailingIcon: {handleId: 123n},
+      showTrailingIcon: true,
+    };
+    await microtasksFinished();
+
+    const trailingIcon =
+        icon.shadowRoot.querySelector<HTMLElement>('#trailing-icon');
+    assertTrue(!!trailingIcon);
+    assertEquals('none', window.getComputedStyle(trailingIcon).transform);
+
+    document.documentElement.dir = 'rtl';
+    assertEquals(
+        FLIPPED_X_MATRIX, window.getComputedStyle(trailingIcon).transform);
+  });
 });
 
 suite('PageActionIconsTest', function() {

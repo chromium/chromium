@@ -90,6 +90,10 @@
   --toolbar-chip-fg-color: var(--color-omnibox-icon-foreground-tonal);
 }
 
+:host-context([dir=rtl]) #animatedIcon {
+  transform: scaleX(-1);
+}
+
 #text {
   display: inline-block;
   font-family: var(--omnibox-primary-body-3-emphasis-font-family);
@@ -151,7 +155,7 @@
   --slide-crossfade-leading-collapsed: var(--slide-crossfade-trailing);
 }
 
-:host([slide-and-crossfade]:dir(rtl)) {
+:host-context([dir=rtl]):host([slide-and-crossfade]) {
   --slide-crossfade-direction: 1;
 }
 

@@ -1366,5 +1366,35 @@ TEST_F(PageActionViewTest, SlideAndCrossfadeAnimationPropagated) {
             IconLabelBubbleView::AnimationStyle::kSlideAndCrossfade);
 }
 
+TEST_F(PageActionViewTest, DoesNotFlipNonVectorIconInRtl) {
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+
+  // Vector icons should flip in RTL.
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()
+                  ->GetImageContainerView()
+                  ->GetFlipCanvasOnPaintForRTLUI());
+
+  // Non-vector (bitmap/favicon) icons should not flip in RTL.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kDefaultIconSize, kDefaultIconSize);
+  const ui::ImageModel bitmap_image =
+      ui::ImageModel::FromImage(gfx::Image::CreateFrom1xBitmap(bitmap));
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(bitmap_image));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_FALSE(page_action_view()
+                   ->GetImageContainerView()
+                   ->GetFlipCanvasOnPaintForRTLUI());
+
+  // Switching back to a vector icon should re-enable RTL flipping.
+  const ui::ImageModel vector_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kArrowBackIcon, ui::kColorSysPrimary, kDefaultIconSize);
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(vector_image));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_TRUE(page_action_view()
+                  ->GetImageContainerView()
+                  ->GetFlipCanvasOnPaintForRTLUI());
+}
+
 }  // namespace
 }  // namespace page_actions

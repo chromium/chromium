@@ -950,6 +950,7 @@ TEST_F(IconLabelBubbleViewTest, SlideAndCrossfadeAnimationConfiguredAndDriven) {
   views::ImageView* trailing_image = view()->GetCrossfadeImageView();
   ASSERT_NE(trailing_image, nullptr);
   EXPECT_TRUE(trailing_image->GetVisible());
+  EXPECT_TRUE(trailing_image->GetFlipCanvasOnPaintForRTLUI());
   ASSERT_NE(trailing_image->layer(), nullptr);
 
   // Leading icon container layer is created.

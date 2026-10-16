@@ -27,7 +27,7 @@ export function getHtml(this: PageActionIconElement) {
         .icon="${this.getAnimatedIcon_()}">
     </cr-icon>
   ` : html`
-    <icon-from-table slot="prefix-icon" id="icon"
+    <icon-from-table slot="prefix-icon" id="icon" flip-in-rtl
         .iconHandle="${this.state.icon}">
     </icon-from-table>
   `}
@@ -35,7 +35,7 @@ export function getHtml(this: PageActionIconElement) {
     ${this.state.text || ''}
   </span>
   ${this.hasTrailingIcon_() ? html`
-    <icon-from-table slot="suffix-icon" id="trailing-icon"
+    <icon-from-table slot="suffix-icon" id="trailing-icon" flip-in-rtl
         .iconHandle="${this.state.trailingIcon!}">
     </icon-from-table>
   ` : nothing}

@@ -46,6 +46,7 @@ SlideAndCrossfadeIconLabelBubbleAnimationLayoutStrategy::
   host.label()->SetSkipSubpixelRenderingOpacityCheck(true);
 
   trailing_image_view_->SetCanProcessEventsWithinSubtree(false);
+  trailing_image_view_->SetFlipCanvasOnPaintForRTLUI(true);
   trailing_image_view_->SetPaintToLayer();
   trailing_image_view_->layer()->SetFillsBoundsOpaquely(false);
 

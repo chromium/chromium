@@ -1209,6 +1209,30 @@ suite('NewTabPageRealboxNextTest', () => {
       await microtasksFinished();
       assertFalse(composeButton.hasAttribute('has-user-input'));
     });
+
+    test('flips arrow icon in RTL', async () => {
+      loadTimeData.overrideValues({ntpRealboxDynamicAiModeButton: true});
+      realbox = createAndAppendRealbox({
+        composeButtonEnabled: true,
+        composeboxEnabled: true,
+        ntpRealboxNextEnabled: true,
+      });
+      await microtasksFinished();
+      const composeButton =
+          realbox.shadowRoot.querySelector('cr-searchbox-compose-button');
+      assertTrue(!!composeButton);
+      const arrowIcon =
+          composeButton.shadowRoot.querySelector<HTMLElement>('#arrowIcon');
+      assertTrue(!!arrowIcon);
+      assertEquals('none', window.getComputedStyle(arrowIcon).scale);
+
+      try {
+        document.documentElement.dir = 'rtl';
+        assertEquals('-1 1', window.getComputedStyle(arrowIcon).scale);
+      } finally {
+        document.documentElement.dir = 'ltr';
+      }
+    });
   });
 });
 

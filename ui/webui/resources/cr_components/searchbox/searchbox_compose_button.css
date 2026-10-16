@@ -600,6 +600,10 @@
               visibility 50ms linear;
 }
 
+:host-context([dir='rtl']) .arrow-icon {
+  scale: -1 1;
+}
+
 :host([dynamic][has-user-input]) .arrow-icon {
   opacity: 1;
   pointer-events: auto;

@@ -17,6 +17,9 @@ const COLLAPSE_HOLD_DURATION_MS = 1800;
 const AUTO_COLLAPSE_DELAY_MS = 2400;
 const REDUCED_MOTION_AUTO_COLLAPSE_DELAY_MS = 3000;
 
+// Computed 2D matrix for scaleX(-1).
+const FLIPPED_X_MATRIX = 'matrix(-1, 0, 0, 1, 0, 0)';
+
 suite('ContentSettingIcon', function() {
   let icon: ContentSettingIconElement;
   let handler: TestToolbarUiHandler;
@@ -589,5 +592,20 @@ suite('ContentSettingIcon', function() {
     icon.remove();
     assertEquals(1, stopTrackingCalls.length);
     assertEquals(icon, stopTrackingCalls[0]!);
+  });
+
+  test('Flips icon in RTL', () => {
+    const iconElement = icon.shadowRoot.querySelector<CrIconElement>('#icon');
+    assertTrue(!!iconElement);
+    assertEquals('none', window.getComputedStyle(iconElement).transform);
+
+    try {
+      document.documentElement.dir = 'rtl';
+      assertEquals(
+          FLIPPED_X_MATRIX, window.getComputedStyle(iconElement).transform);
+      assertEquals('none', window.getComputedStyle(icon.$.label).transform);
+    } finally {
+      document.documentElement.dir = 'ltr';
+    }
   });
 });

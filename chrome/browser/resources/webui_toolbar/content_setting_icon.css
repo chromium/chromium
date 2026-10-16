@@ -49,3 +49,7 @@
   height: var(--icon-size);
   width: var(--icon-size);
 }
+
+:host-context([dir=rtl]) #icon {
+  transform: scaleX(-1);
+}

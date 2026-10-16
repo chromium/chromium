@@ -11,6 +11,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './icon_from_table.css.js';
 import {getHtml} from './icon_from_table.html.js';
 import type {IconHandle} from './icon_handle.mojom-webui.js';
+import {IconType} from './icon_handle.mojom-webui.js';
 import {IconTable} from './icon_table.js';
 import type {IconInfo} from './icon_table.js';
 
@@ -36,9 +37,21 @@ export class IconFromTableElement extends CrLitElement {
       iconHandle: {type: Object},
 
       /**
+       * Whether to mirror the icon horizontally in RTL layouts. Does not
+       * mirror full-color icons (e.g. favicons).
+       */
+      flipInRtl: {type: Boolean, reflect: true, attribute: 'flip-in-rtl'},
+
+      /**
        * Internally cached information on the icon.
        */
       iconInfo_: {type: Object},
+
+      /**
+       * Whether the rendered icon is full-color (e.g. favicons) and should
+       * never be mirrored in RTL.
+       */
+      isFullColor_: {type: Boolean, reflect: true, attribute: 'is-full-color'},
     };
   }
 
@@ -46,6 +59,9 @@ export class IconFromTableElement extends CrLitElement {
     handleId: 0n,
   };
 
+  accessor flipInRtl: boolean = false;
+
+  protected accessor isFullColor_: boolean = false;
   protected accessor iconInfo_: IconInfo;
 
   private iconTable_: IconTable = IconTable.getInstance();
@@ -53,12 +69,14 @@ export class IconFromTableElement extends CrLitElement {
   constructor() {
     super();
     this.iconInfo_ = this.iconTable_.getIconInfo(this.iconHandle);
+    this.isFullColor_ = this.iconInfo_.type === IconType.kFullColorUrl;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
     if (changedProperties.has('iconHandle')) {
       this.iconInfo_ = this.iconTable_.getIconInfo(this.iconHandle);
+      this.isFullColor_ = this.iconInfo_.type === IconType.kFullColorUrl;
     }
   }
 
