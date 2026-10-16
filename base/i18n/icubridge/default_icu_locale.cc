@@ -28,7 +28,8 @@ ThreadSafeLocaleHolder& GetLocaleHolder() {
     // The "en-US" locale here is used as the initial default so this is never
     // in a uninitialized state.
     UErrorCode error_code = U_ZERO_ERROR;
-    icu::Locale::setDefault(icu::Locale::getUS(), error_code);
+    // Avoid getUS(), which queries the OS while initializing the locale cache.
+    icu::Locale::setDefault(icu::Locale("en", "US"), error_code);
     CHECK(U_SUCCESS(error_code));
     return GetKnownLanguageTag("en-US");
   }());
