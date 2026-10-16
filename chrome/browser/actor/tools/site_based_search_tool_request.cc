@@ -10,9 +10,9 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/site_based_search_tool.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
@@ -107,10 +107,10 @@ ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
     }
   }
 
-  NOTIMPLEMENTED();
-  return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kNotImplemented,
-                                       /*requires_page_stabilization=*/false,
-                                       "Not implemented.")};
+  return {std::make_unique<SiteBasedSearchTool>(
+              task_id, tool_delegate, GetActorSurfaceHandle().GetTabHandle(),
+              query_),
+          MakeOkResult()};
 }
 
 void SiteBasedSearchToolRequest::Apply(ToolRequestVisitorFunctor& f) const {

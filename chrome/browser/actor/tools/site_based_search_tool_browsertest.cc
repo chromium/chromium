@@ -3,18 +3,23 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/site_based_search_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -40,6 +45,18 @@ class ActorSiteBasedSearchToolBrowserTest : public ActorToolsTest {
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+  void RefreshExtractedPageContent() {
+    auto* extraction_service = page_content_annotations::
+        PageContentExtractionServiceFactory::GetForProfile(GetProfile());
+    ASSERT_TRUE(extraction_service);
+    base::test::TestFuture<
+        std::optional<page_content_annotations::ExtractedPageContentResult>>
+        refresh_future;
+    extraction_service->RefreshExtractedPageContentAndEligibilityForPage(
+        web_contents()->GetPrimaryPage(), refresh_future.GetCallback());
+    ASSERT_TRUE(refresh_future.Take().has_value());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
@@ -55,7 +72,8 @@ IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
   ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest, NotImplemented) {
+IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
+                       FailsWhenNoSearchAvailable) {
   const GURL url_start =
       embedded_https_test_server().GetURL("example.com", kStartUrlPath);
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
@@ -64,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest, NotImplemented) {
       MakeSiteBasedSearchRequest(*active_tab(), "search terms");
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kNotImplemented);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kSiteBasedSearchNotAvailable);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
@@ -118,9 +137,34 @@ IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
       MakeSiteBasedSearchRequest(*active_tab(), "opensearch query");
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kNotImplemented);
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kSiteBasedSearchNotAvailable);
 
   EXPECT_EQ(web_contents()->GetURL(), url_start);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
+                       SearchViaDomInputSearch) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("example.com", kStartUrlPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+  ASSERT_TRUE(content::ExecJs(web_contents(), R"(
+    document.body.innerHTML =
+        '<form action="/actor/blank.html">' +
+        '  <input type="search" name="q">' +
+        '</form>';
+  )"));
+  RefreshExtractedPageContent();
+
+  std::unique_ptr<ToolRequest> action =
+      MakeSiteBasedSearchRequest(*active_tab(), "dom query");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectOkResult(result);
+
+  EXPECT_EQ(web_contents()->GetURL(),
+            embedded_https_test_server().GetURL(
+                "example.com", "/actor/blank.html?q=dom+query"));
 }
 
 }  // namespace
