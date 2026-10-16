@@ -6,14 +6,21 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_extension_bridge.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -22,7 +29,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -48,11 +58,16 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
@@ -69,11 +84,31 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace {
+
+void SimulateLeftClickDrag(content::WebContents* web_contents,
+                           const gfx::Point& from,
+                           const gfx::Point& to) {
+  content::WaitForHitTestData(web_contents->GetPrimaryMainFrame());
+  content::SimulateMouseEvent(web_contents,
+                              blink::WebInputEvent::Type::kMouseDown,
+                              blink::WebMouseEvent::Button::kLeft, from);
+  content::SimulateMouseEvent(web_contents,
+                              blink::WebInputEvent::Type::kMouseMove,
+                              blink::WebMouseEvent::Button::kLeft, to);
+  content::SimulateMouseEvent(web_contents,
+                              blink::WebInputEvent::Type::kMouseUp,
+                              blink::WebMouseEvent::Button::kLeft, to);
+}
 
 class ContextualTasksLensOverlayControllerInteractiveUiTest
     : public contextual_tasks::ContextualTasksInteractiveTestBaseT<
@@ -1979,6 +2014,533 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
                        OmniboxPopupState::kAim;
           },
           "Omnibox popup state is kAim"));
+}
+
+class RegionChipTestingContextualTasksUiService
+    : public TestingContextualTasksUiService {
+ public:
+  using TestingContextualTasksUiService::TestingContextualTasksUiService;
+  ~RegionChipTestingContextualTasksUiService() override = default;
+
+  std::optional<GURL> GetInitialUrlForTask(const base::Uuid& uuid) override {
+    if (std::optional<GURL> url =
+            TestingContextualTasksUiService::GetInitialUrlForTask(uuid)) {
+      return url;
+    }
+    return GetDefaultAiPageUrlForTask(uuid);
+  }
+};
+
+class ContextualTasksLensRegionChipInteractiveUiTest
+    : public ContextualTasksLensOverlayControllerInteractiveUiTest {
+ public:
+  ContextualTasksLensRegionChipInteractiveUiTest() {
+    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
+  }
+
+  void SetUpFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+         {contextual_tasks::kContextualTasksRearchitecture, {}},
+         {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}},
+         {extensions_features::kApiContextualTasksPrivate, {}}},
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
+  }
+
+  contextual_tasks::UserVariation GetUserVariation() const override {
+    return contextual_tasks::UserVariation::kSignedIn;
+  }
+
+  std::unique_ptr<KeyedService> BuildMockContextualTasksUiServiceInstance(
+      content::BrowserContext* context) override {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<RegionChipTestingContextualTasksUiService>(
+        profile,
+        contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile),
+        IdentityManagerFactory::GetForProfile(profile),
+        AimEligibilityServiceFactory::GetForProfile(profile),
+        /*cookie_synchronizer=*/nullptr);
+  }
+
+  void SetUpOnMainThread() override {
+    ContextualTasksLensOverlayControllerInteractiveUiTest::SetUpOnMainThread();
+    contextual_tasks::ContextualTasksExtensionBridge::Get(
+        browser()->GetProfile());
+    PinnedToolbarActionsModel::Get(browser()->GetProfile())
+        ->UpdatePinnedState(kActionSidePanelShowContextualTasks, true);
+  }
+
+  InteractiveTestApi::MultiStep NavigateToTabWithImage(
+      ui::ElementIdentifier tab_id,
+      const GURL& url) {
+    const DeepQuery kPathToBody{"body"};
+    return Steps(InstrumentTab(tab_id), NavigateWebContents(tab_id, url),
+                 EnsurePresent(tab_id, kPathToBody),
+                 WaitForWebContentsPainted(tab_id),
+                 WaitForWebContentsReady(tab_id, url));
+  }
+
+  InteractiveTestApi::MultiStep OpenContextualTasksSidePanelViaToolbarButton(
+      ui::ElementIdentifier side_panel_contents_id) {
+    return Steps(
+        EnsurePresent(
+            kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+        PressButton(kPinnedToolbarActionShowSidePanelContextualTasksElementId),
+        WaitForShow(kContextualTasksSidePanelWebViewElementId),
+        NameViewRelative(
+            kContextualTasksSidePanelWebViewElementId,
+            "SidePanelContentWebViewName",
+            [](contextual_tasks::ContextualTasksWebView* web_view) {
+              return web_view->content_web_view();
+            }),
+        InstrumentNonTabWebView(side_panel_contents_id,
+                                "SidePanelContentWebViewName"),
+        WaitForWebContentsReady(side_panel_contents_id));
+  }
+
+  InteractiveTestApi::MultiStep WaitForAimHandshake(
+      ui::ElementIdentifier side_panel_contents_id) {
+    const DeepQuery kPathToBody{"body"};
+    return Steps(WaitForJsResultAt(side_panel_contents_id, kPathToBody,
+                                   "el => el.dataset.handshakeComplete",
+                                   "true"));
+  }
+
+  InteractiveTestApi::StepBuilder ClickSidePanelLensButton() {
+    return Do([this]() {
+      auto* controller =
+          contextual_tasks::ContextualTasksPanelController::From(browser());
+      content::WebContents* side_panel_contents =
+          controller->GetActiveWebContents();
+      ASSERT_TRUE(side_panel_contents != nullptr);
+      content::RenderFrameHost* button_rfh = nullptr;
+      EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+        button_rfh = content::FrameMatchingPredicateOrNullptr(
+            side_panel_contents->GetPrimaryPage(),
+            base::BindRepeating([](content::RenderFrameHost* rfh) {
+              return rfh->GetLastCommittedURL().ExtractFileName() ==
+                     "lens_button.html";
+            }));
+        return button_rfh != nullptr;
+      }));
+      ASSERT_TRUE(button_rfh != nullptr);
+
+      auto result = content::EvalJs(button_rfh, R"(
+        new Promise((resolve) => {
+          const check = () => {
+            const app = document.querySelector('lens-button-app');
+            const btn = app?.shadowRoot?.querySelector('#lensButton');
+            if (btn && !btn.disabled) {
+              btn.click();
+              resolve(true);
+            } else {
+              setTimeout(check, 50);
+            }
+          };
+          check();
+        });
+      )");
+      EXPECT_TRUE(result.is_ok() && result.ExtractBool());
+    });
+  }
+
+  InteractiveTestApi::MultiStep WaitForLensOverlayAndSelectRegion(
+      ui::ElementIdentifier overlay_id,
+      base::OnceCallback<gfx::Point()> target_point) {
+    const DeepQuery kPathToRegionSelection{
+        "lens-overlay-app",
+        "lens-selection-overlay",
+        "#regionSelectionLayer",
+    };
+    return Steps(
+        InAnyContext(
+            InstrumentNonTabWebView(overlay_id,
+                                    LensOverlayController::kOverlayId),
+            WaitForWebContentsReady(
+                overlay_id, GURL(chrome::kChromeUILensOverlayUntrustedURL))),
+        InSameContext(
+            WaitForShow(LensOverlayController::kOverlayId),
+            ExecuteJsAt(overlay_id, {}, R"(
+            () => {
+              const style = document.createElement('style');
+              style.textContent = `
+                * {
+                  animation-duration: 0s !important;
+                  transition-duration: 0s !important;
+                }
+              `;
+              document.head.appendChild(style);
+            }
+          )"),
+            WaitForScreenshotRendered(overlay_id),
+            EnsurePresent(overlay_id, kPathToRegionSelection),
+            WithElement(LensOverlayController::kOverlayId,
+                        [this, target_point = std::move(target_point)](
+                            ui::TrackedElement* el) mutable {
+                          auto* const web_view = AsView<views::WebView>(el);
+                          const gfx::Rect bounds =
+                              web_view->GetBoundsInScreen();
+                          SimulateLeftClickDrag(
+                              web_view->GetWebContents(),
+                              gfx::Rect(bounds.size()).CenterPoint(),
+                              std::move(target_point).Run() -
+                                  bounds.OffsetFromOrigin());
+                        }),
+            FinishScreenshotUpload(0)));
+  }
+
+  InteractiveTestApi::MultiStep WaitForLensChipMountedWithPreview(
+      ui::ElementIdentifier side_panel_contents_id,
+      content::RenderFrameHost** out_chip_rfh,
+      std::string* out_crop_uri) {
+    const DeepQuery kPathToBody{"body"};
+    return Steps(
+        WaitForJsResultAt(side_panel_contents_id, kPathToBody,
+                          "el => el.dataset.chipMounted", "true"),
+        WaitForJsResultAt(side_panel_contents_id, kPathToBody,
+                          "el => el.dataset.mountCount", "1"),
+        Do([this, out_chip_rfh, out_crop_uri]() {
+          auto* controller =
+              contextual_tasks::ContextualTasksPanelController::From(browser());
+          content::WebContents* side_panel_contents =
+              controller->GetActiveWebContents();
+          ASSERT_TRUE(side_panel_contents != nullptr);
+          EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+            *out_chip_rfh = content::FrameMatchingPredicateOrNullptr(
+                side_panel_contents->GetPrimaryPage(),
+                base::BindRepeating([](content::RenderFrameHost* rfh) {
+                  return rfh->GetLastCommittedURL().ExtractFileName() ==
+                         "lens_chip.html";
+                }));
+            return *out_chip_rfh != nullptr;
+          }));
+          ASSERT_TRUE(*out_chip_rfh != nullptr);
+
+          auto result = content::EvalJs(*out_chip_rfh, R"(
+            new Promise((resolve) => {
+              const check = () => {
+                const app = document.querySelector('lens-chip-app');
+                const img = app?.shadowRoot?.querySelector('#cropImage');
+                if (img && img.src && img.src.startsWith('data:image/')) {
+                  resolve(img.src);
+                } else {
+                  setTimeout(check, 50);
+                }
+              };
+              check();
+            });
+          )");
+          ASSERT_TRUE(result.is_ok());
+          *out_crop_uri = result.ExtractString();
+          ASSERT_FALSE(out_crop_uri->empty());
+        }));
+  }
+
+  InteractiveTestApi::MultiStep SelectNewRegionOnOverlay(
+      ui::ElementIdentifier overlay_id) {
+    return Steps(InSameContext(ExecuteJsAt(overlay_id, {}, R"(
+              () => {
+                const overlay = document.querySelector('lens-overlay-app')
+                    ?.shadowRoot?.querySelector('lens-selection-overlay');
+                if (!overlay) return false;
+                const rect = overlay.getBoundingClientRect();
+                const startX = rect.left + rect.width / 2 - 50;
+                const startY = rect.top + rect.height / 2 - 50;
+                const endX = rect.left + rect.width / 2 - 120;
+                const endY = rect.top + rect.height / 2 - 120;
+                const savedSetPointerCapture = overlay.setPointerCapture;
+                overlay.setPointerCapture = () => {};
+                try {
+                  overlay.dispatchEvent(new PointerEvent('pointerdown', {
+                    button: 0,
+                    buttons: 1,
+                    clientX: startX,
+                    clientY: startY,
+                    bubbles: true,
+                    composed: true,
+                    isPrimary: true,
+                  }));
+                  overlay.dispatchEvent(new PointerEvent('pointermove', {
+                    button: 0,
+                    buttons: 1,
+                    clientX: endX,
+                    clientY: endY,
+                    bubbles: true,
+                    composed: true,
+                    isPrimary: true,
+                  }));
+                  overlay.dispatchEvent(new PointerEvent('pointerup', {
+                    button: 0,
+                    buttons: 0,
+                    clientX: endX,
+                    clientY: endY,
+                    bubbles: true,
+                    composed: true,
+                    isPrimary: true,
+                  }));
+                } finally {
+                  overlay.setPointerCapture = savedSetPointerCapture;
+                }
+                return true;
+              }
+            )")));
+  }
+
+  InteractiveTestApi::StepBuilder VerifyLensChipUpdatedInPlace(
+      content::RenderFrameHost* const* chip_rfh,
+      const std::string* first_crop_uri) {
+    return Do([this, chip_rfh, first_crop_uri]() {
+      auto* controller =
+          contextual_tasks::ContextualTasksPanelController::From(browser());
+      content::WebContents* side_panel_contents =
+          controller->GetActiveWebContents();
+      ASSERT_TRUE(side_panel_contents != nullptr);
+      auto* user_data =
+          contextual_tasks::ContextualTasksWebContentsUserData::FromWebContents(
+              side_panel_contents);
+      ASSERT_TRUE(user_data != nullptr);
+      auto model = user_data->input_state_model();
+      ASSERT_TRUE(model != nullptr);
+
+      base::test::TestFuture<void> crop_updated;
+      base::CallbackListSubscription subscription;
+      if (model->lens_crop().has_value() &&
+          model->lens_crop()->data_uri != *first_crop_uri) {
+        crop_updated.SetValue();
+      } else {
+        subscription = model->Subscribe(
+            base::BindLambdaForTesting([&](const omnibox::InputState&) {
+              if (model->lens_crop().has_value() &&
+                  model->lens_crop()->data_uri != *first_crop_uri &&
+                  !crop_updated.IsReady()) {
+                crop_updated.SetValue();
+              }
+            }));
+      }
+      EXPECT_TRUE(crop_updated.Wait());
+
+      EXPECT_TRUE(content::ExecJs(
+          *chip_rfh, base::StringPrintf(R"(
+        new Promise((resolve) => {
+          const check = () => {
+            const app = document.querySelector('lens-chip-app');
+            const img = app?.shadowRoot?.querySelector('#cropImage');
+            if (img && img.src && img.src === '%s') {
+              resolve(true);
+            } else {
+              setTimeout(check, 50);
+            }
+          };
+          check();
+        });
+      )",
+                                        model->lens_crop()->data_uri.c_str())));
+
+      EXPECT_EQ(content::EvalJs(side_panel_contents,
+                                "document.body.dataset.mountCount"),
+                "1");
+    });
+  }
+
+  InteractiveTestApi::StepBuilder ClickLensChipCloseButton(
+      content::RenderFrameHost* const* chip_rfh) {
+    return Do([chip_rfh]() {
+      EXPECT_TRUE(content::ExecJs(*chip_rfh, R"(
+        new Promise((resolve) => {
+          const check = () => {
+            const app = document.querySelector('lens-chip-app');
+            const btn = app?.shadowRoot?.querySelector('#closeButton');
+            if (btn && !btn.disabled) {
+              btn.click();
+              resolve(true);
+            } else {
+              setTimeout(check, 50);
+            }
+          };
+          check();
+        });
+      )"));
+    });
+  }
+
+  InteractiveTestApi::MultiStep VerifyLensChipUnmountedAndOverlayClosed(
+      ui::ElementIdentifier side_panel_contents_id) {
+    const DeepQuery kPathToBody{"body"};
+    return Steps(
+        WaitForJsResultAt(side_panel_contents_id, kPathToBody,
+                          "el => el.dataset.chipMounted", "false"),
+        WaitForJsResultAt(side_panel_contents_id, kPathToBody,
+                          "el => el.dataset.unmountCount", "1"),
+        WaitForJsResultAt(
+            side_panel_contents_id, kPathToBody,
+            "() => document.getElementById('lens-chip-iframe') === null", true),
+        Do([this]() {
+          auto* controller =
+              contextual_tasks::ContextualTasksPanelController::From(browser());
+          content::WebContents* side_panel_contents =
+              controller->GetActiveWebContents();
+          auto* user_data =
+              contextual_tasks::ContextualTasksWebContentsUserData::
+                  FromWebContents(side_panel_contents);
+          EXPECT_TRUE(user_data != nullptr);
+          if (user_data) {
+            auto model = user_data->input_state_model();
+            EXPECT_TRUE(model != nullptr);
+            if (model) {
+              EXPECT_FALSE(model->lens_crop().has_value());
+            }
+          }
+
+          content::WebContents* tab_contents =
+              browser()->GetTabStripModel()->GetActiveWebContents();
+          auto* search_controller =
+              LensSearchController::FromTabWebContents(tab_contents);
+          EXPECT_TRUE(search_controller != nullptr);
+          if (search_controller) {
+            EXPECT_TRUE(search_controller->IsOff() ||
+                        search_controller->IsClosing());
+            if (search_controller->lens_overlay_controller()) {
+              EXPECT_FALSE(search_controller->lens_overlay_controller()
+                               ->HasRegionSelection());
+            }
+          }
+        }));
+  }
+
+  InteractiveTestApi::MultiStep SubmitQueryFromAim(
+      ui::ElementIdentifier side_panel_contents_id) {
+    const DeepQuery kPathToSubmitButton{"#submitQueryButton"};
+    return Steps(EnsurePresent(side_panel_contents_id, kPathToSubmitButton),
+                 MoveMouseTo(side_panel_contents_id, kPathToSubmitButton),
+                 ClickMouse());
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,
+                       OpenOverlaySelectRegionMountChipAndDismiss) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"www.google.com"});
+  base::ScopedClosureRunner clear_host_override(base::BindOnce([]() {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  }));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+  std::string mock_aim_html;
+  ASSERT_TRUE(base::ReadFileToString(
+      test_data_dir.AppendASCII("lens/mock_aim_page.html"), &mock_aim_html));
+
+  content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+      [](const std::string& html,
+         content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n", html,
+              params->client.get());
+          return true;
+        }
+        return false;
+      },
+      mock_aim_html));
+
+  const GURL tab_url = embedded_test_server()->GetURL(kDocumentWithImage);
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point_1 = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center = browser_view->contents_web_view_for_testing()
+                                ->GetBoundsInScreen()
+                                .CenterPoint();
+    off_center.Offset(50, 50);
+    return off_center;
+  });
+
+  content::RenderFrameHost* chip_rfh = nullptr;
+  std::string first_crop_uri;
+
+  RunTestSequence(
+      NavigateToTabWithImage(kActiveTab, tab_url),
+      OpenContextualTasksSidePanelViaToolbarButton(kSidePanelWebContentsId),
+      WaitForAimHandshake(kSidePanelWebContentsId), ClickSidePanelLensButton(),
+      WaitForLensOverlayAndSelectRegion(kOverlayId,
+                                        std::move(off_center_point_1)),
+      WaitForLensChipMountedWithPreview(kSidePanelWebContentsId, &chip_rfh,
+                                        &first_crop_uri),
+      SelectNewRegionOnOverlay(kOverlayId),
+      VerifyLensChipUpdatedInPlace(&chip_rfh, &first_crop_uri),
+      ClickLensChipCloseButton(&chip_rfh),
+      VerifyLensChipUnmountedAndOverlayClosed(kSidePanelWebContentsId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,
+                       OpenOverlaySelectRegionSubmitQueryAndDismissChip) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  contextual_tasks::SetForcedEmbeddedPageHostOverride(
+      contextual_tasks::HostOverride{"www.google.com"});
+  base::ScopedClosureRunner clear_host_override(base::BindOnce([]() {
+    contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
+  }));
+
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath test_data_dir;
+  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+  std::string mock_aim_html;
+  ASSERT_TRUE(base::ReadFileToString(
+      test_data_dir.AppendASCII("lens/mock_aim_page.html"), &mock_aim_html));
+
+  content::URLLoaderInterceptor url_loader_interceptor(base::BindRepeating(
+      [](const std::string& html,
+         content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == "www.google.com") {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n", html,
+              params->client.get());
+          return true;
+        }
+        return false;
+      },
+      mock_aim_html));
+
+  const GURL tab_url = embedded_test_server()->GetURL(kDocumentWithImage);
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point_1 = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center = browser_view->contents_web_view_for_testing()
+                                ->GetBoundsInScreen()
+                                .CenterPoint();
+    off_center.Offset(50, 50);
+    return off_center;
+  });
+
+  content::RenderFrameHost* chip_rfh = nullptr;
+  std::string first_crop_uri;
+
+  RunTestSequence(
+      NavigateToTabWithImage(kActiveTab, tab_url),
+      OpenContextualTasksSidePanelViaToolbarButton(kSidePanelWebContentsId),
+      WaitForAimHandshake(kSidePanelWebContentsId), ClickSidePanelLensButton(),
+      WaitForLensOverlayAndSelectRegion(kOverlayId,
+                                        std::move(off_center_point_1)),
+      WaitForLensChipMountedWithPreview(kSidePanelWebContentsId, &chip_rfh,
+                                        &first_crop_uri),
+      SubmitQueryFromAim(kSidePanelWebContentsId),
+      VerifyLensChipUnmountedAndOverlayClosed(kSidePanelWebContentsId));
 }
 
 }  // namespace

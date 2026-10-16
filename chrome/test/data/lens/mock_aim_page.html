@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="always">
+  <title>Mock AIM Page</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: sans-serif;
+    }
+    #composebox-container {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 8px;
+      gap: 8px;
+    }
+    #chip-tray {
+      display: flex;
+      gap: 8px;
+      min-height: 48px;
+    }
+    #lens-chip-iframe {
+      width: 140px;
+      height: 48px;
+      border: none;
+    }
+    #action-bar {
+      display: flex;
+      align-items: center;
+    }
+    #lens-button-iframe {
+      width: 48px;
+      height: 48px;
+      border: none;
+    }
+  </style>
+</head>
+<body data-chip-mounted="false" data-mount-count="0" data-unmount-count="0" data-handshake-complete="false">
+  <div id="composebox-container">
+    <div id="chip-tray">
+      <!-- Lens region chip iframe dynamically mounted here by server message -->
+    </div>
+    <div id="action-bar">
+      <!-- Lens button iframe embedded in the action bar -->
+      <iframe id="lens-button-iframe"
+              referrerpolicy="unsafe-url"
+              src="chrome-extension://glbjnfimcajjenihimblfaponejbkoph/lens_button.html?cs=0">
+      </iframe>
+      <button id="submitQueryButton" type="button">Submit Query</button>
+    </div>
+  </div>
+
+  <script>
+    window.receivedMessages = [];
+
+    function parseVarint(bytes, pos) {
+      let val = 0;
+      let shift = 0;
+      while (pos < bytes.length) {
+        const b = bytes[pos++];
+        val |= (b & 0x7F) << shift;
+        if ((b & 0x80) === 0) {
+          break;
+        }
+        shift += 7;
+      }
+      return [val, pos];
+    }
+
+    function parseClientToSearchMessage(bytes) {
+      let pos = 0;
+      const res = {};
+      while (pos < bytes.length) {
+        let tag;
+        [tag, pos] = parseVarint(bytes, pos);
+        const fieldNum = tag >> 3;
+        const wireType = tag & 7;
+        if (wireType === 0) {
+          let val;
+          [val, pos] = parseVarint(bytes, pos);
+          res[fieldNum] = val;
+        } else if (wireType === 2) {
+          let length;
+          [length, pos] = parseVarint(bytes, pos);
+          const val = bytes.subarray(pos, pos + length);
+          pos += length;
+          if (fieldNum === 1) {
+            res.handshakePing = {};
+          } else if (fieldNum === 2) {
+            // InjectChromeInput
+            let innerPos = 0;
+            const inner = { inputType: 0, isActive: false };
+            while (innerPos < val.length) {
+              let iTag;
+              [iTag, innerPos] = parseVarint(val, innerPos);
+              const iFieldNum = iTag >> 3;
+              const iWireType = iTag & 7;
+              if (iWireType === 0) {
+                let iVal;
+                [iVal, innerPos] = parseVarint(val, innerPos);
+                if (iFieldNum === 2) {
+                  inner.inputType = iVal;
+                } else if (iFieldNum === 3) {
+                  inner.isActive = (iVal !== 0);
+                }
+              } else if (iWireType === 2) {
+                let iLen;
+                [iLen, innerPos] = parseVarint(val, innerPos);
+                const iBytes = val.subarray(innerPos, innerPos + iLen);
+                innerPos += iLen;
+                if (iFieldNum === 1) {
+                  inner.dataId = new TextDecoder().decode(iBytes);
+                }
+              }
+            }
+            res.injectChromeInput = inner;
+          }
+        }
+      }
+      return res;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const configuredExtensionId = urlParams.get('extension_id') ||
+        'glbjnfimcajjenihimblfaponejbkoph';
+    const buttonIframe = document.getElementById('lens-button-iframe');
+    if (buttonIframe && urlParams.has('extension_id')) {
+      buttonIframe.src = 'chrome-extension://' + configuredExtensionId +
+          '/lens_button.html?cs=0';
+    }
+
+    window.addEventListener('message', (event) => {
+      let dataBytes;
+      if (event.data instanceof ArrayBuffer) {
+        dataBytes = new Uint8Array(event.data);
+      } else if (event.data instanceof Uint8Array) {
+        dataBytes = event.data;
+      } else {
+        return;
+      }
+
+      window.receivedMessages.push(dataBytes);
+
+      // Handle HandshakePing: field 1 length-delimited (tag 10).
+      if (dataBytes.length >= 2 && dataBytes[0] === 10) {
+        // Send SearchToClientMessage with HandshakeResponse (field 1, wire type 2, length 0 -> [10, 0]).
+        if (event.source) {
+          const response = new Uint8Array([10, 0]);
+          event.source.postMessage(response.buffer, event.origin);
+        }
+        document.body.dataset.handshakeComplete = 'true';
+        return;
+      }
+
+      const msg = parseClientToSearchMessage(dataBytes);
+      if (msg.injectChromeInput) {
+        const input = msg.injectChromeInput;
+        // inputType 1 = LENS_CHIP
+        if (input.inputType === 1) {
+          const tray = document.getElementById('chip-tray');
+          const existing = document.getElementById('lens-chip-iframe');
+          if (input.isActive) {
+            if (!existing) {
+              const iframe = document.createElement('iframe');
+              iframe.id = 'lens-chip-iframe';
+              iframe.referrerPolicy = 'unsafe-url';
+              const params = new URLSearchParams(window.location.search);
+              const extensionId = params.get('extension_id') ||
+                  'glbjnfimcajjenihimblfaponejbkoph';
+              iframe.src = 'chrome-extension://' + extensionId + '/lens_chip.html?cs=0';
+              tray.appendChild(iframe);
+              document.body.dataset.chipMounted = 'true';
+              document.body.dataset.mountCount =
+                  String((parseInt(document.body.dataset.mountCount || '0', 10) + 1));
+            }
+          } else {
+            if (existing) {
+              existing.remove();
+              document.body.dataset.chipMounted = 'false';
+              document.body.dataset.unmountCount =
+                  String((parseInt(document.body.dataset.unmountCount || '0', 10) + 1));
+            }
+          }
+        }
+      }
+    });
+
+    // Proactively post 'domContentLoaded' to the lens button iframe to establish
+    // the target origin in post_message_handler.ts.
+    function pingButtonIframe() {
+      if (document.body.dataset.handshakeComplete === 'true') {
+        return;
+      }
+      const buttonIframe = document.getElementById('lens-button-iframe');
+      if (buttonIframe && buttonIframe.contentWindow) {
+        buttonIframe.contentWindow.postMessage('domContentLoaded', '*');
+      }
+    }
+
+    const pingInterval = setInterval(() => {
+      if (document.body.dataset.handshakeComplete === 'true') {
+        clearInterval(pingInterval);
+      } else {
+        pingButtonIframe();
+      }
+    }, 50);
+
+    function submitQuery() {
+      const buttonIframe = document.getElementById('lens-button-iframe');
+      if (buttonIframe && buttonIframe.contentWindow) {
+        // SearchToClientMessage with OnSubmitQueryRequest: field 2, length 0 -> [18, 0].
+        const request = new Uint8Array([18, 0]);
+        buttonIframe.contentWindow.postMessage(request.buffer, '*');
+      }
+    }
+    const submitBtn = document.getElementById('submitQueryButton');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', submitQuery);
+    }
+    window.submitQuery = submitQuery;
+
+    window.addEventListener('load', pingButtonIframe);
+  </script>
+</body>
+</html>
