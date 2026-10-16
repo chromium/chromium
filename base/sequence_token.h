@@ -25,14 +25,16 @@ class BASE_EXPORT SequenceToken {
 
   // An invalid SequenceToken is not equal to any other SequenceToken, including
   // other invalid SequenceTokens.
-  bool operator==(const SequenceToken& other) const;
+  bool operator==(const SequenceToken& other) const {
+    return token_ == other.token_ && IsValid();
+  }
 
   // Returns true if this is a valid SequenceToken.
-  bool IsValid() const;
+  bool IsValid() const { return token_ != kInvalidSequenceToken; }
 
   // Returns the integer uniquely representing this SequenceToken. This method
   // should only be used for tracing and debugging.
-  int ToInternalValue() const;
+  int ToInternalValue() const { return token_; }
 
   // Sets the `SequenceToken` as itself for the thread currently running this
   // code.
@@ -72,11 +74,13 @@ class BASE_EXPORT TaskToken {
 
   // An invalid TaskToken is not equal to any other TaskToken, including
   // other invalid TaskTokens.
-  bool operator==(const TaskToken& other) const;
-  bool operator!=(const TaskToken& other) const;
+  bool operator==(const TaskToken& other) const {
+    return token_ == other.token_ && IsValid();
+  }
+  bool operator!=(const TaskToken& other) const { return !(*this == other); }
 
   // Returns true if this is a valid TaskToken.
-  bool IsValid() const;
+  bool IsValid() const { return token_ != kInvalidTaskToken; }
 
   // In the scope of a `TaskScope`, returns a valid `TaskToken` which isn't
   // equal to any `TaskToken` returned in the scope of a different `TaskScope`.

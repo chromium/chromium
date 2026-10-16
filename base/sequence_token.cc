@@ -23,18 +23,6 @@ constinit thread_local bool current_task_is_running_synchronously = false;
 
 }  // namespace
 
-bool SequenceToken::operator==(const SequenceToken& other) const {
-  return token_ == other.token_ && IsValid();
-}
-
-bool SequenceToken::IsValid() const {
-  return token_ != kInvalidSequenceToken;
-}
-
-int SequenceToken::ToInternalValue() const {
-  return token_;
-}
-
 SequenceToken SequenceToken::Create() {
   return SequenceToken(g_sequence_token_generator.GetNext());
 }
@@ -50,18 +38,6 @@ SequenceToken SequenceToken::GetForCurrentThread() {
 void SequenceToken::SetForCurrentThread() {
   CHECK(!current_sequence_token.IsValid());
   current_sequence_token = *this;
-}
-
-bool TaskToken::operator==(const TaskToken& other) const {
-  return token_ == other.token_ && IsValid();
-}
-
-bool TaskToken::operator!=(const TaskToken& other) const {
-  return !(*this == other);
-}
-
-bool TaskToken::IsValid() const {
-  return token_ != kInvalidTaskToken;
 }
 
 TaskToken TaskToken::Create() {

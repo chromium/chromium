@@ -89,8 +89,9 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
   CHECK(!thread_ref_.is_null());
 
   // Valid if current sequence is the bound sequence.
-  bool is_valid =
-      (sequence_token_ == internal::SequenceToken::GetForCurrentThread());
+  const internal::SequenceToken current_sequence_token =
+      internal::SequenceToken::GetForCurrentThread();
+  bool is_valid = (sequence_token_ == current_sequence_token);
 
   // Valid if holding a bound lock.
   if (!is_valid) {
@@ -147,14 +148,16 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
 #if DCHECK_IS_ON()
   // `locks_` must contain locks held at binding time and for all calls to
   // `CalledOnValidSequence` that returned true afterwards.
-  std::erase_if(locks_, [](uintptr_t lock_ptr) {
-    return !std::ranges::contains(subtle::GetTrackedLocksHeldByCurrentThread(),
-                                  lock_ptr);
-  });
+  if (!locks_.empty()) {
+    std::erase_if(locks_, [](uintptr_t lock_ptr) {
+      return !std::ranges::contains(
+          subtle::GetTrackedLocksHeldByCurrentThread(), lock_ptr);
+    });
+  }
 #endif  // DCHECK_IS_ON()
 
   // `sequence_token_` is reset if this returns true from a different sequence.
-  if (sequence_token_ != internal::SequenceToken::GetForCurrentThread()) {
+  if (sequence_token_ != current_sequence_token) {
     sequence_token_ = internal::SequenceToken();
   }
 
