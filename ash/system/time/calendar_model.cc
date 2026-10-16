@@ -582,17 +582,8 @@ void CalendarModel::InsertEventInMonth(
   // Month is now the most-recently-used.
   PromoteMonth(start_of_month);
 
-  auto it = event_months_.find(start_of_month);
-  if (it == event_months_.end()) {
-    // No events for this month, so add a map for it and insert.
-    SingleMonthEventMap month;
-    InsertEventInMonthEventList(month, event, start_time_midnight);
-    event_months_.emplace(start_of_month, month);
-  } else {
-    // Insert in a pre-existing month.
-    SingleMonthEventMap& month = it->second;
-    InsertEventInMonthEventList(month, event, start_time_midnight);
-  }
+  InsertEventInMonthEventList(event_months_[start_of_month], event,
+                              start_time_midnight);
 }
 
 void CalendarModel::InsertEventInMonthEventList(
@@ -604,18 +595,7 @@ void CalendarModel::InsertEventInMonthEventList(
     return;
   }
 
-  auto it = month.find(start_time_midnight);
-  if (it == month.end()) {
-    // No events stored for this day, so create a new list, add the event to
-    // it, and insert the list in the map.
-    SingleDayEventList list;
-    list.push_back(*event);
-    month.emplace(start_time_midnight, list);
-  } else {
-    // Already have some events for this day.
-    SingleDayEventList& list = it->second;
-    list.push_back(*event);
-  }
+  month[start_time_midnight].push_back(*event);
 }
 
 SingleDayEventList CalendarModel::FindEvents(base::Time day) const {

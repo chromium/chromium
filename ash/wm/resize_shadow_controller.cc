@@ -191,11 +191,7 @@ void ResizeShadowController::RecreateShadowIfNeeded(aura::Window* window) {
 
   auto new_shadow = std::make_unique<ResizeShadow>(window, params, type);
 
-  auto it = window_shadows_.find(window);
-  if (it == window_shadows_.end())
-    window_shadows_.insert(std::make_pair(window, std::move(new_shadow)));
-  else
-    it->second = std::move(new_shadow);
+  window_shadows_.insert_or_assign(window, std::move(new_shadow));
 }
 
 ResizeShadow* ResizeShadowController::GetShadowForWindow(

@@ -150,10 +150,9 @@ void RoutineLog::Append(mojom::RoutineType type, const std::string& text) {
   RoutineCategory category = GetRoutineCategory(type);
 
   // Insert a new log if it doesn't exist then append to it.
-  base::FilePath log_path = GetLogFilePath(category);
-  auto iter = logs_.find(category);
-  if (iter == logs_.end()) {
-    iter = logs_.emplace(category, std::make_unique<AsyncLog>(log_path)).first;
+  auto [iter, inserted] = logs_.try_emplace(category);
+  if (inserted) {
+    iter->second = std::make_unique<AsyncLog>(GetLogFilePath(category));
   }
 
   iter->second->Append(text);
