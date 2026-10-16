@@ -5,6 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DRAWING_BUFFER_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_DRAWING_BUFFER_TEST_HELPERS_H_
 
+#include <array>
+
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "cc/test/stub_decode_cache.h"
@@ -250,8 +254,15 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
 
   MOCK_METHOD1(WaitSyncTokenCHROMIUMMock, void(const GLbyte* sync_token));
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override {
-    UNSAFE_TODO(memcpy(&most_recently_waited_sync_token_, sync_token,
-                       sizeof(most_recently_waited_sync_token_)));
+    // SAFETY: The CHROMIUM_sync_point GL API requires `sync_token` to point to
+    // a GL_SYNC_TOKEN_SIZE_CHROMIUM-byte sync token, and sync_token.h
+    // static_asserts that gpu::SyncToken fits in it. In these tests, callers
+    // (e.g. gpu::ClientSharedImage on behalf of DrawingBuffer) pass a
+    // gpu::SyncToken's data.
+    base::byte_span_from_ref(base::allow_nonunique_obj,
+                             most_recently_waited_sync_token_)
+        .copy_from(base::as_bytes(
+            UNSAFE_BUFFERS(base::span(sync_token, sizeof(gpu::SyncToken)))));
     WaitSyncTokenCHROMIUMMock(sync_token);
   }
 
@@ -264,13 +275,11 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   }
   void DrawingBufferClientRestoreRasterizerDiscard() override {}
   void DrawingBufferClientRestoreMaskAndClearValues() override {
-    UNSAFE_TODO(memcpy(state_.color_mask, saved_state_.color_mask,
-                       sizeof(state_.color_mask)));
+    state_.color_mask = saved_state_.color_mask;
     state_.clear_depth = saved_state_.clear_depth;
     state_.clear_stencil = saved_state_.clear_stencil;
 
-    UNSAFE_TODO(memcpy(state_.clear_color, saved_state_.clear_color,
-                       sizeof(state_.clear_color)));
+    state_.clear_color = saved_state_.clear_color;
     state_.depth_mask = saved_state_.depth_mask;
     state_.stencil_mask = saved_state_.stencil_mask;
   }
@@ -377,11 +386,11 @@ class GLES2InterfaceForTests : public gpu::gles2::GLES2InterfaceStub,
   struct State {
     bool scissor_enabled = false;
 
-    GLfloat clear_color[4] = {0, 0, 0, 0};
+    std::array<GLfloat, 4> clear_color = {0, 0, 0, 0};
     GLfloat clear_depth = 0;
     GLint clear_stencil = 0;
 
-    GLboolean color_mask[4] = {0, 0, 0, 0};
+    std::array<GLboolean, 4> color_mask = {0, 0, 0, 0};
     GLboolean depth_mask = 0;
     GLuint stencil_mask = 0;
 
