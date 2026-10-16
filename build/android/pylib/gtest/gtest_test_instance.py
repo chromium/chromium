@@ -35,6 +35,10 @@ BROWSER_TEST_SUITES = [
 # The max number of tests to run on a batch during the test run.
 MAX_BATCH_SIZE = 256
 
+# Browser tests run each test in its own process, so are much slower than other
+# gtests. Batches must complete within the batch timeout (10x --shard-timeout).
+_BROWSER_TEST_MAX_BATCH_SIZE = 64
+
 RUN_IN_SUB_THREAD_TEST_SUITES = [
     # Multiprocess tests should be run outside of the main thread.
     'base_unittests',  # file_locking_unittest.cc uses a child process.
@@ -478,10 +482,13 @@ class GtestTestInstance(test_instance.TestInstance):
             if os.path.exists(exe_dist_dir):
                 self._exe_dist_dir = exe_dist_dir
 
-        self._test_launcher_batch_limit = MAX_BATCH_SIZE
+        max_batch_size = MAX_BATCH_SIZE
+        if self._suite in BROWSER_TEST_SUITES:
+            max_batch_size = _BROWSER_TEST_MAX_BATCH_SIZE
+        self._test_launcher_batch_limit = max_batch_size
         if (
             args.test_launcher_batch_limit
-            and 0 < args.test_launcher_batch_limit < MAX_BATCH_SIZE
+            and 0 < args.test_launcher_batch_limit < max_batch_size
         ):
             self._test_launcher_batch_limit = args.test_launcher_batch_limit
 
