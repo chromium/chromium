@@ -4,6 +4,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -72,8 +73,16 @@ IN_PROC_BROWSER_TEST_P(GlicWebClientManagerBrowserTest,
   EXPECT_GT(samples[0].min, 0);
 }
 
+// TODO(crbug.com/572980728): Consistently failing on ChromeOS and Linux
+// dbg/asan.
+#if BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_LINUX) && (!defined(NDEBUG) || defined(ADDRESS_SANITIZER)))
+#define MAYBE_TimeToWarmedRecordedOnceOnly DISABLED_TimeToWarmedRecordedOnceOnly
+#else
+#define MAYBE_TimeToWarmedRecordedOnceOnly TimeToWarmedRecordedOnceOnly
+#endif
 IN_PROC_BROWSER_TEST_P(GlicWebClientManagerBrowserTest,
-                       TimeToWarmedRecordedOnceOnly) {
+                       MAYBE_TimeToWarmedRecordedOnceOnly) {
   base::HistogramTester histogram_tester;
 
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
