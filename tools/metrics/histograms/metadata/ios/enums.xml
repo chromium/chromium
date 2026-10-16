@@ -2096,6 +2096,44 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Incognito text search item"/>
 </enum>
 
+<!-- LINT.IfChange(IOSSicBottomSheetEntrypoint) -->
+
+<enum name="IOSSicBottomSheetEntrypoint">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Ask about current page"/>
+  <int value="2" label="Web selection Search With"/>
+  <int value="3" label="AIM SRP link tap"/>
+  <int value="4" label="Location bar or toolbar action"/>
+  <int value="5" label="Session restore"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h:AssistantAimEntrypoint) -->
+
+<!-- LINT.IfChange(IOSSicBottomSheetHeaderAction) -->
+
+<enum name="IOSSicBottomSheetHeaderAction">
+  <int value="0" label="Close button tapped"/>
+  <int value="1" label="New thread tapped"/>
+  <int value="2" label="Thread history tapped"/>
+  <int value="3" label="My Activity tapped"/>
+  <int value="4" label="Help tapped"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h:AssistantAimHeaderAction) -->
+
+<!-- LINT.IfChange(IOSSicBottomSheetStateTransition) -->
+
+<enum name="IOSSicBottomSheetStateTransition">
+  <int value="0" label="Minimized sheet"/>
+  <int value="1" label="Medium sheet"/>
+  <int value="2" label="Large sheet"/>
+  <int value="3" label="Dismissed via close button"/>
+  <int value="4" label="Restored with undo"/>
+  <int value="5" label="Dismissed via other"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h:AssistantAimStateTransition) -->
+
 <!-- LINT.IfChange(IOSSigninFullscreenPromoEvents) -->
 
 <enum name="IOSSigninFullscreenPromoEvents">

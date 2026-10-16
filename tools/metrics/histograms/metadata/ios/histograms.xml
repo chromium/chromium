@@ -8091,6 +8091,173 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SicBottomSheet.AttachmentsPerSession" units="attachments"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the total number of attachments submitted across follow-up queries
+    during an Assistant AIM bottom sheet session. Logged once when the session
+    ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.CloseUndoTapped" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records whether the user tapped the Undo action on the snackbar shown after
+    closing the Assistant AIM bottom sheet.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.Entrypoint"
+    enum="IOSSicBottomSheetEntrypoint" expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the entrypoint that initiated an Assistant AIM bottom sheet session.
+    Logged once when the session starts.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.FollowupHadAttachment" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records whether a follow-up query submitted in the Assistant AIM bottom
+    sheet included at least one attachment.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.FollowupsPerSession" units="queries"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the total number of follow-up queries submitted during an Assistant
+    AIM bottom sheet session. Logged once when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.HeaderAction"
+    enum="IOSSicBottomSheetHeaderAction" expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records user interactions with the header buttons and overflow menu actions
+    in the Assistant AIM bottom sheet.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.ImmediateDismissal" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records whether an Assistant AIM bottom sheet session was dismissed without
+    positive engagement within the immediate dismissal threshold (3 seconds of
+    active visible time). Logged once when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.LinkClicked" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Recorded each time the user clicks an outbound link or citation in the
+    Assistant AIM bottom sheet response.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.LinksClickedPerSession" units="clicks"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the total number of outbound links clicked during an Assistant AIM
+    bottom sheet session. Logged once when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.ReturnedAfterLinkClick" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records whether the user expanded the Assistant AIM bottom sheet back from
+    the minimized state after clicking an outbound link that minimized the
+    sheet, or ended the session without returning.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.SessionHadEngagement" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records whether the user performed at least one qualifying positive
+    engagement action during an Assistant AIM bottom sheet session. Logged once
+    when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.SessionHadLinkClick" enum="Boolean"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records whether the user clicked at least one outbound link during an
+    Assistant AIM bottom sheet session. Logged once when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.StateTransition"
+    enum="IOSSicBottomSheetStateTransition" expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records sheet detent transitions, dismissals, and undo restorations during
+    an Assistant AIM bottom sheet session.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.TimeSpent" units="ms"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the cumulative active visible duration of an Assistant AIM bottom
+    sheet session, excluding intervals when the sheet is temporarily hidden.
+    Logged once when the session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.TimeSpent.Abandoned" units="ms"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the cumulative active visible duration of an Assistant AIM bottom
+    sheet session that ended without any qualifying positive engagement. Logged
+    once when an unengaged session ends.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SicBottomSheet.TimeSpent.Engaged" units="ms"
+    expires_after="2027-04-04">
+  <owner>ameurhosni@google.com</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    Records the cumulative active visible duration of an Assistant AIM bottom
+    sheet session in which the user performed at least one qualifying positive
+    engagement action. Logged once when an engaged session ends.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SignInpromo.Fullscreen.PromoEvents"
     enum="IOSSigninFullscreenPromoEvents" expires_after="2027-04-11">
   <owner>cheickcisse@google.com</owner>

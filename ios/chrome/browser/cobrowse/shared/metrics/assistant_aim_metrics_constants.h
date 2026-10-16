@@ -42,6 +42,9 @@ inline constexpr std::string_view kAssistantAimAttachmentsPerSessionHistogram =
     "IOS.SicBottomSheet.AttachmentsPerSession";
 
 // Entrypoints for starting an Assistant AIM bottom sheet session.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AssistantAimEntrypoint)
 enum class AssistantAimEntrypoint {
   kUnknown = 0,
   // User submitted an AIM query with the current page attached ("Ask about
@@ -57,8 +60,12 @@ enum class AssistantAimEntrypoint {
   kSessionRestore = 5,
   kMaxValue = kSessionRestore,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSicBottomSheetEntrypoint)
 
 // State transitions of the Assistant AIM bottom sheet.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AssistantAimStateTransition)
 enum class AssistantAimStateTransition {
   kMinimizedSheet = 0,
   kMediumSheet = 1,
@@ -68,8 +75,12 @@ enum class AssistantAimStateTransition {
   kDismissedOther = 5,
   kMaxValue = kDismissedOther,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSicBottomSheetStateTransition)
 
 // Actions available in the Assistant AIM bottom sheet header and overflow menu.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AssistantAimHeaderAction)
 enum class AssistantAimHeaderAction {
   kCloseButtonTapped = 0,
   kNewThreadTapped = 1,
@@ -78,5 +89,6 @@ enum class AssistantAimHeaderAction {
   kHelpTapped = 4,
   kMaxValue = kHelpTapped,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSicBottomSheetHeaderAction)
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_SHARED_METRICS_ASSISTANT_AIM_METRICS_CONSTANTS_H_
