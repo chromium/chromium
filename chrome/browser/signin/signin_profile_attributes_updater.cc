@@ -24,8 +24,8 @@ SigninProfileAttributesUpdater::SigninProfileAttributesUpdater(
       profile_attributes_storage_(profile_attributes_storage),
       profile_path_(profile_path),
       prefs_(prefs) {
-  DCHECK(identity_manager_);
-  DCHECK(profile_attributes_storage_);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
+  CHECK(profile_attributes_storage_, base::NotFatalUntil::M162);
   identity_manager_observation_.Observe(identity_manager_.get());
 
   UpdateProfileAttributes();

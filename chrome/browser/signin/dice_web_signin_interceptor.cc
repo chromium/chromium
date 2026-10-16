@@ -519,9 +519,9 @@ DiceWebSigninInterceptor::DiceWebSigninInterceptor(
       delegate_(std::move(delegate)),
       profile_metrics_service_(CHECK_DEREF(profile_metrics_service)),
       state_(std::make_unique<ResetableState>()) {
-  DCHECK(profile_);
-  DCHECK(identity_manager_);
-  DCHECK(delegate_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
+  CHECK(delegate_, base::NotFatalUntil::M162);
 }
 
 DiceWebSigninInterceptor::~DiceWebSigninInterceptor() = default;
@@ -780,8 +780,8 @@ void DiceWebSigninInterceptor::CreateBrowserAfterSigninInterception(
     std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle> bubble_handle,
     bool is_new_profile,
     WebSigninInterceptor::SigninInterceptionType interception_type) {
-  DCHECK(!state_->session_startup_helper_);
-  DCHECK(bubble_handle);
+  CHECK(!state_->session_startup_helper_, base::NotFatalUntil::M162);
+  CHECK(bubble_handle, base::NotFatalUntil::M162);
   state_->interception_bubble_handle_ = std::move(bubble_handle);
   state_->account_id_ = account_id;
   state_->interception_type_ = interception_type;
@@ -877,7 +877,8 @@ bool DiceWebSigninInterceptor::CanApplyEnterprisePoliciesToInterceptedAccount(
 
 bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
+  CHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info),
+        base::NotFatalUntil::M162);
   CoreAccountInfo primary_account =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   bool intercepted_account_managed =
@@ -911,7 +912,8 @@ bool DiceWebSigninInterceptor::ShouldEnforceEnterpriseProfileSeparation(
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
+  CHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info),
+        base::NotFatalUntil::M162);
 
   if (!CanApplyEnterprisePoliciesToInterceptedAccount(
           intercepted_account_info)) {
@@ -950,7 +952,8 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseDialog(
 
 bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
+  CHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info),
+        base::NotFatalUntil::M162);
 
   if (!IsUsernameAllowedForInterceptionByPattern(
           intercepted_account_info.GetEmail())) {
@@ -973,7 +976,8 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
 
 bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
     const AccountInfo& intercepted_account_info) const {
-  DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
+  CHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info),
+        base::NotFatalUntil::M162);
 
   if (!IsUsernameAllowedForInterceptionByPattern(
           std::string(intercepted_account_info.GetEmail()))) {
@@ -1110,7 +1114,7 @@ void DiceWebSigninInterceptor::EnsureObservingExtendedAccountInfo() {
 void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
     const AccountInfo& info,
     bool timed_out) {
-  DCHECK_EQ(info.GetAccountId(), state_->account_id_);
+  CHECK_EQ(info.GetAccountId(), state_->account_id_, base::NotFatalUntil::M162);
 
   if (!IsRequiredExtendedAccountInfoAvailable(info)) {
     // We can't process the interception with the information currently
@@ -1185,8 +1189,9 @@ void DiceWebSigninInterceptor::ProcessInterceptionOrWait(
 
 void DiceWebSigninInterceptor::OnInterceptionReadyToBeProcessed(
     const AccountInfo& info) {
-  DCHECK_EQ(info.GetAccountId(), state_->account_id_);
-  DCHECK(IsRequiredExtendedAccountInfoAvailable(info));
+  CHECK_EQ(info.GetAccountId(), state_->account_id_, base::NotFatalUntil::M162);
+  CHECK(IsRequiredExtendedAccountInfoAvailable(info),
+        base::NotFatalUntil::M162);
 
   if (!state_->web_contents_) {
     RecordSigninInterceptionHeuristicOutcome(
@@ -1537,7 +1542,7 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
   // passed around to be in turn destroyed and cause a UAF issue.
   CHECK(!account_info_update_observation_.IsObserving());
 
-  DCHECK(state_->interception_bubble_handle_);
+  CHECK(state_->interception_bubble_handle_, base::NotFatalUntil::M162);
   // base::Unretained(this) is safe here because the callback is owned by
   // `state_` (which is owned by `this`), guaranteeing it will not outlive
   // this interceptor instance.
@@ -1673,8 +1678,8 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
   // passed around to be in turn destroyed and cause a UAF issue.
   CHECK(!account_info_update_observation_.IsObserving());
 
-  DCHECK(state_->interception_bubble_handle_);
-  DCHECK(!state_->dice_signed_in_profile_creator_);
+  CHECK(state_->interception_bubble_handle_, base::NotFatalUntil::M162);
+  CHECK(!state_->dice_signed_in_profile_creator_, base::NotFatalUntil::M162);
 
   // base::Unretained(this) is safe here because the callback is owned by
   // `state_` (which is owned by `this`), guaranteeing it will not outlive
@@ -1698,7 +1703,7 @@ void DiceWebSigninInterceptor::OnProfileSwitchChoice(
 void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
     std::optional<ProfilePresets> profile_presets,
     Profile* new_profile) {
-  DCHECK(state_->dice_signed_in_profile_creator_);
+  CHECK(state_->dice_signed_in_profile_creator_, base::NotFatalUntil::M162);
   state_->dice_signed_in_profile_creator_.reset();
 
   if (!new_profile) {
@@ -1767,7 +1772,7 @@ void DiceWebSigninInterceptor::ProceedWithProfileCreation(
   profile_presets.search_engine_choice_data =
       SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
 
-  DCHECK(!state_->dice_signed_in_profile_creator_);
+  CHECK(!state_->dice_signed_in_profile_creator_, base::NotFatalUntil::M162);
   // Unretained is fine because the profile creator is owned by this.
   state_->dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
@@ -1781,7 +1786,7 @@ void DiceWebSigninInterceptor::ProceedWithProfileCreation(
 
 void DiceWebSigninInterceptor::ProceedWithProfileSwitch(
     const base::FilePath& profile_path) {
-  DCHECK(!state_->dice_signed_in_profile_creator_);
+  CHECK(!state_->dice_signed_in_profile_creator_, base::NotFatalUntil::M162);
   // Unretained is fine because the profile creator is owned by this.
   state_->dice_signed_in_profile_creator_ =
       std::make_unique<DiceSignedInProfileCreator>(
@@ -1841,8 +1846,8 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
           signin_metrics::AccessPoint::
               kEnterpriseDialogAfterSigninInterception);
     } else {
-      DCHECK_EQ(GetPrimaryAccountInfo(identity_manager_).GetAccountId(),
-                account_info.GetAccountId());
+      CHECK_EQ(GetPrimaryAccountInfo(identity_manager_).GetAccountId(),
+               account_info.GetAccountId(), base::NotFatalUntil::M162);
     }
 
     enterprise_util::SetUserAcceptedAccountManagement(
@@ -1874,7 +1879,7 @@ void DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult(
 }
 
 void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
-  DCHECK(state_->interception_bubble_handle_);
+  CHECK(state_->interception_bubble_handle_, base::NotFatalUntil::M162);
   state_->interception_bubble_handle_.reset();  // Close the bubble now.
   state_->session_startup_helper_.reset();
 
@@ -1884,7 +1889,7 @@ void DiceWebSigninInterceptor::OnNewBrowserCreated(bool is_new_profile) {
 
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
   delegate_->ShowFirstRunExperienceInNewProfile(browser, state_->account_id_,
                                                 *state_->interception_type_);
 }
@@ -2013,7 +2018,8 @@ void DiceWebSigninInterceptor::
                                 policy::ProfileSeparationPolicies)> callback) {
   if (state_->account_level_signin_restriction_policy_fetcher_ != nullptr) {
     // A fetch is already in progress, don't start a new one.
-    DCHECK_EQ(account_info.GetAccountId(), state_->account_id_);
+    CHECK_EQ(account_info.GetAccountId(), state_->account_id_,
+             base::NotFatalUntil::M162);
     return;
   }
 
@@ -2029,7 +2035,8 @@ void DiceWebSigninInterceptor::
     return;
   }
 
-  DCHECK(!state_->interception_info_available_timeout_.IsCancelled());
+  CHECK(!state_->interception_info_available_timeout_.IsCancelled(),
+        base::NotFatalUntil::M162);
 
   if (!g_browser_process->system_network_context_manager()) {
     std::move(callback).Run(std::nullopt, policy::ProfileSeparationPolicies());

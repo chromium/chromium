@@ -82,6 +82,6 @@ void ShowPrintErrorDialogForGenericError() {
 }
 
 void SetShowPrintErrorDialogForTest(base::RepeatingClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   GetErrorDialogOverride() = std::move(callback);
 }

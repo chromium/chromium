@@ -95,8 +95,8 @@ ChromePaymentRequestDelegate::~ChromePaymentRequestDelegate() = default;
 
 void ChromePaymentRequestDelegate::ShowDialog(
     base::WeakPtr<PaymentRequest> request) {
-  DCHECK_EQ(nullptr, shown_dialog_.get());
-  DCHECK_EQ(nullptr, spc_dialog_.get());
+  CHECK_EQ(nullptr, shown_dialog_.get(), base::NotFatalUntil::M162);
+  CHECK_EQ(nullptr, spc_dialog_.get(), base::NotFatalUntil::M162);
 
   switch (dialog_type_) {
     case DialogType::PAYMENT_REQUEST:
@@ -209,7 +209,7 @@ ChromePaymentRequestDelegate::CreateInternalAuthenticator() const {
   // called at some point.
   if (!FrameSupportsPayments(rfh))
     return nullptr;
-  DCHECK(rfh->IsRenderFrameLive());
+  CHECK(rfh->IsRenderFrameLive(), base::NotFatalUntil::M162);
   return std::make_unique<content::InternalAuthenticatorImpl>(rfh);
 }
 

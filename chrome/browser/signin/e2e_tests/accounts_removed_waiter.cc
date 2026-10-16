@@ -9,7 +9,7 @@ namespace signin::test {
 AccountsRemovedWaiter::AccountsRemovedWaiter(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
-  DCHECK(identity_manager_);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
 }
 
 AccountsRemovedWaiter::~AccountsRemovedWaiter() = default;

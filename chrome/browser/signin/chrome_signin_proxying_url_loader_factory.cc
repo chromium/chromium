@@ -230,7 +230,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyRequestAdapter
                              modified_headers,
                              removed_headers),
         in_progress_request_(in_progress_request) {
-    DCHECK(in_progress_request_);
+    CHECK(in_progress_request_, base::NotFatalUntil::M162);
   }
 
   ProxyRequestAdapter(const ProxyRequestAdapter&) = delete;
@@ -457,13 +457,13 @@ ProxyingURLLoaderFactory::ProxyingURLLoaderFactory(
     content::WebContents::Getter web_contents_getter,
     network::URLLoaderFactoryBuilder& factory_builder,
     DisconnectCallback on_disconnect) {
-  DCHECK(proxy_receivers_.empty());
-  DCHECK(!delegate_);
-  DCHECK(!web_contents_getter_);
-  DCHECK(!on_disconnect_);
+  CHECK(proxy_receivers_.empty(), base::NotFatalUntil::M162);
+  CHECK(!delegate_, base::NotFatalUntil::M162);
+  CHECK(!web_contents_getter_, base::NotFatalUntil::M162);
+  CHECK(!on_disconnect_, base::NotFatalUntil::M162);
 
   auto [loader_receiver, target_factory] = factory_builder.Append();
-  DCHECK(!target_factory_.is_bound());
+  CHECK(!target_factory_.is_bound(), base::NotFatalUntil::M162);
 
   delegate_ = std::move(delegate);
   top_frame_origin_ = factory_isolation_info.top_frame_origin();
@@ -488,7 +488,7 @@ void ProxyingURLLoaderFactory::MaybeProxyRequest(
     const url::Origin& request_initiator,
     const net::IsolationInfo& factory_isolation_info,
     network::URLLoaderFactoryBuilder& factory_builder) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Navigation requests are handled using signin::URLLoaderThrottle.
   if (is_navigation)

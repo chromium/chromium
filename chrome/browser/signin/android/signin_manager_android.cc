@@ -121,10 +121,10 @@ SigninManagerAndroid::SigninManagerAndroid(
       user_policy_signin_service_(
           policy::UserPolicySigninServiceFactory::GetForProfile(profile_)),
       weak_factory_(this) {
-  DCHECK(profile_);
-  DCHECK(identity_manager_);
-  DCHECK(user_cloud_policy_manager_);
-  DCHECK(user_policy_signin_service_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
+  CHECK(user_cloud_policy_manager_, base::NotFatalUntil::M162);
+  CHECK(user_policy_signin_service_, base::NotFatalUntil::M162);
 
   java_signin_manager_ = Java_SigninManagerImpl_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),

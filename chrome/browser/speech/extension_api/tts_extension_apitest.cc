@@ -283,7 +283,7 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
  public:
   EventRouterAddListenerWaiter(Profile* profile, const std::string& event_name)
       : event_router_(EventRouter::EventRouter::Get(profile)) {
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M162);
     event_router_->RegisterObserver(this, event_name);
   }
 

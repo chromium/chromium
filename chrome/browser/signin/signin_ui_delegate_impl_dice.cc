@@ -53,7 +53,7 @@ void SigninUiDelegateImplDice::ShowReauthUI(
     bool enable_sync,
     signin_metrics::AccessPoint access_point,
     signin_metrics::PromoAction promo_action) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   ShowDiceTab(EnsureBrowser(profile), email, enable_sync, access_point,
               promo_action);

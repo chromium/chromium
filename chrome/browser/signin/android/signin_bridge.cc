@@ -38,7 +38,7 @@ void SigninBridge::StartAddAccountFlow(TabAndroid* tab,
 void SigninBridge::OpenAccountManagementScreen(
     ui::WindowAndroid* window,
     signin::GAIAServiceType service_type) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M162);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SigninBridge_openAccountManagementScreen(env, window->GetJavaObject(),
                                                 static_cast<int>(service_type));

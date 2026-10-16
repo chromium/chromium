@@ -94,7 +94,7 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
 
 BoundSessionKey GetBoundSessionKey(
     const BoundSessionParams& bound_session_params) {
-  DCHECK(AreParamsValid(bound_session_params));
+  CHECK(AreParamsValid(bound_session_params), base::NotFatalUntil::M162);
   return {.site = GURL(bound_session_params.site()),
           .session_id = bound_session_params.session_id()};
 }

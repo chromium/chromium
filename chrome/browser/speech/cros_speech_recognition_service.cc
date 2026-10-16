@@ -227,8 +227,8 @@ void CrosSpeechRecognitionService::
         const base::flat_map<std::string, base::FilePath>& config_paths,
         const std::string& primary_language_name,
         const bool mask_offensive_words) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(!options->is_server_based);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
+  CHECK(!options->is_server_based, base::NotFatalUntil::M162);
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       cros_speech_recognition_recognizer_cb_.Run(
@@ -248,8 +248,8 @@ void CrosSpeechRecognitionService::
         std::unique_ptr<network::PendingSharedURLLoaderFactory>
             pending_loader_factory) {
 #if BUILDFLAG(ENABLE_SERVER_BASED_RECOGNITION_RECOGNIZER)
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(options->is_server_based);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
+  CHECK(options->is_server_based, base::NotFatalUntil::M162);
   AudioSourceFetcherImpl::Create(
       std::move(fetcher_receiver),
       std::make_unique<ServerBasedRecognitionRecognizer>(

@@ -177,7 +177,7 @@ bool HeaderModificationDelegateImpl::ShouldInterceptNavigation(
 void HeaderModificationDelegateImpl::ProcessRequest(
     ChromeRequestAdapter* request_adapter,
     const GURL& redirect_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (profile_->IsOffTheRecord()) {
     // We expect seeing traffic from OTR profiles only if
     // `BoundSessionCookieRefreshService` exists.
@@ -257,7 +257,7 @@ void HeaderModificationDelegateImpl::ProcessRequest(
 void HeaderModificationDelegateImpl::ProcessResponse(
     ResponseAdapter* response_adapter,
     const GURL& redirect_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (gaia::HasGaiaSchemeHostPort(response_adapter->GetUrl()) &&

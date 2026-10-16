@@ -80,10 +80,11 @@ TokensLoadedCallbackRunner::TokensLoadedCallbackRunner(
     : profile_(profile),
       identity_manager_(IdentityManagerFactory::GetForProfile(profile)),
       callback_(std::move(callback)) {
-  DCHECK(profile_);
-  DCHECK(identity_manager_);
-  DCHECK(callback_);
-  DCHECK(!identity_manager_->AreRefreshTokensLoaded());
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
+  CHECK(callback_, base::NotFatalUntil::M162);
+  CHECK(!identity_manager_->AreRefreshTokensLoaded(),
+        base::NotFatalUntil::M162);
   scoped_identity_manager_observer_.Observe(identity_manager_.get());
 }
 
@@ -147,7 +148,7 @@ void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
 }
 
 void DiceSignedInProfileCreator::LoadNewProfileTokens(Profile* new_profile) {
-  DCHECK(!tokens_loaded_callback_runner_);
+  CHECK(!tokens_loaded_callback_runner_, base::NotFatalUntil::M162);
   // base::Unretained is fine because the runner is owned by this.
   auto tokens_loaded_callback_runner =
       TokensLoadedCallbackRunner::RunWhenLoaded(

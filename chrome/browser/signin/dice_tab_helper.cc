@@ -66,7 +66,7 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
                                 signin_metrics::PromoAction promo_action,
                                 content::WebContents* web_contents,
                                 const CoreAccountInfo& account_info) {
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M162);
     BrowserWindowInterface* browser =
         web_contents
             ? GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
@@ -183,8 +183,9 @@ void DiceTabHelper::InitializeSigninFlow(
     EnableHistorySyncOptinCallback history_sync_optin_callback,
     OnSigninHeaderReceived on_signin_header_received_callback,
     ShowSigninErrorCallback show_signin_error_callback) {
-  DCHECK(signin_url.is_valid());
-  DCHECK(state_->signin_url.is_empty() || state_->signin_url == signin_url);
+  CHECK(signin_url.is_valid(), base::NotFatalUntil::M162);
+  CHECK(state_->signin_url.is_empty() || state_->signin_url == signin_url,
+        base::NotFatalUntil::M162);
 
   Reset();
   state_->redirect_url = redirect_url;

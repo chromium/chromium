@@ -17,7 +17,7 @@ AccountConsistencyModeManagerFactory::GetInstance() {
 // static
 AccountConsistencyModeManager*
 AccountConsistencyModeManagerFactory::GetForProfile(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   return static_cast<AccountConsistencyModeManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -39,7 +39,7 @@ AccountConsistencyModeManagerFactory::~AccountConsistencyModeManagerFactory() =
 std::unique_ptr<KeyedService>
 AccountConsistencyModeManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(!context->IsOffTheRecord());
+  CHECK(!context->IsOffTheRecord(), base::NotFatalUntil::M162);
   Profile* profile = Profile::FromBrowserContext(context);
 
   return std::make_unique<AccountConsistencyModeManager>(profile);

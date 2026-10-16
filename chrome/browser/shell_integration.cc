@@ -167,7 +167,7 @@ base::CommandLine CommandLineArgsForUrlShortcut(
 
 void AppendProfileArgs(const base::FilePath& profile_path,
                        base::CommandLine* command_line) {
-  DCHECK(command_line);
+  CHECK(command_line, base::NotFatalUntil::M162);
   const base::CommandLine& cmd_line = *base::CommandLine::ForCurrentProcess();
 
   // Use the same UserDataDir for new launches that we currently have set.
@@ -233,7 +233,7 @@ void DefaultWebClientWorker::OnCheckIsDefaultComplete(
     DefaultWebClientState state,
     bool is_following_set_as_default,
     DefaultWebClientWorkerCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   RunCallback(std::move(callback), state);
 
   if (is_following_set_as_default)
@@ -369,7 +369,7 @@ void DefaultSchemeClientWorker::
         DefaultWebClientState state,
         std::u16string client_value,
         DefaultSchemeHandlerWorkerCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!callback.is_null() && IsValidDefaultWebClientState(state)) {
     std::move(callback).Run(state, client_value);
@@ -381,7 +381,7 @@ void DefaultSchemeClientWorker::
 
 void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientName(
     DefaultSchemeHandlerWorkerCallback callback) {
-  DCHECK(!url_.is_empty());
+  CHECK(!url_.is_empty(), base::NotFatalUntil::M162);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -397,7 +397,7 @@ void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientName(
 #if BUILDFLAG(IS_WIN)
 void DefaultSchemeClientWorker::CheckIsDefaultAndGetDefaultClientProgId(
     DefaultSchemeHandlerWorkerCallback callback) {
-  DCHECK(!url_.is_empty());
+  CHECK(!url_.is_empty(), base::NotFatalUntil::M162);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 

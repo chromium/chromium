@@ -122,7 +122,7 @@ GURL PrintPreviewDialogDelegate::GetDialogContentURL() const {
 }
 
 void PrintPreviewDialogDelegate::GetDialogSize(gfx::Size* size) const {
-  DCHECK(size);
+  CHECK(size, base::NotFatalUntil::M162);
   const gfx::Size kMinDialogSize(800, 480);
   const int kBorder = 25;
   *size = kMinDialogSize;
@@ -251,7 +251,7 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
     WebContents* initiator,
     const mojom::RequestPrintPreviewParams& params,
     bool is_pdf) {
-  DCHECK(initiator);
+  CHECK(initiator, base::NotFatalUntil::M162);
 
   // Get the print preview dialog for `initiator`.
   WebContents* preview_dialog = GetPrintPreviewForContents(initiator);
@@ -536,7 +536,7 @@ void PrintPreviewDialogController::SaveInitiatorTitle(
 void PrintPreviewDialogController::RemoveInitiator(
     WebContents* initiator) {
   WebContents* preview_dialog = GetPrintPreviewForContents(initiator);
-  DCHECK(preview_dialog);
+  CHECK(preview_dialog, base::NotFatalUntil::M162);
   // Update the map entry first, so when the print preview dialog gets destroyed
   // and reaches RemovePreviewDialog(), it does not attempt to also remove the
   // initiator's observers.

@@ -40,7 +40,7 @@ FakeBoundSessionRefreshCookieFetcher::~FakeBoundSessionRefreshCookieFetcher() =
 void FakeBoundSessionRefreshCookieFetcher::Start(
     RefreshCookieCompleteCallback callback,
     std::optional<std::string> sec_session_challenge_response) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M162);
   callback_ = std::move(callback);
   sec_session_challenge_response_ = std::move(sec_session_challenge_response);
 
@@ -112,7 +112,7 @@ void FakeBoundSessionRefreshCookieFetcher::OnRefreshCookieCompleted(
 
 void FakeBoundSessionRefreshCookieFetcher::InsertCookieInCookieJar(
     std::unique_ptr<net::CanonicalCookie> cookie) {
-  DCHECK(cookie_manager_);
+  CHECK(cookie_manager_, base::NotFatalUntil::M162);
   base::OnceCallback<void(net::CookieAccessResult)> callback =
       base::BindOnce(&FakeBoundSessionRefreshCookieFetcher::OnCookieSet,
                      weak_ptr_factory_.GetWeakPtr());
@@ -172,6 +172,6 @@ FakeBoundSessionRefreshCookieFetcher::CreateFakeCookie(
           net::CookiePriority::COOKIE_PRIORITY_HIGH,
           /*partition_key=*/std::nullopt, /*status=*/nullptr);
 
-  DCHECK(new_cookie);
+  CHECK(new_cookie, base::NotFatalUntil::M162);
   return new_cookie;
 }

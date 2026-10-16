@@ -111,8 +111,9 @@ static void JNI_ServiceWorkerPaymentAppBridge_GetServiceWorkerPaymentAppsInfo(
 static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
     content::WebContents* payment_request_web_contents,
     int32_t reason) {
-  DCHECK(payment_request_web_contents);  // Verified in Java before invoking
-                                         // this function.
+  CHECK(payment_request_web_contents,
+        base::NotFatalUntil::M162);  // Verified in Java before invoking
+                                     // this function.
   content::PaymentAppProvider::GetOrCreateForWebContents(
       payment_request_web_contents)
       ->OnClosingOpenedWindow(
@@ -122,10 +123,12 @@ static void JNI_ServiceWorkerPaymentAppBridge_OnClosingPaymentAppWindow(
 static void JNI_ServiceWorkerPaymentAppBridge_OnOpeningPaymentAppWindow(
     content::WebContents* payment_request_web_contents,
     content::WebContents* payment_handler_web_contents) {
-  DCHECK(payment_request_web_contents);  // Verified in Java before invoking
-                                         // this function.
-  DCHECK(payment_handler_web_contents);  // Verified in Java before invoking
-                                         // this function.
+  CHECK(payment_request_web_contents,
+        base::NotFatalUntil::M162);  // Verified in Java before invoking
+                                     // this function.
+  CHECK(payment_handler_web_contents,
+        base::NotFatalUntil::M162);  // Verified in Java before invoking
+                                     // this function.
   content::PaymentAppProvider::GetOrCreateForWebContents(
       payment_request_web_contents)
       ->SetOpenedWindow(payment_handler_web_contents);

@@ -68,7 +68,7 @@ class ExitHandler {
 
 // static
 void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, many shut down hangs have been seen in certain PartitionAlloc

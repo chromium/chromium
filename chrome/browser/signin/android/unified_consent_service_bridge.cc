@@ -40,7 +40,7 @@ JNI_UnifiedConsentServiceBridge_SetUrlKeyedAnonymizedDataCollectionEnabled(
     const bool enabled) {
   auto* unifiedConsentService =
       UnifiedConsentServiceFactory::GetForProfile(profile);
-  DCHECK(unifiedConsentService);
+  CHECK(unifiedConsentService, base::NotFatalUntil::M162);
   unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(enabled);
 }
 

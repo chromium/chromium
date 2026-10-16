@@ -386,7 +386,7 @@ bool ChromeSigninClient::IsClearPrimaryAccountAllowed() const {
 void ChromeSigninClient::PreSignOut(
     base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached,
     signin_metrics::ProfileSignout signout_source_metric) {
-  DCHECK(on_signout_decision_reached);
+  CHECK(on_signout_decision_reached, base::NotFatalUntil::M162);
   DCHECK(!on_signout_decision_reached_) << "SignOut already in-progress!";
   on_signout_decision_reached_ = std::move(on_signout_decision_reached);
 

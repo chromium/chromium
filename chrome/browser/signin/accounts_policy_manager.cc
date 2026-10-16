@@ -66,8 +66,8 @@ class AccountsPolicyManager::DeleteProfileDialogManager
   void PresentDialogOnAllBrowserWindows(
       Profile* profile,
       bool auto_confirm_profile_deletion_for_testing) {
-    DCHECK(profile);
-    DCHECK(profile_path_.empty());
+    CHECK(profile, base::NotFatalUntil::M162);
+    CHECK(profile_path_.empty(), base::NotFatalUntil::M162);
     profile_path_ = profile->GetPath();
 
     if (auto_confirm_profile_deletion_for_testing) {
@@ -92,7 +92,7 @@ class AccountsPolicyManager::DeleteProfileDialogManager
   }
 
   void OnBrowserActivated(BrowserWindowInterface* browser) override {
-    DCHECK(!profile_path_.empty());
+    CHECK(!profile_path_.empty(), base::NotFatalUntil::M162);
     if (profile_path_ != browser->GetProfile()->GetPath()) {
       return;
     }
@@ -150,7 +150,8 @@ class AccountsPolicyManager::DeleteProfileDialogManager
     }
 
     // Show the dialog.
-    DCHECK(active_browser_->GetWindow()->GetNativeWindow());
+    CHECK(active_browser_->GetWindow()->GetNativeWindow(),
+          base::NotFatalUntil::M162);
     chrome::MessageBoxResult result = chrome::ShowWarningMessageBoxSync(
         active_browser_->GetWindow()->GetNativeWindow(),
         l10n_util::GetStringUTF16(IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE),
@@ -199,8 +200,8 @@ class AccountsPolicyManager::DeleteProfileDialogManager
 
 AccountsPolicyManager::AccountsPolicyManager(Profile* profile)
     : profile_(profile) {
-  DCHECK(profile_);
-  DCHECK(!profile_->IsOffTheRecord());
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M162);
   Initialize();
 }
 
@@ -348,10 +349,11 @@ void AccountsPolicyManager::ShowDeleteProfileDialog(Profile* profile,
 void AccountsPolicyManager::OnUserConfirmedProfileDeletion(
     DeleteProfileDialogManager* dialog_manager,
     base::FilePath profile_path) {
-  DCHECK_EQ(delete_profile_dialog_manager_.get(), dialog_manager);
+  CHECK_EQ(delete_profile_dialog_manager_.get(), dialog_manager,
+           base::NotFatalUntil::M162);
   delete_profile_dialog_manager_.reset();
 
-  DCHECK(profiles::IsMultipleProfilesEnabled());
+  CHECK(profiles::IsMultipleProfilesEnabled(), base::NotFatalUntil::M162);
 
   g_browser_process->profile_manager()
       ->GetDeleteProfileHelper()

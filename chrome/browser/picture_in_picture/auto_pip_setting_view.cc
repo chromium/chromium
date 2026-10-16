@@ -170,7 +170,7 @@ raw_ptr<views::MdTextButton> AutoPipSettingView::InitControlViewButton(
 }
 
 void AutoPipSettingView::InitBubbleTitleView(const GURL& origin) {
-  DCHECK(origin.has_host() || origin.SchemeIsFile());
+  CHECK(origin.has_host() || origin.SchemeIsFile(), base::NotFatalUntil::M162);
 
   dialog_title_view_ = std::make_unique<views::View>();
   auto* layout_manager = dialog_title_view_->SetLayoutManager(

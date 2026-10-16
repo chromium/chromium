@@ -17,7 +17,7 @@ AccountsPolicyManagerFactory* AccountsPolicyManagerFactory::GetInstance() {
 // static
 AccountsPolicyManager* AccountsPolicyManagerFactory::GetForProfile(
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   return static_cast<AccountsPolicyManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

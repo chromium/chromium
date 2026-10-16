@@ -87,7 +87,7 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
                  chromeos::tts::mojom::AudioParametersPtr audio_parameters) {
                 // |owner| is always valid because TtsExtensionEngine is a
                 // singleton.
-                DCHECK(audio_parameters);
+                CHECK(audio_parameters, base::NotFatalUntil::M162);
                 owner->UpdateAudioStreamOptions(std::move(audio_parameters));
                 owner->Play(std::move(args), engine_id, profile);
               },
@@ -191,7 +191,7 @@ bool TtsExtensionEngineChromeOS::RefreshAudioStreamOptionsForExtension(
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile);
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M162);
   const extensions::Extension* extension =
       registry->enabled_extensions().GetByID(engine_id);
   if (!extension)
@@ -230,7 +230,7 @@ void TtsExtensionEngineChromeOS::Play(scoped_refptr<extensions::EventArgs> args,
   extensions::EventRouter* event_router = extensions::EventRouter::Get(profile);
 
   // Add audio stream options.
-  DCHECK(audio_parameters_);
+  CHECK(audio_parameters_, base::NotFatalUntil::M162);
   base::DictValue audio_stream_options;
   audio_stream_options.Set(tts_extension_api_constants::kSampleRateKey,
                            audio_parameters_->sample_rate);

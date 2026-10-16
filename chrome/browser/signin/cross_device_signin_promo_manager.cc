@@ -448,7 +448,7 @@ void OnCrossDeviceSigninPromoDismissed(
 void OpenSigninToPhoneQrCodeBubble(BrowserWindowInterface* browser_window,
                                    CrossDeviceSigninPromoEntryPoint entry_point,
                                    base::OnceClosure closing_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(base::FeatureList::IsEnabled(switches::kCrossDeviceSigninFromDesktop));
   if (!browser_window) {
     return;
@@ -486,7 +486,7 @@ void OpenSigninToPhoneQrCodeBubble(BrowserWindowInterface* browser_window,
 }
 
 bool IsCrossDeviceSigninPromoBubbleOpen(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(profile);
   QrBubbleState* state = QrBubbleState::IfExists(profile);
   return state && state->is_open();
@@ -496,7 +496,7 @@ base::CallbackListSubscription
 RegisterCrossDeviceSigninPromoBubbleStateCallback(
     Profile* profile,
     base::RepeatingCallback<void(bool)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(profile);
   return QrBubbleState::Get(profile)->AddObserver(std::move(callback));
 }

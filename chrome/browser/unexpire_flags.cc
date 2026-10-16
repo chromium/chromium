@@ -45,7 +45,7 @@ int ExpirationMilestoneForFlag(const char* flag) {
     // expire, which would be very bad. As such there's an extra error-check
     // here: a DCHECK to catch bugs in the script, and a regular if to ensure we
     // never expire flags that should never expire.
-    DCHECK_NE(f->mstone, -1);
+    CHECK_NE(f->mstone, -1, base::NotFatalUntil::M162);
     return f->mstone;
   }
   return -1;
@@ -73,7 +73,7 @@ std::set<int> UnexpiredMilestonesFromStorage(
 
 bool IsFlagExpired(const flags_ui::FlagsStorage* storage,
                    const char* internal_name) {
-  DCHECK(storage);
+  CHECK(storage, base::NotFatalUntil::M162);
 
   int mstone = ExpirationMilestoneForFlag(internal_name);
   if (mstone == -1) {

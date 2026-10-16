@@ -34,7 +34,7 @@ std::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
     return std::nullopt;
   }
 
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M162);
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   if (!web_app::AppBrowserController::IsWebApp(browser)) {

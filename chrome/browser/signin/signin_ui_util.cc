@@ -97,7 +97,7 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   // Returns the  last time the animated identity was shown. Returns the null
   // time if it was never shown.
   static base::TimeTicks GetAnimatedIdentityLastShown(Profile* profile) {
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M162);
     AvatarButtonUserData* data = GetForProfile(profile);
     if (!data) {
       return base::TimeTicks();
@@ -108,7 +108,7 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   // Sets the time when the animated identity was shown.
   static void SetAnimatedIdentityLastShown(Profile* profile,
                                            base::TimeTicks time) {
-    DCHECK(!time.is_null());
+    CHECK(!time.is_null(), base::NotFatalUntil::M162);
     GetOrCreateForProfile(profile)->animated_identity_last_shown_ = time;
   }
 
@@ -122,7 +122,7 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
 
   // Never returns nullptr.
   static AvatarButtonUserData* GetOrCreateForProfile(Profile* profile) {
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M162);
     AvatarButtonUserData* existing_data = GetForProfile(profile);
     if (existing_data) {
       return existing_data;
@@ -167,7 +167,7 @@ void ShowCrossDeviceSigninQrBubble(
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 std::u16string GetAuthenticatedUsername(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   std::string user_display_name;
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -233,7 +233,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
                                   const CoreAccountInfo& account,
                                   signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M162);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -304,7 +304,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
                                      signin_metrics::AccessPoint access_point,
                                      bool is_default_promo_account) {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M162);
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -326,10 +326,11 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
     return;
   }
 
-  DCHECK(!account.account_id.empty());
-  DCHECK(!account.email.empty());
-  DCHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) ||
-         AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
+  CHECK(!account.account_id.empty(), base::NotFatalUntil::M162);
+  CHECK(!account.email.empty(), base::NotFatalUntil::M162);
+  CHECK(AccountConsistencyModeManager::IsDiceEnabledForProfile(profile) ||
+            AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile),
+        base::NotFatalUntil::M162);
 
   signin_metrics::PromoAction existing_account_promo_action =
       is_default_promo_account
@@ -472,7 +473,7 @@ content::WebContents* GetSignInTabWithAccessPoint(
 std::u16string GetShortProfileIdentityToDisplay(
     const ProfileAttributesEntry& profile_attributes_entry,
     Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo core_info =

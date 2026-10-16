@@ -275,8 +275,8 @@ void ChromeSpeechRecognitionService::LaunchIfNotRunning() {
 
   PrefService* profile_prefs = user_prefs::UserPrefs::Get(context_);
   PrefService* global_prefs = g_browser_process->local_state();
-  DCHECK(profile_prefs);
-  DCHECK(global_prefs);
+  CHECK(profile_prefs, base::NotFatalUntil::M162);
+  CHECK(global_prefs, base::NotFatalUntil::M162);
 
   // TODO(crbug.com/40162502): Language pack path should be configurable per
   // SpeechRecognitionRecognizer to allow multiple features to use Speech

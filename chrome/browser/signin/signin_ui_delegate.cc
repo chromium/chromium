@@ -53,7 +53,7 @@ void SigninUiDelegate::ShowHistorySyncOptinUI(
 
 // static
 BrowserWindowInterface* SigninUiDelegate::EnsureBrowser(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   chrome::ScopedTabbedBrowserDisplayer displayer(profile);
   return displayer.browser_window_interface();
 }

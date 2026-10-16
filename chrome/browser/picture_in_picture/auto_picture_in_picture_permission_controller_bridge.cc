@@ -24,7 +24,7 @@ namespace picture_in_picture {
 bool JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!web_contents) {
     return false;
   }
@@ -42,7 +42,7 @@ bool JNI_AutoPictureInPicturePermissionController_IsAutoPictureInPictureInUse(
 int32_t JNI_AutoPictureInPicturePermissionController_GetPermissionStatus(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!web_contents) {
     return CONTENT_SETTING_BLOCK;
   }
@@ -61,7 +61,7 @@ void JNI_AutoPictureInPicturePermissionController_SetPermissionStatus(
     JNIEnv* env,
     content::WebContents* web_contents,
     int32_t status) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!web_contents) {
     // If the WebContents is gone, we cannot get the Profile to save the
     // setting. This might happen if the tab is closed immediately after the
@@ -83,7 +83,7 @@ void JNI_AutoPictureInPicturePermissionController_SetPermissionStatus(
 void JNI_AutoPictureInPicturePermissionController_OnPictureInPictureDismissed(
     JNIEnv* env,
     content::WebContents* web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!web_contents) {
     return;
   }

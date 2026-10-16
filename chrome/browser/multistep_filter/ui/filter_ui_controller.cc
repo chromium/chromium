@@ -411,7 +411,8 @@ void FilterUiController::ShowSuggestionChip() {
 
 void FilterUiController::OnPageActionAnchoredMessageShown(
     const page_actions::PageActionState& page_action) {
-  DCHECK_EQ(page_action.action_id, kActionMultistepFilter);
+  CHECK_EQ(page_action.action_id, kActionMultistepFilter,
+           base::NotFatalUntil::M162);
   if (!suggestion_state_) {
     return;
   }
@@ -460,7 +461,8 @@ void FilterUiController::OnPageActionAnchoredMessageShown(
 
 void FilterUiController::OnPageActionAnchoredMessageHidden(
     const page_actions::PageActionState& page_action) {
-  DCHECK_EQ(page_action.action_id, kActionMultistepFilter);
+  CHECK_EQ(page_action.action_id, kActionMultistepFilter,
+           base::NotFatalUntil::M162);
   if (!suggestion_state_) {
     return;
   }

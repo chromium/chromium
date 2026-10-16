@@ -106,7 +106,7 @@ NetworkSpeechRecognizer::EventListener::EventListener(
           std::move(pending_shared_url_loader_factory)),
       locale_(locale),
       session_(kInvalidSessionId) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   NotifyRecognitionStateChanged(SPEECH_RECOGNIZER_READY);
 }
 
@@ -125,7 +125,7 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
     const std::string& auth_scope,
     const std::string& auth_token,
     const scoped_refptr<content::SpeechRecognitionSessionPreamble>& preamble) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   if (session_ != kInvalidSessionId)
     StopOnIOThread();
 
@@ -141,7 +141,7 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
   config.max_hypotheses = 1;
   config.filter_profanities = filter_profanities;
   if (!shared_url_loader_factory_) {
-    DCHECK(pending_shared_url_loader_factory_);
+    CHECK(pending_shared_url_loader_factory_, base::NotFatalUntil::M162);
     shared_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
         std::move(pending_shared_url_loader_factory_));
   }
@@ -160,7 +160,7 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
 }
 
 void NetworkSpeechRecognizer::EventListener::StopOnIOThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M162);
   if (session_ == kInvalidSessionId)
     return;
 
@@ -239,10 +239,10 @@ void NetworkSpeechRecognizer::EventListener::OnAudioLevelsChange(
     int session_id,
     float volume,
     float noise_volume) {
-  DCHECK_LE(0.0, volume);
-  DCHECK_GE(1.0, volume);
-  DCHECK_LE(0.0, noise_volume);
-  DCHECK_GE(1.0, noise_volume);
+  CHECK_LE(0.0, volume, base::NotFatalUntil::M162);
+  CHECK_GE(1.0, volume, base::NotFatalUntil::M162);
+  CHECK_LE(0.0, noise_volume, base::NotFatalUntil::M162);
+  CHECK_GE(1.0, noise_volume, base::NotFatalUntil::M162);
   volume = std::max(0.0f, volume - noise_volume);
   // Both |volume| and |noise_volume| are defined to be in the range [0.0, 1.0].
   // See: content/public/browser/speech_recognition_event_listener.h
@@ -267,18 +267,18 @@ NetworkSpeechRecognizer::NetworkSpeechRecognizer(
           new EventListener(delegate,
                             std::move(pending_shared_url_loader_factory),
                             locale)) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 NetworkSpeechRecognizer::~NetworkSpeechRecognizer() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // Reset the delegate before calling Stop() to avoid any additional callbacks.
   delegate().reset();
   Stop();
 }
 
 void NetworkSpeechRecognizer::Start() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkSpeechRecognizer::EventListener::StartOnIOThread,
@@ -287,7 +287,7 @@ void NetworkSpeechRecognizer::Start() {
 }
 
 void NetworkSpeechRecognizer::Stop() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkSpeechRecognizer::EventListener::StopOnIOThread,

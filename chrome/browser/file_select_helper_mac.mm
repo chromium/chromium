@@ -171,7 +171,7 @@ void FileSelectHelper::ProcessSelectedFilesMac(
 void FileSelectHelper::ProcessSelectedFilesMacOnUIThread(
     const std::vector<ui::SelectedFileInfo>& files,
     const std::vector<base::FilePath>& temporary_files) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!temporary_files.empty()) {
     temporary_files_.insert(

@@ -162,8 +162,9 @@ ProcessDiceHeaderDelegateImpl::ProcessDiceHeaderDelegateImpl(
       history_sync_optin_callback_(std::move(history_sync_optin_callback)),
       on_signin_header_received_(std::move(on_signin_header_received)),
       show_signin_error_callback_(std::move(show_signin_error_callback)) {
-  DCHECK_EQ(!is_chrome_signin_tab_, enable_sync_callback_.is_null());
-  DCHECK(show_signin_error_callback_);
+  CHECK_EQ(!is_chrome_signin_tab_, enable_sync_callback_.is_null(),
+           base::NotFatalUntil::M162);
+  CHECK(show_signin_error_callback_, base::NotFatalUntil::M162);
 }
 
 ProcessDiceHeaderDelegateImpl::~ProcessDiceHeaderDelegateImpl() = default;
@@ -401,7 +402,8 @@ void ProcessDiceHeaderDelegateImpl::CompleteChromeSignInAfterGaiaSignin(
 void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
     const std::string& email,
     const GoogleServiceAuthError& error) {
-  DCHECK_NE(GoogleServiceAuthError::NONE, error.state());
+  CHECK_NE(GoogleServiceAuthError::NONE, error.state(),
+           base::NotFatalUntil::M162);
   content::WebContents* web_contents = web_contents_.get();
   DiceTabHelper* tab_helper = GetDiceTabHelperFromWebContents(web_contents);
   if (tab_helper) {

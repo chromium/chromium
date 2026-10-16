@@ -197,8 +197,8 @@ SpeechRecognitionRecognizerClientImpl::SpeechRecognitionRecognizerClientImpl(
     const std::string& device_id,
     media::mojom::SpeechRecognitionOptionsPtr options)
     : SpeechRecognizer(delegate), device_id_(device_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(options->language.has_value());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(options->language.has_value(), base::NotFatalUntil::M162);
   language_ = options->language.value();
 
   // Connect the AudioSourceSpeechRecognitionContext & bind an
@@ -249,7 +249,7 @@ void SpeechRecognitionRecognizerClientImpl::Stop() {
 void SpeechRecognitionRecognizerClientImpl::OnSpeechRecognitionRecognitionEvent(
     const media::SpeechRecognitionResult& result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Returning true ensures the speech recognition continues.
   std::move(reply).Run(true);
@@ -307,7 +307,7 @@ void SpeechRecognitionRecognizerClientImpl::StartFetchingOnInputDeviceInfo(
 
 void SpeechRecognitionRecognizerClientImpl::UpdateStatus(
     SpeechRecognizerStatus state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   waiting_for_params_ = false;
   if (state_ == state)
     return;

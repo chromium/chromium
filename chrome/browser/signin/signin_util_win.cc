@@ -219,8 +219,8 @@ void ImportCredentialsFromProvider(Profile* profile,
 // signed in throuhg credential provider.
 void ExtractCredentialProviderUser(std::wstring* cred_provider_gaia_id,
                                    std::wstring* cred_provider_email) {
-  DCHECK(cred_provider_gaia_id);
-  DCHECK(cred_provider_email);
+  CHECK(cred_provider_gaia_id, base::NotFatalUntil::M162);
+  CHECK(cred_provider_email, base::NotFatalUntil::M162);
 
   cred_provider_gaia_id->clear();
   cred_provider_email->clear();
@@ -329,7 +329,7 @@ void SetTurnSyncOnHelperDelegateForTesting(
 // credential provider shouldn't attempt to import credentials into current
 // profile.
 bool IsGCPWUsedInOtherProfile(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (profile_manager) {

@@ -62,8 +62,9 @@ int ChromeBrowserMainPartsAndroid::PreCreateThreads() {
 
 void ChromeBrowserMainPartsAndroid::PostProfileInit(Profile* profile,
                                                     bool is_initial_profile) {
-  DCHECK(is_initial_profile);  // No multiprofile on Android, only the initial
-                               // call should happen.
+  CHECK(is_initial_profile,
+        base::NotFatalUntil::M162);  // No multiprofile on Android, only the
+                                     // initial call should happen.
 
   // Get the OS Data Saver setting. This will be needed later on, so we want to
   // fetch this setting as soon as possible to avoid blocking on it.
@@ -143,7 +144,7 @@ void ChromeBrowserMainPartsAndroid::ShowMissingLocaleMessageBox() {
 
 void ChromeBrowserMainPartsAndroid::OnApplicationStateChange(
     base::android::ApplicationState state) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(scudo_purge_coordinator_);
   switch (state) {
     case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:

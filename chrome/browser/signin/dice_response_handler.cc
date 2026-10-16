@@ -507,7 +507,8 @@ bool DiceResponseHandler::DiceSigninSession::MarkEnableSyncIfFetching(
     const std::string& email) {
   for (const auto& fetcher : token_fetchers_) {
     if (fetcher->gaia_id() == gaia_id) {
-      DCHECK(gaia::AreEmailsSame(fetcher->email(), email));
+      CHECK(gaia::AreEmailsSame(fetcher->email(), email),
+            base::NotFatalUntil::M162);
       fetcher->set_should_enable_sync(true);
       return true;
     }
@@ -528,10 +529,10 @@ DiceResponseHandler::DiceResponseHandler(
       identity_manager_(identity_manager),
       account_reconcilor_(account_reconcilor),
       about_signin_internals_(about_signin_internals) {
-  DCHECK(signin_client_);
-  DCHECK(identity_manager_);
-  DCHECK(account_reconcilor_);
-  DCHECK(about_signin_internals_);
+  CHECK(signin_client_, base::NotFatalUntil::M162);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
+  CHECK(account_reconcilor_, base::NotFatalUntil::M162);
+  CHECK(about_signin_internals_, base::NotFatalUntil::M162);
 }
 
 DiceResponseHandler::~DiceResponseHandler() = default;
@@ -565,7 +566,8 @@ void DiceResponseHandler::ProcessDiceHeader(
       const signin::DiceResponseParams::SignoutInfo* signout_info =
           dice_params.signout_info();
       CHECK(signout_info);
-      DCHECK_GT(signout_info->account_infos.size(), 0u);
+      CHECK_GT(signout_info->account_infos.size(), 0u,
+               base::NotFatalUntil::M162);
       ProcessDiceSignoutHeader(signout_info->account_infos);
       return;
     }

@@ -62,7 +62,7 @@ void WebContentsCollection::StartObserving(content::WebContents* web_contents) {
   auto emplace_result = web_contents_observers_.emplace(
       web_contents, std::make_unique<ForwardingWebContentsObserver>(
                         web_contents, observer_, this));
-  DCHECK(emplace_result.second);
+  CHECK(emplace_result.second, base::NotFatalUntil::M162);
 }
 
 void WebContentsCollection::StopObserving(content::WebContents* web_contents) {

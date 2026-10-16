@@ -42,7 +42,7 @@ constexpr const char* kDeepinPrinterCommand[] = {"dde-printer"};
 
 // Returns true if the dialog was opened successfully.
 bool OpenPrinterConfigDialog(base::span<const char* const> command) {
-  DCHECK(!command.empty());
+  CHECK(!command.empty(), base::NotFatalUntil::M162);
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   if (!base::ExecutableExistsInPath(env.get(), command[0])) {
     return false;

@@ -151,7 +151,7 @@ typedef HRESULT (STDAPICALLTYPE* RegisterApplicationRestartProc)(
 void InitializeWindowProcExceptions() {
   base::win::WinProcExceptionFilter exception_filter =
       base::win::SetWinProcExceptionFilter(&CrashForException_ExportThunk);
-  DCHECK(!exception_filter);
+  CHECK(!exception_filter, base::NotFatalUntil::M162);
 }
 
 // TODO(siggi): Remove once https://crbug.com/41367502 is resolved.
@@ -183,7 +183,8 @@ void DelayedRecordProcessorMetrics() {
 // Initializes the ModuleDatabase on its owning sequence. Also starts the
 // enumeration of registered modules in the Windows Registry.
 void InitializeModuleDatabase() {
-  DCHECK(ModuleDatabase::GetTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(ModuleDatabase::GetTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 
   ModuleDatabase::SetInstance(std::make_unique<ModuleDatabase>());
 
@@ -347,7 +348,7 @@ void ShowCloseBrowserFirstMessageBox() {
 // Updates all Progressive Web App launchers in |profile_dir| to the latest
 // version.
 void UpdatePwaLaunchersForProfile(const base::FilePath& profile_dir) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(profile_dir);
   if (!profile) {
@@ -662,7 +663,8 @@ int ChromeBrowserMainPartsWin::PreEarlyInitialization() {
 }
 
 void ChromeBrowserMainPartsWin::ToolkitInitialized() {
-  DCHECK_NE(base::PlatformThread::CurrentId(), base::kInvalidThreadId);
+  CHECK_NE(base::PlatformThread::CurrentId(), base::kInvalidThreadId,
+           base::NotFatalUntil::M162);
   gfx::CrashIdHelper::RegisterMainThread(base::PlatformThread::CurrentId());
   ChromeBrowserMainParts::ToolkitInitialized();
   gfx::win::SetAdjustFontCallback(&l10n_util::AdjustUiFont);
@@ -675,11 +677,11 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
   SetupInstallerUtilStrings();
 
   PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M162);
 
   // Initialize the OSCrypt.
   bool os_crypt_init = os_crypt_async::Init(local_state);
-  DCHECK(os_crypt_init);
+  CHECK(os_crypt_init, base::NotFatalUntil::M162);
 
   base::SetExtraNoExecuteAllowedPath(chrome::DIR_USER_DATA);
 
@@ -790,7 +792,7 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
 
   // Verify that the delay load helper hooks are in place. This cannot be tested
   // from unit tests, so rely on this failing here.
-  DCHECK(__pfnDliFailureHook2);
+  CHECK(__pfnDliFailureHook2, base::NotFatalUntil::M162);
 
   InitializeChromeElf();
 
@@ -1095,8 +1097,8 @@ void ChromeBrowserMainPartsWin::OnModuleEvent(
 // the provided |module_watcher|.
 void ChromeBrowserMainPartsWin::SetupModuleDatabase(
     std::unique_ptr<ModuleWatcher>* module_watcher) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(module_watcher);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(module_watcher, base::NotFatalUntil::M162);
 
   ModuleDatabase::GetTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&InitializeModuleDatabase));

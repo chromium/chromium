@@ -55,7 +55,7 @@ void OpenItem(Profile*,
               const base::FilePath& full_path,
               OpenItemType item_type,
               OpenOperationCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   // TaskPriority::USER_BLOCKING because this is usually opened as a result of a
   // user action (e.g. open-downloaded-file or show-item-in-folder).
   // TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN because this doesn't need global

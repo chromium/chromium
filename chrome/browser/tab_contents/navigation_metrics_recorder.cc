@@ -58,7 +58,7 @@ NavigationMetricsRecorder::GetThirdPartyCookieBlockState(const GURL& url) {
 
 void NavigationMetricsRecorder::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!navigation_handle->HasCommitted() ||
       !navigation_handle->IsInPrimaryMainFrame()) {
     return;

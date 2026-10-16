@@ -148,7 +148,7 @@ TtsEngineExtensionObserverChromeOS::TtsEngineExtensionObserverChromeOS(
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
-  DCHECK(event_router);
+  CHECK(event_router, base::NotFatalUntil::M162);
   event_router->RegisterObserver(this, tts_engine_events::kOnSpeak);
   event_router->RegisterObserver(this, tts_engine_events::kOnStop);
 
@@ -214,7 +214,7 @@ bool TtsEngineExtensionObserverChromeOS::IsLoadedTtsEngine(
     const std::string& extension_id) {
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
-  DCHECK(event_router);
+  CHECK(event_router, base::NotFatalUntil::M162);
   if ((event_router->ExtensionHasEventListener(extension_id,
                                                tts_engine_events::kOnSpeak) ||
        event_router->ExtensionHasEventListener(

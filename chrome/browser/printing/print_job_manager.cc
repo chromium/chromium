@@ -26,8 +26,8 @@ PrintQueriesQueue::~PrintQueriesQueue() {
 
 void PrintQueriesQueue::QueuePrinterQuery(std::unique_ptr<PrinterQuery> query) {
   base::AutoLock lock(lock_);
-  DCHECK(query);
-  DCHECK(query->is_valid());
+  CHECK(query, base::NotFatalUntil::M162);
+  CHECK(query->is_valid(), base::NotFatalUntil::M162);
   queued_queries_.push_back(std::move(query));
 }
 
@@ -41,7 +41,7 @@ std::unique_ptr<PrinterQuery> PrintQueriesQueue::PopPrinterQuery(
 
     std::unique_ptr<PrinterQuery> current_query = std::move(query);
     queued_queries_.erase(it);
-    DCHECK(current_query->is_valid());
+    CHECK(current_query->is_valid(), base::NotFatalUntil::M162);
     return current_query;
   }
   return nullptr;
@@ -69,7 +69,7 @@ base::CallbackListSubscription PrintJobManager::AddDocDoneCallback(
 }
 
 scoped_refptr<PrintQueriesQueue> PrintJobManager::queue() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!queue_)
     queue_ = base::MakeRefCounted<PrintQueriesQueue>();
   return queue_;
@@ -82,8 +82,8 @@ void PrintJobManager::SetQueueForTest(scoped_refptr<PrintQueriesQueue> queue) {
 }
 
 void PrintJobManager::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!is_shutdown_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(!is_shutdown_, base::NotFatalUntil::M162);
   is_shutdown_ = true;
   StopJobs(true);
   if (queue_) {
@@ -93,7 +93,7 @@ void PrintJobManager::Shutdown() {
 }
 
 void PrintJobManager::StopJobs(bool wait_for_finish) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // Copy the array since it can be modified in transit.
   PrintJobs to_stop;
   to_stop.swap(current_jobs_);
@@ -112,7 +112,7 @@ void PrintJobManager::OnStarted(PrintJob* print_job) {
 
   // Causes a AddRef().
   bool inserted = current_jobs_.insert(print_job).second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M162);
 }
 
 void PrintJobManager::OnDocDone(PrintJob* print_job,

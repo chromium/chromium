@@ -25,7 +25,8 @@ void SiteTokenURLLoaderHeaderClient::Create(
         receiver,
     mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>
         target_client) {
-  DCHECK(base::FeatureList::IsEnabled(features::kSiteTokenProviderEnabled));
+  CHECK(base::FeatureList::IsEnabled(features::kSiteTokenProviderEnabled),
+        base::NotFatalUntil::M162);
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new SiteTokenURLLoaderHeaderClient(
           std::move(service), std::move(target_client))),

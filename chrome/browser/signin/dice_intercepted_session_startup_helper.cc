@@ -107,7 +107,7 @@ void DiceInterceptedSessionStartupHelper::OnAccountsInCookieUpdated(
 
 void DiceInterceptedSessionStartupHelper::OnStateChanged(
     signin_metrics::AccountReconcilorState state) {
-  DCHECK(!use_multilogin_);
+  CHECK(!use_multilogin_, base::NotFatalUntil::M162);
   if (state == signin_metrics::AccountReconcilorState::kError) {
     reconcile_error_encountered_ = true;
     return;
@@ -168,7 +168,7 @@ void DiceInterceptedSessionStartupHelper::OnSetAccountInCookieCompleted(
     base::ElapsedTimer timer,
     size_t num_accounts,
     signin::SetAccountsInCookieResult result) {
-  DCHECK(use_multilogin_);
+  CHECK(use_multilogin_, base::NotFatalUntil::M162);
   if (num_accounts > 1) {
     const base::TimeDelta duration = timer.Elapsed();
     base::UmaHistogramTimes(kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin,

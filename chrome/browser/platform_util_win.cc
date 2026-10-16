@@ -148,7 +148,7 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 }  // namespace internal
 
 void OpenExternal(const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_BLOCKING,

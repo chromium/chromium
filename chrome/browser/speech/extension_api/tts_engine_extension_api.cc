@@ -277,7 +277,7 @@ void TtsExtensionEngine::GetVoices(
     std::vector<content::VoiceData>* out_voices) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   EventRouter* event_router = EventRouter::Get(profile);
-  DCHECK(event_router);
+  CHECK(event_router, base::NotFatalUntil::M162);
 
   bool is_offline = (net::NetworkChangeNotifier::GetConnectionType() ==
                      net::NetworkChangeNotifier::CONNECTION_NONE);

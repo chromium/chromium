@@ -33,14 +33,14 @@ class PictureInPictureWindowManagerBridge
 
   // PictureInPictureWindowManager::Observer:
   void OnEnterPictureInPicture() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_PictureInPictureWindowManagerBridge_onPictureInPictureStateChanged(
         env, true);
   }
 
   void OnExitPictureInPicture() override {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_PictureInPictureWindowManagerBridge_onPictureInPictureStateChanged(
         env, false);
@@ -49,7 +49,7 @@ class PictureInPictureWindowManagerBridge
 
 static bool JNI_PictureInPictureWindowManagerBridge_IsInPictureInPicture(
     JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   PictureInPictureWindowManagerBridge::GetInstance();
   return PictureInPictureWindowManager::GetInstance()->IsInPictureInPicture();
 }

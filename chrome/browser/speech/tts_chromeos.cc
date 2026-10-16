@@ -70,7 +70,7 @@ void TtsPlatformImplChromeOs::Speak(
     const content::VoiceData& voice,
     const content::UtteranceContinuousParameters& params,
     base::OnceCallback<void(bool)> on_speak_finished) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Parse SSML and process speech.
   content::TtsController::GetInstance()->StripSSML(
@@ -114,7 +114,7 @@ void TtsPlatformImplChromeOs::ProcessSpeech(
 }
 
 bool TtsPlatformImplChromeOs::StopSpeaking() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   auto* const arc_service_manager = arc::ArcServiceManager::Get();
   if (!arc_service_manager)
     return false;
