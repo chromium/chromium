@@ -19,11 +19,10 @@
 #include <math.h>
 
 #include <algorithm>
-#include <iterator>
 #include <limits>
-#include <map>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/bit_cast.h"
 #include "base/check_op.h"
@@ -551,7 +550,7 @@ std::optional<Value> Reader::ReadMapContent(
     int max_nesting_level) {
   const uint64_t length = header.value;
 
-  std::map<Value, Value, Value::Less> cbor_map;
+  std::vector<std::pair<Value, Value>> items;
   for (uint64_t i = 0; i < length; ++i) {
     std::optional<Value> key =
         DecodeCompleteDataItem(config, max_nesting_level - 1);
@@ -578,25 +577,17 @@ std::optional<Value> Reader::ReadMapContent(
         return std::nullopt;
     }
 
-    auto [it, inserted] =
-        cbor_map.try_emplace(std::move(key.value()), std::move(value.value()));
-    if (!inserted) {
-      error_code_ = DecoderError::DUPLICATE_KEY;
+    if (!items.empty() && !Value::Less()(items.back().first, *key)) {
+      error_code_ = std::ranges::binary_search(items, *key, Value::Less(),
+                                               &std::pair<Value, Value>::first)
+                        ? DecoderError::DUPLICATE_KEY
+                        : DecoderError::OUT_OF_ORDER_KEY;
       return std::nullopt;
     }
 
-    if (std::next(it) != cbor_map.end()) {
-      error_code_ = DecoderError::OUT_OF_ORDER_KEY;
-      return std::nullopt;
-    }
+    items.emplace_back(*std::move(key), *std::move(value));
   }
 
-  std::vector<std::pair<Value, Value>> items;
-  items.reserve(cbor_map.size());
-  while (!cbor_map.empty()) {
-    auto node = cbor_map.extract(cbor_map.begin());
-    items.emplace_back(std::move(node.key()), std::move(node.mapped()));
-  }
   return Value(Value::MapValue(base::sorted_unique, std::move(items)));
 }
 
