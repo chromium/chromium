@@ -42,9 +42,6 @@
 
 namespace speech {
 
-// Older SODA binaries ignore the resulting config field.
-BASE_FEATURE(kSodaXnnpackDelegate, base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr char kInvalidAudioDataError[] = "Invalid audio data received.";
 
 // The name of the generic biasing model that will be used for enabling
@@ -702,7 +699,7 @@ void SpeechRecognitionRecognizerImpl::ResetSoda() {
       base::FeatureList::IsEnabled(media::kSpeakerChangeDetection));
   config_msg_.set_mask_offensive_words(mask_offensive_words_);
   // Only set when enabled so the serialized config is unchanged otherwise.
-  if (base::FeatureList::IsEnabled(kSodaXnnpackDelegate)) {
+  if (base::FeatureList::IsEnabled(media::kSodaXnnpackDelegate)) {
     config_msg_.set_enable_xnnpack_delegate(true);
   }
   if (config_paths_.size() > 0 && options_->allow_multi_language) {

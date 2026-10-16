@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/speech/soda/mock_soda_client.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -137,7 +138,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest, OnLanguagePackInstalledTest) {
 
 TEST_F(SpeechRecognitionRecognizerImplTest, XnnpackDelegateFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSodaXnnpackDelegate);
+  feature_list.InitAndEnableFeature(media::kSodaXnnpackDelegate);
   CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
   EXPECT_CALL(*soda_client_, Reset(_, _, _));
   recognizer_->OnLanguagePackInstalled(config_paths());
@@ -148,7 +149,7 @@ TEST_F(SpeechRecognitionRecognizerImplTest, XnnpackDelegateFeatureEnabled) {
 
 TEST_F(SpeechRecognitionRecognizerImplTest, XnnpackDelegateFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSodaXnnpackDelegate);
+  feature_list.InitAndDisableFeature(media::kSodaXnnpackDelegate);
   CreateRecognizer(CreateOptions(), kPrimaryLanguageName);
   EXPECT_CALL(*soda_client_, Reset(_, _, _));
   recognizer_->OnLanguagePackInstalled(config_paths());

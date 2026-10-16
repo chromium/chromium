@@ -964,6 +964,10 @@ BASE_FEATURE(kResumeBackgroundVideo,
 BASE_FEATURE(kRevokeMediaSourceObjectURLOnAttach,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Asks the Speech On-Device API (SODA) to run its TFLite models through the
+// XNNPACK delegate. Older SODA binaries ignore the request.
+BASE_FEATURE(kSodaXnnpackDelegate, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable the Speaker Change Detection feature, which inserts a line break when
 // the Speech On-Device API (SODA) detects a speaker change.
 BASE_FEATURE(kSpeakerChangeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
