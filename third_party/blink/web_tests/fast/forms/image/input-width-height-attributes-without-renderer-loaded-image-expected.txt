@@ -1,4 +1,4 @@
-FAIL e.width should be 16. Was 0.
+PASS e.width is 16
 PASS e.height is 16
 PASS successfullyParsed is true
 

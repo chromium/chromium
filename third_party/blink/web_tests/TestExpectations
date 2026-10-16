@@ -2528,7 +2528,6 @@ crbug.com/563060354 virtual/approximate-geolocation/external/wpt/geolocation/get
 crbug.com/563046526 external/wpt/svg/render/order/z-index.tentative.svg [ Failure ]
 crbug.com/562303032 external/wpt/css/css-text/hyphens/hyphenate-limit-lines-001.html [ Failure ]
 crbug.com/562303032 external/wpt/css/css-text/word-spacing/word-spacing-combining-mark-002.html [ Failure ]
-crbug.com/562529675 external/wpt/html/semantics/forms/the-input-element/image-width-height.html [ Failure ]
 crbug.com/562303034 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-appearance-optgroup-legend-not-first.html [ Failure ]
 crbug.com/562425279 external/wpt/svg/styling/invalidation/pct-filter.html [ Failure ]
 crbug.com/562425279 external/wpt/svg/styling/invalidation/pct-marker.html [ Failure ]
