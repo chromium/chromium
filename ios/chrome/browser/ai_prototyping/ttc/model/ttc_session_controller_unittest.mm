@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -468,6 +469,26 @@ TEST_F(TtcSessionControllerTest,
   EXPECT_EQ(observer.last_lifecycle(), TTCSessionLifecycle::kLive);
 
   controller.Disconnect();
+}
+
+// Tests that `TtcSessionController` tracks the initial active `WebState` and
+// clears it when the session stops or disconnects.
+TEST_F(TtcSessionControllerTest, TestTracksInitialActiveWebState) {
+  web::FakeWebState first_tab;
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  TtcSessionController controller(std::move(conversation), &first_tab);
+
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), &first_tab);
+  controller.StartSession();
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), &first_tab);
+
+  controller.StopSession();
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);
+
+  controller.Disconnect();
+  EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);
 }
 
 }  // namespace

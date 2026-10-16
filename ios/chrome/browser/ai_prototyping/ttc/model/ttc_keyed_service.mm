@@ -16,14 +16,16 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
 
-TTCKeyedService::TTCKeyedService(OptimizationGuideService* optimization_guide)
-    : optimization_guide_(optimization_guide) {}
+TTCKeyedService::TTCKeyedService(OptimizationGuideService* optimization_guide,
+                                 BrowserList* browser_list)
+    : optimization_guide_(optimization_guide), browser_list_(browser_list) {}
 
 TTCKeyedService::~TTCKeyedService() = default;
 
 void TTCKeyedService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EndSession();
+  browser_list_ = nullptr;
 }
 
 bool TTCKeyedService::IsEnabled() const {
@@ -78,7 +80,7 @@ void TTCKeyedService::StartSession() {
   }
 
   session_controller_ =
-      std::make_unique<TtcSessionController>(std::move(backend));
+      std::make_unique<TtcSessionController>(std::move(backend), browser_list_);
   session_controller_->set_journal(&journal_);
 
   session_controller_->StartSession();

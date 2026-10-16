@@ -23,8 +23,27 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_utils.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
 
 namespace {
+
+// Returns the active `WebState` of the most active regular `Browser` in
+// `browser_list`, or `nullptr` if none exists.
+web::WebState* GetInitialActiveWebState(BrowserList* browser_list) {
+  if (!browser_list) {
+    return nullptr;
+  }
+  Browser* browser =
+      browser_list_utils::GetMostActiveSceneBrowser(browser_list);
+  if (!browser) {
+    return nullptr;
+  }
+  WebStateList* web_state_list = browser->GetWebStateList();
+  return web_state_list ? web_state_list->GetActiveWebState() : nullptr;
+}
 
 // Returns the string representation of `lifecycle`.
 std::string SessionLifecycleToString(TTCSessionLifecycle lifecycle) {
@@ -86,18 +105,23 @@ void TtcSessionController::OnConversationError(ttc::ErrorCode error) {
 #pragma mark - Initializers
 
 TtcSessionController::TtcSessionController(
-    std::unique_ptr<TtcConversation> conversation)
-    : conversation_(std::move(conversation)) {
+    std::unique_ptr<TtcConversation> conversation,
+    web::WebState* active_web_state)
+    : conversation_(std::move(conversation)),
+      initial_web_state_(active_web_state ? active_web_state->GetWeakPtr()
+                                          : nullptr) {
   CHECK(conversation_);
   conversation_->set_delegate(this);
   RegisterBackgroundObserver();
 }
 
 TtcSessionController::TtcSessionController(
-    std::unique_ptr<ttc::TtcBackend> backend)
+    std::unique_ptr<ttc::TtcBackend> backend,
+    BrowserList* browser_list)
     : TtcSessionController(std::make_unique<TtcConversation>(
-          [[TTCAudioSessionController alloc] init],
-          std::move(backend))) {}
+                               [[TTCAudioSessionController alloc] init],
+                               std::move(backend)),
+                           GetInitialActiveWebState(browser_list)) {}
 
 TtcSessionController::TtcSessionController()
     : TtcSessionController(std::make_unique<TtcConversation>()) {}
@@ -120,6 +144,11 @@ void TtcSessionController::set_journal(TTCJournal* journal) {
   conversation_->set_journal(journal);
 }
 
+web::WebState* TtcSessionController::GetVoiceFocusedWebState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return initial_web_state_.get();
+}
+
 #pragma mark - Session Lifecycle
 
 void TtcSessionController::StartSession() {
@@ -132,6 +161,7 @@ void TtcSessionController::StartSession() {
 
 void TtcSessionController::StopSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  initial_web_state_.reset();
   conversation_->Stop();
   SetLifecycle(TTCSessionLifecycle::kFinished);
 }

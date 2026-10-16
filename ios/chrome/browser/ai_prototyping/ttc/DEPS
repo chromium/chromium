@@ -7,7 +7,9 @@ include_rules = [
   "+components/ttc/app",
   "+ios/chrome/browser/intelligence/proto_wrappers",
   "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/shared/model/browser",
   "+ios/chrome/browser/shared/model/profile",
+  "+ios/chrome/browser/shared/model/web_state_list",
   "+ios/chrome/browser/shared/public/features",
   # keep-sorted end
 ]

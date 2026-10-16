@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
+class BrowserList;
 class OptimizationGuideService;
 class TtcSessionController;
 
@@ -23,7 +24,10 @@ class TtcSessionController;
 // lifecycle, state transitions, and coordination for a Profile.
 class TTCKeyedService : public KeyedService {
  public:
-  explicit TTCKeyedService(OptimizationGuideService* optimization_guide);
+  // Constructs the keyed service with `optimization_guide` and `browser_list`
+  // for the owning profile.
+  TTCKeyedService(OptimizationGuideService* optimization_guide,
+                  BrowserList* browser_list);
   TTCKeyedService(const TTCKeyedService&) = delete;
   TTCKeyedService& operator=(const TTCKeyedService&) = delete;
   ~TTCKeyedService() override;
@@ -72,6 +76,9 @@ class TTCKeyedService : public KeyedService {
 
   // The OptimizationGuideService this service is using.
   raw_ptr<OptimizationGuideService> optimization_guide_ = nullptr;
+
+  // The `BrowserList` for the owning profile, passed to session controllers.
+  raw_ptr<BrowserList> browser_list_ = nullptr;
 
   // Shared session journal retaining entries for the current or most recent
   // session. Declared before `session_controller_` so `journal_` outlives any

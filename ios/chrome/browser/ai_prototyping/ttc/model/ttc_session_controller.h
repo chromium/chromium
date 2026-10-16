@@ -17,11 +17,17 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
+class BrowserList;
+
 namespace ttc {
 class TtcBackend;
 }  // namespace ttc
 
 class TTCJournal;
+
+namespace web {
+class WebState;
+}  // namespace web
 
 // Coordinates the lifecycle, observer notifications, and backgrounding teardown
 // for an active TTC session on iOS.
@@ -37,13 +43,20 @@ class TtcSessionController : public TtcConversation::Delegate {
   TTCJournal* journal() const;
   void set_journal(TTCJournal* journal);
 
+  // Returns the initial active `WebState` resolved for this session, or
+  // `nullptr` if none.
+  web::WebState* GetVoiceFocusedWebState() const;
+
   // Constructs a session controller injecting a custom conversation
-  // coordinator.
-  explicit TtcSessionController(std::unique_ptr<TtcConversation> conversation);
+  // coordinator and optional initial `active_web_state`.
+  explicit TtcSessionController(std::unique_ptr<TtcConversation> conversation,
+                                web::WebState* active_web_state = nullptr);
 
   // Constructs a session controller creating a `TtcConversation` with
-  // `backend`.
-  explicit TtcSessionController(std::unique_ptr<ttc::TtcBackend> backend);
+  // `backend`, optionally resolving the initial active `WebState` from
+  // `browser_list`.
+  explicit TtcSessionController(std::unique_ptr<ttc::TtcBackend> backend,
+                                BrowserList* browser_list = nullptr);
 
   // Constructs a session controller using a default `TtcConversation`.
   TtcSessionController();
@@ -104,6 +117,9 @@ class TtcSessionController : public TtcConversation::Delegate {
 
   // Underlying conversation coordinator owned by this session controller.
   std::unique_ptr<TtcConversation> conversation_;
+
+  // Initial active `WebState` to monitor when the session starts.
+  base::WeakPtr<web::WebState> initial_web_state_;
 
   // Current lifecycle state of the session.
   TTCSessionLifecycle lifecycle_ = TTCSessionLifecycle::kInitializing;
