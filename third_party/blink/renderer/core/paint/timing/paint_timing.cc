@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -14,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
@@ -290,6 +292,9 @@ void PaintTiming::MarkPaintTimingInternal() {
       paint_timing_detector_->GetTextPaintTimingDetector()
           .TakeTextRecordsOnPaintFinished();
 
+  const bool has_new_contentful_paint =
+      !image_records.empty() || !text_records.empty();
+
   // Notify clients of all image and text elements painted in this frame and
   // filter the records lists down to just those needed by clients.
   //
@@ -321,6 +326,13 @@ void PaintTiming::MarkPaintTimingInternal() {
   // on getting presentation time feedback.
   if (!widget && !callback_manager_) {
     return;
+  }
+
+  // Count unique paints that produced any new image or text paint timing
+  // records (including text repaints after user interaction for soft
+  // navigations and re-added elements).
+  if (has_new_contentful_paint) {
+    ++contentful_paint_count_;
   }
 
   // 8. Let frameTimingInfo be document’s current frame timing info.
@@ -673,17 +685,30 @@ void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(pending_presentation_data_);
   Supplement<Document>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+  PageVisibilityObserver::Trace(visitor);
 }
 
 void PaintTiming::ContextDestroyed() {
   pending_presentation_data_.clear();
+  MaybeRecordHistogramsOnPageHiddenOrContextDestroyed();
+}
+
+void PaintTiming::PageVisibilityChanged() {
+  if (GetPage() && !GetPage()->IsPageVisible()) {
+    MaybeRecordHistogramsOnPageHiddenOrContextDestroyed();
+  }
 }
 
 PaintTiming::PaintTiming(Document& document)
     : Supplement<Document>(document),
       ExecutionContextLifecycleObserver(document.GetExecutionContext()),
+      PageVisibilityObserver(document.GetPage()),
       paint_timing_detector_(MakeGarbageCollected<PaintTimingDetector>(this)),
-      fmp_detector_(MakeGarbageCollected<FirstMeaningfulPaintDetector>(this)) {
+      fmp_detector_(MakeGarbageCollected<FirstMeaningfulPaintDetector>(this)),
+      is_outermost_main_frame_(
+          document.GetFrame()
+              ? std::make_optional(document.GetFrame()->IsOutermostMainFrame())
+              : std::nullopt) {
   // `window` will be null if `document` has already been shut down (frame
   // detach). Typically `PaintTiming` will be created before this, but this
   // isn't guaranteed since it's created lazily.
@@ -1023,6 +1048,8 @@ void PaintTiming::OnInputOrScroll() {
     return;
   }
 
+  MaybeRecordBeforeInputOrScrollHistogram();
+
   RemoveClient(largest_contentful_paint_manager_);
   largest_contentful_paint_manager_ = nullptr;
 
@@ -1033,6 +1060,43 @@ void PaintTiming::OnInputOrScroll() {
       ->timingForReporting()
       ->SetFirstInputOrScrollNotifiedTimestamp(base::TimeTicks::Now());
   paint_timing::NotifyLoaderPerformanceTimingChanged(GetSupplementable());
+}
+
+bool PaintTiming::ShouldRecordContentfulPaintCountHistograms() const {
+  const Document* document = GetSupplementable();
+  return is_outermost_main_frame_.has_value() && document &&
+         !document->IsInitialEmptyDocument() &&
+         (document->IsHTMLDocument() || document->IsXHTMLDocument());
+}
+
+void PaintTiming::RecordContentfulPaintCountHistogram(
+    std::string_view metric_suffix) {
+  CHECK(is_outermost_main_frame_.has_value());
+  base::UmaHistogramCounts10000(
+      base::StrCat({"Renderer.PaintTiming.ContentfulPaintCount.",
+                    *is_outermost_main_frame_ ? "" : "Subframe.",
+                    metric_suffix}),
+      contentful_paint_count_);
+}
+
+void PaintTiming::MaybeRecordBeforeInputOrScrollHistogram() {
+  if (recorded_before_input_or_scroll_ ||
+      !ShouldRecordContentfulPaintCountHistograms()) {
+    return;
+  }
+  recorded_before_input_or_scroll_ = true;
+  RecordContentfulPaintCountHistogram("BeforeInputOrScroll");
+}
+
+void PaintTiming::MaybeRecordHistogramsOnPageHiddenOrContextDestroyed() {
+  if (recorded_until_hidden_or_destroyed_ ||
+      !ShouldRecordContentfulPaintCountHistograms()) {
+    return;
+  }
+  recorded_until_hidden_or_destroyed_ = true;
+  // Also record BeforeInputOrScroll if no input or scroll occurred yet.
+  MaybeRecordBeforeInputOrScrollHistogram();
+  RecordContentfulPaintCountHistogram("UntilPageHiddenOrContextDestroyed");
 }
 
 void PaintTiming::AddClient(PaintTimingClient* new_client) {

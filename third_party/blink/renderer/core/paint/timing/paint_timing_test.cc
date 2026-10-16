@@ -863,4 +863,163 @@ TEST_F(PaintTimingTest, PseudoElementPendingBackgroundImage) {
   EXPECT_EQ(painted_record->GetNode(), new_target);
 }
 
+TEST_F(PaintTimingTest, ContentfulPaintCountHistograms) {
+  DetachMockClient();
+  base::HistogramTester histogram_tester;
+
+  SetMainFrameBodyContent(R"HTML(
+    <div id="target1">Text 1</div>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  // Second contentful paint.
+  Element* div2 = GetDocument().CreateRawElement(html_names::kDivTag);
+  div2->AppendChild(GetDocument().createTextNode("Text 2"));
+  GetDocument().body()->AppendChild(div2);
+  SimulateRenderingAndPresentationTime();
+
+  // Non-contentful paint should not increment the count.
+  SimulateRenderingAndPresentationTime();
+
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 0);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      0);
+
+  SimulateKeyDown();
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 2, 1);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      0);
+
+  // Third contentful paint after input.
+  Element* div3 = GetDocument().CreateRawElement(html_names::kDivTag);
+  div3->AppendChild(GetDocument().createTextNode("Text 3"));
+  GetDocument().body()->AppendChild(div3);
+  SimulateRenderingAndPresentationTime();
+
+  GetPaintTiming().ContextDestroyed();
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      3, 1);
+}
+
+TEST_F(PaintTimingTest, ContentfulPaintCountHistogramsOnPageHidden) {
+  DetachMockClient();
+  base::HistogramTester histogram_tester;
+
+  SetMainFrameBodyContent(R"HTML(
+    <div>Text 1</div>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      1, 1);
+
+  // Subsequent context destruction should not record duplicate samples.
+  GetPaintTiming().ContextDestroyed();
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 1);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      1);
+}
+
+TEST_F(PaintTimingTest, ContentfulPaintCountHistogramsSubframe) {
+  DetachMockClient();
+  base::HistogramTester histogram_tester;
+
+  SetMainFrameBodyContent(R"HTML(
+    <iframe></iframe>
+  )HTML");
+  SetChildFrameBodyContent(R"HTML(
+    <div>Subframe text</div>
+  )HTML");
+  SimulateRenderingAndPresentationTime();
+
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+
+  // Main frame painted without contentful elements; subframe painted 1.
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.Subframe.BeforeInputOrScroll",
+      1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.Subframe."
+      "UntilPageHiddenOrContextDestroyed",
+      1, 1);
+}
+
+TEST_F(PaintTimingTest, ContentfulPaintCountHistogramsFilteredDocuments) {
+  DetachMockClient();
+  base::HistogramTester histogram_tester;
+
+  // Before `SetMainFrameBodyContent()`, the main document is still in the
+  // initial empty document state and should not record histograms on page hide.
+  EXPECT_TRUE(GetDocument().IsInitialEmptyDocument());
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 0);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      0);
+
+  // Once the main frame commits content (leaving the initial empty document
+  // state), user input before first paint should immediately record 0 for
+  // BeforeInputOrScroll. An un-navigated iframe remains an initial empty
+  // document and should not record subframe histograms.
+  SetMainFrameBodyContent(R"HTML(
+    <div>Main frame text</div>
+    <iframe></iframe>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsInitialEmptyDocument());
+  EXPECT_TRUE(ChildDocument().IsInitialEmptyDocument());
+
+  SimulateKeyDown();
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 0, 1);
+
+  SimulateRenderingAndPresentationTime();
+
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount.BeforeInputOrScroll", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Renderer.PaintTiming.ContentfulPaintCount."
+      "UntilPageHiddenOrContextDestroyed",
+      1, 1);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount.Subframe.BeforeInputOrScroll",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "Renderer.PaintTiming.ContentfulPaintCount.Subframe."
+      "UntilPageHiddenOrContextDestroyed",
+      0);
+}
+
 }  // namespace blink

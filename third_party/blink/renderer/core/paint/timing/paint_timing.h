@@ -7,6 +7,8 @@
 
 #include <array>
 #include <memory>
+#include <optional>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
@@ -18,6 +20,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_callbacks.h"
@@ -46,7 +49,8 @@ CORE_EXPORT BASE_DECLARE_FEATURE(kPaintTimingWaitForPresentationFrameIndex);
 // document.
 class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
                                       public Supplement<Document>,
-                                      public ExecutionContextLifecycleObserver {
+                                      public ExecutionContextLifecycleObserver,
+                                      public PageVisibilityObserver {
   using RequestAnimationFrameTimesAfterBackForwardCacheRestore = std::array<
       base::TimeTicks,
       WebPerformanceMetricsForReporting::
@@ -207,6 +211,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void Trace(Visitor*) const override;
   void ContextDestroyed() override;
+  void PageVisibilityChanged() override;
 
   // Returns the `LargestContentfulPaintManager` associated with this
   // `PaintTiming`. Returns null if hard LCP is no longer being recorded, e.g.
@@ -375,6 +380,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void OnInputOrScroll();
 
+  bool ShouldRecordContentfulPaintCountHistograms() const;
+  void RecordContentfulPaintCountHistogram(std::string_view metric_suffix);
+  void MaybeRecordBeforeInputOrScrollHistogram();
+  void MaybeRecordHistogramsOnPageHiddenOrContextDestroyed();
+
   // Propagates the paint timing info and presentation time to the
   // `PaintTimingRecord`s owned by the `PresentationCallbackData`.
   void SetPaintTimingInfoForPaintTimingRecords(
@@ -432,6 +442,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   HeapVector<Member<PaintTimingClient>> clients_;
   // Used to enforce `clients_` is not modified during iteration.
   bool allow_client_modifications_ = true;
+
+  const std::optional<bool> is_outermost_main_frame_;
+  bool recorded_before_input_or_scroll_ = false;
+  bool recorded_until_hidden_or_destroyed_ = false;
+  uint32_t contentful_paint_count_ = 0;
 
   // A strictly increasing ID associated with `PresentationCallbackData`,
   // incremented when the data is created.

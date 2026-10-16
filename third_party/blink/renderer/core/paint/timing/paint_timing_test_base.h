@@ -220,6 +220,9 @@ class PaintTimingTestBase : public RenderingTest {
   // update.
   void SetMainFrameBodyContent(const String& content) {
     GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(content);
+    // Setting HTML implies the frame loads contents, so leave the initial empty
+    // document state (matching `RenderingTest::SetChildFrameHTML`).
+    GetDocument().OverrideIsInitialEmptyDocument();
     CHECK(GetDocument().domWindow());
     DOMWindowPerformance::performance(*GetDocument().domWindow())
         ->SetCrossOriginIsolatedCapabilityForTesting(true);

@@ -420,6 +420,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Renderer.PaintTiming.ContentfulPaintCount{FrameType}.{Lifecycle}"
+    units="count" expires_after="2027-08-31">
+  <owner>mmocny@chromium.org</owner>
+  <owner>shaseley@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the number of unique paints in {FrameType} that produced any new
+    image or text paint timing records {Lifecycle}. This includes initial paints
+    of visible images or text, elements that are removed and re-added to the
+    DOM, and text repaints after user interaction (tracked for soft
+    navigations). Recorded once per committed HTML/XHTML document (excluding
+    initial empty documents).
+  </summary>
+  <token key="FrameType">
+    <variant name="" summary="an outermost main frame"/>
+    <variant name=".Subframe" summary="a subframe (including fenced frames)"/>
+  </token>
+  <token key="Lifecycle">
+    <variant name="BeforeInputOrScroll"
+        summary="before the first user input or scroll (or until the page is
+                 first hidden or the document context is destroyed if no
+                 input or scroll occurred)"/>
+    <variant name="UntilPageHiddenOrContextDestroyed"
+        summary="until the page is first hidden or the document execution
+                 context is destroyed"/>
+  </token>
+</histogram>
+
 <histogram name="Renderer.PaintTiming.PresentationCallbackIdDelta"
     units="count" expires_after="2027-08-31">
   <owner>shaseley@chromium.org</owner>
