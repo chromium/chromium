@@ -7,11 +7,11 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
-#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/sanitizer_buildflags.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,8 +50,8 @@ TEST(FuzzerStacktraceTest, SymbolizesUAF) {
   // This loosely replicates how we run fuzzers in production. Wet let ASAN
   // handle the symbolization online - which fails for sandboxed processes, but
   // this toy fuzzer does not run any sandboxed code.
-  auto environment = base::Environment::Create();
-  environment->SetVar("ASAN_OPTIONS", "symbolize=1");
+  base::ScopedEnvironmentVariableOverride asan_options("ASAN_OPTIONS",
+                                                       "symbolize=1");
 
   std::string output;
   EXPECT_FALSE(base::GetAppOutputAndError(cmd, &output));  // Target crashes.
@@ -239,22 +239,22 @@ TEST(FuzzerStacktraceTest, CheckFailureRegexesAreValid) {
   EXPECT_EQ(re2::RE2(CheckFailureStackRegexWin()).error(), "");
 }
 
-// // Fuzzer fails to run under MSan or ASan debug builds.
-// // TODO(https://crbug.com/326101784): Re-enable this once MSan build is
-// fixed.
-// // TODO(https://crbug.com/529790472): Fix stacktrace regex for ASan debug
-// // builds.
-// #if defined(MEMORY_SANITIZER) || \
-//     (defined(ADDRESS_SANITIZER) && !defined(NDEBUG))
-// #define MAYBE_SymbolizesCheck DISABLED_SymbolizesCheck
-// #else
-// #define MAYBE_SymbolizesCheck SymbolizesCheck
-// #endif
-// TODO(crbug.com/574485660): Revert to MAYBE_SymbolizesCheck once flakiness
-// is resolved.
-TEST(FuzzerStacktraceTest, DISABLED_SymbolizesCheck) {
+// Fuzzer fails to run under MSan or ASan debug builds.
+// TODO(https://crbug.com/326101784): Re-enable this once MSan build is fixed.
+// TODO(https://crbug.com/529790472): Fix stacktrace regex for ASan debug
+// builds.
+#if defined(MEMORY_SANITIZER) || \
+    (defined(ADDRESS_SANITIZER) && !defined(NDEBUG))
+#define MAYBE_SymbolizesCheck DISABLED_SymbolizesCheck
+#else
+#define MAYBE_SymbolizesCheck SymbolizesCheck
+#endif
+TEST(FuzzerStacktraceTest, MAYBE_SymbolizesCheck) {
   base::CommandLine cmd(FuzzerPath());
   cmd.AppendArgPath(FuzzerInputPath("check"));
+
+  base::ScopedEnvironmentVariableOverride asan_options("ASAN_OPTIONS",
+                                                       "symbolize=1");
 
   std::string output;
   EXPECT_FALSE(base::GetAppOutputAndError(cmd, &output));  // Target crashes.
