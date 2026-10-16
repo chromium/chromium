@@ -789,8 +789,6 @@ source_set("platform_browser_tests") {
 
 if (is_android) {
   test("android_browsertests") {
-    configs += [ "//build/config:precompiled_headers" ]
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     use_default_launcher = false
     product_config_java_packages = [ "org.chromium.chrome.browser" ]
     android_manifest =
@@ -803,11 +801,6 @@ if (is_android) {
       proguard_enabled = true
       proguard_configs = [ "//chrome/android/proguard/main.flags" ]
     }
-
-    sources = [
-      "android/browsertests_apk/android_browsertests_jni_onload.cc",
-      "base/android/android_browser_test_browsertest_android.cc",
-    ]
 
     deps = [
       ":android_browsertests_assets",
@@ -922,6 +915,8 @@ if (is_android) {
       "//chrome/browser/webid",
       "//chrome/browser/webid:android_browsertests",
       "//chrome/renderer:android_browsertests",
+      "//chrome/test/android:android_browsertests_jni_onload",
+      "//chrome/test/base:android_browsertests",
       "//chrome/test/base:android_ui_test_utils",
       "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:browser_tests_runner",
@@ -1176,9 +1171,9 @@ if (is_android) {
       ]
     }
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    # All android_browsertests sources have been migrated into per-feature
+    # targets. Do not add new sources to //chrome/test:android_browsertests.
+    sources = []
   }
 
   test("android_sync_integration_tests") {

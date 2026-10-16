@@ -632,3 +632,18 @@ android_library("live_signin_test_util_java") {
     "//third_party/hamcrest:hamcrest_java",
   ]
 }
+
+source_set("android_browsertests_jni_onload") {
+  testonly = true
+  sources = [ "browsertests_apk/android_browsertests_jni_onload.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome:chrome_android_core",
+    "//chrome/test/base:chrome_test_launcher",
+    "//content/public/app",
+    "//content/test:android_test_message_pump_support",
+    "//content/test:test_support",
+    "//ui/base:test_support",
+  ]
+}

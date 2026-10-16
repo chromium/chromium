@@ -1433,6 +1433,26 @@ if (is_android) {
     sources = [ "platform_browser_test.h" ]
     public_deps = [ ":android_browser_test" ]
   }
+
+  source_set("android_browsertests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "android/android_browser_test_browsertest_android.cc" ]
+    deps = [
+      ":android_browser_test",
+      "//base",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/android/tab_model",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
 }
 
 if (is_chromeos) {
