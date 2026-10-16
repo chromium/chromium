@@ -10297,6 +10297,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContextualTasks.LensRegionChip.Dismissed">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the user dismisses the Lens region chip in the Contextual
+    Tasks composebox plate.
+  </description>
+</action>
+
+<action name="ContextualTasks.LensRegionChip.Shown">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <description>
+    Recorded when the Lens region chip is shown in the Contextual Tasks
+    composebox plate.
+  </description>
+</action>
+
 <action name="ContextualTasks.SidePanel.UserAction.Close.AiModeLinkClick">
   <owner>nguyenbryan@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>

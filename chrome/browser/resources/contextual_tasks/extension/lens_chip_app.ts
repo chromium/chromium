@@ -106,9 +106,15 @@ export class LensChipAppElement extends CrLitElement {
   }
 
   private async fetchPreview_() {
+    const startTime = performance.now();
     try {
       const response = await this.getPageHandler_().getLensCropPreview();
       this.dataUri = response?.dataUri ?? '';
+      if (response?.dataUri) {
+        chrome.metricsPrivate?.recordTime(
+            'ContextualTasks.LensRegionChip.PreviewLoadLatency',
+            Math.round(performance.now() - startTime));
+      }
     } catch (e) {
       this.dataUri = '';
     }

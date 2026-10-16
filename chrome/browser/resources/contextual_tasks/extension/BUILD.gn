@@ -237,6 +237,8 @@ build_webui("build") {
 
   in_folder = "."
 
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+
   static_files = [
     "context_library.html",
     "lens_button.html",
