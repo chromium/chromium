@@ -23,6 +23,7 @@
 #include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
+#include "remoting/host/agent_integration_configurator.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/audio_injector.h"
 #include "remoting/host/base/desktop_environment_options.h"
@@ -140,6 +141,11 @@ BasicDesktopEnvironment::CreateFileOperations() {
 std::unique_ptr<UrlForwarderConfigurator>
 BasicDesktopEnvironment::CreateUrlForwarderConfigurator() {
   return UrlForwarderConfigurator::Create();
+}
+
+std::unique_ptr<AgentIntegrationConfigurator>
+BasicDesktopEnvironment::CreateAgentIntegrationConfigurator() {
+  return AgentIntegrationConfigurator::Create();
 }
 
 std::string BasicDesktopEnvironment::GetCapabilities() const {

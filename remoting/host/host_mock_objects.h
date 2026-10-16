@@ -108,6 +108,10 @@ class MockDesktopEnvironment : public DesktopEnvironment {
               CreateUrlForwarderConfigurator,
               (),
               (override));
+  MOCK_METHOD(std::unique_ptr<AgentIntegrationConfigurator>,
+              CreateAgentIntegrationConfigurator,
+              (),
+              (override));
   MOCK_METHOD(std::unique_ptr<RemoteWebAuthnStateChangeNotifier>,
               CreateRemoteWebAuthnStateChangeNotifier,
               (),

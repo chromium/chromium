@@ -1,0 +1,48 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Composite message type for messages sent over the agent-integration-control
+// data channel.
+// Next ID: 5
+message AgentIntegrationControl {
+  // Message sent by the client requesting the host for the current agent
+  // integration state. The host will respond with a QueryStateResponse.
+  // Next ID: 1
+  message QueryStateRequest {}
+
+  // Message sent by the host reporting the current agent integration state.
+  // Next ID: 2
+  message QueryStateResponse {
+    // Indicates whether agent integration is currently enabled.
+    optional bool enabled = 1;
+  }
+
+  // Message sent by the client requesting the host to enable or disable agent
+  // integration. The host will respond with a SetStateResponse.
+  // Next ID: 2
+  message SetStateRequest {
+    // True to enable agent integration, false to disable it.
+    optional bool enabled = 1;
+  }
+
+  // Message sent by the host reporting the result of a SetStateRequest.
+  // Next ID: 2
+  message SetStateResponse {
+    // Indicates whether the state change operation succeeded.
+    optional bool success = 1;
+  }
+
+  oneof message {
+    QueryStateRequest query_state_request = 1;
+    QueryStateResponse query_state_response = 2;
+    SetStateRequest set_state_request = 3;
+    SetStateResponse set_state_response = 4;
+  }
+}

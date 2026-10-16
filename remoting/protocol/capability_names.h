@@ -54,6 +54,9 @@ inline constexpr char kMicrophoneRemotingCapability[] = "microphoneRemoting";
 // Host supports remoting of terminal control.
 inline constexpr char kTerminalModeCapability[] = "terminalMode_alpha";
 
+// Host supports enabling and disabling coding agent integration.
+inline constexpr char kAgentIntegrationCapability[] = "agentIntegration";
+
 // Host supports security key forwarding via a WebRTC data channel.
 inline constexpr char kSecurityKeyV2Capability[] = "securityKeyV2";
 

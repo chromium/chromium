@@ -14,6 +14,7 @@ group("proto_lite") {
 proto_library("proto") {
   sources = [
     "action.proto",
+    "agent_integration_control.proto",
     "audio.proto",
     "control.proto",
     "coordinates.proto",

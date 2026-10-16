@@ -25,6 +25,7 @@
 #include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/fake_active_display_monitor.h"
+#include "remoting/host/fake_agent_integration_configurator.h"
 #include "remoting/host/fake_keyboard_layout_monitor.h"
 #include "remoting/host/fake_mouse_cursor_monitor.h"
 #include "remoting/host/file_transfer/file_operations.h"
@@ -164,6 +165,11 @@ std::unique_ptr<FileOperations> FakeDesktopEnvironment::CreateFileOperations() {
 std::unique_ptr<UrlForwarderConfigurator>
 FakeDesktopEnvironment::CreateUrlForwarderConfigurator() {
   return std::make_unique<FakeUrlForwarderConfigurator>();
+}
+
+std::unique_ptr<AgentIntegrationConfigurator>
+FakeDesktopEnvironment::CreateAgentIntegrationConfigurator() {
+  return std::make_unique<FakeAgentIntegrationConfigurator>();
 }
 
 std::string FakeDesktopEnvironment::GetCapabilities() const {

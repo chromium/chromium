@@ -406,6 +406,8 @@ static_library("common") {
     "active_display_monitor.cc",
     "agent_integration_configurator.cc",
     "agent_integration_configurator.h",
+    "agent_integration_control_message_handler.cc",
+    "agent_integration_control_message_handler.h",
     "audio_capturer.cc",
     "audio_injector.cc",
     "audio_silence_detector.cc",
@@ -894,6 +896,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "agent_integration_control_message_handler_unittest.cc",
     "audio_silence_detector_unittest.cc",
     "audio_volume_filter_unittest.cc",
     "backoff_timer_unittest.cc",

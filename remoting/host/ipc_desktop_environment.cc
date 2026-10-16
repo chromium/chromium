@@ -33,6 +33,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
+#include "remoting/host/agent_integration_configurator.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
@@ -124,6 +125,11 @@ std::unique_ptr<FileOperations> IpcDesktopEnvironment::CreateFileOperations() {
 std::unique_ptr<UrlForwarderConfigurator>
 IpcDesktopEnvironment::CreateUrlForwarderConfigurator() {
   return desktop_session_proxy_->CreateUrlForwarderConfigurator();
+}
+
+std::unique_ptr<AgentIntegrationConfigurator>
+IpcDesktopEnvironment::CreateAgentIntegrationConfigurator() {
+  return nullptr;
 }
 
 std::string IpcDesktopEnvironment::GetCapabilities() const {

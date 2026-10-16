@@ -20,6 +20,7 @@ namespace remoting {
 
 class ActionExecutor;
 class ActiveDisplayMonitor;
+class AgentIntegrationConfigurator;
 class AudioCapturer;
 class ClientSessionControl;
 class IpcFifoBufferReader;
@@ -67,6 +68,8 @@ class DesktopEnvironment {
   virtual std::unique_ptr<FileOperations> CreateFileOperations() = 0;
   virtual std::unique_ptr<UrlForwarderConfigurator>
   CreateUrlForwarderConfigurator() = 0;
+  virtual std::unique_ptr<AgentIntegrationConfigurator>
+  CreateAgentIntegrationConfigurator() = 0;
   virtual std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() = 0;
 

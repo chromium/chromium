@@ -14,15 +14,18 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -33,6 +36,8 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/session_policies.h"
+#include "remoting/host/agent_integration_configurator.h"
+#include "remoting/host/agent_integration_control_message_handler.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_display_info.h"
 #include "remoting/host/fake_desktop_environment.h"
@@ -47,6 +52,7 @@
 #include "remoting/host/security_key/security_key_auth_handler_posix.h"
 #endif
 
+#include "remoting/proto/agent_integration_control.pb.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/capability_names.h"
@@ -1526,5 +1532,64 @@ TEST_F(PeerSessionSecurityKeyTest, DataChannelConnects) {
   pipe->ClosePipe();
   ASSERT_TRUE(base::test::RunUntil([&]() { return !pipe->HasWrappers(); }));
 }
+
+TEST_F(PeerSessionImplTest,
+       DoesNotAdvertiseAgentIntegrationCapabilityWhenBinaryMissing) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride exe_dir_override(base::DIR_EXE, temp_dir.GetPath());
+
+  EXPECT_CALL(client_stub_, SetCapabilities(Not(IncludesCapabilities(
+                                protocol::kAgentIntegrationCapability))));
+
+  CreatePeerSession();
+  ConnectPeerSession();
+}
+
+#if BUILDFLAG(IS_LINUX)
+TEST_F(
+    PeerSessionImplTest,
+    AdvertisesAgentIntegrationCapabilityAndHandlesDataChannelWhenBinaryExists) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::ScopedPathOverride exe_dir_override(base::DIR_EXE, temp_dir.GetPath());
+  base::FilePath binary_path =
+      temp_dir.GetPath().AppendASCII(AgentIntegrationConfigurator::kBinaryName);
+  ASSERT_TRUE(base::WriteFile(binary_path, ""));
+  ASSERT_TRUE(base::SetPosixFilePermissions(
+      binary_path, base::FILE_PERMISSION_READ_BY_USER |
+                       base::FILE_PERMISSION_WRITE_BY_USER |
+                       base::FILE_PERMISSION_EXECUTE_BY_USER));
+
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities(
+                                protocol::kAgentIntegrationCapability)));
+
+  CreatePeerSession();
+  ConnectPeerSession();
+
+  protocol::Capabilities capabilities_message;
+  capabilities_message.set_capabilities(protocol::kAgentIntegrationCapability);
+  peer_session_->SetCapabilities(capabilities_message);
+
+  auto pipe =
+      std::make_unique<protocol::FakeMessagePipe>(/*asynchronous=*/false);
+  peer_session_->OnIncomingDataChannel(
+      AgentIntegrationControlMessageHandler::kDataChannelName, pipe->Wrap());
+
+  pipe->OpenPipe();
+
+  protocol::AgentIntegrationControl message;
+  message.mutable_query_state_request();
+  pipe->ReceiveProtobufMessage(message);
+  ASSERT_EQ(pipe->sent_messages().size(), 1u);
+
+  protocol::AgentIntegrationControl response;
+  ASSERT_TRUE(response.ParseFromString(pipe->sent_messages().front()));
+  ASSERT_TRUE(response.has_query_state_response());
+  EXPECT_FALSE(response.query_state_response().enabled());
+
+  pipe->ClosePipe();
+}
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace remoting

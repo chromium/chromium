@@ -57,6 +57,8 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<FileOperations> CreateFileOperations() override;
   std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
       override;
+  std::unique_ptr<AgentIntegrationConfigurator>
+  CreateAgentIntegrationConfigurator() override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
