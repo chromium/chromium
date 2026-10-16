@@ -8757,3 +8757,9 @@ crbug.com/568343392 crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/t
 
 # Gardener 2026-10-16
 crbug.com/522632542 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/activate/activate.py [ Failure Pass ]
+crbug.com/551678154 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe-active-mode.https.html [ Failure Pass ]
+crbug.com/550839289 external/wpt/fedcm/third-party-iframe/fedcm-third-party-iframe.https.html [ Failure Pass ]
+crbug.com/551670645 [ Linux ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
+crbug.com/551670645 [ Mac ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
+crbug.com/551670645 [ Win10.20h2 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
+crbug.com/551670645 [ Win11 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
