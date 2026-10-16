@@ -331,7 +331,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   gfx::HDRMetadata hdr_metadata_;
 
   base::OnceClosure context_lost_callback_;
-  mutable sk_sp<SkSurface> surface_;
+  sk_sp<SkSurface> surface_;
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
       cc::PaintImage::kInvalidContentId;

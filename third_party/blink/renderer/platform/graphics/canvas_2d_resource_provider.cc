@@ -591,9 +591,6 @@ void Canvas2DResourceProvider::OnMemoryDump(
 }
 
 SkSurface* Canvas2DResourceProvider::GetSkSurface() const {
-  if (!surface_) {
-    surface_ = CreateSkSurface();
-  }
   return surface_.get();
 }
 
@@ -864,6 +861,9 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   if (resource_) {
     EnsureWriteAccess();
   }
+  if (!is_accelerated_) {
+    surface_ = CreateSkSurface();
+  }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 
   // Single buffered mode supported only for accelerated canvas.
@@ -939,6 +939,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       image_pool_ = gpu::SharedImagePool<CanvasResourceSharedImage>::Create(
           image_info, sii, "CanvasResourceSharedImage",
           kMaxRecycledCanvasResources);
+      surface_ = CreateSkSurface();
     }
   }
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
