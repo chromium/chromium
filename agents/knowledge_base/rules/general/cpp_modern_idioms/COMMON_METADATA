@@ -1,0 +1,235 @@
+agentic_review {
+  capability_groups {
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/delete-empty-files-from-repository.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-finch-in-client-side-identifiers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/omit-scratch-and-generator-output-files.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/scope-lint-ifchange-to-target-definition.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/assert-associative-container-insertion-success.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/assert-state-preconditions-before-transitions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-conditional-phrasing-for-unconditional-operations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-dead-fallback-branches-under-is-apple.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-magic-numbers-use-named-constants.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-move-and-swap-in-move-assignment.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-check-before-optional-value.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-clamping.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-closure-cancellation.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-com-out-param-initialization.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-concept-return-type-constraints.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-condition-evaluation.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-directory-prefixes-in-filenames.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-empty-check-before-default-return.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-guard-before-loop.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-in-loop-updates.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-member-reload-after-store.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-non-const-overloads.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-span-for-array-indexing.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-string-view-when-filepath-available.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-redundant-variable-before-return.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-reusing-comptr-across-sequential-calls.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-synchronous-apis-for-blocking-io.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-unnecessary-single-use-member-variables.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/bind-reference-via-ternary-to-avoid-branch-duplication.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/colocate-feature-params-with-parent-feature.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/conditionally-include-headers-for-platform-guarded-code.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/consistent-namespace-qualification-within-scope.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/consistently-name-sibling-helpers-sharing-side-effects.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/const-auto-for-flag-combinations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/const-for-immutable-member-variables.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/const-for-unmodified-local-variables.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/constrain-range-template-parameters-with-std-ranges-concepts.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/declare-inline-methods-constexpr-on-value-classes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/define-duration-constants-as-time-delta.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/delete-unsupported-operations-in-public-section.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/do-not-define-or-undef-reserved-identifiers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/factor-repeated-preprocessor-conditionals-into-helpers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/group-related-function-overloads-together.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/group-related-member-variables-in-structs-and-classes.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/group-related-preprocessor-conditions-in-ladders.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/include-attribute-in-getters-returning-dimensions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/initialize-variant-in-member-initializer-list.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/internal-namespace-for-header-helpers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/iterate-scalar-types-by-value-in-range-for.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/keep-internal-helper-methods-private.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/keep-is-constant-evaluated-in-compound-expressions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/manage-raii-guard-lifetime-via-block-scoping.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/match-call-site-cast-to-parameter-type.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/match-definition-order-in-cc-to-header-declaration-order.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/match-internal-helper-names-to-public-interfaces.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/nest-class-specific-types-and-enums.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-redundant-null-check-after-early-exit.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-redundant-static-cast-on-safe-conversions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/omit-redundant-default-arguments-in-forwarding-calls.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/omit-redundant-type-qualification-on-unscoped-enums.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/order-macos-shortcut-modifiers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/pass-null-or-empty-view-to-end-iterators.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/place-file-local-types-and-constants-at-top-of-tu.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-as-string-over-to-string-for-string-views.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-buildflag-over-raw-preprocessor-defines.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-designated-initializers-for-aggregate-structs.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-direct-member-access-over-trivial-getters.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-direct-member-assignment-over-pointer-cast.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-distinct-members-over-boolean-indexed-arrays.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-early-return-on-failure.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-empty-braces-over-zero-initializer.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-explicit-empty-string-literals-over-bare-braces.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-function-style-cast-for-class-types.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-if-over-ternary-for-side-effects.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-positive-iterator-presence-check-in-if-init.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-raii-over-raw-new-and-delete-array.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-ranges-for-each-over-transform-for-in-place-modificat.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-reset-over-nullopt-assignment-for-optional.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-span-split-at-over-first-and-subspan.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-standard-string-view-aliases-over-basic-string-view.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-string-view-over-const-string-ref-for-read-only-param.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-string-view-over-span-for-character-sequences.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-strong-alias-over-primitive-types-for-tokens.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-switch-over-chained-if-else.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-ternary-for-optional-callback-transformation.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-ternary-over-disjunctive-conjunctions.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-unified-cross-platform-implementation.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-value-initialization-to-zero-structs.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/query-error-details-on-base-file-instances.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/remove-dead-parameters-during-refactoring.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/renumber-or-document-gaps-in-bitmasks-and-enums.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/require-explicit-architecture-checks-with-error-fallback.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/return-default-constructed-object-on-error.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/return-result-enum-for-multi-outcome-operations.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/reuse-cached-local-variable-for-repeated-accessors.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/update-variable-names-on-type-refactoring.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-assign-or-return-for-expected-and-optional.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-chromium-buildflag-outside-partitionalloc.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-decltype-auto-for-generic-range-accessor-return-types.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-direct-arch-cpu-macros.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-emplace-back-return-value-instead-of-back.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-helper-return-value-instead-of-recalculating-length.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-int64-for-profiler-metadata.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-kmax-only-for-inclusive-upper-bounds.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-native-environment-string-aliases.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-notify-allow-reentrancy-only-on-disallowed-reentrancy-li.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-passkey-to-restrict-method-access.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-platform-thread-sleep-instead-of-platform-apis.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-std-exchange-to-extract-and-reset-containers.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-std-move-over-std-forward-for-local-variables.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-two-step-adl-swap-idiom.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-underscore-for-unused-structured-bindings.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-validated-constexpr-constant-as-loop-bound.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/verify-precomputed-derived-values-with-dcheck.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/when-separating-public-and-internal-interfaces-reserve-canon.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:@JNINamespace|@JniType|@NativeMethods|JArrayView\\w*)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-as-string-view-for-jarray-view.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:BASE_(?:DECLARE_)?FEATURE|FeatureParam|FeatureList)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-redundant-is-enabled-before-feature-param-get.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:Callback|Closure|Bind(?:Once|Repeating|LambdaForTesting))\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/pass-once-callback-by-value-when-transferring-ownership.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-base-nullcallback-over-bare-braces.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:Checked|Clamped)Num\\w*\\b|\\b(?:checked|saturated)_cast\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-auto-with-checked-numeric-arithmetic.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-checked-cast-over-bytesizedelta-for-bytesize.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:CreateProcess\\w*|HRESULT_FROM_WIN32|ReplaceFile|CoCreateInstance|OpenProcessToken|GetTokenInformation)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/pass-target-com-interface-directly-to-cocreateinstance.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-replacefile-over-move-for-temp-files.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/use-hresult-from-win32-for-system-errors.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:NOTREACHED|ImmediateCrash)\\b|\\[\\[noreturn\\]\\]"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/mark-non-returning-functions-with-noreturn.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:PA_)?UNSAFE_(?:BUFFERS|TODO|BUFFER_USAGE)\\b|allow_unsafe_buffers"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-subspan-or-substr-over-unsafe-buffers-pointer-arithme.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-unsafe-buffers-over-convoluted-subspans-at-c-api-boun.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/scope-unsafe-buffer-macros-inside-assertions.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:StrCat|StrAppend)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-base-strcat-over-chained-plus-operator.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:UTF8|UTF16|ASCII|UnicodeString|icu4x|Locale)\\w*\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-icu-unicodestring-for-8bit-string-manipulation.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b(?:cxx::bridge|rust::(?:Str|String|Slice)|unsafe\\b|c_char|CString)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/consistently-suffix-posted-task-methods.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/omit-redundant-suffixes-on-boolean-variables.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bChannel::(?:UNKNOWN|DEFAULT)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-channel-unknown-over-channel-default.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bEnumSet\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-base-enum-set-over-raw-bitmasks.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bHeapArray\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-vector-over-heap-array-for-dynamic-byte-buffers.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\b[a-z_]*span[a-z_]*\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-redundant-base-span-wrapping.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-byte-span-from-ref-over-unsafe-reinterpret-cast.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/require-uint8-for-byte-span-apis.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/reuse-existing-local-span-variable.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bfrom_range\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-from-range-for-container-construction.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bmadvise\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/omit-redundant-page-alignment-in-madvise-length.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bmake_(?:optional|pair|tuple|move_iterator|reverse_iterator)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-implicit-coercion-in-ctad-deduction-guides.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-ctad-over-factory-helpers.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\boptional_ref\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/avoid-wrapping-local-pointers-in-optional-ref.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\branges::(?:equal|rbegin|rend|contains|find)\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/no-redundant-size-check-with-std-ranges-equal.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-ranges-rbegin-over-legacy-rbegin-in-adapters.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|hpp|cc|cpp|mm)"
+    content_patterns: "\\bstatic_assert\\b"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/prefer-requires-clauses-over-static-assert.md"
+    rules: "agents/knowledge_base/rules/general/cpp_modern_idioms/provide-descriptive-messages-in-static-asserts.md"
+  }
+}
