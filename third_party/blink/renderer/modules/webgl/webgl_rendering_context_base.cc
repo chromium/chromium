@@ -980,18 +980,7 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     // elsewhere assumes RGBA. OTOH the software path seems to be assuming N32
     // somewhere in the later pipeline but for offscreen canvas only.
     viz::SharedImageFormat format = GetSharedImageFormat();
-    bool should_force_bgra8_to_rgba =
-        !shared_image_usages.HasAny(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                    gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-
-#if BUILDFLAG(IS_LINUX)
-    // WebGpu preferred canvas on linux is RGBA and interop (vk on gl) is
-    // dependent on canvas copies being RGBA (not BGRA).
-    should_force_bgra8_to_rgba = true;
-#endif
-
-    if (format != viz::SinglePlaneFormat::kRGBA_F16 &&
-        should_force_bgra8_to_rgba) {
+    if (format != viz::SinglePlaneFormat::kRGBA_F16) {
       format = viz::SinglePlaneFormat::kRGBA_8888;
     }
 
