@@ -392,7 +392,7 @@ views::View* EditorViewController::CreateInputField(views::View* editor_view,
     case EditorField::ControlType::CUSTOMFIELD: {
       std::unique_ptr<views::View> custom_view = CreateCustomFieldView(
           field.type, &focusable_field, valid, &error_message);
-      DCHECK(custom_view);
+      CHECK(custom_view, base::NotFatalUntil::M162);
 
       field_view->AddChildView(std::move(custom_view));
       field_view->SetPreferredSize(gfx::Size(field_width, kInputFieldHeight));
@@ -479,7 +479,8 @@ void EditorViewController::SaveButtonPressed(const ui::Event& event) {
   if (back_navigation_type_ == BackNavigationType::kOneStep) {
     dialog()->GoBack();
   } else {
-    DCHECK_EQ(BackNavigationType::kPaymentSheet, back_navigation_type_);
+    CHECK_EQ(BackNavigationType::kPaymentSheet, back_navigation_type_,
+             base::NotFatalUntil::M162);
     dialog()->GoBackToPaymentSheet();
   }
 }

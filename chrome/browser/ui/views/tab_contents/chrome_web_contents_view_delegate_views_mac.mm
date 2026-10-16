@@ -222,7 +222,7 @@ ChromeWebContentsViewFocusHelper*
 ChromeWebContentsViewDelegateViewsMac::GetFocusHelper() const {
   ChromeWebContentsViewFocusHelper* helper =
       ChromeWebContentsViewFocusHelper::FromWebContents(web_contents_);
-  DCHECK(helper);
+  CHECK(helper, base::NotFatalUntil::M162);
   return helper;
 }
 

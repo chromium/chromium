@@ -83,7 +83,7 @@ const extensions::Extension* GetExtensionForOrigin(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->enabled_extensions().GetByID(
           security_origin.GetHost());
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M162);
   return extension;
 #else
   return nullptr;
@@ -838,7 +838,7 @@ void DocumentPipHost::OnAnyBrowserEnteredFullscreen() {
 
 void DocumentPipHost::SetWebContentsBlocked(content::WebContents* web_contents,
                                             bool blocked) {
-  DCHECK_EQ(GetChildWebContents(), web_contents);
+  CHECK_EQ(GetChildWebContents(), web_contents, base::NotFatalUntil::M162);
   if (!blocked && widget_ && widget_->IsActive()) {
     FocusChildWebContents();
   }
@@ -847,12 +847,12 @@ void DocumentPipHost::SetWebContentsBlocked(content::WebContents* web_contents,
 web_modal::WebContentsModalDialogHost*
 DocumentPipHost::GetWebContentsModalDialogHost(
     content::WebContents* web_contents) {
-  DCHECK_EQ(GetChildWebContents(), web_contents);
+  CHECK_EQ(GetChildWebContents(), web_contents, base::NotFatalUntil::M162);
   return this;
 }
 
 bool DocumentPipHost::IsWebContentsVisible(content::WebContents* web_contents) {
-  DCHECK_EQ(GetChildWebContents(), web_contents);
+  CHECK_EQ(GetChildWebContents(), web_contents, base::NotFatalUntil::M162);
   return widget_ && !widget_->IsClosed() && widget_->IsVisible() &&
          !widget_->IsMinimized();
 }

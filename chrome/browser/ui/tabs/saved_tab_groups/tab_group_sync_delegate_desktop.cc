@@ -399,7 +399,7 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
 
     // Activate the first tab in the group.
     tabs::TabInterface* first_tab = tab_group->GetFirstTab();
-    DCHECK(first_tab);
+    CHECK(first_tab, base::NotFatalUntil::M162);
     tab_strip_model->ActivateTabAt(tab_strip_model->GetIndexOfTab(first_tab));
   }
 

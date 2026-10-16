@@ -109,7 +109,7 @@ void CardUnmaskAuthenticationSelectionDialogView::UpdateContent() {
 }
 
 bool CardUnmaskAuthenticationSelectionDialogView::Accept() {
-  DCHECK(!controller_->GetChallengeOptions().empty());
+  CHECK(!controller_->GetChallengeOptions().empty(), base::NotFatalUntil::M162);
   controller_->OnOkButtonClicked();
   return false;
 }

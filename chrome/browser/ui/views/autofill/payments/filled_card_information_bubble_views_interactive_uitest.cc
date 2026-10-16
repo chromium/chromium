@@ -87,7 +87,7 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
         static_cast<FilledCardInformationBubbleControllerImpl*>(
             FilledCardInformationBubbleControllerImpl::GetOrCreate(
                 browser()->GetTabStripModel()->GetActiveWebContents()));
-    DCHECK(controller);
+    CHECK(controller, base::NotFatalUntil::M162);
     controller->SetEventObserverForTesting(this);
   }
 
@@ -157,7 +157,7 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
     auto* provider = browser_view->toolbar_button_provider();
     auto* icon =
         provider->GetPageActionViewInterface(kActionFilledCardInformation);
-    DCHECK(icon);
+    CHECK(icon, base::NotFatalUntil::M162);
     return icon;
   }
 

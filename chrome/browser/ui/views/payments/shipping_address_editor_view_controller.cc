@@ -133,7 +133,7 @@ bool ShippingAddressEditorViewController::ValidateModelAndSave() {
     // parsed substructure.
     bool success = SaveFieldsToProfile(profile_to_edit_,
                                        /*ignore_errors=*/false);
-    DCHECK(success);
+    CHECK(success, base::NotFatalUntil::M162);
     if (!is_incognito()) {
       state()->GetPersonalDataManager()->address_data_manager().UpdateProfile(
           *profile_to_edit_);
@@ -205,7 +205,7 @@ void ShippingAddressEditorViewController::OnPerformAction(
   if (sender->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)) {
     return;
   }
-  DCHECK(sender->GetSelectedIndex().has_value());
+  CHECK(sender->GetSelectedIndex().has_value(), base::NotFatalUntil::M162);
   if (chosen_country_index_ != sender->GetSelectedIndex()) {
     chosen_country_index_ = sender->GetSelectedIndex().value();
     failed_to_load_region_data_ = false;
@@ -223,8 +223,9 @@ void ShippingAddressEditorViewController::UpdateEditorView() {
     views::Combobox* country_combo_box =
         static_cast<views::Combobox*>(dialog()->GetViewByID(
             GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
-    DCHECK(country_combo_box);
-    DCHECK_EQ(countries_.size(), country_combo_box->GetRowCount());
+    CHECK(country_combo_box, base::NotFatalUntil::M162);
+    CHECK_EQ(countries_.size(), country_combo_box->GetRowCount(),
+             base::NotFatalUntil::M162);
     country_combo_box->SetSelectedIndex(chosen_country_index_);
   } else if (countries_.size() > 0UL) {
     chosen_country_index_ = 0UL;

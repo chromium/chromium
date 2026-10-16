@@ -62,8 +62,9 @@ void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
 }
 
 void ViewStack::Pop(bool animate) {
-  DCHECK_LT(1u,
-            GetSize());  // There must be at least one view left after popping.
+  CHECK_LT(1u, GetSize(),
+           base::NotFatalUntil::M162);  // There must be at least one view left
+                                        // after popping.
 
   // Set the second-to-last view as visible, since it is about to be revealed
   // when the last view animates out.
@@ -80,8 +81,8 @@ void ViewStack::Pop(bool animate) {
 }
 
 void ViewStack::PopMany(int n, bool animate) {
-  DCHECK_LT(static_cast<size_t>(n),
-            GetSize());  // The stack can never be empty.
+  CHECK_LT(static_cast<size_t>(n), GetSize(),
+           base::NotFatalUntil::M162);  // The stack can never be empty.
 
   size_t pre_size = stack_.size();
 
@@ -94,7 +95,7 @@ void ViewStack::PopMany(int n, bool animate) {
   // Erase N - 1 elements now, the last one will be erased when its animation
   // completes
   stack_.erase(stack_.end() - n, stack_.end() - 1);
-  DCHECK_EQ(pre_size - n + 1, stack_.size());
+  CHECK_EQ(pre_size - n + 1, stack_.size(), base::NotFatalUntil::M162);
 
   Pop(animate);
 }

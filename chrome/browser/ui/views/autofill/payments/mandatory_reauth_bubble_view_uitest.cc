@@ -48,7 +48,7 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
     auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
     MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents);
     MandatoryReauthBubbleControllerImpl* controller = GetController();
-    DCHECK(controller);
+    CHECK(controller, base::NotFatalUntil::M162);
   }
 
   void ShowBubble() {
@@ -127,7 +127,7 @@ class MandatoryReauthBubbleViewUiTest : public InProcessBrowserTest {
     auto* icon =
         provider->GetPageActionViewInterface(kActionAutofillMandatoryReauth);
 
-    DCHECK(icon);
+    CHECK(icon, base::NotFatalUntil::M162);
     return icon;
   }
 

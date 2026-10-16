@@ -182,12 +182,12 @@ TabGroupChange::CloseChange::CloseChange(
 TabGroupChange::CloseChange::~CloseChange() = default;
 
 const TabGroupChange::VisualsChange* TabGroupChange::GetVisualsChange() const {
-  DCHECK_EQ(type, Type::kVisualsChanged);
+  CHECK_EQ(type, Type::kVisualsChanged, base::NotFatalUntil::M162);
   return static_cast<const VisualsChange*>(delta.get());
 }
 
 const TabGroupChange::CreateChange* TabGroupChange::GetCreateChange() const {
-  DCHECK_EQ(type, Type::kCreated);
+  CHECK_EQ(type, Type::kCreated, base::NotFatalUntil::M162);
   return static_cast<const CreateChange*>(delta.get());
 }
 
@@ -204,7 +204,7 @@ std::vector<tabs::TabInterface*> TabGroupChange::CloseChange::GetDetachedTabs()
 }
 
 const TabGroupChange::CloseChange* TabGroupChange::GetCloseChange() const {
-  DCHECK_EQ(type, Type::kClosed);
+  CHECK_EQ(type, Type::kClosed, base::NotFatalUntil::M162);
   return static_cast<const CloseChange*>(delta.get());
 }
 
@@ -312,23 +312,23 @@ SplitTabChange::SplitTabChange(TabStripModel* model,
 SplitTabChange::~SplitTabChange() = default;
 
 const SplitTabChange::AddedChange* SplitTabChange::GetAddedChange() const {
-  DCHECK_EQ(type, Type::kAdded);
+  CHECK_EQ(type, Type::kAdded, base::NotFatalUntil::M162);
   return static_cast<const AddedChange*>(delta.get());
 }
 
 const SplitTabChange::VisualsChange* SplitTabChange::GetVisualsChange() const {
-  DCHECK_EQ(type, Type::kVisualsChanged);
+  CHECK_EQ(type, Type::kVisualsChanged, base::NotFatalUntil::M162);
   return static_cast<const VisualsChange*>(delta.get());
 }
 
 const SplitTabChange::ContentsChange* SplitTabChange::GetContentsChange()
     const {
-  DCHECK_EQ(type, Type::kContentsChanged);
+  CHECK_EQ(type, Type::kContentsChanged, base::NotFatalUntil::M162);
   return static_cast<const ContentsChange*>(delta.get());
 }
 
 const SplitTabChange::RemovedChange* SplitTabChange::GetRemovedChange() const {
-  DCHECK_EQ(type, Type::kRemoved);
+  CHECK_EQ(type, Type::kRemoved, base::NotFatalUntil::M162);
   return static_cast<const RemovedChange*>(delta.get());
 }
 

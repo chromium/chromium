@@ -15,7 +15,7 @@ namespace tab_groups {
 // static
 CollaborationMessagingObserver*
 CollaborationMessagingObserverFactory::GetForProfile(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   return static_cast<CollaborationMessagingObserver*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }

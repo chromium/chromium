@@ -621,7 +621,7 @@ bool WebUIBrowserWindow::GetAcceleratorForCommandId(
 
 void WebUIBrowserWindow::OnWidgetBoundsChanged(views::Widget* widget,
                                                const gfx::Rect& new_bounds) {
-  DCHECK_EQ(widget, widget_.get());
+  CHECK_EQ(widget, widget_.get(), base::NotFatalUntil::M162);
   if (modal_dialog_host_) {
     modal_dialog_host_->NotifyPositionRequiresUpdate();
   }
@@ -1081,7 +1081,8 @@ WebUIBrowserWindow::PreHandleKeyboardEvent(
   // command id from |accelerator_table_|, it must be a keydown event. This
   // DCHECK ensures we won't accidentally return NOT_HANDLED for a later added
   // RELEASED accelerator in BrowserView.
-  DCHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kRawKeyDown);
+  CHECK_EQ(event.GetType(), blink::WebInputEvent::Type::kRawKeyDown,
+           base::NotFatalUntil::M162);
   // |accelerator| is a non-reserved browser shortcut (e.g. Ctrl+f).
   return content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT;
 }

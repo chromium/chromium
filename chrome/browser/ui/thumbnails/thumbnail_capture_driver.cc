@@ -151,14 +151,16 @@ void ThumbnailCaptureDriver::UpdateSchedulingPriority() {
     return;
   }
 
-  DCHECK_EQ(page_readiness_, PageReadiness::kReadyForFinalCapture);
+  CHECK_EQ(page_readiness_, PageReadiness::kReadyForFinalCapture,
+           base::NotFatalUntil::M162);
   scheduler_->SetTabCapturePriority(
       this, ThumbnailScheduler::TabCapturePriority::kHigh);
 }
 
 void ThumbnailCaptureDriver::StartCooldown() {
-  DCHECK_EQ(page_readiness_, PageReadiness::kReadyForFinalCapture);
-  DCHECK_EQ(capture_state_, CaptureState::kCapturing);
+  CHECK_EQ(page_readiness_, PageReadiness::kReadyForFinalCapture,
+           base::NotFatalUntil::M162);
+  CHECK_EQ(capture_state_, CaptureState::kCapturing, base::NotFatalUntil::M162);
 
   capture_state_ = CaptureState::kCooldown;
   captured_cooldown_frame_ = false;

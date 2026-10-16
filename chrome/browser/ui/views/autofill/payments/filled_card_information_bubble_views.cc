@@ -57,7 +57,7 @@ FilledCardInformationBubbleViews::FilledCardInformationBubbleViews(
     FilledCardInformationBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M162);
   SetShowIcon(true);
   SetShowCloseButton(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -158,10 +158,12 @@ void FilledCardInformationBubbleViews::OnWidgetDestroying(
   if (!widget->IsClosed()) {
     return;
   }
-  DCHECK_NE(widget->closed_reason(),
-            views::Widget::ClosedReason::kAcceptButtonClicked);
-  DCHECK_NE(widget->closed_reason(),
-            views::Widget::ClosedReason::kCancelButtonClicked);
+  CHECK_NE(widget->closed_reason(),
+           views::Widget::ClosedReason::kAcceptButtonClicked,
+           base::NotFatalUntil::M162);
+  CHECK_NE(widget->closed_reason(),
+           views::Widget::ClosedReason::kCancelButtonClicked,
+           base::NotFatalUntil::M162);
 }
 
 std::unique_ptr<views::MdTextButton>

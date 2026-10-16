@@ -18,8 +18,8 @@ bool SetTabAudioMuted(content::WebContents* contents,
                       bool mute,
                       TabMutedReason reason,
                       const std::string& extension_id) {
-  DCHECK(contents);
-  DCHECK(TabMutedReason::kNone != reason);
+  CHECK(contents, base::NotFatalUntil::M162);
+  CHECK(TabMutedReason::kNone != reason, base::NotFatalUntil::M162);
 
   // Set the metadata *before* muting the contents. This ensures that any
   // observers of the WebContents that monitor mute state changes get the proper
@@ -29,7 +29,7 @@ bool SetTabAudioMuted(content::WebContents* contents,
       LastMuteMetadata::FromWebContents(contents);
   metadata->reason = reason;
   if (reason == TabMutedReason::kExtension) {
-    DCHECK(!extension_id.empty());
+    CHECK(!extension_id.empty(), base::NotFatalUntil::M162);
     metadata->extension_id = extension_id;
   } else {
     metadata->extension_id.clear();

@@ -342,7 +342,7 @@ void SigninInterceptFirstRunExperienceDialog::
 
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(browser_->GetProfile()));
-  DCHECK(!sync_confirmation_callback_);
+  CHECK(!sync_confirmation_callback_, base::NotFatalUntil::M162);
   sync_confirmation_callback_ = std::move(callback);
   dialog_->DoNextStep(Step::kTurnOnSync, Step::kSyncConfirmation);
 }
@@ -417,7 +417,7 @@ void SigninInterceptFirstRunExperienceDialog::
     result = LoginUIService::ABORT_SYNC;
   }
 
-  DCHECK(sync_confirmation_callback_);
+  CHECK(sync_confirmation_callback_, base::NotFatalUntil::M162);
   std::move(sync_confirmation_callback_).Run(result);
   // `this` may now be deleted.
 }
@@ -487,7 +487,7 @@ void SigninInterceptFirstRunExperienceDialog::CloseModalDialog() {
   }
 }
 void SigninInterceptFirstRunExperienceDialog::ResizeNativeView(int height) {
-  DCHECK(dialog_delegate_);
+  CHECK(dialog_delegate_, base::NotFatalUntil::M162);
   dialog_delegate_->ResizeNativeView(height);
 }
 
@@ -497,8 +497,9 @@ SigninInterceptFirstRunExperienceDialog::GetModalDialogWebContentsForTesting() {
 }
 
 void SigninInterceptFirstRunExperienceDialog::OnModalDialogClosed() {
-  DCHECK(!dialog_delegate_ ||
-         dialog_delegate_observation_.IsObservingSource(dialog_delegate_));
+  CHECK(!dialog_delegate_ ||
+            dialog_delegate_observation_.IsObservingSource(dialog_delegate_),
+        base::NotFatalUntil::M162);
   dialog_delegate_observation_.Reset();
   dialog_delegate_ = nullptr;
   NotifyModalDialogClosed();
@@ -507,9 +508,9 @@ void SigninInterceptFirstRunExperienceDialog::OnModalDialogClosed() {
 void SigninInterceptFirstRunExperienceDialog::DoNextStep(
     Step expected_current_step,
     Step step) {
-  DCHECK_EQ(expected_current_step, current_step_);
+  CHECK_EQ(expected_current_step, current_step_, base::NotFatalUntil::M162);
   // Going to a previous step is not allowed.
-  DCHECK_GT(step, current_step_);
+  CHECK_GT(step, current_step_, base::NotFatalUntil::M162);
   current_step_ = step;
 
   switch (step) {
@@ -653,7 +654,7 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
     return;
   }
 
-  DCHECK(profile_customization_preloaded_contents_);
+  CHECK(profile_customization_preloaded_contents_, base::NotFatalUntil::M162);
   dialog_delegate_->SetWebContents(
       profile_customization_preloaded_contents_.get());
   dialog_delegate_->ResizeNativeView(ProfileCustomizationUI::kPreferredHeight);
@@ -667,8 +668,8 @@ void SigninInterceptFirstRunExperienceDialog::
 
 void SigninInterceptFirstRunExperienceDialog::SetDialogDelegate(
     SigninViewControllerDelegate* delegate) {
-  DCHECK(!dialog_delegate_);
-  DCHECK(!dialog_delegate_observation_.IsObserving());
+  CHECK(!dialog_delegate_, base::NotFatalUntil::M162);
+  CHECK(!dialog_delegate_observation_.IsObserving(), base::NotFatalUntil::M162);
   dialog_delegate_ = delegate;
   dialog_delegate_observation_.Observe(dialog_delegate_);
 }
@@ -685,7 +686,7 @@ void SigninInterceptFirstRunExperienceDialog::PreloadProfileCustomizationUI() {
       profile_customization_preloaded_contents_->GetWebUI()
           ->GetController()
           ->GetAs<ProfileCustomizationUI>();
-  DCHECK(web_ui);
+  CHECK(web_ui, base::NotFatalUntil::M162);
   web_ui->Initialize(
       base::BindOnce(&SigninInterceptFirstRunExperienceDialog::
                          ProfileCustomizationCloseOnCompletion,

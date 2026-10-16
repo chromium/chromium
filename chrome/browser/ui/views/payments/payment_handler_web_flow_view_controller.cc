@@ -301,7 +301,7 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   web_contents()->SetDelegate(this);
   content::WebContents* parent_tab_web_contents = state()->GetWebContents();
 
-  DCHECK_NE(parent_tab_web_contents, web_contents());
+  CHECK_NE(parent_tab_web_contents, web_contents(), base::NotFatalUntil::M162);
   content::PaymentAppProvider::GetOrCreateForWebContents(
       /*payment_request_web_contents=*/parent_tab_web_contents)
       ->SetOpenedWindow(
@@ -469,7 +469,7 @@ PaymentHandlerWebFlowViewController::GetWeakPtr() {
 
 void PaymentHandlerWebFlowViewController::VisibleSecurityStateChanged(
     content::WebContents* source) {
-  DCHECK_EQ(source, web_contents());
+  CHECK_EQ(source, web_contents(), base::NotFatalUntil::M162);
   if (!SslValidityChecker::IsValidPageInPaymentHandlerWindow(source)) {
     AbortPayment();
   } else {

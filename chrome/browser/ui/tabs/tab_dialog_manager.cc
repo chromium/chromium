@@ -125,7 +125,8 @@ gfx::Rect GetModalDialogBounds(views::Widget* widget,
 
     // The requested dialog bounds should never fall outside the bounds of the
     // transient parent.
-    DCHECK(dialog_screen_bounds.Intersects(host_screen_bounds));
+    CHECK(dialog_screen_bounds.Intersects(host_screen_bounds),
+          base::NotFatalUntil::M162);
 
     // Adjust the dialog bound to ensure it remains visible on the display.
     const gfx::Rect display_work_area =
@@ -302,7 +303,8 @@ TabDialogManager::~TabDialogManager() = default;
 
 std::unique_ptr<views::Widget> TabDialogManager::CreateTabScopedDialog(
     views::DialogDelegate* delegate) {
-  DCHECK_EQ(ui::mojom::ModalType::kChild, delegate->GetModalType());
+  CHECK_EQ(ui::mojom::ModalType::kChild, delegate->GetModalType(),
+           base::NotFatalUntil::M162);
   views::Widget* host = GetHostWidget();
   CHECK(host);
 

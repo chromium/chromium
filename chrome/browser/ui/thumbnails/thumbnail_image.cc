@@ -40,8 +40,8 @@ ThumbnailImage::Delegate::~Delegate() {
 ThumbnailImage::ThumbnailImage(Delegate* delegate, CompressedThumbnailData data)
     : delegate_(delegate), data_(std::move(data)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  DCHECK(delegate_);
-  DCHECK(!delegate_->thumbnail_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
+  CHECK(!delegate_->thumbnail_, base::NotFatalUntil::M162);
   delegate_->thumbnail_ = this;
 }
 
@@ -249,9 +249,9 @@ gfx::ImageSkia ThumbnailImage::UncompressImage(
 gfx::ImageSkia ThumbnailImage::CropPreviewImage(
     const gfx::ImageSkia& source_image,
     const gfx::Size& minimum_size) {
-  DCHECK(!source_image.isNull());
-  DCHECK(!source_image.size().IsEmpty());
-  DCHECK(!minimum_size.IsEmpty());
+  CHECK(!source_image.isNull(), base::NotFatalUntil::M162);
+  CHECK(!source_image.size().IsEmpty(), base::NotFatalUntil::M162);
+  CHECK(!minimum_size.IsEmpty(), base::NotFatalUntil::M162);
   const float desired_aspect =
       static_cast<float>(minimum_size.width()) / minimum_size.height();
   const float source_aspect =

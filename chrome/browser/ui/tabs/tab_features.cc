@@ -1481,7 +1481,7 @@ autofill::BubbleManager* TabFeatures::SetBubbleManagerForTesting(
 void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
                                       content::WebContents* old_contents,
                                       content::WebContents* new_contents) {
-  DCHECK_EQ(old_contents, tab->GetContents());
+  CHECK_EQ(old_contents, tab->GetContents(), base::NotFatalUntil::M162);
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
 

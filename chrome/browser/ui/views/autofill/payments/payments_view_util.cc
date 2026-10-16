@@ -312,7 +312,7 @@ END_METADATA
 
 PaymentsUiClosedReason GetPaymentsUiClosedReasonFromWidget(
     const views::Widget* widget) {
-  DCHECK(widget);
+  CHECK(widget, base::NotFatalUntil::M162);
   if (!widget->IsClosed()) {
     return PaymentsUiClosedReason::kUnknown;
   }

@@ -86,7 +86,7 @@ std::unique_ptr<views::View> GetBaseProfileLabel(
     const std::u16string& s3,
     std::u16string* accessible_content,
     bool enabled = true) {
-  DCHECK(accessible_content);
+  CHECK(accessible_content, base::NotFatalUntil::M162);
   std::unique_ptr<views::View> container = std::make_unique<views::View>();
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0);
@@ -144,7 +144,7 @@ std::unique_ptr<views::View> GetShippingAddressLabel(
     const autofill::AutofillProfile& profile,
     std::u16string* accessible_content,
     bool enabled) {
-  DCHECK(accessible_content);
+  CHECK(accessible_content, base::NotFatalUntil::M162);
   std::u16string name = profile.GetInfo(autofill::NAME_FULL, locale);
 
   std::u16string address =
@@ -259,7 +259,7 @@ std::unique_ptr<views::View> GetShippingAddressLabelWithMissingInfo(
     const PaymentsProfileComparator& comp,
     std::u16string* accessible_content,
     bool enabled) {
-  DCHECK(accessible_content);
+  CHECK(accessible_content, base::NotFatalUntil::M162);
   std::unique_ptr<views::View> base_label = GetShippingAddressLabel(
       type, locale, profile, accessible_content, enabled);
 
@@ -283,7 +283,7 @@ std::unique_ptr<views::View> GetContactInfoLabel(
     bool request_payer_phone,
     const PaymentsProfileComparator& comp,
     std::u16string* accessible_content) {
-  DCHECK(accessible_content);
+  CHECK(accessible_content, base::NotFatalUntil::M162);
   std::u16string name = request_payer_name
                             ? profile.GetInfo(autofill::NAME_FULL, locale)
                             : std::u16string();
@@ -348,7 +348,7 @@ std::unique_ptr<views::View> CreateShippingOptionLabel(
     const std::u16string& formatted_amount,
     bool emphasize_label,
     std::u16string* accessible_content) {
-  DCHECK(accessible_content);
+  CHECK(accessible_content, base::NotFatalUntil::M162);
   std::unique_ptr<views::View> container = std::make_unique<views::View>();
 
   auto layout = std::make_unique<views::BoxLayout>(

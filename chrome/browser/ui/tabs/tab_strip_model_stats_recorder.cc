@@ -99,7 +99,7 @@ void TabStripModelStatsRecorder::OnActiveTabChanged(
     TabInfo::Get(old_contents)->UpdateState(TabState::kInactive);
   }
 
-  DCHECK(new_contents);
+  CHECK(new_contents, base::NotFatalUntil::M162);
   TabInfo* tab_info = TabInfo::Get(new_contents);
   tab_info->UpdateState(TabState::kActive);
 
@@ -115,7 +115,7 @@ void TabStripModelStatsRecorder::OnActiveTabChanged(
 void TabStripModelStatsRecorder::OnTabReplaced(
     content::WebContents* old_contents,
     content::WebContents* new_contents) {
-  DCHECK(old_contents != new_contents);
+  CHECK(old_contents != new_contents, base::NotFatalUntil::M162);
   *TabInfo::Get(new_contents) = *TabInfo::Get(old_contents);
 
   std::replace(active_tab_history_.begin(), active_tab_history_.end(),

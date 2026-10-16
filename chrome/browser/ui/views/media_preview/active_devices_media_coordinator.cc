@@ -26,7 +26,7 @@ using EligibleDevices = MediaCoordinator::EligibleDevices;
 
 bool IsWithinWebContents(content::GlobalRenderFrameHostId render_frame_host_id,
                          base::WeakPtr<content::WebContents> web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   bool is_request_in_frame = false;
   web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&is_request_in_frame,

@@ -42,7 +42,7 @@ SaveCardBubbleViews::SaveCardBubbleViews(views::BubbleAnchor anchor_view,
                                          SaveCardBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
   SetButtonLabel(ui::mojom::DialogButton::kOk,
                  controller->GetAcceptButtonText());
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
@@ -189,7 +189,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
 }
 
 void SaveCardBubbleViews::InitFootnoteView(views::View* footnote_view) {
-  DCHECK(!footnote_view_);
+  CHECK(!footnote_view_, base::NotFatalUntil::M162);
   footnote_view_ = footnote_view;
   footnote_view_->SetID(DialogViewId::FOOTNOTE_VIEW);
 }

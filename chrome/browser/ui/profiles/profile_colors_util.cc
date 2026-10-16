@@ -62,7 +62,7 @@ ProfileThemeColors GetProfileThemeColorsFromHighlightColor(
 }
 
 size_t GenerateRandomIndex(size_t size) {
-  DCHECK_GT(size, 0u);
+  CHECK_GT(size, 0u, base::NotFatalUntil::M162);
   return static_cast<size_t>(base::RandIntInclusive(0, size - 1));
 }
 
@@ -289,11 +289,11 @@ chrome_colors::ColorInfo GenerateNewProfileColorWithGenerator(
     available_color_indices =
         GetAvailableColorIndices(std::set<ProfileThemeColors>(), std::nullopt);
   }
-  DCHECK(!available_color_indices.empty());
+  CHECK(!available_color_indices.empty(), base::NotFatalUntil::M162);
 
   size_t size = available_color_indices.size();
   size_t available_index = std::move(random_generator).Run(size);
-  DCHECK_LT(available_index, size);
+  CHECK_LT(available_index, size, base::NotFatalUntil::M162);
   size_t index = available_color_indices[available_index];
   return chrome_colors::kGeneratedColorsInfo[index];
 }

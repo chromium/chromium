@@ -194,7 +194,7 @@ void RecordToggleFocusGroupMetrics(bool is_unfocus,
 }  // namespace
 
 TabGroupModelFactory::TabGroupModelFactory() {
-  DCHECK(!factory_instance);
+  CHECK(!factory_instance, base::NotFatalUntil::M162);
   factory_instance = this;
 }
 
@@ -276,7 +276,7 @@ TabStripModel::TabStripModel(TabStripModelDelegate* delegate,
                              Profile* profile,
                              TabGroupModelFactory* group_model_factory)
     : delegate_(delegate), profile_(profile), selection_model_(this) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
 
   contents_data_ = std::make_unique<tabs::TabStripCollection>(false);
 
@@ -293,7 +293,7 @@ TabStripModel::~TabStripModel() {
 }
 
 void TabStripModel::SetTabStripUI(TabStripModelObserver* observer) {
-  DCHECK(!tab_strip_ui_was_set_);
+  CHECK(!tab_strip_ui_was_set_, base::NotFatalUntil::M162);
 
   std::vector<TabStripModelObserver*> new_observers{observer};
   for (auto& old_observer : observers_) {
@@ -1370,7 +1370,7 @@ void TabStripModel::SetOpenerOfTabAt(int index, tabs::TabInterface* opener) {
 
 int TabStripModel::GetIndexOfLastWebContentsOpenedBy(const WebContents* opener,
                                                      int start_index) const {
-  DCHECK(opener);
+  CHECK(opener, base::NotFatalUntil::M162);
   CHECK(ContainsIndex(start_index));
 
   absl::flat_hash_set<const WebContents*> opener_and_descendants;
@@ -1449,7 +1449,7 @@ bool TabStripModel::IsTabCollapsed(int index) const {
 
 bool TabStripModel::IsGroupCollapsed(
     const tab_groups::TabGroupId& group) const {
-  DCHECK(group_model_);
+  CHECK(group_model_, base::NotFatalUntil::M162);
 
   return group_model()->ContainsTabGroup(group) &&
          group_model()->GetTabGroup(group)->visual_data()->is_collapsed();
@@ -2078,8 +2078,9 @@ void TabStripModel::AddToExistingGroup(const std::vector<int> indices,
   CHECK(SupportsTabGroups());
 
   // Ensure that the indices are sorted and unique.
-  DCHECK(std::ranges::is_sorted(indices));
-  DCHECK(std::ranges::adjacent_find(indices) == indices.end());
+  CHECK(std::ranges::is_sorted(indices), base::NotFatalUntil::M162);
+  CHECK(std::ranges::adjacent_find(indices) == indices.end(),
+        base::NotFatalUntil::M162);
   CHECK(ContainsIndex(*(indices.begin())));
   CHECK(ContainsIndex(*(indices.rbegin())));
 
@@ -2094,7 +2095,7 @@ void TabStripModel::AddToGroupForRestore(const std::vector<int>& indices,
                                          const tab_groups::TabGroupId& group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  DCHECK(group_model_);
+  CHECK(group_model_, base::NotFatalUntil::M162);
   if (!group_model_) {
     return;
   }
@@ -2276,7 +2277,7 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
       new_selection_model.SetAnchorTab(new_selection_model.active_tab());
     }
 
-    DCHECK(!new_selection_model.empty());
+    CHECK(!new_selection_model.empty(), base::NotFatalUntil::M162);
 
     SetSelection(new_selection_model, TabStripModelObserver::CHANGE_REASON_NONE,
                  /*triggered_by_other_operation=*/false);
@@ -2808,16 +2809,16 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     }
 
     case CommandCopyURL:
-      DCHECK(delegate()->IsForWebApp());
+      CHECK(delegate()->IsForWebApp(), base::NotFatalUntil::M162);
       return true;
 
     case CommandGoBack:
-      DCHECK(delegate()->IsForWebApp());
+      CHECK(delegate()->IsForWebApp(), base::NotFatalUntil::M162);
       return delegate()->CanGoBack(GetWebContentsAt(context_index));
 
     case CommandCloseAllTabs:
-      DCHECK(delegate()->IsForWebApp());
-      DCHECK(web_app::HasPinnedHomeTab(this));
+      CHECK(delegate()->IsForWebApp(), base::NotFatalUntil::M162);
+      CHECK(web_app::HasPinnedHomeTab(this), base::NotFatalUntil::M162);
       return true;
 
     case CommandToggleVertical:
@@ -3528,7 +3529,7 @@ bool TabStripModel::WillContextMenuGroup(int index) {
   }
 
   std::vector<int> indices = GetIndicesForCommand(index);
-  DCHECK(!indices.empty());
+  CHECK(!indices.empty(), base::NotFatalUntil::M162);
 
   // If all tabs are in the same group, then we ungroup, otherwise we group.
   std::optional<tab_groups::TabGroupId> group = GetTabGroupForTab(indices[0]);
@@ -3811,7 +3812,8 @@ bool TabStripModel::HasIndicesClosedByCommand(int index,
   if (!ContainsIndex(index)) {
     return false;
   }
-  DCHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs);
+  CHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs,
+        base::NotFatalUntil::M162);
   bool is_selected = IsTabSelected(index);
   int last_unclosed_tab = -1;
   if (id == CommandCloseTabsToRight) {
@@ -3853,7 +3855,8 @@ std::vector<tabs::TabInterface*> TabStripModel::GetTabsClosedByCommand(
     return {};
   }
 
-  DCHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs);
+  CHECK(id == CommandCloseTabsToRight || id == CommandCloseOtherTabs,
+        base::NotFatalUntil::M162);
 
   tabs::TabInterface* invoked_tab = GetTabAtIndex(index);
 
@@ -4392,7 +4395,8 @@ void TabStripModel::SelectRelativeTab(TabRelativeDirection direction,
 
   // Ensure the active tab is not in a collapsed group so the while loop can
   // fallback on activating the active tab.
-  DCHECK(!start_group.has_value() || !IsGroupCollapsed(start_group.value()));
+  CHECK(!start_group.has_value() || !IsGroupCollapsed(start_group.value()),
+        base::NotFatalUntil::M162);
 
   std::optional<tab_groups::TabGroupId> focused_group = GetFocusedGroup();
   const int delta = direction == TabRelativeDirection::kNext ? 1 : -1;
@@ -4805,14 +4809,16 @@ void TabStripModel::AddToNewGroupImpl(const std::vector<int>& indices,
   // Verify that the group id is not being used by any existing group. Group ids
   // are generated randomly but a conflict should be almost impossible in
   // practice.
-  DCHECK([&]() {
-    for (const tabs::TabInterface* tab : *this) {
-      if (tab->GetGroup() == new_group) {
-        return false;
-      }
-    }
-    return true;
-  }());
+  CHECK(
+      [&]() {
+        for (const tabs::TabInterface* tab : *this) {
+          if (tab->GetGroup() == new_group) {
+            return false;
+          }
+        }
+        return true;
+      }(),
+      base::NotFatalUntil::M162);
 
   ExitFocusMode(TabGroupFocusExitReason::kGroupCreated);
 
@@ -5697,12 +5703,15 @@ void TabStripModel::FixOpeners(int index) {
 
   // Sanity check that none of the tabs' openers refer `old_tab` or
   // themselves.
-  DCHECK([&]() {
-    return std::none_of(begin(), end(), [&](tabs::TabInterface* tab) {
-      tabs::TabInterface* opener = static_cast<tabs::TabModel*>(tab)->opener();
-      return opener == old_tab || opener == tab;
-    });
-  }());
+  CHECK(
+      [&]() {
+        return std::none_of(begin(), end(), [&](tabs::TabInterface* tab) {
+          tabs::TabInterface* opener =
+              static_cast<tabs::TabModel*>(tab)->opener();
+          return opener == old_tab || opener == tab;
+        });
+      }(),
+      base::NotFatalUntil::M162);
 }
 
 std::optional<tab_groups::TabGroupId> TabStripModel::GetGroupToAssign(
@@ -5807,7 +5816,7 @@ void TabStripModel::OnActiveTabChanged(
       }
     }
   }
-  DCHECK(selection.new_model.active().has_value());
+  CHECK(selection.new_model.active().has_value(), base::NotFatalUntil::M162);
   const tabs::TabInterface* const new_opener =
       GetOpenerOfTabAt(selection.new_model.active().value());
 

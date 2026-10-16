@@ -327,7 +327,8 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (ExecuteCustomCommand(command_id, event_flags)) {
     return;
   }
-  DCHECK_NE(IDC_RECENT_TABS_NO_DEVICE_TABS, command_id);
+  CHECK_NE(IDC_RECENT_TABS_NO_DEVICE_TABS, command_id,
+           base::NotFatalUntil::M162);
 
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(browser_->GetProfile());
@@ -341,7 +342,8 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   if (IsCommandType(CommandType::Tab, command_id)) {
     const TabItems& tab_items = *GetTabVectorForCommandId(command_id);
     const TabItem& item = tab_items.at(command_id);
-    DCHECK(item.tab_id.is_valid() && item.url.is_valid());
+    CHECK(item.tab_id.is_valid() && item.url.is_valid(),
+          base::NotFatalUntil::M162);
 
     if (item.session_tag.empty()) {  // Restore tab of local session.
       base::RecordAction(
@@ -553,7 +555,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     }
 
     // Add the header for the device session.
-    DCHECK(!session->GetSessionName().empty());
+    CHECK(!session->GetSessionName().empty(), base::NotFatalUntil::M162);
     std::unique_ptr<ui::SimpleMenuModel> device_menu_model =
         CreateOtherDeviceSubMenu(session, tabs_in_session);
     const int command_id = GetAndIncrementNextMenuID();
@@ -568,7 +570,7 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
   }  // for all sessions
 
   // We are not supposed to get here unless at least some items were added.
-  DCHECK_GT(GetItemCount(), 0u);
+  CHECK_GT(GetItemCount(), 0u, base::NotFatalUntil::M162);
 }
 
 void RecentTabsSubMenuModel::BuildLocalTabItem(
@@ -587,7 +589,7 @@ void RecentTabsSubMenuModel::BuildLocalTabItem(
   local_tab_items_.emplace(command_id, item);
   AddTabFavicon(command_id, this, item.url);
   // We shouldn't get here if there is no recently closed title.
-  DCHECK(recent_tabs_title_index_.has_value());
+  CHECK(recent_tabs_title_index_.has_value(), base::NotFatalUntil::M162);
   // visual_data should only be populated if the tab was part of a tab group
   // when closed. We shouldn't set the minor icon for the item most recently
   // closed, as this creates visual clutter alongside the shortcut text.
@@ -963,7 +965,7 @@ void RecentTabsSubMenuModel::OnFaviconDataAvailable(
   }
   const std::optional<size_t> index_in_menu =
       menu_model->GetIndexOfCommandId(command_id);
-  DCHECK(index_in_menu.has_value());
+  CHECK(index_in_menu.has_value(), base::NotFatalUntil::M162);
   menu_model->SetIcon(index_in_menu.value(),
                       ui::ImageModel::FromImage(image_result.image));
   ui::MenuModelDelegate* delegate = menu_model_delegate();
@@ -975,7 +977,7 @@ void RecentTabsSubMenuModel::OnFaviconDataAvailable(
 
 RecentTabsSubMenuModel::TabItems*
 RecentTabsSubMenuModel::GetTabVectorForCommandId(int command_id) {
-  DCHECK(IsCommandType(CommandType::Tab, command_id));
+  CHECK(IsCommandType(CommandType::Tab, command_id), base::NotFatalUntil::M162);
   return IsCommandType(CommandType::RemoteTab, command_id) ? &remote_tab_items_
                                                            : &local_tab_items_;
 }
@@ -1012,7 +1014,7 @@ void RecentTabsSubMenuModel::ClearTabsFromOtherDevices() {
 
 sync_sessions::OpenTabsUIDelegate*
 RecentTabsSubMenuModel::GetOpenTabsUIDelegate() {
-  DCHECK(session_sync_service_);
+  CHECK(session_sync_service_, base::NotFatalUntil::M162);
   return session_sync_service_->GetOpenTabsUIDelegate();
 }
 

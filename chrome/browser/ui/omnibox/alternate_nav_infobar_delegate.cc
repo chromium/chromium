@@ -73,7 +73,7 @@ GURL AlternateNavInfoBarDelegate::GetLinkURL() const {
 
 bool AlternateNavInfoBarDelegate::LinkClicked(
     WindowOpenDisposition disposition) {
-  DCHECK(match_);
+  CHECK(match_, base::NotFatalUntil::M162);
   history::HistoryService* const history_service =
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::IMPLICIT_ACCESS);
@@ -141,11 +141,12 @@ AlternateNavInfoBarDelegate::AlternateNavInfoBarDelegate(
       destination_url_(destination_url),
       original_url_(original_url) {
   if (match_) {
-    DCHECK_EQ(destination_url_, match_->destination_url);
+    CHECK_EQ(destination_url_, match_->destination_url,
+             base::NotFatalUntil::M162);
   }
 
-  DCHECK(destination_url_.is_valid());
-  DCHECK(original_url_.is_valid());
+  CHECK(destination_url_.is_valid(), base::NotFatalUntil::M162);
+  CHECK(original_url_.is_valid(), base::NotFatalUntil::M162);
 
   substitutions_.emplace_back(base::UTF8ToUTF16(destination_url_.spec()),
                               /*is_link=*/true, std::nullopt);

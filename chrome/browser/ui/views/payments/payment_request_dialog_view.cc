@@ -115,7 +115,7 @@ views::View* PaymentRequestDialogView::GetInitiallyFocusedView() {
 }
 
 void PaymentRequestDialogView::OnDialogClosed() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!loading_view_shown_time_.is_null()) {
     base::UmaHistogramTimes(kLoadingViewShownDurationAbortedHistogramName,
                             base::TimeTicks::Now() - loading_view_shown_time_);
@@ -658,9 +658,9 @@ PaymentRequestDialogView::PaymentRequestDialogView(
     base::WeakPtr<PaymentRequest> request,
     base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer)
     : request_(request), observer_for_testing_(observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(request);
-  DCHECK(request->spec());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(request, base::NotFatalUntil::M162);
+  CHECK(request->spec(), base::NotFatalUntil::M162);
 
   // Observe our top-level browser window widget, in order to reject the Payment
   // Request/Handler dialog if the window is resized (programmatically or by the
@@ -782,7 +782,7 @@ void PaymentRequestDialogView::ViewHierarchyChanged(
   // view's descendants, dispose of the controller.
   if (!details.is_add &&
       controller_map_.find(details.child) != controller_map_.end()) {
-    DCHECK(!details.move_view);
+    CHECK(!details.move_view, base::NotFatalUntil::M162);
     controller_map_.erase(details.child);
   }
 }

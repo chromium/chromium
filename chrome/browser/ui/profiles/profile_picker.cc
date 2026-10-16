@@ -183,7 +183,7 @@ ProfilePicker::Params::Params(EntryPoint entry_point,
 // static
 bool ProfilePicker::Shown() {
   PrefService* prefs = g_browser_process->local_state();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M162);
   return prefs->GetBoolean(prefs::kBrowserProfilePickerShown);
 }
 

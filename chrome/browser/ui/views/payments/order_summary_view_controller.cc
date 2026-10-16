@@ -137,8 +137,8 @@ OrderSummaryViewController::OrderSummaryViewController(
     base::WeakPtr<PaymentRequestState> state,
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog) {
-  DCHECK(spec);
-  DCHECK(state);
+  CHECK(spec, base::NotFatalUntil::M162);
+  CHECK(state, base::NotFatalUntil::M162);
   spec->AddObserver(this);
   state->AddObserver(this);
 }

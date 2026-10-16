@@ -643,8 +643,9 @@ void LensSearchController::HideOverlay() {
   }
 
   // This method should only be called when the side panel is open.
-  DCHECK(lens_overlay_side_panel_coordinator_->state() !=
-         lens::LensOverlaySidePanelCoordinator::State::kOff);
+  CHECK(lens_overlay_side_panel_coordinator_->state() !=
+            lens::LensOverlaySidePanelCoordinator::State::kOff,
+        base::NotFatalUntil::M162);
 
   // If the overlay is showing, the overlay needs to fade out. Play the fade out
   // animation and then clean up the rest of the UI afterwards.
@@ -1140,7 +1141,7 @@ void LensSearchController::OnOverlayHidden(
     // TODO(crbug.com/440608864): Make this a CHECK once this is verified.
     if (!dismissal_source.has_value()) {
       // Exit early to avoid a crash.
-      DCHECK(dismissal_source.has_value());
+      CHECK(dismissal_source.has_value(), base::NotFatalUntil::M162);
       return;
     }
     CloseLensPart2(dismissal_source.value());

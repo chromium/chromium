@@ -204,7 +204,7 @@ void AutofillProgressDialogViews::InvalidateControllerForCallbacks() {
 }
 
 void AutofillProgressDialogViews::AddedToWidget() {
-  DCHECK(progress_throbber_);
+  CHECK(progress_throbber_, base::NotFatalUntil::M162);
   progress_throbber_->Start();
 
   GetBubbleFrameView()->SetTitleView(

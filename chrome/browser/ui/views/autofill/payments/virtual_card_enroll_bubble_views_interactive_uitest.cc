@@ -66,7 +66,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
         static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(
                 browser()->GetTabStripModel()->GetActiveWebContents()));
-    DCHECK(controller);
+    CHECK(controller, base::NotFatalUntil::M162);
     CreateVirtualCardEnrollmentFields();
   }
 
@@ -165,7 +165,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
         BrowserView::GetBrowserViewForBrowser(browser());
     auto* provider = browser_view->toolbar_button_provider();
     auto* icon = provider->GetPageActionViewInterface(kActionVirtualCardEnroll);
-    DCHECK(icon);
+    CHECK(icon, base::NotFatalUntil::M162);
     return icon;
   }
 

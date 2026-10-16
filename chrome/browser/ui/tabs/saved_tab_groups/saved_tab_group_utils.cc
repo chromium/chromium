@@ -169,7 +169,7 @@ void SavedTabGroupUtils::RemoveGroupFromTabstrip(
   BrowserWindowInterface* const browser_with_local_group_id =
       browser ? browser
               : SavedTabGroupUtils::GetBrowserWithTabGroupId(local_group);
-  DCHECK(browser_with_local_group_id);
+  CHECK(browser_with_local_group_id, base::NotFatalUntil::M162);
   if (!browser_with_local_group_id) {
     return;
   }

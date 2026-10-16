@@ -116,7 +116,8 @@ void OmniboxController::StartZeroSuggestPrefetch() {
 void OmniboxController::OnResultChanged(AutocompleteController* controller,
                                         bool default_match_changed) {
   TRACE_EVENT0("omnibox", "OmniboxController::OnResultChanged");
-  DCHECK(controller == autocomplete_controller_.get());
+  CHECK(controller == autocomplete_controller_.get(),
+        base::NotFatalUntil::M162);
 
   // OnResultChanged will be also called upon the first user interaction
   // with the omnibox to show a new result.

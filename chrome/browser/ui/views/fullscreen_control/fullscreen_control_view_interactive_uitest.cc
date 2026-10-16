@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
                        NoFullscreenPopupOnBrowserFullscreen) {
   EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  DCHECK(browser_view);
+  CHECK(browser_view, base::NotFatalUntil::M162);
   ASSERT_TRUE(browser_view->IsFullscreen());
   ASSERT_FALSE(IsPopupCreated());
 }

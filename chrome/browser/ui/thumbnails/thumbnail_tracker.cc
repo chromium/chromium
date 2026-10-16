@@ -104,7 +104,7 @@ scoped_refptr<ThumbnailImage> ThumbnailTracker::GetThumbnailFromTabHelper(
   if (auto* const thumbnail_helper =
           tab ? ThumbnailTabHelper::From(tab) : nullptr) {
     auto thumbnail = thumbnail_helper->thumbnail();
-    DCHECK(thumbnail);
+    CHECK(thumbnail, base::NotFatalUntil::M162);
     return thumbnail;
   } else {
     DVLOG(1) << "ThumbnailTabHelper doesn't exist for tab";

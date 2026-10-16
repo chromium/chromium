@@ -38,7 +38,7 @@ OfferNotificationBubbleViews::OfferNotificationBubbleViews(
                                 web_contents,
                                 /*autosize=*/true),
       controller_(controller) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
@@ -109,8 +109,9 @@ void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
   if (!widget->IsClosed()) {
     return;
   }
-  DCHECK_NE(widget->closed_reason(),
-            views::Widget::ClosedReason::kCancelButtonClicked);
+  CHECK_NE(widget->closed_reason(),
+           views::Widget::ClosedReason::kCancelButtonClicked,
+           base::NotFatalUntil::M162);
 }
 
 void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {
@@ -142,7 +143,7 @@ void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {
       views::BoxLayout::CrossAxisAlignment::kStart);
 
   const AutofillOfferData* offer = controller_->GetOffer();
-  DCHECK(offer);
+  CHECK(offer, base::NotFatalUntil::M162);
   const std::string& value_prop_text =
       offer->GetDisplayStrings().value_prop_text;
   // Add the first line of `value_prop_text` with see details link.
@@ -218,7 +219,8 @@ void OfferNotificationBubbleViews::InitWithWalletDirectOfferContent() {
 }
 
 void OfferNotificationBubbleViews::OnOfferDetailsLinkClicked() {
-  DCHECK(controller_->GetOffer()->GetOfferDetailsUrl().is_valid());
+  CHECK(controller_->GetOffer()->GetOfferDetailsUrl().is_valid(),
+        base::NotFatalUntil::M162);
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(controller_->GetOffer()->GetOfferDetailsUrl()),

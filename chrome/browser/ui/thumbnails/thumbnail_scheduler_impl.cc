@@ -31,8 +31,9 @@ ThumbnailSchedulerImpl::ThumbnailSchedulerImpl(int max_total_captures,
                                                int max_low_priority_captures)
     : max_total_captures_(max_total_captures),
       max_low_priority_captures_(max_low_priority_captures) {
-  DCHECK_GT(max_total_captures_, 0);
-  DCHECK_GE(max_total_captures_, max_low_priority_captures_);
+  CHECK_GT(max_total_captures_, 0, base::NotFatalUntil::M162);
+  CHECK_GE(max_total_captures_, max_low_priority_captures_,
+           base::NotFatalUntil::M162);
 }
 
 ThumbnailSchedulerImpl::~ThumbnailSchedulerImpl() = default;
@@ -145,7 +146,8 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
 
   // A high priority tab may have been deprioritized, so the low
   // priority quota may be off by one.
-  DCHECK_LE(lo_prio_capture_count_, lo_prio_quota + 1);
+  CHECK_LE(lo_prio_capture_count_, lo_prio_quota + 1,
+           base::NotFatalUntil::M162);
 
   // A new high priority capture may preempt an existing low priority one. This
   // happens in two cases:
@@ -159,14 +161,14 @@ void ThumbnailSchedulerImpl::Schedule(TabNode* tab_node,
   // a new one if below the quota. Note the latter cannot happen if a
   // high priority tab was scheduled above.
   if (lo_prio_capture_count_ > lo_prio_quota) {
-    DCHECK_EQ(descheduled_tab, nullptr);
+    CHECK_EQ(descheduled_tab, nullptr, base::NotFatalUntil::M162);
     descheduled_tab = lo_prio_capturing_.tail()->value();
     descheduled_tab->RemoveFromList();
     lo_prio_waiting_.Append(descheduled_tab);
     lo_prio_capture_count_ -= 1;
   } else if (lo_prio_capture_count_ < lo_prio_quota &&
              !lo_prio_waiting_.empty()) {
-    DCHECK_EQ(scheduled_tab, nullptr);
+    CHECK_EQ(scheduled_tab, nullptr, base::NotFatalUntil::M162);
     scheduled_tab = lo_prio_waiting_.head()->value();
     scheduled_tab->RemoveFromList();
     lo_prio_capturing_.Append(scheduled_tab);

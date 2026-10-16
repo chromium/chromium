@@ -185,7 +185,7 @@ PaymentRequestItemList::~PaymentRequestItemList() = default;
 
 void PaymentRequestItemList::AddItem(
     std::unique_ptr<PaymentRequestItemList::Item> item) {
-  DCHECK_EQ(this, item->list());
+  CHECK_EQ(this, item->list(), base::NotFatalUntil::M162);
   if (!items_.empty()) {
     item->set_previous_row(items_.back()->AsWeakPtr());
   }
@@ -218,7 +218,7 @@ std::unique_ptr<views::View> PaymentRequestItemList::CreateListView() {
 }
 
 void PaymentRequestItemList::SelectItem(PaymentRequestItemList::Item* item) {
-  DCHECK_EQ(this, item->list());
+  CHECK_EQ(this, item->list(), base::NotFatalUntil::M162);
   if (selected_item_ == item) {
     return;
   }

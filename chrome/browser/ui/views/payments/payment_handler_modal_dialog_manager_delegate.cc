@@ -51,8 +51,8 @@ PaymentHandlerModalDialogManagerDelegate::
 void PaymentHandlerModalDialogManagerDelegate::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {
-  DCHECK(web_contents);
-  DCHECK_EQ(web_contents_, web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
+  CHECK_EQ(web_contents_, web_contents, base::NotFatalUntil::M162);
   if (!blocked) {
     web_contents->Focus();
   }
@@ -88,13 +88,13 @@ PaymentHandlerModalDialogManagerDelegate::GetWebContentsModalDialogHost(
 
 bool PaymentHandlerModalDialogManagerDelegate::IsWebContentsVisible(
     content::WebContents* web_contents) {
-  DCHECK_EQ(web_contents_, web_contents);
+  CHECK_EQ(web_contents_, web_contents, base::NotFatalUntil::M162);
   return platform_util::IsVisible(web_contents->GetNativeView());
 }
 
 void PaymentHandlerModalDialogManagerDelegate::SetWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   web_contents_ = web_contents;
 }
 

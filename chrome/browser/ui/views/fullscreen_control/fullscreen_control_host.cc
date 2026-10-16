@@ -191,7 +191,8 @@ void FullscreenControlHost::OnMouseEvent(const ui::MouseEvent& event) {
         Hide(true);
       }
     } else {
-      DCHECK_EQ(InputEntryMethod::NOT_ACTIVE, input_entry_method_);
+      CHECK_EQ(InputEntryMethod::NOT_ACTIVE, input_entry_method_,
+               base::NotFatalUntil::M162);
       if (!in_mouse_cooldown_mode_ &&
           event.y() <= kShowFullscreenExitControlHeight) {
         // If the exit fullscreen prompt is being shown (say user just pressed
@@ -218,7 +219,7 @@ void FullscreenControlHost::OnTouchEvent(const ui::TouchEvent& event) {
     return;
   }
 
-  DCHECK(IsVisible());
+  CHECK(IsVisible(), base::NotFatalUntil::M162);
 
   // Hide the popup if it is showing and the user touches outside of the popup.
   if (event.type() == ui::EventType::kTouchPressed && !IsAnimating()) {

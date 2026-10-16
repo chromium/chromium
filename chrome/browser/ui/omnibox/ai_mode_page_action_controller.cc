@@ -261,13 +261,13 @@ bool AiModePageActionController::ShouldShowPageAction(
 
 void AiModePageActionController::OnPageActionIconShown(
     const page_actions::PageActionState& page_action) {
-  DCHECK_EQ(page_action.action_id, kActionAiMode);
+  CHECK_EQ(page_action.action_id, kActionAiMode, base::NotFatalUntil::M162);
   is_visible_ = true;
 }
 
 void AiModePageActionController::OnPageActionIconHidden(
     const page_actions::PageActionState& page_action) {
-  DCHECK_EQ(page_action.action_id, kActionAiMode);
+  CHECK_EQ(page_action.action_id, kActionAiMode, base::NotFatalUntil::M162);
   is_visible_ = false;
 }
 

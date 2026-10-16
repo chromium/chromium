@@ -223,7 +223,7 @@ bool CardUnmaskPromptViews::IsDialogButtonEnabled(
     return true;
   }
 
-  DCHECK_EQ(ui::mojom::DialogButton::kOk, button);
+  CHECK_EQ(ui::mojom::DialogButton::kOk, button, base::NotFatalUntil::M162);
 
   return cvc_input_->GetEnabled() &&
          controller_->InputCvcIsValid(cvc_input_->GetText()) &&

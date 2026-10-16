@@ -113,7 +113,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, loop_.QuitWhenIdleClosure(), base::Milliseconds(200));
     } else {
-      DCHECK(observation_.IsObserving());
+      CHECK(observation_.IsObserving(), base::NotFatalUntil::M162);
       observation_.Reset();
       if (!views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
         // Press DOWN to select the first item, then RETURN to select it. Only

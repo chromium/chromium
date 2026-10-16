@@ -36,7 +36,7 @@ ThumbnailReadinessTracker::ThumbnailReadinessTracker(
     ReadinessChangeCallback callback)
     : content::WebContentsObserver(web_contents),
       callback_(std::move(callback)) {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M162);
 }
 
 ThumbnailReadinessTracker::~ThumbnailReadinessTracker() = default;

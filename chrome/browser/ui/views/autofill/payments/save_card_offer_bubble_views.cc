@@ -124,11 +124,12 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
     return true;
   }
 
-  DCHECK_EQ(ui::mojom::DialogButton::kOk, button);
+  CHECK_EQ(ui::mojom::DialogButton::kOk, button, base::NotFatalUntil::M162);
   if (cardholder_name_textfield_) {
     // Make sure we are not requesting cardholder name and expiration date at
     // the same time.
-    DCHECK(!month_input_dropdown_ && !year_input_dropdown_);
+    CHECK(!month_input_dropdown_ && !year_input_dropdown_,
+          base::NotFatalUntil::M162);
     // If requesting the user confirm the name, it cannot be blank and must be
     // a valid cardholder name.
     std::u16string trimmed_text;
@@ -141,7 +142,7 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
   if (month_input_dropdown_ || year_input_dropdown_) {
     // Make sure we are not requesting cardholder name and expiration date at
     // the same time.
-    DCHECK(!cardholder_name_textfield_);
+    CHECK(!cardholder_name_textfield_, base::NotFatalUntil::M162);
     int month_value = 0, year_value = 0;
     if (!base::StringToInt(
             month_input_dropdown_->GetModel()->GetItemAt(
@@ -192,7 +193,7 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
 void SaveCardOfferBubbleViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  DCHECK_EQ(cardholder_name_textfield_, sender);
+  CHECK_EQ(cardholder_name_textfield_, sender, base::NotFatalUntil::M162);
   DialogModelChanged();
 }
 
@@ -306,7 +307,7 @@ SaveCardOfferBubbleViews::CreateRequestCardholderNameForAccountCreationView() {
 std::unique_ptr<views::Textfield>
 SaveCardOfferBubbleViews::CreateCardholderNameTextfield(
     const std::u16string& prefilled_name) {
-  DCHECK(!cardholder_name_textfield_);
+  CHECK(!cardholder_name_textfield_, base::NotFatalUntil::M162);
   auto cardholder_name_textfield = std::make_unique<views::Textfield>();
   cardholder_name_textfield->set_controller(this);
   cardholder_name_textfield->SetID(DialogViewId::CARDHOLDER_NAME_TEXTFIELD);

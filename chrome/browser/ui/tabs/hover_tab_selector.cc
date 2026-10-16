@@ -13,7 +13,7 @@
 
 HoverTabSelector::HoverTabSelector(TabStripModel* tab_strip_model)
     : tab_strip_model_(tab_strip_model), tab_transition_tab_index_(-1) {
-  DCHECK(tab_strip_model_);
+  CHECK(tab_strip_model_, base::NotFatalUntil::M162);
 }
 
 HoverTabSelector::~HoverTabSelector() = default;
@@ -48,8 +48,9 @@ void HoverTabSelector::CancelTabTransition() {
 }
 
 void HoverTabSelector::PerformTabTransition() {
-  DCHECK(tab_transition_tab_index_ >= 0 &&
-         tab_transition_tab_index_ < tab_strip_model_->count());
+  CHECK(tab_transition_tab_index_ >= 0 &&
+            tab_transition_tab_index_ < tab_strip_model_->count(),
+        base::NotFatalUntil::M162);
   tab_strip_model_->ActivateTabAt(
       tab_transition_tab_index_,
       TabStripUserGestureDetails(

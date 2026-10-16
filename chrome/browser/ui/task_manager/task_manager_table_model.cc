@@ -366,7 +366,7 @@ TaskManagerTableModel::TaskManagerTableModel(
       table_model_observer_(nullptr),
       stringifier_(new TaskManagerValuesStringifier),
       display_category_(initial_display_category) {
-  DCHECK(delegate);
+  CHECK(delegate, base::NotFatalUntil::M162);
   StartUpdating();
 }
 
@@ -770,8 +770,8 @@ std::u16string TaskManagerTableModel::GetAXNameForHeaderCell(
 std::u16string TaskManagerTableModel::GetAXNameForRow(
     size_t row,
     const std::vector<int>& visible_column_ids) const {
-  DCHECK_LT(row, RowCount());
-  DCHECK(!visible_column_ids.empty());
+  CHECK_LT(row, RowCount(), base::NotFatalUntil::M162);
+  CHECK(!visible_column_ids.empty(), base::NotFatalUntil::M162);
 
   // Holds all visible column values for the `row`.
   std::vector<std::u16string> column_names;
@@ -799,7 +799,7 @@ std::u16string TaskManagerTableModel::GetAXNameForRow(
     if (mismatch_task - current_task > 1) {
       const TaskIdList group_tasks =
           observed_task_manager()->GetIdsOfTasksSharingSameProcess(tasks_[row]);
-      DCHECK(!group_tasks.empty());
+      CHECK(!group_tasks.empty(), base::NotFatalUntil::M162);
       other_task_titles.reserve(group_tasks.size() - 1);
       // If there is at least one task other than the `row` in the same task
       // group existing in `tasks_`, insert the connect text and the title of

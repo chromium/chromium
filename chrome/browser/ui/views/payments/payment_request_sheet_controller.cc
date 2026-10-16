@@ -84,7 +84,7 @@ class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
     views::View* title =
         GetViewByID(static_cast<int>(payments::DialogViewID::SHEET_TITLE));
     views::FocusManager* focus = GetFocusManager();
-    DCHECK(focus);
+    CHECK(focus, base::NotFatalUntil::M162);
 
     title->RequestFocus();
 
@@ -471,7 +471,7 @@ PaymentRequestSheetController::CreateExtraFooterView() {
 
 void PaymentRequestSheetController::PopulateSheetHeaderView(
     views::View* container) {
-  DCHECK_EQ(container, header_view_);
+  CHECK_EQ(container, header_view_, base::NotFatalUntil::M162);
 
   container->SetID(static_cast<int>(DialogViewID::PAYMENT_APP_HEADER));
   container->SetBackground(
@@ -566,7 +566,7 @@ views::View* PaymentRequestSheetController::GetFirstFocusedView() {
     return secondary_button_;
   }
 
-  DCHECK(content_view_);
+  CHECK(content_view_, base::NotFatalUntil::M162);
   return content_view_;
 }
 

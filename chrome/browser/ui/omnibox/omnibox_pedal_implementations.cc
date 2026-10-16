@@ -2053,7 +2053,7 @@ GetPedalImplementations(OmniboxPedalProfileType profile_type,
             .insert(
                 std::make_pair(pedal->PedalId(), base::WrapRefCounted(pedal)))
             .second;
-    DCHECK(inserted);
+    CHECK(inserted, base::NotFatalUntil::M162);
   };
 
   const bool otr =

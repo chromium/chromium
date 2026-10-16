@@ -64,8 +64,8 @@ class ProfileItem : public PaymentRequestItemList::Item {
   // PaymentRequestItemList::Item:
   std::unique_ptr<views::View> CreateContentView(
       std::u16string* accessible_content) override {
-    DCHECK(profile_);
-    DCHECK(accessible_content);
+    CHECK(profile_, base::NotFatalUntil::M162);
+    CHECK(accessible_content, base::NotFatalUntil::M162);
 
     return controller_->GetLabel(profile_, accessible_content);
   }
@@ -111,7 +111,7 @@ class ShippingProfileViewController : public ProfileListViewController,
                                 base::WeakPtr<PaymentRequestState> state,
                                 base::WeakPtr<PaymentRequestDialogView> dialog)
       : ProfileListViewController(spec, state, dialog) {
-    DCHECK(spec);
+    CHECK(spec, base::NotFatalUntil::M162);
     spec->AddObserver(this);
     PopulateList();
   }
@@ -241,7 +241,7 @@ class ContactProfileViewController : public ProfileListViewController {
                                base::WeakPtr<PaymentRequestState> state,
                                base::WeakPtr<PaymentRequestDialogView> dialog)
       : ProfileListViewController(spec, state, dialog) {
-    DCHECK(spec);
+    CHECK(spec, base::NotFatalUntil::M162);
     PopulateList();
   }
 
@@ -256,7 +256,7 @@ class ContactProfileViewController : public ProfileListViewController {
   std::unique_ptr<views::View> GetLabel(
       autofill::AutofillProfile* profile,
       std::u16string* accessible_content) override {
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M162);
     return GetContactInfoLabel(
         AddressStyleType::DETAILED, state()->GetApplicationLocale(), *profile,
         /*request_payer_name=*/spec() && spec()->request_payer_name(),

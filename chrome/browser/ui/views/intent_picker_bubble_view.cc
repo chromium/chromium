@@ -412,7 +412,7 @@ class IntentPickerAppListView
 
     SetBackgroundColor(ui::kColorBubbleBackground);
     SetContents(std::move(scrollable_view));
-    DCHECK(!contents()->children().empty());
+    CHECK(!contents()->children().empty(), base::NotFatalUntil::M162);
     const int row_height =
         contents()->children().front()->GetPreferredSize().height();
     // Use |kMaxAppResults| as a measure of how many apps we want to show.
@@ -423,8 +423,9 @@ class IntentPickerAppListView
   ~IntentPickerAppListView() override = default;
 
   void SetSelectedIndex(std::optional<size_t> index) override {
-    DCHECK(index.has_value());  // List-style intent picker does not support
-                                // having no selection.
+    CHECK(index.has_value(),
+          base::NotFatalUntil::M162);  // List-style intent picker does not
+                                       // support having no selection.
     SetSelectedAppIndex(index.value(), nullptr);
   }
 
@@ -497,7 +498,7 @@ class IntentPickerAppListView
 
   IntentPickerLabelButton* GetIntentPickerLabelButtonAt(size_t index) {
     const auto& children = contents()->children();
-    DCHECK_LT(index, children.size());
+    CHECK_LT(index, children.size(), base::NotFatalUntil::M162);
     return views::AsViewClass<IntentPickerLabelButton>(children[index]);
   }
 
@@ -540,7 +541,7 @@ views::Widget* IntentPickerBubbleView::ShowBubble(
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(intent_picker_bubble_);
 
-  DCHECK(intent_picker_bubble_->HasCandidates());
+  CHECK(intent_picker_bubble_->HasCandidates(), base::NotFatalUntil::M162);
   intent_picker_bubble_->ShowForReason(DisplayReason::USER_GESTURE);
 
   intent_picker_bubble_->SelectDefaultItem();
@@ -584,7 +585,7 @@ void IntentPickerBubbleView::OnDialogAccepted() {
                         remember_selection_checkbox_->GetChecked();
   auto selected_index = GetSelectedIndex();
   // Dialog cannot be accepted when there is no selection.
-  DCHECK(selected_index.has_value());
+  CHECK(selected_index.has_value(), base::NotFatalUntil::M162);
   RunCallbackAndCloseBubble(app_info_[selected_index.value()].launch_name,
                             app_info_[selected_index.value()].type,
                             apps::IntentPickerCloseReason::OPEN_APP,
@@ -702,8 +703,8 @@ void IntentPickerBubbleView::OnAppSelected(std::optional<size_t> index,
   }
 
   if (accepted) {
-    DCHECK(index.has_value());
-    DCHECK(event);
+    CHECK(index.has_value(), base::NotFatalUntil::M162);
+    CHECK(event, base::NotFatalUntil::M162);
     if (GetDialogClientView() &&
         GetDialogClientView()->IsPossiblyUnintendedInteraction(
             *event,
@@ -789,7 +790,7 @@ void IntentPickerBubbleView::RunCallbackAndCloseBubble(
   ClearIntentPickerBubbleView();
   if (!intent_picker_cb_.is_null()) {
     // Calling Run() will make |intent_picker_cb_| null.
-    DCHECK(!should_persist || !launch_name.empty());
+    CHECK(!should_persist || !launch_name.empty(), base::NotFatalUntil::M162);
     std::move(intent_picker_cb_)
         .Run(launch_name, entry_type, close_reason, should_persist);
   }

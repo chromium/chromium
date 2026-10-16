@@ -62,7 +62,7 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
                                kMinExistingTabGroupCommandId,
                                TabStripModel::CommandAddToNewGroup),
       tab_menu_model_delegate_(tab_menu_model_delegate) {
-  DCHECK(model->SupportsTabGroups());
+  CHECK(model->SupportsTabGroups(), base::NotFatalUntil::M162);
   std::vector<MenuItemInfo> menu_item_infos;
 
   menu_item_infos = GetMenuItemsFromModel(model);
@@ -220,7 +220,8 @@ void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(size_t target_index) {
     return;
   }
 
-  DCHECK_LE(size_t(target_index), target_index_to_group_mapping_.size());
+  CHECK_LE(size_t(target_index), target_index_to_group_mapping_.size(),
+           base::NotFatalUntil::M162);
   TabGroupModel* group_model = model()->group_model();
   if (!group_model) {
     return;

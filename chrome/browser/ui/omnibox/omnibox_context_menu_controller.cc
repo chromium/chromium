@@ -883,7 +883,7 @@ void OmniboxContextMenuController::OnFaviconDataAvailable(
     target_menu_model = shared_tabs_menu_model_.get();
     index_in_menu = target_menu_model->GetIndexOfCommandId(command_id);
   }
-  DCHECK(index_in_menu.has_value());
+  CHECK(index_in_menu.has_value(), base::NotFatalUntil::M162);
   target_menu_model->SetIcon(index_in_menu.value(),
                              ui::ImageModel::FromImage(image_result.image));
   // Update the screen after updating the icon.

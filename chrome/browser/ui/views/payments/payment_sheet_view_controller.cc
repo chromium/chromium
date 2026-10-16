@@ -223,7 +223,7 @@ std::unique_ptr<views::View> CreateInlineCurrencyAmountItem(
     const std::u16string& amount,
     bool hint_color,
     bool bold) {
-  DCHECK(!bold || !hint_color);
+  CHECK(!bold || !hint_color, base::NotFatalUntil::M162);
   return views::Builder<views::TableLayoutView>()
       .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
                  views::TableLayout::kFixedSize,
@@ -331,7 +331,7 @@ class PaymentSheetRowBuilder {
       int n,
       const std::u16string& button_string,
       bool button_enabled) {
-    DCHECK(accessible_content_.empty());
+    CHECK(accessible_content_.empty(), base::NotFatalUntil::M162);
     std::unique_ptr<PreviewEliderLabel> content_view =
         std::make_unique<PreviewEliderLabel>(preview_text, format_string, n,
                                              views::style::STYLE_HINT);
@@ -381,8 +381,8 @@ PaymentSheetViewController::PaymentSheetViewController(
     base::WeakPtr<PaymentRequestState> state,
     base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog) {
-  DCHECK(spec);
-  DCHECK(state);
+  CHECK(spec, base::NotFatalUntil::M162);
+  CHECK(state, base::NotFatalUntil::M162);
   spec->AddObserver(this);
   state->AddObserver(this);
 }
@@ -635,7 +635,7 @@ PaymentSheetViewController::CreatePaymentSheetSummaryRow() {
 std::unique_ptr<views::View>
 PaymentSheetViewController::CreateShippingSectionContent(
     std::u16string* accessible_content) {
-  DCHECK(accessible_content);
+  CHECK(accessible_content, base::NotFatalUntil::M162);
   autofill::AutofillProfile* profile = state()->selected_shipping_profile();
   if (!profile) {
     return std::make_unique<views::Label>(std::u16string());
@@ -911,10 +911,10 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
   std::u16string begin_tag = u"BEGIN_LINK";
   std::u16string end_tag = u"END_LINK";
   size_t link_begin = data_source.find(begin_tag);
-  DCHECK(link_begin != std::u16string::npos);
+  CHECK(link_begin != std::u16string::npos, base::NotFatalUntil::M162);
 
   size_t link_end = data_source.find(end_tag);
-  DCHECK(link_end != std::u16string::npos);
+  CHECK(link_end != std::u16string::npos, base::NotFatalUntil::M162);
 
   size_t link_length = link_end - link_begin - begin_tag.size();
   data_source.erase(link_end, end_tag.size());

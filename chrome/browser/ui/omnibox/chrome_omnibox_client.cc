@@ -461,8 +461,8 @@ gfx::Image ChromeOmniboxClient::GetSizedIcon(const gfx::Image& icon) const {
   // In touch mode, icons are 20x20. FaviconCache and ExtensionIconManager both
   // guarantee favicons and extension icons will be 16x16, so add extra padding
   // around them to align them vertically with the other vector icons.
-  DCHECK_GE(icon_size, icon.Height());
-  DCHECK_GE(icon_size, icon.Width());
+  CHECK_GE(icon_size, icon.Height(), base::NotFatalUntil::M162);
+  CHECK_GE(icon_size, icon.Width(), base::NotFatalUntil::M162);
   auto padding_border = gfx::Insets::VH((icon_size - icon.Height()) / 2,
                                         (icon_size - icon.Width()) / 2);
   if (!padding_border.IsEmpty()) {
@@ -1116,7 +1116,8 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
     return;
   }
 
-  DCHECK(!AutocompleteMatch::IsSearchType(match.type));
+  CHECK(!AutocompleteMatch::IsSearchType(match.type),
+        base::NotFatalUntil::M162);
 
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
       ->StartPrerendering(match.destination_url, *web_contents);

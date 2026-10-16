@@ -82,8 +82,10 @@ int GetClosestValidIndexBetweenTabGroups(TabStripModel& tab_strip,
 
     // Check that `target_start` and `target_end` are not in the middle of any
     // group.
-    DCHECK(!IsInMiddleOfTabGroup(tab_strip, target_start));
-    DCHECK(!IsInMiddleOfTabGroup(tab_strip, target_end));
+    CHECK(!IsInMiddleOfTabGroup(tab_strip, target_start),
+          base::NotFatalUntil::M162);
+    CHECK(!IsInMiddleOfTabGroup(tab_strip, target_end),
+          base::NotFatalUntil::M162);
 
     // Find the offset between `index_to_check` and `target_start` and
     // `target_end` and apply the lesser of the offsets to

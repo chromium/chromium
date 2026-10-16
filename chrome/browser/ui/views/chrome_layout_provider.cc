@@ -22,19 +22,20 @@ ChromeLayoutProvider* g_chrome_layout_provider = nullptr;
 }  // namespace
 
 ChromeLayoutProvider::ChromeLayoutProvider() {
-  DCHECK_EQ(nullptr, g_chrome_layout_provider);
+  CHECK_EQ(nullptr, g_chrome_layout_provider, base::NotFatalUntil::M162);
   g_chrome_layout_provider = this;
 }
 
 ChromeLayoutProvider::~ChromeLayoutProvider() {
-  DCHECK_EQ(this, g_chrome_layout_provider);
+  CHECK_EQ(this, g_chrome_layout_provider, base::NotFatalUntil::M162);
   g_chrome_layout_provider = nullptr;
 }
 
 // static
 ChromeLayoutProvider* ChromeLayoutProvider::Get() {
   // Check to avoid downcasting a base LayoutProvider.
-  DCHECK_EQ(g_chrome_layout_provider, views::LayoutProvider::Get());
+  CHECK_EQ(g_chrome_layout_provider, views::LayoutProvider::Get(),
+           base::NotFatalUntil::M162);
   return static_cast<ChromeLayoutProvider*>(views::LayoutProvider::Get());
 }
 
@@ -45,7 +46,7 @@ ChromeLayoutProvider::CreateLayoutProvider() {
 }
 
 gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
-  DCHECK_LT(metric, views::VIEWS_INSETS_MAX);
+  CHECK_LT(metric, views::VIEWS_INSETS_MAX, base::NotFatalUntil::M162);
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (metric) {
     case views::INSETS_DIALOG:
@@ -116,8 +117,8 @@ gfx::Insets ChromeLayoutProvider::GetInsetsMetric(int metric) const {
 }
 
 int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
-  DCHECK_GE(metric, views::VIEWS_DISTANCE_START);
-  DCHECK_LT(metric, views::VIEWS_DISTANCE_MAX);
+  CHECK_GE(metric, views::VIEWS_DISTANCE_START, base::NotFatalUntil::M162);
+  CHECK_LT(metric, views::VIEWS_DISTANCE_MAX, base::NotFatalUntil::M162);
 
   if (metric < views::VIEWS_DISTANCE_END) {
     return LayoutProvider::GetDistanceMetric(metric);
@@ -347,8 +348,8 @@ views::ShapeSysTokens GetShapeSysToken(views::ShapeContextToken id) {
 
 int ChromeLayoutProvider::GetCornerRadiusMetric(views::ShapeContextToken token,
                                                 const gfx::Size& size) const {
-  DCHECK_GE(token, views::kShapeContextTokenStart);
-  DCHECK_LT(token, kChromeShapeContextTokenEnd);
+  CHECK_GE(token, views::kShapeContextTokenStart, base::NotFatalUntil::M162);
+  CHECK_LT(token, kChromeShapeContextTokenEnd, base::NotFatalUntil::M162);
 
   if (token < views::ShapeContextTokens::kShapeContextTokenEnd) {
     return LayoutProvider::GetCornerRadiusMetric(token, size);

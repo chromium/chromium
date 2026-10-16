@@ -26,8 +26,8 @@ BackgroundThumbnailVideoCapturer::BackgroundThumbnailVideoCapturer(
     content::WebContents* contents,
     GotFrameCallback got_frame_callback)
     : contents_(contents), got_frame_callback_(std::move(got_frame_callback)) {
-  DCHECK(contents_);
-  DCHECK(got_frame_callback_);
+  CHECK(contents_, base::NotFatalUntil::M162);
+  CHECK(got_frame_callback_, base::NotFatalUntil::M162);
 }
 
 BackgroundThumbnailVideoCapturer::~BackgroundThumbnailVideoCapturer() {
@@ -119,7 +119,7 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   // the same type, with null check being equivalent to IsValid() check. Given
   // the above, we should never be able to receive a read only shmem region that
   // is not valid - mojo will enforce it for us.
-  DCHECK(shmem_region.IsValid());
+  CHECK(shmem_region.IsValid(), base::NotFatalUntil::M162);
 
   // Process captured image.
   base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();

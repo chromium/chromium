@@ -72,7 +72,7 @@ class PaymentMethodListItem final : public PaymentRequestItemList::Item {
 
   std::unique_ptr<views::View> CreateContentView(
       std::u16string* accessible_content) override {
-    DCHECK(accessible_content);
+    CHECK(accessible_content, base::NotFatalUntil::M162);
     auto card_info_container = std::make_unique<views::View>();
     if (!app_) {
       return card_info_container;

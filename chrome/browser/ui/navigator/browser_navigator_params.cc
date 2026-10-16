@@ -50,7 +50,7 @@ NavigateParams::~NavigateParams() = default;
 void NavigateParams::FillNavigateParamsFromOpenURLParams(
     const content::OpenURLParams& params) {
 #if DCHECK_IS_ON()
-  DCHECK(params.Valid());
+  CHECK(params.Valid(), base::NotFatalUntil::M162);
 #endif
 
   this->initiator_frame_token = params.initiator_frame_token;

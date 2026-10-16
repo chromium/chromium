@@ -192,7 +192,7 @@ void ThumbnailTabHelper::RequestCapture() {
 }
 
 void ThumbnailTabHelper::StartCapture() {
-  DCHECK(scoped_capture_);
+  CHECK(scoped_capture_, base::NotFatalUntil::M162);
   StartVideoCapture();
 }
 
@@ -295,7 +295,7 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
     return;
   }
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (type == CaptureType::kVideoFrame) {
     capture_driver_.GotFrame();

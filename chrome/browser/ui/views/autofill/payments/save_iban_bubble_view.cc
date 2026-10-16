@@ -42,7 +42,7 @@ SaveIbanBubbleView::SaveIbanBubbleView(views::BubbleAnchor anchor_view,
                                        IbanBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view, web_contents),
       controller_(controller) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
   SetButtonLabel(ui::mojom::DialogButton::kOk,
                  controller->GetAcceptButtonText());
   SetButtonLabel(ui::mojom::DialogButton::kCancel,
@@ -310,7 +310,7 @@ bool SaveIbanBubbleView::Accept() {
   }
 
   if (controller_) {
-    DCHECK(nickname_textfield_);
+    CHECK(nickname_textfield_, base::NotFatalUntil::M162);
     controller_->OnAcceptButton(nickname_textfield_->GetText());
   }
 

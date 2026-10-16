@@ -53,7 +53,8 @@ std::unique_ptr<views::ImageView> CreateSecurePaymentConfirmationIconView(
 std::u16string FormatMerchantLabel(
     const std::optional<std::u16string>& merchant_name,
     const std::optional<std::u16string>& merchant_origin) {
-  DCHECK(merchant_name.has_value() || merchant_origin.has_value());
+  CHECK(merchant_name.has_value() || merchant_origin.has_value(),
+        base::NotFatalUntil::M162);
 
   if (merchant_name.has_value() && merchant_origin.has_value()) {
     return base::StrCat(
