@@ -611,7 +611,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
       WaitForShow(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(AppMenuModel::kTabGroupsMenuItem),
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      EnsurePresent(STGTabsMenuModel::kOpenGroup),
+      EnsurePresent(STGTabsMenuModel::kCloseGroup),
       EnsurePresent(STGTabsMenuModel::kMoveGroupToNewWindowMenuItem),
       EnsurePresent(STGTabsMenuModel::kToggleGroupPinStateMenuItem),
       EnsurePresent(STGTabsMenuModel::kDeleteGroupMenuItem),
@@ -653,17 +653,17 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupInteractiveTest,
 
       // Check the number of tabs in the first group.
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      WaitForShow(STGTabsMenuModel::kOpenGroup),
+      WaitForShow(STGTabsMenuModel::kCloseGroup),
       CheckTabGroupSubmenuTabCount(STGEverythingMenu::kTabGroup, 1),
 
       // Check the number of tabs in the second group.
       SelectMenuItem(kSecondSavedGroupItem),
-      WaitForShow(STGTabsMenuModel::kOpenGroup),
+      WaitForShow(STGTabsMenuModel::kCloseGroup),
       CheckTabGroupSubmenuTabCount(kSecondSavedGroupItem, 1),
 
       // Check the number of tabs in the first group again.
       SelectMenuItem(STGEverythingMenu::kTabGroup),
-      WaitForShow(STGTabsMenuModel::kOpenGroup),
+      WaitForShow(STGTabsMenuModel::kCloseGroup),
       CheckTabGroupSubmenuTabCount(STGEverythingMenu::kTabGroup, 1),
 
       // Close the menu to prevent flakes.

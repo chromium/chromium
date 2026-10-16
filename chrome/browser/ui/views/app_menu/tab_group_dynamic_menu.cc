@@ -132,30 +132,37 @@ void TabGroupDynamicMenu::BuildTabGroupCommands(
     actions::BaseAction* parent_item,
     const base::Uuid& uuid,
     Profile* profile) {
-  auto open_in_browser_item =
+  const bool is_local = group->local_group_id().has_value();
+  auto open_or_close_item =
       actions::ActionItem::Builder(
           base::BindRepeating(
               &TabGroupDynamicMenu::PerformTabGroupAction,
               base::Unretained(this),
-              tab_groups::TabGroupMenuAction::Type::OPEN_IN_BROWSER,
+              is_local ? tab_groups::TabGroupMenuAction::Type::CLOSE_GROUP
+                       : tab_groups::TabGroupMenuAction::Type::OPEN_IN_BROWSER,
               browser_window_interface_))
-          .SetActionId(kActionTabGroupOpenInBrowser)
-          .SetText(l10n_util::GetStringUTF16(IDS_OPEN_GROUP_IN_BROWSER_MENU))
+          .SetActionId(is_local ? kActionCloseTabGroup
+                                : kActionTabGroupOpenInBrowser)
+          .SetText(l10n_util::GetStringUTF16(
+              is_local ? IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP
+                       : IDS_OPEN_GROUP_IN_BROWSER_MENU))
           .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled() ? kOpenInBrowserIcon
-                                                : kOpenInBrowserOldIcon))
+              is_local ? (features::IsRoundedIconsEnabled()
+                              ? kTabCloseIcon
+                              : kCloseGroupRefreshOldIcon)
+                       : (features::IsRoundedIconsEnabled()
+                              ? kOpenInBrowserIcon
+                              : kOpenInBrowserOldIcon)))
           .SetProperty(AppMenuActionItem::kDisplayTypeKey,
                        AppMenuActionItem::DisplayType::kRow)
           .SetProperty(views::kElementIdentifierKey,
-                       tab_groups::STGTabsMenuModel::kOpenGroup)
+                       is_local ? tab_groups::STGTabsMenuModel::kCloseGroup
+                                : tab_groups::STGTabsMenuModel::kOpenGroup)
           .Build();
 
-  open_in_browser_item->SetProperty(tab_groups::kSavedTabGroupGuidKey,
-                                    std::make_unique<base::Uuid>(uuid));
-  open_in_browser_item->SetEnabled(!group->local_group_id().has_value());
-  parent_item->AddChild(std::move(open_in_browser_item));
-
-  bool is_local = group->local_group_id().has_value();
+  open_or_close_item->SetProperty(tab_groups::kSavedTabGroupGuidKey,
+                                  std::make_unique<base::Uuid>(uuid));
+  parent_item->AddChild(std::move(open_or_close_item));
   std::optional<std::u16string> move_text_override =
       is_local ? std::make_optional(l10n_util::GetStringUTF16(
                      IDS_TAB_GROUP_HEADER_CXMENU_MOVE_GROUP_TO_NEW_WINDOW))

@@ -151,10 +151,14 @@ void TabGroupMenuBridge::BuildMenu() {
     }
 
     NSMenu* submenu = [[NSMenu alloc] init];
-    // Add static menu items for submenu.
     [submenu addItem:CreateStaticSubmenuItem(
-                         IDS_OPEN_GROUP_IN_BROWSER_MENU,
-                         TabGroupMenuAction::Type::OPEN_IN_BROWSER, uuid)];
+                         group->local_group_id().has_value()
+                             ? IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP
+                             : IDS_OPEN_GROUP_IN_BROWSER_MENU,
+                         group->local_group_id().has_value()
+                             ? TabGroupMenuAction::Type::CLOSE_GROUP
+                             : TabGroupMenuAction::Type::OPEN_IN_BROWSER,
+                         uuid)];
     [submenu
         addItem:CreateStaticSubmenuItem(
                     group->local_group_id().has_value()
