@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
 import fnmatch
 import html
 import json
@@ -31,6 +32,74 @@ from test_runner_utils import parse_filter_file, parse_filter_tokens
 _REPEAT_PARAMETER = "__pytest_repeat_step_number"
 _REPEAT_IDENTITIES = pytest.StashKey[dict[str, str]]()
 _NODE_ID_PROPERTY = "chromium-bidi:nodeid"
+
+# ResultSink rejects the whole test result if `summaryHtml` is larger than
+# this. The full failure text goes into an artifact instead.
+# https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/pbutil/test_result.go
+_MAX_SUMMARY_HTML_BYTES = 4096
+# ResultSink rejects `failureReason.primaryErrorMessage` above this size.
+_MAX_PRIMARY_ERROR_MESSAGE_BYTES = 1024
+_FAILURE_ARTIFACT_ID = "failure_details"
+
+
+def _truncate_utf8(text: str, max_bytes: int) -> str:
+    """Truncates `text` so that its UTF-8 encoding fits in `max_bytes`."""
+    encoded = text.encode("utf-8")
+    if len(encoded) <= max_bytes:
+        return text
+    marker = "..."
+    budget = max_bytes - len(marker)
+    return encoded[:budget].decode("utf-8", errors="ignore") + marker
+
+
+def primary_error_message(longreprtext: str) -> str:
+    """Returns a short error message from a pytest failure representation.
+
+    Prefers the first line of the last block of pytest assertion lines
+    (prefixed with `E`). For `assert x, "message"` the first line holds the
+    exception message and the next lines hold the assertion introspection.
+    Falls back to the last non-empty line.
+    """
+    lines = [line.rstrip() for line in longreprtext.splitlines() if line.strip()]
+    if not lines:
+        return ""
+    message = lines[-1]
+    for index in range(len(lines) - 1, -1, -1):
+        if not re.match(r"^E\s", lines[index]):
+            continue
+        # Walk up to the start of this block of `E` lines.
+        while index > 0 and re.match(r"^E\s", lines[index - 1]):
+            index -= 1
+        message = lines[index]
+        break
+    message = re.sub(r"^E\s+", "", message).strip()
+    return _truncate_utf8(message, _MAX_PRIMARY_ERROR_MESSAGE_BYTES)
+
+
+def build_failure_fields(longreprtext: str) -> dict:
+    """Returns the ResultSink fields that describe a test failure.
+
+    The full failure text is attached as an artifact. `summaryHtml` contains
+    only a short message and a reference to the artifact, so it stays below
+    the ResultSink size limit.
+    """
+    message = primary_error_message(longreprtext)
+    summary_html = (
+        f"<pre>{html.escape(message)}</pre>"
+        f'<p><text-artifact artifact-id="{_FAILURE_ARTIFACT_ID}"></text-artifact></p>'
+    )
+    assert len(summary_html.encode("utf-8")) <= _MAX_SUMMARY_HTML_BYTES
+    return {
+        "summaryHtml": summary_html,
+        "failureReason": {"primaryErrorMessage": message},
+        "artifacts": {
+            _FAILURE_ARTIFACT_ID: {
+                "contents": base64.b64encode(longreprtext.encode("utf-8")).decode(
+                    "ascii"
+                ),
+            },
+        },
+    }
 
 
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
@@ -294,9 +363,10 @@ class ResultSinkReporter:
         }
 
         if status == "FAIL" and report.longrepr:
-            # report.longreprtext contains the string representation of the failure
-            error_info = html.escape(report.longreprtext)
-            test_result["summaryHtml"] = f"<pre>{error_info}</pre>"
+            # report.longreprtext contains the string representation of the
+            # failure. It is often larger than the ResultSink `summaryHtml`
+            # limit, so it goes into an artifact.
+            test_result.update(build_failure_fields(report.longreprtext))
 
         self.pending_results.append(test_result)
 

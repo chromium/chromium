@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import base64
 import os
 import sys
 import tempfile
@@ -10,8 +11,10 @@ import pytest
 from resultsink_reporter import (
     TestFilter,
     TestFilterGroup,
+    build_failure_fields,
     format_test_id,
     parse_filter_tokens,
+    primary_error_message,
 )
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "tools"))
@@ -511,3 +514,66 @@ def test_unit_test_filter_pattern_ninja_and_gtest():
     assert is_ex
     assert f_pat == "src/cdp/CdpClient.test.ts"
     assert c_pat is None
+
+
+_LONGREPR_WITH_ASSERTION = """\
+websocket = <WebSocketClientProtocol object at 0x107c99150>
+
+    async def test_download(websocket):
+>       event = await wait_for_event(websocket, "browsingContext.downloadEnd")
+E       Failed: Timeout >20.0s
+
+tests/browsing_context/test_download.py:42: Failed
+----------------------------- Captured stderr call -----------------------------
+INFO:test_helpers:Executing command 79 with method 'browsingContext.navigate'
+"""
+
+
+def test_primary_error_message_prefers_last_assertion_line():
+    assert primary_error_message(_LONGREPR_WITH_ASSERTION) == "Failed: Timeout >20.0s"
+
+
+def test_primary_error_message_uses_first_line_of_assertion_block():
+    longrepr = (
+        ">       assert resp == expected, 'Unexpected response'\n"
+        "E       AssertionError: Unexpected response\n"
+        "E       assert {'a': 1} == {'a': 2}\n"
+        "E         Differing items:\n"
+        "\n"
+        "tests/test_x.py:10: AssertionError\n"
+    )
+    assert primary_error_message(longrepr) == "AssertionError: Unexpected response"
+
+
+def test_primary_error_message_falls_back_to_last_line():
+    assert primary_error_message("first line\nlast line\n") == "last line"
+
+
+def test_primary_error_message_empty():
+    assert primary_error_message("") == ""
+
+
+def test_primary_error_message_is_truncated_to_resultsink_limit():
+    message = primary_error_message("E   " + "x" * 5000)
+    assert len(message.encode("utf-8")) <= 1024
+    assert message.endswith("...")
+
+
+def test_primary_error_message_truncation_keeps_valid_utf8():
+    message = primary_error_message("E   " + "é" * 2000)
+    assert len(message.encode("utf-8")) <= 1024
+    message.encode("utf-8")
+
+
+def test_build_failure_fields_keeps_summary_below_resultsink_limit():
+    # Captured output in a failed E2E test is often far above 4096 bytes.
+    longrepr = _LONGREPR_WITH_ASSERTION + ("INFO:test_helpers:noise <b>\n" * 1000)
+    fields = build_failure_fields(longrepr)
+
+    assert len(fields["summaryHtml"].encode("utf-8")) <= 4096
+    assert "Failed: Timeout &gt;20.0s" in fields["summaryHtml"]
+    assert 'text-artifact artifact-id="failure_details"' in fields["summaryHtml"]
+    assert fields["failureReason"] == {"primaryErrorMessage": "Failed: Timeout >20.0s"}
+
+    contents = fields["artifacts"]["failure_details"]["contents"]
+    assert base64.b64decode(contents).decode("utf-8") == longrepr
