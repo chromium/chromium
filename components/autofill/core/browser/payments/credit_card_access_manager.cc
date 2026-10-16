@@ -756,12 +756,17 @@ void CreditCardAccessManager::Authenticate(
             *card_, GetWeakPtr(),
             risk_based_authentication_response_.context_token,
             *selected_challenge_option_);
-      } else if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+      } else if (IsMaskedServerCardRiskBasedAuthAvailable() &&
+                 (!IsCardOnDeviceVerificationEnforced() ||
+                  !risk_based_authentication_response_.context_token.empty())) {
+        // Verified card, but yellow-pathed by Risk-based auth.
         CHECK(!risk_based_authentication_response_.context_token.empty());
         payments_autofill_client().GetCvcAuthenticator().Authenticate(
             *card_, GetWeakPtr(),
             risk_based_authentication_response_.context_token);
       } else {
+        // Unverified card forcing CVC auth instead of Risk-based auth, or
+        // Risk-based auth is unavailable.
         payments_autofill_client().GetCvcAuthenticator().Authenticate(
             *card_, GetWeakPtr());
       }
@@ -1316,6 +1321,28 @@ bool CreditCardAccessManager::ShouldWaitForPreflightCallResponse(
          is_user_verifiable_call_in_progress;
 }
 
+bool CreditCardAccessManager::ShouldForceCvcAuthentication(
+    bool get_unmask_details_returned) const {
+  if (!IsCardOnDeviceVerificationEnforced()) {
+    return false;
+  }
+
+  // Client-side CVC enforcement only applies when a preflight call was (or was
+  // about to be) issued (`is_user_verifiable_` is true, or `IsUserVerifiable()`
+  // was still pending when the wait timed out). For non-verifiable devices, no
+  // preflight call is issued and CVC enforcement is handled server-side in the
+  // risk-based authentication call.
+  const bool is_user_verifiable_or_pending = is_user_verifiable_.value_or(
+      is_user_verifiable_called_timestamp_.has_value());
+  if (!is_user_verifiable_or_pending) {
+    return false;
+  }
+
+  return !get_unmask_details_returned ||
+         !unmask_details_.verified_instrument_ids.contains(
+             card_->instrument_id());
+}
+
 void CreditCardAccessManager::FetchMaskedServerCard() {
   is_authentication_in_progress_ = true;
 
@@ -1363,23 +1390,33 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 
   if (risk_based_auth_available) {
     // The progress dialog covers both the wait for the preflight call response
-    // and the risk-based authentication that follows it.
+    // and any risk-based authentication that might follow it. If the preflight
+    // call is still running, we should show the progress dialog since we need
+    // to know if the card is verified or unverified first. If the preflight
+    // call has returned and we've determined it's an unverified card and are
+    // forcing CVC auth, we should *not* show the progress dialog since we will
+    // proceed immediately to CVC auth.
     waiting_for_preflight_call_response_ = should_wait_for_preflight;
-    payments_autofill_client().ShowAutofillProgressDialog(
-        card_->card_info_retrieval_enrollment_state() ==
-                CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled
-            ? AutofillProgressUiType::kCardInfoRetrievalEnrolledUnmaskProgressUi
-            : AutofillProgressUiType::kServerCardUnmaskProgressUi,
-        /*cancel_callback=*/
-        should_wait_for_preflight
-            ? base::BindOnce(
-                  &CreditCardAccessManager::OnMaskedServerCardUnmaskCancelled,
-                  GetWeakPtr())
-            : base::BindOnce(
-                  &CreditCardRiskBasedAuthenticator::OnUnmaskCancelled,
-                  payments_autofill_client()
-                      .GetRiskBasedAuthenticator()
-                      ->AsWeakPtr()));
+    if (should_wait_for_preflight ||
+        !ShouldForceCvcAuthentication(get_unmask_details_returned)) {
+      payments_autofill_client().ShowAutofillProgressDialog(
+          card_->card_info_retrieval_enrollment_state() ==
+                  CreditCard::CardInfoRetrievalEnrollmentState::
+                      kRetrievalEnrolled
+              ? AutofillProgressUiType::
+                    kCardInfoRetrievalEnrolledUnmaskProgressUi
+              : AutofillProgressUiType::kServerCardUnmaskProgressUi,
+          /*cancel_callback=*/
+          should_wait_for_preflight
+              ? base::BindOnce(
+                    &CreditCardAccessManager::OnMaskedServerCardUnmaskCancelled,
+                    GetWeakPtr())
+              : base::BindOnce(
+                    &CreditCardRiskBasedAuthenticator::OnUnmaskCancelled,
+                    payments_autofill_client()
+                        .GetRiskBasedAuthenticator()
+                        ->AsWeakPtr()));
+    }
   } else {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     // On desktop, show the verify pending dialog for opted-in user, unless it
@@ -1409,9 +1446,20 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
 
 void CreditCardAccessManager::AuthenticateForMaskedServerCard(
     bool get_unmask_details_returned) {
-  waiting_for_preflight_call_response_ = false;
+  const bool waited_for_preflight =
+      std::exchange(waiting_for_preflight_call_response_, false);
 
   if (IsMaskedServerCardRiskBasedAuthAvailable()) {
+    if (ShouldForceCvcAuthentication(get_unmask_details_returned)) {
+      if (waited_for_preflight) {
+        payments_autofill_client().CloseAutofillProgressDialog(
+            /*show_confirmation_before_closing=*/false,
+            /*no_interactive_authentication_callback=*/base::OnceClosure());
+      }
+      Authenticate(UnmaskAuthFlowType::kCvc);
+      return;
+    }
+
     // Risk-based authentication is handled in CreditCardRiskBasedAuthenticator.
     // Further delegation will be handled in
     // CreditCardAccessManager::OnRiskBasedAuthenticationResponseReceived.

@@ -891,8 +891,8 @@ TEST_P(
       1);
 }
 
-// Tests the preflight wait that gates the authentication of a masked server
-// card when card-on-device verification enforcement is enabled.
+// Tests the preflight wait and CVC enforcement that gate the authentication of
+// a masked server card when card-on-device verification enforcement is enabled.
 class CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest
     : public CreditCardAccessManagerTestBase {
  public:
@@ -907,9 +907,15 @@ class CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest
  protected:
   // Creates a masked server card and starts a preflight call whose response is
   // delayed until InvokeDelayedGetUnmaskDetailsResponse() is called.
-  const CreditCard* SetUpCardWithPendingPreflightCall() {
+  const CreditCard* SetUpCardWithPendingPreflightCall(
+      bool card_is_verified = true) {
     const CreditCard* masked_server_card =
         CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+    if (card_is_verified) {
+      payments_network_interface()
+          .unmask_details()
+          ->verified_instrument_ids.insert(kTestInstrumentId);
+    }
     GetFIDOAuthenticator()->SetUserVerifiable(true);
     payments_network_interface().ShouldReturnUnmaskDetailsImmediately(false);
     PrepareToFetchCreditCardAndWaitForCallbacks();
@@ -928,14 +934,23 @@ class CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest
         ->autofill_progress_dialog_shown();
   }
 
+  bool autofill_progress_dialog_closed() {
+    return autofill_client()
+        .GetPaymentsAutofillClient()
+        ->autofill_progress_dialog_closed();
+  }
+
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Ensures the progress dialog is shown and the risk-based authentication is
-// held back while the preflight call is still in flight.
-TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
-       PreflightCallPending_RiskBasedAuthWaitsBehindProgressDialog) {
-  const CreditCard* masked_server_card = SetUpCardWithPendingPreflightCall();
+// held back while the preflight call is still in flight, and starts once the
+// preflight call returns with the card in `verified_instrument_ids`.
+TEST_F(
+    CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+    PreflightCallPending_VerifiedCard_RiskBasedAuthWaitsBehindProgressDialog) {
+  const CreditCard* masked_server_card =
+      SetUpCardWithPendingPreflightCall(/*card_is_verified=*/true);
 
   FetchCreditCard(masked_server_card);
 
@@ -944,18 +959,49 @@ TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
   EXPECT_TRUE(autofill_progress_dialog_shown());
   EXPECT_FALSE(risk_based_authentication_invoked());
 
-  // Once the preflight call returns, the risk-based authentication starts.
+  // Once the preflight call returns with the card marked as verified, the
+  // risk-based authentication starts and the progress dialog stays open.
   InvokeDelayedGetUnmaskDetailsResponse();
 
   EXPECT_TRUE(risk_based_authentication_invoked());
+  EXPECT_FALSE(autofill_progress_dialog_closed());
 }
 
-// Ensures the risk-based authentication starts once the wait for the preflight
-// call times out, and that the timeout is recorded.
+// Ensures that if the preflight call returns and the card is absent from
+// `verified_instrument_ids`, risk-based authentication is skipped, the progress
+// dialog is closed, and CVC authentication is immediately mandated.
 TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
-       PreflightCallTimesOut_RiskBasedAuthStarts) {
+       PreflightCallReturns_UnverifiedCard_MandatesCvcAuthImmediately) {
   base::HistogramTester histogram_tester;
-  const CreditCard* masked_server_card = SetUpCardWithPendingPreflightCall();
+  const CreditCard* masked_server_card =
+      SetUpCardWithPendingPreflightCall(/*card_is_verified=*/false);
+
+  FetchCreditCard(masked_server_card);
+  ASSERT_TRUE(autofill_progress_dialog_shown());
+  ASSERT_FALSE(risk_based_authentication_invoked());
+
+  InvokeDelayedGetUnmaskDetailsResponse();
+
+  EXPECT_FALSE(risk_based_authentication_invoked());
+  EXPECT_TRUE(autofill_progress_dialog_closed());
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.FlowEvents.Cvc",
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
+
+  EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+  EXPECT_EQ(kTestNumber16, accessor().number());
+  EXPECT_EQ(kTestCvc16, accessor().cvc());
+}
+
+// Ensures that once the wait for the preflight call times out, risk-based
+// authentication is skipped, the progress dialog is closed, and CVC
+// authentication is immediately mandated.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       PreflightCallTimesOut_MandatesCvcAuthImmediately) {
+  base::HistogramTester histogram_tester;
+  const CreditCard* masked_server_card =
+      SetUpCardWithPendingPreflightCall(/*card_is_verified=*/true);
 
   FetchCreditCard(masked_server_card);
 
@@ -964,7 +1010,12 @@ TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
 
   FastForwardBy(CreditCardAccessManager::kUnmaskDetailsResponseTimeout);
 
-  EXPECT_TRUE(risk_based_authentication_invoked());
+  EXPECT_FALSE(risk_based_authentication_invoked());
+  EXPECT_TRUE(autofill_progress_dialog_closed());
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.FlowEvents.Cvc",
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
   // The user perceived the latency of the preflight call, so the base event
   // has to be logged alongside the timeout, reporting that the card was chosen
   // before the preflight call returned.
@@ -980,15 +1031,22 @@ TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
       autofill_metrics::PreflightCallEvent::
           kCardChosenBeforePreflightCallReturned,
       1);
+
+  EXPECT_TRUE(GetRealPanForCVCAuth(PaymentsRpcResult::kSuccess, kTestNumber));
+  EXPECT_EQ(kTestNumber16, accessor().number());
+  EXPECT_EQ(kTestCvc16, accessor().cvc());
 }
 
 // Ensures that a preflight call that returned before the card was selected does
-// not delay the risk-based authentication.
-TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
-       PreflightCallAlreadyReturned_RiskBasedAuthStartsImmediately) {
+// not delay the risk-based authentication when the card is verified.
+TEST_F(
+    CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+    PreflightCallAlreadyReturned_VerifiedCard_RiskBasedAuthStartsImmediately) {
   base::HistogramTester histogram_tester;
   const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+  payments_network_interface().unmask_details()->verified_instrument_ids.insert(
+      kTestInstrumentId);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
   PrepareToFetchCreditCardAndWaitForCallbacks();
@@ -1005,6 +1063,121 @@ TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
       autofill_metrics::PreflightCallEvent::
           kPreflightCallReturnedBeforeCardChosen,
       1);
+}
+
+// Ensures that when a preflight call has already returned and the card is
+// absent from `verified_instrument_ids`, CVC authentication is mandated
+// immediately without invoking risk-based authentication or showing the
+// progress dialog, even if the user is opted in to FIDO or the card is enrolled
+// in CardInfoRetrieval.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       PreflightCallAlreadyReturned_UnverifiedCard_MandatesCvcAuthImmediately) {
+  base::HistogramTester histogram_tester;
+  OptUserInToFido();
+  const CreditCard* masked_server_card = CreateServerCard(
+      kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+      CreditCard::RecordType::kMaskedServerCard,
+      /*is_card_info_retrieval_enrolled=*/true, kTestInstrumentId);
+  payments_network_interface().AddFidoEligibleCard(kTestServerId, kCredentialId,
+                                                   kGooglePaymentsRpid);
+  // Only another card is verified on this device.
+  payments_network_interface().unmask_details()->verified_instrument_ids.insert(
+      kTestInstrumentId2);
+  payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+
+  FetchCreditCard(masked_server_card);
+
+  EXPECT_FALSE(risk_based_authentication_invoked());
+  EXPECT_FALSE(autofill_progress_dialog_shown());
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.BetterAuth.FlowEvents.Cvc",
+      CreditCardFormEventLogger::UnmaskAuthFlowEvent::kPromptShown, 1);
+}
+
+// Ensures that if the wait times out while `IsUserVerifiable()` is still
+// pending, risk-based authentication is skipped, the progress dialog is closed,
+// and CVC authentication is immediately mandated.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       IsUserVerifiablePending_TimesOut_MandatesCvcAuthImmediately) {
+  const CreditCard* masked_server_card =
+      CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
+  GetFIDOAuthenticator()->SetUserVerifiable(true);
+  payments_network_interface().ShouldReturnUnmaskDetailsImmediately(false);
+  // Start `PrepareToFetchCreditCard()` without running callbacks so
+  // `IsUserVerifiable()` remains pending when the card is selected.
+  credit_card_access_manager().PrepareToFetchCreditCard();
+
+  FetchCreditCard(masked_server_card);
+  ASSERT_TRUE(autofill_progress_dialog_shown());
+  ASSERT_FALSE(risk_based_authentication_invoked());
+
+  FastForwardBy(CreditCardAccessManager::kUnmaskDetailsResponseTimeout);
+
+  EXPECT_FALSE(risk_based_authentication_invoked());
+  EXPECT_TRUE(autofill_progress_dialog_closed());
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
+}
+
+// Ensures that on a non-FIDO-verifiable device (where no preflight call is
+// issued), Chrome proceeds with risk-based authentication so the server can
+// enforce CVC verification or return a CardInfoRetrieval challenge.
+TEST_F(CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+       UserNotVerifiable_ProceedsToRiskBasedAuth) {
+  const CreditCard* masked_server_card = CreateServerCard(
+      kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+      CreditCard::RecordType::kMaskedServerCard,
+      /*is_card_info_retrieval_enrolled=*/true, kTestInstrumentId);
+  GetFIDOAuthenticator()->SetUserVerifiable(false);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+
+  FetchCreditCard(masked_server_card);
+
+  EXPECT_TRUE(autofill_progress_dialog_shown());
+  EXPECT_TRUE(risk_based_authentication_invoked());
+
+  // When the server returns an SMS OTP challenge for a CardInfoRetrieval card,
+  // Chrome shows the authenticator selection dialog rather than overriding with
+  // client-side CVC enforcement.
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
+  response.result = CreditCardRiskBasedAuthenticator::
+      RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
+  response.context_token = "fake_context_token";
+  response.card_unmask_challenge_options = test::GetCardUnmaskChallengeOptions(
+      {CardUnmaskChallengeOptionType::kSmsOtp});
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      response);
+  EXPECT_TRUE(
+      payments_autofill_client().unmask_authenticator_selection_dialog_shown());
+}
+
+// Ensures that on a non-FIDO-verifiable device (where no preflight call is
+// issued), a regular masked server card (`is_card_info_retrieval_enrolled` =
+// false) proceeds with risk-based authentication and undergoes CVC
+// authentication when challenged by the server.
+TEST_F(
+    CreditCardAccessManagerCardOnDeviceVerificationEnforcementTest,
+    UserNotVerifiable_RegularServerCard_ProceedsToRiskBasedAuthCvcChallenge) {
+  const CreditCard* masked_server_card = CreateServerCard(
+      kTestGUID, kTestNumber, kTestServerId, kTestCvc16,
+      CreditCard::RecordType::kMaskedServerCard,
+      /*is_card_info_retrieval_enrolled=*/false, kTestInstrumentId);
+  GetFIDOAuthenticator()->SetUserVerifiable(false);
+  PrepareToFetchCreditCardAndWaitForCallbacks();
+
+  FetchCreditCard(masked_server_card);
+
+  EXPECT_TRUE(autofill_progress_dialog_shown());
+  EXPECT_TRUE(risk_based_authentication_invoked());
+
+  CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
+  response.result = CreditCardRiskBasedAuthenticator::
+      RiskBasedAuthenticationResponse::Result::kAuthenticationRequired;
+  response.context_token = "fake_context_token";
+  credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
+      response);
+  EXPECT_EQ(GetUnmaskAuthFlowType(), UnmaskAuthFlowType::kCvc);
 }
 
 // Ensures that cancelling the progress dialog while waiting for the preflight

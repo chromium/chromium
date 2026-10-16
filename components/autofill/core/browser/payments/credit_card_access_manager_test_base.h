@@ -48,6 +48,8 @@ class CreditCardAccessManagerTestBase
   static constexpr char16_t kTestCvc16[] = u"123";
   static constexpr char kTestServerId[] = "server_id_1";
   static constexpr char kTestServerId2[] = "server_id_2";
+  static constexpr int64_t kTestInstrumentId = 12345;
+  static constexpr int64_t kTestInstrumentId2 = 67890;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   static constexpr char kTestCvc[] = "123";
@@ -120,7 +122,8 @@ class CreditCardAccessManagerTestBase
       const char16_t* cvc = kTestCvc16,
       CreditCard::RecordType record_type =
           CreditCard::RecordType::kMaskedServerCard,
-      bool is_card_info_retrieval_enrolled = false);
+      bool is_card_info_retrieval_enrolled = false,
+      int64_t instrument_id = kTestInstrumentId);
 
   CreditCardCvcAuthenticator& GetCvcAuthenticator();
 

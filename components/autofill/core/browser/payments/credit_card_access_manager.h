@@ -336,6 +336,12 @@ class CreditCardAccessManager
   bool ShouldWaitForPreflightCallResponse(bool get_unmask_details_returned,
                                           bool risk_based_auth_available);
 
+  // Returns whether `card_` must bypass risk-based authentication and
+  // immediately undergo CVC authentication because card-on-device verification
+  // is enforced and the preflight call either timed out or reported that the
+  // card has not yet been verified on this device.
+  bool ShouldForceCvcAuthentication(bool get_unmask_details_returned) const;
+
   // Helper function to fetch masked server cards.
   void FetchMaskedServerCard();
 

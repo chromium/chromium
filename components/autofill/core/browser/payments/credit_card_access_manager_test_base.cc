@@ -157,7 +157,8 @@ const CreditCard* CreditCardAccessManagerTestBase::CreateServerCard(
     std::string server_id,
     const char16_t* cvc,
     CreditCard::RecordType record_type,
-    bool is_card_info_retrieval_enrolled) {
+    bool is_card_info_retrieval_enrolled,
+    int64_t instrument_id) {
   CreditCard server_card = CreditCard();
   test::SetCreditCardInfo(&server_card, "Elvis Presley", number.c_str(),
                           test::NextMonth().c_str(), test::NextYear().c_str(),
@@ -165,6 +166,7 @@ const CreditCard* CreditCardAccessManagerTestBase::CreateServerCard(
   server_card.set_guid(guid);
   server_card.set_record_type(record_type);
   server_card.set_server_id(server_id);
+  server_card.set_instrument_id(instrument_id);
   if (is_card_info_retrieval_enrolled) {
     server_card.set_card_info_retrieval_enrollment_state(
         CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);

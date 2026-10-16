@@ -307,6 +307,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return autofill_progress_dialog_shown_;
   }
 
+  bool autofill_progress_dialog_closed() const {
+    return autofill_progress_dialog_closed_;
+  }
+
   // Simulates the user cancelling the autofill progress dialog by running the
   // `cancel_callback` that was passed to ShowAutofillProgressDialog().
   void CancelAutofillProgressDialog() {
@@ -435,6 +439,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       multiple_request_payments_network_interface_;
 
   bool autofill_progress_dialog_shown_ = false;
+  bool autofill_progress_dialog_closed_ = false;
 
   base::OnceClosure autofill_progress_dialog_cancel_callback_;
 
