@@ -79,10 +79,24 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
   static constexpr size_t kDefaultAlmostFullPercent = 90;
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
-  // Reserves address space from the pool.
-  uintptr_t Reserve(pool_handle handle,
-                    uintptr_t requested_address,
-                    size_t length);
+  // Expected lifetime of an address space reservation, used to decide where in
+  // the pool it is placed when |requested_address| is 0 or unavailable.
+  enum class ReservationLifetime {
+    // The reservation is expected to never be released (e.g. normal bucket
+    // superpages).
+    kPersistent,
+    // The reservation is expected to be released (e.g. direct-mapped
+    // allocations).
+    kTransient,
+  };
+
+  // Reserves address space from the pool. See |ReservationLifetime| for how
+  // |lifetime| affects placement.
+  uintptr_t Reserve(
+      pool_handle handle,
+      uintptr_t requested_address,
+      size_t length,
+      ReservationLifetime lifetime = ReservationLifetime::kPersistent);
 
   // Frees address space back to the pool and decommits underlying system pages.
   void UnreserveAndDecommit(pool_handle handle,
@@ -150,6 +164,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
     uintptr_t FindChunk(size_t size,
                         std::atomic<size_t>& almost_full_pool_count,
                         bool& should_notify) PA_LOCKS_EXCLUDED(lock_);
+    uintptr_t FindChunkFromEnd(size_t size,
+                               std::atomic<size_t>& almost_full_pool_count,
+                               bool& should_notify) PA_LOCKS_EXCLUDED(lock_);
     bool FreeChunk(uintptr_t address,
                    size_t size,
                    std::atomic<size_t>& almost_full_pool_count)
@@ -192,6 +209,16 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
     // of 1s after this index, but at least we know there is no point in
     // starting the search before it.
     size_t bit_hint_ PA_GUARDED_BY(lock_) = 0;
+
+    // An index of a bit in the bitset at or after which we know for sure there
+    // are all 1s (i.e. all bits in [high_bit_hint_, total_bits_) are 1).
+    //
+    // Note that |bit_hint_| and |high_bit_hint_| are maintained independently,
+    // and it is valid for |bit_hint_| to be greater than |high_bit_hint_|. This
+    // happens when the pool is completely full (the two all-1s ranges overlap),
+    // and must be handled by all users of these hints. FreeChunk() restores
+    // |bit_hint_| <= |high_bit_hint_|.
+    size_t high_bit_hint_ PA_GUARDED_BY(lock_) = 0;
 
     size_t allocated_bits_ PA_GUARDED_BY(lock_) = 0;
     bool is_almost_full_ PA_GUARDED_BY(lock_) = false;

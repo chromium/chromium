@@ -100,13 +100,16 @@ bool AreAllowedSuperPagesForBRPPool(uintptr_t start, uintptr_t end) {
 //   AreAllowedSuperPagesForBRPPool.
 // - IsAllowedSuperPageForBRPPool (used by AreAllowedSuperPagesForBRPPool) is
 //   designed to not need locking.
-uintptr_t ReserveMemoryFromPool(pool_handle pool,
-                                uintptr_t requested_address,
-                                size_t requested_size) {
+uintptr_t ReserveMemoryFromPool(
+    pool_handle pool,
+    uintptr_t requested_address,
+    size_t requested_size,
+    AddressPoolManager::ReservationLifetime lifetime =
+        AddressPoolManager::ReservationLifetime::kPersistent) {
   PA_DCHECK(!(requested_address % kSuperPageSize));
 
   uintptr_t reserved_address = AddressPoolManager::GetInstance().Reserve(
-      pool, requested_address, requested_size);
+      pool, requested_address, requested_size, lifetime);
 
   // In 32-bit mode, when allocating from BRP pool, verify that the requested
   // allocation honors the block list. Find a better address otherwise.
@@ -275,7 +278,11 @@ SlotSpanMetadata* PartitionDirectMap(PartitionRoot* root,
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
       ScopedSyscallTimer timer{root};
 #endif
-      reservation_start = ReserveMemoryFromPool(pool, 0, reservation_size);
+      // Contrary to bucketed allocations, direct-mapped ones are actually
+      // decommitted from the GigaCage.
+      reservation_start = ReserveMemoryFromPool(
+          pool, 0, reservation_size,
+          AddressPoolManager::ReservationLifetime::kTransient);
     }
     if (!reservation_start) [[unlikely]] {
       if (return_null) {
@@ -737,7 +744,8 @@ uintptr_t PartitionBucket::AllocNewSuperPageSpan(PartitionRoot* root,
   uintptr_t requested_address = root->next_super_page_;
   pool_handle pool = root->ChoosePool();
   uintptr_t super_page_span_start = ReserveMemoryFromPool(
-      pool, requested_address, super_page_count * kSuperPageSize);
+      pool, requested_address, super_page_count * kSuperPageSize,
+      AddressPoolManager::ReservationLifetime::kPersistent);
   if (!super_page_span_start) [[unlikely]] {
     if (ContainsFlags(flags, AllocFlags::kReturnNull)) {
       return 0;

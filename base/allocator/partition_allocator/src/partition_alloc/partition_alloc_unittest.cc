@@ -6129,6 +6129,43 @@ TEST_P(PartitionAllocTest, GetReservationStart) {
   allocator.root()->Free(ptr);
 }
 
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+// Direct-mapped reservations are transient, and are placed at the top of the
+// pool, whereas normal bucket super pages are placed at the bottom. See
+// AddressPoolManager::ReservationLifetime.
+TEST_P(PartitionAllocTest, DirectMapIsAllocatedFromTopOfPool) {
+  void* small_ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
+  ASSERT_TRUE(small_ptr);
+  size_t large_size = kSuperPageSize * 3 + PartitionPageSize() * .5f;
+  ASSERT_GT(large_size, BucketIndexLookup::kMaxBucketSize);
+  void* large_ptr = allocator.root()->Alloc(large_size, type_name);
+  ASSERT_TRUE(large_ptr);
+  void* large_ptr2 = allocator.root()->Alloc(large_size, type_name);
+  ASSERT_TRUE(large_ptr2);
+
+  uintptr_t small_address = UntagPtr(small_ptr);
+  uintptr_t large_address = UntagPtr(large_ptr);
+  uintptr_t large_address2 = UntagPtr(large_ptr2);
+  auto small_info = PartitionAddressSpace::GetPoolInfo(small_address);
+  auto large_info = PartitionAddressSpace::GetPoolInfo(large_address);
+  ASSERT_EQ(small_info.handle, large_info.handle);
+  const size_t pool_size = ~large_info.base_mask + 1;
+
+  // Other tests and allocations in this process share the pool, so don't
+  // expect exact addresses. However, normal bucket super pages should be in the
+  // bottom half of the pool, and direct-mapped ones in the top half, growing
+  // downward.
+  EXPECT_LT(small_info.offset, pool_size / 2);
+  EXPECT_GE(large_info.offset, pool_size / 2);
+  EXPECT_LT(large_info.offset, pool_size);
+  EXPECT_LT(large_address2, large_address);
+
+  allocator.root()->Free(large_ptr2);
+  allocator.root()->Free(large_ptr);
+  allocator.root()->Free(small_ptr);
+}
+#endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+
 TEST_P(PartitionAllocTest, CheckReservationType) {
   ReservationOffsetTable table = allocator.root()->GetReservationOffsetTable();
   void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);

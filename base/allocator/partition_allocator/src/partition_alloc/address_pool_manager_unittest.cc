@@ -54,6 +54,8 @@ class AddressPoolManagerForTesting : public AddressPoolManager {
 
 class PartitionAllocAddressPoolManagerTest : public testing::Test {
  protected:
+  using ReservationLifetime = AddressPoolManager::ReservationLifetime;
+
   PartitionAllocAddressPoolManagerTest() = default;
   ~PartitionAllocAddressPoolManagerTest() override = default;
 
@@ -225,6 +227,127 @@ TEST_F(PartitionAllocAddressPoolManagerTest, IrregularPattern) {
   GetAddressPoolManager()->UnreserveAndDecommit(pool_, a8, 3 * kSuperPageSize);
   GetAddressPoolManager()->UnreserveAndDecommit(pool_, a10,
                                                 15 * kSuperPageSize);
+}
+
+TEST_F(PartitionAllocAddressPoolManagerTest,
+       IrregularPatternNonPersistentReservation) {
+  const uintptr_t pool_end = base_address_ + kPoolSize;
+  uintptr_t a1 = GetAddressPoolManager()->Reserve(
+      pool_, 0, kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a1, pool_end - 1 * kSuperPageSize);
+  uintptr_t a2 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 2 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a2, pool_end - 3 * kSuperPageSize);
+  uintptr_t a3 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 3 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a3, pool_end - 6 * kSuperPageSize);
+  uintptr_t a4 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 4 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a4, pool_end - 10 * kSuperPageSize);
+  uintptr_t a5 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 5 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a5, pool_end - 15 * kSuperPageSize);
+
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a4, 4 * kSuperPageSize);
+  uintptr_t a6 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 6 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a6, pool_end - 21 * kSuperPageSize);
+
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a5, 5 * kSuperPageSize);
+  uintptr_t a7 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 7 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a7, pool_end - 13 * kSuperPageSize);
+  uintptr_t a8 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 3 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a8, pool_end - 24 * kSuperPageSize);
+  uintptr_t a9 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 2 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a9, pool_end - 15 * kSuperPageSize);
+
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a7, 7 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a9, 2 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a6, 6 * kSuperPageSize);
+  uintptr_t a10 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 15 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(a10, pool_end - 21 * kSuperPageSize);
+
+  // Clean up.
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a1, kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a2, 2 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a3, 3 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a8, 3 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, a10,
+                                                15 * kSuperPageSize);
+}
+
+TEST_F(PartitionAllocAddressPoolManagerTest,
+       PersistentAndNonPersistentReservationsDoNotFragment) {
+  const uintptr_t pool_end = base_address_ + kPoolSize;
+
+  // Simulate interleaving transient (DirectMap) reservations with persistent
+  // (normal bucket) reservations.
+  uintptr_t dm1 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 4 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(dm1, pool_end - 4 * kSuperPageSize);
+
+  uintptr_t normal1 = GetAddressPoolManager()->Reserve(
+      pool_, 0, kSuperPageSize, ReservationLifetime::kPersistent);
+  EXPECT_EQ(normal1, base_address_);
+
+  uintptr_t dm2 = GetAddressPoolManager()->Reserve(
+      pool_, 0, 8 * kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(dm2, pool_end - 12 * kSuperPageSize);
+
+  uintptr_t normal2 = GetAddressPoolManager()->Reserve(
+      pool_, normal1 + kSuperPageSize, kSuperPageSize,
+      ReservationLifetime::kPersistent);
+  EXPECT_EQ(normal2, base_address_ + kSuperPageSize);
+
+  // Free both transient reservations.
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, dm1, 4 * kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, dm2, 8 * kSuperPageSize);
+
+  // The entire remaining pool (kPageCnt - 2 superpages) should be contiguous!
+  AddressSpaceStatsDumperForTesting dumper{};
+  GetAddressPoolManager()->DumpStats(&dumper);
+  EXPECT_EQ(dumper.regular_pool_usage_, 2ull);
+  EXPECT_EQ(dumper.regular_pool_largest_reservation_, kPageCnt - 2);
+
+  uintptr_t huge_dm = GetAddressPoolManager()->Reserve(
+      pool_, 0, (kPageCnt - 2) * kSuperPageSize,
+      ReservationLifetime::kTransient);
+  EXPECT_EQ(huge_dm, base_address_ + 2 * kSuperPageSize);
+
+  // Pool is now completely full from both ends.
+  EXPECT_EQ(GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize,
+                                             ReservationLifetime::kPersistent),
+            0u);
+  EXPECT_EQ(GetAddressPoolManager()->Reserve(
+                pool_, base_address_ + 2 * kSuperPageSize, kSuperPageSize,
+                ReservationLifetime::kPersistent),
+            0u);
+  EXPECT_EQ(GetAddressPoolManager()->Reserve(pool_, 0, kSuperPageSize,
+                                             ReservationLifetime::kTransient),
+            0u);
+  GetAddressPoolManager()->DumpStats(&dumper);
+  EXPECT_EQ(dumper.regular_pool_usage_, kPageCnt);
+  EXPECT_EQ(dumper.regular_pool_largest_reservation_, 0ull);
+
+  GetAddressPoolManager()->UnreserveAndDecommit(
+      pool_, huge_dm, (kPageCnt - 2) * kSuperPageSize);
+
+  // Verify that hints recover properly after the pool was 100% full.
+  uintptr_t dm3 = GetAddressPoolManager()->Reserve(
+      pool_, 0, kSuperPageSize, ReservationLifetime::kTransient);
+  EXPECT_EQ(dm3, pool_end - kSuperPageSize);
+  uintptr_t normal3 = GetAddressPoolManager()->Reserve(
+      pool_, 0, kSuperPageSize, ReservationLifetime::kPersistent);
+  EXPECT_EQ(normal3, base_address_ + 2 * kSuperPageSize);
+
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, dm3, kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, normal3, kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, normal2, kSuperPageSize);
+  GetAddressPoolManager()->UnreserveAndDecommit(pool_, normal1, kSuperPageSize);
 }
 
 TEST_F(PartitionAllocAddressPoolManagerTest, DecommittedDataIsErased) {

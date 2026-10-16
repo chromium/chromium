@@ -118,14 +118,29 @@ void AddressPoolManager::Remove(pool_handle handle) {
 
 uintptr_t AddressPoolManager::Reserve(pool_handle handle,
                                       uintptr_t requested_address,
-                                      size_t length) {
+                                      size_t length,
+                                      ReservationLifetime lifetime) {
   Pool* pool = GetPool(handle);
   bool should_notify = false;
   uintptr_t address = 0;
+  // Reservations can be persistent or not. If a reservation is persistent, we
+  // try to pack it from the bottom of the address space, otherwise from the
+  // top. This is intended to minimize fragmentation over time:
+  // - Persistent: Since these are never released, they effectively end up being
+  //   a single, continuous region with no holes.
+  // - Non-persistent: The main goal is to keep holes that are as large as
+  //   possible, to prevent allocation failures due to GigaCage
+  //   fragmentation. Allocating from the top at least moves these away from the
+  //   persistent allocations. The current policy (first-fit) is not necessarily
+  //   the best one, but at least it prevents the interleaving of persistent and
+  //   non-persistent allocations from creating permanent fragmentation.
   if (requested_address &&
       pool->TryReserveChunk(requested_address, length, almost_full_pool_count_,
                             should_notify)) {
     address = requested_address;
+  } else if (lifetime == ReservationLifetime::kTransient) {
+    address =
+        pool->FindChunkFromEnd(length, almost_full_pool_count_, should_notify);
   } else {
     address = pool->FindChunk(length, almost_full_pool_count_, should_notify);
   }
@@ -161,6 +176,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
   ScopedGuard scoped_lock(lock_);
   alloc_bitset_.reset();
   bit_hint_ = 0;
+  high_bit_hint_ = total_bits_;
   allocated_bits_ = 0;
   is_almost_full_ = false;
 }
@@ -176,6 +192,7 @@ bool AddressPoolManager::Pool::Reset(
   total_bits_ = 0;
   alloc_bitset_.reset();
   bit_hint_ = 0;
+  high_bit_hint_ = 0;
   allocated_bits_ = 0;
   if (!is_almost_full_) {
     return false;
@@ -238,13 +255,15 @@ uintptr_t AddressPoolManager::Pool::FindChunk(
   size_t beg_bit = bit_hint_;
   size_t curr_bit = bit_hint_;
   while (true) {
-    // |end_bit| points 1 past the last bit that needs to be 0. If it goes past
-    // |total_bits_|, return |nullptr| to signal no free chunk was found.
-    size_t end_bit = beg_bit + need_bits;
-    if (end_bit > total_bits_) {
+    // The candidate chunk is [beg_bit, beg_bit + need_bits). All bits at or
+    // after |high_bit_hint_| are known to be 1, so if the chunk doesn't fit
+    // below it, return 0 to signal no free chunk was found. Note that
+    // |beg_bit| may be past |high_bit_hint_| when the pool is full.
+    if (beg_bit > high_bit_hint_ || high_bit_hint_ - beg_bit < need_bits) {
       should_notify = false;
       return 0;
     }
+    size_t end_bit = beg_bit + need_bits;
 
     bool found = true;
     for (; curr_bit < end_bit; ++curr_bit) {
@@ -270,6 +289,73 @@ uintptr_t AddressPoolManager::Pool::FindChunk(
         alloc_bitset_[i] = true;
       }
       allocated_bits_ += need_bits;
+      if (bit_hint_ == beg_bit) {
+        bit_hint_ = end_bit;
+      }
+      if (high_bit_hint_ == end_bit) {
+        high_bit_hint_ = beg_bit;
+      }
+      should_notify = UpdateAlmostFullStateLocked(almost_full_pool_count);
+      uintptr_t address = address_begin_ + beg_bit * kSuperPageSize;
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+      PA_DCHECK(address + requested_size <= address_end_);
+#endif
+      return address;
+    }
+  }
+
+  PA_NOTREACHED();
+}
+
+uintptr_t AddressPoolManager::Pool::FindChunkFromEnd(
+    size_t requested_size,
+    std::atomic<size_t>& almost_full_pool_count,
+    bool& should_notify) {
+  ScopedGuard scoped_lock(lock_);
+
+  PA_DCHECK(!(requested_size & kSuperPageOffsetMask));
+  const size_t need_bits = requested_size >> kSuperPageShift;
+
+  // Use first-fit policy from the high end to find an available chunk from free
+  // chunks. Start from |high_bit_hint_|, because we know there are no free
+  // chunks at or after it.
+  size_t end_bit = high_bit_hint_;
+  size_t curr_bit = high_bit_hint_;
+  while (true) {
+    if (end_bit < bit_hint_ || end_bit - bit_hint_ < need_bits) {
+      should_notify = false;
+      return 0;
+    }
+    size_t beg_bit = end_bit - need_bits;
+
+    bool found = true;
+    while (curr_bit > beg_bit) {
+      --curr_bit;
+      if (alloc_bitset_[curr_bit]) {
+        // The bit was set, so this chunk isn't entirely free. Set |found=false|
+        // to ensure the outer loop continues. However, continue the inner loop
+        // to set |end_bit| to the lowest set bit in the investigated chunk.
+        // |curr_bit| is decremented all the way to |beg_bit| to prevent the
+        // next outer loop pass from checking the same bits.
+        end_bit = curr_bit;
+        found = false;
+        if (high_bit_hint_ == curr_bit + 1) {
+          --high_bit_hint_;
+        }
+      }
+    }
+
+    // An entire [beg_bit;end_bit) region of 0s was found. Fill them with 1s (to
+    // mark as allocated) and return the allocated address.
+    if (found) {
+      for (size_t i = beg_bit; i < end_bit; ++i) {
+        PA_DCHECK(!alloc_bitset_[i]);
+        alloc_bitset_[i] = true;
+      }
+      allocated_bits_ += need_bits;
+      if (high_bit_hint_ == end_bit) {
+        high_bit_hint_ = beg_bit;
+      }
       if (bit_hint_ == beg_bit) {
         bit_hint_ = end_bit;
       }
@@ -339,23 +425,26 @@ bool AddressPoolManager::Pool::FreeChunk(
   PA_DCHECK(allocated_bits_ >= need_bits);
   allocated_bits_ -= need_bits;
   bit_hint_ = std::min(bit_hint_, beg_bit);
+  high_bit_hint_ = std::max(high_bit_hint_, end_bit);
   return UpdateAlmostFullStateLocked(almost_full_pool_count);
 }
 
 void AddressPoolManager::Pool::GetStats(PoolStats* stats) {
   std::bitset<kMaxSuperPagesInPool> pages;
   size_t i;
+  size_t end;
   {
     ScopedGuard scoped_lock(lock_);
     pages = alloc_bitset_;
     i = bit_hint_;
+    end = high_bit_hint_;
     PA_DCHECK(pages.count() == allocated_bits_);
     stats->usage = allocated_bits_;
   }
 
   size_t largest_run = 0;
   size_t current_run = 0;
-  for (; i < total_bits_; ++i) {
+  for (; i < end; ++i) {
     if (!pages[i]) {
       current_run += 1;
       continue;
@@ -444,7 +533,8 @@ void ResetBitmap(std::bitset<bitsize>& bitmap,
 
 uintptr_t AddressPoolManager::Reserve(pool_handle handle,
                                       uintptr_t requested_address,
-                                      size_t length) {
+                                      size_t length,
+                                      ReservationLifetime lifetime) {
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
   uintptr_t address =
       AllocPages(requested_address, length, kSuperPageSize,
