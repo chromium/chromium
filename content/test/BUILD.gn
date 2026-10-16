@@ -2674,6 +2674,7 @@ test("content_unittests") {
     "../browser/digital_credentials/virtual_wallet_unittest.cc",
     "../browser/dom_storage/dom_storage_context_wrapper_unittest.cc",
     "../browser/download/download_manager_impl_unittest.cc",
+    "../browser/download/save_package_serialization_handler_unittest.cc",
     "../browser/download/save_package_unittest.cc",
     "../browser/embedder_isolation_info_unittest.cc",
     "../browser/eye_dropper_chooser_impl_unittest.cc",

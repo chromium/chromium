@@ -20,12 +20,19 @@ void SavePackageSerializationHandler::DidReceiveData(
     const std::string& data_buffer) {
   // This callback should always have been set.
   CHECK(did_serialize_data_callback_, base::NotFatalUntil::M159);
+  // Ignore data that arrives after the renderer reported that serialization is
+  // finished.
+  if (!done_callback_) {
+    return;
+  }
   did_serialize_data_callback_.Run(data_buffer);
 }
 
 void SavePackageSerializationHandler::Done() {
   // This callback should always have been set and only called once.
-  CHECK(done_callback_, base::NotFatalUntil::M159);
+  if (!done_callback_) {
+    return;
+  }
   std::move(done_callback_).Run();
 }
 
