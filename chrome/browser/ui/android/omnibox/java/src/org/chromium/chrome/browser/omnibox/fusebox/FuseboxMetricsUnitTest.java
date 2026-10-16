@@ -15,6 +15,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
@@ -573,6 +574,44 @@ public class FuseboxMetricsUnitTest {
 
         mMetrics.notifyOmniboxSessionEnded(
                 true, AutocompleteRequestType.SEARCH, ModelMode.MODEL_MODE_GEMINI_REGULAR);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordTabAttachmentEffectiveDuration_SingleTab() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM
+                                        + ".SingleTab",
+                                1500)
+                        .expectNoRecords(
+                                FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM
+                                        + ".MultipleTabs")
+                        .build();
+
+        long startTime = TimeUtils.elapsedRealtimeMillis() - 500;
+        FuseboxMetrics.recordTabAttachmentEffectiveDuration(
+                startTime, /* loadDurationMs= */ 1000, /* isPartOfMultiTabSelection= */ false);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testRecordTabAttachmentEffectiveDuration_MultipleTabs() {
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM
+                                        + ".MultipleTabs",
+                                2500)
+                        .expectNoRecords(
+                                FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM
+                                        + ".SingleTab")
+                        .build();
+
+        long startTime = TimeUtils.elapsedRealtimeMillis() - 1000;
+        FuseboxMetrics.recordTabAttachmentEffectiveDuration(
+                startTime, /* loadDurationMs= */ 1500, /* isPartOfMultiTabSelection= */ true);
         watcher.assertExpected();
     }
 }

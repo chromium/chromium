@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tab.utilities;
 
-import android.os.SystemClock;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.util.SparseLongArray;
@@ -15,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -32,6 +32,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service for queuing and monitoring tabs that need to be loaded on demand. Supports tracking
@@ -45,6 +46,8 @@ public class TabLoadingService {
      * release from growing concurrent loading work unboundedly on low-memory devices.
      */
     private static final int IN_FLIGHT_MULTIPLIER_AFTER_SLOT_RELEASE = 2;
+
+    private static final long LOAD_DURATION_TTL_MS = 5 * 60 * 1000L;
 
     /**
      * Possible outcomes of a tab load request. Used to indicate the final state of the tab when
@@ -193,11 +196,32 @@ public class TabLoadingService {
     private final SparseIntArray mTabLoadGenerations = new SparseIntArray();
 
     /**
-     * Maps pending tab IDs to the timestamps (in {@link SystemClock#elapsedRealtime()}) when they
-     * were enqueued in {@link #mPendingTabs}. Used to record queue wait duration once an active
-     * concurrency slot becomes available.
+     * Maps pending tab IDs to the timestamps (in {@link TimeUtils#elapsedRealtimeMillis()}) when
+     * they were enqueued in {@link #mPendingTabs}. Used to record queue wait duration once an
+     * active concurrency slot becomes available.
      */
     private final SparseLongArray mTabQueueStartTimes = new SparseLongArray();
+
+    /**
+     * Maps tab IDs to timestamps (in {@link TimeUtils#elapsedRealtimeMillis()}) when their
+     * on-demand load was requested via {@link #queueLoadIfNeeded}. Stamped at request rather than
+     * when a concurrency slot opens, so recorded durations include any time spent waiting in {@link
+     * #mPendingTabs}, and a pending tab promoted to loading after {@link #checkpointLoadDurations}
+     * does not record a new duration.
+     */
+    private final SparseLongArray mTabLoadRequestTimes = new SparseLongArray();
+
+    /**
+     * Maps tab IDs to their completed on-demand load durations in milliseconds. Stored upon
+     * successful load completion and consumed by callers measuring end-to-end preparation latency.
+     */
+    private final SparseLongArray mLastLoadDurationsMs = new SparseLongArray();
+
+    /**
+     * Maps tab IDs to the timestamps (in {@link TimeUtils#elapsedRealtimeMillis()}) when their
+     * on-demand load completed. Used for TTL expiration in {@link #getAndClearLoadDuration}.
+     */
+    private final SparseLongArray mLastLoadTimestampsMs = new SparseLongArray();
 
     /** Monotonic generation counter incremented with each new load request. */
     private int mNextGeneration;
@@ -228,6 +252,7 @@ public class TabLoadingService {
 
         if (!mLimitEnabled) {
             mQueuedTabs.put(tab.getId(), new ObserverList<>());
+            mTabLoadRequestTimes.put(tab.getId(), TimeUtils.elapsedRealtimeMillis());
             return startTabLoad(tab, /* notifyOnFailure= */ false);
         }
 
@@ -245,6 +270,7 @@ public class TabLoadingService {
         // of addLoadIfNeededCallback() can register listeners (including for tabs that were
         // already loading).
         mQueuedTabs.put(tab.getId(), new ObserverList<>());
+        mTabLoadRequestTimes.put(tab.getId(), TimeUtils.elapsedRealtimeMillis());
 
         if (mPendingTabs.isEmpty() && hasLoadCapacity()) {
             RecordHistogram.recordCount100Histogram(
@@ -253,7 +279,7 @@ public class TabLoadingService {
         } else {
             tab.addObserver(sObserver);
             mPendingTabs.add(tab);
-            mTabQueueStartTimes.put(tab.getId(), SystemClock.elapsedRealtime());
+            mTabQueueStartTimes.put(tab.getId(), TimeUtils.elapsedRealtimeMillis());
             RecordHistogram.recordCount100Histogram(
                     "Android.TabLoadingService.PendingQueueDepth", mPendingTabs.size());
             return true;
@@ -327,6 +353,9 @@ public class TabLoadingService {
         boolean removedPending = mPendingTabs.remove(tab);
         mTabLoadGenerations.delete(tab.getId());
         mTabQueueStartTimes.delete(tab.getId());
+        mTabLoadRequestTimes.delete(tab.getId());
+        mLastLoadDurationsMs.delete(tab.getId());
+        mLastLoadTimestampsMs.delete(tab.getId());
         boolean wasQueued = mQueuedTabs.get(tab.getId()) != null;
         boolean wasLoading = mLoadingTabs.remove(tab);
         // A tab that released its slot at DOMContentLoaded is still loading, so it is cancelled the
@@ -368,9 +397,60 @@ public class TabLoadingService {
         return removedPending || wasQueued;
     }
 
+    /**
+     * Returns and clears the on-demand load duration in milliseconds for the given tab ID, or 0 if
+     * the tab did not load on demand, was already loaded, or the recorded duration has expired.
+     */
+    public long getAndClearLoadDuration(int tabId) {
+        ThreadUtils.assertOnUiThread();
+        long recordedAt = mLastLoadTimestampsMs.get(tabId, 0);
+        mLastLoadTimestampsMs.delete(tabId);
+        long duration = mLastLoadDurationsMs.get(tabId, 0);
+        mLastLoadDurationsMs.delete(tabId);
+        if (recordedAt > 0
+                && (TimeUtils.elapsedRealtimeMillis() - recordedAt) <= LOAD_DURATION_TTL_MS) {
+            return duration;
+        }
+        return 0;
+    }
+
+    /**
+     * Finalizes on-demand load durations for the given tab IDs prior to attachment creation,
+     * discarding tracked durations for tabs not in the given set.
+     *
+     * <p>For any tab in {@code tabIds} whose load is currently in flight, records the duration
+     * elapsed up to this point so the metric strictly measures time spent loading while inside the
+     * picker. Any tabs not in {@code tabIds} (e.g. tabs deselected before confirming) are pruned.
+     *
+     * @param tabIds The set of confirmed tab IDs from the tab picker.
+     */
+    public void checkpointLoadDurations(Set<Integer> tabIds) {
+        ThreadUtils.assertOnUiThread();
+        long now = TimeUtils.elapsedRealtimeMillis();
+        pruneExpiredLoadDurations(now);
+
+        for (int tabId : tabIds) {
+            long startTime = mTabLoadRequestTimes.get(tabId, 0);
+            if (startTime > 0) {
+                mLastLoadDurationsMs.put(tabId, now - startTime);
+                mLastLoadTimestampsMs.put(tabId, now);
+            }
+        }
+        mTabLoadRequestTimes.clear();
+
+        for (int i = mLastLoadTimestampsMs.size() - 1; i >= 0; i--) {
+            int id = mLastLoadTimestampsMs.keyAt(i);
+            if (!tabIds.contains(id)) {
+                mLastLoadDurationsMs.delete(id);
+                mLastLoadTimestampsMs.removeAt(i);
+            }
+        }
+    }
+
     private boolean startTabLoad(Tab tab, boolean notifyOnFailure) {
         // If tab was destroyed while waiting in the queue, notify destroyed immediately.
         if (tab.isDestroyed()) {
+            mTabLoadRequestTimes.delete(tab.getId());
             if (notifyOnFailure) {
                 removeCallbacksAndNotify(tab, LoadResult.DESTROYED);
             } else {
@@ -384,6 +464,7 @@ public class TabLoadingService {
         boolean isLoadingResult = tab.isLoading();
         if (!loadIfNeededResult || !isLoadingResult) {
             mTabLoadGenerations.delete(tab.getId());
+            mTabLoadRequestTimes.delete(tab.getId());
             if (notifyOnFailure) {
                 int result = tab.isDestroyed() ? LoadResult.DESTROYED : LoadResult.FAILURE;
                 removeCallbacksAndNotify(tab, result);
@@ -441,8 +522,37 @@ public class TabLoadingService {
         mTabQueueStartTimes.delete(tab.getId());
         tab.removeObserver(sObserver);
 
+        long startTime = mTabLoadRequestTimes.get(tab.getId(), 0);
+        mTabLoadRequestTimes.delete(tab.getId());
+        if (result == LoadResult.SUCCESS) {
+            if (startTime > 0) {
+                long now = TimeUtils.elapsedRealtimeMillis();
+                pruneExpiredLoadDurations(now);
+                mLastLoadDurationsMs.put(tab.getId(), now - startTime);
+                mLastLoadTimestampsMs.put(tab.getId(), now);
+            }
+        } else {
+            mLastLoadDurationsMs.delete(tab.getId());
+            mLastLoadTimestampsMs.delete(tab.getId());
+        }
+
         removeCallbacksAndNotify(tab, result);
         maybeLoadQueuedTabs();
+    }
+
+    /**
+     * Drops recorded load durations that are older than {@link #LOAD_DURATION_TTL_MS}. Durations
+     * are only consumed by callers measuring attachment latency, so loads that are never attached
+     * would otherwise accumulate for the lifetime of the process.
+     *
+     * @param now The current {@link TimeUtils#elapsedRealtimeMillis()}.
+     */
+    private void pruneExpiredLoadDurations(long now) {
+        for (int i = mLastLoadTimestampsMs.size() - 1; i >= 0; i--) {
+            if (now - mLastLoadTimestampsMs.valueAt(i) <= LOAD_DURATION_TTL_MS) continue;
+            mLastLoadDurationsMs.delete(mLastLoadTimestampsMs.keyAt(i));
+            mLastLoadTimestampsMs.removeAt(i);
+        }
     }
 
     /** Removes the callbacks for the tab and notifies them of the load result. */
@@ -466,7 +576,7 @@ public class TabLoadingService {
             long queueStartTime = mTabQueueStartTimes.get(nextTab.getId(), 0);
             if (queueStartTime > 0) {
                 mTabQueueStartTimes.delete(nextTab.getId());
-                long duration = SystemClock.elapsedRealtime() - queueStartTime;
+                long duration = TimeUtils.elapsedRealtimeMillis() - queueStartTime;
                 RecordHistogram.recordMediumTimesHistogram(
                         "Android.TabLoadingService.QueueWaitDuration", duration);
             }
@@ -479,10 +589,18 @@ public class TabLoadingService {
         mQueuedTabs.clear();
         mTabLoadGenerations.clear();
         mTabQueueStartTimes.clear();
+        mTabLoadRequestTimes.clear();
+        mLastLoadDurationsMs.clear();
+        mLastLoadTimestampsMs.clear();
         mNextGeneration = 0;
         mLoadingTabs.clear();
         mSlotReleasedTabs.clear();
         mPendingTabs.clear();
+    }
+
+    /** Returns the number of recorded on-demand load durations currently being tracked. */
+    int getTrackedLoadDurationCountForTesting() {
+        return mLastLoadDurationsMs.size();
     }
 
     /** Sets the singleton instance of {@link TabLoadingService} for testing. */
