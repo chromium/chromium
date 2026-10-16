@@ -24,6 +24,8 @@
 namespace history::journeys {
 namespace {
 
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
@@ -88,15 +90,12 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SuccessWithMetadata) {
   ASSERT_NE(url_id1, 0);
   ASSERT_NE(url_id2, 0);
 
-  base::Time visit_time_1 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
-  base::Time visit_time_2 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  base::Time visit_time_1 = TimeFromMicros(1000);
+  base::Time visit_time_2 = TimeFromMicros(2000);
   ASSERT_NE(AddTestVisit(url_id1, visit_time_1), 0);
   ASSERT_NE(AddTestVisit(url_id2, visit_time_2), 0);
 
-  base::Time creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  base::Time creation_time = TimeFromMicros(5000);
   JourneyRow journey(
       "test_journey", "Example Journey", creation_time, /*emoji=*/"🔍",
       /*overview=*/"Overview text", /*short_overview=*/"Short overview",
@@ -122,23 +121,18 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_ResolvesCollections) {
   ASSERT_NE(url_id1, 0);
   ASSERT_NE(url_id2, 0);
 
-  base::Time visit_time_1 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
-  base::Time visit_time_2 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
-  base::Time unknown_visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(3000));
+  base::Time visit_time_1 = TimeFromMicros(1000);
+  base::Time visit_time_2 = TimeFromMicros(2000);
+  base::Time unknown_visit_time = TimeFromMicros(3000);
   // A local visit that isn't one of the journey's history entries.
-  base::Time other_visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(4000));
+  base::Time other_visit_time = TimeFromMicros(4000);
   ASSERT_NE(AddTestVisit(url_id1, visit_time_1), 0);
   ASSERT_NE(AddTestVisit(url_id2, visit_time_2), 0);
   ASSERT_NE(AddTestVisit(url_id1, other_visit_time), 0);
 
-  JourneyRow journey = CreateJourneyRow(
-      "test_journey", "Example Journey",
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
-      {visit_time_1, visit_time_2});
+  JourneyRow journey =
+      CreateJourneyRow("test_journey", "Example Journey", TimeFromMicros(5000),
+                       {visit_time_1, visit_time_2});
   journey.collections = {
       // Items are in display order, which differs from visit order. Items
       // that aren't one of the journey's visits are dropped, even if the
@@ -173,24 +167,19 @@ TEST_F(JourneysBackendUtilTest,
        GetAllJourneysWithResolvedVisits_ResolvesCollections) {
   URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
   ASSERT_NE(url_id, 0);
-  base::Time visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time visit_time = TimeFromMicros(1000);
   ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
 
   JourneyRow with_collection = CreateJourneyRow(
-      "with_collection", "With collection",
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(6000)),
-      {visit_time});
+      "with_collection", "With collection", TimeFromMicros(6000), {visit_time});
   // The item that isn't one of the journey's visits is dropped, without
   // dropping the journey.
   with_collection.collections = {JourneyHistoryEntryCollection(
       "Collection", {JourneyHistoryEntry(visit_time),
-                     JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
-                         base::Microseconds(3000)))})};
-  JourneyRow without_collection = CreateJourneyRow(
-      "without_collection", "Without collection",
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
-      {visit_time});
+                     JourneyHistoryEntry(TimeFromMicros(3000))})};
+  JourneyRow without_collection =
+      CreateJourneyRow("without_collection", "Without collection",
+                       TimeFromMicros(5000), {visit_time});
   ASSERT_TRUE(db_.AddOrUpdateJourneys({with_collection, without_collection}));
 
   base::HistogramTester histogram_tester;
@@ -210,8 +199,7 @@ TEST_F(JourneysBackendUtilTest,
 }
 
 TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_EmptyVisits) {
-  base::Time creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  base::Time creation_time = TimeFromMicros(5000);
   JourneyRow journey("empty_journey", "Empty", creation_time);
 
   Journey expected_journey("empty_journey", "Empty", creation_time);
@@ -220,8 +208,7 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_EmptyVisits) {
 
 TEST_F(JourneysBackendUtilTest,
        ResolveJourneyVisits_MissingVisitReturnsNullopt) {
-  base::Time unknown_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999));
+  base::Time unknown_time = TimeFromMicros(9999);
   JourneyRow missing_journey = CreateJourneyRow("missing_journey", /*title=*/"",
                                                 /*creation_time=*/base::Time(),
                                                 /*visit_times=*/{unknown_time});
@@ -230,8 +217,7 @@ TEST_F(JourneysBackendUtilTest,
 }
 
 TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_MissingUrlReturnsNullopt) {
-  base::Time visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time visit_time = TimeFromMicros(1000);
   // Add visit referencing non-existent URLID 999.
   ASSERT_NE(AddTestVisit(999, visit_time), 0);
 
@@ -251,8 +237,7 @@ TEST_F(JourneysBackendUtilTest,
   ASSERT_NE(source_id, 0);
   ASSERT_NE(dest_id, 0);
 
-  base::Time shared_visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  base::Time shared_visit_time = TimeFromMicros(5000);
   VisitID visit_1 =
       AddTestVisit(source_id, shared_visit_time,
                    ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
@@ -263,8 +248,7 @@ TEST_F(JourneysBackendUtilTest,
                                 ui::PAGE_TRANSITION_CHAIN_END));
   ASSERT_GT(visit_2, visit_1);
 
-  base::Time creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(6000));
+  base::Time creation_time = TimeFromMicros(6000);
   JourneyRow journey =
       CreateJourneyRow("journey_redirect", "Redirect Journey", creation_time,
                        /*visit_times=*/{shared_visit_time});
@@ -291,20 +275,17 @@ TEST_F(JourneysBackendUtilTest,
        GetAllJourneysWithResolvedVisits_OrdersByCreationTimeDesc) {
   URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
   ASSERT_NE(url_id, 0);
-  base::Time visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time visit_time = TimeFromMicros(1000);
   ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
 
   // Older resolved journey (creation_time = 5000).
-  base::Time creation_time_older =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  base::Time creation_time_older = TimeFromMicros(5000);
   JourneyRow older_journey =
       CreateJourneyRow("journey_older", "Older Resolved", creation_time_older,
                        /*visit_times=*/{visit_time});
 
   // Newer resolved journey (creation_time = 8000).
-  base::Time creation_time_newer =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(8000));
+  base::Time creation_time_newer = TimeFromMicros(8000);
   JourneyRow newer_journey =
       CreateJourneyRow("journey_newer", "Newer Resolved", creation_time_newer,
                        /*visit_times=*/{visit_time});
@@ -324,35 +305,31 @@ TEST_F(JourneysBackendUtilTest,
        GetAllJourneysWithResolvedVisits_FiltersOutUnresolvedJourneys) {
   URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
   ASSERT_NE(url_id, 0);
-  base::Time visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time visit_time = TimeFromMicros(1000);
   ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
 
-  base::Time creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  base::Time creation_time = TimeFromMicros(5000);
   JourneyRow complete_journey =
       CreateJourneyRow("journey_complete", "Complete", creation_time,
                        /*visit_times=*/{visit_time});
 
   // Incomplete journey (creation_time = 9000, has missing visit timestamp
   // 9999).
-  JourneyRow incomplete_journey = CreateJourneyRow(
-      "journey_incomplete", "Incomplete",
-      /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9000)),
-      /*visit_times=*/
-      {visit_time,
-       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999))});
+  JourneyRow incomplete_journey =
+      CreateJourneyRow("journey_incomplete", "Incomplete",
+                       /*creation_time=*/
+                       TimeFromMicros(9000),
+                       /*visit_times=*/
+                       {visit_time, TimeFromMicros(9999)});
 
   // Journey whose visit references non-existent URLID 999.
-  base::Time orphaned_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  base::Time orphaned_time = TimeFromMicros(2000);
   ASSERT_NE(AddTestVisit(999, orphaned_time), 0);
-  JourneyRow orphaned_journey = CreateJourneyRow(
-      "journey_orphaned", "Orphaned",
-      /*creation_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(7000)),
-      /*visit_times=*/{orphaned_time});
+  JourneyRow orphaned_journey =
+      CreateJourneyRow("journey_orphaned", "Orphaned",
+                       /*creation_time=*/
+                       TimeFromMicros(7000),
+                       /*visit_times=*/{orphaned_time});
 
   ASSERT_TRUE(db_.AddOrUpdateJourneys(
       {complete_journey, incomplete_journey, orphaned_journey}));
@@ -361,26 +338,20 @@ TEST_F(JourneysBackendUtilTest,
   EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_),
               ElementsAre(Field(&Journey::journey_id, "journey_complete")));
 
-  histogram_tester.ExpectBucketCount(
-      kResolutionResultHistogram, SyncedJourneyResolutionResult::kResolved, 1);
-  histogram_tester.ExpectBucketCount(
-      kResolutionResultHistogram, SyncedJourneyResolutionResult::kMissingVisit,
-      1);
-  histogram_tester.ExpectBucketCount(kResolutionResultHistogram,
-                                     SyncedJourneyResolutionResult::kMissingUrl,
-                                     1);
-  histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 3);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kResolutionResultHistogram),
+      BucketsAre(Bucket(SyncedJourneyResolutionResult::kResolved, 1),
+                 Bucket(SyncedJourneyResolutionResult::kMissingVisit, 1),
+                 Bucket(SyncedJourneyResolutionResult::kMissingUrl, 1)));
 }
 
 TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_Found) {
   URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
   ASSERT_NE(url_id, 0);
-  base::Time visit_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
+  base::Time visit_time = TimeFromMicros(1000);
   ASSERT_NE(AddTestVisit(url_id, visit_time), 0);
 
-  base::Time creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  base::Time creation_time = TimeFromMicros(5000);
   ASSERT_TRUE(db_.AddOrUpdateJourneys(
       {CreateJourneyRow("journey_a", "Journey A", creation_time,
                         /*visit_times=*/{visit_time}),
@@ -412,7 +383,7 @@ TEST_F(JourneysBackendUtilTest,
   ASSERT_TRUE(db_.AddOrUpdateJourneys({CreateJourneyRow(
       "journey_incomplete", "Incomplete", /*creation_time=*/base::Time(),
       /*visit_times=*/
-      {base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999))})}));
+      {TimeFromMicros(9999)})}));
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "journey_incomplete"),
@@ -430,17 +401,14 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SetsIsForeign) {
   ASSERT_NE(local_url_id, 0);
   ASSERT_NE(foreign_url_id, 0);
 
-  base::Time t1 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
-  base::Time t2 =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(2000));
+  base::Time t1 = TimeFromMicros(1000);
+  base::Time t2 = TimeFromMicros(2000);
   ASSERT_NE(AddTestVisit(local_url_id, t1), 0);
   ASSERT_NE(AddTestVisit(foreign_url_id, t2, ui::PAGE_TRANSITION_LINK,
                          /*originator_cache_guid=*/"remote_device_guid"),
             0);
 
-  base::Time creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000));
+  base::Time creation_time = TimeFromMicros(5000);
   JourneyRow row = CreateJourneyRow("journey_foreign", "Mixed Devices",
                                     creation_time, {t1, t2});
 
@@ -462,23 +430,18 @@ TEST_F(JourneysBackendUtilTest, GetUnresolvableJourneysCountForFishfood) {
 
   URLID url_id = AddTestURL(GURL("http://www.example.com/page1"), u"Page 1");
   ASSERT_NE(url_id, 0);
-  base::Time resolved_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(1000));
-  base::Time missing_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(9999));
+  base::Time resolved_time = TimeFromMicros(1000);
+  base::Time missing_time = TimeFromMicros(9999);
   ASSERT_NE(AddTestVisit(url_id, resolved_time), 0);
 
-  JourneyRow complete_journey = CreateJourneyRow(
-      "journey_complete", "Complete",
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(7000)),
-      /*visit_times=*/{resolved_time});
+  JourneyRow complete_journey =
+      CreateJourneyRow("journey_complete", "Complete", TimeFromMicros(7000),
+                       /*visit_times=*/{resolved_time});
   JourneyRow unresolvable_journey_1 = CreateJourneyRow(
-      "journey_unresolvable_1", "Unresolvable 1",
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(6000)),
+      "journey_unresolvable_1", "Unresolvable 1", TimeFromMicros(6000),
       /*visit_times=*/{resolved_time, missing_time});
   JourneyRow unresolvable_journey_2 = CreateJourneyRow(
-      "journey_unresolvable_2", "Unresolvable 2",
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(5000)),
+      "journey_unresolvable_2", "Unresolvable 2", TimeFromMicros(5000),
       /*visit_times=*/{missing_time});
 
   ASSERT_TRUE(db_.AddOrUpdateJourneys(

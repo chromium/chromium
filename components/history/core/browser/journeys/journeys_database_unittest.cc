@@ -57,10 +57,6 @@ testing::Matcher<const JourneyRow&> MatchesJourney(const JourneyRow& expected) {
             ElementsAreArray(expected.collections)));
 }
 
-base::Time TimeFromMicros(int64_t micros) {
-  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(micros));
-}
-
 JourneyRow CreateTestJourney(const std::string& journey_id,
                              const std::string& title,
                              int64_t creation_time_micros) {

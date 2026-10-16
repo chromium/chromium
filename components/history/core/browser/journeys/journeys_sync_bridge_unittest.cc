@@ -18,6 +18,7 @@
 #include "components/history/core/browser/journeys/history_backend_for_journeys_sync.h"
 #include "components/history/core/browser/journeys/journey_row.h"
 #include "components/history/core/browser/journeys/journeys_sync_metadata_database.h"
+#include "components/history/core/browser/journeys/journeys_test_utils.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -97,22 +98,19 @@ JourneySpecifics CreateTestJourneySpecifics(
 JourneyRow CreateTestJourneyRow(const std::string& journey_id = kTestJourneyId,
                                 const std::string& title = kTestTitle,
                                 bool include_rich_fields = true) {
-  base::Time creation_time =
-      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(100));
+  base::Time creation_time = TimeFromMicros(100);
   if (include_rich_fields) {
     return JourneyRow(
         journey_id, title, creation_time, /*emoji=*/kTestEmoji,
         /*overview=*/kTestOverview, /*short_overview=*/kTestShortOverview,
         /*history_entries=*/
-        {JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
-            base::Microseconds(kTestVisitTimestamp)))},
+        {JourneyHistoryEntry(TimeFromMicros(kTestVisitTimestamp))},
         /*continuation_queries=*/
         {JourneyContinuationQuery(kTestQueryTitle, kTestQueryPrompt)},
         /*collections=*/
         {JourneyHistoryEntryCollection(
             kTestCollectionTitle,
-            {JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
-                base::Microseconds(kTestVisitTimestamp)))})});
+            {JourneyHistoryEntry(TimeFromMicros(kTestVisitTimestamp))})});
   }
   return JourneyRow(journey_id, title, creation_time, /*emoji=*/kTestEmoji);
 }
@@ -380,10 +378,8 @@ TEST_F(JourneysSyncBridgeTest, ConvertsCollectionsInOrderInBothDirections) {
       ElementsAre(
           JourneyHistoryEntryCollection(
               "First",
-              {JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
-                   base::Microseconds(kOtherVisitTimestamp))),
-               JourneyHistoryEntry(base::Time::FromDeltaSinceWindowsEpoch(
-                   base::Microseconds(kTestVisitTimestamp)))}),
+              {JourneyHistoryEntry(TimeFromMicros(kOtherVisitTimestamp)),
+               JourneyHistoryEntry(TimeFromMicros(kTestVisitTimestamp))}),
           JourneyHistoryEntryCollection("Empty", {})));
 
   std::unique_ptr<syncer::DataBatch> batch = bridge.GetAllDataForDebugging();

@@ -11,6 +11,10 @@
 
 namespace history::journeys {
 
+base::Time TimeFromMicros(int64_t micros) {
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(micros));
+}
+
 void PrintTo(const JourneyHistoryEntry& entry, std::ostream* os) {
   *os << "JourneyHistoryEntry("
       << entry.visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds() << ")";
