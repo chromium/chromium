@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/tools/bookmark_management_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -433,6 +434,23 @@ TEST(ToolRegistryTest, MoveMouseToolDefinition) {
   EXPECT_THAT(*definition,
               RequiresParam(MoveMouseToolRequest::kDomNodeIdParam));
 }
+TEST(ToolRegistryTest, DragAndReleaseToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      DragAndReleaseToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kDragAndRelease);
+  EXPECT_EQ(definition->name, DragAndReleaseToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(DragAndReleaseToolRequest::kFromDomNodeIdParam,
+                             "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(DragAndReleaseToolRequest::kFromDomNodeIdParam));
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(DragAndReleaseToolRequest::kToDomNodeIdParam, "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(DragAndReleaseToolRequest::kToDomNodeIdParam));
+}
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -799,6 +817,17 @@ TEST(ToolRegistryTest, GetAllToolsContainsMoveMouseTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kMoveMouse, &ToolDefinition::id));
+}
+TEST(ToolRegistryTest, GetAllToolsContainsDragAndReleaseTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kDragAndRelease,
+                                    &ToolDefinition::id));
 }
 TEST(ToolRegistryTest, ToolIdToNameReturnsEmptyForUnrecognizedId) {
   EXPECT_TRUE(ToolRegistry::ToolIdToName(kUnrecognizedToolId).empty());

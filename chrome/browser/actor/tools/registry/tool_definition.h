@@ -79,7 +79,9 @@ enum class ToolId {
   kCloseWindow = 29,
   // Moves the mouse pointer over an element on the page.
   kMoveMouse = 30,
-  kMaxValue = kMoveMouse,
+  // Drags an element and drops it onto another element on the page.
+  kDragAndRelease = 31,
+  kMaxValue = kDragAndRelease,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

@@ -4,14 +4,39 @@
 
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 
+#include <optional>
+#include <string_view>
+#include <utility>
+
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "drag_and_release_tool_request.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 namespace actor {
+
+namespace {
+
+// Default description for the `drag_and_release` tool.
+constexpr std::string_view kDragAndReleaseToolDescription =
+    "Drags an element and releases it onto another element on the active "
+    "webpage.";
+
+// Description for the `from_dom_node_id` parameter of the `drag_and_release`
+// tool.
+constexpr std::string_view kFromDomNodeIdParamDescription =
+    "The numeric DOM node ID of the element to drag.";
+
+// Description for the `to_dom_node_id` parameter of the `drag_and_release`
+// tool.
+constexpr std::string_view kToDomNodeIdParamDescription =
+    "The numeric DOM node ID of the element to drop onto.";
+
+}  // namespace
 
 using ::tabs::TabHandle;
 
@@ -27,6 +52,19 @@ DragAndReleaseToolRequest::~DragAndReleaseToolRequest() = default;
 
 DragAndReleaseToolRequest::DragAndReleaseToolRequest(
     const DragAndReleaseToolRequest& other) = default;
+
+// static
+std::optional<ToolDefinition> DragAndReleaseToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kDragAndRelease, kModelFacingName,
+                               kDragAndReleaseToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddIntegerProperty(kFromDomNodeIdParam,
+                                  kFromDomNodeIdParamDescription)
+              .AddIntegerProperty(kToDomNodeIdParam,
+                                  kToDomNodeIdParamDescription))
+      .Build();
+}
 
 void DragAndReleaseToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
   f.Apply(*this);
