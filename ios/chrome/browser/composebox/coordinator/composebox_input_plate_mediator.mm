@@ -59,6 +59,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
 #import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_query_contextualizer_delegate_bridge.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
@@ -1947,6 +1948,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // through the standard search navigation flow.
   if ([self shouldInvokeAssistantForAIMQuery]) {
     CobrowseContext* context = [[CobrowseContext alloc] initWithURL:URL];
+    context.entrypoint = AssistantAimEntrypoint::kAskAboutCurrentPage;
     context.attachedItems = _items.containedItems;
     if (_cobrowseBrowserAgent) {
       _cobrowseBrowserAgent->SetCobrowseContext(context);

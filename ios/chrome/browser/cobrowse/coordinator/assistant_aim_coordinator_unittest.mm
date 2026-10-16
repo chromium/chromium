@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 #import "ios/chrome/browser/metrics/model/activity_reporter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -17,8 +20,10 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -73,6 +78,10 @@ class AssistantAIMCoordinatorTest : public PlatformTest {
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_container_handler_
                      forProtocol:@protocol(AssistantContainerCommands)];
+    mock_scene_handler_ = OCMProtocolMock(@protocol(SceneCommands));
+    [browser_->GetCommandDispatcher()
+        startDispatchingToTarget:mock_scene_handler_
+                     forProtocol:@protocol(SceneCommands)];
     mock_snackbar_handler_ = OCMProtocolMock(@protocol(SnackbarCommands));
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:mock_snackbar_handler_
@@ -100,6 +109,7 @@ class AssistantAIMCoordinatorTest : public PlatformTest {
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;
   id mock_container_handler_;
+  id mock_scene_handler_;
   id mock_snackbar_handler_;
   AssistantAIMCoordinator* coordinator_ = nil;
 };
@@ -127,15 +137,49 @@ TEST_F(AssistantAIMCoordinatorTest, ActivityReporting_SetVisible) {
   [mockViewController stopMocking];
 }
 
+// Tests that `AssistantAIMCoordinator` forwards visibility, detent change, and
+// stop events to `AssistantAIMMetricsRecorder`.
+TEST_F(AssistantAIMCoordinatorTest, MetricsReporting_VisibilityAndDetent) {
+  id mock_recorder = OCMClassMock([AssistantAIMMetricsRecorder class]);
+  [coordinator_ setValue:mock_recorder forKey:@"metricsRecorder"];
+
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+
+  OCMExpect(
+      [mock_recorder recordDetentChanged:AssistantContainerDetent::kMinimized]);
+  OCMExpect([mock_recorder recordVisibilityChanged:YES]);
+  [coordinator_ setVisible:YES inMinimizedState:YES];
+  [mock_recorder verify];
+
+  OCMExpect(
+      [mock_recorder recordDetentChanged:AssistantContainerDetent::kLarge]);
+  [static_cast<id<AssistantContainerDelegate>>(coordinator_)
+      assistantContainer:nil
+         didChangeDetent:AssistantContainerDetent::kLarge];
+  [mock_recorder verify];
+
+  OCMExpect([mock_recorder recordVisibilityChanged:NO]);
+  [coordinator_ setVisible:NO];
+  [mock_recorder verify];
+
+  OCMExpect([mock_recorder recordSessionEnded]);
+  [coordinator_ stop];
+  [mock_recorder verify];
+}
+
 TEST_F(AssistantAIMCoordinatorTest,
        DidTapClose_ShowsSnackbarOnDismissalCompletion) {
-  // Set up _viewController using KVC.
-  id mockViewController = OCMClassMock([AssistantAIMViewController class]);
-  [coordinator_ setValue:mockViewController forKey:@"viewController"];
+  // Set up _viewController and _metricsRecorder using KVC.
+  id mock_view_controller = OCMClassMock([AssistantAIMViewController class]);
+  [coordinator_ setValue:mock_view_controller forKey:@"viewController"];
+  id mock_recorder = OCMClassMock([AssistantAIMMetricsRecorder class]);
+  [coordinator_ setValue:mock_recorder forKey:@"metricsRecorder"];
 
   // Expect the container dismissal to be triggered.
   // We want to capture the completion block passed to it.
   __block ProceduralBlock dismissal_completion = nil;
+  OCMExpect([mock_recorder recordVisibilityChanged:NO]);
   OCMExpect([mock_container_handler_
       dismissAssistantContainerAnimated:YES
                              completion:[OCMArg checkWithBlock:^BOOL(id obj) {
@@ -144,21 +188,32 @@ TEST_F(AssistantAIMCoordinatorTest,
                              }]]);
 
   // Trigger close tap.
-  [(id<AssistantAIMViewControllerDelegate>)coordinator_
-      assistantAIMViewControllerDidTapClose:mockViewController];
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidTapClose:mock_view_controller];
 
+  [mock_recorder verify];
   [mock_container_handler_ verify];
   [mock_snackbar_handler_ verify];
 
   // Now, the snackbar should be shown when the completion block is executed.
-  OCMExpect([mock_snackbar_handler_ showSnackbarMessage:[OCMArg any]]);
+  __block SnackbarMessage* captured_message = nil;
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(SnackbarMessage* msg) {
+        captured_message = msg;
+        return YES;
+      }]]);
 
   ASSERT_NE(nil, dismissal_completion);
   dismissal_completion();
 
   [mock_snackbar_handler_ verify];
+  ASSERT_NE(nil, captured_message);
+  ASSERT_NE(nil, captured_message.completionHandler);
 
-  [mockViewController stopMocking];
+  OCMExpect([mock_recorder recordClosedSnackbarResolvedWithUndo:NO]);
+  OCMExpect([mock_recorder recordSessionEnded]);
+  captured_message.completionHandler(YES);
+  [mock_recorder verify];
 }
 
 // Tests that the captive portal login page requested from the coordinator's

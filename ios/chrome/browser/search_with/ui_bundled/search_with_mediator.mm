@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_util.h"
+#import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -285,6 +286,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
                                               _prefService)) {
     CobrowseContext* context =
         [CobrowseContext cobrowseContextWithSearchQuery:text];
+    context.entrypoint = AssistantAimEntrypoint::kWebSelectionSearchWith;
     _cobrowseBrowserAgent->SetCobrowseContext(context);
     _cobrowseBrowserAgent->SetSessionActive(true);
     [self.sceneHandler showAssistantWithNewSession];

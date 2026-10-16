@@ -4,6 +4,7 @@ include_rules = [
   "+ios/chrome/browser/browser_content/model",
   "+ios/chrome/browser/browser_content/ui_bundled",
   "+ios/chrome/browser/cobrowse/model",
+  "+ios/chrome/browser/cobrowse/shared/metrics",
   "+ios/chrome/browser/enterprise/data_controls/model",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/web_selection/model",

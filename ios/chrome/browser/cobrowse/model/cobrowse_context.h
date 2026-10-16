@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+enum class AssistantAimEntrypoint;
 @class ComposeboxInputItem;
 class GURL;
 
@@ -30,6 +31,9 @@ class GURL;
 
 // The items attached from the composebox.
 @property(nonatomic, copy) NSArray<ComposeboxInputItem*>* attachedItems;
+
+// Entrypoint that initiated the cobrowse session.
+@property(nonatomic, assign) AssistantAimEntrypoint entrypoint;
 
 // Whether the context contains server session tokens (mstk, mtid, or cinpts).
 @property(nonatomic, assign, readonly) BOOL hasServerSessionTokens;

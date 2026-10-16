@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("metrics_constants") {
+  sources = [ "assistant_aim_metrics_constants.h" ]
+}
+
+source_set("metrics") {
+  sources = [
+    "assistant_aim_metrics_recorder.h",
+    "assistant_aim_metrics_recorder.mm",
+  ]
+  deps = [
+    ":metrics_constants",
+    "//base",
+    "//ios/chrome/browser/assistant/ui:detent",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "assistant_aim_metrics_recorder_unittest.mm" ]
+  deps = [
+    ":metrics",
+    ":metrics_constants",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/assistant/ui:detent",
+    "//testing/gtest",
+  ]
+}

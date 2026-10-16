@@ -1,0 +1,36 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_COBROWSE_SHARED_METRICS_ASSISTANT_AIM_METRICS_RECORDER_H_
+#define IOS_CHROME_BROWSER_COBROWSE_SHARED_METRICS_ASSISTANT_AIM_METRICS_RECORDER_H_
+
+#import <Foundation/Foundation.h>
+
+enum class AssistantAimEntrypoint;
+enum class AssistantContainerDetent : NSInteger;
+
+// Metrics recorder for user activity and session lifecycle during an Assistant
+// AIM bottom sheet session.
+@interface AssistantAIMMetricsRecorder : NSObject
+
+// Starts tracking a session launched from `entrypoint`.
+- (void)recordSessionStartedWithEntrypoint:(AssistantAimEntrypoint)entrypoint;
+
+// Pauses or resumes the active visible duration timer when the sheet's
+// `visible` state changes.
+- (void)recordVisibilityChanged:(BOOL)visible;
+
+// Records a sheet transition to `detent`.
+- (void)recordDetentChanged:(AssistantContainerDetent)detent;
+
+// Records whether the snackbar to undo closing the session resolved with
+// `didUndo`
+- (void)recordClosedSnackbarResolvedWithUndo:(BOOL)didUndo;
+
+// Finalizes and flushes all session-level metrics when the session ends.
+- (void)recordSessionEnded;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_COBROWSE_SHARED_METRICS_ASSISTANT_AIM_METRICS_RECORDER_H_

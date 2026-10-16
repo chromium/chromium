@@ -29,6 +29,7 @@ source_set("model") {
     "//components/prefs",
     "//components/search_engines",
     "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/cobrowse/shared/metrics:metrics_constants",
     "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",

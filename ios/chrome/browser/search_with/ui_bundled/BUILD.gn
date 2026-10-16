@@ -17,6 +17,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/browser_content/model",
     "//ios/chrome/browser/browser_content/ui_bundled:edit_menu_utils",
     "//ios/chrome/browser/cobrowse/model",
+    "//ios/chrome/browser/cobrowse/shared/metrics:metrics_constants",
     "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/web_state_list",
