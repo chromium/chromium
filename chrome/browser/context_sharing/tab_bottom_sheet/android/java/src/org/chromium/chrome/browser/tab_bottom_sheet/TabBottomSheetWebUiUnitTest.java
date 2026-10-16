@@ -24,6 +24,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.ContextThemeWrapper;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
@@ -79,6 +80,7 @@ import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -95,6 +97,7 @@ public class TabBottomSheetWebUiUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
@@ -122,6 +125,8 @@ public class TabBottomSheetWebUiUnitTest {
 
         WeakReference<Activity> weakActivity = new WeakReference<>(mActivity);
         when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
+        Mockito.lenient().when(mWindowAndroid.getDisplay()).thenReturn(mDisplayAndroid);
+        Mockito.lenient().when(mDisplayAndroid.getDipScale()).thenReturn(1.0f);
 
         View decorView = new View(mActivity);
         decorView.layout(0, 0, /* right= */ 0, /* bottom= */ 1000);
@@ -972,6 +977,72 @@ public class TabBottomSheetWebUiUnitTest {
         mWebUi.setWebContents(mWebContents, true);
 
         assertEquals(selectorSupplier, TabModelSelectorSupplier.from(thinWindow));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+    })
+    public void testSetWebContents_UpdatesSafeAreaInsetsWhenEdgeToEdgeEnabled() {
+        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
+
+        int topMarginPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.context_sharing.R.dimen
+                                        .tab_bottom_sheet_web_ui_top_margin);
+        int expectedTopDip = (int) Math.ceil(topMarginPx / 2.0f);
+
+        mWebUi.setWebContents(mWebContents, false);
+
+        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 0)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
+    @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
+    public void testSetWebContents_DoesNotUpdateSafeAreaInsetsWhenEdgeToEdgeDisabled() {
+        mWebUi.setWebContents(mWebContents, false);
+
+        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+    })
+    public void testSetWebContents_SidePanel_DoesNotUpdateSafeAreaInsets() {
+        Context context =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
+        View containerView =
+                LayoutInflater.from(context)
+                        .inflate(
+                                org.chromium.chrome.browser.context_sharing.R.layout
+                                        .tab_bottom_sheet,
+                                null);
+        TabBottomSheetWebUi sidePanelWebUi =
+                new TestTabBottomSheetWebUi(
+                        context,
+                        containerView,
+                        mWindowAndroid,
+                        mContextMenuPopulatorFactory,
+                        mSelectionDropdownMenuDelegate,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        TabBottomSheetClientType.UNKNOWN,
+                        CoBrowseContainerType.SIDE_PANEL,
+                        /* ephemeralTabOpener= */ null,
+                        /* readLaterOpener= */ null,
+                        mContentView);
+
+        sidePanelWebUi.setWebContents(mWebContents, false);
+
+        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
     }
 
     /**

@@ -7,17 +7,20 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isActivityFinishingOrDestroyed;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils.isEdgeToEdgeEnabled;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -27,6 +30,7 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -319,6 +323,7 @@ public class TabBottomSheetWebUi {
             setAllowFullscreenIme(
                     mContext.getResources().getConfiguration().orientation
                             == Configuration.ORIENTATION_LANDSCAPE);
+            updateSafeAreaInsets();
         }
     }
 
@@ -334,6 +339,24 @@ public class TabBottomSheetWebUi {
         if (adapter != null) {
             adapter.setAllowFullscreenIme(allow);
         }
+    }
+
+    void updateSafeAreaInsets() {
+        if (!isEdgeToEdgeEnabled()
+                || mContainerType == CoBrowseContainerType.SIDE_PANEL
+                || mWebContents == null) {
+            return;
+        }
+
+        @Px
+        int topMarginPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_web_ui_top_margin);
+        float dipScale = mWindowAndroid.getDisplay().getDipScale();
+        int topInsetDip = (int) Math.ceil(topMarginPx / dipScale);
+
+        Rect safeArea = new Rect(0, topInsetDip, 0, 0);
+        mWebContents.setDisplayCutoutSafeArea(safeArea);
     }
 
     @Nullable WebContents getWebContents() {
