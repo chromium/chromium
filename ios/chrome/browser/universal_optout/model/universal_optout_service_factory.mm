@@ -18,28 +18,15 @@
 
 namespace universal_optout {
 
-// static
-UniversalOptOutServiceFactory* UniversalOptOutServiceFactory::GetInstance() {
-  static base::NoDestructor<UniversalOptOutServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-UniversalOptOutService* UniversalOptOutServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<UniversalOptOutService>(
-      profile, /*create=*/true);
-}
-
-UniversalOptOutServiceFactory::UniversalOptOutServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("UniversalOptOutService",
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+UniversalOptOutServiceFactory::UniversalOptOutServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "UniversalOptOutService",
+          ProfileSelection::kRedirectedInIncognito,
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-UniversalOptOutServiceFactory::~UniversalOptOutServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 UniversalOptOutServiceFactory::BuildServiceInstanceFor(

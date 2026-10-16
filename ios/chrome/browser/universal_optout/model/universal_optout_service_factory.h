@@ -5,31 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UNIVERSAL_OPTOUT_MODEL_UNIVERSAL_OPTOUT_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_UNIVERSAL_OPTOUT_MODEL_UNIVERSAL_OPTOUT_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "components/universal_optout/universal_optout_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace universal_optout {
 
-class UniversalOptOutService;
-
 // Factory for creating UniversalOptOutService on iOS.
-class UniversalOptOutServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class UniversalOptOutServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<UniversalOptOutServiceFactory,
+                                                UniversalOptOutService> {
  public:
-  static UniversalOptOutService* GetForProfile(ProfileIOS* profile);
-  static UniversalOptOutServiceFactory* GetInstance();
-
-  UniversalOptOutServiceFactory(const UniversalOptOutServiceFactory&) = delete;
-  UniversalOptOutServiceFactory& operator=(
-      const UniversalOptOutServiceFactory&) = delete;
+  explicit UniversalOptOutServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<UniversalOptOutServiceFactory>;
-
-  UniversalOptOutServiceFactory();
-  ~UniversalOptOutServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
