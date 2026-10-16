@@ -65,6 +65,7 @@ class AAudioInputStream : public AudioInputStream,
   SEQUENCE_CHECKER(sequence_checker_);
 
   void CreateStreamWrapper();
+  bool RetryStart();
   void HandleDeviceChange();
   void OnFifoFilled(const AudioBus& output_bus, int frame_delay);
   void DeliverAudio(const AudioBus& audio_bus, base::TimeTicks capture_time);

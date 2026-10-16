@@ -4,6 +4,9 @@
 
 #include "media/audio/android/aaudio_input.h"
 
+#include "base/android/device_info.h"
+#include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "media/audio/android/audio_device.h"
@@ -135,7 +138,7 @@ void AAudioInputStream::Start(AudioInputCallback* callback) {
   // Acquire the Bluetooth SCO state before starting the stream. The Android
   // framework requires SCO to be active before the stream is started.
   audio_manager_->AcquireScoState(this);
-  if (stream_wrapper_->Start()) {
+  if (stream_wrapper_->Start() || RetryStart()) {
     return;
   }
   // Release the SCO state if the stream failed to start.
@@ -145,6 +148,39 @@ void AAudioInputStream::Start(AudioInputCallback* callback) {
     callback_->OnError(Error::kStartupFailed);
     callback_ = nullptr;
   }
+}
+
+bool AAudioInputStream::RetryStart() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (device_.IsDefault() || !base::android::device_info::is_desktop() ||
+      !base::FeatureList::IsEnabled(
+          features::kAAudioInputRetryOnStartFailure)) {
+    return false;
+  }
+
+  // On initial creation, the renderer IPC gap between `Open()` and `Start()`
+  // gives lower-priority background captures time to re-attach to our Android
+  // input and start first, which makes our explicit-device `Start()` fail.
+  // Reopening and calling `Start()` right after `Open()` avoids that gap.
+  stream_wrapper_->Close();
+  stream_wrapper_.reset();
+  CreateStreamWrapper();
+  if (!stream_wrapper_->Open()) {
+    base::AutoLock al(lock_);
+    error_during_device_change_ = true;
+    LOG(ERROR) << "AAudio input stream failed to reopen on retry for device "
+               << device_.GetId().ToAAudioDeviceId();
+    return false;
+  }
+  if (stream_wrapper_->Start()) {
+    LOG(WARNING) << "AAudio input stream started on retry for device "
+                 << device_.GetId().ToAAudioDeviceId();
+    return true;
+  }
+  LOG(ERROR) << "AAudio input stream failed to start on retry for device "
+             << device_.GetId().ToAAudioDeviceId();
+  return false;
 }
 
 void AAudioInputStream::Stop() {
@@ -312,7 +348,7 @@ void AAudioInputStream::HandleDeviceChange() {
   // audio routing (e.g. Bluetooth SCO) can be configured correctly.
   audio_manager_->OnAAudioInputStreamDeviceChanged(this);
 
-  if (!stream_wrapper_->Start()) {
+  if (!stream_wrapper_->Start() && !RetryStart()) {
     // Release the SCO state as the stream failed to start.
     audio_manager_->ReleaseScoState(this);
     base::AutoLock al(lock_);

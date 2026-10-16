@@ -31,6 +31,10 @@ BASE_FEATURE(kUseAAudioInput, base::FEATURE_ENABLED_BY_DEFAULT);
 // effect.
 BASE_FEATURE(kAAudioPerStreamDeviceSelection, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// On desktop Android, retries a failed AAudio input start once with a fresh
+// stream for the same device.
+BASE_FEATURE(kAAudioInputRetryOnStartFailure, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for
 // optimal output frame size.
 BASE_FEATURE(kAlwaysUseAudioManagerOutputFramesPerBuffer,
