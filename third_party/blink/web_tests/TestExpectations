@@ -8823,3 +8823,6 @@ crbug.com/569679632 [ Win ] bindings/pass-as-span.html [ Pass Failure ]
 # Gardener 2026-10-09
 crbug.com/569736364 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigation_started/navigation_interrupted.py [ Pass Timeout ]
 crbug.com/568343392 crbug.com/540619916 [ Debug Linux ] external/wpt/webdriver/tests/classic/element_clear/user_prompts.py [ Failure Pass ]
+
+# Gardener 2026-10-16
+crbug.com/522632542 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/activate/activate.py [ Failure Pass ]
