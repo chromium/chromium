@@ -604,6 +604,7 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
 
  protected:
   const GURL kUrl{"https://url.com/"};
+  base::HistogramTester histograms_;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
@@ -631,10 +632,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
                        ShouldFixBadMetadata) {
-  base::HistogramTester histograms;
-
   ASSERT_TRUE(SetupClients());
-  // BeforeSetupClient() in the fixture has mangled the prefs so that
+  // OnProfileCreationStarted() in the fixture has mangled the prefs so that
   // Sync-the-feature is *not* enabled anymore, and Sync will start up in
   // transport mode instead.
   // Note that this means the persisted metadata is now in an inconsistent
@@ -662,36 +661,36 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
 
   // Generally: For data types that use two separate models, the metadata (of
   // the Sync-the-feature model) should have been cleared.
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::BOOKMARKS), 1);
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::PASSWORDS), 1);
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::READING_LIST), 1);
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::AUTOFILL_WALLET_DATA), 1);
 
   // But for data types that use a single model in both transport mode and
   // Sync-the-feature mode (and that support transport mode in the first place),
   // the metadata should *not* have been cleared.
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::DEVICE_INFO), 0);
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::SHARING_MESSAGE), 0);
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
 
   // With `kSeparateLocalAndAccountSearchEngines`, the same model is used for
   // both transport mode and Sync-the-feature mode, so the metadata should *not*
   // have been cleared.
-  histograms.ExpectBucketCount(
+  histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES),
       base::FeatureList::IsEnabled(

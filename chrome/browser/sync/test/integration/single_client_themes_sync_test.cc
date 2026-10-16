@@ -620,6 +620,9 @@ class SingleClientThemesSyncTestWithAccountThemesSeparation
   SingleClientThemesSyncTestWithAccountThemesSeparation()
       : feature_list_(syncer::kSeparateLocalAndAccountThemes) {}
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -918,7 +921,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SingleClientThemesSyncTestWithAccountThemesSeparation,
     ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {
-  base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients());
 
   // Original local theme should get re-applied.
@@ -927,9 +929,11 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
   EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
 
-  histogram_tester.ExpectUniqueSample(
+  // Both the default browser test profile and client 0's profile emit `true` on
+  // startup.
+  histogram_tester_.ExpectUniqueSample(
       "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.THEME", true,
-      /*expected_bucket_count=*/1);
+      /*expected_bucket_count=*/2);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -971,7 +975,6 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
                        ShouldClearAccountDataOnStartupIfAccountStateChanged) {
-  base::HistogramTester histogram_tester;
   ASSERT_TRUE(SetupClients());
 
   // Original local theme should get re-applied.
@@ -981,9 +984,11 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
   EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
 
   // Clearing happened with StayStoppedAndMaybeClearData() called upon startup.
-  histogram_tester.ExpectUniqueSample(
+  // Both the default browser test profile and client 0's profile emit `true` on
+  // startup.
+  histogram_tester_.ExpectUniqueSample(
       "Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid.THEME", true,
-      /*expected_bucket_count=*/1);
+      /*expected_bucket_count=*/2);
 }
 
 // Signing out is not supported on ChromeOS, thus excluded from this test suite.
