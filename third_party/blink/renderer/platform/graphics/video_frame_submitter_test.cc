@@ -164,20 +164,6 @@ class MockSurfaceEmbedder : public mojom::blink::SurfaceEmbedder {
   mojo::Receiver<mojom::blink::SurfaceEmbedder> receiver_{this};
 };
 
-class TestClientSharedImageInterface : public gpu::ClientSharedImageInterface {
- public:
-  TestClientSharedImageInterface()
-      : gpu::ClientSharedImageInterface(
-            nullptr,
-            gpu::GpuChannelHost::Create(
-                0 /* channel_id */,
-                gpu::GPUInfo(),
-                gpu::GpuFeatureInfo(),
-                gpu::SharedImageCapabilities(),
-                mojo::ScopedMessagePipeHandle(
-                    mojo::MessagePipeHandle(mojo::kInvalidHandleValue)))) {}
-};
-
 }  // namespace
 
 // Supports testing features::OnBeginFrameAcks, which changes the expectations
@@ -198,8 +184,8 @@ class VideoFrameSubmitterTest : public testing::Test {
         begin_frame_source_(new viz::FakeExternalBeginFrameSource(0.f, false)),
         video_frame_provider_(new StrictMock<MockVideoFrameProvider>()),
         context_provider_(viz::TestContextProvider::CreateRaster()),
-        client_shared_image_interface_(
-            base::MakeRefCounted<TestClientSharedImageInterface>()) {
+        shared_image_interface_(
+            base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
     context_provider_->BindToCurrentSequence();
     MakeSubmitter();
     task_environment_.RunUntilIdle();
@@ -210,7 +196,7 @@ class VideoFrameSubmitterTest : public testing::Test {
     // Make sure GpuChannelHost is completely destroyed to avoid ASAN memory
     // leak errors.
     resource_provider_ = nullptr;
-    client_shared_image_interface_.reset();
+    shared_image_interface_.reset();
     submitter_.reset();
     task_environment_.RunUntilIdle();
   }
@@ -285,7 +271,7 @@ class VideoFrameSubmitterTest : public testing::Test {
   void OnReceivedContextProvider(
       bool use_gpu_compositing,
       scoped_refptr<viz::RasterContextProvider> context_provider,
-      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface) {
+      scoped_refptr<gpu::SharedImageInterface> shared_image_interface) {
     submitter_->OnReceivedContextProvider(use_gpu_compositing,
                                           std::move(context_provider),
                                           std::move(shared_image_interface));
@@ -313,7 +299,7 @@ class VideoFrameSubmitterTest : public testing::Test {
   std::unique_ptr<StrictMock<MockVideoFrameProvider>> video_frame_provider_;
   std::unique_ptr<StrictMock<MockSurfaceEmbedder>> surface_embedder_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
-  scoped_refptr<TestClientSharedImageInterface> client_shared_image_interface_;
+  scoped_refptr<gpu::TestSharedImageInterface> shared_image_interface_;
   std::unique_ptr<VideoFrameSubmitter> submitter_;
   raw_ptr<StrictMock<MockVideoFrameResourceProvider>> resource_provider_;
 };
@@ -827,7 +813,7 @@ TEST_F(VideoFrameSubmitterTest,
       .Times(1);
   EXPECT_CALL(*video_frame_provider_, OnContextLost()).Times(1);
   submitter_->OnContextLost();
-  OnReceivedContextProvider(false, nullptr, client_shared_image_interface_);
+  OnReceivedContextProvider(false, nullptr, shared_image_interface_);
   task_environment_.RunUntilIdle();
 }
 
@@ -871,8 +857,8 @@ TEST_F(VideoFrameSubmitterTest,
       .Times(0);
   EXPECT_CALL(*video_frame_provider_, OnContextLost()).Times(1);
   submitter_->OnContextLost();
-  client_shared_image_interface_->gpu_channel()->DestroyChannel();
-  OnReceivedContextProvider(false, nullptr, client_shared_image_interface_);
+  shared_image_interface_->MarkAsLost();
+  OnReceivedContextProvider(false, nullptr, shared_image_interface_);
   task_environment_.RunUntilIdle();
 }
 

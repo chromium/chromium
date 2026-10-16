@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -97,12 +98,9 @@ class TestSharedImageInterface : public SharedImageInterface {
   void DestroySharedImage(std::vector<SyncToken> sync_tokens,
                           const Mailbox& mailbox) override;
 
-  bool IsLost() const override { return false; }
-  bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override {
-    return true;
-  }
-  void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer) override {
-  }
+  bool IsLost() const override;
+  bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
+  void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
 
 #if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(zx::eventpair service_handle,
@@ -196,6 +194,8 @@ class TestSharedImageInterface : public SharedImageInterface {
     emulate_client_provided_native_buffer_ = true;
   }
 
+  void MarkAsLost();
+
  protected:
   ~TestSharedImageInterface() override;
 
@@ -226,6 +226,9 @@ class TestSharedImageInterface : public SharedImageInterface {
   absl::flat_hash_map<SharedImagePoolId,
                       mojo::Remote<mojom::SharedImagePoolClientInterface>>
       remote_map_;
+
+  bool is_lost_ GUARDED_BY(lock_) = false;
+  std::vector<raw_ptr<GpuChannelLostObserver>> observer_list_ GUARDED_BY(lock_);
 };
 
 }  // namespace gpu
