@@ -1351,12 +1351,138 @@ class DebuggerExtensionApiPdfTest : public base::test::WithFeatureOverride,
                                     public DebuggerExtensionApiTest {
  public:
   DebuggerExtensionApiPdfTest()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {}
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfOopif) {
+    if (IsParamFeatureEnabled()) {
+      factory_.emplace();
+    }
+  }
+
+  testing::AssertionResult LoadPdf(const GURL& pdf_url) {
+    if (!ui_test_utils::NavigateToURL(browser(), pdf_url)) {
+      return testing::AssertionFailure() << "NavigateToURL failed";
+    }
+    content::WebContents* web_contents = GetActiveWebContents();
+    if (IsParamFeatureEnabled()) {
+      return factory_->GetTestMimeHandlerStreamManager(web_contents)
+          ->WaitUntilPdfLoaded(web_contents->GetPrimaryMainFrame());
+    }
+    return pdf_extension_test_util::EnsurePDFHasLoaded(web_contents);
+  }
+
+ private:
+  std::optional<pdf::TestMimeHandlerStreamManagerFactory> factory_;
 };
 
 // Test that the debuggers can attach to the PDF embedder frame.
 IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest, AttachToPdf) {
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_pdf")) << message_;
+}
+
+// Test that extensions cannot attach directly or via Target.setAutoAttach to
+// the inner PDF extension frame or PDF content frame, while still being able to
+// attach to the outer PDF embedder tab.
+IN_PROC_BROWSER_TEST_P(DebuggerExtensionApiPdfTest,
+                       CannotAttachToInnerPdfFrames) {
+  TestExtensionDir test_extension_dir;
+  test_extension_dir.WriteManifest(
+      R"({
+         "name": "debugger",
+         "version": "0.1",
+         "manifest_version": 3,
+         "permissions": ["debugger"]
+       })");
+  const Extension* extension = LoadExtension(test_extension_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  GURL pdf_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(LoadPdf(pdf_url));
+
+  scoped_refptr<content::DevToolsAgentHost> pdf_extension_host;
+  scoped_refptr<content::DevToolsAgentHost> pdf_content_host;
+  for (const auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetURL().SchemeIs(extensions::kExtensionScheme) &&
+        host->GetURL().GetHost() == extension_misc::kPdfExtensionId) {
+      pdf_extension_host = host;
+    } else if (host->GetProcessHost() && host->GetProcessHost()->IsPdf()) {
+      pdf_content_host = host;
+    }
+  }
+  ASSERT_TRUE(pdf_extension_host);
+  ASSERT_TRUE(pdf_content_host);
+
+  const std::string expected_direct_attach_error =
+      IsParamFeatureEnabled() ? "Cannot attach to this target."
+                              : manifest_errors::kCannotAccessExtensionUrl;
+
+  // Direct attachment to the PDF extension frame must be rejected.
+  {
+    auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+    attach_function->set_extension(extension);
+    EXPECT_FALSE(api_test_utils::RunFunction(
+        attach_function.get(),
+        base::StringPrintf(R"([{"targetId": "%s"}, "1.3"])",
+                           pdf_extension_host->GetId().c_str()),
+        profile()));
+    EXPECT_EQ(expected_direct_attach_error, attach_function->GetError());
+    EXPECT_FALSE(pdf_extension_host->IsAttached());
+  }
+
+  // Direct attachment to the PDF content frame must be rejected.
+  {
+    auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+    attach_function->set_extension(extension);
+    EXPECT_FALSE(api_test_utils::RunFunction(
+        attach_function.get(),
+        base::StringPrintf(R"([{"targetId": "%s"}, "1.3"])",
+                           pdf_content_host->GetId().c_str()),
+        profile()));
+    EXPECT_EQ(expected_direct_attach_error, attach_function->GetError());
+    EXPECT_FALSE(pdf_content_host->IsAttached());
+  }
+
+  // Attaching to the outer PDF embedder tab succeeds, and neither
+  // Target.setAutoAttach nor Target.attachToTarget may attach to the inner PDF
+  // extension or content frames.
+  int tab_id =
+      sessions::SessionTabHelper::IdForTab(GetActiveWebContents()).id();
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(extension);
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(),
+      base::StringPrintf(R"([{"tabId": %d}, "1.3"])", tab_id), profile()));
+
+  auto send_command = base::MakeRefCounted<DebuggerSendCommandFunction>();
+  send_command->set_extension(extension);
+  ASSERT_TRUE(api_test_utils::RunFunction(
+      send_command.get(),
+      base::StringPrintf(
+          R"([{"tabId": %d}, "Target.setAutoAttach", )"
+          R"({"autoAttach": true, "waitForDebuggerOnStart": false, )"
+          R"("flatten": true}])",
+          tab_id),
+      profile()));
+
+  EXPECT_FALSE(pdf_extension_host->IsAttached());
+  EXPECT_FALSE(pdf_content_host->IsAttached());
+
+  for (const auto& restricted_host : {pdf_extension_host, pdf_content_host}) {
+    auto attach_to_target = base::MakeRefCounted<DebuggerSendCommandFunction>();
+    attach_to_target->set_extension(extension);
+    std::string error = api_test_utils::RunFunctionAndReturnError(
+        attach_to_target.get(),
+        base::StringPrintf(
+            R"([{"tabId": %d}, "Target.attachToTarget", {"targetId": "%s"}])",
+            tab_id, restricted_host->GetId().c_str()),
+        profile());
+    EXPECT_THAT(error, testing::HasSubstr("Not allowed"));
+    EXPECT_FALSE(restricted_host->IsAttached());
+  }
+
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(extension);
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), base::StringPrintf(R"([{"tabId": %d}])", tab_id),
+      profile()));
 }
 
 // TODO(crbug.com/40268279): Stop testing both modes after OOPIF PDF viewer

@@ -332,35 +332,44 @@ bool ExtensionMayAttachToRenderFrameHost(
   }
   bool result = true;
   render_frame_host->ForEachRenderFrameHostWithAction(
-      [&page_url, &extension, extension_profile, error,
-       &result](content::RenderFrameHost* render_frame_host) {
+      [&](content::RenderFrameHost* rfh) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-        // If |render_frame_host| is attached to an inner MimeHandlerViewGuest
-        // skip it. This is done to fix crbug.com/40213673 because an extension
-        // cannot inspect another extension.
-        if (MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host)) {
+        // If `rfh` is attached to an inner MimeHandlerViewGuest, skip it when
+        // checking an ancestor frame. This is done to fix crbug.com/40213673
+        // because an extension cannot inspect another extension. Do not skip if
+        // `rfh` is the target `render_frame_host` itself so that extensions
+        // cannot attach directly to the guest frame.
+        if (rfh != render_frame_host &&
+            MimeHandlerViewGuest::FromRenderFrameHost(rfh)) {
           return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
         }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PDF)
         // The PDF extension frame would normally prevent all other frames in
-        // the frame tree from being attachable. Skip it so this doesn't occur.
-        // This should be okay, since the PDF extension frame and PDF content
-        // frame aren't listed in chrome.debugger.getTargets(). Check both the
-        // last committed origin and the SiteURL for the PDF extension frame,
+        // the frame tree from being attachable. Skip it and its children when
+        // checking an ancestor frame so this doesn't occur. Do not skip if
+        // `rfh` is the target `render_frame_host` itself, and disallow direct
+        // attachment to the PDF content frame. Check both the last committed
+        // origin and the SecurityPrincipal for the PDF extension frame,
         // because this method may be called in the middle of a navigation where
-        // the SiteURL has been updated but navigation hasn't committed yet.
+        // the SecurityPrincipal has been updated but navigation hasn't
+        // committed yet.
         if (chrome_pdf::features::IsOopifPdfEnabled() &&
-            (IsPdfExtensionOrigin(
-                 render_frame_host->GetLastCommittedOrigin()) ||
-             IsPdfExtensionPrincipal(render_frame_host->GetSiteInstance()
-                                         ->GetSecurityPrincipal()))) {
-          return content::RenderFrameHost::FrameIterationAction::kContinue;
+            rfh != render_frame_host &&
+            (IsPdfExtensionOrigin(rfh->GetLastCommittedOrigin()) ||
+             IsPdfExtensionPrincipal(
+                 rfh->GetSiteInstance()->GetSecurityPrincipal()))) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        if (rfh->GetProcess()->IsPdf()) {
+          *error = kRestrictedError;
+          result = false;
+          return content::RenderFrameHost::FrameIterationAction::kStop;
         }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
-        if (render_frame_host->GetWebUI()) {
+        if (rfh->GetWebUI()) {
           *error = manifest_errors::kCannotAccessChromeUrl;
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
@@ -371,7 +380,7 @@ bool ExtensionMayAttachToRenderFrameHost(
         // extension with the "debugger" permission can neither inspect it nor
         // run script in it.
         if (content::WebContents* web_contents =
-                content::WebContents::FromRenderFrameHost(render_frame_host);
+                content::WebContents::FromRenderFrameHost(rfh);
             web_contents && web_contents->IsPrivileged()) {
           *error = manifest_errors::kCannotAccessPage;
           result = false;
@@ -381,15 +390,14 @@ bool ExtensionMayAttachToRenderFrameHost(
         // We check both the last committed URL and the SiteURL because this
         // method may be called in the middle of a navigation where the SiteURL
         // has been updated but navigation hasn't committed yet.
-        if (!ExtensionMayAttachToURLOrInnerURL(
-                extension, extension_profile,
-                render_frame_host->GetLastCommittedURL(), &page_url, error) ||
-            !ExtensionMayAttachToURLOrInnerURL(
-                extension, extension_profile,
-                render_frame_host->GetSiteInstance()
-                    ->GetSecurityPrincipal()
-                    .GetDeprecatedSiteURL(),
-                &page_url, error)) {
+        if (!ExtensionMayAttachToURLOrInnerURL(extension, extension_profile,
+                                               rfh->GetLastCommittedURL(),
+                                               &page_url, error) ||
+            !ExtensionMayAttachToURLOrInnerURL(extension, extension_profile,
+                                               rfh->GetSiteInstance()
+                                                   ->GetSecurityPrincipal()
+                                                   .GetDeprecatedSiteURL(),
+                                               &page_url, error)) {
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
