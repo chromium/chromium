@@ -1,6 +1,6 @@
 ---
 name: generate-component-spec
-description: Maps a Figma component from the Chrome Design System (CDS) to equivalent C++ Views, WebUI, and Clank (Android) components in the Chromium codebase. Generates a comprehensive side-by-side comparative Markdown specification detailing layout variants, interactive states, design tokens, architectural and implementation gaps, and usage guidelines across desktop and mobile. Use this skill when given a Figma component URL and asked to generate a component spec.
+description: Maps a Figma component from the Chrome Design System (CDS) to its platform-specific equivalent in the Chromium codebase. Generates a platform-specific Markdown specification that details variants, interactive states, design tokens, architectural and implementation gaps, and usage guidelines. Use this skill when given a Figma component or frame URL and asked to generate a component spec.
 metadata:
   author: Chrome Design System Team
 ---
@@ -19,28 +19,25 @@ ______________________________________________________________________
 ## Workflow Decision Tree
 
 ```
-[User provides Figma URL]
+[User provides URL to a Figma component or frame]
            │
            ▼
-[Step 1: Extract URL metadata & Retrieve Figma design context]
+[Step 1: Extract URL metadata, resolve target Figma component(s), & retrieve design context]
            │
            ▼
-[Step 2: Search C++ Views for controls under ui/views/controls/]
+[Step 2: Identify the component's platform]
            │
            ▼
-[Step 3: Search WebUI under ui/webui/resources/cr_elements/]
+[Step 3: Identify equivalent component(s) in code & related Figma components]
            │
            ▼
-[Step 4: Search Clank (Android) under components/browser_ui/ and ui/android/]
+[Step 4: Analyze design tokens]
            │
            ▼
-[Step 5: Analyze design tokens across C++, CSS, and Android]
+[Step 5: Identify architectural gaps]
            │
            ▼
-[Step 6: Identify architectural & state-handling gaps]
-           │
-           ▼
-[Step 7: Generate the final Markdown Spec File]
+[Step 6: Generate the final Markdown Spec File]
 ```
 
 ______________________________________________________________________
@@ -54,39 +51,80 @@ ______________________________________________________________________
      from the URL parameters.
    - **Important**: Convert any hyphens in the `nodeId` parameter to colons
      (e.g., `20268-1070` becomes `20268:1070`).
-2. Retrieve the component design context by calling
-   `mcp_figma_get_design_context` with your extracted `fileKey` and `nodeId`.
-3. Study the returned React markup, CSS variables, typography annotations,
+2. Resolve the target Figma component(s):
+   - Sometimes the provided URL points to a parent frame (such as a section,
+     documentation card, or artboard) that isn't actually a Figma component, but
+     contains the Figma component(s).
+   - Inspect the node structure (via `mcp_figma_get_metadata` or
+     `mcp_figma_get_design_context`). **Always use the Figma component
+     (`COMPONENT` or `COMPONENT_SET`) rather than a parent frame** whenever
+     possible, updating the target `nodeId`(s) and Figma URL(s) to point
+     directly to the Figma component(s).
+   - **Note on frame-based components**: This isn't always possible—sometimes a
+     component in Figma isn't formally defined as a Figma component, but is
+     instead constructed out of plain frames (`FRAME`). In that case, use the
+     frame that directly represents the component itself (rather than an outer
+     layout or documentation wrapper frame).
+   - **Multiple Figma components**: If the parent frame contains multiple Figma
+     components that are part of the same logical component (or sub-components
+     that together make up the component), collect all of them so they can all
+     be analyzed and listed in the spec.
+3. Retrieve the component design context by calling
+   `mcp_figma_get_design_context` with your `fileKey` and resolved `nodeId`(s).
+4. Study the returned React markup, CSS variables, typography annotations,
    variants, and element states (such as Default, Hovered, Pressed, Disabled) to
    understand the component's visual properties.
-4. If the Figma component name specifies a platform (e.g. Views, WebUI, Clank),
-   assume this is a single-platform component, and skip the steps below that
-   pertain to other platforms.
 
-### Step 2: Search the C++ Views Directory
+### Step 2: Identify the Component's Platform
+
+The given Figma URL is a component for a specific platform. It should be one of
+the following, which also corresponds to an implementation in code:
+
+- Desktop - note that a desktop Figma component may correspond to a WebUI
+  implementation, a C++ Views implementation, or both.
+- Android (Clank)
+
+### Step 3: Identify Equivalent Component(s) in Code
+
+Look for code implementations depending on the platform. If there are no
+matches, tell the user that there are no matches, and do not continue (don't
+generate a component spec file).
+
+Keep in mind that **Figma-to-code mappings can be many-to-many**:
+
+- **One Figma component → Multiple code components**: A single Figma component
+  may map to several distinct components in code (for example, variants within
+  one Figma component implemented as separate C++ Views classes or WebUI
+  elements). Identify all corresponding primary code components.
+- **Multiple Figma components → One code component (or shared component)**:
+  Conversely, several Figma components may map to the same component in code or
+  represent different parts/variants of the same component. When this occurs,
+  identify and list all of the other Figma components that are part of the same
+  component (fetching their metadata/design context if needed).
+
+#### Desktop C++ Views
 
 1. Views controls are located under `ui/views/controls/`. Search in this
    directory (especially under subdirectories like `button/`, `textfield/`,
    `checkbox/`, `combobox/` depending on the component's visual role) using
-   `glob` or `grep_search`. If there are no matches, note that there are no
-   matches.
+   `glob` or `grep_search`.
 2. Locate the corresponding C++ `.h` header files.
 3. Identify how style variations (primary, default, tonal, etc.) are set. Search
    for button or component style definitions (such as `enum class ButtonStyle`
    in `ui/base/ui_base_types.h`) and typography providers (such as
    `ui/views/style/typography_provider.cc`).
 
-### Step 3: Search the WebUI Directory
+#### Desktop WebUI
 
 1. WebUI elements are located under `ui/webui/resources/cr_elements/` and
    `ui/webui/resources/cr_components/`. Search in this directory using `glob` or
-   `grep_search`. If there are no matches, note that there are no matches.
+   `grep_search`.
 2. Identify the custom element's `.ts` controller file (e.g., `cr_button.ts`)
    and any associated HTML templates (`.html.ts`) or CSS files (`.css`).
 3. Identify how style variations are activated via CSS classes (such as
    `.action-button` or `.tonal-button` for `<cr-button>`).
 
-### Step 4: Search the Clank (Android) Directory
+#### Android (Clank)
 
 1. Clank Android components are located under:
    - `ui/android/java/src/org/chromium/ui/widget/` (e.g., `ButtonCompat.java`,
@@ -106,9 +144,9 @@ ______________________________________________________________________
    `@style/Widget.BrowserUI.CheckBox`).
 3. Identify MVC bindings if applicable (`PropertyModel`, `ViewBinder`).
 
-### Step 5: Map Design Tokens
+### Step 4: Map Design Tokens
 
-1. Compare color definitions across all platforms:
+1. Compare color definitions:
    - Match Figma CSS properties (e.g., `--desktop/sys/primary-colors/primary`)
      to corresponding:
      - C++ `ColorId` entries (e.g., `ui::kColorButtonBackgroundProminent` in
@@ -125,10 +163,10 @@ ______________________________________________________________________
    pill-shaped (rounded) elements are hardcoded (e.g., `border-radius: 100px`,
    `@dimen/button_compat_corner_radius`) or resolved dynamically.
 
-### Step 6: Identify Architectural Gaps
+### Step 5: Identify Architectural Gaps
 
-Document differences between design intent and system implementations across all
-3 platforms, focusing on:
+Document differences between design intent and system implementations, focusing
+on:
 
 - **Variant mismatches**: e.g., features modeled in Figma that have no direct
   single-class toggle in C++ Views, require manual CSS in WebUI, or need custom
@@ -139,28 +177,47 @@ Document differences between design intent and system implementations across all
   hovered, or focused states, or custom accessibility overrides (like
   `FocusRing` vs Android ripple backgrounds).
 
-### Step 7: Generate the Specification Markdown File
+### Step 6: Generate the Specification Markdown File
 
 Write a polished, comprehensive Markdown specification file. Strictly follow
 rules:
 
-- Name the file `{{ComponentName}}_Spec.md`. Use a single unified specification
-  file per component covering all platforms without platform suffixes. If Figma
-  has multiple platform-specific variants (e.g. `TextFields (Views)` and
-  `TextFields (WebUI)`), combine them into a single `{{ComponentName}}_Spec.md`
-  and include all Figma links.
+- Name the file `{{ComponentName}}_Spec.md`.
 - If the file already exists, update it only with necessary changes rather than
   generating from scratch.
 - The document must follow the exact structure specified in
   `../assets/spec-template.md`.
+  - Omit table columns that are not relevant to the component's platform.
   - Links to components in code MUST be relative to the repo root (`//src/`),
     NOT the user's filesystem (do not include `file://`).
-  - In Section 1 (`Component Metadata & Source Files`), include columns for all
-    platforms (**C++ Views**, **WebUI**, **Clank (Android)**), using `**N/A**`
-    for platforms where a component is not applicable.
-  - For any platform where the component equivalent is `**N/A**` in Section 1,
-    omit/remove that platform's column from subsequent comparison tables
-    (Section 2, Section 3, Section 4).
+  - In section 1, under the **Figma Component** column:
+    - Always reference the actual Figma component name and link (`nodeId`)
+      rather than a parent container frame (unless the component is only defined
+      using frames in Figma).
+    - If multiple Figma components map to the component in code or are part of
+      the same component, list all of those Figma components (and their
+      corresponding Figma links) separated by `<br>`.
+  - In section 1, under the platform code columns:
+    - If the Figma component maps to multiple components in code, list each
+      applicable component and its source file separated by `<br>`.
+    - When listing source files, strictly limit components in code to the
+      primary component class(es)/element(s) and their direct source files
+      (e.g., the `.h` header for Views, `.ts` controller for WebUI, and primary
+      `.java` widget class for Clank).
+    - **Always list only the component name(s)** (e.g., `ButtonCompat`,
+      `views::MdTextButton`, `<cr-button>`). Do NOT include style resources,
+      theme overlays, or CSS classes (e.g., `@style/FilledButton`,
+      `FilledButton.Tonal.ThemeOverlay.*`, `.action-button`) in these columns;
+      document those in the variant and token sections instead.
 - Make the file viewable as an artifact.
-- Ask the user to confirm saving the markdown file to the `./component-specs/`
-  directory.
+- In section 2, always start with a **"Figma variant axes"** summary listing
+  every variant property of each Figma component and its possible values (e.g.,
+  `Variant` (Primary | Tonal) × `State` (Default | Hovered)), before the
+  variants table. Use exact Figma property/value names, and one bullet per Figma
+  component when there are several.
+- Ask the user to confirm saving the markdown file to the
+  `./component-specs/{{PlatformName}}/` directory and updating the mapping table
+  in `./components_{{platformName}}.md`.
+  - When adding the row to the mapping table, follow the same rule: list only
+    the component name(s) in the platform code columns, without style resources,
+    theme overlays, or CSS classes.

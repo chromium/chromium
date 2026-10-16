@@ -1,37 +1,36 @@
-# Component Spec: {{ComponentName}}
+# {{ComponentName}} Spec ({{PlatformName}})
 
-This specification document outlines the mapping, design tokens, styling
-variants, and interactive states of the **{{ComponentName}}** component across
-Figma, C++ Views (Desktop), WebUI (Desktop), and Clank (Android).
+This document maps the specifications of the **{{ComponentName}}**
+({{PlatformName}}) component across Figma and code.
 
 ______________________________________________________________________
 
 ## Overview
 
-\[Summarize the component's role, interactive capabilities, and styling variants
-across desktop and mobile platforms\]
+\[In less than 3 sentences, summarize the component's role, interactive
+capabilities, and styling variants\]
 
 ______________________________________________________________________
 
 ## 1. Component Metadata & Source Files
 
-| Feature            | Figma Component                                          | C++ Views (Desktop)                                                | WebUI (Desktop)                                                              | Clank (Android)                                                                                                                      |
-| :----------------- | :------------------------------------------------------- | :----------------------------------------------------------------- | :--------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
-| **Component Name** | `{{ComponentName}}`                                      | `views::{{ViewsClassName}}`                                        | `<{{webui-element-tag}}>`                                                    | `{{ClankClassName}}` / `@style/{{ClankStyleName}}`                                                                                   |
-| **Source Files**   | [Figma Link: `{{nodeId}}`](%7B%7BOriginalFigmaURL%7D%7D) | [path/to/views/header.h](%7B%7B//src/path/to/views/header.h%7D%7D) | [path/to/webui/controller.ts](%7B%7B//src/path/to/webui/controller.ts%7D%7D) | [path/to/clank/Class.java](%7B%7B//src/path/to/clank/Class.java%7D%7D)<br>[path/to/styles.xml](%7B%7B//src/path/to/styles.xml%7D%7D) |
-
-\[In the Source Files row, include links to all components defined in the
-Component Name row. For Views, only include header `.h` files. For WebUI, only
-include controller `.ts` files. For Clank, include Java class files and resource
-`.xml` files.\]
+| Feature            | Figma Component                                                 | C++ Views (Desktop)                                                | WebUI (Desktop)                                                              | Clank (Android)                                                                                                                      |
+| :----------------- | :-------------------------------------------------------------- | :----------------------------------------------------------------- | :--------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| **Component Name** | `{{ComponentName}}`                                             | `views::{{ViewsClassName}}`                                        | `<{{webui-element-tag}}>`                                                    | `{{ClankClassName}}` / `@style/{{ClankStyleName}}`                                                                                   |
+| **Source Files**   | [Figma Link: `{{ComponentName}}`](%7B%7BOriginalFigmaURL%7D%7D) | [path/to/views/header.h](%7B%7B//src/path/to/views/header.h%7D%7D) | [path/to/webui/controller.ts](%7B%7B//src/path/to/webui/controller.ts%7D%7D) | [path/to/clank/Class.java](%7B%7B//src/path/to/clank/Class.java%7D%7D)<br>[path/to/styles.xml](%7B%7B//src/path/to/styles.xml%7D%7D) |
 
 ______________________________________________________________________
 
-## 2. Styling, Variants & Features (Layout & Style)
+## 2. Variants & Properties
 
-\[Table mapping Figma variants like Primary, Tonal, Outlined, Text, and icon
-slots (Leading, Trailing) to C++ classes/enums, WebUI custom classes or
-elements, and Clank Android styles/classes\]
+Figma variant axes: \[List each Figma component's variant properties and their
+values, e.g. `Variant` (Primary | Tonal | Outlined | Text) × `Icons` (None |
+Leading | Trailing) × `State` (Default | Hovered | Pressed | Disabled). If there
+are multiple Figma components, use one bullet per component.\]
+
+\[Table mapping Figma variants like State (e.g. Hovered, Disabled), Type (e.g.
+Primary, Tonal, Outlined), and icon slots (Leading, Trailing) to equivalent C++
+classes/enums, WebUI props/custom classes, and Clank Android styles/classes\]
 
 | Feature / Variant | Figma Component   | C++ Views (Desktop)           | WebUI (Desktop)                     | Clank (Android)       |
 | :---------------- | :---------------- | :---------------------------- | :---------------------------------- | :-------------------- |
@@ -40,23 +39,7 @@ elements, and Clank Android styles/classes\]
 
 ______________________________________________________________________
 
-## 3. Component States
-
-\[Table mapping interactive states like Default, Hovered, Pressed, Disabled,
-Focused to Figma state properties, C++ ButtonStates / views::FocusRing, WebUI
-CSS classes / pseudo-classes, and Android state selectors / ripple drawables\]
-
-| State                | Figma Component  | C++ Views (Desktop)                   | WebUI (Desktop)              | Clank (Android)                                             |
-| :------------------- | :--------------- | :------------------------------------ | :--------------------------- | :---------------------------------------------------------- |
-| **Default (Normal)** | `State=Default`  | `Button::ButtonState::STATE_NORMAL`   | Default state / no modifiers | `android:enabled="true"`                                    |
-| **Hovered**          | `State=Hovered`  | `Button::ButtonState::STATE_HOVERED`  | `:hover` pseudo-class        | Hover state layer (`@dimen/default_hovered_alpha`)          |
-| **Pressed (Pushed)** | `State=Pressed`  | `Button::ButtonState::STATE_PRESSED`  | `:active` / `<cr-ripple>`    | Ripple state (`@color/filled_button_ripple_color`)          |
-| **Disabled**         | `State=Disabled` | `Button::ButtonState::STATE_DISABLED` | `<... disabled>` attribute   | `android:enabled="false"` (`@dimen/default_disabled_alpha`) |
-| **Focused**          | `State=Focused`  | `views::FocusRing`                    | `:focus-visible` outline     | `FocusRing` / `?attr/colorPrimary`                          |
-
-______________________________________________________________________
-
-## 4. Design Token Comparison (Side-by-Side)
+## 3. Design Token Comparison (Side-by-Side)
 
 \[Comprehensive side-by-side mapping table of design tokens covering colors,
 container/foreground pairings, border outlines, typography (weights, sizes, line
@@ -69,7 +52,7 @@ heights), outer/inner paddings, and corner radii\]
 
 ______________________________________________________________________
 
-## 5. Architectural & Implementation Gaps
+## 4. Architectural & Implementation Gaps
 
 \[Detailed sections describing shape/corner-radius discrepancies, static vs.
 dynamic theme coloring, font size inheritance differences, line-height
@@ -78,7 +61,7 @@ Android\]
 
 ______________________________________________________________________
 
-## 6. Styling, Variants, Features and States Mismatches
+## 5. Styling, Variants, Features and States Mismatches
 
 \[Detailed analysis of features or visual treatments that have layout
 mismatches, variant discrepancies, or custom behavioral configurations between
@@ -87,7 +70,7 @@ target sizing)\]
 
 ______________________________________________________________________
 
-## 7. Usage & UX Guidance
+## 6. Usage & UX Guidance
 
 ### 1. General Principles & Best Practices
 
