@@ -446,6 +446,8 @@ class GlicInstanceImpl : public GlicInstance,
   // Updates the floating panel can attach state.
   void UpdateFloatingPanelCanAttach();
 
+  void OnEmbedderClosed(EmbedderKey key);
+
   mojom::PanelState ComputePanelState();
 
   using ConversationInfoChangedCallbackList =

@@ -601,12 +601,17 @@ void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
 void GlicInstanceImpl::CloseInternal(EmbedderKey key,
                                      EmbedderEntry& entry,
                                      const CloseOptions& options) {
-  service_->metrics()->OnInstanceClosed();
-  instance_metrics_.OnClose();
-  instance_metrics_.ResetShownState(key);
+  OnEmbedderClosed(key);
   if (entry.embedder) {
     // May delete this.
     entry.embedder->Close(options);
+  }
+}
+
+void GlicInstanceImpl::OnEmbedderClosed(EmbedderKey key) {
+  if (instance_metrics_.ResetShownState(key)) {
+    service_->metrics()->OnInstanceClosed();
+    instance_metrics_.OnClose();
   }
 }
 
@@ -1336,6 +1341,7 @@ void GlicInstanceImpl::MaybeShowHostUi(
 void GlicInstanceImpl::OnBoundTabDestroyed(tabs::TabInterface* tab) {
   instance_metrics_.OnBoundTabDestroyed();
   EmbedderKey key = GetEmbedderKeyForTab(tab);
+  OnEmbedderClosed(key);
   if (active_embedder_key_ == key) {
     host_.SetDelegate(&empty_embedder_delegate_);
     ClearActiveEmbedderAndNotifyVisibilityChange();
@@ -1614,7 +1620,7 @@ void GlicInstanceImpl::DidCloseFor(EmbedderKey key,
   TRACE_EVENT("glic", "GlicInstanceImpl::DidCloseFor", "reason", reason);
   // Must be called early to avoid use-after-free if instance is deleted.
   if (reason == EmbedderCloseReason::kExplicitlyClosed) {
-    instance_metrics().ResetShownState(key);
+    OnEmbedderClosed(key);
     // The user dismissed the UI this instance was showing before the client
     // became usable, so an invocation that only came to show that UI is
     // abandoned rather than left to time out. Only the active embedder

@@ -1700,6 +1700,16 @@ TEST_F(GlicInstanceMetricsTest,
                                      1);
 }
 
+TEST_F(GlicInstanceMetricsTest,
+       ResetShownState_ReturnsTrueOnlyWhenPreviouslyShown) {
+  EmbedderKey key = SidePanelEmbedderKey(&mock_tab_);
+  EXPECT_FALSE(metrics_.ResetShownState(key));
+  EXPECT_TRUE(metrics_.MarkShownAndCheckIfFirstTime(key));
+  EXPECT_FALSE(metrics_.MarkShownAndCheckIfFirstTime(key));
+  EXPECT_TRUE(metrics_.ResetShownState(key));
+  EXPECT_FALSE(metrics_.ResetShownState(key));
+}
+
 class GlicInstanceMetricsGeicTest : public GlicInstanceMetricsTest {
  protected:
   GlicInstanceMetricsGeicTest() {
@@ -1974,4 +1984,5 @@ INSTANTIATE_TEST_SUITE_P(All,
                          GlicInstanceProviderMetricsTest,
                          testing::Values(GlicProvider::kGemini,
                                          GlicProvider::kGeminiEnterprise));
+
 }  // namespace glic

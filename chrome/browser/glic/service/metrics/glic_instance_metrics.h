@@ -173,7 +173,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   bool MarkShownAndCheckIfFirstTime(EmbedderKey key);
 
-  void ResetShownState(EmbedderKey key);
+  // Clears the shown state for `key` and returns true if `key` was previously
+  // marked as shown.
+  bool ResetShownState(EmbedderKey key);
 
   // Called when a tab that was bound to this instance is destroyed.
   void OnBoundTabDestroyed();

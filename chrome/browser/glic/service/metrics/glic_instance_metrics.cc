@@ -822,8 +822,8 @@ bool GlicInstanceMetrics::MarkShownAndCheckIfFirstTime(EmbedderKey key) {
   return seen_embedders_.insert(ToSafeKey(key)).second;
 }
 
-void GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
-  seen_embedders_.erase(ToSafeKey(key));
+bool GlicInstanceMetrics::ResetShownState(EmbedderKey key) {
+  return seen_embedders_.erase(ToSafeKey(key)) > 0;
 }
 
 void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
