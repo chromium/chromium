@@ -5878,40 +5878,82 @@ TEST_F(StyleEngineTest, SystemFontsObeyDefaultFontSize) {
 
   // Now test degenerate cases
   GetDocument().GetSettings()->SetDefaultFontSize(-1);
-  GetDocument().GetStyleResolver().InvalidateMatchedPropertiesCache();
   UpdateAllLifecyclePhases();
   EXPECT_EQ(1, body->GetComputedStyle()->FontSize());
   EXPECT_EQ(1, input->GetComputedStyle()->FontSize());
 
   GetDocument().GetSettings()->SetDefaultFontSize(0);
-  GetDocument().GetStyleResolver().InvalidateMatchedPropertiesCache();
   UpdateAllLifecyclePhases();
   EXPECT_EQ(1, body->GetComputedStyle()->FontSize());
   EXPECT_EQ(13, input->GetComputedStyle()->FontSize());
 
   GetDocument().GetSettings()->SetDefaultFontSize(1);
-  GetDocument().GetStyleResolver().InvalidateMatchedPropertiesCache();
   UpdateAllLifecyclePhases();
   EXPECT_EQ(1, body->GetComputedStyle()->FontSize());
   EXPECT_EQ(1, input->GetComputedStyle()->FontSize());
 
   GetDocument().GetSettings()->SetDefaultFontSize(2);
-  GetDocument().GetStyleResolver().InvalidateMatchedPropertiesCache();
   UpdateAllLifecyclePhases();
   EXPECT_EQ(2, body->GetComputedStyle()->FontSize());
   EXPECT_EQ(2, input->GetComputedStyle()->FontSize());
 
   GetDocument().GetSettings()->SetDefaultFontSize(3);
-  GetDocument().GetStyleResolver().InvalidateMatchedPropertiesCache();
   UpdateAllLifecyclePhases();
   EXPECT_EQ(3, body->GetComputedStyle()->FontSize());
   EXPECT_EQ(0, input->GetComputedStyle()->FontSize());
 
   GetDocument().GetSettings()->SetDefaultFontSize(12345);
-  GetDocument().GetStyleResolver().InvalidateMatchedPropertiesCache();
   UpdateAllLifecyclePhases();
   EXPECT_EQ(10000, body->GetComputedStyle()->FontSize());
   EXPECT_EQ(10000, input->GetComputedStyle()->FontSize());
+}
+
+// Minimum font size changes must apply whether or not the body style changes.
+TEST_F(StyleEngineTest, MinimumFontSizeChange) {
+  GetDocument().GetSettings()->SetDefaultFontSize(16);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<span style="font-size: 0.75rem"></span>)HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* span = GetDocument().QuerySelector(AtomicString("span"));
+  ASSERT_TRUE(span);
+  EXPECT_EQ(12, span->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetMinimumFontSize(14);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(14, span->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetMinimumFontSize(0);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(12, span->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetMinimumFontSize(20);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(20, span->GetComputedStyle()->FontSize());
+}
+
+// Same as above, with em since the logical minimum skips rem.
+TEST_F(StyleEngineTest, MinimumLogicalFontSizeChange) {
+  GetDocument().GetSettings()->SetDefaultFontSize(16);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      R"HTML(<span style="font-size: 0.75em"></span>)HTML");
+  UpdateAllLifecyclePhases();
+
+  Element* span = GetDocument().QuerySelector(AtomicString("span"));
+  ASSERT_TRUE(span);
+  EXPECT_EQ(12, span->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetMinimumLogicalFontSize(14);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(14, span->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetMinimumLogicalFontSize(0);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(12, span->GetComputedStyle()->FontSize());
+
+  GetDocument().GetSettings()->SetMinimumLogicalFontSize(20);
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(20, span->GetComputedStyle()->FontSize());
 }
 
 TEST_F(StyleEngineTest, CascadeLayersInOriginsAndTreeScopes) {

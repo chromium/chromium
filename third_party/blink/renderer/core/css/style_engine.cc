@@ -2844,6 +2844,10 @@ bool StyleEngine::HasRulesForId(const AtomicString& id) const {
 
 void StyleEngine::InitialStyleChanged() {
   InvalidateInitialStyle();
+  // Cached styles may depend on the old settings, e.g. minimum font size.
+  if (resolver_) {
+    resolver_->InvalidateMatchedPropertiesCache();
+  }
   MarkViewportStyleDirty();
   // We need to update the viewport style immediately because media queries
   // evaluated in MediaQueryAffectingValueChanged() below may rely on the
