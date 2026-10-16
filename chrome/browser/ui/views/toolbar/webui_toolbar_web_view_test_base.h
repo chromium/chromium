@@ -113,6 +113,19 @@ class WebUIToolbarWebViewTestBase : public InProcessBrowserTest {
   [[nodiscard]] bool WaitForPinnedActionHidden(
       toolbar_ui_api::mojom::PinnedToolbarAction action);
 
+  // Returns a comma-separated string of ordered actions in #extensions, using
+  // extension IDs for extension actions, '<menu>' for the extensions menu
+  // button, and '<divider>' for the divider. Actions hidden (presumably due to
+  // overflow) are prefixed with
+  // '!'. Note that unpinned actions are not typically sent to the renderer at
+  // all, and so don't appear in the #extensions element, and are thus not
+  // included, unless they are "popped out" / have a bubble.
+  std::string GetExtensionsState();
+
+  // Waits until GetExtensionsState() returns `expected`. On failure, adds a
+  // failure with the last observed state, and returns false.
+  [[nodiscard]] bool WaitForExtensionsState(const std::string& expected);
+
   // Enables battery saver mode and waits until the button is visible.
   void EnableBatterySaverButton(
       content::WebContents* webui_web_contents = nullptr);

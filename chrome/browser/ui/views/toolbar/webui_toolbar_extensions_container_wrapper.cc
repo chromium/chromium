@@ -100,6 +100,8 @@ WebUIToolbarExtensionsContainerWrapper::GetExtensionsButton() {
 
   button->id = kExtensionsButtonId;
   button->is_visible = true;
+  // The extensions button is never hidden due to overflow.
+  button->force_visible = true;
 
   // Fill in the rest of the fields based on `extensions_button_state_`.
   button->icon = extensions_button_icon_ =

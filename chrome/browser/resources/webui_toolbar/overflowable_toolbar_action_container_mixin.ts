@@ -56,7 +56,7 @@ export interface OverflowableToolbarActionContainer extends ResponsiveControl {
 /**
  * A mixin for responsive controls that manage multiple child actions
  * and optional dividers. Each child action will be hidden if it doesn't fit.
- * Non-divider actions that don't fit will be added to the overflow menu.
+ * Actions that don't fit will be added to the overflow menu, if needed.
  * Consumers only need to implement getActions(). All non-divider actions must
  * be of equal size.
  *
@@ -180,8 +180,12 @@ export const OverflowableToolbarActionContainerMixin =
         controlsToAddToOverflowMenu(): OverflowMenuItem[] {
           const overflowItems: OverflowMenuItem[] = [];
           for (const action of this.cachedActions_) {
-            if (!action.isDivider && this.isOverflowed_(action)) {
-              overflowItems.push(action.getOverflowMenuItem());
+            if (action.isDivider || !this.isOverflowed_(action)) {
+              continue;
+            }
+            const item = action.getOverflowMenuItem();
+            if (item) {
+              overflowItems.push(item);
             }
           }
           return overflowItems;

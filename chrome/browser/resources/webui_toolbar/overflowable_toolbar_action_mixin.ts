@@ -25,11 +25,12 @@ export interface OverflowableToolbarActionMixinInterface {
 
   /**
    * Returns the OverflowMenuItem corresponding to the action to display on the
-   * overflow menu when overflowed. Will not be invoked for dividers, which are
-   * assumed not to ever appear on the overflow menu, even if hidden due to
-   * overflow.
+   * overflow menu when overflowed, or null if the action should just be hidden
+   * when overflowed, without being added to the overflow menu. Will not be
+   * invoked for dividers, which are assumed not to ever appear on the overflow
+   * menu, even if hidden due to overflow.
    */
-  getOverflowMenuItem(): OverflowMenuItem;
+  getOverflowMenuItem(): OverflowMenuItem|null;
 }
 
 // Elements within an OverflowableToolbarActionContainer. They must all use
@@ -41,9 +42,9 @@ export type OverflowableToolbarActionElement =
  * A mixin for actions contained within an OverflowableToolbarActionContainer.
  * Actions are hidden if they cannot be entirely fit on the toolbar.
  *
- * Each action must either be a divider or a button. Button actions will
- * appear on the overflow menu if they don't fit, and must override
- * getOverflowMenuItem().
+ * Each action must either be a divider or a button. Button actions must
+ * override getOverflowMenuItem(), and may return a non-null value if they
+ * should be added to the overflow menu when overflowed.
  *
  * Requests a new layout whenever `preventOverflow` changes, as that can
  * affect which controls should be overflowed.
@@ -85,7 +86,7 @@ export const OverflowableToolbarActionMixin =
 
         // See documentation in OverflowableToolbarActionMixinInterface, above.
         // Must be overridden by non-divider actions.
-        getOverflowMenuItem(): OverflowMenuItem {
+        getOverflowMenuItem(): OverflowMenuItem|null {
           assertNotReached(
               'getOverflowMenuItem() must be overridden by non-divider ' +
               'actions, and never called on dividers');

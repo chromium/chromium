@@ -10,13 +10,15 @@ import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getHtml} from './extensions.html.js';
+import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_action_container_mixin.js';
+import type {OverflowableToolbarActionElement} from './overflowable_toolbar_action_mixin.js';
 import {getCss} from './toolbar_action_container.css.js';
 import {ToolbarActionContainerMixin} from './toolbar_action_container_mixin.js';
 
 const initialState: ExtensionActionInfo[] = [];
 
-const ExtensionsElementBase =
-    ToolbarActionContainerMixin(CrLitElement, initialState);
+const ExtensionsElementBase = OverflowableToolbarActionContainerMixin(
+    ToolbarActionContainerMixin(CrLitElement, initialState));
 
 export class ExtensionsElement extends ExtensionsElementBase {
   static get is() {
@@ -53,6 +55,13 @@ export class ExtensionsElement extends ExtensionsElementBase {
   // ToolbarActionContainerMixin override
   override getKey(state: ExtensionActionInfo): string {
     return state.id;
+  }
+
+  // OverflowableToolbarActionContainerMixin override. Relies on the template
+  // only containing extension actions and the divider.
+  override getActions(): OverflowableToolbarActionElement[] {
+    return Array.from(this.shadowRoot.children) as
+        OverflowableToolbarActionElement[];
   }
 
   override moveItem(id: string, index: number) {

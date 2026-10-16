@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -38,6 +39,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -46,8 +48,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
@@ -3863,4 +3867,109 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
   EXPECT_EQ(static_cast<int>(ax::mojom::HasPopup::kMenu),
             data->GetIntAttribute(ax::mojom::IntAttribute::kHasPopup));
   EXPECT_FALSE(data->HasState(ax::mojom::State::kExpanded));
+}
+
+// Tests that when an extension's popup is shown, its icon is forced to be
+// visible, even when there's no room for it on the toolbar, and the popup is
+// anchored to it. Covers both a pinned extension that has overflowed, and an
+// unpinned extension, which is popped out to show its popup. This is an
+// interactive UI test because extension popups close when another widget in the
+// browser window is activated.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarFullyEnabledInteractiveUiTest,
+                       ExtensionPopupShownWhenOverflowed) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir pinned_temp_dir;
+  base::ScopedTempDir unpinned_temp_dir;
+  ASSERT_TRUE(pinned_temp_dir.CreateUniqueTempDir());
+  ASSERT_TRUE(unpinned_temp_dir.CreateUniqueTempDir());
+  scoped_refptr<const extensions::Extension> pinned_extension =
+      LoadAndPinExtension(pinned_temp_dir, /*has_background_script=*/false,
+                          /*has_popup=*/true);
+  ASSERT_TRUE(pinned_extension);
+  scoped_refptr<const extensions::Extension> unpinned_extension = LoadExtension(
+      unpinned_temp_dir, /*has_background_script=*/false, /*has_popup=*/true);
+  ASSERT_TRUE(unpinned_extension);
+  const std::string pinned_id = pinned_extension->id();
+  const std::string unpinned_id = unpinned_extension->id();
+
+  // Extensions may be pinned by default, so make sure `unpinned_extension` is
+  // not pinned.
+  ToolbarActionsModel* model =
+      ToolbarActionsModel::Get(browser()->GetProfile());
+  if (model->IsActionPinned(unpinned_id)) {
+    model->SetActionVisibility(unpinned_id, false);
+  }
+
+  auto* container = static_cast<WebUIToolbarExtensionsContainer*>(
+      ExtensionsContainer::From(*browser()));
+  ASSERT_TRUE(container);
+
+  // Return values of GetExtensionsState() with the pinned extension visible.
+  // The unpinned extensions doesn't appear anywhere, since unpinned extensions
+  // aren't sent at all to the WebUI toolbar, unless they're "popped out" due to
+  // a having an open/opening bubble.
+  const std::string pinned_extension_visible =
+      base::StrCat({pinned_id, ",<menu>,<divider>"});
+  // Return value of GetExtensionsState() with the pinned extension hidden due
+  // to overflow.
+  const std::string pinned_extension_hidden =
+      base::StrCat({"!", pinned_id, ",<menu>,<divider>"});
+  ASSERT_TRUE(WaitForExtensionsState(pinned_extension_visible));
+
+  // Make the spacer as wide as the window, which should overflow everything
+  // that can be overflowed.
+  gfx::Rect window_bounds = browser()->GetWindow()->GetBounds();
+  ASSERT_EQ(SetSpacerWidth(window_bounds.width()), true);
+  ASSERT_TRUE(WaitForExtensionsState(pinned_extension_hidden));
+
+  // Activate the browser window before showing popups, so that its activation
+  // doesn't close them.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  struct TestCase {
+    std::string extension_with_poup_id;
+    // Expected extensions state while the popup is open, and when everything
+    // that can be overflowed, is overflowed.
+    std::string state_with_popup;
+  } kTestCases[] = {
+      {pinned_id,
+       // The unpinned extension isn't even sent to the renderer in this case,
+       // since it's unpinned and has no bubble.
+       pinned_extension_visible},
+      {unpinned_id,
+       // In this case, the pinned extension is hidden to overflow, and the
+       // unpinned extension should be visible.
+       base::StrCat({"!", pinned_id, ",", unpinned_id, ",<menu>,<divider>"})},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.extension_with_poup_id);
+
+    // Show the popup, as would happen when using the extension's keyboard
+    // shortcut.
+    ToolbarActionViewModel* action =
+        container->GetActionForId(test_case.extension_with_poup_id);
+    ASSERT_TRUE(action);
+    action->ExecuteUserAction(
+        ToolbarActionViewModel::InvocationSource::kCommand);
+
+    // The popup should be shown, anchored to the extension's icon, which
+    // should be visible.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return ExtensionPopup::last_popup_for_testing() != nullptr &&
+             ExtensionPopup::last_popup_for_testing()->GetWidget()->IsVisible();
+    }));
+    views::BubbleDialogDelegate* popup_bubble =
+        ExtensionPopup::last_popup_for_testing();
+    ui::TrackedElement* anchor =
+        container->GetExtensionAnchor(test_case.extension_with_poup_id);
+    ASSERT_TRUE(anchor);
+    EXPECT_TRUE(popup_bubble->IsSameAnchor(views::BubbleAnchor(anchor)));
+    EXPECT_EQ(GetExtensionsState(), test_case.state_with_popup);
+
+    // Once the popup is closed, the icon should soon be hidden due to overflow.
+    container->HideActivePopup();
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return ExtensionPopup::last_popup_for_testing() == nullptr; }));
+    ASSERT_TRUE(WaitForExtensionsState(pinned_extension_hidden));
+  }
 }

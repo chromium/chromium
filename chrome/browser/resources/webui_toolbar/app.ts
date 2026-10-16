@@ -1044,9 +1044,12 @@ export class ToolbarAppElement extends AppElementBase {
       this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>('#media'),
     ];
 
-    const groupedControls =
-        [this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
-            '#pinnedToolbarActions')];
+    const groupedControls = [
+      this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
+          '#pinnedToolbarActions'),
+      this.shadowRoot.querySelector<ResponsiveControl&HTMLElement>(
+          '#extensions'),
+    ];
 
     return (this.omniboxResizingPrioritizationEnabled_ ?
                 [locationBar, ...buttons, ...groupedControls] :

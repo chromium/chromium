@@ -18,8 +18,18 @@ struct ExtensionActionInfo {
   mojo_base.mojom.String16 tooltip;
 
   // True if button is visible for any reason; e.g. pinned, or popped out
-  // because the user is interacting with this extension.
+  // because the user is interacting with this extension. The WebUI toolbar
+  // never receives actions where this is false, as they're filtered out by
+  // WebUIToolbarExtensionsContainerWrapper.
   bool is_visible;
+
+  // True if the button must be visible, regardless of whether there's enough
+  // room for it on the toolbar, e.g., because it's popped out, has an open
+  // context menu, has a bubble anchored to it, or is the pinned-by-default IPH
+  // anchor. Always true for the extensions button. When true, `is_visible` is
+  // also true.
+  bool force_visible;
+
   toolbar_ui_api.mojom.IconHandle icon;
 
   // True if this button should additionally register as the anchor for the

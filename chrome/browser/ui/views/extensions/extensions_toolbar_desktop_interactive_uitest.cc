@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -2016,6 +2017,55 @@ class ExtensionsPinnedByDefaultWebUIInteractiveTest
     return extension;
   }
 
+  content::WebContents* GetWebUIWebContents() {
+    // GetWebContents() is private in ToolbarView, but public in
+    // WebUIToolbarControlDelegate.
+    WebUIToolbarControlDelegate* toolbar =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->toolbar()
+            ->GetWebUIToolbarViewForTesting();
+    return toolbar->GetWebContents();
+  }
+
+  // Adds a fixed-width spacer to the WebUI toolbar, and lays out the toolbar
+  // again.
+  [[nodiscard]] testing::AssertionResult SetSpacerWidth(int width) {
+    return content::ExecJs(GetWebUIWebContents(), content::JsReplace(R"(
+          const app = document.querySelector('toolbar-app');
+          let spacer = app.shadowRoot.querySelector('#test-spacer');
+          if (!spacer) {
+            spacer = document.createElement('div');
+            spacer.id = 'test-spacer';
+            spacer.style.flexShrink = '0';
+            app.shadowRoot.appendChild(spacer);
+          }
+          spacer.style.width = $1 + 'px';
+          app.layoutResponsiveControls();
+        )",
+                                                                     width));
+  }
+
+  // Returns whether the WebUI button for `extension_id` exists and is visible,
+  // according to the renderer.
+  bool IsExtensionButtonVisibleInRenderer(const std::string& extension_id) {
+    // Use ExtractBool() so that script errors cause test failures, rather than
+    // being treated as the button not being visible.
+    return content::EvalJs(GetWebUIWebContents(),
+                           content::JsReplace(R"(
+          (() => {
+            const app = document.querySelector('toolbar-app');
+            const extensions = app.shadowRoot.querySelector('#extensions');
+            const button = Array.from(
+                extensions.shadowRoot.querySelectorAll(
+                    'webui-toolbar-extension'))
+                .find(el => el.dataset.key === $1);
+            return !!button && button.checkVisibility();
+          })()
+        )",
+                                              extension_id))
+        .ExtractBool();
+  }
+
  private:
   base::test::ScopedFeatureList webui_feature_list_;
 };
@@ -2189,6 +2239,58 @@ IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
       WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
       PressClosePromoButton(),
       WaitForHide(kExtensionsPinnedByDefaultElementId));
+}
+
+// Tests that the IPH is shown for an extension whose button has been hidden due
+// to overflow, since the WebUI container forces the IPH anchor to be visible.
+// This differs from Views, where the IPH fails to show in this case.
+IN_PROC_BROWSER_TEST_F(ExtensionsPinnedByDefaultWebUIInteractiveTest,
+                       PromoShowsWhenOverflowed) {
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionWithHostPermissions("Extension", "<all_urls>");
+  ASSERT_TRUE(extension);
+  const std::string extension_id = extension->id();
+  WebUIToolbarExtensionsContainer* container = GetContainer();
+  ASSERT_TRUE(container);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return container->GetExtensionAnchor(extension_id) != nullptr;
+  }));
+
+  // Make the spacer as wide as the window, which should overflow everything
+  // that can be overflowed, including the extension's button.
+  ASSERT_TRUE(SetSpacerWidth(browser()->GetWindow()->GetBounds().width()));
+
+  // Wait for both the renderer and ElementTracker to consider the button
+  // hidden before requesting the IPH. Otherwise, the IPH could be anchored to
+  // the button before it's overflowed, and the test could pass even if the
+  // button weren't forced to be visible. Nothing will make the button visible
+  // again after this, other than the IPH request.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !IsExtensionButtonVisibleInRenderer(extension_id) &&
+           !container->GetExtensionAnchor(extension_id);
+  }));
+
+  RunTestSequence(
+      Do([&]() { container->ShowPinnedByDefaultIPH(extension_id); }),
+      WaitForPromo(feature_engagement::kIPHExtensionsPinnedByDefaultFeature),
+      // The extension's button should have been made visible to anchor the
+      // IPH.
+      Check([&]() {
+        return IsExtensionButtonVisibleInRenderer(extension_id) &&
+               container->GetExtensionAnchor(extension_id) != nullptr &&
+               container->GetExtensionElement(
+                   kExtensionsPinnedByDefaultElementId, extension_id) !=
+                   nullptr;
+      }),
+      PressClosePromoButton(),
+      WaitForHide(kExtensionsPinnedByDefaultElementId));
+
+  // Once the promo is closed, the button should be hidden due to overflow
+  // again.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !IsExtensionButtonVisibleInRenderer(extension_id) &&
+           !container->GetExtensionAnchor(extension_id);
+  }));
 }
 
 // Tests that popping out an action while the IPH is showing closes the IPH.

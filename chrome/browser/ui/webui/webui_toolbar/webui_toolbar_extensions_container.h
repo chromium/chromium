@@ -180,6 +180,12 @@ class WebUIToolbarExtensionsContainer
   void OnContextMenuShownFromToolbar(const std::string& action_id);
   void OnContextMenuClosedFromToolbar();
 
+  // Returns true if the action must be visible on the toolbar, even if there's
+  // not enough room for it, e.g., because it's popped out, has an open context
+  // menu, has a widget anchored to it, or is the pinned-by-default IPH anchor.
+  // Doesn't consider whether the action is pinned.
+  bool ShouldForceVisibility(const std::string& action_id) const;
+
   const raw_ref<BrowserWindowInterface> browser_;
   const raw_ptr<views::Widget> widget_;
   const base::WeakPtr<content::WebContents> web_contents_;

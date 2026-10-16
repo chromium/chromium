@@ -73,6 +73,8 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
     result->id = model_->GetId();
     result->accessible_name = model_->GetAccessibleName(web_contents);
     result->tooltip = model_->GetTooltip(web_contents);
+    result->force_visible =
+        extensions_container_->ShouldForceVisibility(result->id);
     result->is_visible =
         extensions_container_->IsActionVisibleOnToolbar(result->id);
     result->is_pinned_by_default_iph_anchor =
@@ -320,7 +322,9 @@ void WebUIToolbarExtensionsContainer::ShowPinnedByDefaultIPH(
   }
 
   // This causes the WebUI button to register
-  // kExtensionsPinnedByDefaultElementId.
+  // kExtensionsPinnedByDefaultElementId, and forces the button to be visible,
+  // even if it would otherwise be hidden due to overflow (see
+  // ShouldForceVisibility()).
   pinned_by_default_iph_extension_id_ = extension_id;
   NotifyOfOneAction(extension_id);
 
@@ -431,18 +435,7 @@ void WebUIToolbarExtensionsContainer::OnContextMenuClosedFromToolbar() {
 
 bool WebUIToolbarExtensionsContainer::IsActionVisibleOnToolbar(
     const std::string& action_id) const {
-  if (model_->IsActionPinned(action_id) || popped_out_action_ == action_id ||
-      (context_menu_ && context_menu_->action_id() == action_id)) {
-    return true;
-  }
-
-  for (const auto& anchored_widget : anchored_widgets_) {
-    if (anchored_widget.extension_id == action_id) {
-      return true;
-    }
-  }
-
-  return false;
+  return model_->IsActionPinned(action_id) || ShouldForceVisibility(action_id);
 }
 
 void WebUIToolbarExtensionsContainer::UndoPopOut() {
@@ -882,4 +875,28 @@ void WebUIToolbarExtensionsContainer::AnchorAndShowWidgetImmediately(
     bubble_delegate->SetAnchor(views::BubbleAnchor(anchor));
   }
   widget->Show();
+}
+
+bool WebUIToolbarExtensionsContainer::ShouldForceVisibility(
+    const std::string& action_id) const {
+  if (popped_out_action_ == action_id ||
+      (context_menu_ && context_menu_->action_id() == action_id)) {
+    return true;
+  }
+
+  // Unlike Views, where the pinned-by-default IPH fails to show if its anchor
+  // has overflowed, force the IPH's anchor to be visible. Otherwise, the IPH
+  // would remain pending until the button fits on the toolbar, since
+  // ShowPinnedByDefaultIPH() waits for the button to be shown.
+  if (pinned_by_default_iph_extension_id_ == action_id) {
+    return true;
+  }
+
+  for (const auto& anchored_widget : anchored_widgets_) {
+    if (anchored_widget.extension_id == action_id) {
+      return true;
+    }
+  }
+
+  return false;
 }

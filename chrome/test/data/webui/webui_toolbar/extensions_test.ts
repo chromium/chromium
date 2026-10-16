@@ -88,6 +88,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 1',
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -96,6 +97,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 2',
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -104,6 +106,7 @@ suite('Extensions', function() {
         accessibleName: 'Extensions Button',
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
+        forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -150,6 +153,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 2',
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -158,6 +162,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 1',
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -166,6 +171,7 @@ suite('Extensions', function() {
         accessibleName: 'Extensions Button',
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
+        forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -622,6 +628,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 1',
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -630,6 +637,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 2',
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -638,6 +646,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 3',
         tooltip: 'Action 3 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 4n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -646,6 +655,7 @@ suite('Extensions', function() {
         accessibleName: 'Extensions Button',
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
+        forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -690,6 +700,7 @@ suite('Extensions', function() {
             accessibleName: 'Action 1',
             tooltip: 'Action 1 Tooltip',
             isVisible: true,
+            forceVisible: false,
             icon: {handleId: 1n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -698,6 +709,7 @@ suite('Extensions', function() {
             accessibleName: 'Action 2',
             tooltip: 'Action 2 Tooltip',
             isVisible: true,
+            forceVisible: false,
             icon: {handleId: 2n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -706,6 +718,7 @@ suite('Extensions', function() {
             accessibleName: 'Action 3',
             tooltip: 'Action 3 Tooltip',
             isVisible: true,
+            forceVisible: false,
             icon: {handleId: 4n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -714,6 +727,7 @@ suite('Extensions', function() {
             accessibleName: 'Extensions Button',
             tooltip: 'Extensions Button Tooltip',
             isVisible: true,
+            forceVisible: true,
             icon: {handleId: 3n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -771,6 +785,7 @@ suite('Extensions', function() {
             accessibleName: 'Action 1',
             tooltip: 'Action 1 Tooltip Changed',
             isVisible: true,
+            forceVisible: false,
             icon: {handleId: 1n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -779,6 +794,7 @@ suite('Extensions', function() {
             accessibleName: 'Action 2',
             tooltip: 'Action 2 Tooltip',
             isVisible: true,
+            forceVisible: false,
             icon: {handleId: 2n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -787,6 +803,7 @@ suite('Extensions', function() {
             accessibleName: 'Extensions Button',
             tooltip: 'Extensions Button Tooltip',
             isVisible: true,
+            forceVisible: true,
             icon: {handleId: 3n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -826,6 +843,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 1',
         tooltip: 'Action 1 Tooltip Changed',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -834,6 +852,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 2',
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -842,6 +861,7 @@ suite('Extensions', function() {
         accessibleName: 'Extensions Button',
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
+        forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -899,6 +919,7 @@ suite('Extensions', function() {
             accessibleName: 'Action 2',
             tooltip: 'Action 2 Tooltip',
             isVisible: true,
+            forceVisible: false,
             icon: {handleId: 2n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -907,6 +928,7 @@ suite('Extensions', function() {
             accessibleName: 'Action 1',
             tooltip: 'Action 1 Tooltip',
             isVisible: true,
+            forceVisible: false,
             icon: {handleId: 1n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -915,6 +937,7 @@ suite('Extensions', function() {
             accessibleName: 'Extensions Button',
             tooltip: 'Extensions Button Tooltip',
             isVisible: true,
+            forceVisible: true,
             icon: {handleId: 3n},
             isPinnedByDefaultIphAnchor: false,
           },
@@ -984,6 +1007,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 2',
         tooltip: 'Action 2 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 2n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -992,6 +1016,7 @@ suite('Extensions', function() {
         accessibleName: 'Extensions Button',
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
+        forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -1014,6 +1039,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 1',
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -1144,6 +1170,80 @@ suite('Extensions', function() {
     assertEquals('', actionElements[2]!.getAttribute('data-key'));
   });
 
+  test('getActions', () => {
+    const actions = container.getActions();
+    assertEquals(4, actions.length);
+    assertEquals('action-1', actions[0]!.getAttribute('data-key'));
+    assertEquals('action-2', actions[1]!.getAttribute('data-key'));
+    assertEquals('', actions[2]!.getAttribute('data-key'));
+    assertFalse(actions[2]!.isDivider);
+    assertTrue(actions[3]!.isDivider);
+  });
+
+  test('Prevents overflow of force-visible actions', async () => {
+    const actionElements =
+        container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+    assertEquals(3, actionElements.length);
+    const action1 = actionElements[0]!;
+    const action2 = actionElements[1]!;
+    const menuButton = actionElements[2]!;
+    assertFalse(action1.preventOverflow);
+    assertFalse(action2.preventOverflow);
+    // The extensions menu button is always force-visible.
+    assertTrue(menuButton.preventOverflow);
+
+    // Force action 2 to be visible, as happens when its popup is shown.
+    container.states = container.states.map(
+        s => s.id === 'action-2' ? {...s, forceVisible: true} : s);
+    await microtasksFinished();
+    assertFalse(action1.preventOverflow);
+    assertTrue(action2.preventOverflow);
+    assertTrue(menuButton.preventOverflow);
+
+    container.states = container.states.map(
+        s => s.id === 'action-2' ? {...s, forceVisible: false} : s);
+    await microtasksFinished();
+    assertFalse(action1.preventOverflow);
+    assertFalse(action2.preventOverflow);
+    assertTrue(menuButton.preventOverflow);
+  });
+
+  test('Prevents overflow of tracked highlighted actions', async () => {
+    const actionElements =
+        container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+    assertEquals(3, actionElements.length);
+    const action1 = actionElements[0]!;
+    const action2 = actionElements[1]!;
+    assertFalse(action1.preventOverflow);
+    assertFalse(action2.preventOverflow);
+
+    action2.trackedHighlighted = true;
+    await microtasksFinished();
+    assertFalse(action1.preventOverflow);
+    assertTrue(action2.preventOverflow);
+
+    action2.trackedHighlighted = false;
+    await microtasksFinished();
+    assertFalse(action1.preventOverflow);
+    assertFalse(action2.preventOverflow);
+  });
+
+  test('Overflowed actions are not added to the overflow menu', () => {
+    // Hide everything that may be hidden. Only the extensions menu button,
+    // which may not overflow, and the divider after it, should remain visible.
+    container.setToMinWidth();
+    const actions = container.getActions();
+    assertEquals(4, actions.length);
+    assertTrue(actions[0]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[1]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[3]!.classList.contains('overflow-display-none'));
+
+    // Overflowed extensions are just hidden, and not added to the overflow
+    // menu.
+    assertEquals(0, container.controlsToAddToOverflowMenu().length);
+  });
+
   test('Click suppression when bubble is open or recently closed', () => {
     const actionElements =
         container.shadowRoot.querySelectorAll('webui-toolbar-extension');
@@ -1207,6 +1307,7 @@ suite('Extensions', function() {
         accessibleName: 'Action 1',
         tooltip: 'Action 1 Tooltip',
         isVisible: true,
+        forceVisible: false,
         icon: {handleId: 1n},
         isPinnedByDefaultIphAnchor: false,
       },
@@ -1215,6 +1316,7 @@ suite('Extensions', function() {
         accessibleName: 'Extensions Button',
         tooltip: 'Extensions Button Tooltip',
         isVisible: true,
+        forceVisible: true,
         icon: {handleId: 3n},
         isPinnedByDefaultIphAnchor: false,
       },

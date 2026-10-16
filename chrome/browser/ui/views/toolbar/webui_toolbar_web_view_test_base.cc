@@ -187,6 +187,43 @@ bool WebUIToolbarWebViewTestBase::WaitForPinnedActionHidden(
   return base::test::RunUntil([&]() { return !IsPinnedActionVisible(action); });
 }
 
+std::string WebUIToolbarWebViewTestBase::GetExtensionsState() {
+  return content::EvalJs(GetWebUIWebContents(), R"(
+        (() => {
+          const app = document.querySelector('toolbar-app');
+          const extensions = app?.shadowRoot?.querySelector('#extensions');
+          if (!extensions) {
+            return '';
+          }
+          return extensions.getActions().map(el => {
+            let name = el.isDivider ? '<divider>' : el.getItemId();
+            if (name === '') {
+              name = '<menu>';
+            }
+            if (!el.checkVisibility()) {
+              name = '!' + name;
+            }
+            return name;
+          }).join(',');
+        })()
+      )")
+      .ExtractString();
+}
+
+bool WebUIToolbarWebViewTestBase::WaitForExtensionsState(
+    const std::string& expected) {
+  std::string state;
+  if (base::test::RunUntil([&]() {
+        state = GetExtensionsState();
+        return state == expected;
+      })) {
+    return true;
+  }
+  ADD_FAILURE() << "Expected extensions state: " << expected
+                << ", actual state: " << state;
+  return false;
+}
+
 void WebUIToolbarWebViewTestBase::EnableBatterySaverButton(
     content::WebContents* webui_web_contents) {
   if (!webui_web_contents) {
@@ -270,9 +307,13 @@ WebUIToolbarWebViewTestBase::LoadAndPinExtension(base::ScopedTempDir& temp_dir,
     return nullptr;
   }
 
-  // Pin the extension so it becomes visible.
-  ToolbarActionsModel::Get(browser()->GetProfile())
-      ->SetActionVisibility(extension->id(), true);
+  // Pin the extension so it becomes visible. It may already be pinned, if
+  // features::kExtensionsPinnedByDefault is enabled.
+  ToolbarActionsModel* model =
+      ToolbarActionsModel::Get(browser()->GetProfile());
+  if (!model->IsActionPinned(extension->id())) {
+    model->SetActionVisibility(extension->id(), true);
+  }
 
   // Wait for the extension's button to be shown. The anchor is only registered
   // once the button's animations complete, so this also waits for it to finish
