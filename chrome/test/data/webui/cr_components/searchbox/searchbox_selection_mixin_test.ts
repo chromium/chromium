@@ -119,6 +119,89 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
     });
   });
 
+  test('getAvailableSelections with default match and AIM button', () => {
+    element.isAimVisible = true;
+    element.showEntrypoint = false;
+
+    // Normal default match without keyword/actions includes kFocusedButtonAim.
+    const defaultMatch = createAutocompleteMatch({
+      allowedToBeDefaultMatch: true,
+    });
+    let result = createAutocompleteResultForTesting({
+      matches: [defaultMatch],
+    });
+    let selections = element.getAvailableSelections(result);
+    assertEquals(2, selections.length);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+        selections[0]);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kFocusedButtonAim, actionIndex: 0},
+        selections[1]);
+
+    // Default match with an associated keyword chip excludes
+    // kFocusedButtonAim so Tab navigates directly into keyword mode.
+    const defaultMatchWithKeyword = createAutocompleteMatch({
+      allowedToBeDefaultMatch: true,
+      keywordModel:
+          createMatchKeywordModelForTesting({type: KeywordType.kChip}),
+    });
+    result = createAutocompleteResultForTesting({
+      matches: [defaultMatchWithKeyword],
+    });
+    selections = element.getAvailableSelections(result);
+    assertEquals(2, selections.length);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+        selections[0]);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kKeywordMode, actionIndex: 0},
+        selections[1]);
+
+    const next = element.getNextSelection(
+        result, selections[0]!, SelectionDirection.kForward,
+        SelectionStep.kStateOrLine);
+    assertDeepEquals(selections[1]!, next);
+
+    // Default match with actions excludes kFocusedButtonAim.
+    const defaultMatchWithActions = createAutocompleteMatch({
+      allowedToBeDefaultMatch: true,
+      actions: [createActionForTesting()],
+    });
+    result = createAutocompleteResultForTesting({
+      matches: [defaultMatchWithActions],
+    });
+    selections = element.getAvailableSelections(result);
+    assertEquals(2, selections.length);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+        selections[0]);
+    assertDeepEquals(
+        {
+          line: 0,
+          state: SelectionLineState.kFocusedButtonAction,
+          actionIndex: 0,
+        },
+        selections[1]);
+
+    // Second match having instant keyword excludes kFocusedButtonAim.
+    const secondMatchInstant = createAutocompleteMatch({
+      keywordModel:
+          createMatchKeywordModelForTesting({type: KeywordType.kInstant}),
+    });
+    result = createAutocompleteResultForTesting({
+      matches: [defaultMatch, secondMatchInstant],
+    });
+    selections = element.getAvailableSelections(result);
+    assertEquals(2, selections.length);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+        selections[0]);
+    assertDeepEquals(
+        {line: 1, state: SelectionLineState.kKeywordMode, actionIndex: 0},
+        selections[1]);
+  });
+
   test('isAiModeVirtualFocused', () => {
     assertFalse(element.isAiModeVirtualFocused());
 
