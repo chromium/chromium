@@ -15,6 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_ADDRESS_BAR;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR_SWITCH;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOTTOM_BAR_SWITCH;
@@ -22,6 +23,7 @@ import static org.chromium.chrome.browser.appearance.settings.AppearanceSettings
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_TOOLBAR_SHORTCUT;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_UI_THEME;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.BOTTOM_BAR_ENABLED;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.VERTICAL_TABS_ENABLED;
 import static org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant.NEW_TAB;
@@ -45,6 +47,7 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -65,8 +68,11 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -170,10 +176,13 @@ public class AppearanceSettingsFragmentTest {
     }
 
     @After
+    @UiThreadTest
     public void tearDownPerTest() {
         mUserActionTester.tearDown();
         ChromeSharedPreferences.getInstance().removeKey(VERTICAL_TABS_ENABLED);
         ChromeSharedPreferences.getInstance().removeKey(BOTTOM_BAR_ENABLED);
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
+        ChromeSharedPreferences.getInstance().removeKey(TOOLBAR_TOP_ANCHORED);
     }
 
     @AfterClass
@@ -720,6 +729,63 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testAddressBarPreferenceIsAbsentWhenBottomBarDisabled() {
+        launchSettings();
+        assertNull(mSettings.findPreference(PREF_ADDRESS_BAR));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testAddressBarPreferenceIsAbsentOnTablet() {
+        DeviceInfo.setIsFoldableForTesting(false);
+        launchSettings();
+        assertNull(mSettings.findPreference(PREF_ADDRESS_BAR));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":move_toolbar_settings_to_appearance/false")
+    public void testAddressBarPreferenceIsAbsentWhenMoveParamOff() {
+        launchSettings();
+        assertNull(mSettings.findPreference(PREF_ADDRESS_BAR));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testAddressBarPreferenceIsPresentWhenEligible() throws ClassNotFoundException {
+        launchSettings();
+
+        final var addressBarPref =
+                assertSettingsExists(PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+        final var context = mSettings.getContext();
+        assertEquals(
+                context.getString(R.string.address_bar_settings_top), addressBarPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AddressBarPreference.setToolbarPositionAndSource(
+                                ToolbarPositionAndSource.BOTTOM_SETTINGS));
+        assertEquals(
+                context.getString(R.string.address_bar_settings_bottom),
+                addressBarPref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        AddressBarPreference.setToolbarPositionAndSource(
+                                ToolbarPositionAndSource.TOP_SETTINGS));
+        assertEquals(
+                context.getString(R.string.address_bar_settings_top), addressBarPref.getSummary());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testSearchIndex_MoveToolbarSettingsNotEligible() {
         var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
@@ -727,6 +793,7 @@ public class AppearanceSettingsFragmentTest {
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                 context, mIndexData, mProfile);
 
+        verify(mIndexData).removeEntryForKey(prefFragment, PREF_ADDRESS_BAR);
         verify(mIndexData, never())
                 .updateEntryForKey(eq(prefFragment), eq(PREF_TOOLBAR_SHORTCUT), anyInt());
     }
@@ -743,6 +810,7 @@ public class AppearanceSettingsFragmentTest {
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                 context, mIndexData, mProfile);
 
+        verify(mIndexData).removeEntryForKey(prefFragment, PREF_ADDRESS_BAR);
         verify(mIndexData, never())
                 .updateEntryForKey(eq(prefFragment), eq(PREF_TOOLBAR_SHORTCUT), anyInt());
     }
@@ -758,6 +826,7 @@ public class AppearanceSettingsFragmentTest {
         AppearanceSettingsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                 context, mIndexData, mProfile);
 
+        verify(mIndexData, never()).removeEntryForKey(prefFragment, PREF_ADDRESS_BAR);
         verify(mIndexData)
                 .updateEntryForKey(
                         prefFragment, PREF_TOOLBAR_SHORTCUT, R.string.address_bar_shortcut);

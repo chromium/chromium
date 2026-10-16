@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SignInPreference;
 import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference;
@@ -775,7 +776,8 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // Similar to ToolbarPositionController#isToolbarPositionCustomizationEnabled(), except
         // - no CCT checks (settings are not accessible from CCTs),
         // - showing on Foldables in unfolded (open) state.
-        return !DeviceInfo.isAutomotive()
+        return !BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)
+                && !DeviceInfo.isAutomotive()
                 && (DeviceInfo.isFoldable()
                         || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context));
     }
