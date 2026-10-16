@@ -10988,7 +10988,17 @@ NavigationRequest::GetAssociatedRFHType() const {
   // we only update the value for non-pending commit navigations (i.e. the
   // NavigationRequest owned by the FrameTreeNode). See the comments in
   // `RenderFrameHostManager::CommitPendingIfNecessary()` for more details.
-  CHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST)
+  // Note that CANCELING navigations haven't moved to their final
+  // RenderFrameHost yet and are still owned by the FrameTreeNode: they will
+  // either be deleted, move to WILL_FAIL_REQUEST, or (if they were canceled
+  // during WILL_FAIL_REQUEST) move to READY_TO_COMMIT to commit an error page.
+  // So it's still OK to check the associated RFH type. This
+  // can happen when e.g. a NavigationThrottle cancels a navigation and the
+  // NavigationRequest is not deleted synchronously, and in the meantime
+  // `RenderFrameHostManager::DiscardSpeculativeRFHIfUnused()` is called because
+  // another navigation's NavigationClient got disconnected.
+  CHECK(state_ < READY_TO_COMMIT || state_ == WILL_FAIL_REQUEST ||
+        state_ == CANCELING)
       << "Use GetRenderFrameHost() instead when the final RenderFrameHost "
          "for the navigation has been picked";
   return associated_rfh_type_;
