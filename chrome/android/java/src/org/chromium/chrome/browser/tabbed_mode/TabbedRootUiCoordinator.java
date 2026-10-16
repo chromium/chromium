@@ -1966,6 +1966,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         assert bottomSheetController != null;
         TipsUtils.maybeShowTipsOptInPromo(
                 mActivity,
+                mProfileSupplier.get(),
                 bottomSheetController,
                 mSnackbarManagerSupplier.asNonNull().get(),
                 ChromeSharedPreferences.getInstance(),

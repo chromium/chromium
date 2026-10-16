@@ -7,6 +7,10 @@ package org.chromium.chrome.browser.tips;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -20,20 +24,29 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.tips.TipsPromoProperties.FeatureTipPromoData;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TipsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
 public class TipsUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SharedPreferencesManager mSharedPreferences;
+    @Mock private Callback<TipsOptInCoordinator> mOnShowCallback;
 
     private Activity mActivity;
 
@@ -397,6 +410,46 @@ public class TipsUtilsUnitTest {
                         mSharedPreferences,
                         /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
                                 TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP)
+    public void testShouldShowTipsOptInPromo_CooldownGroupEnabledBypassesSharedPreferencesCaps() {
+        when(mSharedPreferences.readInt(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0))
+                .thenReturn(TipsUtils.getMaxTipsOptInPromoShowCount());
+        when(mSharedPreferences.readLong(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,
+                        0))
+                .thenReturn(System.currentTimeMillis());
+
+        assertTrue(
+                TipsUtils.shouldShowTipsOptInPromo(
+                        /* notificationsEnabled= */ false,
+                        mSharedPreferences,
+                        /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                                TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1)));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_TIPS_NOTIFICATIONS,
+        ChromeFeatureList.INTERRUPTIVE_IPH_COOLDOWN_GROUP
+    })
+    public void testMaybeShowTipsOptInPromo_CooldownGroupEnabledAndNullProfile_DoesNotShow() {
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
+
+        TipsUtils.maybeShowTipsOptInPromo(
+                mActivity,
+                /* profile= */ null,
+                mock(BottomSheetController.class),
+                mock(SnackbarManager.class),
+                mSharedPreferences,
+                /* timeSinceLastBackgroundedMs= */ TimeUnit.HOURS.toMillis(
+                        TipsUtils.APP_BACKGROUNDED_HOURS_FOR_PROMO + 1),
+                mOnShowCallback);
+
+        verify(mOnShowCallback, never()).onResult(any());
     }
 
     @Test

@@ -8,9 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP;
@@ -51,6 +54,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 
@@ -64,6 +69,7 @@ public class TipsOptInCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Tracker mTracker;
 
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
@@ -79,12 +85,14 @@ public class TipsOptInCoordinatorUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).create().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mSharedPreferenceManager = ChromeSharedPreferences.getInstance();
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
         mTipsOptInCoordinator =
                 new TipsOptInCoordinator(
                         mActivity,
                         mBottomSheetController,
                         mSnackbarManager,
-                        mSharedPreferenceManager);
+                        mSharedPreferenceManager,
+                        mTracker);
         mView = mTipsOptInCoordinator.getViewForTesting();
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mBottomSheetContent = mTipsOptInCoordinator.getBottomSheetContentForTesting();
@@ -279,5 +287,22 @@ public class TipsOptInCoordinatorUnitTest {
         assertEquals(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 mView.findViewById(R.id.opt_in_logo).getLayoutParams().width);
+    }
+
+    @Test
+    public void testTrackerDismissedOnSheetClosed() {
+        mTipsOptInCoordinator.showBottomSheet();
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+
+        mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.TAP_SCRIM);
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+    }
+
+    @Test
+    public void testTrackerDismissedWhenShowBottomSheetFails() {
+        when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(false);
+
+        mTipsOptInCoordinator.showBottomSheet();
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
     }
 }

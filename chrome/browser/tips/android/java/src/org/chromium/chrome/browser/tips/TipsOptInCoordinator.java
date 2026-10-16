@@ -35,6 +35,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetType;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.widget.ButtonCompat;
 
 import java.lang.annotation.Retention;
@@ -96,6 +98,7 @@ public class TipsOptInCoordinator {
     private final SharedPreferencesManager mSharedPreferences;
     private final TipsOptInSheetContent mSheetContent;
     private final View mContentView;
+    private @Nullable Tracker mTracker;
     private @TipsOptInUserInteraction int mUserInteractionType;
 
     /**
@@ -105,16 +108,19 @@ public class TipsOptInCoordinator {
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param snackbarManager The system {@link SnackbarManager}.
      * @param sharedPreferences The {@link SharedPreferencesManager} to use.
+     * @param tracker Optional {@link Tracker} to notify when the bottom sheet is dismissed.
      */
     public TipsOptInCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
             SnackbarManager snackbarManager,
-            SharedPreferencesManager sharedPreferences) {
+            SharedPreferencesManager sharedPreferences,
+            @Nullable Tracker tracker) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mSnackbarManager = snackbarManager;
         mSharedPreferences = sharedPreferences;
+        mTracker = tracker;
         mUserInteractionType = TipsOptInUserInteraction.DISMISSED;
 
         mContentView =
@@ -135,12 +141,23 @@ public class TipsOptInCoordinator {
 
     /** Cleans up resources. */
     public void destroy() {
+        notifyTrackerDismissed();
         mContext.unregisterComponentCallbacks(mComponentCallbacks);
+    }
+
+    private void notifyTrackerDismissed() {
+        if (mTracker != null) {
+            mTracker.dismissed(FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE);
+            mTracker = null;
+        }
     }
 
     /** Shows the promo. The caller is responsible for all eligibility checks. */
     public void showBottomSheet() {
-        mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true);
+        if (!mBottomSheetController.requestShowContent(mSheetContent, /* animate= */ true)) {
+            notifyTrackerDismissed();
+            return;
+        }
 
         // Increment the show count.
         int currentCount =
@@ -254,6 +271,7 @@ public class TipsOptInCoordinator {
                         public void onSheetClosed(@StateChangeReason int reason) {
                             mBackPressStateChangedSupplier.set(false);
                             mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
+                            notifyTrackerDismissed();
 
                             if (reason == StateChangeReason.SWIPE
                                     || reason == StateChangeReason.TAP_SCRIM) {

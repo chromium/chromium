@@ -25,6 +25,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -38,6 +40,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.FeatureProperties;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.UiFormat;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
 
@@ -454,6 +460,7 @@ public class TipsUtils {
      * Checks criteria and potentially shows the Tips opt-in promo bottom sheet.
      *
      * @param activity The current {@link Activity}.
+     * @param profile The current {@link Profile}, or null if unavailable.
      * @param bottomSheetController The system {@link BottomSheetController}.
      * @param snackbarManager The {@link SnackbarManager} to use.
      * @param sharedPreferences The {@link SharedPreferencesManager} to use.
@@ -462,6 +469,7 @@ public class TipsUtils {
      */
     public static void maybeShowTipsOptInPromo(
             Activity activity,
+            @Nullable Profile profile,
             BottomSheetController bottomSheetController,
             SnackbarManager snackbarManager,
             SharedPreferencesManager sharedPreferences,
@@ -477,12 +485,34 @@ public class TipsUtils {
                                 return;
                             }
 
+                            Tracker tracker = null;
+                            if (!shouldAlwaysShowOptInPromo()
+                                    && ChromeFeatureList.sInterruptiveIphCooldownGroup
+                                            .isEnabled()) {
+                                if (profile == null) {
+                                    return;
+                                }
+                                tracker = TrackerFactory.getTrackerForProfile(profile);
+                                FeatureProperties featureProperties =
+                                        new FeatureProperties(
+                                                UiFormat.BOTTOM_SHEET,
+                                                /* isBlockedByEnterprisePolicy= */ true,
+                                                /* isBlockedByCooldownGroup= */ true,
+                                                /* blocksCooldownGroup= */ true);
+                                if (!tracker.shouldTriggerHelpUi(
+                                        FeatureConstants.ANDROID_TIPS_OPT_IN_PROMO_FEATURE,
+                                        featureProperties)) {
+                                    return;
+                                }
+                            }
+
                             TipsOptInCoordinator coordinator =
                                     new TipsOptInCoordinator(
                                             activity,
                                             bottomSheetController,
                                             snackbarManager,
-                                            sharedPreferences);
+                                            sharedPreferences,
+                                            tracker);
                             coordinator.showBottomSheet();
                             onShowCallback.onResult(coordinator);
                         }
@@ -503,6 +533,20 @@ public class TipsUtils {
             return true;
         }
 
+        if (notificationsEnabled
+                || sharedPreferences.readBoolean(
+                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false)
+                || timeSinceLastBackgroundedMs
+                        <= TimeUnit.HOURS.toMillis(APP_BACKGROUNDED_HOURS_FOR_PROMO)) {
+            return false;
+        }
+
+        // When the interruptive IPH cooldown group is enabled, frequency and cooldown limits are
+        // enforced by Feature Engagement instead of SharedPreferences.
+        if (ChromeFeatureList.sInterruptiveIphCooldownGroup.isEnabled()) {
+            return true;
+        }
+
         long lastShownTimeMs =
                 sharedPreferences.readLong(
                         ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_LAST_SHOWN_TIMESTAMP,
@@ -511,14 +555,9 @@ public class TipsUtils {
                 (System.currentTimeMillis() - lastShownTimeMs)
                         >= TimeUnit.DAYS.toMillis(getTipsOptInPromoCooldownDays());
 
-        return !notificationsEnabled
-                && !sharedPreferences.readBoolean(
-                        ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_ACCEPTED, false)
-                && sharedPreferences.readInt(
+        return sharedPreferences.readInt(
                                 ChromePreferenceKeys.TIPS_NOTIFICATIONS_OPT_IN_PROMO_SHOW_COUNT, 0)
                         < getMaxTipsOptInPromoShowCount()
-                && cooldownPassed
-                && timeSinceLastBackgroundedMs
-                        > TimeUnit.HOURS.toMillis(APP_BACKGROUNDED_HOURS_FOR_PROMO);
+                && cooldownPassed;
     }
 }
