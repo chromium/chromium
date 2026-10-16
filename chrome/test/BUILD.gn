@@ -1628,14 +1628,6 @@ if (!is_android) {
       "//ui/webui:buildflags",
     ]
 
-    allow_circular_includes_from = []
-
-    # password_generation_popup_view_views_browsertest.cc includes
-    # ../browser/ui/views/autofill/popup/popup_pixel_test.h, which is compiled
-    # directly into this target's own sources rather than a separate one.
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/views/passwords:browser_tests" ]
-
     # Runtime dependencies
     data_deps = [
       "//chrome:browser_tests_pak",
@@ -2055,8 +2047,6 @@ if (!is_android) {
         "//chrome/browser/ui/webui_browser:browser_tests",
         "//chrome/browser/ui/zoom:browser_tests",
       ]
-      allow_circular_includes_from +=
-          [ "//chrome/browser/ui/lens:browser_tests" ]
     }
 
     # TODO(crbug.com/353332589): Move this browsertest into
