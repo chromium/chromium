@@ -32,6 +32,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/stack_allocated.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -271,6 +272,8 @@ struct SetWindowPosParams {
   HWND window_insert_after;
   bool success;
   std::set<HWND> shunted_hwnds;
+
+  STACK_ALLOCATED();
 };
 
 BOOL CALLBACK ChromeWindowEnumProc(HWND hwnd, LPARAM lparam) {
