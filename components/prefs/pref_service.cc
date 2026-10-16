@@ -219,7 +219,7 @@ const PrefService::Preference* PrefService::FindPreference(
   if (it != prefs_map_.end())
     return it->second.get();
   const base::Value* default_value = nullptr;
-  if (!pref_registry_->defaults()->GetValue(path, &default_value)) {
+  if (!pref_registry_->default_store()->GetValue(path, &default_value)) {
     return nullptr;
   }
   it = prefs_map_
@@ -320,7 +320,7 @@ const base::Value* PrefService::GetDefaultPrefValue(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Lookup the preference in the default store.
   const base::Value* value = nullptr;
-  bool has_value = pref_registry_->defaults()->GetValue(path, &value);
+  bool has_value = pref_registry_->default_store()->GetValue(path, &value);
   DCHECK(has_value) << "Default value missing for pref: " << path;
   return value;
 }
@@ -502,7 +502,7 @@ base::Value* PrefService::GetMutableUserPref(std::string_view path,
 
   // If no user preference of the correct type exists, clone default value.
   const base::Value* default_value = nullptr;
-  pref_registry_->defaults()->GetValue(path, &default_value);
+  pref_registry_->default_store()->GetValue(path, &default_value);
   DCHECK_EQ(default_value->type(), type);
   user_pref_store_->SetValueSilently(path, default_value->Clone(),
                                      GetWriteFlags(pref));
@@ -668,7 +668,7 @@ const base::Value* PrefService::GetPreferenceValue(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value* default_value = nullptr;
-  CHECK(pref_registry_->defaults()->GetValue(path, &default_value))
+  CHECK(pref_registry_->default_store()->GetValue(path, &default_value))
       << "Trying to access an unregistered pref: " << path;
   CHECK(default_value);
   const base::Value::Type default_type = default_value->type();

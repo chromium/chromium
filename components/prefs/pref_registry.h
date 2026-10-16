@@ -85,6 +85,10 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   // Gets the registered defaults.
   scoped_refptr<PrefStore> defaults();
 
+  // Returns a raw pointer to the underlying default store without atomic
+  // reference-count overhead for internal callers that do not take ownership.
+  PrefStore* default_store() const;
+
   // Allows iteration over defaults.
   const_iterator begin() const;
   const_iterator end() const;

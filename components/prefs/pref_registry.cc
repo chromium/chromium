@@ -43,6 +43,10 @@ scoped_refptr<PrefStore> PrefRegistry::defaults() {
   return defaults_.get();
 }
 
+PrefStore* PrefRegistry::default_store() const {
+  return defaults_.get();
+}
+
 PrefRegistry::const_iterator PrefRegistry::begin() const {
   return defaults_->begin();
 }
