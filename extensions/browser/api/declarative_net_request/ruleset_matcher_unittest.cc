@@ -39,6 +39,7 @@
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1402,6 +1403,148 @@ TEST_F(AllowAllRequestsTest, AllowlistedFrameTracking) {
   action = matcher->GetAllowlistedFrameActionForTesting(
       web_contents->GetPrimaryMainFrame());
   EXPECT_FALSE(action);
+}
+
+// Regression test for crbug.com/519999855: verifies that error documents do not
+// gain allowAllRequests privileges from their failed destination URL (neither
+// on initial error commit nor on subsequent same-document navigations), evict
+// stale self-allowlist entries on same-RFH error commits, and still preserve
+// any allowlist action inherited from an enclosing allowlisted parent frame.
+TEST_F(AllowAllRequestsTest, ErrorDocumentTracking) {
+  TestRule parent_allow_rule = CreateGenericRule();
+  parent_allow_rule.id = kMinValidID;
+  parent_allow_rule.condition->url_filter = "||parent-allowed.com";
+  parent_allow_rule.condition->resource_types =
+      std::vector<std::string>({"main_frame"});
+  parent_allow_rule.action->type = "allowAllRequests";
+  parent_allow_rule.priority = 2;
+
+  TestRule subframe_allow_rule = CreateGenericRule();
+  subframe_allow_rule.id = kMinValidID + 1;
+  subframe_allow_rule.condition->url_filter = "||corp-intranet.com";
+  subframe_allow_rule.condition->resource_types =
+      std::vector<std::string>({"sub_frame"});
+  subframe_allow_rule.action->type = "allowAllRequests";
+  subframe_allow_rule.priority = 10;
+
+  TestRule block_rule = CreateGenericRule();
+  block_rule.id = kMinValidID + 2;
+  block_rule.condition->url_filter = "||tracker.com";
+  block_rule.action->type = "block";
+  block_rule.priority = 5;
+
+  std::unique_ptr<RulesetMatcher> matcher;
+  ASSERT_TRUE(CreateVerifiedMatcher(
+      {parent_allow_rule, subframe_allow_rule, block_rule},
+      CreateTemporarySource(), &matcher));
+
+  auto notify_committed = [&matcher](content::RenderFrameHost* host,
+                                     const GURL& url, bool is_error_page) {
+    testing::NiceMock<content::MockNavigationHandle> navigation_handle(url,
+                                                                       host);
+    navigation_handle.set_has_committed(true);
+    navigation_handle.set_is_error_page(is_error_page);
+    matcher->OnDidFinishNavigation(&navigation_handle);
+  };
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(
+          browser_context(), content::SiteInstance::Create(browser_context()));
+  ASSERT_TRUE(web_contents);
+
+  // 1. Navigate main frame to a non-allowlisted page and append a child frame.
+  const GURL untrusted_main_url("https://attacker.com/");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents.get(), untrusted_main_url);
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  notify_committed(main_rfh, untrusted_main_url, /*is_error_page=*/false);
+  EXPECT_FALSE(matcher->GetAllowlistedFrameActionForTesting(main_rfh));
+
+  content::RenderFrameHost* child =
+      content::RenderFrameHostTester::For(main_rfh)->AppendChild("sub_frame");
+  ASSERT_TRUE(child);
+
+  // 2. Navigate child frame to https://corp-intranet.com/ and fail (e.g.,
+  // ERR_BLOCKED_BY_CSP). Even though GetLastCommittedURL() holds
+  // https://corp-intranet.com/, the error document must not be allowlisted and
+  // block rules must still apply to its subresource loads.
+  const GURL blocked_allowlisted_url("https://corp-intranet.com/secret");
+  content::RenderFrameHost* error_child =
+      content::NavigationSimulator::NavigateAndFailFromDocument(
+          blocked_allowlisted_url, net::ERR_BLOCKED_BY_CSP, child);
+  ASSERT_TRUE(error_child);
+  ASSERT_TRUE(error_child->IsErrorDocument());
+  ASSERT_EQ(blocked_allowlisted_url, error_child->GetLastCommittedURL());
+
+  notify_committed(error_child, blocked_allowlisted_url,
+                   /*is_error_page=*/true);
+  EXPECT_FALSE(matcher->GetAllowlistedFrameActionForTesting(error_child));
+
+  // Verify subresource requests from `error_child` are blocked by `block_rule`.
+  GURL tracker_url("https://tracker.com/probe.gif");
+  RequestParams subresource_params;
+  subresource_params.url = &tracker_url;
+  subresource_params.element_type = url_pattern_index::flat::ElementType_IMAGE;
+  subresource_params.parent_routing_id = error_child->GetGlobalId();
+  EXPECT_EQ(CreateRequestActionForTesting(RequestAction::Type::COLLAPSE,
+                                          *block_rule.id, *block_rule.priority),
+            matcher->GetAction(subresource_params,
+                               RulesetMatchingStage::kOnBeforeRequest));
+
+  // 3. Simulate a same-document navigation inside `error_child` (where
+  // NavigationHandle::IsErrorPage() is false while host->IsErrorDocument()
+  // remains true). The error document must still not be allowlisted.
+  const GURL fragment_url("https://corp-intranet.com/secret#fragment");
+  notify_committed(error_child, fragment_url, /*is_error_page=*/false);
+  EXPECT_FALSE(matcher->GetAllowlistedFrameActionForTesting(error_child));
+
+  // 4. Commit a valid navigation to https://corp-intranet.com/ in the subframe,
+  // then simulate an error page committing in the same RenderFrameHost to
+  // verify the stale self-allowlist entry is evicted.
+  content::RenderFrameHost* allowed_child =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          blocked_allowlisted_url, error_child);
+  ASSERT_TRUE(allowed_child);
+  ASSERT_FALSE(allowed_child->IsErrorDocument());
+  notify_committed(allowed_child, blocked_allowlisted_url,
+                   /*is_error_page=*/false);
+  EXPECT_EQ(CreateRequestActionForTesting(
+                RequestAction::Type::ALLOW_ALL_REQUESTS,
+                *subframe_allow_rule.id, *subframe_allow_rule.priority),
+            matcher->GetAllowlistedFrameActionForTesting(allowed_child));
+
+  // Simulate an error commit in the same RenderFrameHost. This intentionally
+  // exercises the NavigationHandle::IsErrorPage() branch while the host's last
+  // committed URL still matches `subframe_allow_rule`, verifying that the stale
+  // self-allowlist entry is evicted rather than re-added.
+  notify_committed(allowed_child, blocked_allowlisted_url,
+                   /*is_error_page=*/true);
+  EXPECT_FALSE(matcher->GetAllowlistedFrameActionForTesting(allowed_child));
+
+  // 5. Navigate main frame to https://parent-allowed.com/ (priority 2) and fail
+  // a child subframe navigation to https://corp-intranet.com/ (priority 10):
+  // the error child must inherit the parent's priority-2 action rather than
+  // gaining the failed URL's priority-10 action.
+  const GURL allowed_main_url("https://parent-allowed.com/");
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
+                                                             allowed_main_url);
+  main_rfh = web_contents->GetPrimaryMainFrame();
+  notify_committed(main_rfh, allowed_main_url, /*is_error_page=*/false);
+  RequestAction parent_action = CreateRequestActionForTesting(
+      RequestAction::Type::ALLOW_ALL_REQUESTS, *parent_allow_rule.id,
+      *parent_allow_rule.priority);
+  EXPECT_EQ(parent_action,
+            matcher->GetAllowlistedFrameActionForTesting(main_rfh));
+
+  child = content::RenderFrameHostTester::For(main_rfh)->AppendChild("sub2");
+  ASSERT_TRUE(child);
+  error_child = content::NavigationSimulator::NavigateAndFailFromDocument(
+      blocked_allowlisted_url, net::ERR_BLOCKED_BY_CSP, child);
+  ASSERT_TRUE(error_child);
+  notify_committed(error_child, blocked_allowlisted_url,
+                   /*is_error_page=*/true);
+  EXPECT_EQ(parent_action,
+            matcher->GetAllowlistedFrameActionForTesting(error_child));
 }
 
 // Ensures that GetBeforeRequestAction correctly incorporates allowAllRequests
