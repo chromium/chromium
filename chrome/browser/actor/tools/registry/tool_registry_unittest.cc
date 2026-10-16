@@ -294,6 +294,19 @@ TEST(ToolRegistryTest, CreateWindowToolDefinition) {
               base::test::DictionaryHasValue("properties",
                                              base::Value(base::DictValue())));
 }
+
+TEST(ToolRegistryTest, ActivateWindowToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      ActivateWindowToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kActivateWindow);
+  EXPECT_EQ(definition->name, ActivateWindowToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(ActivateWindowToolRequest::kWindowIdParam, "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(ActivateWindowToolRequest::kWindowIdParam));
+}
 #endif
 
 TEST(ToolRegistryTest, FindAndHighlightToolDefinition) {
@@ -657,6 +670,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsCreateWindowTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kCreateWindow,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsActivateWindowTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kActivateWindow,
                                     &ToolDefinition::id));
 }
 #endif

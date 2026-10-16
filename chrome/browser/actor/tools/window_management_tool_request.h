@@ -38,11 +38,16 @@ class CreateWindowToolRequest : public ToolRequest {
 class ActivateWindowToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "ActivateWindow";
+  static constexpr std::string_view kModelFacingName = "activate_window";
+  static constexpr std::string_view kWindowIdParam = "window_id";
 
   explicit ActivateWindowToolRequest(int32_t window_id);
   ~ActivateWindowToolRequest() override;
 
   int32_t GetWindowId() const { return window_id_; }
+
+  // Returns the `ToolId::kActivateWindow` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   CreateToolResult CreateTool(TaskId task_id,
                               ToolDelegate& tool_delegate) const override;

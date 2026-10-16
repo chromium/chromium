@@ -73,7 +73,9 @@ enum class ToolId {
   kScrollPage = 26,
   // Opens a new browser window.
   kCreateWindow = 27,
-  kMaxValue = kCreateWindow,
+  // Brings the specified window to the foreground.
+  kActivateWindow = 28,
+  kMaxValue = kActivateWindow,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
