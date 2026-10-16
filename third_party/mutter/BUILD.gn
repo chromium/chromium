@@ -6,10 +6,465 @@ import("//third_party/mutter/visibility.gni")
 
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//third_party/glib/codegen.gni")
 import("//third_party/gsettings-desktop-schemas/gschemas.gni")
 import("//third_party/wayland/wayland_protocol.gni")
 
 assert(is_linux)
+
+# Code generated at build time with glib's code generators from the in-tree
+# glib, mirroring the checked-in layout that on_update.sh used to produce. The
+# arguments and input lists match upstream's meson.build files; the mkenums
+# header lists are in the same order as upstream's.
+_gen_dir = target_gen_dir
+
+_clutter_enum_headers = [
+  "src/clutter/clutter/clutter.h",
+  "src/clutter/clutter/clutter-action.h",
+  "src/clutter/clutter/clutter-actor-accessible.h",
+  "src/clutter/clutter/clutter-actor-meta.h",
+  "src/clutter/clutter/clutter-actor.h",
+  "src/clutter/clutter/clutter-align-constraint.h",
+  "src/clutter/clutter/clutter-animatable.h",
+  "src/clutter/clutter/clutter-backend.h",
+  "src/clutter/clutter/clutter-bind-constraint.h",
+  "src/clutter/clutter/clutter-binding-pool.h",
+  "src/clutter/clutter/clutter-bin-layout.h",
+  "src/clutter/clutter/clutter-blur-effect.h",
+  "src/clutter/clutter/clutter-box-layout.h",
+  "src/clutter/clutter/clutter-brightness-contrast-effect.h",
+  "src/clutter/clutter/clutter-click-gesture.h",
+  "src/clutter/clutter/clutter-clone.h",
+  "src/clutter/clutter/clutter-color-op.h",
+  "src/clutter/clutter/clutter-color-pipeline.h",
+  "src/clutter/clutter/clutter-color-pipeline-shader.h",
+  "src/clutter/clutter/clutter-color-state.h",
+  "src/clutter/clutter/clutter-color-state-icc.h",
+  "src/clutter/clutter/clutter-color-state-params.h",
+  "src/clutter/clutter/clutter-color-transform.h",
+  "src/clutter/clutter/clutter-color-utils.h",
+  "src/clutter/clutter/clutter-colorize-effect.h",
+  "src/clutter/clutter/clutter-constraint.h",
+  "src/clutter/clutter/clutter-content.h",
+  "src/clutter/clutter/clutter-context.h",
+  "src/clutter/clutter/clutter-cursor.h",
+  "src/clutter/clutter/clutter-deform-effect.h",
+  "src/clutter/clutter/clutter-desaturate-effect.h",
+  "src/clutter/clutter/clutter-effect.h",
+  "src/clutter/clutter/clutter-enums.h",
+  "src/clutter/clutter/clutter-event.h",
+  "src/clutter/clutter/clutter-fixed-layout.h",
+  "src/clutter/clutter/clutter-flow-layout.h",
+  "src/clutter/clutter/clutter-focus.h",
+  "src/clutter/clutter/clutter-frame-clock.h",
+  "src/clutter/clutter/clutter-frame.h",
+  "src/clutter/clutter/clutter-gesture.h",
+  "src/clutter/clutter/clutter-grab.h",
+  "src/clutter/clutter/clutter-grid-layout.h",
+  "src/clutter/clutter/clutter-input-device.h",
+  "src/clutter/clutter/clutter-input-device-tool.h",
+  "src/clutter/clutter/clutter-input-focus.h",
+  "src/clutter/clutter/clutter-input-method.h",
+  "src/clutter/clutter/clutter-interval.h",
+  "src/clutter/clutter/clutter-keyframe-transition.h",
+  "src/clutter/clutter/clutter-key-controller.h",
+  "src/clutter/clutter/clutter-key-focus.h",
+  "src/clutter/clutter/clutter-keymap.h",
+  "src/clutter/clutter/clutter-keysyms.h",
+  "src/clutter/clutter/clutter-keyval.h",
+  "src/clutter/clutter/clutter-layout-manager.h",
+  "src/clutter/clutter/clutter-layout-meta.h",
+  "src/clutter/clutter/clutter-long-press-gesture.h",
+  "src/clutter/clutter/clutter-macros.h",
+  "src/clutter/clutter/clutter-main.h",
+  "src/clutter/clutter/clutter-motion-controller.h",
+  "src/clutter/clutter/clutter-offscreen-effect.h",
+  "src/clutter/clutter/clutter-page-turn-effect.h",
+  "src/clutter/clutter/clutter-paint-context.h",
+  "src/clutter/clutter/clutter-paint-nodes.h",
+  "src/clutter/clutter/clutter-paint-node.h",
+  "src/clutter/clutter/clutter-pan-gesture.h",
+  "src/clutter/clutter/clutter-pick-context.h",
+  "src/clutter/clutter/clutter-press-gesture.h",
+  "src/clutter/clutter/clutter-property-transition.h",
+  "src/clutter/clutter/clutter-scroll-controller.h",
+  "src/clutter/clutter/clutter-seat.h",
+  "src/clutter/clutter/clutter-settings.h",
+  "src/clutter/clutter/clutter-shader-effect.h",
+  "src/clutter/clutter/clutter-shader-types.h",
+  "src/clutter/clutter/clutter-sprite.h",
+  "src/clutter/clutter/clutter-snap-constraint.h",
+  "src/clutter/clutter/clutter-stage.h",
+  "src/clutter/clutter/clutter-stage-view.h",
+  "src/clutter/clutter/clutter-texture-content.h",
+  "src/clutter/clutter/clutter-timeline.h",
+  "src/clutter/clutter/clutter-transition-group.h",
+  "src/clutter/clutter/clutter-transition.h",
+  "src/clutter/clutter/clutter-types.h",
+  "src/clutter/clutter/clutter-virtual-input-device.h",
+]
+
+glib_mkenums("clutter_enum_types_h") {
+  input_headers = _clutter_enum_headers
+  input_base_dir = "src/clutter"
+  template = "src/clutter/clutter/clutter-enum-types.h.in"
+  output = "$_gen_dir/include/clutter/clutter-enum-types.h"
+}
+
+glib_mkenums("clutter_enum_types_c") {
+  input_headers = _clutter_enum_headers
+  input_base_dir = "src/clutter"
+  template = "src/clutter/clutter/clutter-enum-types.c.in"
+  output = "$_gen_dir/clutter/clutter-enum-types.c"
+}
+
+_cogl_enum_headers = [
+  "src/cogl/cogl/cogl-buffer.h",
+  "src/cogl/cogl/cogl-pixel-format.h",
+  "src/cogl/cogl/cogl-types.h",
+]
+
+glib_mkenums("cogl_enum_types_h") {
+  input_headers = _cogl_enum_headers
+  input_base_dir = "src/cogl"
+  template = "src/cogl/cogl/cogl-enum-types.h.in"
+  output = "$_gen_dir/include/cogl/cogl-enum-types.h"
+}
+
+glib_mkenums("cogl_enum_types_c") {
+  input_headers = _cogl_enum_headers
+  input_base_dir = "src/cogl"
+  template = "src/cogl/cogl/cogl-enum-types.c.in"
+  output = "$_gen_dir/cogl/cogl-enum-types.c"
+}
+
+_meta_enum_headers = [
+  "src/src/meta/barrier.h",
+  "src/src/meta/boxes.h",
+  "src/src/meta/common.h",
+  "src/src/meta/compositor.h",
+  "src/src/meta/display.h",
+  "src/src/meta/keybindings.h",
+  "src/src/meta/main.h",
+  "src/src/meta/meta-backend.h",
+  "src/src/meta/meta-base.h",
+  "src/src/meta/meta-background.h",
+  "src/src/meta/meta-background-actor.h",
+  "src/src/meta/meta-background-content.h",
+  "src/src/meta/meta-background-group.h",
+  "src/src/meta/meta-backlight.h",
+  "src/src/meta/meta-close-dialog.h",
+  "src/src/meta/meta-cursor.h",
+  "src/src/meta/meta-cursor-tracker.h",
+  "src/src/meta/meta-context.h",
+  "src/src/meta/meta-debug.h",
+  "src/src/meta/meta-debug-control.h",
+  "src/src/meta/meta-dnd.h",
+  "src/src/meta/meta-enums.h",
+  "src/src/meta/meta-external-constraint.h",
+  "src/src/meta/meta-idle-monitor.h",
+  "src/src/meta/meta-inhibit-shortcuts-dialog.h",
+  "src/src/meta/meta-keymap-description.h",
+  "src/src/meta/meta-later.h",
+  "src/src/meta/meta-launch-context.h",
+  "src/src/meta/meta-logical-monitor.h",
+  "src/src/meta/meta-monitor.h",
+  "src/src/meta/meta-monitor-manager.h",
+  "src/src/meta/meta-multi-texture.h",
+  "src/src/meta/meta-multi-texture-format.h",
+  "src/src/meta/meta-orientation-manager.h",
+  "src/src/meta/meta-plugin.h",
+  "src/src/meta/meta-remote-access-controller.h",
+  "src/src/meta/meta-selection.h",
+  "src/src/meta/meta-selection-source.h",
+  "src/src/meta/meta-selection-source-memory.h",
+  "src/src/meta/meta-settings.h",
+  "src/src/meta/meta-shaped-texture.h",
+  "src/src/meta/meta-sound-player.h",
+  "src/src/meta/meta-stage.h",
+  "src/src/meta/meta-startup-notification.h",
+  "src/src/meta/meta-wayland-client.h",
+  "src/src/meta/meta-wayland-compositor.h",
+  "src/src/meta/meta-wayland-surface.h",
+  "src/src/meta/meta-window-actor.h",
+  "src/src/meta/meta-window-config.h",
+  "src/src/meta/meta-window-group.h",
+  "src/src/meta/meta-workspace-manager.h",
+  "src/src/meta/prefs.h",
+  "src/src/meta/types.h",
+  "src/src/meta/util.h",
+  "src/src/meta/window.h",
+  "src/src/meta/workspace.h",
+]
+
+glib_mkenums("meta_enum_types_h") {
+  input_headers = _meta_enum_headers
+  input_base_dir = "src/src"
+  template = "src/src/meta/meta-enum-types.h.in"
+  output = "$_gen_dir/include/meta/meta-enum-types.h"
+}
+
+glib_mkenums("meta_enum_types_c") {
+  input_headers = _meta_enum_headers
+  input_base_dir = "src/src"
+  template = "src/src/meta/meta-enum-types.c.in"
+  output = "$_gen_dir/meta/meta-enum-types.c"
+}
+
+_meta_private_enum_headers = [
+  "src/src/core/window-private.h",
+  "src/src/backends/native/meta-backend-native-types.h",
+  "src/src/backends/native/meta-drm-buffer.h",
+  "src/src/backends/native/meta-kms-types.h",
+  "src/src/backends/native/meta-thread.h",
+]
+
+glib_mkenums("meta_private_enum_types_h") {
+  input_headers = _meta_private_enum_headers
+  input_base_dir = "src/src"
+  template = "src/src/meta-private-enum-types.h.in"
+  output = "$_gen_dir/include/meta-private-enum-types.h"
+}
+
+glib_mkenums("meta_private_enum_types_c") {
+  input_headers = _meta_private_enum_headers
+  input_base_dir = "src/src"
+  template = "src/src/meta-private-enum-types.c.in"
+  output = "$_gen_dir/meta-private-enum-types.c"
+}
+
+glib_genmarshal("clutter_marshal_c") {
+  source = "src/clutter/clutter/clutter-marshal.list"
+  input_base_dir = "src/clutter"
+  output = "$_gen_dir/clutter/clutter-marshal.c"
+  mode = "body"
+  extra_args = [
+    "--prefix",
+    "_clutter_marshal",
+    "--valist-marshallers",
+    "--include-header",
+    "clutter-marshal.h",
+  ]
+}
+
+glib_genmarshal("clutter_marshal_h") {
+  source = "src/clutter/clutter/clutter-marshal.list"
+  input_base_dir = "src/clutter"
+  output = "$_gen_dir/include/clutter/clutter-marshal.h"
+  mode = "header"
+  extra_args = [
+    "--prefix",
+    "_clutter_marshal",
+    "--valist-marshallers",
+    "--pragma-once",
+  ]
+}
+
+gdbus_codegen("meta_dbus_a11y") {
+  sources = [ "src/data/dbus-interfaces/org.freedesktop.a11y.xml" ]
+  output_name = "meta-dbus-a11y"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.freedesktop.a11y"
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_clipboard") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.Clipboard.xml" ]
+  output_name = "meta-dbus-clipboard"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_color_manager") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.ColorManager.xml" ]
+  output_name = "meta-dbus-color-manager"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter"
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_debug_control") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.DebugControl.xml" ]
+  output_name = "meta-dbus-debug-control"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter"
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_display_config") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.DisplayConfig.xml" ]
+  output_name = "meta-dbus-display-config"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_gsd_color") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.SettingsDaemon.Color.xml" ]
+  output_name = "meta-dbus-gsd-color"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_gsd_power_screen") {
+  sources =
+      [ "src/data/dbus-interfaces/org.gnome.SettingsDaemon.Power.Screen.xml" ]
+  output_name = "meta-dbus-gsd-power-screen"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_idle_monitor") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.IdleMonitor.xml" ]
+  output_name = "meta-dbus-idle-monitor"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+    "--c-generate-object-manager",
+  ]
+}
+
+gdbus_codegen("meta_dbus_input_capture") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.InputCapture.xml" ]
+  output_name = "meta-dbus-input-capture"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter"
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_input_mapping") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.InputMapping.xml" ]
+  output_name = "meta-dbus-input-mapping"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_login1") {
+  sources = [ "src/data/dbus-interfaces/org.freedesktop.login1.xml" ]
+  output_name = "meta-dbus-login1"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.freedesktop."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_rtkit1") {
+  sources = [ "src/data/dbus-interfaces/org.freedesktop.RealtimeKit1.xml" ]
+  output_name = "meta-dbus-rtkit1"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.freedesktop."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+gdbus_codegen("meta_dbus_service_channel") {
+  sources = [ "src/data/dbus-interfaces/org.gnome.Mutter.ServiceChannel.xml" ]
+  output_name = "meta-dbus-service-channel"
+  output_dir = "$_gen_dir/data"
+  interface_prefix = "org.gnome.Mutter."
+  c_namespace = "MetaDBus"
+  extra_args = [
+    "--c-generate-autocleanup",
+    "all",
+  ]
+}
+
+_meta_dbus_targets = [
+  ":meta_dbus_a11y",
+  ":meta_dbus_clipboard",
+  ":meta_dbus_color_manager",
+  ":meta_dbus_debug_control",
+  ":meta_dbus_display_config",
+  ":meta_dbus_gsd_color",
+  ":meta_dbus_gsd_power_screen",
+  ":meta_dbus_idle_monitor",
+  ":meta_dbus_input_capture",
+  ":meta_dbus_input_mapping",
+  ":meta_dbus_login1",
+  ":meta_dbus_rtkit1",
+  ":meta_dbus_service_channel",
+]
+
+# config.h comes from meson's host configuration checks and is checked in as a
+# template (see on_update.sh). Fill in the mutter version.
+action("config_h") {
+  script = "configure_version_header.py"
+  inputs = [
+    "include/config.h.in",
+    "src/meson.build",
+  ]
+  outputs = [ "$_gen_dir/include/config.h" ]
+  args = [
+    "--meson-build",
+    rebase_path("src/meson.build", root_build_dir),
+    "--template",
+    rebase_path("include/config.h.in", root_build_dir),
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+  ]
+}
+
+# Generated headers, which are included throughout mutter, so every mutter
+# target needs them to be generated first.
+group("generated_headers") {
+  public_deps = _meta_dbus_targets + [
+                  ":clutter_enum_types_h",
+                  ":clutter_marshal_h",
+                  ":cogl_enum_types_h",
+                  ":config_h",
+                  ":meta_enum_types_h",
+                  ":meta_private_enum_types_h",
+                ]
+}
 
 pkg_config("atk") {
   packages = [ "atk" ]
@@ -103,6 +558,7 @@ wayland_protocol("xdg_system_bell_protocol") {
 config("mtk_public_config") {
   include_dirs = [
     "include",
+    "$_gen_dir/include",
     "src/mtk",
     "src/mtk/mtk",
   ]
@@ -207,7 +663,10 @@ source_set("mtk") {
 
   public_configs = [ ":mtk_public_config" ]
 
+  # All other mutter targets depend on mtk, and mtk_public_config includes the
+  # generated headers' directory.
   public_deps = [
+    ":generated_headers",
     "//third_party/glib",
     "//third_party/glib:gio",
     "//third_party/glib:gmodule",
@@ -234,10 +693,6 @@ source_set("cogl") {
   include_dirs = [ "src/cogl/cogl" ]
 
   sources = [
-    # generated cogl enum types
-    "cogl/cogl-enum-types.c",
-    "include/cogl/cogl-enum-types.h",
-
     # cogl_headers
     "src/cogl/cogl/cogl-atlas-texture.h",
     "src/cogl/cogl/cogl-atlas.h",
@@ -477,6 +932,9 @@ source_set("cogl") {
     "src/cogl/cogl/winsys/cogl-winsys.h",
   ]
 
+  # Generated sources.
+  sources += get_target_outputs(":cogl_enum_types_c")
+
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
@@ -487,6 +945,7 @@ source_set("cogl") {
     "//third_party/glib:gio",
     "//third_party/glib:gmodule",
   ]
+  deps = [ ":cogl_enum_types_c" ]
 
   libs = [
     "EGL",
@@ -525,19 +984,11 @@ source_set("clutter") {
   ]
 
   include_dirs = [
-    "include/clutter",
+    "$_gen_dir/include/clutter",
     "//third_party/gsettings-desktop-schemas/src/headers",
   ]
 
   sources = [
-    # generated clutter enum types
-    "clutter/clutter-enum-types.c",
-    "include/clutter/clutter-enum-types.h",
-
-    # generated clutter marshallers
-    "clutter/clutter-marshal.c",
-    "include/clutter/clutter-marshal.h",
-
     # clutter_headers
     "src/clutter/clutter/clutter-action.h",
     "src/clutter/clutter/clutter-actor-accessible.h",
@@ -766,13 +1217,21 @@ source_set("clutter") {
     "src/clutter/clutter/clutter-sprite.h",
   ]
 
+  # Generated sources.
+  sources += get_target_outputs(":clutter_enum_types_c")
+  sources += get_target_outputs(":clutter_marshal_c")
+
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   public_configs = [ ":clutter_public_config" ]
 
   public_deps = [ ":cogl" ]
-  deps = [ "//third_party/gsettings-desktop-schemas" ]
+  deps = [
+    ":clutter_enum_types_c",
+    ":clutter_marshal_c",
+    "//third_party/gsettings-desktop-schemas",
+  ]
 }
 
 config("libmutter_config") {
@@ -786,7 +1245,7 @@ config("libmutter_config") {
   include_dirs = [
     "src",
     "src/src",
-    "data",
+    "$_gen_dir/data",
     "src/clutter/clutter",
     "//third_party/gsettings-desktop-schemas/src/headers",
   ]
@@ -903,42 +1362,6 @@ source_set("libmutter") {
   ]
 
   sources = [
-    # generated meta enum types
-    "include/meta/meta-enum-types.h",
-    "meta/meta-enum-types.c",
-
-    # generated private enum types
-    "include/meta-private-enum-types.h",
-    "meta-private-enum-types.c",
-
-    # generated dbus sources
-    "data/meta-dbus-a11y.c",
-    "data/meta-dbus-a11y.h",
-    "data/meta-dbus-clipboard.c",
-    "data/meta-dbus-clipboard.h",
-    "data/meta-dbus-color-manager.c",
-    "data/meta-dbus-color-manager.h",
-    "data/meta-dbus-debug-control.c",
-    "data/meta-dbus-debug-control.h",
-    "data/meta-dbus-display-config.c",
-    "data/meta-dbus-display-config.h",
-    "data/meta-dbus-gsd-color.c",
-    "data/meta-dbus-gsd-color.h",
-    "data/meta-dbus-gsd-power-screen.c",
-    "data/meta-dbus-gsd-power-screen.h",
-    "data/meta-dbus-idle-monitor.c",
-    "data/meta-dbus-idle-monitor.h",
-    "data/meta-dbus-input-capture.c",
-    "data/meta-dbus-input-capture.h",
-    "data/meta-dbus-input-mapping.c",
-    "data/meta-dbus-input-mapping.h",
-    "data/meta-dbus-login1.c",
-    "data/meta-dbus-login1.h",
-    "data/meta-dbus-rtkit1.c",
-    "data/meta-dbus-rtkit1.h",
-    "data/meta-dbus-service-channel.c",
-    "data/meta-dbus-service-channel.h",
-
     # meta headers
     "src/src/meta/barrier.h",
     "src/src/meta/boxes.h",
@@ -1578,6 +2001,17 @@ source_set("libmutter") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
 
   deps = _libmutter_deps
+
+  # Generated sources.
+  sources += get_target_outputs(":meta_enum_types_c")
+  sources += get_target_outputs(":meta_private_enum_types_c")
+  foreach(t, _meta_dbus_targets) {
+    sources += get_target_outputs(t)
+  }
+  deps += _meta_dbus_targets + [
+            ":meta_enum_types_c",
+            ":meta_private_enum_types_c",
+          ]
 }
 
 # Chromium's implementation of the zcr_ui_controls_v2 protocol, used by

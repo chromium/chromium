@@ -20,6 +20,9 @@ _glib_codegen_common_inputs = [
 #     defined elsewhere with "# NOSORT" to make the ordering intent explicit.)
 #   template: The .template file.
 #   output: The generated file.
+#   input_base_dir (optional): Directory to run glib-mkenums in. Input paths
+#     relative to it are used in the generated code (e.g. in #include
+#     directives), so set this to match upstream's include paths.
 template("glib_mkenums") {
   action(target_name) {
     forward_variables_from(invoker,
@@ -35,12 +38,72 @@ template("glib_mkenums") {
                "//third_party/glib/src/gobject/glib-mkenums.in",
              ]
     outputs = [ invoker.output ]
-    args = [
-             "--template",
-             rebase_path(invoker.template, root_build_dir),
-             "--output",
-             rebase_path(invoker.output, root_build_dir),
-           ] + rebase_path(invoker.input_headers, root_build_dir)
+    if (defined(invoker.input_base_dir)) {
+      _base_dir = invoker.input_base_dir
+      args = [
+        "--chdir",
+        rebase_path(_base_dir, root_build_dir),
+      ]
+    } else {
+      _base_dir = root_build_dir
+      args = []
+    }
+    args += [
+              "--template",
+              rebase_path(invoker.template, _base_dir),
+              "--output",
+              rebase_path(invoker.output, _base_dir),
+            ] + rebase_path(invoker.input_headers, _base_dir)
+  }
+}
+
+# Runs glib-genmarshal on a marshaller list, producing either the body or the
+# header.
+#
+# Parameters:
+#   source: The .list file.
+#   output: The generated file.
+#   mode: "body" or "header".
+#   input_base_dir (optional): Directory to run glib-genmarshal in, as for
+#     glib_mkenums. The list file's path relative to it appears in comments.
+#   extra_args (optional): Additional glib-genmarshal arguments, e.g.
+#     "--prefix".
+template("glib_genmarshal") {
+  assert(invoker.mode == "body" || invoker.mode == "header")
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "deps",
+                             "public_deps",
+                             "testonly",
+                             "visibility",
+                           ])
+    script = "//third_party/glib/glib_genmarshal.py"
+    inputs = _glib_codegen_common_inputs + [
+               invoker.source,
+               "//third_party/glib/src/gobject/glib-genmarshal.in",
+             ]
+    outputs = [ invoker.output ]
+    if (defined(invoker.input_base_dir)) {
+      _base_dir = invoker.input_base_dir
+      args = [
+        "--chdir",
+        rebase_path(_base_dir, root_build_dir),
+      ]
+    } else {
+      _base_dir = root_build_dir
+      args = []
+    }
+    args += [
+      "--output",
+      rebase_path(invoker.output, _base_dir),
+      "--${invoker.mode}",
+      rebase_path(invoker.source, _base_dir),
+    ]
+    if (defined(invoker.extra_args)) {
+      args += invoker.extra_args
+    }
   }
 }
 

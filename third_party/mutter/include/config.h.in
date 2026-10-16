@@ -2,13 +2,13 @@
 #define GETTEXT_PACKAGE "mutter"
 
 /* Version number of package */
-#define VERSION "51.1"
+#define VERSION "@VERSION@"
 
 /* Name of package */
 #define PACKAGE_NAME "mutter"
 
 /* Version number of package */
-#define PACKAGE_VERSION "51.1"
+#define PACKAGE_VERSION "@VERSION@"
 
 /* Search path for plugins */
 #define MUTTER_PLUGIN_DIR "."

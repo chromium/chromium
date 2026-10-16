@@ -22,9 +22,20 @@ built against mutter's private headers and hooked into the compositor by
 wrapping meta_wayland_compositor_new() at link time
 (-Wl,--wrap=meta_wayland_compositor_new in BUILD.gn).
 
-When updating to a new version, update the Revision above with the new commit hash,
-and perform the following steps:
-1. Run on_update.sh
-2. Check in the generated files along with the changes for the update.
+Enum types, marshallers and D-Bus code are generated at build time with the
+in-tree glib's code generators (see //third_party/glib/codegen.gni), using the
+same arguments and inputs as upstream's meson.build files. Only the outputs
+that need the host are checked in, under include/: config.h (from meson's host
+configuration checks, as a template whose version is filled in at build time
+from src/meson.build) and meta-default-modes.h (whose generator runs the
+host's /usr/bin/cvt, from the xcvt package, to calculate VESA CVT display
+mode timings). Point releases therefore only need a DEPS update.
+
+When updating to a new major version, update the Revision above with the new
+commit hash, and perform the following steps:
+1. Update BUILD.gn to match the upstream meson.build files: sources, and the
+   inputs and arguments of the glib_mkenums, glib_genmarshal and gdbus_codegen
+   targets.
+2. Run on_update.sh and check in the regenerated files under include/.
 3. Make sure chromium/meta-wayland-ui-controls.c still builds against the new
    private headers.

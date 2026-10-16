@@ -91,82 +91,24 @@ meson setup \
     -Dfonts=false\
     "$TMP_DIR"
 
-# Only build the generated sources (meson custom targets). Compiling mutter
-# itself would require all of its dependencies to be installed on the host.
-meson introspect --targets "$TMP_DIR" | python3 -c '
-import json, os, sys
-build_dir = sys.argv[1]
-for target in json.load(sys.stdin):
-  if target["type"] == "custom":
-    for f in target["filename"]:
-      print(os.path.relpath(f, build_dir))
-' "$TMP_DIR" | xargs ninja -C "$TMP_DIR"
+# Most generated code (enum types, marshallers and D-Bus code) is generated at
+# build time with glib's code generators (see BUILD.gn). Only the outputs that
+# need the host remain checked in: config.h, from meson's host configuration
+# checks, and meta-default-modes.h, whose generator runs the host's cvt binary
+# (/usr/bin/cvt, from the xcvt package on Debian/Ubuntu), which calculates VESA
+# CVT display mode timings.
+ninja -C "$TMP_DIR" src/meta-default-modes.h
+cp "$TMP_DIR/src/meta-default-modes.h" ../include/
 
-# copy generated the toplevel config.h file
-cp "$TMP_DIR/config.h" ../include/
-
-# override the hard-coded absolute plugin path and set it to "." with the
-# assumption that mutter will be run from the output directory where the plugin
-# libdefault.so should be found
-sed -i 's/#define MUTTER_PLUGIN_DIR.*/#define MUTTER_PLUGIN_DIR "."/'\
-  ../include/config.h
-
-# copy generated cogl headers
-find "$TMP_DIR/cogl" -name '*.h' -printf '%P\n' |
-  rsync --no-relative --dirs  --files-from=- "$TMP_DIR/cogl/" ../include/cogl/
-
-# generate clutter headers
-find "$TMP_DIR/clutter" -name '*.h' -printf '%P\n' | while read -r file; do
-  # ensure no absolute path
-  sed -i 's|(.*/third_party/mutter/src/\(.*\)|(\1|' "$TMP_DIR/clutter/$file"
-  # replace references to clutter/clutter/ with clutter
-  sed -i 's|clutter/clutter/|clutter/|' "$TMP_DIR/clutter/$file"
-  echo "$file"
-done | rsync --no-relative --dirs --files-from=- "$TMP_DIR/clutter/" \
-  ../include/clutter/
-
-# copy other headers excluding dbus
-find "$TMP_DIR/src" -name 'meta-dbus*' -prune -o -name '*-protocol.*' \
-  -prune -o -name '*.h' -printf '%P\n' |
-  rsync -R --files-from=- "$TMP_DIR/src/" ../include/
-
-# copy cogl genereated .c files
-find "$TMP_DIR/cogl" -name '*.c' -printf '%P\n' | while read -r file; do
-  # ensure no absolute path
-  sed -i 's|"[^"]*/third_party/mutter/src/\([^"]*\)"|"\1"|' \
-    "$TMP_DIR/cogl/$file"
-  # replace references to cogl/cogl/ with cogl
-  sed -i 's|cogl/cogl/|cogl/|' "$TMP_DIR/cogl/$file"
-  echo "$file"
-done | rsync --no-relative --dirs --files-from=- $TMP_DIR/cogl/ ../cogl/
-
-# copy clutter genereated .c files
-find $TMP_DIR/clutter -name '*.c' -printf '%P\n' | while read -r file; do
-  # ensure no absolute path
-  sed -i 's|"[^"]*/third_party/mutter/src/\([^"]*\)"|"\1"|' \
-    "$TMP_DIR/clutter/$file"
-  sed -i 's|(.*/third_party/mutter/src/\(.*\)|(\1|' "$TMP_DIR/clutter/$file"
-  # replace references to clutter/clutter/ with clutter
-  sed -i 's|clutter/clutter/|clutter/|' "$TMP_DIR/clutter/$file"
-  echo "$file"
-done | rsync --no-relative --dirs --files-from=- "$TMP_DIR/clutter/" ../clutter/
-
-# copy other genereated .c files excluding dbus
-find "$TMP_DIR/src" -name 'meta-dbus*' -prune -o -name '*-protocol.*' \
-  -prune -o -name '*.c' -printf '%P\n' | while read -r file; do
-  # ensure no absolute path
-  sed -i 's|"[^"]*/src/\([^"]*\)"|"\1"|' "$TMP_DIR/src/$file"
-  echo "$file"
-done | rsync -R --files-from=- "$TMP_DIR/src/" ../
-
-# copy generated headers from "meta"
-find "$TMP_DIR/src/meta" -name '*.h' -printf '%P\n' |
-  rsync --files-from=- "$TMP_DIR/src/meta/" ../include/meta/
-
-
-# copy generated dbus files
-find "$TMP_DIR/src" -name 'meta-dbus*' -printf '%P\n'
-rsync "$TMP_DIR/src/"meta-dbus* ../data/
+# config.h is checked in as a template, with the mutter version replaced by a
+# placeholder that is filled in at build time (see configure_version_header.py),
+# so that it doesn't change when mutter is rolled. Also override the hard-coded
+# absolute plugin path and set it to "." with the assumption that mutter will be
+# run from the output directory where the plugin libdefault.so should be found.
+sed -E \
+  -e 's/^(#define (PACKAGE_)?VERSION) ".*"/\1 "@VERSION@"/' \
+  -e 's/^#define MUTTER_PLUGIN_DIR.*/#define MUTTER_PLUGIN_DIR "."/' \
+  "$TMP_DIR/config.h" > ../include/config.h.in
 
 rm -rf "$TMP_DIR" "$PC_DIR"
 
