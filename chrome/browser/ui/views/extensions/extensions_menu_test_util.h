@@ -12,12 +12,26 @@
 #include "ui/views/view_observer.h"
 
 class BrowserWindowInterface;
+class ExtensionsContainer;
+class ExtensionsContainerViews;
+class ExtensionsMenuCoordinator;
 class ExtensionsMenuView;
 class ExtensionsToolbarDesktop;
 class HoverButton;
+class ToolbarActionViewModel;
+class WebUIToolbarExtensionsContainer;
 
 // An implementation of ExtensionActionTestHelper that works with the
 // ExtensionsMenu.
+//
+// The extensions menu itself is always a Views bubble, so most of this class
+// operates on the platform-abstract ExtensionsContainer and
+// ExtensionsContainerViews interfaces. The toolbar container hosting the
+// extension actions can either be the Views-based ExtensionsToolbarDesktop
+// or, when features::IsWebUIExtensionsContainerEnabled(), the
+// WebUIToolbarExtensionsContainer backing the WebUI toolbar. Only the few
+// operations that need to look at the toolbar's actual buttons branch on which
+// of the two is in use.
 class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
                                views::ViewObserver {
  public:
@@ -53,13 +67,32 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
   // Returns the action button for the given `id` from the `menu_view_`.
   HoverButton* GetActionButton(const extensions::ExtensionId& id);
 
+  // Returns the ExtensionsMenuCoordinator of whichever container is in use.
+  // Only non-null when extensions_features::kExtensionsMenuAccessControl is
+  // enabled.
+  ExtensionsMenuCoordinator* GetExtensionsMenuCoordinator();
+
+  // Returns the action that owns the currently showing popup, if any.
+  ToolbarActionViewModel* GetPopupOwner();
+
   // An override to allow test instances of the ExtensionsMenuView.
   // This has to be defined before |menu_view_| below.
   base::AutoReset<bool> scoped_allow_extensions_menu_instances_;
 
   const raw_ptr<BrowserWindowInterface, DanglingUntriaged> browser_;
+
+  // Exactly one of these is non-null, depending on whether the WebUI
+  // extensions container is enabled.
   raw_ptr<ExtensionsToolbarDesktop, DanglingUntriaged> extensions_toolbar_ =
       nullptr;
+  raw_ptr<WebUIToolbarExtensionsContainer, DanglingUntriaged>
+      webui_extensions_container_ = nullptr;
+
+  // The platform-abstract interfaces of whichever container is in use.
+  raw_ptr<ExtensionsContainer, DanglingUntriaged> extensions_container_ =
+      nullptr;
+  raw_ptr<ExtensionsContainerViews, DanglingUntriaged>
+      extensions_container_views_ = nullptr;
 
   // The actual pointer to an ExtensionsMenuView, non-null if alive.
   raw_ptr<ExtensionsMenuView> menu_view_ = nullptr;

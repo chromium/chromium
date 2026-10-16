@@ -66,6 +66,20 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
 
   ExtensionActionViewModel* model() { return model_.get(); }
 
+  // Returns the icon to show in the toolbar for this action on the active tab,
+  // greyed out if the action is disabled there.
+  ui::ImageModel GetIconModel() {
+    content::WebContents* web_contents =
+        browser_->GetTabStripModel()->GetActiveWebContents();
+    ui::ImageModel icon_model =
+        model_->GetIcon(web_contents, gfx::Size(20, 20));
+    if (!model_->IsEnabled(web_contents)) {
+      icon_model = ui::GetDefaultDisabledIconFromImageModel(
+          icon_model, extensions_container_->widget_->GetColorProvider());
+    }
+    return icon_model;
+  }
+
   extensions_bar::mojom::ExtensionActionInfoPtr ToMojo() {
     content::WebContents* web_contents =
         browser_->GetTabStripModel()->GetActiveWebContents();
@@ -82,15 +96,9 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
         result->id;
 
     if (result->is_visible) {
-      ui::ImageModel icon_model =
-          model_->GetIcon(web_contents, gfx::Size(20, 20));
-      if (!model_->IsEnabled(web_contents)) {
-        icon_model = ui::GetDefaultDisabledIconFromImageModel(
-            icon_model, extensions_container_->widget_->GetColorProvider());
-      }
       icon_handle_ =
           extensions_container_->icon_table_->RegisterImageModelTryReuse(
-              icon_model, icon_handle_);
+              GetIconModel(), icon_handle_);
       result->icon = icon_handle_;
     } else {
       icon_handle_ = toolbar_ui_api::IconHandle();
@@ -682,6 +690,13 @@ ui::TrackedElement* WebUIToolbarExtensionsContainer::GetExtensionElement(
 
 views::Widget* WebUIToolbarExtensionsContainer::GetWidget() const {
   return widget_;
+}
+
+gfx::ImageSkia WebUIToolbarExtensionsContainer::GetActionIconForTesting(
+    const std::string& action_id) {
+  auto it = actions_.find(action_id);
+  CHECK(it != actions_.end());
+  return it->second->GetIconModel().Rasterize(widget_->GetColorProvider());
 }
 
 void WebUIToolbarExtensionsContainer::NotifyActionPoppedOut(
