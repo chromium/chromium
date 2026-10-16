@@ -13,7 +13,6 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/mojo_embedder/viz_layer_context.h"
-#include "cc/test/test_client_shared_image_interface.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/task_runner_provider.h"
@@ -25,6 +24,7 @@
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
@@ -160,16 +160,12 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
     bool disable_display_vsync,
     double refresh_rate,
     viz::BeginFrameSource* begin_frame_source)
-    : LayerTreeFrameSink(
-          std::move(compositor_context_provider),
-          std::move(worker_context_provider),
-          task_runner_provider->HasImplThread()
-              ? task_runner_provider->ImplThreadTaskRunner()
-              : task_runner_provider->MainThreadTaskRunner(),
-          shared_image_interface
-              ? base::MakeRefCounted<TestClientSharedImageInterface>(
-                    shared_image_interface)
-              : nullptr),
+    : LayerTreeFrameSink(std::move(compositor_context_provider),
+                         std::move(worker_context_provider),
+                         task_runner_provider->HasImplThread()
+                             ? task_runner_provider->ImplThreadTaskRunner()
+                             : task_runner_provider->MainThreadTaskRunner(),
+                         std::move(shared_image_interface)),
       synchronous_composite_(synchronous_composite),
       disable_display_vsync_(disable_display_vsync),
       renderer_settings_(renderer_settings),
@@ -183,8 +179,7 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
           shared_image_interface
               ? std::make_unique<viz::TestSharedImageInterfaceProvider>(
                     shared_image_interface)
-              : std::make_unique<viz::TestSharedImageInterfaceProvider>()) {
-}
+              : std::make_unique<viz::TestSharedImageInterfaceProvider>()) {}
 
 TestLayerTreeFrameSink::~TestLayerTreeFrameSink() = default;
 

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -270,6 +271,23 @@ void SharedImageInterfaceInProcess::ScheduleGpuTask(
     const SyncToken& release) {
   task_sequence_->ScheduleTask(std::move(task), std::move(sync_token_fences),
                                release);
+}
+
+// These functions are not used in production use-cases of
+// SharedImageInterfaceInProcess, but unit tests use this interface in place
+// of ClientSharedImageInterface and need them.
+bool SharedImageInterfaceInProcess::IsLost() const {
+  CHECK_IS_TEST();
+  return false;
+}
+bool SharedImageInterfaceInProcess::AddGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  CHECK_IS_TEST();
+  return true;
+}
+void SharedImageInterfaceInProcess::RemoveGpuChannelLostObserver(
+    GpuChannelLostObserver* observer) {
+  CHECK_IS_TEST();
 }
 
 }  // namespace gpu

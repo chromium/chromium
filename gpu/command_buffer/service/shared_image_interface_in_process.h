@@ -72,6 +72,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
       SurfaceHandle surface_handle,
       gfx::BufferUsage buffer_usage,
       std::optional<SharedImagePoolId> pool_id) override;
+  bool IsLost() const override;
+  bool AddGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
+  void RemoveGpuChannelLostObserver(GpuChannelLostObserver* observer) override;
 
  protected:
   ~SharedImageInterfaceInProcess() override;

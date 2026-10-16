@@ -10,7 +10,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/test/fake_layer_context.h"
-#include "cc/test/test_client_shared_image_interface.h"
 #include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
 #include "components/viz/common/features.h"
@@ -18,7 +17,7 @@
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/test/begin_frame_args_test.h"
-#include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/mock_gpu_channel.h"
@@ -48,8 +47,8 @@ FakeLayerTreeFrameSink::FakeLayerTreeFrameSink(
           std::move(context_provider),
           std::move(worker_context_provider),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::MakeRefCounted<TestClientSharedImageInterface>(
-              base::MakeRefCounted<gpu::TestSharedImageInterface>())) {}
+
+          base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
 
 FakeLayerTreeFrameSink::~FakeLayerTreeFrameSink() = default;
 

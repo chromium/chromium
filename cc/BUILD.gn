@@ -684,8 +684,6 @@ cc_test_static_library("test_support") {
     "test/stub_layer_tree_host_single_thread_delegate.h",
     "test/task_graph_runner_test_template.cc",
     "test/task_graph_runner_test_template.h",
-    "test/test_client_shared_image_interface.cc",
-    "test/test_client_shared_image_interface.h",
     "test/test_hooks.cc",
     "test/test_hooks.h",
     "test/test_layer_context.cc",
