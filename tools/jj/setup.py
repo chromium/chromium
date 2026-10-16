@@ -16,6 +16,7 @@ from util import run_jj
 
 
 def main():
+  logging.basicConfig(level=logging.DEBUG)
   script_dir = pathlib.Path(__file__).resolve().parent
   repo_root = script_dir.parent.parent
   os.chdir(repo_root)
