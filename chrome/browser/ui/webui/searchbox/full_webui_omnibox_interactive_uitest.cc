@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu_mixin.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -84,7 +85,11 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -2364,6 +2369,144 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest, OnCopy) {
         histogram_tester.ExpectBucketCount(
             OmniboxEditModel::kCutOrCopyAllTextHistogram, 1, 1);
       }));
+}
+
+// Verifies that right-clicking the unfocused omnibox on a web page opens the
+// WebUI omnibox with all of its text selected and without the suggestions
+// dropdown, and shows the WebUI searchbox context menu, whose Paste item pastes
+// into the WebUI omnibox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       RightClickShowsContextMenu) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "Right-clicks on the WebUI toolbar's omnibox are handled "
+                    "by the WebUI toolbar.";
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  RunTestSequence(
+      // Steady state: a web page is focused and the omnibox popup is closed.
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, embedded_test_server()->GetURL("/title1.html")),
+      WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForPopupTransitionLockout(), Do([]() {
+        ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+            .WriteText(u"pasted text");
+      }),
+      MoveMouseTo(kOmniboxElementId), ClickMouse(ui_controls::RIGHT),
+#if BUILDFLAG(IS_MAC)
+      // The native context menu runs a nested run loop, and since it is shown
+      // from a task no application tasks run until it closes, including this
+      // test's steps and its IPCs to the WebUI. So select Paste on the same
+      // call stack as the menu being shown, wait for the menu to close, and
+      // only then verify the WebUI omnibox.
+      InAnyContext(WithoutDelay(
+          WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem),
+          // The suggestions dropdown is closed (checked in C++, since the
+          // WebUI can't be queried while the menu is open).
+          CheckResult(
+              [this]() {
+                return GetOmniboxControllerForTest()
+                    ->autocomplete_controller()
+                    ->result()
+                    .empty();
+              },
+              true, "NoSuggestionsWhileContextMenuIsShown"),
+          SelectMenuItem(OmniboxContextMenuMixinBase::kPasteMenuItem))),
+      InAnyContext(WaitForHide(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+#else
+      // The WebUI searchbox context menu is shown.
+      InAnyContext(WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+#endif
+      // The WebUI omnibox is open with its input focused.
+      WaitForPopupReady(),
+#if !BUILDFLAG(IS_MAC)
+      // All of the WebUI omnibox's text is selected.
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           "(el) => el && el.value.length > 0 && "
+                           "el.selectionStart === 0 && "
+                           "el.selectionEnd === el.value.length"),
+      // The suggestions dropdown is closed.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      InAnyContext(SelectMenuItem(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+#endif
+      // Paste replaces the selection, so the value being exactly the pasted
+      // text also shows that all of the WebUI omnibox's text was selected.
+      WaitForWebUIInputValue("pasted text"));
+}
+
+// Same as `RightClickShowsContextMenu`, but the context menu is requested by
+// the accessibility "show context menu" action, e.g. from a screen reader.
+// Unlike a right-click, this reaches the omnibox view without a mouse press,
+// so opening the WebUI omnibox is up to the context menu hand-off.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       AccessibilityContextMenuActionShowsContextMenu) {
+  if (IsWebUIToolbarEnabled()) {
+    GTEST_SKIP() << "Context menu requests on the WebUI toolbar's omnibox are "
+                    "handled by the WebUI toolbar.";
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  RunTestSequence(
+      // Steady state: a web page is focused and the omnibox popup is closed.
+      WaitForBrowserActive(),
+      AddInstrumentedTab(kTab1, embedded_test_server()->GetURL("/title1.html")),
+      WaitForWebContentsReady(kTab1), ClickWebPageBody(kTab1),
+      WaitForPopupDismissed(), WaitForPopupTransitionLockout(), Do([]() {
+        ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
+            .WriteText(u"pasted text");
+      }),
+      Do([this]() {
+        ui::AXActionData action;
+        action.action = ax::mojom::Action::kShowContextMenu;
+        // Request the context menu the way a screen reader does, via the
+        // accessibility action on the view.
+        views::View* omnibox_view =
+            BrowserView::GetBrowserViewForBrowser(browser())
+                ->GetLocationBarView()
+                ->omnibox_view();
+        omnibox_view->HandleAccessibleAction(action);
+      }),
+#if BUILDFLAG(IS_MAC)
+      // The native context menu runs a nested run loop, and since it is shown
+      // from a task no application tasks run until it closes, including this
+      // test's steps and its IPCs to the WebUI. So select Paste on the same
+      // call stack as the menu being shown, wait for the menu to close, and
+      // only then verify the WebUI omnibox.
+      InAnyContext(WithoutDelay(
+          WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem),
+          // The suggestions dropdown is closed (checked in C++, since the
+          // WebUI can't be queried while the menu is open).
+          CheckResult(
+              [this]() {
+                return GetOmniboxControllerForTest()
+                    ->autocomplete_controller()
+                    ->result()
+                    .empty();
+              },
+              true, "NoSuggestionsWhileContextMenuIsShown"),
+          SelectMenuItem(OmniboxContextMenuMixinBase::kPasteMenuItem))),
+      InAnyContext(WaitForHide(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+#else
+      // The WebUI searchbox context menu is shown.
+      InAnyContext(WaitForShow(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+#endif
+      // The WebUI omnibox is open with its input focused.
+      WaitForPopupReady(),
+#if !BUILDFLAG(IS_MAC)
+      // All of the WebUI omnibox's text is selected.
+      WaitForJsConditionAt(kPopupWebView, kWebUIInput,
+                           "(el) => el && el.value.length > 0 && "
+                           "el.selectionStart === 0 && "
+                           "el.selectionEnd === el.value.length"),
+      // The suggestions dropdown is closed.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      InAnyContext(SelectMenuItem(OmniboxContextMenuMixinBase::kPasteMenuItem)),
+#endif
+      // Paste replaces the selection, so the value being exactly the pasted
+      // text also shows that all of the WebUI omnibox's text was selected.
+      WaitForWebUIInputValue("pasted text"));
 }
 
 // Verifies that pressing Enter on an open page (without modifying the URL)

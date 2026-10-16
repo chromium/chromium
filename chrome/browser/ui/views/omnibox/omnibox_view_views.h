@@ -296,6 +296,11 @@ class OmniboxViewViews
   // steady-state elisions).  |gesture| is the user gesture causing unelision.
   bool UnapplySteadyStateElisions(UnelisionGesture gesture);
 
+  // In Full WebUI mode, shows the WebUI searchbox menu instead of the views
+  // one. Returns true if handled.
+  bool HandOffContextMenuToWebUI(const gfx::Point& point,
+                                 ui::mojom::MenuSourceType source_type);
+
 #if BUILDFLAG(IS_MAC)
   void AnnounceFriendlySuggestionText();
 #endif

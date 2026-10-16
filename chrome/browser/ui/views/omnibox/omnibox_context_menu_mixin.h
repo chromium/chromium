@@ -41,6 +41,7 @@ class OmniboxContextMenuMixinBase {
  public:
   // A few context menu items get IDs for interactive UI test use.
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCopyMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasteMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowFullUrlsMenuItem);
 
   void SetClipboardTextForTesting(const std::u16string& text) {

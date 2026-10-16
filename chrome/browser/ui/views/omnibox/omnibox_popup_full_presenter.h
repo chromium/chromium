@@ -77,6 +77,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       bool forward_mouse_events) override;
   void SynchronizePopupBounds() override;
   void WidgetDestroyed() override;
+  void OnWidgetPresentedChanged(bool presented) override;
 
   // Transparent margin around the popup content reserved for the drop shadow:
   // the full shadow insets when the dropdown is expanded, or the same insets

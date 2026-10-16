@@ -59,6 +59,8 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
   // `SetFocus(false)` Mojo IPC to ensure DOM input focus in the WebUI is
   // cleared.
   void OnBlur() override;
+  bool RequestWebUIContextMenu(const gfx::Point& screen_point,
+                               ui::mojom::MenuSourceType source_type) override;
   // Called when the WebUI page handler establishes its Mojo connection.
   void OnPopupHandlerReady() override;
   bool IsPopupHandlerReady() const override;

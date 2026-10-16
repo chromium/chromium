@@ -195,6 +195,7 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
 
 void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
   is_open_ = true;
+  OnWidgetPresentedChanged(false);
   if (ShouldPreserveRequestedFocus() &&
       (widget_->IsActive() || focus_requested_)) {
     widget_->Show();
@@ -260,6 +261,8 @@ void OmniboxPopupPresenterBase::LogResultToContentReadyMetric(
 void OmniboxPopupPresenterBase::OnWidgetPresented(
     base::TimeTicks show_request_time,
     const gfx::PresentationFeedback& feedback) {
+  // Report even on failure so that nothing waits forever.
+  OnWidgetPresentedChanged(true);
   if (feedback.failed()) {
     return;
   }
@@ -286,6 +289,7 @@ void OmniboxPopupPresenterBase::Hide() {
   is_deferred_ = false;
   // Drop stale visual state callbacks.
   visual_state_weak_factory_.InvalidateWeakPtrs();
+  OnWidgetPresentedChanged(false);
 
   // Only close if UI DevTools settings allow.
   if (widget_ && widget_->ShouldHandleNativeWidgetActivationChanged(false)) {

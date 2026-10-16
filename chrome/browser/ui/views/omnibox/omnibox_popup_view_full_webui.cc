@@ -438,6 +438,10 @@ void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
 void OmniboxPopupViewFullWebUI::OnFocus(bool query_zps, bool select_all) {
   TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::OnFocus", "query_zps",
               query_zps, "select_all", select_all);
+  if (presenter() && presenter()->GetWebUIContent()) {
+    static_cast<OmniboxFullPopupWebUIContent*>(presenter()->GetWebUIContent())
+        ->CancelPendingContextMenuRequest();
+  }
   focused_ = true;
   bool changed = controller()->popup_state_manager()->popup_state() !=
                  OmniboxPopupState::kFull;
@@ -491,6 +495,17 @@ void OmniboxPopupViewFullWebUI::OnBlur() {
   if (auto* popup_handler = GetPopupHandler()) {
     popup_handler->SetFocus(false);
   }
+}
+
+bool OmniboxPopupViewFullWebUI::RequestWebUIContextMenu(
+    const gfx::Point& screen_point,
+    ui::mojom::MenuSourceType source_type) {
+  if (!presenter() || !presenter()->GetWebUIContent()) {
+    return false;
+  }
+  return static_cast<OmniboxFullPopupWebUIContent*>(
+             presenter()->GetWebUIContent())
+      ->RequestContextMenu(screen_point, source_type);
 }
 
 void OmniboxPopupViewFullWebUI::OnPopupHandlerReady() {

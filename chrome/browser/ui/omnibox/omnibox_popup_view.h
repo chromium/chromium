@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 
 class OmniboxController;
@@ -25,6 +26,9 @@ class OmniboxPopupPresenterBase;
 class OmniboxResultView;
 class OmniboxSuggestionButtonRowView;
 class OmniboxPopupViewBrowserView;
+namespace gfx {
+class Point;
+}
 namespace ui {
 struct AXNodeData;
 }
@@ -96,6 +100,11 @@ class OmniboxPopupView {
 
   // Called when the WebUI omnibox reports a manual blur.
   virtual void OnManualBlur() {}
+
+  // Asks the popup to show its context menu at `screen_point` once ready.
+  // Returns false if the caller should fall back to its own menu.
+  virtual bool RequestWebUIContextMenu(const gfx::Point& screen_point,
+                                       ui::mojom::MenuSourceType source_type);
 
   // Notifies the popup view that its WebUI page handler is ready.
   virtual void OnPopupHandlerReady() {}
