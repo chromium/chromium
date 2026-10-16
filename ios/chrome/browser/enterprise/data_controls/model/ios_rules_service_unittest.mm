@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/enterprise/data_controls/model/ios_rules_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -31,14 +33,14 @@ class IOSRulesServiceTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestProfileIOS::Builder builder1;
-    builder1.SetName("test-user-1");
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder1));
-
-    TestProfileIOS::Builder builder2;
-    builder2.SetName("test-user-2");
-    other_profile_ =
-        profile_manager_.AddProfileWithBuilder(std::move(builder2));
+    // `TestProfileManagerIOS` requires the personal profile to be created
+    // before adding any managed profiles.
+    profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
+    managed_profile1_ = AddManagedProfileWithBuilder(
+        profile_manager_, [FakeSystemIdentity fakeManagedIdentity]);
+    managed_profile2_ = AddManagedProfileWithBuilder(
+        profile_manager_,
+        [FakeSystemIdentity identityWithEmail:@"bar@foo.com"]);
   }
 
   const GURL google_url() const { return GURL("https://google.com"); }
@@ -77,8 +79,8 @@ class IOSRulesServiceTest : public PlatformTest {
   // TestProfileManagerIOS.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_;
-  raw_ptr<TestProfileIOS> other_profile_;
+  raw_ptr<TestProfileIOS> managed_profile1_;
+  raw_ptr<TestProfileIOS> managed_profile2_;
 };
 
 }  // namespace
@@ -86,14 +88,14 @@ class IOSRulesServiceTest : public PlatformTest {
 TEST_F(IOSRulesServiceTest, NoRuleSet) {
   ExpectNoVerdict(
       IOSRulesServiceFactory::GetInstance()
-          ->GetForProfile(profile_)
-          ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
+          ->GetForProfile(managed_profile1_)
+          ->GetPasteVerdict(google_url(), GURL(), managed_profile1_, nullptr));
   ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                      ->GetForProfile(profile_)
+                      ->GetForProfile(managed_profile1_)
                       ->GetCopyToOSClipboardVerdict(
                           /*source*/ google_url()));
   ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                      ->GetForProfile(profile_)
+                      ->GetForProfile(managed_profile1_)
                       ->GetCopyRestrictedBySourceVerdict(
                           /*source*/ google_url()));
 }
@@ -101,7 +103,7 @@ TEST_F(IOSRulesServiceTest, NoRuleSet) {
 TEST_F(IOSRulesServiceTest, SourceURL) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                         "name": "block",
                         "rule_id": "1234",
                         "sources": {
@@ -112,27 +114,27 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
                         ]
                       })"});
 
+    ExpectBlockVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(google_url(), GURL(),
+                                             managed_profile1_, nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile1_));
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
-    ExpectBlockVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                         "name": "warn",
                         "rule_id": "1234",
                         "sources": {
@@ -143,20 +145,20 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
                         ]
                       })"});
 
-    ExpectWarnVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
-                          ->GetForProfile(profile_)
+                          ->GetForProfile(managed_profile1_)
+                          ->GetPasteVerdict(google_url(), GURL(),
+                                            managed_profile1_, nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile1_));
+    ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
+                          ->GetForProfile(managed_profile1_)
                           ->GetCopyToOSClipboardVerdict(
                               /*source*/ google_url()));
     ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
-                          ->GetForProfile(profile_)
+                          ->GetForProfile(managed_profile1_)
                           ->GetCopyRestrictedBySourceVerdict(
                               /*source*/ google_url()));
   }
@@ -164,7 +166,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                               "name": "allow",
                               "rule_id": "1234",
                               "sources": {
@@ -174,7 +176,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
                                 {"class": "CLIPBOARD", "level": "ALLOW"}
                               ]
                             })",
-                                                        R"({
+                                                                 R"({
                               "name": "warn",
                               "rule_id": "5678",
                               "sources": {
@@ -184,21 +186,21 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
                                 {"class": "CLIPBOARD", "level": "WARN"}
                               ]
                             })"});
+    ExpectAllowVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(google_url(), GURL(),
+                                             managed_profile1_, nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile1_));
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
-    ExpectAllowVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 }
@@ -206,7 +208,7 @@ TEST_F(IOSRulesServiceTest, SourceURL) {
 TEST_F(IOSRulesServiceTest, DestinationURL) {
   {
     // Restriction level is set as "BLOCK".
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                               "name": "block",
                               "rule_id": "1234",
                               "destinations": {
@@ -216,26 +218,26 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
                                 {"class": "CLIPBOARD", "level": "BLOCK"}
                               ]
                             })"});
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
-    ExpectBlockVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          managed_profile1_, nullptr));
+    ExpectBlockVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                             managed_profile1_));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // Restriction level is set as "WARN".
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                               "name": "warn",
                               "rule_id": "1234",
                               "destinations": {
@@ -245,27 +247,27 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
                                 {"class": "CLIPBOARD", "level": "WARN"}
                               ]
                             })"});
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
-    ExpectWarnVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          managed_profile1_, nullptr));
+    ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
+                          ->GetForProfile(managed_profile1_)
+                          ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                            managed_profile1_));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                              "name": "allow",
                              "rule_id": "1234",
                              "destinations": {
@@ -275,7 +277,7 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
                                {"class": "CLIPBOARD", "level": "ALLOW"}
                              ]
                            })",
-                                                        R"({
+                                                                 R"({
                              "name": "warn",
                              "rule_id": "5678",
                              "destinations": {
@@ -285,20 +287,20 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
                                {"class": "CLIPBOARD", "level": "WARN"}
                              ]
                            })"});
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), profile_, nullptr));
-    ExpectAllowVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          managed_profile1_, nullptr));
+    ExpectAllowVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                             managed_profile1_));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 }
@@ -306,7 +308,7 @@ TEST_F(IOSRulesServiceTest, DestinationURL) {
 TEST_F(IOSRulesServiceTest, SourceIncognito) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                   "name": "block",
                                   "rule_id": "1234",
                                   "sources": {
@@ -316,35 +318,36 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                     {"class": "CLIPBOARD", "level": "BLOCK"}
                                   ]
                                 })"});
-    ExpectBlockVerdict(IOSRulesServiceFactory::GetInstance()
-                           ->GetForProfile(profile_)
-                           ->GetPasteVerdict(google_url(), GURL(),
-                                             profile_->GetOffTheRecordProfile(),
-                                             nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_)
+            ->GetPasteVerdict(google_url(), GURL(),
+                              managed_profile1_->GetOffTheRecordProfile(),
+                              nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile1_));
+    ExpectBlockVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
+                        ->GetForProfile(managed_profile1_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                     "name": "warn",
                                     "rule_id": "1234",
                                     "sources": {
@@ -354,36 +357,37 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                       {"class": "CLIPBOARD", "level": "WARN"}
                                     ]
                                   })"});
-    ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
-                          ->GetForProfile(profile_)
-                          ->GetPasteVerdict(google_url(), GURL(),
-                                            profile_->GetOffTheRecordProfile(),
-                                            nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_)
+            ->GetPasteVerdict(google_url(), GURL(),
+                              managed_profile1_->GetOffTheRecordProfile(),
+                              nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile1_));
+    ExpectWarnVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
+                        ->GetForProfile(managed_profile1_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                               "name": "allow",
                               "rule_id": "1234",
                               "sources": {
@@ -393,7 +397,7 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                 {"class": "CLIPBOARD", "level": "ALLOW"}
                               ]
                             })",
-                                                        R"({
+                                                                 R"({
                               "name": "warn",
                               "rule_id": "5678",
                               "sources": {
@@ -403,29 +407,30 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
                                 {"class": "CLIPBOARD", "level": "WARN"}
                               ]
                             })"});
-    ExpectAllowVerdict(IOSRulesServiceFactory::GetInstance()
-                           ->GetForProfile(profile_)
-                           ->GetPasteVerdict(google_url(), GURL(),
-                                             profile_->GetOffTheRecordProfile(),
-                                             nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, profile_));
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_)
+            ->GetPasteVerdict(google_url(), GURL(),
+                              managed_profile1_->GetOffTheRecordProfile(),
+                              nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile1_));
+    ExpectAllowVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
+                        ->GetForProfile(managed_profile1_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 }
@@ -433,7 +438,7 @@ TEST_F(IOSRulesServiceTest, SourceIncognito) {
 TEST_F(IOSRulesServiceTest, DestinationIncognito) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                       "name": "block",
                                       "rule_id": "1234",
                                       "destinations": {
@@ -445,26 +450,28 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
                                     })"});
     ExpectBlockVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetPasteVerdict(GURL(), google_url(), nullptr,
-                              profile_->GetOffTheRecordProfile()));
-    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
-                        ->GetPasteVerdict(google_url(), GURL(),
-                                          profile_->GetOffTheRecordProfile(),
-                                          nullptr));
-    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_->GetOffTheRecordProfile())
-                        ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
+                              managed_profile1_->GetOffTheRecordProfile()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_)
+            ->GetPasteVerdict(google_url(), GURL(),
+                              managed_profile1_->GetOffTheRecordProfile(),
+                              nullptr));
+    ExpectNoVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
+            ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
+    ExpectNoVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                         "name": "warn",
                                         "rule_id": "1234",
                                         "destinations": {
@@ -476,27 +483,29 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
                                       })"});
     ExpectWarnVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetPasteVerdict(GURL(), google_url(), nullptr,
-                              profile_->GetOffTheRecordProfile()));
-    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
-                        ->GetPasteVerdict(google_url(), GURL(),
-                                          profile_->GetOffTheRecordProfile(),
-                                          nullptr));
-    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_->GetOffTheRecordProfile())
-                        ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
+                              managed_profile1_->GetOffTheRecordProfile()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_)
+            ->GetPasteVerdict(google_url(), GURL(),
+                              managed_profile1_->GetOffTheRecordProfile(),
+                              nullptr));
+    ExpectNoVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
+            ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
+    ExpectNoVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                   "name": "allow",
                                   "rule_id": "1234",
                                   "destinations": {
@@ -506,7 +515,7 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
                                     {"class": "CLIPBOARD", "level": "ALLOW"}
                                   ]
                                 })",
-                                                        R"({
+                                                                 R"({
                                   "name": "warn",
                                   "rule_id": "5678",
                                   "destinations": {
@@ -518,20 +527,22 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
                                 })"});
     ExpectAllowVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
+            ->GetForProfile(managed_profile1_)
             ->GetPasteVerdict(GURL(), google_url(), nullptr,
-                              profile_->GetOffTheRecordProfile()));
-    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_)
-                        ->GetPasteVerdict(google_url(), GURL(),
-                                          profile_->GetOffTheRecordProfile(),
-                                          nullptr));
-    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(profile_->GetOffTheRecordProfile())
-                        ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
+                              managed_profile1_->GetOffTheRecordProfile()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_->GetOffTheRecordProfile())
+            ->GetForProfile(managed_profile1_)
+            ->GetPasteVerdict(google_url(), GURL(),
+                              managed_profile1_->GetOffTheRecordProfile(),
+                              nullptr));
+    ExpectNoVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
+            ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
+    ExpectNoVerdict(
+        IOSRulesServiceFactory::GetInstance()
+            ->GetForProfile(managed_profile1_->GetOffTheRecordProfile())
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 }
@@ -539,7 +550,7 @@ TEST_F(IOSRulesServiceTest, DestinationIncognito) {
 TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                             "name": "block",
                             "rule_id": "1234",
                             "sources": {
@@ -550,26 +561,26 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
                             ]
                           })"});
 
-    ExpectBlockVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
+    ExpectBlockVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(google_url(), GURL(),
+                                             managed_profile2_, nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile2_));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(other_profile_)
+            ->GetForProfile(managed_profile2_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                "name": "warn",
                                "rule_id": "1234",
                                "sources": {
@@ -580,20 +591,20 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
                                ]
                              })"});
 
-    ExpectWarnVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
+    ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
+                          ->GetForProfile(managed_profile1_)
+                          ->GetPasteVerdict(google_url(), GURL(),
+                                            managed_profile2_, nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile2_));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyToOSClipboardVerdict(
                             /*source*/ google_url()));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyRestrictedBySourceVerdict(
                             /*source*/ google_url()));
   }
@@ -601,7 +612,7 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                      "name": "allow",
                                      "rule_id": "1234",
                                      "sources": {
@@ -611,7 +622,7 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
                                        {"class": "CLIPBOARD", "level": "ALLOW"}
                                      ]
                                    })",
-                                                        R"({
+                                                                 R"({
                                      "name": "warn",
                                      "rule_id": "5678",
                                      "sources": {
@@ -621,20 +632,20 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
                                        {"class": "CLIPBOARD", "level": "WARN"}
                                      ]
                                    })"});
-    ExpectAllowVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
+    ExpectAllowVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(google_url(), GURL(),
+                                             managed_profile2_, nullptr));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                          managed_profile2_));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(other_profile_)
+            ->GetForProfile(managed_profile2_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 }
@@ -642,7 +653,7 @@ TEST_F(IOSRulesServiceTest, SourceOtherProfile) {
 TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
   {
     // Restriction level is set as `BLOCK`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                             "name": "block",
                             "rule_id": "1234",
                             "destinations": {
@@ -653,26 +664,26 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
                             ]
                           })"});
 
-    ExpectBlockVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
+    ExpectBlockVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                             managed_profile2_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          managed_profile2_, nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(other_profile_)
+            ->GetForProfile(managed_profile2_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 
   {
     // Restriction level is set as `WARN`.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                "name": "warn",
                                "rule_id": "1234",
                                "destinations": {
@@ -683,20 +694,20 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
                                ]
                              })"});
 
-    ExpectWarnVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
+    ExpectWarnVerdict(IOSRulesServiceFactory::GetInstance()
+                          ->GetForProfile(managed_profile1_)
+                          ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                            managed_profile2_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          managed_profile2_, nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyToOSClipboardVerdict(
                             /*source*/ google_url()));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyRestrictedBySourceVerdict(
                             /*source*/ google_url()));
   }
@@ -704,7 +715,7 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
   {
     // When multiple rules are triggered, "ALLOW" should have precedence over
     // any other value.
-    SetDataControls(profile_->GetTestingPrefService(), {R"({
+    SetDataControls(managed_profile1_->GetTestingPrefService(), {R"({
                                      "name": "allow",
                                      "rule_id": "1234",
                                      "destinations": {
@@ -714,7 +725,7 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
                                        {"class": "CLIPBOARD", "level": "ALLOW"}
                                      ]
                                    })",
-                                                        R"({
+                                                                 R"({
                                      "name": "warn",
                                      "rule_id": "5678",
                                      "destinations": {
@@ -724,20 +735,20 @@ TEST_F(IOSRulesServiceTest, DestinationOtherProfile) {
                                        {"class": "CLIPBOARD", "level": "WARN"}
                                      ]
                                    })"});
-    ExpectAllowVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(GURL(), google_url(), nullptr, other_profile_));
-    ExpectNoVerdict(
-        IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(profile_)
-            ->GetPasteVerdict(google_url(), GURL(), other_profile_, nullptr));
+    ExpectAllowVerdict(IOSRulesServiceFactory::GetInstance()
+                           ->GetForProfile(managed_profile1_)
+                           ->GetPasteVerdict(GURL(), google_url(), nullptr,
+                                             managed_profile2_));
     ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
-                        ->GetForProfile(other_profile_)
+                        ->GetForProfile(managed_profile1_)
+                        ->GetPasteVerdict(google_url(), GURL(),
+                                          managed_profile2_, nullptr));
+    ExpectNoVerdict(IOSRulesServiceFactory::GetInstance()
+                        ->GetForProfile(managed_profile2_)
                         ->GetCopyToOSClipboardVerdict(/*source*/ google_url()));
     ExpectNoVerdict(
         IOSRulesServiceFactory::GetInstance()
-            ->GetForProfile(other_profile_)
+            ->GetForProfile(managed_profile2_)
             ->GetCopyRestrictedBySourceVerdict(/*source*/ google_url()));
   }
 }

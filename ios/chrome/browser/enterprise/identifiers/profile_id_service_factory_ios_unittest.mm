@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +35,9 @@ class ProfileIdServiceFactoryIOSTest : public PlatformTest {
   ProfileIdServiceFactoryIOSTest() {
     policy::BrowserDMTokenStorage::SetForTesting(&storage_);
     storage_.SetClientId(kFakeDeviceID);
-    profile_ = AddTestProfile(/*name=*/std::string());
-    service_ = ProfileIdServiceFactoryIOS::GetForProfile(profile_);
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
+    service_ = ProfileIdServiceFactoryIOS::GetForProfile(personal_profile_);
   }
 
  protected:
@@ -52,25 +55,17 @@ class ProfileIdServiceFactoryIOSTest : public PlatformTest {
     service_ = ProfileIdServiceFactoryIOS::GetForProfile(profile);
   }
 
-  TestProfileIOS::Builder CreateProfileBuilder(const std::string& name) {
+  TestProfileIOS::Builder CreateProfileBuilder() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ProfileIdServiceFactoryIOS::GetInstance(),
                               ProfileIdServiceFactoryIOS::GetDefaultFactory());
-    if (!name.empty()) {
-      builder.SetName(name);
-    }
     return builder;
-  }
-
-  // Adds a pre-configured test profile to the manager.
-  TestProfileIOS* AddTestProfile(const std::string& name) {
-    return profile_manager_.AddProfileWithBuilder(CreateProfileBuilder(name));
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> personal_profile_;
   raw_ptr<ProfileIdService> service_;
   policy::FakeBrowserDMTokenStorage storage_;
 };
@@ -79,7 +74,7 @@ class ProfileIdServiceFactoryIOSTest : public PlatformTest {
 // the same profile identifiers each time.
 TEST_F(ProfileIdServiceFactoryIOSTest, GetProfileId_MultipleCalls) {
   auto profile_id1 = service_->GetProfileId();
-  EXPECT_EQ(GetTestProfileId(profile_), profile_id1.value());
+  EXPECT_EQ(GetTestProfileId(personal_profile_), profile_id1.value());
   auto profile_id2 = service_->GetProfileId();
   EXPECT_EQ(profile_id2.value(), profile_id1.value());
   auto profile_id3 = service_->GetProfileId();
@@ -88,29 +83,32 @@ TEST_F(ProfileIdServiceFactoryIOSTest, GetProfileId_MultipleCalls) {
 
 // Tests that multiple profiles have different profile identifiers.
 TEST_F(ProfileIdServiceFactoryIOSTest, GetProfileId_MultipleProfiles) {
-  // The original profile is the profile set in BaseTest.
-  auto profile_id_1 = service_->GetProfileId();
-  EXPECT_EQ(GetTestProfileId(profile_), profile_id_1.value());
-  auto* profile_2 = AddTestProfile("profile-2");
-  SetProfileIdService(profile_2);
-  auto profile_id_2 = service_->GetProfileId();
-  EXPECT_EQ(GetTestProfileId(profile_2), profile_id_2.value());
-  EXPECT_FALSE(profile_id_1.value() == profile_id_2.value());
+  // The original profile is the personal profile set in BaseTest.
+  auto personal_profile_id = service_->GetProfileId();
+  EXPECT_EQ(GetTestProfileId(personal_profile_), personal_profile_id.value());
+  auto* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
+      CreateProfileBuilder());
+  SetProfileIdService(managed_profile);
+  auto managed_profile_id = service_->GetProfileId();
+  EXPECT_EQ(GetTestProfileId(managed_profile), managed_profile_id.value());
+  EXPECT_FALSE(personal_profile_id.value() == managed_profile_id.value());
 }
 
 // Tests that no profile identifier is created and no profile GUID is
 // persisted(in the case that a profile guid did not previously exist).
 TEST_F(ProfileIdServiceFactoryIOSTest, GetProfileId_Guest_Profile) {
-  profile_->GetPrefs()->SetString(kProfileGUIDPref, "");
-  SetProfileIdService(profile_);
-  std::string profile_guid = profile_->GetPrefs()->GetString(kProfileGUIDPref);
+  personal_profile_->GetPrefs()->SetString(kProfileGUIDPref, "");
+  SetProfileIdService(personal_profile_);
+  std::string profile_guid =
+      personal_profile_->GetPrefs()->GetString(kProfileGUIDPref);
   EXPECT_TRUE(profile_guid.empty());
 }
 
 // Tests that no service is created in OTR profiles since the factory has a
 // profile preference for only creating the service for regular profiles.
 TEST_F(ProfileIdServiceFactoryIOSTest, GetProfileId_Incognito_Profile) {
-  auto* otr_profile = profile_->GetOffTheRecordProfile();
+  auto* otr_profile = personal_profile_->GetOffTheRecordProfile();
   SetProfileIdService(otr_profile);
   EXPECT_FALSE(service_);
 }

@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/proxy/proxy_config.h"
 #import "ios/web/public/proxy/proxy_configuration_provider.h"
@@ -210,17 +212,18 @@ class ProxyServiceControllerTest : public PlatformTest {
     builder.AddTestingFactory(
         EnterpriseProxyErrorServiceFactoryIOS::GetInstance(),
         EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     proxy_service_ = static_cast<FakeEnterpriseProxyService*>(
-        EnterpriseProxyServiceFactoryIOS::GetForProfile(profile_));
-    web_state_.SetBrowserState(profile_);
+        EnterpriseProxyServiceFactoryIOS::GetForProfile(personal_profile_));
+    web_state_.SetBrowserState(personal_profile_);
 
     proxy_configuration_provider_ =
-        std::make_unique<TestProxyConfigurationProvider>(profile_);
+        std::make_unique<TestProxyConfigurationProvider>(personal_profile_);
     controller_ = std::make_unique<ProxyServiceController>(
         proxy_service_,
-        EnterpriseProxyErrorServiceFactoryIOS::GetForProfile(profile_),
+        EnterpriseProxyErrorServiceFactoryIOS::GetForProfile(personal_profile_),
         proxy_configuration_provider_.get());
   }
 
@@ -245,7 +248,7 @@ class ProxyServiceControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ProfileIOS> profile_ = nullptr;
+  raw_ptr<ProfileIOS> personal_profile_ = nullptr;
   raw_ptr<FakeEnterpriseProxyService> proxy_service_ = nullptr;
   web::FakeWebState web_state_;
   std::unique_ptr<TestProxyConfigurationProvider> proxy_configuration_provider_;
@@ -260,7 +263,7 @@ TEST_F(ProxyServiceControllerTest, AppliesInitialRoutesOnCreation) {
   EXPECT_CALL(mock_service, GetDynamicRoutingConfig())
       .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)));
 
-  TestProxyConfigurationProvider provider(profile_);
+  TestProxyConfigurationProvider provider(personal_profile_);
   enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
   ProxyServiceController controller(&mock_service, &error_service, &provider);
 
@@ -277,7 +280,7 @@ TEST_F(ProxyServiceControllerTest, DynamicRoutingUpdatesPropagate) {
       .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)))
       .WillOnce(Return(CreateSampleRoutingConfig(kSecondDestinationPattern)));
 
-  TestProxyConfigurationProvider provider(profile_);
+  TestProxyConfigurationProvider provider(personal_profile_);
   enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
   ProxyServiceController controller(&mock_service, &error_service, &provider);
 
@@ -296,7 +299,7 @@ TEST_F(ProxyServiceControllerTest, ClearsRoutesWhenUpdatedWithEmptyConfig) {
       .WillOnce(Return(CreateSampleRoutingConfig(kFirstDestinationPattern)))
       .WillOnce(Return(net::ProxyConfig::DynamicRoutingConfig{}));
 
-  TestProxyConfigurationProvider provider(profile_);
+  TestProxyConfigurationProvider provider(personal_profile_);
   enterprise_net::EnterpriseProxyErrorService error_service(&mock_service);
   ProxyServiceController controller(&mock_service, &error_service, &provider);
 
@@ -311,7 +314,6 @@ TEST_F(ProxyServiceControllerTest, ClearsRoutesWhenUpdatedWithEmptyConfig) {
 // profile and returns null for an off-the-record profile.
 TEST_F(ProxyServiceControllerTest, FactoryCreatesControllerForProfile) {
   TestProfileIOS::Builder builder;
-  builder.SetName("factory-profile");
   builder.AddTestingFactory(
       EnterpriseProxyServiceFactoryIOS::GetInstance(),
       base::BindRepeating(
@@ -324,13 +326,15 @@ TEST_F(ProxyServiceControllerTest, FactoryCreatesControllerForProfile) {
       EnterpriseProxyErrorServiceFactoryIOS::GetDefaultFactory());
   builder.AddTestingFactory(ProxyServiceControllerFactory::GetInstance(),
                             ProxyServiceControllerFactory::GetDefaultFactory());
-  TestProfileIOS* profile =
-      profile_manager_.AddProfileWithBuilder(std::move(builder));
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
+      std::move(builder));
 
-  EXPECT_NE(ProxyServiceControllerFactory::GetForProfile(profile), nullptr);
+  EXPECT_NE(ProxyServiceControllerFactory::GetForProfile(managed_profile),
+            nullptr);
 
   ProfileIOS* otr_profile =
-      profile->CreateOffTheRecordProfileWithTestingFactories();
+      managed_profile->CreateOffTheRecordProfileWithTestingFactories();
   EXPECT_EQ(ProxyServiceControllerFactory::GetForProfile(otr_profile), nullptr);
 }
 
