@@ -2831,6 +2831,51 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
             menu->menu_model().GetLabelAt(index.value()));
 }
 
+TEST_F(
+    RenderViewContextMenuMenuSimplificationTest,
+    ReadAnythingOnlyOnceWhenMenuSimplificationAndShuffleExperimentPlaceAtBottom) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kReadAnythingMenuShuffleExperiment,
+        {{"read_anything_menu_shuffle_group_name",
+          "MenuShufflePlaceAtBottom"}}}},
+      {});
+
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->SetBrowser(GetBrowser());
+  menu->Init();
+
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+  EXPECT_EQ(1,
+            CountOccurrences(*menu, IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE));
+}
+
+TEST_F(
+    RenderViewContextMenuPrefsTest,
+    ReadAnythingNotDuplicatedInEditableWithSelectionWhenMenuSimplificationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kMenuSimplification);
+
+  content::ContextMenuParams params;
+  params.selection_text = u"editable selection";
+  params.is_editable = true;
+
+  auto menu = std::make_unique<TestRenderViewContextMenu>(
+      *web_contents()->GetPrimaryMainFrame(), params);
+  menu->SetBrowser(GetBrowser());
+  menu->Init();
+
+  int count = 0;
+  for (size_t i = 0; i < menu->menu_model().GetItemCount(); ++i) {
+    if (menu->menu_model().GetCommandIdAt(i) ==
+        IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE) {
+      count++;
+    }
+  }
+  EXPECT_LE(count, 1);
+}
 class RenderViewContextMenuSendTabToSelfPageTest
     : public RenderViewContextMenuMenuSimplificationTest {
  public:
