@@ -624,6 +624,9 @@ void ClipboardPromise::HandleWriteWithPermission(
   }
   ScriptState* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
+  // `promise_list` might be out of control and GCed without resolving.
+  // Therefore, `script_promise_resolver_` needs to suppress the detach check.
+  script_promise_resolver_->SuppressDetachCheck();
   PromiseAll<V8UnionBlobOrString>::WaitForAll(
       script_state, promise_list,
       bindings::HeapBind(&ClipboardPromise::HandlePromiseWrite, this),

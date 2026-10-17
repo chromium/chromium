@@ -18146,6 +18146,30 @@
             ]
         }
     ],
+    "V8LimitBasedMemoryReducer": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8Flag_freeze_forces_marking_finalization",
+                        "V8Flag_memory_reducer_limit_based"
+                    ],
+                    "disable_features": [
+                        "ForwardMemoryPressureToBlinkIsolates"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8MaxValidPolymorphicMapCount": [
         {
             "platforms": [
