@@ -52,8 +52,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/web_state_id.h"
-#import "ui/base/device_form_factor.h"
 
 using collaboration::CollaborationServiceShareOrManageEntryPoint;
 using collaboration::FlowType;
@@ -515,10 +515,9 @@ constexpr CGFloat kFacePileAvatarSize = 26;
                      browser:self.browser
                        group:group
           baseViewController:self.viewController
-                  sourceView:ui::GetDeviceFormFactor() ==
-                                     ui::DEVICE_FORM_FACTOR_PHONE
-                                 ? self.viewController.view
-                                 : nil
+                  sourceView:IsRegularXRegularSizeClass(self.viewController)
+                                 ? nil
+                                 : self.viewController.view
                      closing:YES];
   id<SharedTabGroupLastTabAlertCommands> lastTabAlertHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),

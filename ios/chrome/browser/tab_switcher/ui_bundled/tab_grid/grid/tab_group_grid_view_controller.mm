@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_activity_summary_cell.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_header.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
-#import "ui/base/device_form_factor.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 @interface TabGroupGridViewController () <TabGroupActivitySummaryCellDelegate>
 @end
@@ -156,8 +156,7 @@
                                             isGridCell:(BOOL)isGridCell {
   const CGFloat aspectRatio =
       TabGridItemAspectRatio(containerSize, self.view.window.windowScene);
-  if (aspectRatio < 1 &&
-      ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (aspectRatio < 1 && !IsRegularXRegularSizeClass(self)) {
     return EmptyThumbnailLayoutTypeLandscapeLeading;
   }
   return EmptyThumbnailLayoutTypeCenteredPortrait;

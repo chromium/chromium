@@ -52,10 +52,10 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/web_state_id.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using base::apple::ObjCCast;
@@ -2125,7 +2125,7 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
     return EmptyThumbnailLayoutTypeLandscape;
   } else if (isGridCell) {
     return EmptyThumbnailLayoutTypeCenteredPortrait;
-  } else if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  } else if (IsRegularXRegularSizeClass(self)) {
     if (cellHeight < kCellMaxHeightForEmptyThumbnailCenteredPortraitLayout) {
       return EmptyThumbnailLayoutTypePortrait;
     } else {

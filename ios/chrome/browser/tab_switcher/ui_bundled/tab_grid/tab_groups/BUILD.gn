@@ -91,6 +91,7 @@ source_set("tab_groups") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/share_kit",
     "//ios/web/public",
   ]
