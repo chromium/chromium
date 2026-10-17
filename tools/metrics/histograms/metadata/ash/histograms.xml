@@ -8615,41 +8615,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.WindowCycleController.SameApp.DeskMode" enum="AltTabMode"
-    expires_after="2027-05-21">
-  <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Emitted when same app window cycling ends, if and only if user had 2 or more
-    desks and Bento is not disabled, to report the same-desk vs all-desk mode
-    selection. Warning: this histogram was expired from 2025-07-03 to
-    2025-07-21; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="Ash.WindowCycleController.SameApp.IsSameApp" enum="Boolean"
-    expires_after="2027-05-21">
-  <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Emits true when a same-app cycling session is started and false when a
-    normal cycling session is started.
-  </summary>
-</histogram>
-
-<histogram name="Ash.WindowCycleController.SameApp.SkippedWindows"
-    units="windows" expires_after="2027-05-21">
-  <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    The number of windows the user didn't have to tab through because they were
-    using Alt-Backtick instead of Alt-Tab. Recorded as the number of
-    non-same-app windows in the ending MRU list between the starting and chosen
-    window in the initial cycling direction. Warning: this histogram was expired
-    from 2025-07-03 to 2025-07-21; data may be missing.
-  </summary>
-</histogram>
-
 <histogram name="Ash.WindowCycleController.SwitchMode" enum="AltTabMode"
     expires_after="2027-05-21">
   <owner>xdai@chromium.org</owner>

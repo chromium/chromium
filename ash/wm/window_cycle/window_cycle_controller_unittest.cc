@@ -1099,7 +1099,7 @@ TEST_F(WindowCycleControllerTest, AltTabMultiDisplay) {
   // the second display where the cursor is at.
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   auto preview_items = GetWindowCycleItemViews();
   ASSERT_EQ(2u, preview_items.size());
@@ -1122,7 +1122,7 @@ TEST_F(WindowCycleControllerTest, WindowDestruction) {
   // Start cycling and then destroy a window. We should still be cycling and
   // there should now only be two items.
   auto* controller = Shell::Get()->window_cycle_controller();
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   EXPECT_TRUE(controller->IsCycling());
   w1.reset();
   EXPECT_TRUE(controller->IsCycling());
@@ -1185,7 +1185,7 @@ TEST_F(WindowCycleControllerTest, MouseHoverAndSelect) {
 
   // Start cycle, mouse over third item, and release alt-tab.
   // Starting order of windows in cycle list is [5,6,4,3,2,1,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   target_item_center =
       GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint();
   generator->MoveMouseTo(target_item_center);
@@ -1196,7 +1196,7 @@ TEST_F(WindowCycleControllerTest, MouseHoverAndSelect) {
 
   // Start cycle, cycle to the fifth item, mouse over seventh item, and click.
   // Starting order of windows in cycle list is [4,5,6,3,2,1,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   for (int i = 0; i < 5; i++)
     controller->HandleCycleWindow(
         WindowCycleController::WindowCyclingDirection::kForward);
@@ -1221,7 +1221,7 @@ TEST_F(WindowCycleControllerTest, LeftRightCycle) {
   // Start cycle, simulating alt button being held down. Cycle right to the
   // third item.
   // Starting order of windows in cycle list is [2,1,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
   generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
   CompleteCycling(controller);
@@ -1229,7 +1229,7 @@ TEST_F(WindowCycleControllerTest, LeftRightCycle) {
 
   // Start cycle. Cycle right once, then left two times.
   // Starting order of windows in cycle list is [0,2,1].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
   generator->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
   generator->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
@@ -1238,7 +1238,7 @@ TEST_F(WindowCycleControllerTest, LeftRightCycle) {
 
   // Start cycle. Cycle right once, then left once, then right once.
   // Starting order of windows in cycle list is [0,2,1].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   generator->PressKey(ui::VKEY_LEFT, ui::EF_ALT_DOWN);
   generator->PressKey(ui::VKEY_RIGHT, ui::EF_ALT_DOWN);
   generator->PressKey(ui::VKEY_LEFT, ui::EF_ALT_DOWN);
@@ -1258,7 +1258,7 @@ TEST_F(WindowCycleControllerTest, KeysConfirmSelection) {
   // Start cycle, simulating alt button being held down. Cycle right once and
   // complete cycle using space.
   // Starting order of windows in cycle list is [2,1,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   generator->PressKey(ui::VKEY_SPACE, ui::EF_NONE);
@@ -1267,7 +1267,7 @@ TEST_F(WindowCycleControllerTest, KeysConfirmSelection) {
   // Start cycle, simulating alt button being held down. Cycle right once and
   // complete cycle using enter.
   // Starting order of windows in cycle list is [1,2,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   generator->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
@@ -1277,7 +1277,7 @@ TEST_F(WindowCycleControllerTest, KeysConfirmSelection) {
   // complete cycle by releasing alt key (Views uses VKEY_MENU for both left and
   // right alt keys).
   // Starting order of windows in cycle list is [2,1,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
@@ -1294,7 +1294,7 @@ TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Start cycling and press space twice. This should not crash.
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   generator->PressKey(ui::VKEY_SPACE, ui::EF_NONE);
@@ -1302,7 +1302,7 @@ TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
 
   // Start cycling and press enter twice. This should not crash.
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   generator->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
@@ -1319,7 +1319,7 @@ TEST_F(WindowCycleControllerTest, RapidConfirmSelection) {
 
   // Start cycling and press enter once and then right key. This should not
   // crash and the right key should not affect the selection.
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   generator->PressKey(ui::VKEY_RETURN, ui::EF_NONE);
@@ -1341,7 +1341,7 @@ TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
 
   // Start cycling.
   // Current window order is [2,1,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   auto item_views = GetWindowCycleItemViews();
   item_views[2]->AddPreTargetHandler(&event_count);
 
@@ -1358,7 +1358,7 @@ TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
   // Start cycling again while the mouse is over where the third item will be
   // when cycling starts.
   // Current window order is [0,2,1].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   item_views = GetWindowCycleItemViews();
   item_views[2]->AddPreTargetHandler(&event_count);
 
@@ -1371,7 +1371,7 @@ TEST_F(WindowCycleControllerTest, FilterMouseEventsUntilUsed) {
 
   // Start cycling again and click. This should not be filtered out.
   // Current window order is [0,2,1].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   generator->PressLeftButton();
   EXPECT_FALSE(controller->IsCycling());
   EXPECT_TRUE(wm::IsActiveWindow(w1.get()));
@@ -1387,7 +1387,7 @@ TEST_F(WindowCycleControllerTest, MousePressOutsideOfListCancelsCycling) {
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
 
   // Cycle to second item, move to above the window cycle list, and click.
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   gfx::Point above_window_cycle_list =
@@ -1440,7 +1440,7 @@ TEST_F(WindowCycleControllerTest,
   auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
                                                             float y_offset) {
     WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling(/*same_app_only=*/false);
+    controller->StartCycling();
     Scroll(x_offset, GetOffsetY(y_offset), kNumFingersForTrackpad);
     CompleteCycling(controller);
   };
@@ -1469,7 +1469,7 @@ TEST_F(WindowCycleControllerTest,
   // should be dismissed at this point as they do the same thing by design.
   // Current order is [2,4,5,3,1].
   auto* cycle_controller = Shell::Get()->window_cycle_controller();
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   Scroll(horizontal_scroll, 0, kNumFingersForTrackpad);
   EXPECT_FALSE(InOverviewSession());
 
@@ -1497,7 +1497,7 @@ TEST_F(WindowCycleControllerTest, TwoFingerHorizontalScrollInWindowCycleList) {
   auto scroll_until_window_highlighted_and_confirm = [this](float x_offset,
                                                             float y_offset) {
     WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling(/*same_app_only=*/false);
+    controller->StartCycling();
     // Since two finger swipes are negated, negate in tests to mimic how this
     // actually behaves on devices.
     Scroll(-x_offset, GetOffsetY(y_offset), kNumFingersForMouseWheel);
@@ -1541,7 +1541,7 @@ TEST_F(WindowCycleControllerTest, MouseWheelScrollInWindowCycleList) {
                                                             float y_offset,
                                                             int num_of_times) {
     WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling(/*same_app_only=*/false);
+    controller->StartCycling();
     MouseWheelScroll(x_offset, y_offset, num_of_times);
     CompleteCycling(controller);
   };
@@ -1617,7 +1617,7 @@ TEST_F(WindowCycleControllerTest, TouchScroll) {
   auto* event_generator = GetEventGenerator();
 
   // Start cycling.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   ASSERT_TRUE(cycle_controller->IsCycling());
@@ -1710,7 +1710,7 @@ TEST_F(WindowCycleControllerTest, VerticalTouchScroll) {
   auto* event_generator = GetEventGenerator();
 
   // Start cycling.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   ASSERT_TRUE(cycle_controller->IsCycling());
@@ -1762,7 +1762,7 @@ TEST_F(WindowCycleControllerTest, TapSelect) {
   // focus ring should be set to the third item. Selection should not be
   // confirmed since finger was not released. Starting order of windows in cycle
   // list is [2,1,0].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   gfx::Point center_point =
       GetWindowCycleItemViews()[2]->GetBoundsInScreen().CenterPoint();
   tap_without_release(generator, center_point);
@@ -1778,7 +1778,7 @@ TEST_F(WindowCycleControllerTest, TapSelect) {
   // focus ring should be set to the second item. Selection should not be
   // confirmed since finger was not released. Starting order of windows in cycle
   // list is [0,2,1].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   center_point =
       GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint();
   tap_without_release(generator, center_point);
@@ -1792,7 +1792,7 @@ TEST_F(WindowCycleControllerTest, TapSelect) {
 
   // Start cycling again and tap and release.  This should confirm the
   // selection. Starting order of windows in cycle list is [2,0,1].
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   center_point =
       GetWindowCycleItemViews()[1]->GetBoundsInScreen().CenterPoint();
   generator->GestureTapDownAndUp(center_point);
@@ -1838,7 +1838,7 @@ TEST_F(WindowCycleControllerTest, ArrowKeyBeforeCycleViewUI) {
   // Enable initial delay for testing so that once it starts cycling, the cycle
   // view UI will not be shown right away.
   WindowCycleList::SetDisableInitialDelayForTesting(false);
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   EXPECT_TRUE(controller->IsCycling());
   EXPECT_FALSE(CycleViewExists());
   controller->HandleKeyboardNavigation(
@@ -1868,7 +1868,7 @@ TEST_F(WindowCycleControllerTest, SimulateFlingInAltTab) {
 
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
 
   auto preview_items = GetWindowCycleItemViews();
@@ -1967,7 +1967,7 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
                                                             float y_offset,
                                                             int num_of_times) {
     WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling(/*same_app_only=*/false);
+    controller->StartCycling();
     MouseWheelScroll(x_offset, y_offset, num_of_times);
     CompleteCycling(controller);
   };
@@ -2026,7 +2026,7 @@ TEST_F(ReverseGestureWindowCycleControllerTest,
                                                             float y_offset,
                                                             int num_fingers) {
     WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-    controller->StartCycling(/*same_app_only=*/false);
+    controller->StartCycling();
     Scroll(x_offset, y_offset, num_fingers);
     CompleteCycling(controller);
   };
@@ -2152,7 +2152,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ModeChangesOnTap) {
   };
 
   // Start cycle. Alt-tab should contain windows from all desks with tab slider.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_EQ(3u, cycle_windows.size());
@@ -2169,7 +2169,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ModeChangesOnTap) {
   CompleteCycling(cycle_controller);
 
   // Tap all desks tab slider button. Switch back to all desks mode.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
   tab_slider_buttons = GetWindowCycleTabSliderButtons();
   gfx::Point all_desks_button_center_point =
@@ -2238,7 +2238,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   };
 
   // Start cycle. Alt-tab should contain windows from all desks with tab slider.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_EQ(3u, cycle_windows.size());
@@ -2280,7 +2280,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, SingleDeskHidesInteractiveMode) {
 
   // Alt-tab should contain windows from all desks without any the tab slider
   // and no-recent-items view.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(!GetWindowCycleNoRecentItemsLabel());
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   auto cycle_windows = GetWindows(cycle_controller);
@@ -2295,7 +2295,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, SingleDeskHidesInteractiveMode) {
   const Desk* desk_2 = desks_controller->GetDeskAtIndex(1);
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_EQ(2u, cycle_windows.size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
@@ -2345,7 +2345,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   auto* generator = GetEventGenerator();
   // Press and hold an alt key to test that alt + left clicking a button works.
   generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(5u, cycle_windows.size());
@@ -2370,7 +2370,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, CycleShowsWindowsPerMode) {
   // Activate desk1 and start alt-tab.
   const Desk* desk_1 = desks_controller->GetDeskAtIndex(0);
   ActivateDesk(desk_1);
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   // Should start alt-tab with the current-desk mode and show only two windows
   // from desk1.
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
@@ -2408,7 +2408,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowInActiveDesk) {
   auto win1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 200});
 
   // Starting alt-tab should shows all desks.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(2u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
@@ -2451,7 +2451,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, OneWindowTotalInActiveDesk) {
   auto win0 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 200});
 
   // Starting alt-tab should not show the view and only activate the window.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_FALSE(CycleViewExists());
   EXPECT_TRUE(wm::IsActiveWindow(win0.get()));
@@ -2492,7 +2492,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowInActiveDesk) {
   EXPECT_EQ(desk_2, desks_controller->active_desk());
 
   // Starting alt-tab should show all windows from all desks.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   auto cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(2u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
@@ -2523,7 +2523,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, NoWindowInActiveDesk) {
 
   // Entering alt-tab in the current-desk mode with zero window should work and
   // show no-recent-item label.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   cycle_windows = GetWindows(cycle_controller);
   EXPECT_EQ(0u, GetWindowCycleItemViews().size());
   EXPECT_EQ(cycle_windows.size(), GetWindowCycleItemViews().size());
@@ -2579,7 +2579,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   auto win0 = CreateWindowWithAppType(AppType::SYSTEM_APP, {10, 30, 400, 200});
 
   // Enter the all-desk mode by default with the window order [0, 1, 2, 3 ,4].
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
 
@@ -3193,7 +3193,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest, WindowDestruction) {
   // Start cycling. The default mode is all desks so there should be 6 windows
   // in the window cycle list currently.
   auto* cycle_controller = Shell::Get()->window_cycle_controller();
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_EQ(6u, GetWindows(cycle_controller).size());
 
@@ -3226,7 +3226,7 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   auto win1 = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 200});
 
   // Start cycle. Verify the slider buttons are present.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   auto tab_slider_buttons = GetWindowCycleTabSliderButtons();
   EXPECT_EQ(2u, tab_slider_buttons.size());
 
@@ -3382,7 +3382,7 @@ TEST_F(MultiUserWindowCycleControllerTest, AltTabModePrefsUpdateUI) {
   multi_user_window_manager()->SetWindowOwner(win2.get(), GetUser1AccountId());
 
   // user_1 prefs and alt-tab mode should default to the all-desk mode.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_EQ(3u, GetWindowCycleItemViews().size());
   EXPECT_FALSE(IsActivePrefsPerDeskMode());
@@ -3424,7 +3424,7 @@ TEST_F(MultiUserWindowCycleControllerTest, AltTabModePrefsUpdateUI) {
   multi_user_window_manager()->SetWindowOwner(win6.get(), GetUser2AccountId());
 
   // user_2 prefs and alt-tab mode should default to the all-desk mode.
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_EQ(4u, GetWindowCycleItemViews().size());
   EXPECT_FALSE(IsActivePrefsPerDeskMode());
@@ -3480,7 +3480,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
   // user_1 prefs set to current-desk mode.
   bool per_desk = true;
   SetActivePrefsPerDeskMode(per_desk);
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
   EXPECT_EQ(IsActivePrefsPerDeskMode(),
@@ -3506,7 +3506,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
   // In preparation for multi-user alt-tab mode switching, start alt-tab with
   // user_2 prefs set to current-desk mode.
   SetActivePrefsPerDeskMode(per_desk);
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_EQ(per_desk, IsActivePrefsPerDeskMode());
   EXPECT_EQ(IsActivePrefsPerDeskMode(),
@@ -3526,7 +3526,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
   // Switch back to user_1. Make sure that user_1 prefs remains unaffected
   // and the alt-tab enter with the correct current-desk mode.
   SwitchActiveUser(GetUser1AccountId());
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_TRUE(IsActivePrefsPerDeskMode());
   EXPECT_EQ(IsActivePrefsPerDeskMode(),
@@ -3538,7 +3538,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
   // to make sure both users start at the same mode selection.
   SwitchActiveUser(GetUser2AccountId());
   EXPECT_EQ(desk_2, desks_controller->active_desk());
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   SwitchPerDeskAltTabModeFromUIAndCheckPrefs(true);
@@ -3552,7 +3552,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
   // user_1 to all-desks mode to see if user_2's mode will change.
   SwitchActiveUser(GetUser1AccountId());
   EXPECT_EQ(desk_2, desks_controller->active_desk());
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
   SwitchPerDeskAltTabModeFromUIAndCheckPrefs(false);
@@ -3563,7 +3563,7 @@ TEST_F(MultiUserWindowCycleControllerTest,
   // to the current-desk mode correctly.
   SwitchActiveUser(GetUser2AccountId());
   EXPECT_EQ(desk_2, desks_controller->active_desk());
-  cycle_controller->StartCycling(/*same_app_only=*/false);
+  cycle_controller->StartCycling();
   EXPECT_TRUE(cycle_controller->IsCycling());
   EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_EQ(2u, GetWindowCycleItemViews().size());
@@ -3630,7 +3630,7 @@ TEST_F(WindowCycleControllerShutdownTest,
       prefs::kAltTabPerDesk, true);
 
   WindowCycleController* controller = Shell::Get()->window_cycle_controller();
-  controller->StartCycling(/*same_app_only=*/false);
+  controller->StartCycling();
   EXPECT_TRUE(controller->IsCycling());
   EXPECT_TRUE(GetWindows(controller).empty());
   // Leave cycling active as the test finishes so `Shell::~Shell()` tears it

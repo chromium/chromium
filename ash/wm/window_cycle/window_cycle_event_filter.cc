@@ -165,7 +165,7 @@ void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
         base::BindRepeating(
             &WindowCycleController::HandleCycleWindow,
             base::Unretained(Shell::Get()->window_cycle_controller()),
-            GetWindowCyclingDirection(event), /*same_app_only=*/false));
+            GetWindowCyclingDirection(event)));
   } else if (key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
              key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT) {
     Shell::Get()->window_cycle_controller()->HandleKeyboardNavigation(

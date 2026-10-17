@@ -107,31 +107,20 @@ constexpr base::TimeDelta kOcclusionTrackerPauseTimeout =
 // Builds the item view for window cycling for the given `window` with the
 // correct parent. If the given `window` is a free-form window, the direct
 // parent will be `mirror_container`. For `window` that belongs to a snap group,
-// however, a `GroupContainerCycleView` will be added. If `same_app_only` is
-// true, `GroupContainerCycleView` will only be created if both the windows in
-// snap group belongs to the same app.
-WindowMiniViewBase* BuildAndConfigureCycleView(
-    aura::Window* window,
-    views::View* mirror_container,
-    std::vector<raw_ptr<WindowMiniViewBase, VectorExperimental>>& cycle_views,
-    const std::vector<raw_ptr<aura::Window, VectorExperimental>>& windows,
-    const bool same_app_only) {
+// however, a `GroupContainerCycleView` will be added.
+WindowMiniViewBase* BuildAndConfigureCycleView(aura::Window* window,
+                                               views::View* mirror_container) {
   if (auto* snap_group_controller = SnapGroupController::Get()) {
     if (auto* snap_group =
             snap_group_controller->GetSnapGroupForGivenWindow(window)) {
-      if (!same_app_only ||
-          (same_app_only &&
-           std::ranges::contains(windows, snap_group->window1()) &&
-           std::ranges::contains(windows, snap_group->window2()))) {
-        // Create `GroupContainerCycleView` if `window` is physically left / top
-        // snapped, which adds two child views subsequently. Skip adding
-        // `GroupContainerCycleView` if `window` is secondary snapped since the
-        // corresponding container view has been built.
-        return window == snap_group->GetPhysicallyLeftOrTopWindow()
-                   ? mirror_container->AddChildView(
-                         std::make_unique<GroupContainerCycleView>(snap_group))
-                   : nullptr;
-      }
+      // Create `GroupContainerCycleView` if `window` is physically left / top
+      // snapped, which adds two child views subsequently. Skip adding
+      // `GroupContainerCycleView` if `window` is secondary snapped since the
+      // corresponding container view has been built.
+      return window == snap_group->GetPhysicallyLeftOrTopWindow()
+                 ? mirror_container->AddChildView(
+                       std::make_unique<GroupContainerCycleView>(snap_group))
+                 : nullptr;
     }
   }
 
@@ -144,9 +133,8 @@ WindowMiniViewBase* BuildAndConfigureCycleView(
 }  // namespace
 
 WindowCycleView::WindowCycleView(aura::Window* root_window,
-                                 const WindowList& windows,
-                                 const bool same_app_only)
-    : root_window_(root_window), same_app_only_(same_app_only) {
+                                 const WindowList& windows)
+    : root_window_(root_window) {
   const bool is_interactive_alt_tab_mode_allowed =
       Shell::Get()->window_cycle_controller()->IsInteractiveAltTabModeAllowed();
 
@@ -259,8 +247,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   }
 
   for (aura::Window* window : windows) {
-    if (auto* view = BuildAndConfigureCycleView(
-            window, mirror_container_, cycle_views_, windows, same_app_only)) {
+    if (auto* view = BuildAndConfigureCycleView(window, mirror_container_)) {
       cycle_views_.push_back(view);
       no_previews_list_.push_back(view);
     }
@@ -358,8 +345,7 @@ void WindowCycleView::UpdateWindows(const WindowList& windows) {
     return;
 
   for (aura::Window* window : windows) {
-    if (auto* view = BuildAndConfigureCycleView(
-            window, mirror_container_, cycle_views_, windows, same_app_only_)) {
+    if (auto* view = BuildAndConfigureCycleView(window, mirror_container_)) {
       cycle_views_.push_back(view);
       no_previews_list_.push_back(view);
     }
