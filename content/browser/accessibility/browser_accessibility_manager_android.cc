@@ -406,9 +406,11 @@ void BrowserAccessibilityManagerAndroid::FireSelectionChangedOnMainFrameRoot(
 
 void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
     WebContentsAccessibilityBase* wcax) {
-  // TODO(crbug.com/481134054): Return early if this frame is not focused,
-  // since the selection exposed on Android is strictly that of the focused
-  // frame.
+  // The selection exposed to Android is strictly that of the focused frame, so
+  // selection changes in unfocused frames are dropped.
+  if (this != GetManagerForFocusedFrame()) {
+    return;
+  }
   std::optional<SelectionRange> selection = GetSelectionRange();
   const bool expose_children_enabled = base::FeatureList::IsEnabled(
       features::kAccessibilityExposeNonAtomicTextFieldChildren);
@@ -1099,16 +1101,6 @@ BrowserAccessibilityManagerAndroid::GetManagerForFocusedFrame() const {
   ui::BrowserAccessibility* focus = root_manager->GetFocus();
   return static_cast<BrowserAccessibilityManagerAndroid*>(
       focus ? focus->manager() : root_manager);
-}
-
-std::optional<BrowserAccessibilityManagerAndroid::SelectionRange>
-BrowserAccessibilityManagerAndroid::GetSelectionRangeOfFocusedFrame() const {
-  BrowserAccessibilityManagerAndroid* focused_manager =
-      GetManagerForFocusedFrame();
-  if (!focused_manager) {
-    return std::nullopt;
-  }
-  return focused_manager->GetSelectionRange();
 }
 
 void BrowserAccessibilityManagerAndroid::ClearSelection() {

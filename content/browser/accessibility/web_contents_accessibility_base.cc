@@ -1987,8 +1987,14 @@ void WebContentsAccessibilityBase::PopulateAccessibilityNodeInfoSelection(
     return;
   }
 
+  BrowserAccessibilityManagerAndroid* focused_manager =
+      root_manager->GetManagerForFocusedFrame();
+  if (!focused_manager) {
+    return;
+  }
+
   std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
-      root_manager->GetSelectionRangeOfFocusedFrame();
+      focused_manager->GetSelectionRange();
 
   if (selection.has_value()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
@@ -2046,8 +2052,14 @@ WebContentsAccessibilityBase::GetExtendedSelection(JNIEnv* env,
     return nullptr;
   }
 
+  BrowserAccessibilityManagerAndroid* focused_manager =
+      root_manager->GetManagerForFocusedFrame();
+  if (!focused_manager) {
+    return nullptr;
+  }
+
   std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
-      root_manager->GetSelectionRangeOfFocusedFrame();
+      focused_manager->GetSelectionRange();
   if (!selection.has_value()) {
     return nullptr;
   }
@@ -2091,8 +2103,14 @@ WebContentsAccessibilityBase::GetSelectionAsTextOffsetsForNode(
   if (!root_manager) {
     return nullptr;
   }
+  BrowserAccessibilityManagerAndroid* focused_manager =
+      root_manager->GetManagerForFocusedFrame();
+  if (!focused_manager) {
+    return nullptr;
+  }
+
   std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> selection =
-      root_manager->GetSelectionRangeOfFocusedFrame();
+      focused_manager->GetSelectionRange();
   if (!selection.has_value()) {
     return nullptr;
   }

@@ -5135,11 +5135,10 @@ public class WebContentsAccessibilityTest {
                         null,
                         () -> createAccessibilityNodeInfo(buttonVvid).isFocused()));
 
-        // Select in the subframe while the root frame is focused.
-        // The wait relies on the selection changed event fired for the selection change of the
-        // subframe itself, although the subframe is not focused and the exposed selection does not
-        // change. TODO(crbug.com/481134054): Revisit this sync if that event is no longer fired.
-        executeJSAndWaitForSelectionEvent(
+        // Select in the subframe while the root frame is focused, and don't wait for the
+        // selection to be exposed.
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                mActivityTestRule.getWebContents(),
                 """
                 const p2 = document.getElementById('f1').contentDocument.getElementById('p2');
                 p2.ownerDocument.getSelection().setBaseAndExtent(

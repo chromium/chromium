@@ -175,12 +175,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // root frame if there is no focused node.
   BrowserAccessibilityManagerAndroid* GetManagerForFocusedFrame() const;
 
-  // Returns the selection of the focused frame of the page, in the same way as
-  // `GetSelectionRange`. Chrome tracks the selection separately in each frame,
-  // while the selection of the whole page is exposed on the root of the main
-  // frame. As on the web, the selection of the page is the selection of the
-  // focused frame, and the selections of other frames are not exposed.
-  std::optional<SelectionRange> GetSelectionRangeOfFocusedFrame() const;
 
   // Clears the selection in this frame by sending a kSetSelection action
   // anchored on the frame root with kNoSelectionOffset.
