@@ -97,9 +97,6 @@ BASE_FEATURE(kGlicLiveMode,
 
 BASE_FEATURE(kGlicSummarizeVideoSuggestion, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicContextMenu, FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
 const base::FeatureParam<std::string> kGlicContextMenuArm{&kGlicContextMenu,
                                                           "variant", "arm3"};

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_GLIC_GLIC_METRICS_H_
 
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/display/display.h"
 
 class Profile;
@@ -170,10 +168,6 @@ enum class OptInFlow {
 
 class GlicSharingManagerInternal;
 
-namespace internal {
-class BrowserActivityObserver;
-}
-
 // Responsible for all glic web-client metrics, and all stateful glic metrics.
 // Some stateless glic metrics are logged inline in the relevant code for
 // convenience.
@@ -196,12 +190,10 @@ class GlicMetrics {
   GlicMetrics& operator=(const GlicMetrics&) = delete;
   ~GlicMetrics();
 
-  // Turn events from the web client.
-  void OnUserInputSubmitted(mojom::WebClientMode mode,
-                            mojom::PromptType prompt_type);
-  void OnResponseStarted();
-
-  void DidRequestContextFromTab(tabs::TabInterface& tab);
+  // Called when the web client reports submitted user input. Records the
+  // FRE-to-first-query metrics once if the FRE was accepted earlier in this
+  // browser session.
+  void OnUserInputSubmitted();
 
   // See glic.mojom for details. These are events from the web client. The
   // lifetime of the web client is scoped to that of the window, so if these
@@ -341,29 +333,12 @@ class GlicMetrics {
 
   base::TimeTicks fre_accepted_time_;
 
-  struct TurnInfo {
-    base::TimeTicks input_submitted_time_;
-    // A chosen source id from which context was requested.
-    ukm::SourceId chosen_source_id_ = ukm::NoURLSourceId();
-  };
-
-  // Tracks information related to individual request/response turns.
-  // It is reset when new user input is submitted and populated as the turn
-  // progresses.
-  TurnInfo turn_;
-
   // The last web client input mode used by the user.
   mojom::WebClientMode input_mode_ = mojom::WebClientMode::kUnknown;
-  std::set<mojom::WebClientMode> inputs_modes_used_;
-
-  // Tracks the source ID from the latest tab context requested by the web
-  // client. It is reset when user input is submitted.
-  ukm::SourceId last_tab_context_source_id_ = ukm::NoURLSourceId();
 
   // Session state. `session_start_time_` is a sentinel that is cleared in
   // OnGlicWindowClose() and is used to determine whether
   // OnGlicWindowStartedOpening was called.
-  int session_responses_ = 0;
   base::TimeTicks session_start_time_;
   mojom::InvocationSource invocation_source_ =
       mojom::InvocationSource::kUnsupported;
@@ -414,8 +389,6 @@ class GlicMetrics {
 
   // The time the last attempt to share an image started.
   base::TimeTicks share_image_start_time_;
-
-  std::unique_ptr<internal::BrowserActivityObserver> browser_activity_observer_;
 };
 
 // Records the hotkey cleared preference metric.

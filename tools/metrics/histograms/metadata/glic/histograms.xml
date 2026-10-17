@@ -2309,18 +2309,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Response.Attached" enum="Boolean"
-    expires_after="2026-07-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    When glic returns a response to user input, whether glic was attached or
-    detached at the time the response started. Only emitted if glic was visible
-    when the response started.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Response.ClosedCaptionsShown" enum="Boolean"
     expires_after="2026-01-15">
   <owner>sanaakbani@google.com</owner>
@@ -2332,27 +2320,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Response.InputMode" enum="GlicWebClientMode"
-    expires_after="2026-09-27">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded after a turn. Records the input mode of the original user input.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Response.InvocationSource" enum="GlicInvocationSource"
-    expires_after="2026-07-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded after a turn. Records the source of the invocation of the glic
-    window.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Response.Rated" enum="BooleanPositive"
     expires_after="2027-04-11">
   <owner>carlosk@chromium.org</owner>
@@ -2361,63 +2328,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Recorded anytime a response is rated. There is no guarantee of correlation
     with any other Response.* metrics. This exists for diagnostic purposes only.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Response.StartTime" units="ms" expires_after="2026-07-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded when a response starts and was visible. Measures the time from a
-    user's submitted input until a response starts and was visible to the user.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Response.StartTime.InputMode.{Mode}" units="ms"
-    expires_after="2026-07-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded when a response starts being presented to the user in {Mode}.
-    Measures the time from when the user submitted input until a response starts
-    being presented to the user.
-  </summary>
-  <token key="Mode" variants="WebClientMode"/>
-</histogram>
-
-<histogram name="Glic.Response.StartTime.TabContext.{ContextStatus}" units="ms"
-    expires_after="2026-07-26">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    Recorded when a response starts being presented to the user and
-    {ContextStatus} (*). Measures the time from when the user submitted input
-    until a response starts being presented to the user. This is reported for
-    all web client modes (text or audio).
-
-    (*) Chrome knows if tab context was requested by the web client and the
-    internal state of tabs' sharing status, but it cannot know for certain if
-    tab context was or was not actually attached to requests by the web client.
-  </summary>
-  <token key="ContextStatus">
-    <variant name="LikelyWith"
-        summary="tab context was likely used in the request"/>
-    <variant name="LikelyWithout"
-        summary="tab context was likely NOT used in the request"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.Response.TabsPinnedForSharingCount" units="tabs"
-    expires_after="2026-07-19">
-  <owner>wry@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <owner>mcrouse@chromium.org</owner>
-  <summary>
-    Recorded after a turn. Records the number of tabs pinned for sharing at that
-    time.
   </summary>
 </histogram>
 
@@ -2563,26 +2473,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Session.InputModesUsed" enum="GlicInputModesUsed"
-    expires_after="2026-07-26">
-  <owner>dullweber@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The input modes that were used during the session. Recorded when the panel
-    is closed.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Session.InputSubmit.BrowserActiveState"
-    enum="GlicBrowserActiveState" expires_after="2026-07-19">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the browser active state when user input is submitted in a Glic
-    session.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Session.Open.Attached" enum="Boolean"
     expires_after="2027-04-11">
   <owner>carlosk@chromium.org</owner>
@@ -2593,15 +2483,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Session.Open.BrowserActiveState"
-    enum="GlicBrowserActiveState" expires_after="2026-07-19">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the browser active state when a Glic session starts.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Session.Open.InvocationSource"
     enum="GlicInvocationSource" expires_after="2027-04-11">
   <owner>carlosk@chromium.org</owner>
@@ -2609,29 +2490,6 @@ chromium-metrics-reviews@google.com.
   <owner>erikchen@chromium.org</owner>
   <summary>
     Recorded when a session starts. Records the source of the invocation.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Session.ResponseCount{Profile}" units="count"
-    expires_after="2027-01-31">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The number of responses during the session. Recorded when the panel is
-    closed.
-
-    {Profile}
-  </summary>
-  <token key="Profile" variants="ProfileIndex"/>
-</histogram>
-
-<histogram name="Glic.Session.ResponseStart.BrowserActiveState"
-    enum="GlicBrowserActiveState" expires_after="2026-07-19">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the browser active state when a Glic response starts rendering.
   </summary>
 </histogram>
 

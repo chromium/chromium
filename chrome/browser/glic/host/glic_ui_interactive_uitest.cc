@@ -10,7 +10,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -271,12 +270,8 @@ class GlicUiInteractiveTest : public GlicUiInteractiveUiTestBase {
 
 // TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(GlicUiInteractiveTest, DISABLED_OpenGlicWindow) {
-  base::HistogramTester histogram_tester;
   RunTestSequence(ObserveState(kGlicUiStateHistory, GetHost()),
                   OpenGlic(GlicInstrumentMode::kHostOnly));
-  // The browser is active when opening the Glic window.
-  histogram_tester.ExpectUniqueSample("Glic.Session.Open.BrowserActiveState",
-                                      0 /*kBrowserActive*/, 1);
 }
 
 // Tests the network being connected at startup (as normal).

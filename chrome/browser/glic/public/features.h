@@ -76,8 +76,6 @@ BASE_DECLARE_FEATURE(kGlicLiveMode);
 
 BASE_DECLARE_FEATURE(kGlicSummarizeVideoSuggestion);
 
-BASE_DECLARE_FEATURE(kGlicFixTimeToFirstQueryKillSwitch);
-
 BASE_DECLARE_FEATURE(kGlicContextMenu);
 extern const base::FeatureParam<std::string> kGlicContextMenuArm;
 extern const base::FeatureParam<bool> kGlicContextMenuWithOnboarding;

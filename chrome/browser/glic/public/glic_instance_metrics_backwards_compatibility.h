@@ -20,7 +20,6 @@ class GlicInstanceMetricsBackwardsCompatibility {
 
   virtual void OnUserInputSubmitted(mojom::WebClientMode mode,
                                     mojom::PromptType prompt_type) = 0;
-  virtual void OnResponseStarted() = 0;
 };
 
 }  // namespace glic

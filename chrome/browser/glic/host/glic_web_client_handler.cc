@@ -1463,10 +1463,7 @@ class GlicWebClientHandler
   void OnUserInputSubmitted(mojom::WebClientMode mode,
                             mojom::PromptType prompt_type) override {
     LogApiRequest(GlicHostApiRequestId::kOnUserInputSubmitted);
-    if (base::FeatureList::IsEnabled(
-            features::kGlicFixTimeToFirstQueryKillSwitch)) {
-      glic_service_->metrics()->OnUserInputSubmitted(mode, prompt_type);
-    }
+    glic_service_->metrics()->OnUserInputSubmitted();
     glic_service_->OnUserInputSubmitted(mode);
     host().instance_metrics_backwards_compatibility().OnUserInputSubmitted(
         mode, prompt_type);
@@ -1491,11 +1488,9 @@ class GlicWebClientHandler
     host().instance_metrics().OnReaction(reaction_type);
   }
 
-  // TODO(crbug.com/450026474): Remove call to GlicMetrics once
-  // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnResponseStarted() override {
     LogApiRequest(GlicHostApiRequestId::kOnResponseStarted);
-    host().instance_metrics_backwards_compatibility().OnResponseStarted();
+    host().instance_metrics().OnResponseStarted();
     host().instance_metrics().RecordAttachedContextTabCount(
         GetSharingManagerInternal().GetNumPinnedTabs());
   }
