@@ -21,6 +21,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -37,6 +38,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -48,6 +50,8 @@ import java.util.List;
     "disable-features=IPH_FeedHeaderMenu"
 })
 @Batch(Batch.PER_CLASS)
+// Tests the Java native NTP, which is not used on desktop (it uses the WebUI NTP).
+@Restriction(DeviceFormFactor.PHONE_OR_TABLET)
 public class NewTabPageMemoryLeakTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
