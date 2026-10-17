@@ -230,12 +230,12 @@ bool AreActionChipsEnabled(Profile* profile) {
       ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
       base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures);
   bool action_chips_eligible =
-      (base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChips) ||
-       base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChipsSmall))
-          ? ntp_next_features_enabled
-          : (aim_eligibility_service &&
-             aim_eligibility_service->IsAimEligible() &&
-             num_tools_eligible >= 2);
+      ntp_next_features_enabled &&
+      ((base::FeatureList::IsEnabled(ntp_features::kNtpScaledActionChips) ||
+        base::FeatureList::IsEnabled(
+            ntp_features::kNtpScaledActionChipsSmall)) ||
+       (aim_eligibility_service && aim_eligibility_service->IsAimEligible() &&
+        num_tools_eligible >= 2));
   return action_chips_eligible &&
          (!ntp_features::kNtpNextDisablementParam.Get() ||
           profile->GetPrefs()->GetBoolean(prefs::kNtpToolChipsVisible));
