@@ -104,6 +104,16 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
 
     EXPECT_CALL(status_change_cb_, Run(STATUS_INITIALIZED))
         .Times(testing::AtLeast(1));
+    RecreateEncoder();
+  }
+
+  ~MediaVideoEncoderWrapperTest() override = default;
+
+  // (Re)creates `encoder_` using `config_`, backed by a new `mock_encoder_`.
+  void RecreateEncoder() {
+    mock_encoder_ = nullptr;
+    encoder_.reset();
+
     auto mock_encoder = std::make_unique<NiceMock<MockVideoEncoder>>();
     mock_encoder_ = mock_encoder.get();
     encoder_ = std::make_unique<MediaVideoEncoderWrapper>(
@@ -112,8 +122,6 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
         status_change_cb_.Get(), mock_gpu_factories_.get());
     encoder_->SetEncoderForTesting(std::move(mock_encoder));
   }
-
-  ~MediaVideoEncoderWrapperTest() override = default;
 
   void SetEncoderAsInitialized() {
     // We simulate the encoder as initialized for the purpose of testing.
@@ -200,6 +208,29 @@ class MediaVideoEncoderWrapperTest : public TestWithCastEnvironment {
     return options;
   }
 
+  // Encodes a key frame and returns the content hint that the encoder was
+  // initialized with.
+  std::optional<media::VideoEncoder::ContentHint> GetInitialContentHint() {
+    std::optional<media::VideoEncoder::ContentHint> content_hint;
+    EXPECT_CALL(*mock_encoder_, Initialize(_, _, _, _, _))
+        .WillOnce([&](VideoCodecProfile profile,
+                      const media::VideoEncoder::Options& options,
+                      media::VideoEncoder::EncoderInfoCB info,
+                      media::VideoEncoder::OutputCB output,
+                      media::VideoEncoder::EncoderStatusCB done) {
+          content_hint = options.content_hint;
+          std::move(info).Run(VideoEncoderInfo());
+          std::move(done).Run(EncoderStatus::Codes::kOk);
+          output_cb_ = output;
+        });
+    EXPECT_CALL(*mock_encoder_, DisablePostedCallbacks());
+
+    const FrameInfo frame_info = CreateFrameInfo(FrameType::kKey);
+    ExpectVideoFrameEncoded(frame_info);
+    EXPECT_NE(EncodeVideoFrame(frame_info), nullptr);
+    return content_hint;
+  }
+
   media::VideoEncoder::OutputCB output_cb_;
 
   FrameSenderConfig config_ = GetDefaultVideoSenderConfig();
@@ -224,6 +255,28 @@ TEST_F(MediaVideoEncoderWrapperTest, InitializeEncoderAndSendFrame) {
   EXPECT_EQ(encoded_frame->is_key_frame, true);
   EXPECT_EQ(encoded_frame->frame_id, FrameId::first());
   EXPECT_GE(encoded_frame->lossiness, 0.0f);
+}
+
+// Test that the encoder is tuned for screen content, since mirroring always
+// captures tabs, windows, or screens.
+TEST_F(MediaVideoEncoderWrapperTest, InitializesEncoderForScreenContent) {
+  EXPECT_EQ(GetInitialContentHint(), media::VideoEncoder::ContentHint::Screen);
+}
+
+// libvpx's VP9 screen content mode currently blurs text after content
+// changes, so VP9 software encoding keeps the default (camera) tuning.
+TEST_F(MediaVideoEncoderWrapperTest,
+       DoesNotTuneVp9SoftwareEncoderForScreenContent) {
+  config_.video_codec_params->codec = VideoCodec::kVP9;
+  RecreateEncoder();
+  EXPECT_EQ(GetInitialContentHint(), std::nullopt);
+}
+
+TEST_F(MediaVideoEncoderWrapperTest, TunesVp9HardwareEncoderForScreenContent) {
+  config_.video_codec_params->codec = VideoCodec::kVP9;
+  config_.use_hardware_encoder = true;
+  RecreateEncoder();
+  EXPECT_EQ(GetInitialContentHint(), media::VideoEncoder::ContentHint::Screen);
 }
 
 TEST_F(MediaVideoEncoderWrapperTest, SendsIntermediateFramesAfterKeyFrames) {

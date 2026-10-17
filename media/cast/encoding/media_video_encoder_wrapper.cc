@@ -220,6 +220,19 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
   options_.bitrate = Bitrate::ConstantBitrate(
       base::checked_cast<uint32_t>(video_config.start_bitrate));
 
+  // Mirroring captures tabs, windows, and screens, so tune the encoder for
+  // screen content. This enables screen content tuning in software encoders
+  // (e.g. screen content mode for VP8), and the "display" content type for
+  // hardware encoders, which keeps text and other sharp edges legible.
+  //
+  // TODO(crbug.com/572902679): Enable this for VP9 software encoding too.
+  // libvpx's VP9 screen content mode uses a stronger loop filter and lowers QP
+  // more slowly than camera mode, so text blurs after every content change and
+  // static content takes several frames to sharpen again.
+  if (codec_ != media::VideoCodec::kVP9 || is_hardware_encoder_) {
+    options_.content_hint = media::VideoEncoder::ContentHint::Screen;
+  }
+
   // NOTE: the H264 encoder can produce either AVC or annexb formatted frames.
   // Annexb is better supported by Cast receivers.
   if (codec_ == media::VideoCodec::kH264) {
