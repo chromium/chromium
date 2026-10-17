@@ -11658,12 +11658,37 @@
             "platforms": [
                 "ios"
             ],
+            "form_factors": [
+                "phone"
+            ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_iPhone",
                     "params": {
                         "animation-colormapping": "{\"light\":{\"6F5D00\":\"#6F5D00\",\"FCD591\":\"#FCD591\"},\"dark\":{\"6F5D00\":\"#B19D93\",\"FCD591\":\"#7A571B\"}}",
                         "animation-url": "https://www.gstatic.com/chrome/ntp/ios/ephemeral_themes/halloween.json",
+                        "seed-color": "#FF8000",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "NewTabPageEphemeralTheme"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "ios"
+            ],
+            "form_factors": [
+                "tablet"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_iPad",
+                    "params": {
+                        "animation-colormapping": "{\"light\":{\"6F5D00\":\"#6F5D00\",\"FCD591\":\"#FCD591\"},\"dark\":{\"6F5D00\":\"#B19D93\",\"FCD591\":\"#7A571B\"}}",
+                        "animation-url": "https://www.gstatic.com/chrome/ntp/ios/ephemeral_themes/halloween-ipad.json",
                         "seed-color": "#FF8000",
                         "version": "1"
                     },
