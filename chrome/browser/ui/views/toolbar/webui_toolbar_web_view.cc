@@ -116,8 +116,10 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_manager_base.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_util_mac.h"
@@ -156,6 +158,15 @@ WebUIToolbarUI* GetWebUIToolbarUIFromWebContents(
   }
   auto* controller = web_ui->GetController();
   return controller ? controller->GetAs<WebUIToolbarUI>() : nullptr;
+}
+
+// Mirrors LabelButton::GetVisualState(): on platforms where inactive widgets
+// make controls appear disabled (Mac), native toolbar buttons use
+// kColorToolbarButtonIconInactive while the window isn't painted as active.
+bool ShouldToolbarControlsAppearInactive(const views::Widget* widget) {
+  return views::PlatformStyle::kInactiveWidgetControlsAppearDisabled &&
+         widget && widget->ShouldViewsStyleFollowWidgetActivation() &&
+         !widget->ShouldPaintAsActive();
 }
 
 }  // namespace
@@ -577,10 +588,32 @@ void WebUIToolbarWebView::AddedToWidget() {
     // preloading.
     MaybeInitializePageDependentControls();
   }
+
+  if constexpr (views::PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
+    paint_as_active_subscription_ =
+        GetWidget()->RegisterPaintAsActiveChangedCallback(
+            base::BindRepeating(&WebUIToolbarWebView::OnPaintAsActiveChanged,
+                                base::Unretained(this)));
+    OnPaintAsActiveChanged();
+  }
+}
+
+void WebUIToolbarWebView::OnPaintAsActiveChanged() {
+  const bool inactive = ShouldToolbarControlsAppearInactive(GetWidget());
+  if (last_queued_state_.controls_appear_inactive != inactive) {
+    last_queued_state_.controls_appear_inactive = inactive;
+    // These icons are rendered by the browser, so they need updating.
+    if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+      pinned_toolbar_actions_.OnControlsAppearInactiveChanged();
+    }
+    avatar_control_.OnControlsAppearInactiveChanged();
+    PostPushToolbarState();
+  }
 }
 
 void WebUIToolbarWebView::RemovedFromWidget() {
   focus_manager_observation_.Reset();
+  paint_as_active_subscription_ = {};
 }
 
 void WebUIToolbarWebView::OnThemeChanged() {

@@ -956,6 +956,13 @@ struct ToolbarState {
 
   // State of the Glic button in the toolbar.
   GlicButtonState glic_button_state;
+
+  // True while toolbar button icons should use the inactive color because the
+  // browser window is inactive. Only ever true on platforms where
+  // views::PlatformStyle::kInactiveWidgetControlsAppearDisabled is set (Mac),
+  // matching native toolbar buttons, which use kColorToolbarButtonIconInactive
+  // in that case.
+  bool controls_appear_inactive = false;
 };
 
 enum FocusRequestTarget {

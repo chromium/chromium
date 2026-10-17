@@ -54,6 +54,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -769,6 +770,66 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
                                   "#textInput", "#input"},
                         "el => el.value.includes('chrome://version')", true));
 }
+
+#if BUILDFLAG(IS_MAC)
+// Verifies the toolbar state tells the WebUI to mute icons while the window is
+// inactive. Only Mac does this (see
+// views::PlatformStyle::kInactiveWidgetControlsAppearDisabled). This also
+// can't run on e.g. Wayland, which doesn't allow activating windows
+// programmatically.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       ControlsAppearInactiveFollowsWindowActivation) {
+  static_assert(views::PlatformStyle::kInactiveWidgetControlsAppearDisabled);
+  WaitForInitialWebUIToolbar(browser());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  views::Widget* const widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  BrowserWindowInterface* const other_browser =
+      CreateBrowser(browser()->GetProfile());
+
+  auto check_inactive = [this](bool expected) {
+    return CheckView(kWebUIToolbarElementIdentifier,
+                     [expected](WebUIToolbarWebView* view) {
+                       view->FlushPendingToolbarStateForTesting();
+                       return static_cast<WebUIToolbarControlDelegate*>(view)
+                                  ->GetState()
+                                  .controls_appear_inactive == expected;
+                     });
+  };
+
+  RunTestSequence(
+      WaitForShow(kWebUIToolbarElementIdentifier), Do([this]() {
+        ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+      }),
+      check_inactive(false), Do([other_browser]() {
+        ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(other_browser));
+      }),
+      PollUntil([widget]() { return !widget->ShouldPaintAsActive(); },
+                "Wait for the browser window to paint as inactive"),
+      check_inactive(true), Do([this]() {
+        ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+      }),
+      PollUntil([widget]() { return widget->ShouldPaintAsActive(); },
+                "Wait for the browser window to paint as active"),
+      check_inactive(false));
+}
+#else
+// Native toolbar buttons don't change when the window is inactive on platforms
+// other than Mac, so the WebUI must never be told to mute icons.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
+                       ControlsNeverAppearInactive) {
+  static_assert(!views::PlatformStyle::kInactiveWidgetControlsAppearDisabled);
+  WaitForInitialWebUIToolbar(browser());
+  RunTestSequence(
+      WaitForShow(kWebUIToolbarElementIdentifier),
+      CheckView(kWebUIToolbarElementIdentifier, [](WebUIToolbarWebView* view) {
+        view->FlushPendingToolbarStateForTesting();
+        return !static_cast<WebUIToolbarControlDelegate*>(view)
+                    ->GetState()
+                    .controls_appear_inactive;
+      }));
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 class WebUIToolbarWebViewDeferStartupLayoutInteractiveTest
     : public WebUIToolbarWebViewInteractiveTest {

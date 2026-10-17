@@ -82,7 +82,8 @@ toolbar_ui_api::mojom::ToolbarStatePtr CreateValidToolbarState() {
       std::vector<extensions_bar::mojom::ExtensionActionInfoPtr>(),
       std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),
       /*layout_constants_version=*/0,
-      /*touch_ui=*/false, toolbar_ui_api::mojom::GlicButtonState::New());
+      /*touch_ui=*/false, toolbar_ui_api::mojom::GlicButtonState::New(),
+      /*controls_appear_inactive=*/false);
 }
 
 MockCommandUpdater::MockCommandUpdater() = default;

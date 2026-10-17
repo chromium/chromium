@@ -27,9 +27,11 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/download_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions_test_base.h"
@@ -52,6 +54,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/ax_update_notifier.h"
 #include "ui/views/accessibility/ax_update_observer.h"
@@ -255,9 +258,16 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
         EvalJsOnPinnedAction(
             mojom_action, "return btn?.getAttribute('iron-icon') || '(null)'"));
 
-    // And the color.
+    // And the color. Like native pinned toolbar buttons, vector icons use the
+    // toolbar button icon color rather than the action's own color.
+    const SkColor icon_color = BrowserView::GetBrowserViewForBrowser(browser())
+                                   ->GetColorProvider()
+                                   ->GetColor(kColorToolbarButtonIcon);
     EXPECT_EQ(
-        "--cr-icon-button-fill-color: rgba(255, 0, 255, 1.00);",
+        base::StringPrintf(
+            "--cr-icon-button-fill-color: rgba(%d, %d, %d, %.2f);",
+            SkColorGetR(icon_color), SkColorGetG(icon_color),
+            SkColorGetB(icon_color), SkColorGetA(icon_color) / 255.0),
         EvalJsOnPinnedAction(mojom_action,
                              "return btn?.getAttribute('style') || '(null)'"));
 

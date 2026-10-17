@@ -60,6 +60,9 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
 
   void Init();
   void OnThemeChanged();
+  // Called when the toolbar state's `controls_appear_inactive` changes, so the
+  // icons can be recolored.
+  void OnControlsAppearInactiveChanged();
 
   // Handle a context menu request from WebUI.
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,

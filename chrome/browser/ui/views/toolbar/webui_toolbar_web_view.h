@@ -553,6 +553,9 @@ class WebUIToolbarWebView
   WebUIToolbarUI* GetWebUIToolbarUI() const override;
 
   void OnTouchUiChanged();
+  // Updates `controls_appear_inactive` in the toolbar state when the widget's
+  // paint-as-active state changes.
+  void OnPaintAsActiveChanged();
   void PostPushToolbarState();
   void MaybeInitializePageDependentControls();
   void PushToolbarState();
@@ -698,6 +701,7 @@ class WebUIToolbarWebView
   base::TimeTicks last_crash_time_;
 
   base::CallbackListSubscription touch_ui_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
 
   // True if the window is maximized or fullscreen.
   bool window_is_maximized_or_fullscreen_ = false;

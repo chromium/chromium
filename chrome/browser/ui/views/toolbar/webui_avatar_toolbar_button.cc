@@ -246,6 +246,10 @@ void WebUIAvatarToolbarButton::NotifyIPHPromoChanged(bool has_promo) {
   }
 }
 
+void WebUIAvatarToolbarButton::OnControlsAppearInactiveChanged() {
+  UpdateState();
+}
+
 void WebUIAvatarToolbarButton::UpdateState() {
   if (!state_manager_ || !is_initialized_ ||
       !delegate_->GetView()->GetWidget()) {
@@ -288,7 +292,9 @@ void WebUIAvatarToolbarButton::UpdateState() {
     auto [icon, icon_type] =
         state_provider->GetAvatarIcon(icon_size, icon_color, *color_provider);
 
-    if (!is_enabled) {
+    // Native AvatarToolbarButton uses this icon for STATE_DISABLED, which is
+    // also shown while the window is inactive on Mac.
+    if (!is_enabled || delegate_->GetState().controls_appear_inactive) {
       icon = ui::GetDefaultDisabledIconFromImageModel(icon);
     }
 

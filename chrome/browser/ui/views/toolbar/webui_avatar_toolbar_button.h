@@ -65,6 +65,10 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
 
   void NotifyIPHPromoChanged(bool has_promo);
 
+  // Called when the toolbar state's `controls_appear_inactive` changes, so the
+  // icon can be updated.
+  void OnControlsAppearInactiveChanged();
+
  private:
   // Used by tests to access the private state_manager_ for verification and
   // fallback queries when the button is hidden.

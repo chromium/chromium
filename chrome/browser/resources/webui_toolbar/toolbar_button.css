@@ -54,6 +54,12 @@ cr-button {
   --cr-button-border: 0;
 }
 
+/* Like native toolbar buttons, use the inactive icon color while the browser
+ * window is inactive on Mac. The browser sets controls-appear-inactive. */
+:host-context(toolbar-app[controls-appear-inactive]) cr-icon-button {
+  --cr-icon-button-fill-color: var(--color-toolbar-button-icon-inactive);
+}
+
 cr-icon-button[is-menu-open],
 cr-button[is-menu-open],
 :host(.anchor-highlight) cr-icon-button {

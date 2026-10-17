@@ -75,6 +75,20 @@ toolbar-chip-button.help-anchor-highlight:not([has-label]) {
   --toolbar-chip-fg-color: var(--color-toolbar-feature-promo-highlight);
 }
 
+/* Like native toolbar buttons, use the inactive icon color while the browser
+ * window is inactive on Mac (the browser sets controls-appear-inactive). This
+ * doesn't apply with a label or IPH, where native keeps their colors. */
+:host-context(toolbar-app[controls-appear-inactive])
+    toolbar-chip-button:not([has-label]):not(.help-anchor-highlight) {
+  --toolbar-chip-fg-color: var(--color-toolbar-button-icon-inactive);
+}
+
+/* Like native toolbar buttons, whose label is disabled while the browser
+ * window is inactive on Mac (the browser sets controls-appear-inactive). */
+:host-context(toolbar-app[controls-appear-inactive]) #text {
+  color: var(--color-label-foreground-disabled);
+}
+
 toolbar-chip-button[has-label] {
   --toolbar-chip-ink-drop-hover-color: var(--color-app-menu-chip-ink-drop-hover);
   --toolbar-chip-ink-drop-ripple-color: var(--color-app-menu-chip-ink-drop-ripple);

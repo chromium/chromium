@@ -495,6 +495,7 @@ export class ToolbarAppElement extends AppElementBase {
     touchUi: getTypedBoolean(ToolbarStateKey.TOUCH_UI),
     pinnedToolbarActionsState: [],
     extensionsState: [],
+    controlsAppearInactive: false,
   };
 
   private browserProxy_: BrowserProxy;
@@ -891,6 +892,17 @@ export class ToolbarAppElement extends AppElementBase {
       chrome.histograms.recordTime(
           'InitialWebUI.Toolbar.ParseFinishedToFirstUpdate',
           Math.round(performance.now() - entry.domInteractive));
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('toolbarState_')) {
+      this.toggleAttribute(
+          'controls-appear-inactive',
+          this.toolbarState_.controlsAppearInactive);
     }
   }
 

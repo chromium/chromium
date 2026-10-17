@@ -77,6 +77,12 @@
   transition: none !important;
 }
 
+/* Like native toolbar buttons, whose label is disabled while the browser
+ * window is inactive on Mac (the browser sets controls-appear-inactive). */
+:host-context(toolbar-app[controls-appear-inactive]) #text {
+  color: var(--color-label-foreground-disabled);
+}
+
 #button.highlight-default {
   --toolbar-chip-bg-color:
       var(--color-avatar-button-highlight-default);
