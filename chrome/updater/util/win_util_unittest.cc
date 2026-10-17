@@ -596,6 +596,14 @@ TEST(WinUtil, GetLoggedOnUserToken) {
   ASSERT_FALSE(::IsUserAnAdmin());
 }
 
+TEST(WinUtil, GetUACState) {
+  const std::string uac_state = GetUACState();
+  EXPECT_THAT(uac_state, testing::HasSubstr("IsUserAdmin: "));
+  EXPECT_THAT(uac_state, testing::HasSubstr("IsUACOn: "));
+  EXPECT_THAT(uac_state, testing::HasSubstr("IsElevatedWithUACOn: "));
+  EXPECT_THAT(uac_state, testing::HasSubstr("LUA: "));
+}
+
 TEST(WinUtil, IsAuditMode) {
   if (!::IsUserAnAdmin()) {
     GTEST_SKIP();

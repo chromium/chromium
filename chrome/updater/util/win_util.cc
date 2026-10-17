@@ -107,6 +107,23 @@ ICallingProcessInfo : public IUnknown {
                                                  HANDLE * handle) = 0;
 };
 
+// Filters the `explorer.exe` processes. This filter is used with
+// `base::ProcessIterator` instead of using `base::NamedProcessIterator`
+// because the latter compares executable names with
+// `base::FilePath::CompareEqualIgnoreCase`, which calls `::CharUpperW` in
+// user32 and `CHECK`s that win32k system calls are not disabled for the
+// process. Some environments which virtualize win32k, such as GraphOn
+// GO-Global, report the win32k lockdown mitigation as enabled for updater
+// processes launched from a hosted application, which makes the `CHECK` fail
+// (see crbug.com/574549798). The process name is pure ASCII, so an ASCII
+// case-insensitive comparison is sufficient and has no user32 dependency.
+class ExplorerProcessFilter : public base::ProcessFilter {
+ public:
+  bool Includes(const base::ProcessEntry& entry) const override {
+    return base::EqualsCaseInsensitiveASCII(entry.exe_file(), L"explorer.exe");
+  }
+};
+
 // Returns `true` if the current process token is a split UAC token.
 bool IsUserRunningSplitToken() {
   std::optional<base::win::AccessToken> token =
@@ -172,7 +189,8 @@ HRESULT GetProcessIntegrityLevel(DWORD process_id, MANDATORY_LEVEL* level) {
 }
 
 bool IsExplorerRunningAtMediumOrLower() {
-  base::NamedProcessIterator iter(L"EXPLORER.EXE", nullptr);
+  const ExplorerProcessFilter filter;
+  base::ProcessIterator iter(&filter);
   while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
     MANDATORY_LEVEL level = MandatoryLevelUntrusted;
     if (SUCCEEDED(GetProcessIntegrityLevel(process_entry->pid(), &level)) &&
@@ -1453,7 +1471,8 @@ std::optional<base::ProcessId> GetExplorerPidInActiveSession() {
     return {};
   }
 
-  base::NamedProcessIterator iter(L"EXPLORER.EXE", nullptr);
+  const ExplorerProcessFilter filter;
+  base::ProcessIterator iter(&filter);
   while (const base::ProcessEntry* process_entry = iter.NextProcessEntry()) {
     DWORD process_session = 0;
     if (::ProcessIdToSessionId(process_entry->pid(), &process_session) &&
