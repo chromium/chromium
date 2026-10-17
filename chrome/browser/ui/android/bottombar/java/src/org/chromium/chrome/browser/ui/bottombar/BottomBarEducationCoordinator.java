@@ -1,0 +1,421 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.bottombar;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Rect;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewTreeObserver;
+
+import androidx.annotation.IntDef;
+
+import org.chromium.base.CallbackUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.ui.actions.ActionId;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
+import org.chromium.components.browser_ui.widget.textbubble.ArrowBubbleDrawable;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.TokenHolder;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.RectProvider;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.function.Supplier;
+
+/**
+ * Coordinates the Bottom Bar Education IPH flow.
+ *
+ * <p>This flow relies on a scrim-below-bottom-controls z-order trick. When the bottom controls are
+ * positioned at the bottom, we use the `control_container` (which contains the bottom omnibox) as
+ * the scrim anchor view. By setting `SHOW_IN_FRONT_OF_ANCHOR_VIEW = false`, the scrim is inserted
+ * before the `control_container` in the view hierarchy, leaving both the `control_container` and
+ * the subsequently-drawn `bottom_app_bar_container` (containing the bottom bar) undimmed above the
+ * scrim.
+ *
+ * <p>When the controls are positioned at the top, the `control_container` is at the top of the
+ * screen. In this case, we use the `bottom_app_bar_container` directly as the anchor view, so only
+ * the bottom bar remains above the scrim.
+ */
+@NullMarked
+public class BottomBarEducationCoordinator {
+
+    private final Context mContext;
+    private final ScrimManager mScrimManager;
+    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    private final @Nullable View mControlContainer;
+    private final @Nullable View mBottomAppBarContainer;
+    private final BottomBarView mBottomBarView;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
+
+    private @Nullable AnchoredPopupWindow mPopupWindow;
+    private @Nullable PropertyModel mScrimModel;
+    private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+    private ViewTreeObserver.@Nullable OnGlobalLayoutListener mGlobalLayoutListener;
+    private @Nullable Tracker mActiveTracker;
+    private @State int mState = State.IDLE;
+
+    @IntDef({State.IDLE, State.SHOWING_BUBBLE, State.DONE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface State {
+        int IDLE = 0;
+        int SHOWING_BUBBLE = 1;
+        int DONE = 3;
+    }
+
+    /**
+     * Constructs the BottomBarEducationCoordinator.
+     *
+     * @param scrimManager The {@link ScrimManager} used to show the dark scrim.
+     * @param browserControlsVisibilityManager The manager for browser controls.
+     * @param controlContainer The top control container view.
+     * @param bottomAppBarContainer The bottom app bar container view.
+     * @param bottomBarView The bottom bar view itself.
+     * @param profileSupplier Supplier for the current Profile.
+     */
+    public BottomBarEducationCoordinator(
+            ScrimManager scrimManager,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            @Nullable View controlContainer,
+            @Nullable View bottomAppBarContainer,
+            BottomBarView bottomBarView,
+            Supplier<@Nullable Profile> profileSupplier) {
+        mContext = bottomBarView.getContext();
+        mScrimManager = scrimManager;
+        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
+        mControlContainer = controlContainer;
+        mBottomAppBarContainer = bottomAppBarContainer;
+        mBottomBarView = bottomBarView;
+        mProfileSupplier = profileSupplier;
+    }
+
+    /**
+     * Destroys the coordinator, removing any active layout listeners and dismissing any shown UI.
+     */
+    public void destroy() {
+        removeLayoutListeners();
+        dismiss();
+        mState = State.DONE;
+    }
+
+    /**
+     * @param profile The current Profile.
+     * @return Whether the education IPH would be shown if requested.
+     */
+    public boolean wouldShow(Profile profile) {
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
+        return tracker != null
+                && tracker.isInitialized()
+                && tracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    /** Attempts to show the education bubble if the conditions are met. */
+    public void maybeShow() {
+        if (mState != State.IDLE) return;
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+
+        if (!mBottomBarView.isLaidOut() || !mBottomBarView.isShown()) {
+            waitForLayout(this::maybeShow);
+            return;
+        }
+
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
+        if (!tracker.isInitialized()) {
+            tracker.addOnInitializedCallback(
+                    success -> {
+                        if (success && mState == State.IDLE) maybeShow();
+                    });
+            return;
+        }
+
+        View controlContainer = mControlContainer;
+        View anchorView =
+                selectScrimAnchor(
+                        mBrowserControlsVisibilityManager.getControlsPosition(),
+                        controlContainer,
+                        mBottomAppBarContainer);
+        if (anchorView == null) return;
+
+        if (!tracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION)) {
+            return;
+        }
+
+        mState = State.SHOWING_BUBBLE;
+        mActiveTracker = tracker;
+        showScrimAndLockControls(anchorView);
+        showBubble(anchorView);
+    }
+
+    /** Dismisses the education bubble and hides the scrim. */
+    public void dismiss() {
+        if (mState != State.SHOWING_BUBBLE) return;
+        mState = State.DONE;
+        removeLayoutListeners();
+        if (mActiveTracker != null) {
+            mActiveTracker.dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+            mActiveTracker = null;
+        }
+        if (mPopupWindow != null) {
+            AnchoredPopupWindow popup = mPopupWindow;
+            mPopupWindow = null;
+            popup.dismiss();
+        }
+
+        hideScrim();
+        if (mBrowserControlsToken != TokenHolder.INVALID_TOKEN) {
+            mBrowserControlsVisibilityManager
+                    .getBrowserVisibilityDelegate()
+                    .releasePersistentShowingToken(mBrowserControlsToken);
+            mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
+        }
+    }
+
+    static boolean shouldUseGeminiVariant(boolean geminiFocusedParam, @Nullable View glicButton) {
+        return geminiFocusedParam
+                && glicButton != null
+                && glicButton.isShown()
+                && glicButton.getWidth() > 0;
+    }
+
+    static int computeArrowOffset(
+            int anchorCenterX, int popupX, int popupWidth, int leftSpacing, int rightSpacing) {
+        int offset = anchorCenterX - popupX;
+        offset = Math.max(leftSpacing, offset);
+        offset = Math.min(popupWidth - rightSpacing, offset);
+        return offset;
+    }
+
+    static @Nullable View selectAnchorTarget(
+            boolean geminiFocused, @Nullable View glicButton, @Nullable View bottomBarView) {
+        if (geminiFocused && glicButton != null) {
+            return glicButton;
+        }
+        return bottomBarView;
+    }
+
+    private static @Nullable View selectScrimAnchor(
+            @ControlsPosition int controlsPosition,
+            @Nullable View controlContainer,
+            @Nullable View bottomAppBarContainer) {
+        return controlsPosition == ControlsPosition.BOTTOM
+                ? controlContainer
+                : bottomAppBarContainer;
+    }
+
+    private void showScrimAndLockControls(View anchorView) {
+        mScrimModel =
+                new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
+                        .with(ScrimProperties.ANCHOR_VIEW, anchorView)
+                        .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, false)
+                        .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
+                        .with(ScrimProperties.AFFECTS_NAVIGATION_BAR, false)
+                        .with(
+                                ScrimProperties.BACKGROUND_COLOR,
+                                mContext.getColor(R.color.default_scrim_color))
+                        .with(
+                                ScrimProperties.BOTTOM_MARGIN,
+                                mBrowserControlsVisibilityManager.getBottomControlsHeight())
+                        .with(ScrimProperties.CLICK_DELEGATE, CallbackUtils.emptyRunnable())
+                        .build();
+
+        mScrimManager.showScrim(mScrimModel);
+        mBrowserControlsToken =
+                mBrowserControlsVisibilityManager
+                        .getBrowserVisibilityDelegate()
+                        .showControlsPersistent();
+    }
+
+    // ClickableViewAccessibility is suppressed because setTouchInterceptor only consumes touches
+    // outside the popup bounds to keep the bubble modal without triggering a click action.
+    @SuppressLint("ClickableViewAccessibility")
+    private void showBubble(View anchorView) {
+        boolean geminiFocusedParam = BottomBarConfigUtils.isEducationGeminiFocused();
+        View glicButton = mBottomBarView.getContainerForAction(ActionId.GLIC);
+        boolean geminiFocused = shouldUseGeminiVariant(geminiFocusedParam, glicButton);
+
+        // TODO(crbug.com/574564735): Record which button the user clicked (Show me, Switch back
+        // or the Settings link).
+        Runnable openSettingsAndDismiss =
+                () -> {
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(
+                                    mContext, SettingsNavigation.SettingsFragment.APPEARANCE);
+                    dismiss();
+                };
+
+        Runnable dismissAndTurnOffBottomBar =
+                () -> {
+                    // Dismiss before writing the pref: pref listeners are notified synchronously,
+                    // and ChromeTabbedActivity recreates itself without the bottom bar in response.
+                    dismiss();
+                    BottomBarConfigUtils.setBottomBarUserEnabled(/* enabled= */ false);
+                };
+
+        Runnable onShowMeClicked =
+                () -> {
+                    if (mActiveTracker != null) {
+                        mActiveTracker.notifyEvent(
+                                EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_USED);
+                    }
+                    dismiss();
+                    // TODO(crbug.com/567168121): Start the tooltip chain (next CL).
+                };
+
+        View bubbleView =
+                BottomBarEducationUtils.inflateBubbleContent(
+                        mContext,
+                        geminiFocused,
+                        /* onSettingsClicked= */ openSettingsAndDismiss,
+                        /* onPositiveClicked= */ onShowMeClicked,
+                        /* onNegativeClicked= */ dismissAndTurnOffBottomBar);
+
+        // Determine the horizontal anchor target. For the default variant, the bubble and its
+        // arrow point to the center of the bottom bar. For the Gemini-focused variant, they
+        // point to the Gemini (GLIC) button.
+        final View arrowTarget = selectAnchorTarget(geminiFocused, glicButton, mBottomBarView);
+
+        final int anchorGapPx =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_education_bubble_anchor_gap);
+        RectProvider rectProvider =
+                new RectProvider() {
+                    @Override
+                    public Rect getRect() {
+                        int[] bottomLoc = new int[2];
+                        mBottomBarView.getLocationInWindow(bottomLoc);
+                        int top = bottomLoc[1];
+                        int bottom = top + mBottomBarView.getHeight();
+
+                        int[] targetLoc = new int[2];
+                        if (arrowTarget != null) {
+                            arrowTarget.getLocationInWindow(targetLoc);
+                        }
+                        int targetCenterX =
+                                arrowTarget != null ? targetLoc[0] + arrowTarget.getWidth() / 2 : 0;
+                        return new Rect(targetCenterX, top - anchorGapPx, targetCenterX, bottom);
+                    }
+                };
+
+        ArrowBubbleDrawable arrow = new ArrowBubbleDrawable(mContext, /* isRoundBubble= */ false);
+        arrow.setShowArrow(true);
+        arrow.setCornerRadiusPx(ViewUtils.dpToPx(mContext, 16));
+        arrow.setBubbleColor(SemanticColorUtils.getMenuBgColor(mContext));
+
+        View rootView = anchorView.getRootView();
+        mPopupWindow =
+                new AnchoredPopupWindow.Builder(
+                                mContext, rootView, arrow, () -> bubbleView, rectProvider)
+                        .setPreferredHorizontalOrientation(
+                                AnchoredPopupWindow.HorizontalOrientation.CENTER)
+                        .setPreferredVerticalOrientation(
+                                AnchoredPopupWindow.VerticalOrientation.ABOVE)
+                        .setLayoutObserver(
+                                (positionBelow, x, y, width, height, anchorRect) -> {
+                                    int arrowOffset =
+                                            computeArrowOffset(
+                                                    anchorRect.centerX(),
+                                                    x,
+                                                    width,
+                                                    arrow.getArrowLeftSpacing(),
+                                                    arrow.getArrowRightSpacing());
+                                    arrow.setPositionProperties(arrowOffset, positionBelow);
+                                })
+                        .setFocusable(true)
+                        .setTouchModal(true)
+                        .setDismissOnTouchInteraction(false)
+                        .setTouchInterceptor(
+                                (v, event) -> {
+                                    int action = event.getActionMasked();
+                                    if (action == MotionEvent.ACTION_OUTSIDE) return true;
+                                    if (action == MotionEvent.ACTION_DOWN) {
+                                        float x = event.getX();
+                                        float y = event.getY();
+                                        return x < 0
+                                                || y < 0
+                                                || x >= v.getWidth()
+                                                || y >= v.getHeight();
+                                    }
+                                    return false;
+                                })
+                        .addOnDismissListener(this::onPopupDismissed)
+                        .setMargin(
+                                mContext.getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.bottom_bar_education_bubble_side_margin))
+                        .setDesiredContentWidth(
+                                rootView.getWidth() > 0
+                                        ? rootView.getWidth()
+                                        : mContext.getResources().getDisplayMetrics().widthPixels)
+                        .build();
+        mPopupWindow.show();
+        if (!mPopupWindow.isShowing()) {
+            dismiss();
+        }
+    }
+
+    /**
+     * Runs {@code action} once the bottom bar is laid out and shown. Uses a one-shot {@link
+     * ViewTreeObserver.OnGlobalLayoutListener} because {@link ViewTreeObserver} dispatches global
+     * layout callbacks both after layout passes and when an ancestor changes visibility between
+     * {@link View#INVISIBLE} and {@link View#VISIBLE} without re-laying out the bar.
+     */
+    // TODO(crbug.com/567168121): Replace OnGlobalLayoutListener with explicit bottom controls
+    // Android view visibility signaling in next refactor.
+    private void waitForLayout(Runnable action) {
+        if (mGlobalLayoutListener != null) return;
+        mGlobalLayoutListener =
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+                    @Override
+                    public void onGlobalLayout() {
+                        if (!mBottomBarView.isLaidOut() || !mBottomBarView.isShown()) return;
+                        removeLayoutListeners();
+                        action.run();
+                    }
+                };
+        mBottomBarView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
+    }
+
+    private void removeLayoutListeners() {
+        if (mGlobalLayoutListener != null) {
+            mBottomBarView
+                    .getViewTreeObserver()
+                    .removeOnGlobalLayoutListener(mGlobalLayoutListener);
+            mGlobalLayoutListener = null;
+        }
+    }
+
+    private void hideScrim() {
+        if (mScrimModel != null) {
+            mScrimManager.hideScrim(mScrimModel, /* animate= */ false);
+            mScrimModel = null;
+        }
+    }
+
+    private void onPopupDismissed() {
+        if (mPopupWindow != null && mState == State.SHOWING_BUBBLE) {
+            dismiss();
+        }
+    }
+
+    @Nullable View getBubbleViewForTesting() {
+        return mPopupWindow != null ? mPopupWindow.getContentView() : null;
+    }
+}
