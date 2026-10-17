@@ -8,7 +8,9 @@
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/span.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_concept.h"
 #include "chrome/grit/generated_resources.h"
@@ -89,17 +91,10 @@ class SearchTagRegistryTest : public testing::Test {
   void TearDown() override { search_tag_registry_.RemoveObserver(&observer_); }
 
   void IndexGetSizeAndCheckResults(uint32_t expected_num_items) {
-    bool callback_done = false;
-    uint32_t num_items = 0;
-    index_remote_->GetSize(base::BindOnce(
-        [](bool* callback_done, uint32_t* num_items, uint64_t size) {
-          *callback_done = true;
-          *num_items = size;
-        },
-        &callback_done, &num_items));
-    task_environment_.RunUntilIdle();
-    ASSERT_TRUE(callback_done);
-    EXPECT_EQ(num_items, expected_num_items);
+    base::test::TestFuture<uint64_t> size;
+    index_remote_->GetSize(size.GetCallback());
+    ASSERT_TRUE(size.Wait());
+    EXPECT_EQ(size.Get(), expected_num_items);
   }
 
   // This line should be before search_tag_registry_ is declared.
@@ -126,6 +121,8 @@ TEST_F(SearchTagRegistryTest, AddAndRemove) {
     EXPECT_EQ(0u, observer_.num_calls());
   }
   // Now that it went out of scope, the update should have occurred.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return observer_.num_calls() >= 1u; }));
   IndexGetSizeAndCheckResults(3u);
   EXPECT_EQ(1u, observer_.num_calls());
 
@@ -150,6 +147,8 @@ TEST_F(SearchTagRegistryTest, AddAndRemove) {
     EXPECT_EQ(1u, observer_.num_calls());
   }
   // Now that it went out of scope, the update should have occurred.
+  ASSERT_TRUE(
+      base::test::RunUntil([&] { return observer_.num_calls() >= 2u; }));
   IndexGetSizeAndCheckResults(0u);
   EXPECT_EQ(2u, observer_.num_calls());
 
