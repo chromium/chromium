@@ -250,6 +250,12 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
       ui::PlatformWindowDelegate::RotateDirection direction,
       bool reset);
 
+#if BUILDFLAG(IS_OZONE)
+  // Returns true if this host is a child bubble widget (rendered as a
+  // platform subwindow when kOzoneBubblesUsePlatformWidgets is enabled).
+  bool IsBubbleSubwindow() const;
+#endif
+
   const base::WeakPtr<internal::NativeWidgetDelegate> native_widget_delegate_;
   const raw_ptr<DesktopNativeWidgetAura> desktop_native_widget_aura_;
 

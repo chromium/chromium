@@ -350,19 +350,28 @@ void DesktopWindowTreeHostPlatform::SetBackgroundColor(
 
 void DesktopWindowTreeHostPlatform::OnActiveWindowChanged(bool active) {
 #if BUILDFLAG(IS_OZONE)
-  // When bubbles are accelerated widgets, `window_children_` can contain a
-  // bubble where `bubble->is_active_` is true, while `this->is_active_` is
-  // false.
-  // When WindowFocusedFromInputEvent makes a window of this tree host
-  // active, we enter this condition where `active && !is_active_` because
-  // subwindows do not get active state from the OS on some platforms (E.g.
-  // Wayland). So we need to ensure Activate is conveyed to the platform_window.
-  if (base::FeatureList::IsEnabled(features::kOzoneBubblesUsePlatformWidgets) &&
-      active && !is_active_ && !window_children_.empty()) {
+  // With accelerated bubbles, subwindows (e.g. Wayland subsurfaces) get no
+  // activation state from the OS. When Aura activates either the parent of an
+  // active bubble or an inactive bubble (e.g. one shown via ShowInactive()),
+  // forward it to the platform window so key events are routed correctly.
+  if (!base::FeatureList::IsEnabled(
+          features::kOzoneBubblesUsePlatformWidgets) ||
+      !active || IsActive()) {
+    return;
+  }
+  if (!window_children_.empty() || IsBubbleSubwindow()) {
     Activate();
   }
 #endif
 }
+
+#if BUILDFLAG(IS_OZONE)
+bool DesktopWindowTreeHostPlatform::IsBubbleSubwindow() const {
+  return window_parent_ &&
+         GetPlatformWindowType(desktop_native_widget_aura_->widget_type()) ==
+             ui::PlatformWindowType::kBubble;
+}
+#endif
 
 std::unique_ptr<corewm::Tooltip>
 DesktopWindowTreeHostPlatform::CreateTooltip() {

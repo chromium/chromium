@@ -6,6 +6,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -13,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/focus_client.h"
@@ -25,6 +27,11 @@
 #include "ui/compositor/layer_textured.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/platform_window/platform_window.h"
@@ -711,6 +718,283 @@ TEST_F(DesktopWindowTreeHostPlatformTest, FocusParentWindowWillActivate) {
   // Toplevel should be active.
   EXPECT_TRUE(host_platform->IsActive());
 }
+
+#if BUILDFLAG(IS_OZONE)
+namespace {
+
+// A StubWindow that models mutually-exclusive platform activation between a
+// parent DesktopWindowTreeHostPlatform and its child bubble hosts, matching how
+// platforms such as Wayland transfer activation between a top-level window and
+// its child subsurfaces.
+class TestBubbleStubWindow : public ui::StubWindow {
+ public:
+  TestBubbleStubWindow(ui::PlatformWindowDelegate* delegate,
+                       gfx::AcceleratedWidget widget,
+                       const gfx::Rect& bounds)
+      : ui::StubWindow(bounds) {
+    InitDelegateWithWidget(delegate, widget);
+  }
+
+  int activate_count() const { return activate_count_; }
+
+  // ui::StubWindow:
+  void Activate() override {
+    ++activate_count_;
+    auto* host = static_cast<DesktopWindowTreeHostPlatform*>(delegate());
+    if (host->window_parent() && host->window_parent()->IsActive()) {
+      host->window_parent()->Deactivate();
+    }
+    for (aura::WindowTreeHost* child_host : host->GetOwnedWindowTreeHosts()) {
+      auto* child_platform_host =
+          static_cast<DesktopWindowTreeHostPlatform*>(child_host);
+      if (child_platform_host->IsActive()) {
+        child_platform_host->Deactivate();
+      }
+    }
+    delegate()->OnActivationChanged(/*active=*/true);
+  }
+
+  void Deactivate() override {
+    delegate()->OnActivationChanged(/*active=*/false);
+  }
+
+ private:
+  int activate_count_ = 0;
+};
+
+class ScopedBubblePlatformWindowFactoryDelegate
+    : public aura::WindowTreeHostPlatform::
+          PlatformWindowFactoryDelegateForTesting {
+ public:
+  ScopedBubblePlatformWindowFactoryDelegate() {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        this);
+  }
+  ScopedBubblePlatformWindowFactoryDelegate(
+      const ScopedBubblePlatformWindowFactoryDelegate&) = delete;
+  ScopedBubblePlatformWindowFactoryDelegate& operator=(
+      const ScopedBubblePlatformWindowFactoryDelegate&) = delete;
+  ~ScopedBubblePlatformWindowFactoryDelegate() override {
+    aura::WindowTreeHostPlatform::SetPlatformWindowFactoryDelegateForTesting(
+        nullptr);
+  }
+
+  std::unique_ptr<ui::PlatformWindow> Create(
+      aura::WindowTreeHostPlatform* host) override {
+    return std::make_unique<TestBubbleStubWindow>(
+        host, ++last_accelerated_widget_, gfx::Rect(100, 100, 100, 100));
+  }
+
+ private:
+  gfx::AcceleratedWidget last_accelerated_widget_ = gfx::kNullAcceleratedWidget;
+};
+
+void ClickInHost(DesktopWindowTreeHostPlatform* host) {
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(10, 10),
+                             gfx::Point(10, 10), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  static_cast<ui::PlatformWindowDelegate*>(host)->DispatchEvent(&press_event);
+}
+
+}  // namespace
+
+class DesktopWindowTreeHostPlatformBubbleTest
+    : public DesktopWindowTreeHostPlatformTest {
+ public:
+  // DesktopWindowTreeHostPlatformTest:
+  void SetUp() override {
+    DesktopWindowTreeHostPlatformTest::SetUp();
+    factory_.emplace();
+  }
+
+  void TearDown() override {
+    factory_.reset();
+    DesktopWindowTreeHostPlatformTest::TearDown();
+  }
+
+ protected:
+  static DesktopWindowTreeHostPlatform* HostFor(Widget* widget) {
+    return DesktopWindowTreeHostPlatform::GetHostForWidget(
+        widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
+  }
+
+  static TestBubbleStubWindow* StubFor(DesktopWindowTreeHostPlatform* host) {
+    return static_cast<TestBubbleStubWindow*>(host->platform_window());
+  }
+
+  std::unique_ptr<Widget> CreateChildWidget(
+      Widget* parent,
+      Widget::InitParams::Type type,
+      const gfx::Rect& bounds,
+      Widget::InitParams::Activatable activatable =
+          Widget::InitParams::Activatable::kDefault,
+      bool remove_standard_frame = false) {
+    Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET, type);
+    params.bounds = bounds;
+    params.parent = parent->GetNativeWindow();
+    params.activatable = activatable;
+    params.remove_standard_frame = remove_standard_frame;
+    return CreateWidgetWithNativeWidgetWithParams(std::move(params));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kOzoneBubblesUsePlatformWidgets};
+  std::optional<ScopedBubblePlatformWindowFactoryDelegate> factory_;
+};
+
+// Verifies that clicking inside an activatable child bubble shown via
+// ShowInactive() activates the bubble's platform window and deactivates the
+// parent, and that clicking back on the parent reactivates the parent and
+// deactivates the bubble.
+TEST_F(DesktopWindowTreeHostPlatformBubbleTest,
+       ActivateInactiveBubbleOnInputAndReactivateParent) {
+  auto parent_widget = CreateWidgetWithNativeWidget();
+  auto* parent_host = HostFor(parent_widget.get());
+  auto* parent_stub = StubFor(parent_host);
+  parent_widget->Show();
+  EXPECT_TRUE(parent_host->IsActive());
+  EXPECT_TRUE(parent_widget->IsActive());
+  EXPECT_EQ(1, parent_stub->activate_count());
+
+  auto bubble_widget =
+      CreateChildWidget(parent_widget.get(), Widget::InitParams::TYPE_BUBBLE,
+                        gfx::Rect(110, 110, 100, 100));
+  auto* bubble_host = HostFor(bubble_widget.get());
+  auto* bubble_stub = StubFor(bubble_host);
+  bubble_widget->ShowInactive();
+
+  // Showing the bubble inactive keeps the parent active and the bubble
+  // inactive.
+  EXPECT_TRUE(parent_host->IsActive());
+  EXPECT_TRUE(parent_widget->IsActive());
+  EXPECT_FALSE(bubble_host->IsActive());
+  EXPECT_FALSE(bubble_widget->IsActive());
+  EXPECT_EQ(0, bubble_stub->activate_count());
+
+  // Clicking inside the inactive bubble activates its content window in Aura,
+  // which should forward Activate() to the bubble's platform window once.
+  ClickInHost(bubble_host);
+
+  EXPECT_TRUE(bubble_host->IsActive());
+  EXPECT_TRUE(bubble_widget->IsActive());
+  EXPECT_EQ(1, bubble_stub->activate_count());
+  // TestBubbleStubWindow::Activate() deactivates the parent so the subsequent
+  // click on the parent exercises the parent reactivation path.
+  EXPECT_FALSE(parent_host->IsActive());
+  EXPECT_FALSE(parent_widget->IsActive());
+
+  // Clicking the already-active bubble a second time (or notifying
+  // OnActiveWindowChanged(true) while already active) should not call
+  // Activate() on the platform window again.
+  ClickInHost(bubble_host);
+  bubble_host->OnActiveWindowChanged(true);
+  EXPECT_EQ(1, bubble_stub->activate_count());
+
+  // Clicking back on the parent window reactivates the parent host and
+  // deactivates the child bubble.
+  ClickInHost(parent_host);
+
+  EXPECT_TRUE(parent_host->IsActive());
+  EXPECT_TRUE(parent_widget->IsActive());
+  EXPECT_EQ(2, parent_stub->activate_count());
+  EXPECT_FALSE(bubble_host->IsActive());
+  EXPECT_FALSE(bubble_widget->IsActive());
+}
+
+// Verifies that clicking a non-activatable child bubble or an inactive
+// non-bubble child window (TYPE_WINDOW or TYPE_WINDOW_FRAMELESS) does not
+// forward bubble subwindow activation.
+TEST_F(DesktopWindowTreeHostPlatformBubbleTest,
+       NonActivatableOrNonBubbleChildNotActivatedOnInput) {
+  auto parent_widget = CreateWidgetWithNativeWidget();
+  auto* parent_host = HostFor(parent_widget.get());
+  parent_widget->Show();
+  EXPECT_TRUE(parent_host->IsActive());
+
+  // A non-activatable bubble shown inactive should remain inactive when
+  // clicked, leaving the parent active.
+  auto non_activatable_bubble = CreateChildWidget(
+      parent_widget.get(), Widget::InitParams::TYPE_BUBBLE,
+      gfx::Rect(120, 120, 100, 100), Widget::InitParams::Activatable::kNo);
+  auto* non_activatable_host = HostFor(non_activatable_bubble.get());
+  auto* non_activatable_stub = StubFor(non_activatable_host);
+  non_activatable_bubble->ShowInactive();
+
+  ClickInHost(non_activatable_host);
+
+  EXPECT_FALSE(non_activatable_host->IsActive());
+  EXPECT_FALSE(non_activatable_bubble->IsActive());
+  EXPECT_EQ(0, non_activatable_stub->activate_count());
+  EXPECT_TRUE(parent_host->IsActive());
+
+  // A child TYPE_WINDOW is a top-level platform window rather than a bubble
+  // subwindow, so Aura focus inside it while inactive should not synthesize
+  // subwindow platform activation.
+  auto child_window_widget = CreateChildWidget(
+      parent_widget.get(), Widget::InitParams::TYPE_WINDOW,
+      gfx::Rect(130, 130, 100, 100), Widget::InitParams::Activatable::kDefault,
+      /*remove_standard_frame=*/true);
+  auto* child_window_host = HostFor(child_window_widget.get());
+  auto* child_window_stub = StubFor(child_window_host);
+  child_window_widget->ShowInactive();
+  EXPECT_FALSE(child_window_host->IsActive());
+
+  ClickInHost(child_window_host);
+
+  EXPECT_FALSE(child_window_host->IsActive());
+  EXPECT_EQ(0, child_window_stub->activate_count());
+  EXPECT_TRUE(parent_host->IsActive());
+
+  // A parented TYPE_WINDOW_FRAMELESS widget maps to kPopup in
+  // GetPlatformWindowType()'s default branch rather than kBubble, so clicking
+  // it while inactive should not forward bubble subwindow activation.
+  auto frameless_child_widget = CreateChildWidget(
+      parent_widget.get(), Widget::InitParams::TYPE_WINDOW_FRAMELESS,
+      gfx::Rect(140, 140, 100, 100));
+  auto* frameless_child_host = HostFor(frameless_child_widget.get());
+  auto* frameless_child_stub = StubFor(frameless_child_host);
+  frameless_child_widget->ShowInactive();
+  EXPECT_FALSE(frameless_child_host->IsActive());
+
+  ClickInHost(frameless_child_host);
+
+  EXPECT_FALSE(frameless_child_host->IsActive());
+  EXPECT_EQ(0, frameless_child_stub->activate_count());
+  EXPECT_TRUE(parent_host->IsActive());
+}
+
+// Verifies that when kOzoneBubblesUsePlatformWidgets is disabled, clicking an
+// inactive TYPE_BUBBLE child widget does not forward Activate() to the platform
+// window.
+TEST_F(DesktopWindowTreeHostPlatformBubbleTest,
+       InactiveBubbleNotActivatedOnInputWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kOzoneBubblesUsePlatformWidgets);
+
+  auto parent_widget = CreateWidgetWithNativeWidget();
+  auto* parent_host = HostFor(parent_widget.get());
+  parent_widget->Show();
+  EXPECT_TRUE(parent_host->IsActive());
+
+  auto bubble_widget =
+      CreateChildWidget(parent_widget.get(), Widget::InitParams::TYPE_BUBBLE,
+                        gfx::Rect(110, 110, 100, 100));
+  auto* bubble_host = HostFor(bubble_widget.get());
+  auto* bubble_stub = StubFor(bubble_host);
+  bubble_widget->ShowInactive();
+  EXPECT_FALSE(bubble_host->IsActive());
+  EXPECT_EQ(0, bubble_stub->activate_count());
+
+  ClickInHost(bubble_host);
+
+  EXPECT_FALSE(bubble_host->IsActive());
+  EXPECT_EQ(0, bubble_stub->activate_count());
+  EXPECT_TRUE(parent_host->IsActive());
+}
+#endif  // BUILDFLAG(IS_OZONE)
 
 TEST_F(DesktopWindowTreeHostPlatformTest,
        OnActivationChangedSurvivesSynchronousClose) {
