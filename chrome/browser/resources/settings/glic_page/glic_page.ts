@@ -88,11 +88,7 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
   // SettingsViewMixin implementation.
   override getAssociatedControlFor(childViewId: string): HTMLElement {
     assert(childViewId === 'gemini');
-    const control = this.shadowRoot.querySelector<HTMLElement>('#glicLinkRow');
-    assert(
-        control,
-        `Failed to find associated control for child '${childViewId}'`);
-    return control;
+    return this.$.glicLinkRow;
   }
 }
 

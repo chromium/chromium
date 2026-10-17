@@ -117,13 +117,9 @@ suite('SafetyHubPage', function() {
     assertEquals(
         1, safetyHubBrowserProxy.getCallCount('getSafeBrowsingCardData'));
     assertTrue(isChildVisible(testElement, '#safeBrowsing'));
-    const header =
-        testElement.$.safeBrowsing.shadowRoot.querySelector('#header');
-    assertTrue(!!header);
+    const header = testElement.$.safeBrowsing.$.header;
     assertEquals(header.textContent.trim(), newCardData.header);
-    const subheader =
-        testElement.$.safeBrowsing.shadowRoot.querySelector('#subheader');
-    assertTrue(!!subheader);
+    const subheader = testElement.$.safeBrowsing.$.subheader;
     assertEquals(subheader.textContent.trim(), newCardData.subheader);
   }
 
@@ -259,12 +255,9 @@ suite('SafetyHubPage', function() {
     assertTrue(isChildVisible(testElement, '#passwords'));
 
     // Card header and subheader should be what the browser proxy provides.
-    const header = testElement.$.passwords.shadowRoot.querySelector('#header');
-    assertTrue(!!header);
+    const header = testElement.$.passwords.$.header;
     assertEquals(header.textContent.trim(), passwordCardMockData.header);
-    const subheader =
-        testElement.$.passwords.shadowRoot.querySelector('#subheader');
-    assertTrue(!!subheader);
+    const subheader = testElement.$.passwords.$.subheader;
     assertEquals(subheader.textContent.trim(), passwordCardMockData.subheader);
 
     // Check that the card aria role and description are correct.
@@ -309,12 +302,9 @@ suite('SafetyHubPage', function() {
     assertTrue(isChildVisible(testElement, '#version'));
 
     // Card header and subheader should be what the browser proxy provides.
-    const header = testElement.$.version.shadowRoot.querySelector('#header');
-    assertTrue(!!header);
+    const header = testElement.$.version.$.header;
     assertEquals(header.textContent.trim(), versionCardMockData.header);
-    const subheader =
-        testElement.$.version.shadowRoot.querySelector('#subheader');
-    assertTrue(!!subheader);
+    const subheader = testElement.$.version.$.subheader;
     assertEquals(subheader.textContent.trim(), versionCardMockData.subheader);
 
     // Check that the card aria role and description are correct.
@@ -414,13 +404,9 @@ suite('SafetyHubPage', function() {
     assertTrue(isChildVisible(testElement, '#safeBrowsing'));
 
     // Card header and subheader should be what the browser proxy provides.
-    const header =
-        testElement.$.safeBrowsing.shadowRoot.querySelector('#header');
-    assertTrue(!!header);
+    const header = testElement.$.safeBrowsing.$.header;
     assertEquals(header.textContent.trim(), safeBrowsingCardMockData.header);
-    const subheader =
-        testElement.$.safeBrowsing.shadowRoot.querySelector('#subheader');
-    assertTrue(!!subheader);
+    const subheader = testElement.$.safeBrowsing.$.subheader;
     assertEquals(
         subheader.textContent.trim(), safeBrowsingCardMockData.subheader);
 

@@ -402,17 +402,11 @@ suite('cr-slider', function() {
     function assertNoTransition() {
       const expected = 'all';
       assertEquals(
-          expected,
-          getComputedStyle(crSlider.shadowRoot.querySelector('#knobAndLabel')!)
-              .transition);
-      assertEquals(
-          expected,
-          getComputedStyle(crSlider.shadowRoot.querySelector('#bar')!)
-              .transition);
+          expected, getComputedStyle(crSlider.$.knobAndLabel).transition);
+      assertEquals(expected, getComputedStyle(crSlider.$.bar).transition);
     }
 
-    const knobAndLabel =
-        crSlider.shadowRoot.querySelector<HTMLElement>('#knobAndLabel')!;
+    const knobAndLabel = crSlider.$.knobAndLabel;
 
     type TransitionEventName = 'transitionstart'|'transitionend';
     function whenTransitionEvent(eventName: TransitionEventName):

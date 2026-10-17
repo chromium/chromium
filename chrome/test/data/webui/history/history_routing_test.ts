@@ -75,9 +75,7 @@ import {navigateTo} from './test_util.js';
 
     test('routing to /grouped may change active view', async () => {
       assertEquals('history', app.$.content.selected);
-      assertEquals(
-          app.shadowRoot.querySelector('#history'),
-          app.$.tabsContent.selectedItem);
+      assertEquals(app.$.history, app.$.tabsContent.selectedItem);
 
       navigateTo('/grouped', app);
       await microtasksFinished();
@@ -91,7 +89,7 @@ import {navigateTo} from './test_util.js';
       assertEquals(
           isHistoryClustersEnabled ?
               app.shadowRoot.querySelector('#history-clusters') :
-              app.shadowRoot.querySelector('#history'),
+              app.$.history,
           app.$.tabsContent.selectedItem);
     });
 

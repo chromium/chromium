@@ -635,8 +635,7 @@ suite('AppContent', () => {
         });
 
     test('applies immersive classes correctly to appFlexParent', async () => {
-      const flexParent = app.shadowRoot.querySelector('#appFlexParent');
-      assertTrue(!!flexParent);
+      const flexParent = app.$.appFlexParent;
 
       assertTrue(flexParent.classList.contains('immersive'));
       assertFalse(flexParent.classList.contains('full-page'));
@@ -653,7 +652,6 @@ suite('AppContent', () => {
       let scroller: HTMLElement;
       setup(() => {
         scroller = app.$.containerScroller;
-        assertTrue(!!scroller);
         visualBrowserProxy.onPresentationStateReceived.callListeners(
             visualBrowserProxy.inImmersiveOverlayPresentationState);
       });

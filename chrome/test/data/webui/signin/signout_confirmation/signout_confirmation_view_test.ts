@@ -97,8 +97,7 @@ suite('SignoutConfirmationViewTest', function() {
     // Verify the tooltip text format.
     const crTooltip = extensionsSection.shadowRoot.querySelector('cr-tooltip');
     assertTrue(!!crTooltip);
-    const tooltipInner = crTooltip.shadowRoot.querySelector('#tooltip');
-    assertTrue(!!tooltipInner);
+    const tooltipInner = crTooltip.$.tooltip;
     const computedStyle = window.getComputedStyle(tooltipInner);
     assertEquals('20px', computedStyle.getPropertyValue('line-height'));
     assertEquals('13px', computedStyle.getPropertyValue('font-size'));

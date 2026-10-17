@@ -81,8 +81,7 @@ suite('BackForwardButtonTest', function() {
     // defaults to 0px on ChromeOS Ash).
     backForwardButton.style.setProperty(
         '--toolbar-interior-margin-start', '6px');
-    const buttonWrapper =
-        backForwardButton.shadowRoot.querySelector('#buttonWrapper')!;
+    const buttonWrapper = backForwardButton.$.buttonWrapper;
 
     // Default: not maximized/fullscreen, attribute not present.
     assertFalse(
@@ -113,8 +112,7 @@ suite('BackForwardButtonTest', function() {
     backForwardButton.windowIsMaximizedOrFullscreen = true;
     await microtasksFinished();
 
-    const buttonWrapper =
-        backForwardButton.shadowRoot.querySelector('#buttonWrapper')!;
+    const buttonWrapper = backForwardButton.$.buttonWrapper;
     const button =
         backForwardButton.shadowRoot.querySelector('cr-icon-button')!;
     const rect = backForwardButton.getBoundingClientRect();
@@ -178,8 +176,7 @@ suite('BackForwardButtonTest', function() {
     backForwardButton.windowIsMaximizedOrFullscreen = true;
     await microtasksFinished();
 
-    const buttonWrapper =
-        backForwardButton.shadowRoot.querySelector('#buttonWrapper')!;
+    const buttonWrapper = backForwardButton.$.buttonWrapper;
     const button =
         backForwardButton.shadowRoot.querySelector('cr-icon-button')!;
 
@@ -224,8 +221,7 @@ suite('BackForwardButtonTest', function() {
         backForwardButton.direction = 'back';
         await microtasksFinished();
 
-        const buttonWrapper =
-            backForwardButton.shadowRoot.querySelector('#buttonWrapper')!;
+        const buttonWrapper = backForwardButton.$.buttonWrapper;
         const button =
             backForwardButton.shadowRoot.querySelector('cr-icon-button')!;
 
@@ -314,8 +310,7 @@ suite('BackForwardButtonTest', function() {
     document.body.appendChild(forwardButton);
     await microtasksFinished();
 
-    const buttonWrapper =
-        forwardButton.shadowRoot.querySelector('#buttonWrapper')!;
+    const buttonWrapper = forwardButton.$.buttonWrapper;
     const style = window.getComputedStyle(buttonWrapper);
     assertEquals('flex', style.display);
     assertEquals('0px', style.paddingLeft);
@@ -332,8 +327,7 @@ suite('BackForwardButtonTest', function() {
         backForwardButton.direction = 'back';
         await microtasksFinished();
 
-        const buttonWrapper =
-            backForwardButton.shadowRoot.querySelector('#buttonWrapper')!;
+        const buttonWrapper = backForwardButton.$.buttonWrapper;
         buttonWrapper.dispatchEvent(new PointerEvent('pointerdown', {
           button: 0,
           pointerType: 'mouse',

@@ -46,10 +46,6 @@ suite('PdfViewerTest', function() {
 
     ['zoom-toolbar', 'page-indicator'].forEach(id => verifyElement(id));
 
-    // Should also have the sizer and content divs
-    assertTrue(!!viewer.shadowRoot.querySelector('#sizer'));
-    assertTrue(!!viewer.shadowRoot.querySelector('#content'));
-
     // These elements don't exist in Print Preview's viewer.
     ['viewer-pdf-toolbar', 'viewer-form-warning'].forEach(
         name => assertFalse(!!viewer.shadowRoot.querySelector(name)));

@@ -181,7 +181,7 @@ suite('ExtensionsActivityLogStreamTest', function() {
     proxyDelegate.getOnExtensionActivity().callListeners(contentScriptActivity);
     await microtasksFinished();
 
-    search.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
+    search.$.clearSearch.click();
     await eventToPromise('viewport-filled', activityLogStream);
 
     // We expect 4 activities to appear as |contentScriptActivity| (which is

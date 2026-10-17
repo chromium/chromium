@@ -133,8 +133,7 @@ chrome.test.runTests([
     chrome.test.assertEq(3, placeholders.length);
 
     // Verify A11y attributes on inner container
-    const container = annotationsElement.shadowRoot.querySelector('#container');
-    assert(container);
+    const container = annotationsElement.$.container;
     chrome.test.assertEq('list', container.getAttribute('role'));
     chrome.test.assertEq(
         loadTimeData.getString('ink2TextAnnotationsAxLabel'),
@@ -1146,8 +1145,7 @@ chrome.test.runTests([
 
     // 8. Focus moves out of container:
     // Resets to initial unfocused state -> [0] and [5] positioned.
-    const container = annotationsElement.shadowRoot.querySelector('#container');
-    assert(container);
+    const container = annotationsElement.$.container;
     container.dispatchEvent(new FocusEvent('focusout', {relatedTarget: null}));
     await microtasksFinished();
     checkPositionedIndices(placeholders, [0, 5]);
@@ -1238,8 +1236,7 @@ chrome.test.runTests([
     checkPositionedIndices(placeholders, [0, 1]);
 
     // Focus moves out of container: both remain positioned.
-    const container = annotationsElement.shadowRoot.querySelector('#container');
-    assert(container);
+    const container = annotationsElement.$.container;
     container.dispatchEvent(new FocusEvent('focusout', {relatedTarget: null}));
     await microtasksFinished();
     checkPositionedIndices(placeholders, [0, 1]);

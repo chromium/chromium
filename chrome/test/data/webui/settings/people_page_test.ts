@@ -277,7 +277,6 @@ suite('SignoutDialogTests', function() {
     assertLT(0, deleteProfileCheckbox.clientHeight);
 
     const disconnectConfirm = signoutDialog.$.disconnectConfirm;
-    assertTrue(!!disconnectConfirm);
     assertFalse(disconnectConfirm.hidden);
 
     disconnectConfirm.click();
@@ -314,10 +313,7 @@ suite('SignoutDialogTests', function() {
     assertTrue(signoutDialog.$.dialog.open);
     assertTrue(!!signoutDialog.shadowRoot.querySelector('#deleteProfile'));
 
-    const disconnectConfirm =
-        signoutDialog.shadowRoot.querySelector<HTMLElement>(
-            '#disconnectConfirm');
-    assertTrue(!!disconnectConfirm);
+    const disconnectConfirm = signoutDialog.$.disconnectConfirm;
     assertFalse(disconnectConfirm.hidden);
 
     syncBrowserProxy.resetResolver('signOut');

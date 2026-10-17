@@ -177,7 +177,7 @@ suite('manager tests', function() {
   test('toast is not hidden when itself is clicked', () => {
     toastManager.show('');
     assertTrue(toastManager.isToastOpen);
-    toastManager.shadowRoot.querySelector<HTMLElement>('#toast')!.click();
+    toastManager.$.toast.click();
     assertTrue(toastManager.isToastOpen);
   });
 

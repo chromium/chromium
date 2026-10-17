@@ -72,10 +72,7 @@ suite('LiveTranslateSection', function() {
   });
 
   test('translate.enable toggle', function() {
-    const settingsToggle =
-        liveTranslateSection.shadowRoot.querySelector<HTMLElement>(
-            '#liveTranslateToggleButton');
-    assertTrue(!!settingsToggle);
+    const settingsToggle = liveTranslateSection.$.liveTranslateToggleButton;
 
     // Clicking on the toggle switches it to true.
     settingsToggle.click();

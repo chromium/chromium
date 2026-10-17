@@ -413,8 +413,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     const event = new FocusEvent('focusout', {
       relatedTarget: document.body,
     });
-    powerBookmarksContextMenu.shadowRoot.querySelector('#menu')!.dispatchEvent(
-        event);
+    powerBookmarksContextMenu.$.menu.dispatchEvent(event);
 
     await microtasksFinished();
 

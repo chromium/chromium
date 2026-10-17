@@ -96,9 +96,7 @@ suite('Scrim', function() {
   });
 
   test('MagicCursorDisabled', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
 
@@ -246,9 +244,7 @@ suite('MagicCursor', function() {
   async function moveCursorAndWait(x: number, y: number): Promise<void> {
     const movePromise = testRemote.moveCursorTo({x, y});
     await flushTasks();
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
     magicCursor.dispatchEvent(new Event('transitionend'));
     await movePromise;
   }
@@ -261,9 +257,7 @@ suite('MagicCursor', function() {
       value: 1.0,
     });
 
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
 
@@ -282,9 +276,7 @@ suite('MagicCursor', function() {
       value: 1.5,
     });
 
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
 
@@ -302,9 +294,7 @@ suite('MagicCursor', function() {
       value: 0.5,
     });
 
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
 
@@ -315,9 +305,7 @@ suite('MagicCursor', function() {
   });
 
   test('MoveCursorTwiceAndVerifyLocation', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
 
@@ -331,9 +319,7 @@ suite('MagicCursor', function() {
   });
 
   test('VerifyStyleProperties', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Verify default style
     const style = magicCursor.computedStyleMap();
@@ -366,9 +352,7 @@ suite('MagicCursor', function() {
   });
 
   test('DynamicDurationCalculation', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
     assertEquals('', magicCursor.style.opacity);
     assertEquals('', magicCursor.style.transform);
 
@@ -453,9 +437,7 @@ suite('MagicCursor', function() {
   });
 
   test('TriggerClickAnimation', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Move the cursor first to initialize it.
     await moveCursorAndWait(100, 150);
@@ -483,9 +465,7 @@ suite('MagicCursor', function() {
   });
 
   test('TriggerClickAnimation_CancelledByMoveCursor', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     await moveCursorAndWait(100, 150);
 
@@ -511,9 +491,7 @@ suite('MagicCursor', function() {
   });
 
   test('TriggerClickAnimation_RestartedBySecondClick', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     await moveCursorAndWait(100, 150);
 
@@ -543,9 +521,7 @@ suite('MagicCursor', function() {
   });
 
   test('TriggerClickAnimation_IgnoredIfUninitialized', async function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Ensure cursor is not initialized (opacity is 0).
     assertEquals('', magicCursor.style.opacity);
@@ -562,9 +538,7 @@ suite('MagicCursor', function() {
   });
 
   test('ClickAnimationTimingMatchesCSS', function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     magicCursor.classList.add('clicking');
     const style = magicCursor.computedStyleMap();
@@ -578,9 +552,7 @@ suite('MagicCursor', function() {
   });
 
   test('CursorImageStructure', function() {
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     const cursorImage = magicCursor.querySelector<HTMLElement>('#cursorImage');
     assertTrue(!!cursorImage);
@@ -597,9 +569,7 @@ suite('MagicCursor', function() {
   test('LoadingState_TriggersAfterMoveAndDelay', async function() {
     const mockTimer = new MockTimer();
     mockTimer.install();
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Initialize the cursor with the first movement.
     await moveCursorAndWait(100, 100);
@@ -623,9 +593,7 @@ suite('MagicCursor', function() {
   test('LoadingState_RemovedImmediatelyOnNewMove', async function() {
     const mockTimer = new MockTimer();
     mockTimer.install();
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Initialize the cursor with the first movement.
     await moveCursorAndWait(100, 100);
@@ -644,9 +612,7 @@ suite('MagicCursor', function() {
   test('LoadingState_DelayCancelledByInterruption', async function() {
     const mockTimer = new MockTimer();
     mockTimer.install();
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Initialize the cursor with the first movement.
     await moveCursorAndWait(100, 100);
@@ -700,9 +666,7 @@ suite('MagicCursor', function() {
     const mockTimer = new MockTimer();
     mockTimer.install();
     setReducedMotion(true);
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Initialize cursor.
     await moveCursorAndWait(100, 100);
@@ -741,9 +705,7 @@ suite('MagicCursor', function() {
     const mockTimer = new MockTimer();
     mockTimer.install();
     setReducedMotion(true);
-    const magicCursor =
-        page.shadowRoot.querySelector<HTMLElement>('#magicCursor');
-    assertTrue(!!magicCursor);
+    const magicCursor = page.$.magicCursor;
 
     // Initialize cursor.
     await moveCursorAndWait(100, 100);

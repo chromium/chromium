@@ -5,7 +5,12 @@
 import type {LanguageHelper, LanguageSettingsMetricsProxy, LanguageSettingsPageImpressionType, SettingsSpellCheckPageElement} from 'chrome://settings/lazy_load.js';
 import {getLanguageHelperInstance, LanguageHelperImpl, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+
+// <if expr="_google_chrome or not is_macosx">
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
+// </if>
+
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -73,10 +78,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
   suite('Metrics', function() {
     test('records when disabling spellCheck globally', async () => {
       prefService.setPrefValue('browser.enable_spellchecking', true);
-      const spellCheckToggle =
-          spellCheckPage.shadowRoot.querySelector<HTMLElement>(
-              '#enableSpellcheckingToggle');
-      assertTrue(!!spellCheckToggle, 'no spellCheckToggle');
+      const spellCheckToggle = spellCheckPage.$.enableSpellcheckingToggle;
       spellCheckToggle.click();
       await microtasksFinished();
 
@@ -88,10 +90,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
     test('records when enabling spellCheck globally', async () => {
       prefService.setPrefValue('browser.enable_spellchecking', false);
 
-      const spellCheckToggle =
-          spellCheckPage.shadowRoot.querySelector<HTMLElement>(
-              '#enableSpellcheckingToggle');
-      assertTrue(!!spellCheckToggle);
+      const spellCheckToggle = spellCheckPage.$.enableSpellcheckingToggle;
       spellCheckToggle.click();
       await microtasksFinished();
 
@@ -119,10 +118,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
 
     test('records when selecting enhanced spell check', async () => {
       prefService.setPrefValue('spellcheck.use_spelling_service', false);
-      const enhancedServiceSelect =
-          spellCheckPage.shadowRoot.querySelector<HTMLElement>(
-              '#spellingServiceEnable');
-      assertTrue(!!enhancedServiceSelect);
+      const enhancedServiceSelect = spellCheckPage.$.spellingServiceEnable;
       enhancedServiceSelect.click();
       await microtasksFinished();
 
@@ -142,9 +138,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
       // Enable spellcheck only for the 1st entry.
       prefService.setPrefValue('spellcheck.dictionaries', ['en-US']);
 
-      const list = spellCheckPage.shadowRoot.querySelector<HTMLElement>(
-          '#spellCheckLanguagesList');
-      assertTrue(!!list);
+      const list = spellCheckPage.$.spellCheckLanguagesList;
       const listItems = list.querySelectorAll<HTMLElement>('.list-item');
       assertEquals(2, listItems.length);
 
@@ -165,9 +159,7 @@ suite('SpellCheckPageMetricsBrowser', function() {
       // Enable spellcheck for both language entries.
       prefService.setPrefValue('spellcheck.dictionaries', ['en-US', 'sw']);
 
-      const list = spellCheckPage.shadowRoot.querySelector<HTMLElement>(
-          '#spellCheckLanguagesList');
-      assertTrue(!!list);
+      const list = spellCheckPage.$.spellCheckLanguagesList;
       const listItems = list.querySelectorAll<HTMLElement>('.list-item');
       assertEquals(2, listItems.length);
 

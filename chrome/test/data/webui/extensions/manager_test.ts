@@ -112,9 +112,7 @@ suite('ExtensionManagerTest', function() {
     const item =
         manager.$.itemsList.shadowRoot.querySelector('extensions-item');
     assertTrue(!!item);
-    const detailsButton =
-        item.shadowRoot.querySelector<HTMLElement>('#detailsButton');
-    assertTrue(!!detailsButton);
+    const detailsButton = item.$.detailsButton;
     detailsButton.click();
     await microtasksFinished();
     assertViewActive('extensions-detail-view');

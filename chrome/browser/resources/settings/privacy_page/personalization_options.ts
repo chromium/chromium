@@ -222,24 +222,6 @@ export class SettingsPersonalizationOptionsElement extends
     return loadTimeData.getStringF('priceEmailNotificationsPrefDesc', username);
   }
 
-  // <if expr="is_chromeos">
-  /**
-   * @return the autocomplete search suggestions CrToggleElement.
-   */
-  getSearchSuggestToggle(): SettingsToggleButtonElement|null {
-    return this.shadowRoot.querySelector<SettingsToggleButtonElement>(
-        '#searchSuggestToggle');
-  }
-
-  /**
-   * @return the anonymized URL collection CrToggleElement.
-   */
-  getUrlCollectionToggle(): SettingsToggleButtonElement|null {
-    return this.shadowRoot.querySelector<SettingsToggleButtonElement>(
-        '#urlCollectionToggle');
-  }
-  // </if>
-
   // <if expr="_google_chrome and not is_chromeos">
   protected onMetricsReportingChange_(e: Event) {
     const target = e.target as CrToggleElement;

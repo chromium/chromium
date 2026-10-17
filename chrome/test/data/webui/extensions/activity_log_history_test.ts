@@ -265,7 +265,7 @@ suite('ExtensionsActivityLogHistoryTest', function() {
 
     // Finally, we clear the search query via the #clearSearch button.
     // We should see all the activities displayed.
-    search.shadowRoot.querySelector<HTMLElement>('#clearSearch')!.click();
+    search.$.clearSearch.click();
 
     await proxyDelegate.whenCalled('getExtensionActivityLog');
 

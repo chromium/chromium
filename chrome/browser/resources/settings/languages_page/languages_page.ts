@@ -175,9 +175,7 @@ export class SettingsLanguagesPageElement extends
   protected onAddLanguagesDialogClose_() {
     this.showAddLanguagesDialog_ = false;
     this.addLanguagesDialogLanguages_ = [];
-    const toFocus = this.shadowRoot.querySelector<HTMLElement>('#addLanguages');
-    assert(toFocus);
-    focusWithoutInk(toFocus);
+    focusWithoutInk(this.$.addLanguages);
   }
 
   /**

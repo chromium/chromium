@@ -5,7 +5,6 @@
 // clang-format off
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
-import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -42,8 +41,7 @@ suite('cr-link-row', function() {
   });
 
   test('icon', async () => {
-    const iconButton =
-        linkRow.shadowRoot.querySelector<CrIconButtonElement>('#icon')!;
+    const iconButton = linkRow.$.icon;
     assertFalse(linkRow.external);
     assertEquals('cr:chevron-right', iconButton.ironIcon);
     linkRow.external = true;
@@ -52,7 +50,7 @@ suite('cr-link-row', function() {
   });
 
   test('role description', async () => {
-    const iconButton = linkRow.shadowRoot.querySelector('#icon')!;
+    const iconButton = linkRow.$.icon;
     assertEquals(undefined, linkRow.roleDescription);
     assertEquals(null, iconButton.getAttribute('aria-roledescription'));
     const description = 'self destruct button';

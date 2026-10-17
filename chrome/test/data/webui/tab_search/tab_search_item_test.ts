@@ -86,13 +86,13 @@ suite('TabSearchItemTest', () => {
     assertNotEquals(null, tooltip);
 
     // Tooltip should be hidden initially.
-    const innerTooltip = tooltip!.shadowRoot.querySelector('#tooltip');
+    const innerTooltip = tooltip!.$.tooltip;
     assertNotEquals(null, innerTooltip);
-    assertEquals('none', getComputedStyle(innerTooltip!).display);
+    assertEquals('none', getComputedStyle(innerTooltip).display);
 
     // Test that the tooltip is shown when the close button is focused.
     tabSearchItemCloseButton!.focus();
-    assertNotEquals('none', getComputedStyle(innerTooltip!).display);
+    assertNotEquals('none', getComputedStyle(innerTooltip).display);
 
     setupTest(new TabData(
         {
@@ -197,8 +197,7 @@ suite('TabSearchItemTest', () => {
 
   // Regression test for crbug.com/504594425
   test('SecondaryTextDirection', () => {
-    const secondaryTextInner =
-        tabSearchItem.shadowRoot.querySelector('#secondaryTextInner')!;
+    const secondaryTextInner = tabSearchItem.$.secondaryTextInner;
     assertEquals(
         'ltr',
         (secondaryTextInner.computedStyleMap().get('direction') as CSSUnitValue)

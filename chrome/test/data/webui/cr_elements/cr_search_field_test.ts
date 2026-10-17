@@ -132,9 +132,7 @@ suite('cr-search-field', function() {
   test('settings refresh 2026 styles applied', async () => {
     document.documentElement.setAttribute('settings-refresh-2026', '');
     const searchInput = field.$.searchInput;
-    const underline =
-        searchInput.shadowRoot.querySelector<HTMLElement>('#underline');
-    assertTrue(!!underline);
+    const underline = searchInput.$.underline;
     assertFalse(isVisible(underline));
 
     field.click();

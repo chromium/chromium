@@ -299,9 +299,7 @@ suite('AllBuilds', function() {
     assertTrue(signoutDialog.$.dialog.open);
 
     // The user clicks confirm, which signs them out.
-    const disconnectConfirm =
-        signoutDialog.shadowRoot.querySelector<HTMLElement>(
-            '#disconnectConfirm')!;
+    const disconnectConfirm = signoutDialog.$.disconnectConfirm;
     disconnectConfirm.click();
 
     await eventToPromise('close', signoutDialog);

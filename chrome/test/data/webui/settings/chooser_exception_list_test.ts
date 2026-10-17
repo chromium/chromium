@@ -390,10 +390,7 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!siteListEntry);
 
         const tooltip = testElement.$.tooltip;
-        assertTrue(!!tooltip);
-
         const innerTooltip = tooltip.$.tooltip;
-        assertTrue(!!innerTooltip);
 
         /**
          * Create an array of test parameters objects. The parameter
@@ -513,9 +510,7 @@ suite('ChooserExceptionList', function() {
             Array.from(siteListEntries).some(entry => entry.model.incognito));
 
         const tooltip = testElement.$.tooltip;
-        assertTrue(!!tooltip);
-        const innerTooltip = tooltip.shadowRoot.querySelector('#tooltip');
-        assertTrue(!!innerTooltip);
+        const innerTooltip = tooltip.$.tooltip;
         const text = loadTimeData.getString('incognitoSiteExceptionDesc');
         // This filtered array should be non-empty due to above test that
         // checks for incognito exception.

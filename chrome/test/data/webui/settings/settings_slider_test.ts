@@ -92,8 +92,7 @@ suite('SettingsSlider', function() {
   }
 
   function pointerEvent(eventType: string, ratio: number) {
-    const rect = crSlider.shadowRoot.querySelector<HTMLElement>(
-                                        '#container')!.getBoundingClientRect();
+    const rect = crSlider.$.container.getBoundingClientRect();
     crSlider.dispatchEvent(new PointerEvent(eventType, {
       buttons: 1,
       pointerId: 1,

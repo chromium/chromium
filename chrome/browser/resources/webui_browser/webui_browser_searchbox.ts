@@ -370,8 +370,7 @@ export class WebuiBrowserSearchboxElement extends
 
   isInputEmpty(): boolean {
     // If this is called before first render, the input element will not exist.
-    if (!this.shadowRoot?.querySelector('#input') || !this.$.input ||
-        !this.$.input.lastInput()) {
+    if (!this.$.input || !this.$.input.lastInput()) {
       return true;
     }
     return !this.$.input.lastInput()!.text.trim();

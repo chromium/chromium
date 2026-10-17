@@ -276,7 +276,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
   test('Ignore Click', async function() {
     // User clicks ignore.
     await openActionMenu();
-    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
+    await clickButton(testElement.$.ignore);
 
     // Ensure the browser proxy call is done, undo toast with a correct text is
     // shown and action menu is closed.
@@ -488,7 +488,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
 
     // User clicks ignore.
     await openActionMenu();
-    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
+    await clickButton(testElement.$.ignore);
 
     // Ensure the browser proxy call is done and no undo toast is shown.
     await assertBrowserCall('ignoreNotificationPermissionForOrigins');
@@ -618,7 +618,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
 
     // Check the header string for a completion case after Ignore action.
     await openActionMenu();
-    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
+    await clickButton(testElement.$.ignore);
     await assertCompletionHeaderString(
         'safetyHubNotificationPermissionReviewIgnoredToastLabel');
     testElement.$.bulkUndoButton.click();
@@ -627,7 +627,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
 
     // Check the header string for a completion case after Reset action.
     await openActionMenu();
-    await clickButton(testElement.shadowRoot.querySelector('#reset'));
+    await clickButton(testElement.$.reset);
     await assertCompletionHeaderString(
         'safetyHubNotificationPermissionReviewResetToastLabel');
   });
@@ -670,7 +670,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // Click Always Allow for the first item in review. This triggers an undo
     // toast to appear.
     await openActionMenu();
-    await clickButton(testElement.shadowRoot.querySelector('#ignore'));
+    await clickButton(testElement.$.ignore);
     assertUndoToast(
         true, 'safetyHubNotificationPermissionReviewIgnoredToastLabel');
 

@@ -84,7 +84,7 @@ suite('ExtensionDetailViewTest', function() {
 
   test('BackButton', () => {
     assertTrue(testIsVisible('#closeButton'));
-    const closeButton = item.shadowRoot.querySelector('#closeButton')!;
+    const closeButton = item.$.closeButton;
     assertTrue(closeButton.classList.contains('icon-arrow-back'));
 
     const computedStyle = getComputedStyle(closeButton);
@@ -922,7 +922,7 @@ suite('ExtensionDetailViewTest', function() {
     // Positioned directly below #viewInStore in DOM order.
     const viewInStore =
         item.shadowRoot.querySelector<HTMLElement>('#viewInStore')!;
-    const rateLink = item.shadowRoot.querySelector<HTMLElement>('#rateLink')!;
+    const rateLink = item.$.rateLink;
     assertEquals(viewInStore.nextElementSibling, rateLink);
 
     // Visible in developer mode as well.
@@ -941,8 +941,7 @@ suite('ExtensionDetailViewTest', function() {
     });
     assertTrue(testIsVisible('#rateLink'));
 
-    const rateLink = item.shadowRoot.querySelector<HTMLElement>('#rateLink')!;
-    assertTrue(!!rateLink);
+    const rateLink = item.$.rateLink;
     await mockDelegate.testClickingCalls(
         rateLink, 'openReviewPage', [extensionData.id]);
   });

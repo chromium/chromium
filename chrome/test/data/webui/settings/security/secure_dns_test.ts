@@ -181,7 +181,7 @@ suite('SettingsSecureDns', function() {
     await testBrowserProxy.whenCalled('getSecureDnsSetting');
     await microtasksFinished();
 
-    secureDnsToggle = testElement.shadowRoot.querySelector('#secureDnsToggle')!;
+    secureDnsToggle = testElement.$.secureDnsToggle;
     assertTrue(isVisible(secureDnsToggle));
 
     assertResolverSelectShown();

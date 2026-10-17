@@ -248,8 +248,7 @@ suite('LanguagesPage', function() {
     });
 
     test('AddLanguagesDialogFocusgroup', function() {
-      const list = dialog.shadowRoot.querySelector('#list');
-      assertTrue(!!list);
+      const list = dialog.$.list;
       assertEquals('listbox block', list.getAttribute('focusgroup'));
     });
 

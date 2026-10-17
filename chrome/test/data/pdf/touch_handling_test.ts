@@ -19,7 +19,7 @@ function sendTouchStart(touches: Point[]) {
     return new window.Touch(touchInit);
   });
 
-  const target = viewer.shadowRoot.querySelector('#content')!;
+  const target = viewer.$.content;
   target.dispatchEvent(new TouchEvent('touchstart', {
     bubbles: true,
     composed: true,

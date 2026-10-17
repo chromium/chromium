@@ -65,8 +65,7 @@ suite('ProfilePickerAppTest', function() {
     await whenCheck(mainView, () => mainView.classList.contains('active'));
     await browserProxy.whenCalled('initializeMainView');
 
-    const profilesWrapper =
-        mainView.shadowRoot.querySelector<HTMLElement>('#profilesWrapper')!;
+    const profilesWrapper = mainView.$.profilesWrapper;
     assertTrue(profilesWrapper.hidden);
 
     webUIListenerCallback(

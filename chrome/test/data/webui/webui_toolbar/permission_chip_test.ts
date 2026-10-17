@@ -73,8 +73,7 @@ suite('PermissionChipTest', function() {
     assertTrue(!!iconEl);
     assertEquals('webui-toolbar-shared:videocam', iconEl.icon);
 
-    const messageEl = chip.shadowRoot.querySelector<HTMLElement>('#message');
-    assertTrue(!!messageEl);
+    const messageEl = chip.$.message;
     assertEquals('Camera', messageEl.textContent);
 
     // Verify it is a button for accessibility

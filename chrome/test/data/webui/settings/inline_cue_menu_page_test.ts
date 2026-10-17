@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import type {SettingsInlineCueMenuPageElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsInlineCueMenuPageElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -41,10 +41,7 @@ suite('InlineCueMenuPage', function() {
 
   test('MainToggle', async function() {
     await initPage();
-    const mainToggle =
-        page.shadowRoot.querySelector<SettingsToggleButtonElement>(
-            '#mainToggle');
-    assertTrue(!!mainToggle);
+    const mainToggle = page.$.mainToggle;
     assertTrue(mainToggle.checked);
 
     mainToggle.click();

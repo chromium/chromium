@@ -28,7 +28,6 @@ suite('ExtensionOptionsDialogTest', () => {
     assertTrue(!!extensionDetailView);
 
     const optionsButton = extensionDetailView.$.extensionsOptions;
-    assertTrue(!!optionsButton);
     optionsButton.click();
     await eventToPromise('cr-dialog-open', manager);
     const dialog =
@@ -39,8 +38,6 @@ suite('ExtensionOptionsDialogTest', () => {
     await waitForClose;
     const activeElement = getDeepActiveElement();
     assertEquals('CR-ICON-BUTTON', activeElement!.tagName);
-    assertEquals(
-        optionsButton.shadowRoot.querySelector('#icon'),
-        getDeepActiveElement());
+    assertEquals(optionsButton.$.icon, getDeepActiveElement());
   });
 });

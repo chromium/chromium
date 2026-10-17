@@ -1156,9 +1156,7 @@ suite('SafeBrowsingLabelsAndToggles', function() {
   });
 
   test('PasswordsLeakDetectionText', async function() {
-    const toggle = page.shadowRoot.querySelector<SettingsToggleButtonElement>(
-        '#passwordsLeakToggle');
-    assertTrue(!!toggle);
+    const toggle = page.$.passwordsLeakToggle;
 
     const passwordLeakLabel =
         loadTimeData.getString('passwordsLeakDetectionLabel');

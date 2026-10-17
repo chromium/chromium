@@ -585,7 +585,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
-    const innerButton = avatarButton.shadowRoot.querySelector('#button')!;
+    const innerButton = avatarButton.$.button;
 
     // Helper to update state and check class
     const checkClass = async (state: any, expectedClass: string) => {
@@ -686,7 +686,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
-    const innerButton = avatarButton.shadowRoot.querySelector('#button')!;
+    const innerButton = avatarButton.$.button;
 
     // Helper to update state and check attribute
     const checkLinearGradientRing = async (hasLinearGradientRing: boolean) => {
@@ -705,7 +705,7 @@ suite('ToolbarAppTest', () => {
       await microtasksFinished();
       const icon = avatarButton.shadowRoot.querySelector('#icon')!;
       const iconStyle = window.getComputedStyle(icon);
-      const actualButton = innerButton.shadowRoot!.querySelector('#button')!;
+      const actualButton = innerButton.$.button;
       const buttonStyle = window.getComputedStyle(actualButton);
 
       if (hasLinearGradientRing) {
@@ -741,9 +741,9 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
-    const innerChip = avatarButton.shadowRoot.querySelector('#button')!;
+    const innerChip = avatarButton.$.button;
     const visualTarget =
-        innerChip.shadowRoot!.querySelector('.iph-visual-target')!;
+        innerChip.shadowRoot.querySelector('.iph-visual-target')!;
     assertTrue(!!visualTarget);
 
     avatarButton.classList.add('anchor-highlight');
@@ -767,9 +767,9 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
-    const innerChip = avatarButton.shadowRoot.querySelector('#button')!;
+    const innerChip = avatarButton.$.button;
     const visualTarget =
-        innerChip.shadowRoot!.querySelector('.iph-visual-target')!;
+        innerChip.shadowRoot.querySelector('.iph-visual-target')!;
     assertTrue(!!visualTarget);
 
     avatarButton.hasHelpBubble = true;
@@ -794,7 +794,7 @@ suite('ToolbarAppTest', () => {
     await microtasksFinished();
 
     const avatarButton = app.shadowRoot.querySelector('avatar-button')!;
-    const innerChip = avatarButton.shadowRoot.querySelector('#button')!;
+    const innerChip = avatarButton.$.button;
     const setHighlighted =
         highlightCallbacks.get('kToolbarAvatarButtonElementId')!;
     assertTrue(!!setHighlighted);

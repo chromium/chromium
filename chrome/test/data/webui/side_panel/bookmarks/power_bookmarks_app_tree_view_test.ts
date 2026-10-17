@@ -412,9 +412,7 @@ suite('TreeView', () => {
     assertTrue(!!dotsIcon);
     assertEquals(loadTimeData.getString('tooltipMore'), dotsIcon.title);
 
-    const bookmarkDiv =
-        rowItem.shadowRoot.querySelector<HTMLElement>('#crUrlListItem');
-    assertTrue(!!bookmarkDiv);
+    const bookmarkDiv = rowItem.$.crUrlListItem;
 
     // Check if the depth is correctly applied to the style
     const computedStyle = getComputedStyle(bookmarkDiv);

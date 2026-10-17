@@ -10,7 +10,6 @@ import type {App} from 'chrome://resources/cr_components/app_management/app_mana
 import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -97,9 +96,7 @@ suite('SupportedLinksItemElement', function() {
     assertNull(supportedLinksDialog);
 
     // Open dialog.
-    const heading =
-        supportedLinksItem.shadowRoot.querySelector<CrLitElement>('#heading');
-    assertTrue(!!heading);
+    const heading = supportedLinksItem.$.heading;
     const link = heading.shadowRoot.querySelector('a');
     assertTrue(!!link);
     link.click();
@@ -156,16 +153,10 @@ suite('SupportedLinksItemElement', function() {
 
         await setUpSupportedLinksComponent('app1', appOptions);
 
-        const preferredRadio =
-            supportedLinksItem.shadowRoot.querySelector<CrRadioButtonElement>(
-                '#preferredRadioButton');
-        assertTrue(!!preferredRadio);
+        const preferredRadio = supportedLinksItem.$.preferredRadioButton;
         assertEquals('Open in an existing MyApp tab', preferredRadio.label);
 
-        const browserRadio =
-            supportedLinksItem.shadowRoot.querySelector<CrRadioButtonElement>(
-                '#browserRadioButton');
-        assertTrue(!!browserRadio);
+        const browserRadio = supportedLinksItem.$.browserRadioButton;
         assertEquals('Open in a new browser tab', browserRadio.label);
       });
 
@@ -185,10 +176,7 @@ suite('SupportedLinksItemElement', function() {
 
     await setUpSupportedLinksComponent('app1', appOptions);
 
-    const preferredRadio =
-        supportedLinksItem.shadowRoot.querySelector<CrRadioButtonElement>(
-            '#preferredRadioButton');
-    assertTrue(!!preferredRadio);
+    const preferredRadio = supportedLinksItem.$.preferredRadioButton;
     assertEquals('Open in MyApp App', preferredRadio.label);
   });
 });

@@ -275,10 +275,9 @@ suite('<history-item> integration test', function() {
     assertTrue(isVisible(actorExpandBtn));
     assertEquals(
         'cr:keyboard-arrow-down', actorExpandBtn!.getAttribute('iron-icon'));
-    const menuBtn =
-        items[1]!.shadowRoot.querySelector<HTMLElement>('#menuButton');
+    const menuBtn = items[1]!.$.menuButton;
     assertEquals(
-        menuBtn!.getAttribute('aria-describedby'),
+        menuBtn.getAttribute('aria-describedby'),
         actorExpandBtn!.getAttribute('aria-describedby'));
 
     const collapse =

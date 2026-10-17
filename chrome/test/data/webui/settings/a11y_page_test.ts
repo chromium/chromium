@@ -205,10 +205,7 @@ suite('A11yPage', () => {
   });
 
   test('toast toggle mapping from enum', async () => {
-    const toastToggle =
-        a11yPage.shadowRoot.querySelector<SettingsToggleButtonElement>(
-            '#toastToggle');
-    assertTrue(!!toastToggle);
+    const toastToggle = a11yPage.$.toastToggle;
 
     toastToggle.click();
     await microtasksFinished();

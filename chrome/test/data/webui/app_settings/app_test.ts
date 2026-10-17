@@ -7,7 +7,6 @@ import 'chrome://app-settings/web_app_settings.js';
 import type {App, AppElement, PermissionItemElement, PermissionTypeIndex, SupportedLinksItemElement, SupportedLinksOverlappingAppsDialogElement, ToggleRowElement} from 'chrome://app-settings/web_app_settings.js';
 import {AppType, browserProxyFactory, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -214,10 +213,7 @@ suite('AppSettingsAppTest', () => {
     assertTrue(!!radioGroup);
     assertEquals('preferred', radioGroup.selected);
 
-    const browserRadioButton =
-        getSupportedLinksElement()!.shadowRoot
-            .querySelector<CrRadioButtonElement>('#browserRadioButton');
-    assertTrue(!!browserRadioButton);
+    const browserRadioButton = getSupportedLinksElement()!.$.browserRadioButton;
     await browserRadioButton.click();
     await fakePageHandler.whenCalled('setPreferredApp');
     await microtasksFinished();
@@ -250,9 +246,7 @@ suite('AppSettingsAppTest', () => {
     assertEquals('browser', radioGroup.selected);
 
     const preferredRadioButton =
-        getSupportedLinksElement()!.shadowRoot
-            .querySelector<CrRadioButtonElement>('#preferredRadioButton');
-    assertTrue(!!preferredRadioButton);
+        getSupportedLinksElement()!.$.preferredRadioButton;
     await preferredRadioButton.click();
     await fakePageHandler.whenCalled('setPreferredApp');
     await microtasksFinished();
@@ -284,18 +278,13 @@ suite('AppSettingsAppTest', () => {
 
     // Pre-test checks
     assertNull(getSupportedLinksElement()!.querySelector('#overlapDialog'));
-    const browserRadioButton =
-        getSupportedLinksElement()!.shadowRoot
-            .querySelector<CrRadioButtonElement>('#browserRadioButton');
-    assertTrue(!!browserRadioButton);
+    const browserRadioButton = getSupportedLinksElement()!.$.browserRadioButton;
     assertTrue(browserRadioButton.checked);
 
     // Open dialog
     let promise = fakePageHandler.whenCalled('getOverlappingPreferredApps');
     const preferredRadioButton =
-        getSupportedLinksElement()!.shadowRoot
-            .querySelector<CrRadioButtonElement>('#preferredRadioButton');
-    assertTrue(!!preferredRadioButton);
+        getSupportedLinksElement()!.$.preferredRadioButton;
     await preferredRadioButton.click();
     await promise;
     await fakePageHandler.flushPipesForTesting();

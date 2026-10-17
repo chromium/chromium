@@ -95,11 +95,7 @@ suite('SettingsSecureDnsInteractive', function() {
   }
 
   function getSecureDnsToggle(): SettingsToggleButtonElement {
-    const secureDnsToggle =
-        testElement.shadowRoot.querySelector<SettingsToggleButtonElement>(
-            '#secureDnsToggle');
-    assertTrue(!!secureDnsToggle);
-    return secureDnsToggle;
+    return testElement.$.secureDnsToggle;
   }
 
   function getResolverOptions(): CrCollapseElement {

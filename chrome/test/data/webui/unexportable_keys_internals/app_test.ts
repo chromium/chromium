@@ -4,7 +4,6 @@
 
 import 'chrome://unexportable-keys-internals/app.js';
 
-import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import type {UnexportableKeysInternalsAppElement} from 'chrome://unexportable-keys-internals/app.js';
 import {browserProxyFactory} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
 import type {PageHandlerInterface, UnexportableKeyInfo, UnexportableSigningKeyId} from 'chrome://unexportable-keys-internals/unexportable_keys_internals.mojom-webui.js';
@@ -150,9 +149,7 @@ suite('UnexportableKeysInternals', function() {
 
     // The delete error toast should not be shown after the key has been deleted
     // successfully.
-    const deleteErrorToast =
-        element.shadowRoot.querySelector<CrToastElement>('#deleteErrorToast');
-    assertTrue(!!deleteErrorToast);
+    const deleteErrorToast = element.$.deleteErrorToast;
     assertFalse(deleteErrorToast.open);
   });
 
@@ -176,9 +173,7 @@ suite('UnexportableKeysInternals', function() {
     await handler.whenCalled('getUnexportableKeysInfo');
     await microtasksFinished();
 
-    const deleteErrorToast =
-        element.shadowRoot.querySelector<CrToastElement>('#deleteErrorToast');
-    assertTrue(!!deleteErrorToast);
+    const deleteErrorToast = element.$.deleteErrorToast;
     assertTrue(deleteErrorToast.open);
   });
 
@@ -187,9 +182,7 @@ suite('UnexportableKeysInternals', function() {
     await microtasksFinished();
     handler.resetResolver('getUnexportableKeysInfo');
 
-    const deleteErrorToast =
-        element.shadowRoot.querySelector<CrToastElement>('#deleteErrorToast');
-    assertTrue(!!deleteErrorToast);
+    const deleteErrorToast = element.$.deleteErrorToast;
     assertFalse(deleteErrorToast.open);
 
     // Show the toast.

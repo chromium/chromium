@@ -179,7 +179,7 @@ export class ViewerThumbnailElement extends CrLitElement {
       return;
     }
 
-    const div = this.shadowRoot.querySelector<HTMLElement>('#thumbnail')!;
+    const div = this.$.thumbnail;
 
     const degreesRotated = this.clockwiseRotations * 90;
     canvas.style.transform = `rotate(${degreesRotated}deg)`;

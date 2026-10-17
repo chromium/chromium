@@ -8,7 +8,10 @@ import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/l
 import {AiEnterpriseFeaturePrefName, EntityDataManagerProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CollapsibleAutofillSettingsCardElement} from 'chrome://settings/settings.js';
 import {loadTimeData, ModelExecutionEnterprisePolicyValue, PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
-import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBulletElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+import type {CrPolicyPrefIndicatorElement, SettingsAiLoggingInfoBulletElement} from 'chrome://settings/settings.js';
+// <if expr="is_win or is_macosx or is_chromeos">
+import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
+// </if>
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -114,9 +117,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
           /*autofillSettingsEnterprisePolicyEnabled=*/ false,
           params.enhancedAutofillOptedIn);
 
-      const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
-          '#optInToggle');
-      assertTrue(!!toggle);
+      const toggle = card.$.optInToggle;
       assertEquals(!params.enhancedAutofillEligibleUser, toggle.disabled);
       assertEquals(
           params.enhancedAutofillEligibleUser && params.enhancedAutofillOptedIn,
@@ -169,9 +170,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
         /*autofillSettingsEnterprisePolicyEnabled=*/ false,
         /*optInStatusResponse=*/ false);
 
-    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
-        '#optInToggle');
-    assertTrue(!!toggle);
+    const toggle = card.$.optInToggle;
 
     toggle.click();
     await microtasksFinished();
@@ -280,9 +279,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     const card = await createCollapsibleAutofillSettingsCard();
     // The toggle is initially enabled (see the setup() method). Clicking it
     // sets the opt-in status to false.
-    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
-        '#optInToggle');
-    assertTrue(!!toggle);
+    const toggle = card.$.optInToggle;
     assertFalse(toggle.disabled);
     assertTrue(toggle.checked);
 
@@ -307,16 +304,13 @@ suite('CollapsibleAutofillSettingsCard', function() {
   test('DisablingClassicAutofillPrefDisablesTheFeature', async function() {
     const card = await createCollapsibleAutofillSettingsCard();
 
-    const toggle = card.shadowRoot.querySelector<SettingsToggleButtonElement>(
-        '#optInToggle');
-    assertTrue(!!toggle);
+    const toggle = card.$.optInToggle;
     assertTrue(toggle.checked);
 
     prefService.setPrefValue('autofill.profile_enabled', false);
     await microtasksFinished();
 
     // Check that when the autofill pref is off, the feature is disabled.
-    assertTrue(!!toggle);
     assertFalse(toggle.checked);
   });
 
@@ -327,10 +321,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
             /*eligibleUser=*/ true,
             /*autofillSettingsEnterprisePolicyEnabled=*/ true);
 
-        const toggle =
-            card.shadowRoot.querySelector<SettingsToggleButtonElement>(
-                '#optInToggle');
-        assertTrue(!!toggle);
+        const toggle = card.$.optInToggle;
         assertTrue(toggle.checked);
 
         prefService.setPrefValue('autofill.profile_enabled', false);
@@ -338,7 +329,6 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
         // Check that even when the address autofill pref is off, the feature is
         // enabled.
-        assertTrue(!!toggle);
         assertTrue(toggle.checked);
       });
 

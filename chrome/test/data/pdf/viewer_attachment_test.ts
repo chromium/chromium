@@ -23,8 +23,7 @@ const tests = [
 
     const downloadButton =
         viewerAttachment.shadowRoot.querySelector('cr-icon-button')!;
-    const attachmentTitle =
-        viewerAttachment.shadowRoot.querySelector('#title')!;
+    const attachmentTitle = viewerAttachment.$.title;
     chrome.test.assertFalse(downloadButton.hidden);
     chrome.test.assertEq('1', window.getComputedStyle(attachmentTitle).opacity);
     chrome.test.succeed();
@@ -39,8 +38,7 @@ const tests = [
 
     const downloadButton =
         viewerAttachment.shadowRoot.querySelector('cr-icon-button')!;
-    const attachmentTitle =
-        viewerAttachment.shadowRoot.querySelector('#title')!;
+    const attachmentTitle = viewerAttachment.$.title;
 
     // An oversized attachment will not have a download button, and its title
     // will be grayed out.

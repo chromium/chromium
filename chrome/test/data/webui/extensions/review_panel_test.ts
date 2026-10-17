@@ -37,17 +37,11 @@ suite('ExtensionsReviewPanel', function() {
   test('ReviewPanelTextExists', function() {
     // Review panel should be visible.
     const reviewPanelContainer = element.$.reviewPanelContainer;
-    assertTrue(!!reviewPanelContainer);
     assertTrue(isVisible(reviewPanelContainer));
 
     // The expand button should be visible along with the review panel.
     const expandButton = element.$.expandButton;
-    assertTrue(!!expandButton);
     assertTrue(isVisible(expandButton));
-
-    // Verify that review panel heading exists.
-    const headingContainer = element.$.headingText;
-    assertTrue(!!headingContainer);
 
     // TODO(http://crbug.com/40902796): Update the unsafe extensions number
     const headingArgs = pluralString.getArgs('getPluralString')[0];
@@ -64,7 +58,6 @@ suite('ExtensionsReviewPanel', function() {
 
   test('CollapsibleList', async function() {
     const expandButton = element.$.expandButton;
-    assertTrue(!!expandButton);
 
     const extensionsList = element.shadowRoot.querySelector('cr-collapse');
     assertTrue(!!extensionsList);
@@ -178,8 +171,7 @@ suite('ExtensionsReviewPanel', function() {
 
         // Wait until the async response comes back. This should trigger 3
         // calls for plural strings.
-        element.shadowRoot.querySelector<HTMLElement>(
-                              '#removeAllButton')!.click();
+        element.$.removeAllButton.click();
         await microtasksFinished();
         const completionText = pluralString.getArgs('getPluralString')[2];
         assertTrue(!!completionTextContainer);

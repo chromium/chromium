@@ -51,9 +51,7 @@ suite('HistorySyncFragment', function() {
     await microtasksFinished();
 
     if (changeSetting) {
-      const toggle =
-          fragment.shadowRoot.querySelector<HTMLElement>('#historyToggle');
-      assertTrue(!!toggle);
+      const toggle = fragment.$.historyToggle;
       toggle.click();
       await microtasksFinished();
       const actionResult =
