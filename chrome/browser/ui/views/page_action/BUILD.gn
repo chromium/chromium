@@ -8,6 +8,7 @@ source_set("page_action") {
   friend = [
     ":impl",
     ":unit_tests",
+    ":interactive_test_support",
     ":interactive_ui_tests",
     ":test_support",
   ]
@@ -138,6 +139,29 @@ source_set("page_action_test_support") {
     "//ui/views",
     "//ui/views:test_support",
     "//ui/webui/tracked_element",
+  ]
+}
+
+source_set("interactive_test_support") {
+  testonly = true
+
+  sources = [
+    "test_support/page_action_interactive_test_mixin.cc",
+    "test_support/page_action_interactive_test_mixin.h",
+  ]
+
+  public_deps = [
+    ":page_action",
+    ":page_action_test_support",
+    "//base",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/page_action",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
+    "//chrome/browser/ui/views/location_bar:icon_label_bubble",
+    "//chrome/test/interaction",
+    "//ui/actions:actions_headers",
+    "//ui/base/interaction:test_support",
   ]
 }
 

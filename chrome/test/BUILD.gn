@@ -3820,8 +3820,6 @@ if (!is_android) {
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.cc",
       "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h",
       "../browser/ui/views/autofill/popup/popup_view_views_test_api.h",
-      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.cc",
-      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -3852,6 +3850,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/location_bar:test_support",
+      "//chrome/browser/ui/views/page_action:interactive_test_support",
       "//chrome/browser/ui/views/page_action:page_action_test_support",
       "//chrome/browser/ui/views/side_panel",
       "//chrome/browser/ui/views/toolbar:test_support",
