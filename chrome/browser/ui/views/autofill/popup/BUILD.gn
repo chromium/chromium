@@ -475,6 +475,15 @@ source_set("popup_footer_with_link_view") {
   ]
 }
 
+source_set("popup_view_views_test_api") {
+  testonly = true
+  public = [ "popup_view_views_test_api.h" ]
+  public_deps = [
+    ":popup_view_views",
+    "//base",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   public = [

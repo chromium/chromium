@@ -3797,27 +3797,12 @@ static_library("test_support_unit") {
 }
 
 if (!is_android) {
-  static_library("test_support_ui") {
-    defines = []
+  # This target no longer has any sources of its own; it only aggregates
+  # dependencies. It must be a source_set (not a static_library) because an
+  # empty static_library produces an empty archive, which the Windows librarian
+  # (lld-link /lib) rejects with "lib failed".
+  source_set("test_support_ui") {
     testonly = true
-
-    sources = [
-      "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.cc",
-      "../browser/ui/views/autofill/payments/card_unmask_prompt_view_tester_views.h",
-      "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.cc",
-      "../browser/ui/views/autofill/payments/offer_notification_bubble_views_test_base.h",
-      "../browser/ui/views/autofill/popup/popup_view_views_test_api.h",
-    ]
-
-    configs += [ "//build/config:precompiled_headers" ]
-
-    allow_circular_includes_from = [
-      # TODO(crbug.com/353332589): Remove these circular dependencies when
-      # remaining blocked headers are fully componentized.
-      "//chrome/browser/privacy_sandbox:attestations_mixin",
-      "//chrome/browser/ui/test:dialog",
-      "//chrome/test/interaction",
-    ]
 
     public_deps = [
       "//chrome/browser:test_support_ui",
@@ -3832,8 +3817,10 @@ if (!is_android) {
       "//chrome/browser/ui/views:create_application_shortcut_view_test_support",
       "//chrome/browser/ui/views:intent_picker_bubble_view",
       "//chrome/browser/ui/views/autofill/payments:offer_notification_bubble_views",
+      "//chrome/browser/ui/views/autofill/payments:test_support_ui",
       "//chrome/browser/ui/views/autofill/popup:popup_notice_view",
       "//chrome/browser/ui/views/autofill/popup:popup_view_views",
+      "//chrome/browser/ui/views/autofill/popup:popup_view_views_test_api",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/views/location_bar:test_support",
@@ -3912,9 +3899,9 @@ if (!is_android) {
       public_deps += [ "//chrome/browser/ui/profiles" ]
     }
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    # All test_support_ui sources have been migrated into per-feature
+    # targets. Do not add new sources to //chrome/test:test_support_ui.
+    sources = []
   }
 
   if (is_chromeos) {
