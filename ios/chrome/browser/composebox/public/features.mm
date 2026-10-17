@@ -110,7 +110,7 @@ bool IsComposeboxDriveOptionEnabled() {
 }
 
 BASE_FEATURE(kComposeboxPhysicalKeyboardReturnKeys,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsComposeboxPhysicalKeyboardReturnKeysEnabled() {
   return base::FeatureList::IsEnabled(kComposeboxPhysicalKeyboardReturnKeys);
