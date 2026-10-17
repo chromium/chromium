@@ -30,6 +30,10 @@ export class IframeElement extends CrLitElement {
 
   static override get properties() {
     return {
+      allow: {
+        reflect: true,
+        type: String,
+      },
       src: {
         reflect: true,
         type: String,
@@ -37,6 +41,7 @@ export class IframeElement extends CrLitElement {
     };
   }
 
+  accessor allow: string = '';
   accessor src: string = '';
 
   // Sends message to iframe.

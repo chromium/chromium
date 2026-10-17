@@ -86,6 +86,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
@@ -188,6 +189,9 @@ constexpr char kAIMDisplayMode[] = "50";
 // The value for the "atvm" (AIM Threads Visibility Mode) query parameter.
 // value "3" corresponds to Threads Visibility Mode "Always Open".
 constexpr char kAIMThreadsVisibilityMode[] = "3";
+// Google Search page shown in the NTP's left-hand side (LHS) panel, relative
+// to the Google base URL.
+constexpr char kLhsRelativeUrl[] = "/search?nem=341";
 
 bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -276,6 +280,16 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
       threads_url, lens::LensOverlayInvocationSource::kNtpContextualQuery,
       /*is_contextual_tasks=*/true);
   dict.Set("threadsUrl", threads_url.spec());
+
+  GURL expanded_lhs_url = google_base_url.Resolve(kLhsRelativeUrl);
+  if (ntp_features::kNtpThreadsRailHybridParam.Get()) {
+    expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "atvm",
+                                                 kAIMThreadsVisibilityMode);
+  }
+  if (auto forced_host = contextual_tasks::GetForcedEmbeddedPageHost()) {
+    expanded_lhs_url = forced_host->ApplyToUrl(expanded_lhs_url);
+  }
+  dict.Set("expandedLhsUrl", expanded_lhs_url.spec());
 
   dict.Set("preconnectStartTimeThreshold",
            features::kNewTabPagePreconnectStartDelayOnMouseHoverByMilliSeconds
@@ -888,10 +902,14 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   // chrome-untrusted://new-tab-page for other external content and resources.
   // NOTE: Use caution when overriding content security policies as that cean
   // lead to subtle security bugs such as https://crbug.com/40057334.
+  GURL google_base_url = GURL(TemplateURLServiceFactory::GetForProfile(profile)
+                                  ->search_terms_data()
+                                  .GoogleBaseURLValue());
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      base::StringPrintf("child-src https: %s %s %s;",
+      base::StringPrintf("child-src https: %s %s %s %s;",
                          google_util::CommandLineGoogleBaseURL().spec().c_str(),
+                         google_base_url.spec().c_str(),
                          chrome::kChromeUIUntrustedNewTabPageUrl,
                          chrome::kChromeUIUntrustedNtpMicrosoftAuthURL));
   source->OverrideContentSecurityPolicy(

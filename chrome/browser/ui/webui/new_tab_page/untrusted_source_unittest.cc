@@ -12,15 +12,12 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -87,11 +84,6 @@ class UntrustedSourceTest : public testing::Test {
                   identity_manager);
             },
             identity_env_.identity_manager()));
-    // The expanded LHS reads the Google base URL from TemplateURLService, which
-    // is null in unit tests unless a testing factory is set.
-    profile_builder.AddTestingFactory(
-        TemplateURLServiceFactory::GetInstance(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
     auto profile = profile_builder.Build();
     return profile;
   }
@@ -240,45 +232,4 @@ TEST_F(UntrustedSourceTest, BackgroundRequest_DirectoryTraversal) {
            "background.jpg"),
       test_web_contents_getter_, callback.Get());
   run_loop.Run();
-}
-
-TEST_F(UntrustedSourceTest, ExpandedLhs_ShouldServiceRequest) {
-  EXPECT_TRUE(untrusted_source_->ShouldServiceRequest(
-      GURL("chrome-untrusted://new-tab-page/expanded-lhs"), profile_.get(),
-      /*render_process_id=*/0));
-}
-
-TEST_F(UntrustedSourceTest, ExpandedLhs_ServesHtmlEmbeddingLhsUrl) {
-  const GURL url("chrome-untrusted://new-tab-page/expanded-lhs");
-  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
-
-  untrusted_source_->StartDataRequest(url, test_web_contents_getter_,
-                                      future.GetCallback());
-
-  scoped_refptr<base::RefCountedMemory> data = future.Take();
-  ASSERT_TRUE(data);
-  EXPECT_THAT(base::as_string_view(*data),
-              testing::HasSubstr(
-                  R"(<iframe src="https://www.google.com/search?nem=341" )"
-                  R"(allow="unbounded-element")"));
-  EXPECT_EQ("text/html", untrusted_source_->GetMimeType(url));
-}
-
-TEST_F(UntrustedSourceTest, ExpandedLhs_HybridAppendsExpandedParam) {
-  feature_list_.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpThreadsRail,
-      {{ntp_features::kNtpThreadsRailHybridParam.name, "true"}});
-  const GURL url("chrome-untrusted://new-tab-page/expanded-lhs");
-  base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
-
-  untrusted_source_->StartDataRequest(url, test_web_contents_getter_,
-                                      future.GetCallback());
-
-  scoped_refptr<base::RefCountedMemory> data = future.Take();
-  ASSERT_TRUE(data);
-  // The URL is HTML-escaped when inserted into the iframe's src attribute.
-  EXPECT_THAT(
-      base::as_string_view(*data),
-      testing::HasSubstr(
-          R"(<iframe src="https://www.google.com/search?nem=341&amp;atvm=3")"));
 }
