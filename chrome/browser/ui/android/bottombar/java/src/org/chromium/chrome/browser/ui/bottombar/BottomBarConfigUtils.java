@@ -186,4 +186,14 @@ public class BottomBarConfigUtils {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.BOTTOM_BAR_GLIC_BUTTON_ENABLED, enabled);
     }
+
+    /** Whether the bottom bar user education flow is enabled. */
+    public static boolean isEducationEnabled() {
+        return ChromeFeatureList.sAndroidBottomBarEducationEnabled.getValue();
+    }
+
+    /** Whether the bottom bar user education flow should use the Gemini-focused variant. */
+    public static boolean isEducationGeminiFocused() {
+        return ChromeFeatureList.sAndroidBottomBarEducationGeminiFocused.getValue();
+    }
 }

@@ -529,6 +529,8 @@ public class BottomBarMediator
     }
 
     private void triggerNewTabIph() {
+        if (BottomBarConfigUtils.isEducationEnabled()) return;
+
         PropertyModel newTabModel = mNewTabActionSupplier.get();
         if (newTabModel == null) return;
 

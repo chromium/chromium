@@ -206,6 +206,10 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         if (tab == null || tab.isOffTheRecord()) {
             return false;
         }
+
+        // Suppress the old promo dialog if the new education flow is enabled.
+        if (BottomBarConfigUtils.isEducationEnabled()) return false;
+
         return mPromoDialogCoordinator.maybeShowPromoDialog(profile);
     }
 

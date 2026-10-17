@@ -783,6 +783,20 @@ public class BottomBarMediatorUnitTest {
         verify(mVisibilityDelegate).onHeightChanged(56);
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"})
+    public void testEducationEnabled_SuppressesLegacyNewTabIph() {
+        PropertyModel newTabModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        mNewTabActionSupplier.set(newTabModel);
+        createMediator();
+
+        // Simulate bottom bar becoming visible, which usually triggers IPH
+        assertNotNull(mMediator);
+        mMediator.onBottomBarStateChanged(true);
+
+        // Assert NewTab action model does NOT have an IPH intent
+        assertNull(newTabModel.get(ActionProperties.IPH_INTENT));
+    }
     private void createMediator() {
         mMediator =
                 new BottomBarMediator(

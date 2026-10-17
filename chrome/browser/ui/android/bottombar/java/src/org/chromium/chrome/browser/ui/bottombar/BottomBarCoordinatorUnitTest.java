@@ -601,4 +601,23 @@ public class BottomBarCoordinatorUnitTest {
 
         watcher.assertExpected();
     }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
+    })
+    public void testPromoDialogSuppressedWhenEducationEnabled() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        mTabSupplier.set(mTab);
+
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
+                .thenReturn(true);
+        GlicEnabling.setEnabledForTesting(true);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+    }
 }
