@@ -8,8 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 
@@ -21,7 +19,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxTabAttachStartFailureReason;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.OnDemandBackgroundTabCaptureConfig;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
@@ -203,12 +200,12 @@ public final class FuseboxAttachment extends ListItem {
     public static FuseboxAttachment forTab(
             Tab tab,
             boolean bypassTabCache,
-            Resources res,
             @FuseboxAttachmentButtonType int buttonType,
             boolean isSuggestedTab) {
+        // Tab thumbnails are resolved by FuseboxAttachmentViewBinder at bind time.
         return new FuseboxAttachment(
                 FuseboxAttachmentType.ATTACHMENT_TAB,
-                new BitmapDrawable(res, OmniboxResourceProvider.getFaviconBitmapForTab(tab)),
+                /* thumbnail= */ null,
                 tab.getTitle(),
                 "",
                 new byte[0],

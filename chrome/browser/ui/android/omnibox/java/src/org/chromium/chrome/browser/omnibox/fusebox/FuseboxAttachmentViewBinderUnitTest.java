@@ -247,7 +247,6 @@ public class FuseboxAttachmentViewBinderUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mContext.getResources(),
                         FuseboxAttachmentButtonType.SUGGESTED_TAB,
                         /* isSuggestedTab= */ true);
         mModel.set(FuseboxAttachmentProperties.ATTACHMENT, attachment);
@@ -371,7 +370,6 @@ public class FuseboxAttachmentViewBinderUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mContext.getResources(),
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
 
@@ -389,7 +387,6 @@ public class FuseboxAttachmentViewBinderUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mContext.getResources(),
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
 

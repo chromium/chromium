@@ -15,9 +15,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -39,7 +36,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxTabAttachStartFailureReason;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.content_public.browser.RenderWidgetHostView;
@@ -65,14 +61,8 @@ public class FuseboxAttachmentUnitTest {
     @Mock private RenderWidgetHostView mRenderWidgetHostView;
     @Mock private TabLoadingService mTabLoadingService;
 
-    private Resources mResources;
-    private Bitmap mBitmap;
-
     @Before
     public void setUp() {
-        mResources = ApplicationProvider.getApplicationContext().getResources();
-        mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        OmniboxResourceProvider.setTabFaviconFactory((tab) -> mBitmap);
         TabLoadingService.setInstanceForTesting(mTabLoadingService);
 
         lenient().when(mTab.getTitle()).thenReturn("Tab Title");
@@ -101,7 +91,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ true,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
         when(mBridge.addTabContext(mTab, /* isSuggestedTab= */ false)).thenReturn(CAPTURE_TOKEN);
@@ -122,7 +111,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
         when(mBridge.addTabContext(mTab, /* isSuggestedTab= */ false)).thenReturn(null);
@@ -142,7 +130,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
         var watcher =
@@ -164,7 +151,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
         when(mBridge.addTabContextFromCache(TAB_ID, /* isSuggestedTab= */ false))
@@ -187,7 +173,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
         when(mBridge.addTabContext(mTab, /* isSuggestedTab= */ false)).thenReturn(CAPTURE_TOKEN);
@@ -207,7 +192,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
         when(mBridge.addTabContextFromCache(TAB_ID, /* isSuggestedTab= */ false))
@@ -228,7 +212,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
         when(mBridge.addTabContextFromCache(TAB_ID, /* isSuggestedTab= */ false))
@@ -280,7 +263,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
 
@@ -296,7 +278,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.TAB_PICKER,
                         /* isSuggestedTab= */ false);
 
@@ -312,7 +293,6 @@ public class FuseboxAttachmentUnitTest {
                 FuseboxAttachment.forTab(
                         mTab,
                         /* bypassTabCache= */ false,
-                        mResources,
                         FuseboxAttachmentButtonType.SUGGESTED_TAB,
                         /* isSuggestedTab= */ true);
 
@@ -371,7 +351,6 @@ public class FuseboxAttachmentUnitTest {
         return FuseboxAttachment.forTab(
                 mTab,
                 /* bypassTabCache= */ false,
-                mResources,
                 FuseboxAttachmentButtonType.TAB_PICKER,
                 /* isSuggestedTab= */ false);
     }

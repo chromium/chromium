@@ -20,7 +20,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Resources;
 import android.os.SystemClock;
 
 import org.junit.Before;
@@ -32,7 +31,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
@@ -63,7 +61,6 @@ public class FuseboxAttachmentModelListUnitTest {
     @Mock private TabLoadingService mTabLoadingService;
     @Mock private ListObserver<Void> mListObserver;
 
-    private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
 
     private FuseboxAttachment createTestAttachment(String title) {
@@ -84,7 +81,6 @@ public class FuseboxAttachmentModelListUnitTest {
                 mComposeboxQueryControllerBridge);
         verify(mComposeboxQueryControllerBridge)
                 .setContextUploadObserver(mFuseboxAttachmentModelList);
-        mResources = ContextUtils.getApplicationContext().getResources();
         mFuseboxAttachmentModelList.addAttachmentChangeListener(mListener);
         mFuseboxAttachmentModelList.setAttachmentUploadFailedListener(
                 mAttachmentUploadFailedListener);
@@ -94,7 +90,6 @@ public class FuseboxAttachmentModelListUnitTest {
         return FuseboxAttachment.forTab(
                 tab,
                 /* bypassTabCache= */ false,
-                mResources,
                 FuseboxAttachmentButtonType.TAB_PICKER,
                 /* isSuggestedTab= */ false);
     }
@@ -126,7 +121,7 @@ public class FuseboxAttachmentModelListUnitTest {
         when(mComposeboxQueryControllerBridge.addTabContextFromCache(tabId, isSuggestedTab))
                 .thenReturn(token);
         return FuseboxAttachment.forTab(
-                tab, /* bypassTabCache= */ false, mResources, buttonType, isSuggestedTab);
+                tab, /* bypassTabCache= */ false, buttonType, isSuggestedTab);
     }
 
     @Test

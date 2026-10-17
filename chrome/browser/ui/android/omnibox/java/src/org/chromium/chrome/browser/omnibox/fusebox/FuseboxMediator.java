@@ -830,11 +830,7 @@ import java.util.function.Supplier;
         if (currentAttachedIds.contains(tab.getId())) return;
         var attachment =
                 FuseboxAttachment.forTab(
-                        tab,
-                        isCurrentTab(tab),
-                        mContext.getResources(),
-                        source,
-                        /* isSuggestedTab= */ false);
+                        tab, isCurrentTab(tab), source, /* isSuggestedTab= */ false);
 
         mModelList.add(attachment);
     }
@@ -971,7 +967,6 @@ import java.util.function.Supplier;
                         FuseboxAttachment.forTab(
                                 tab,
                                 isCurrentTab(tab),
-                                mContext.getResources(),
                                 FuseboxAttachmentButtonType.TAB_PICKER,
                                 /* isSuggestedTab= */ false);
                 attachment.setIsPartOfMultiTabSelection(isPartOfMultiTabSelection);
@@ -1004,7 +999,6 @@ import java.util.function.Supplier;
                         FuseboxAttachment.forTab(
                                 tab,
                                 /* bypassTabCache= */ false,
-                                mContext.getResources(),
                                 FuseboxAttachmentButtonType.SUGGESTED_TAB,
                                 /* isSuggestedTab= */ true);
                 if (mModelList.add(attachment)) {
