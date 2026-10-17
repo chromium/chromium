@@ -40,8 +40,8 @@ import zlib
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 # They are also read by build/config/compiler/BUILD.gn.
-CLANG_REVISION = 'llvmorg-24-init-14453-ge063be79'
-CLANG_SUB_REVISION = 1
+CLANG_REVISION = 'llvmorg-24-init-7747-g62397f8b'
+CLANG_SUB_REVISION = 67
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '24'

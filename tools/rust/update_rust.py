@@ -44,17 +44,17 @@ sys.path.append(
 # Do NOT CHANGE these fields if you don't know what you're doing -- see
 # https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
 # Reverting problematic toolchain rolls is safe, though.
-RUST_REVISION = '8a9dd7abdf013ec10cfeaaa3685feba18ef1c90c'
-CRUBIT_REVISION = 'd757594f6f7ac27c0cf9c8ea63d9136f8e1f77ae'
+RUST_REVISION = '1edd55dcfcd573872c727fa3e086369a71661ee0'
+CRUBIT_REVISION = '20dc640430bd60ff2f7f8dbf69c311c5f807adde'
 BINDGEN_REVISION = '73c69d681eec90b84ffba4f993b5fb2f19580781'
 # If you change the above without changing RUST_REVISION, increment this.
-RUST_SUB_REVISION = 1
+RUST_SUB_REVISION = 1125
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
 # itself check the hash.
 STAGE0_JSON_SHA256 = (
-    '84cb05d6b379ca6409e82a11e2cf19ffe3a4414a36be85de53ad7ecc78181f2f'
+    '960197f9f1c3929b815c76fb34aef300571f734204d7cb61bcf3559baa4624b9'
 )
 
 THIS_DIR = os.path.abspath(os.path.dirname(__file__))
