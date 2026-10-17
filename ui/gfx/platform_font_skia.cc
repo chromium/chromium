@@ -247,6 +247,10 @@ Font PlatformFontSkia::DeriveFont(int size_delta,
 
   DCHECK_GT(new_size, 0);
 
+  if (new_size == font_size_pixels_ && style == style_ && weight == weight_) {
+    return Font(const_cast<PlatformFontSkia*>(this));
+  }
+
   // If the style changed, we may need to load a new face.
   std::string new_family = font_family_;
   bool success = true;

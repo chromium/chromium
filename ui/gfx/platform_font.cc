@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font_list.h"
 
@@ -16,6 +17,12 @@ namespace gfx {
 int PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(
     int desired_font_size) {
   int size_delta = desired_font_size - gfx::PlatformFont::kDefaultBaseFontSize;
+#if !BUILDFLAG(IS_WIN)
+  if (gfx::FontList().GetFontSize() ==
+      gfx::PlatformFont::kDefaultBaseFontSize) {
+    return size_delta;
+  }
+#endif
   gfx::FontList base_font = gfx::FontList().DeriveWithSizeDelta(size_delta);
 
   // The default font may not actually be kDefaultBaseFontSize if, for example,
