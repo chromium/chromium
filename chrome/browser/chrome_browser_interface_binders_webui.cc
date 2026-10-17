@@ -28,9 +28,9 @@
 #include "chrome/browser/ui/webui/location_internals/location_internals.mojom.h"
 #include "chrome/browser/ui/webui/location_internals/location_internals_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
-#include "chrome/browser/ui/webui/omnibox/aim_eligibility/aim_eligibility.mojom.h"
-#include "chrome/browser/ui/webui/omnibox/omnibox_internals.mojom.h"
-#include "chrome/browser/ui/webui/omnibox/omnibox_ui.h"
+#include "chrome/browser/ui/webui/omnibox_internals/aim_eligibility/aim_eligibility.mojom.h"
+#include "chrome/browser/ui/webui/omnibox_internals/omnibox_internals.mojom.h"
+#include "chrome/browser/ui/webui/omnibox_internals/omnibox_internals_ui.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/segmentation_internals/segmentation_internals_ui.h"
 #include "chrome/browser/ui/webui/subresource_filter/subresource_filter_internals_ui.h"
@@ -221,11 +221,11 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   RegisterWebUIControllerInterfaceBinder<
       webnn_internals::mojom::PageHandlerFactory, WebNNInternalsUI>(map);
 #endif
-  RegisterWebUIControllerInterfaceBinder<::mojom::OmniboxPageHandler,
-                                         OmniboxUI>(map);
+  RegisterWebUIControllerInterfaceBinder<::mojom::OmniboxInternalsPageHandler,
+                                         OmniboxInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
-      aim_eligibility::mojom::PageHandlerFactory, OmniboxUI>(map);
+      aim_eligibility::mojom::PageHandlerFactory, OmniboxInternalsUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       site_engagement::mojom::SiteEngagementDetailsProvider, SiteEngagementUI>(

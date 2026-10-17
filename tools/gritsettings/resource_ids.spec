@@ -644,17 +644,17 @@
     "META": {"sizes": {"includes": [10]}},
     "includes": [4450],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox/aim_eligibility_extension/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
-    "includes": [4455],
-  },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox/resources.grd": {
-    "META": {"sizes": {"includes": [50]}},
-    "includes": [4460],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_everywhere/resources.grd": {
     "META": {"sizes": {"includes": [50]}},
     "includes": [4470],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_internals/aim_eligibility_extension/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4473],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_internals/resources.grd": {
+    "META": {"sizes": {"includes": [50]}},
+    "includes": [4476],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox_popup/resources.grd": {
     "META": {"sizes": {"includes": [50]}},

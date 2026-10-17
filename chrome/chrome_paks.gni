@@ -535,7 +535,7 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/resources/contextual_tasks/extension:resources",
         "//chrome/browser/resources/extensions:resources",
-        "//chrome/browser/resources/omnibox/aim_eligibility_extension:resources",
+        "//chrome/browser/resources/omnibox_internals/aim_eligibility_extension:resources",
         "//extensions:extensions_resources",
       ]
     } else if (is_android) {

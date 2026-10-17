@@ -123,9 +123,9 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
   // - autocomplete_controller.cc `RecordScoringSignalCoverageForProvider()`
   // - omnibox_metrics_provider.cc `GetScoringSignalsForLogging()`
   // - omnibox.mojom `struct Signals`
-  // - omnibox_page_handler.cc
+  // - omnibox_internals_page_handler.cc
   //   `TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr>`
-  // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+  // - omnibox_internals_page_handler.cc `TypeConverter<mojom::SignalsPtr,
   //   AutocompleteMatch::ScoringSignals>`
   // - omnibox_util.ts `signalNames`
   // - omnibox/histograms.xml

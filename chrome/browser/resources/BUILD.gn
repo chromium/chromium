@@ -50,7 +50,7 @@ group("resources") {
     public_deps += [
       ":component_extension_resources",
       "contextual_tasks/extension:resources",
-      "omnibox/aim_eligibility_extension:resources",
+      "omnibox_internals/aim_eligibility_extension:resources",
     ]
   }
 
@@ -431,7 +431,7 @@ group("dev_ui_resources") {
     "location_internals:resources",
     "media:resources",
     "net_internals:resources",
-    "omnibox:resources",
+    "omnibox_internals:resources",
     "predictors:resources",
     "segmentation_internals:resources",
     "subresource_filter:resources",
@@ -524,7 +524,7 @@ repack("dev_ui_paks") {
     "$root_gen_dir/chrome/location_internals_resources.pak",
     "$root_gen_dir/chrome/media_resources.pak",
     "$root_gen_dir/chrome/net_internals_resources.pak",
-    "$root_gen_dir/chrome/omnibox_resources.pak",
+    "$root_gen_dir/chrome/omnibox_internals_resources.pak",
     "$root_gen_dir/chrome/predictors_resources.pak",
     "$root_gen_dir/chrome/segmentation_internals_resources.pak",
     "$root_gen_dir/chrome/subresource_filter_internals_resources.pak",
