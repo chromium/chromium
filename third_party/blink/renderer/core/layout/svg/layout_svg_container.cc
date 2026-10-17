@@ -98,7 +98,10 @@ bool LayoutSVGContainer::UpdateAfterSVGLayout(
     bool bbox_changed) {
   // Invalidate all resources of this client if our reference box changed.
   if (EverHadLayout() && (SelfNeedsFullLayout() || bbox_changed)) {
-    SVGResourceInvalidator(*this).InvalidateEffects();
+    SVGResourceInvalidator resource_invalidator(*this);
+    resource_invalidator.InvalidateEffects();
+    // A <use> can be a paint-server client for context-fill or context-stroke.
+    resource_invalidator.InvalidatePaints();
   }
   if (!needs_transform_update_ && transform_uses_reference_box_) {
     if (CheckForImplicitTransformChange(layout_info, bbox_changed)) {

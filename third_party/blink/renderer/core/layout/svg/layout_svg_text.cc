@@ -238,6 +238,19 @@ bool LayoutSVGText::UpdateAfterSVGLayout(const SVGLayoutInfo& layout_info,
     SVGResourceInvalidator resource_invalidator(*this);
     resource_invalidator.InvalidateEffects();
     resource_invalidator.InvalidatePaints();
+
+    // SVG inline descendants can have resources that use this <text>'s
+    // bounding box as their reference box.
+    for (LayoutObject* object = FirstChild(); object;
+         object = object->NextInPreOrder(this)) {
+      auto* svg_inline = DynamicTo<LayoutSVGInline>(object);
+      if (!svg_inline) {
+        continue;
+      }
+      SVGResourceInvalidator descendant_resource_invalidator(*svg_inline);
+      descendant_resource_invalidator.InvalidateEffects();
+      descendant_resource_invalidator.InvalidatePaints();
+    }
   }
 
   UpdateTransformAffectsVectorEffect();
