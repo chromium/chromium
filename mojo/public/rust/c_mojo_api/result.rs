@@ -72,3 +72,5 @@ impl std::fmt::Display for MojoError {
         write!(f, "{}", self.as_str())
     }
 }
+
+impl std::error::Error for MojoError {}

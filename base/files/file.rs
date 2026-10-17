@@ -94,6 +94,12 @@ impl From<File> for UniquePtr<ffi::File> {
     }
 }
 
+impl AsRef<ffi::File> for File {
+    fn as_ref(&self) -> &ffi::File {
+        self.inner()
+    }
+}
+
 impl From<OwnedPlatformFile> for File {
     fn from(handle: OwnedPlatformFile) -> Self {
         // SAFETY: `handle` is an `OwnedPlatformFile`, so the raw handle is

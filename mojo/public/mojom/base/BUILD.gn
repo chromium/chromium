@@ -628,6 +628,23 @@ mojom_component("base") {
     },
   ]
 
+  rust_typemaps = [
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ReadOnlyFile"
+          rust = "base_file::File"
+        },
+      ]
+      traits_file = "read_only_file_mojom_traits.rs"
+      public_deps = [ "//base:file" ]
+      deps = [
+        "//mojo/public/rust/base:read_only_file_checks",
+        "//mojo/public/rust/c_mojo_api",
+      ]
+    },
+  ]
+
   if (is_android) {
     cpp_typemaps += [
       {

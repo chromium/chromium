@@ -20,13 +20,8 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace mojo {
-namespace {
 
-// True if the underlying handle is only readable. Where possible this excludes
-// deletion, writing, truncation, append and other operations that might modify
-// the underlying file. False if we can tell that the file could be modified.
-// On platforms where we cannot test the handle, always returns true.
-bool IsReadOnlyFile(base::File& file) {
+bool IsReadOnlyFile(const base::File& file) {
   bool is_readonly = true;
 #if BUILDFLAG(IS_WIN)
   std::optional<ACCESS_MASK> flags =
@@ -46,7 +41,7 @@ bool IsReadOnlyFile(base::File& file) {
   return is_readonly;
 }
 
-bool IsPhysicalFile(base::File& file) {
+bool IsPhysicalFile(const base::File& file) {
 #if BUILDFLAG(IS_WIN)
   // Verify if this is a real file (not a socket/pipe etc.).
   DWORD type = GetFileType(file.GetPlatformFile());
@@ -61,8 +56,6 @@ bool IsPhysicalFile(base::File& file) {
   return S_ISREG(st.st_mode);
 #endif
 }
-
-}  // namespace
 
 mojo::PlatformHandle StructTraits<mojo_base::mojom::ReadOnlyFileDataView,
                                   base::File>::fd(base::File& file) {
