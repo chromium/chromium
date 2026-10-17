@@ -102,6 +102,11 @@ void PaintMaskLayer(const FillLayer& layer,
     return;
   }
 
+  if ((paint_flags & PaintFlag::kPrivacyPreserving) &&
+      !style_image->IsCorsSameOrigin()) {
+    return;
+  }
+
   std::optional<ScopedMaskLuminanceLayer> mask_luminance_scope;
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   // Don't use the operator if this is the bottom layer.
@@ -227,11 +232,11 @@ void PaintMaskLayer(const FillLayer& layer,
 }
 
 template <typename Callback>
-void IterateFillLayersReveresed(const FillLayer* layer, Callback callback) {
+void IterateFillLayersReversed(const FillLayer* layer, Callback callback) {
   if (!layer) {
     return;
   }
-  IterateFillLayersReveresed(layer->NextForUsedValue(), callback);
+  IterateFillLayersReversed(layer->NextForUsedValue(), callback);
   callback(*layer);
 }
 }  // namespace
@@ -261,7 +266,7 @@ void SVGMaskPainter::Paint(GraphicsContext& context,
                            gfx::ToEnclosingRect(visual_rect));
 
   const SVGBackgroundPaintContext bg_paint_context(layout_object);
-  IterateFillLayersReveresed(&layout_object.StyleRef().MaskLayers(),
+  IterateFillLayersReversed(&layout_object.StyleRef().MaskLayers(),
                              [&layout_object, &bg_paint_context, &context,
                               paint_flags](const FillLayer& layer) {
                                PaintMaskLayer(layer, layout_object,
