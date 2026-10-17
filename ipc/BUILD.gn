@@ -200,6 +200,7 @@ if (use_blink) {
   }
 
   test("ipc_tests") {
+    data_deps = [ "//testing/buildbot/filters:ipc_tests_filters" ]
     sources = [
       "ipc_channel_unittest.cc",
       "ipc_message_unittest.cc",

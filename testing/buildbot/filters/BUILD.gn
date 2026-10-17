@@ -504,3 +504,21 @@ source_set("gwp_asan_unittests_filters") {
     "//testing/buildbot/filters/android.device.gwp_asan_unittests.filter",
   ]
 }
+
+source_set("sandbox_linux_unittests_filters") {
+  testonly = true
+
+  data = [ "//testing/buildbot/filters/fuchsia.starview.sandbox_linux_unittests.filter" ]
+}
+
+source_set("mojo_unittests_filters") {
+  testonly = true
+
+  data = [ "//testing/buildbot/filters/fuchsia.starview.mojo_unittests.filter" ]
+}
+
+source_set("ipc_tests_filters") {
+  testonly = true
+
+  data = [ "//testing/buildbot/filters/fuchsia.starview.ipc_tests.filter" ]
+}

@@ -46,6 +46,7 @@ group("tests") {
 }
 
 test("mojo_unittests") {
+  data_deps = [ "//testing/buildbot/filters:mojo_unittests_filters" ]
   deps = [
     "//mojo/core:test_sources",
     "//mojo/core/test:run_all_unittests",

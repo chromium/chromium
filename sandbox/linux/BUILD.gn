@@ -199,6 +199,7 @@ action("bpf_dsl_golden") {
 }
 
 test("sandbox_linux_unittests") {
+  data_deps = [ "//testing/buildbot/filters:sandbox_linux_unittests_filters" ]
   deps = [
     ":sandbox_linux_unittests_sources",
     "//sandbox/policy:tests",
