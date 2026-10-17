@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
@@ -89,6 +90,8 @@ public class BottomBarMediator
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final NullableObservableSupplier<PropertyModel> mGlicActionSupplier;
     private final NullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
+    private final @Nullable BottomBarEducationCoordinator mEducationCoordinator;
+    private final NullableObservableSupplier<Tab> mTabSupplier;
 
     // Observers and Callbacks
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
@@ -108,6 +111,7 @@ public class BottomBarMediator
     private @Nullable @ActionId Integer mResolvedCandidateExtraAction;
 
     // Mutable State (Primitive / Non-null)
+    private boolean mEducationClaimedPromoSlot;
     private boolean mCandidateMetricsRecorded;
     private boolean mGlicWasVisible;
     private boolean mGlicTimeToAppearRecorded;
@@ -133,6 +137,9 @@ public class BottomBarMediator
      * @param actionRegistry The {@link ActionRegistry}.
      * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
      * @param toolbarPositionSupplier Supplier of the current toolbar position.
+     * @param educationCoordinator The {@link BottomBarEducationCoordinator} for the education
+     *     bubble.
+     * @param tabSupplier Supplier of the current tab.
      */
     public BottomBarMediator(
             Context context,
@@ -146,7 +153,9 @@ public class BottomBarMediator
             BottomBarPromoDialogCoordinator promoDialogCoordinator,
             ActionRegistry actionRegistry,
             LayoutStateProvider layoutStateProvider,
-            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
+            @Nullable BottomBarEducationCoordinator educationCoordinator,
+            NullableObservableSupplier<Tab> tabSupplier) {
         mContext = context;
         mModel = model;
         mButtonManager = buttonManager;
@@ -157,6 +166,8 @@ public class BottomBarMediator
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mPromoDialogCoordinator = promoDialogCoordinator;
         mToolbarPositionSupplier = toolbarPositionSupplier;
+        mEducationCoordinator = educationCoordinator;
+        mTabSupplier = tabSupplier;
         mGlicActionSupplier = actionRegistry.get(ActionId.GLIC);
         mNewTabActionSupplier = actionRegistry.get(ActionId.NEW_TAB);
         mGlicTimeToAppearRecorded = false;
@@ -231,6 +242,10 @@ public class BottomBarMediator
         mModel.set(BottomBarProperties.IS_VISIBLE, isVisible);
         mVisibilityDelegate.onVisibilityChanged(isVisible);
 
+        if (!isVisible && mEducationCoordinator != null) {
+            mEducationCoordinator.dismiss();
+        }
+
         if (didBecomeVisible) {
             mBottomBarShownTimeMs = SystemClock.uptimeMillis();
             if (mGlicAppearedTimeMs != -1 && !mGlicTimeToAppearRecorded) {
@@ -253,14 +268,37 @@ public class BottomBarMediator
      */
     public void onStartupPromoFlowFinished(boolean promoShown) {
         mStartupPromoFlowFinished = true;
-        if (!promoShown) {
+        if (!promoShown || mEducationClaimedPromoSlot) {
             maybeShowIphs();
         }
+    }
+
+    /**
+     * Checks if the education flow should be shown and claims the startup promo slot if so.
+     *
+     * @param profile The current Profile.
+     * @return Whether the education promo slot was successfully claimed.
+     */
+    public boolean maybeClaimPromoSlotForEducation(Profile profile) {
+        if (mEducationCoordinator != null && mEducationCoordinator.wouldShow(profile)) {
+            mEducationClaimedPromoSlot = true;
+            return true;
+        }
+        return false;
     }
 
     private void maybeShowIphs() {
         if (!mStartupPromoFlowFinished) return;
         boolean isBottomBarVisible = mIsVisible == TriState.TRUE;
+
+        if (mEducationCoordinator != null && mEducationClaimedPromoSlot) {
+            Tab currentTab = mTabSupplier.get();
+            if (isBottomBarVisible && currentTab != null && !currentTab.isOffTheRecord()) {
+                mEducationCoordinator.maybeShow();
+            }
+            return;
+        }
+
         boolean isExtraVisible = mModel.get(BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE);
         if (isBottomBarVisible && isExtraVisible) {
             Profile profile = mProfileSupplier.get();

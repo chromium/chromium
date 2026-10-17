@@ -44,6 +44,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.ui.actions.glic.GlicActionProperties;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.GlicIneligibilityReason;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
@@ -88,6 +90,8 @@ public class BottomBarCoordinatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private Tab mTab;
     @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    @Mock private ScrimManager mScrimManager;
     @Mock private GlicKeyedService mGlicKeyedService;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
@@ -133,20 +137,27 @@ public class BottomBarCoordinatorUnitTest {
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mModalDialogManagerSupplier = ObservableSuppliers.createNonNull(mModalDialogManager);
         mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
-        mCoordinator =
-                new BottomBarCoordinator(
-                        mParent,
-                        mActionRegistry,
-                        mThemeColorProvider,
-                        mTabSupplier,
-                        mHomepageEnabledSupplier,
-                        mVisibilityDelegate,
-                        mProfileSupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        mLayoutStateProvider,
-                        mToolbarPositionSupplier);
+        mCoordinator = createCoordinator();
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private BottomBarCoordinator createCoordinator() {
+        return new BottomBarCoordinator(
+                mParent,
+                mActionRegistry,
+                mThemeColorProvider,
+                mTabSupplier,
+                mHomepageEnabledSupplier,
+                mVisibilityDelegate,
+                mProfileSupplier,
+                mOmniboxFocusStateSupplier,
+                mModalDialogManagerSupplier,
+                mLayoutStateProvider,
+                mToolbarPositionSupplier,
+                mBrowserControlsVisibilityManager,
+                mScrimManager,
+                new View(mActivity),
+                new View(mActivity));
     }
 
     @After
@@ -473,19 +484,7 @@ public class BottomBarCoordinatorUnitTest {
         // Recreate coordinator with null profile initially.
         mProfileSupplier.set(null);
         mCoordinator.destroy();
-        mCoordinator =
-                new BottomBarCoordinator(
-                        mParent,
-                        mActionRegistry,
-                        mThemeColorProvider,
-                        mTabSupplier,
-                        mHomepageEnabledSupplier,
-                        mVisibilityDelegate,
-                        mProfileSupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        mLayoutStateProvider,
-                        mToolbarPositionSupplier);
+        mCoordinator = createCoordinator();
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getView().findViewById(R.id.extra_button);
@@ -526,19 +525,7 @@ public class BottomBarCoordinatorUnitTest {
         mGlicActionSupplier.set(glicModel);
 
         mCoordinator.destroy();
-        mCoordinator =
-                new BottomBarCoordinator(
-                        mParent,
-                        mActionRegistry,
-                        mThemeColorProvider,
-                        mTabSupplier,
-                        mHomepageEnabledSupplier,
-                        mVisibilityDelegate,
-                        mProfileSupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        mLayoutStateProvider,
-                        mToolbarPositionSupplier);
+        mCoordinator = createCoordinator();
 
         mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
@@ -607,17 +594,61 @@ public class BottomBarCoordinatorUnitTest {
         ChromeFeatureList.ANDROID_BOTTOM_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
     })
-    public void testPromoDialogSuppressedWhenEducationEnabled() {
+    public void testMaybeShowPromoDialog_EducationEnabled_ClaimsSlot() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
-
-        when(mTracker.shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG))
-                .thenReturn(true);
-        GlicEnabling.setEnabledForTesting(true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
 
+        when(mTracker.isInitialized()).thenReturn(true);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(true);
+
+        assertTrue(mCoordinator.maybeShowPromoDialog(mProfile));
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
+    })
+    public void testMaybeShowPromoDialog_EducationEnabled_DoesNotClaimSlot() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(false);
+        mTabSupplier.set(mTab);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        when(mTracker.isInitialized()).thenReturn(true);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(false);
+
         assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
+        verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/true"
+    })
+    public void testMaybeShowPromoDialog_EducationEnabled_IncognitoReturnsFalse() {
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        mTabSupplier.set(mTab);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        when(mTracker.isInitialized()).thenReturn(true);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(true);
+
+        assertFalse(mCoordinator.maybeShowPromoDialog(mProfile));
+        verify(mTracker, never())
+                .shouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_PROMO_DIALOG);
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyBoolean());
     }
 }

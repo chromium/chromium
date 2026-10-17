@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.ColorInt;
@@ -21,8 +22,10 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -36,6 +39,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMediator;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
@@ -92,7 +96,7 @@ public class BottomBarContainerCoordinator
     private int mCurrentScreenHeightDp;
 
     /**
-     * @param bottomBarContainer The {@link FrameLayout} for the bottom bar.
+     * @param bottomAppBarContainer The {@link ViewGroup} for the bottom app bar container.
      * @param requestLayerUpdateCallback A callback to request layer updates.
      * @param actionRegistry The {@link ActionRegistry}.
      * @param tabSupplier Supplier for the current tab.
@@ -104,9 +108,12 @@ public class BottomBarContainerCoordinator
      * @param appMenuCoordinatorSupplier Supplier of the {@link AppMenuCoordinator}.
      * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
      * @param toolbarPositionSupplier Supplier of the current toolbar position.
+     * @param browserControlsVisibilityManager The {@link BrowserControlsVisibilityManager}.
+     * @param scrimManager The {@link ScrimManager}.
+     * @param controlContainer The control container view.
      */
     public BottomBarContainerCoordinator(
-            FrameLayout bottomBarContainer,
+            ViewGroup bottomAppBarContainer,
             Callback<Boolean> requestLayerUpdateCallback,
             ActionRegistry actionRegistry,
             NullableObservableSupplier<Tab> tabSupplier,
@@ -117,7 +124,13 @@ public class BottomBarContainerCoordinator
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             LayoutStateProvider layoutStateProvider,
-            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            ScrimManager scrimManager,
+            View controlContainer) {
+        FrameLayout bottomBarContainer =
+                bottomAppBarContainer.findViewById(R.id.bottom_container_slot);
+        assert bottomBarContainer != null;
         mBottomBarContainer = bottomBarContainer;
         Context context = bottomBarContainer.getContext();
         mContext = context;
@@ -141,7 +154,11 @@ public class BottomBarContainerCoordinator
                         omniboxFocusStateSupplier,
                         modalDialogManagerSupplier,
                         layoutStateProvider,
-                        toolbarPositionSupplier);
+                        toolbarPositionSupplier,
+                        browserControlsVisibilityManager,
+                        scrimManager,
+                        controlContainer,
+                        bottomAppBarContainer);
         if (BottomBarConfigUtils.shouldIncludeAppMenuButton()
                 && BottomBarConfigUtils.shouldShowAppMenuUpdateBadge()) {
             mAppMenuUpdateBadgeController =

@@ -15,7 +15,9 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.ui.actions.glic.GlicActionButtonBinder;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionButtonBinder;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarButtonManager.ActionConfig;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -45,6 +48,7 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
     private final PropertyModelChangeProcessor<PropertyModel, BottomBarView, PropertyKey> mMcp;
     private final BottomBarButtonManager mButtonManager;
     private final BottomBarPromoDialogCoordinator mPromoDialogCoordinator;
+    private final @Nullable BottomBarEducationCoordinator mEducationCoordinator;
     private final NullableObservableSupplier<Tab> mTabSupplier;
 
     /**
@@ -59,6 +63,13 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
      * @param modalDialogManagerSupplier Supplier of the {@link ModalDialogManager}.
      * @param layoutStateProvider The {@link LayoutStateProvider} to observe layout state changes.
      * @param toolbarPositionSupplier Supplier of the current toolbar position.
+     * @param browserControlsVisibilityManager Used by the education bubble to keep the browser
+     *     controls shown and to read their position.
+     * @param scrimManager Used to show the scrim behind the education bubble.
+     * @param controlContainer The toolbar control container, used as the scrim anchor when the
+     *     controls are at the bottom.
+     * @param bottomAppBarContainer The container hosting the bottom bar, used as the scrim anchor
+     *     when the controls are at the top.
      */
     public BottomBarCoordinator(
             ViewGroup parent,
@@ -71,7 +82,11 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier,
             NonNullObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             LayoutStateProvider layoutStateProvider,
-            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier) {
+            NonNullObservableSupplier<@ControlsPosition Integer> toolbarPositionSupplier,
+            BrowserControlsVisibilityManager browserControlsVisibilityManager,
+            ScrimManager scrimManager,
+            View controlContainer,
+            View bottomAppBarContainer) {
         Context context = parent.getContext();
         mView =
                 (BottomBarView)
@@ -96,6 +111,19 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         mPromoDialogCoordinator =
                 new BottomBarPromoDialogCoordinator(context, modalDialogManagerSupplier);
 
+        if (BottomBarConfigUtils.isEducationEnabled()) {
+            mEducationCoordinator =
+                    new BottomBarEducationCoordinator(
+                            scrimManager,
+                            browserControlsVisibilityManager,
+                            controlContainer,
+                            bottomAppBarContainer,
+                            mView,
+                            profileSupplier);
+        } else {
+            mEducationCoordinator = null;
+        }
+
         mMediator =
                 new BottomBarMediator(
                         context,
@@ -109,7 +137,9 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         mPromoDialogCoordinator,
                         actionRegistry,
                         layoutStateProvider,
-                        toolbarPositionSupplier);
+                        toolbarPositionSupplier,
+                        mEducationCoordinator,
+                        tabSupplier);
         mPromoDialogCoordinator.setListener(mMediator);
 
         mTabSupplier = tabSupplier;
@@ -207,8 +237,9 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
             return false;
         }
 
-        // Suppress the old promo dialog if the new education flow is enabled.
-        if (BottomBarConfigUtils.isEducationEnabled()) return false;
+        if (BottomBarConfigUtils.isEducationEnabled()) {
+            return mMediator.maybeClaimPromoSlotForEducation(profile);
+        }
 
         return mPromoDialogCoordinator.maybeShowPromoDialog(profile);
     }
@@ -228,5 +259,8 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
         mMediator.destroy();
         mMcp.destroy();
         mPromoDialogCoordinator.destroy();
+        if (mEducationCoordinator != null) {
+            mEducationCoordinator.destroy();
+        }
     }
 }

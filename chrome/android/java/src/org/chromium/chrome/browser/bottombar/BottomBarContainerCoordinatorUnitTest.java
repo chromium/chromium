@@ -38,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.bottombar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -81,6 +83,8 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    @Mock private ScrimManager mScrimManager;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
             ObservableSuppliers.createNullable();
@@ -119,6 +123,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                         (activity) -> {
                             mActivity = activity;
                             mBottomBarContainer = new FrameLayout(mActivity);
+                            mBottomBarContainer.setId(R.id.bottom_container_slot);
                             mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
                             mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
                             mModalDialogManagerSupplier =
@@ -126,22 +131,28 @@ public class BottomBarContainerCoordinatorUnitTest {
                             mToolbarPositionSupplier =
                                     ObservableSuppliers.createNonNull(ControlsPosition.TOP);
                             mProfileSupplier.set(mProfile);
-                            mCoordinator =
-                                    new BottomBarContainerCoordinator(
-                                            mBottomBarContainer,
-                                            mRequestLayerUpdateCallback,
-                                            mActionRegistry,
-                                            mTabSupplier,
-                                            mThemeColorProvider,
-                                            mHomepageEnabledSupplier,
-                                            mProfileSupplier,
-                                            mOmniboxFocusStateSupplier,
-                                            mModalDialogManagerSupplier,
-                                            new OneshotSupplierImpl<AppMenuCoordinator>(),
-                                            mLayoutStateProvider,
-                                            mToolbarPositionSupplier);
+                            mCoordinator = createCoordinator();
                         });
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private BottomBarContainerCoordinator createCoordinator() {
+        return new BottomBarContainerCoordinator(
+                mBottomBarContainer,
+                mRequestLayerUpdateCallback,
+                mActionRegistry,
+                mTabSupplier,
+                mThemeColorProvider,
+                mHomepageEnabledSupplier,
+                mProfileSupplier,
+                mOmniboxFocusStateSupplier,
+                mModalDialogManagerSupplier,
+                new OneshotSupplierImpl<AppMenuCoordinator>(),
+                mLayoutStateProvider,
+                mToolbarPositionSupplier,
+                mBrowserControlsVisibilityManager,
+                mScrimManager,
+                new View(mActivity));
     }
 
     @Test
@@ -384,20 +395,7 @@ public class BottomBarContainerCoordinatorUnitTest {
         mGlicActionSupplier.set(glicModel);
 
         mProfileSupplier.set(null);
-        mCoordinator =
-                new BottomBarContainerCoordinator(
-                        mBottomBarContainer,
-                        mRequestLayerUpdateCallback,
-                        mActionRegistry,
-                        mTabSupplier,
-                        mThemeColorProvider,
-                        mHomepageEnabledSupplier,
-                        mProfileSupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        new OneshotSupplierImpl<AppMenuCoordinator>(),
-                        mLayoutStateProvider,
-                        mToolbarPositionSupplier);
+        mCoordinator = createCoordinator();
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
@@ -428,20 +426,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                         .build();
         mGlicActionSupplier.set(glicModel);
 
-        mCoordinator =
-                new BottomBarContainerCoordinator(
-                        mBottomBarContainer,
-                        mRequestLayerUpdateCallback,
-                        mActionRegistry,
-                        mTabSupplier,
-                        mThemeColorProvider,
-                        mHomepageEnabledSupplier,
-                        mProfileSupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        new OneshotSupplierImpl<AppMenuCoordinator>(),
-                        mLayoutStateProvider,
-                        mToolbarPositionSupplier);
+        mCoordinator = createCoordinator();
         RobolectricUtil.runAllBackgroundAndUi();
 
         View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);

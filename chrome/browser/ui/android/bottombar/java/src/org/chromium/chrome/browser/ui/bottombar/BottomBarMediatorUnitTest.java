@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
@@ -87,6 +88,9 @@ public class BottomBarMediatorUnitTest {
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private BottomBarEducationCoordinator mEducationCoordinator;
+    @Mock private Tab mTab;
+    private SettableNullableObservableSupplier<Tab> mTabSupplier;
 
     @Captor private ArgumentCaptor<BottomBarButtonManager.Listener> mButtonManagerListenerCaptor;
 
@@ -107,6 +111,9 @@ public class BottomBarMediatorUnitTest {
     @Before
     public void setUp() {
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(false);
+        mTabSupplier = ObservableSuppliers.createNullable();
+        mTabSupplier.set(mTab);
+        when(mTab.isOffTheRecord()).thenReturn(false);
         mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mToolbarPositionSupplier = ObservableSuppliers.createNonNull(ControlsPosition.TOP);
         mProfileSupplier = ObservableSuppliers.createNullable();
@@ -421,7 +428,9 @@ public class BottomBarMediatorUnitTest {
                         mPromoDialogCoordinator,
                         mActionRegistry,
                         mLayoutStateProvider,
-                        mToolbarPositionSupplier);
+                        mToolbarPositionSupplier,
+                        /* educationCoordinator= */ null,
+                        mTabSupplier);
 
         // Bottom bar is visible, but startup promo flow hasn't finished. IPH should NOT be shown.
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -797,7 +806,81 @@ public class BottomBarMediatorUnitTest {
         // Assert NewTab action model does NOT have an IPH intent
         assertNull(newTabModel.get(ActionProperties.IPH_INTENT));
     }
+
+    @Test
+    public void testEducation_MaybeShowCalled() {
+        createMediator(true, false);
+        assertNotNull(mMediator);
+        when(mEducationCoordinator.wouldShow(mProfile)).thenReturn(true);
+        mOmniboxFocusStateSupplier.set(false); // visible
+
+        assertTrue(mMediator.maybeClaimPromoSlotForEducation(mProfile));
+        mMediator.onStartupPromoFlowFinished(true);
+
+        verify(mEducationCoordinator).maybeShow();
+    }
+
+    @Test
+    public void testEducation_NotClaimed_NotCalled() {
+        createMediator(true, false);
+        assertNotNull(mMediator);
+        mOmniboxFocusStateSupplier.set(false); // visible
+
+        mMediator.onStartupPromoFlowFinished(false);
+        verify(mEducationCoordinator, never()).maybeShow();
+    }
+
+    @Test
+    public void testEducation_Incognito_NotCalled() {
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        createMediator(true, false);
+        assertNotNull(mMediator);
+        when(mEducationCoordinator.wouldShow(mProfile)).thenReturn(true);
+        mOmniboxFocusStateSupplier.set(false); // visible
+
+        assertTrue(mMediator.maybeClaimPromoSlotForEducation(mProfile));
+        mMediator.onStartupPromoFlowFinished(true);
+
+        verify(mEducationCoordinator, never()).maybeShow();
+    }
+
+    @Test
+    public void testEducation_DismissedOnInvisible() {
+        createMediator(true, false);
+        mOmniboxFocusStateSupplier.set(false); // visible
+        clearInvocations(mEducationCoordinator);
+
+        mOmniboxFocusStateSupplier.set(true); // invisible
+        verify(mEducationCoordinator).dismiss();
+    }
+
+    @Test
+    public void testEducation_NullTab_NotCalled() {
+        mTabSupplier.set(null);
+        createMediator(true, false);
+        assertNotNull(mMediator);
+        when(mEducationCoordinator.wouldShow(mProfile)).thenReturn(true);
+        mOmniboxFocusStateSupplier.set(false); // visible
+
+        assertTrue(mMediator.maybeClaimPromoSlotForEducation(mProfile));
+        mMediator.onStartupPromoFlowFinished(true);
+
+        verify(mEducationCoordinator, never()).maybeShow();
+    }
+
+    @Test
+    public void testEducation_DestroyDoesNotDestroyCoordinator() {
+        createMediator(true, false);
+        assertNotNull(mMediator);
+        mMediator.destroy();
+        verify(mEducationCoordinator, never()).destroy();
+    }
+
     private void createMediator() {
+        createMediator(false, true);
+    }
+
+    private void createMediator(boolean withEducation, boolean finishStartupFlow) {
         mMediator =
                 new BottomBarMediator(
                         mContext,
@@ -811,7 +894,11 @@ public class BottomBarMediatorUnitTest {
                         mPromoDialogCoordinator,
                         mActionRegistry,
                         mLayoutStateProvider,
-                        mToolbarPositionSupplier);
-        mMediator.onStartupPromoFlowFinished(false);
+                        mToolbarPositionSupplier,
+                        withEducation ? mEducationCoordinator : null,
+                        mTabSupplier);
+        if (finishStartupFlow) {
+            mMediator.onStartupPromoFlowFinished(false);
+        }
     }
 }
