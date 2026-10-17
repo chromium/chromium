@@ -14450,6 +14450,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidBookmarkBarDragDropDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBarDragDrop)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"mixed-fixed-interval-matcher",
+     flag_descriptions::kMixedFixedIntervalMatcherName,
+     flag_descriptions::kMixedFixedIntervalMatcherDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kMixedFixedIntervalMatcher)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

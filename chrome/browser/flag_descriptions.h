@@ -6413,6 +6413,13 @@ inline constexpr char kMigrateAccountManagerDelegateDescription[] =
     "Enables a refactoring of the Account Manager Delegate to use "
     "PlatformAccounts";
 
+inline constexpr char kMixedFixedIntervalMatcherName[] =
+    "Refresh rate matching for mixed fixed-rate content";
+inline constexpr char kMixedFixedIntervalMatcherDescription[] =
+    "Lowers the display refresh rate when a page only updates fixed-rate "
+    "content, such as videos, animated images, CSS steps() animations and "
+    "scrollbar fade-outs, even if they run at different rates.";
+
 inline constexpr char kAndroidNavigationBlurTransitionAnimationName[] =
     "Blur transition animation for cross-site navigations";
 inline constexpr char kAndroidNavigationBlurTransitionAnimationDescription[] =
