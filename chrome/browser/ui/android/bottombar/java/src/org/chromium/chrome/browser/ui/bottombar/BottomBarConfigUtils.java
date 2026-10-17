@@ -40,7 +40,7 @@ public class BottomBarConfigUtils {
      * Returns whether the bottom bar is eligible on this device, i.e. the feature flag is enabled
      * and the form factor supports it. This does not take the user's Settings choice into account.
      */
-    private static boolean isBottomBarEligible(Context context) {
+    public static boolean isBottomBarEligible(Context context) {
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
                 && !DeviceInfo.isAutomotive()
                 && ChromeFeatureList.sAndroidBottomBar.isEnabled();
@@ -81,6 +81,14 @@ public class BottomBarConfigUtils {
                 .readBoolean(
                         ChromePreferenceKeys.BOTTOM_BAR_ENABLED,
                         ChromeFeatureList.sAndroidBottomBarDefaultUserEnabled.getValue());
+    }
+
+    /**
+     * Returns whether the user has explicitly set the bottom bar enabled preference in Settings.
+     */
+    public static boolean hasUserSetBottomBarEnabled() {
+        return ChromeSharedPreferences.getInstance()
+                .contains(ChromePreferenceKeys.BOTTOM_BAR_ENABLED);
     }
 
     /**

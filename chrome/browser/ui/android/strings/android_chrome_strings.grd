@@ -1015,6 +1015,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_SHOW_ME" desc="Button text to continue and show tooltips">
         Show me
       </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_NOT_NOW" desc="Button text to dismiss the bottom bar opt-in preview dialog">
+        Not now
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TRY_IT_NOW" desc="Button text to accept the bottom bar opt-in preview dialog">
+        Try it now
+      </message>
       <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TOOLTIP_GEMINI" desc="Tooltip explaining the Gemini button">
         Ask Gemini about anything on your page
       </message>

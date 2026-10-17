@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -19,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +33,11 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -38,6 +47,8 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 public class BottomBarEducationUtilsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Profile mProfile;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
     @Mock private Runnable mOnSettingsClicked;
     @Mock private Runnable mOnPositiveClicked;
     @Mock private Runnable mOnNegativeClicked;
@@ -50,6 +61,35 @@ public class BottomBarEducationUtilsUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+    }
+
+    @After
+    public void tearDown() {
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(null);
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_gemini_focused/true"})
+    public void testShouldUseGlicVariant_Enabled() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(true);
+        assertTrue(BottomBarEducationUtils.shouldUseGlicVariant(mProfile));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_gemini_focused/true"})
+    public void testShouldUseGlicVariant_GlicDisabled() {
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(false);
+        assertFalse(BottomBarEducationUtils.shouldUseGlicVariant(mProfile));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_gemini_focused/false"})
+    public void testShouldUseGlicVariant_FeatureParamDisabled() {
+        assertFalse(BottomBarEducationUtils.shouldUseGlicVariant(mProfile));
     }
 
     @Test

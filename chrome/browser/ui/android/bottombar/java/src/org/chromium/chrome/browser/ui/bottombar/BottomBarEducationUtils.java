@@ -14,6 +14,8 @@ import android.widget.TextView;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -22,6 +24,16 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 @NullMarked
 final class BottomBarEducationUtils {
     private BottomBarEducationUtils() {}
+
+    /**
+     * Returns whether the Gemini-focused education copy should be used. This requires both the
+     * Finch parameter and that Gemini (GLIC) is the eligible extra action for the given profile.
+     */
+    static boolean shouldUseGlicVariant(Profile profile) {
+        return BottomBarConfigUtils.isEducationGeminiFocused()
+                && BottomBarActionEligibility.getCandidateExtraAction(profile.getOriginalProfile())
+                        == ActionId.GLIC;
+    }
 
     /**
      * Inflates the content of the education bubble, including its own positive ("Show me") and

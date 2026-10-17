@@ -133,6 +133,15 @@ public class BottomBarConfigUtilsUnitTest {
     }
 
     @Test
+    public void testHasUserSetBottomBarEnabled() {
+        assertFalse(BottomBarConfigUtils.hasUserSetBottomBarEnabled());
+        BottomBarConfigUtils.setBottomBarUserEnabled(/* enabled= */ true);
+        assertTrue(BottomBarConfigUtils.hasUserSetBottomBarEnabled());
+        BottomBarConfigUtils.setBottomBarUserEnabled(/* enabled= */ false);
+        assertTrue(BottomBarConfigUtils.hasUserSetBottomBarEnabled());
+    }
+
+    @Test
     public void testSetBottomBarUserEnabled_RoundTrip() {
         BottomBarConfigUtils.setBottomBarUserEnabled(false);
         assertFalse(BottomBarConfigUtils.isBottomBarUserEnabled());
