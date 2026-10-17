@@ -588,7 +588,7 @@ public class LocationBarMediatorUnitTest {
                         mFuseboxCoordinator,
                         mLocationBarEmbedder,
                         /* omniboxChipManager= */ null,
-                        /* scrimHandler= */ null,
+                        mScrimHandler,
                         mWindowHasFocusSupplier);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
@@ -1091,6 +1091,39 @@ public class LocationBarMediatorUnitTest {
         clearInvocations(mScrimHandler);
         mMediator.onSuggestionsChanged(null, /* hasSuggestions= */ false);
         verify(mScrimHandler).setUseOpaqueScrim(true);
+    }
+
+    @Test
+    public void testScrimOpacity_incognito_neverOpaque() {
+        doReturn(true).when(mLocationBarDataProvider).isIncognitoBranded();
+        mMediator.onFinishNativeInitialization();
+        mMediator.setProfile(mProfile);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        mMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        // Unconventional request type without suggestions: scrim is still not opaque.
+        clearInvocations(mScrimHandler);
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.onSuggestionsChanged(null, /* hasSuggestions= */ false);
+        verify(mScrimHandler, atLeastOnce()).setUseOpaqueScrim(false);
+        verify(mScrimHandler, never()).setUseOpaqueScrim(true);
+    }
+
+    @Test
+    public void testScrimOpacity_tablet_neverOpaque() {
+        mTabletMediator.onFinishNativeInitialization();
+        mTabletMediator.setProfile(mProfile);
+        AutocompleteInput input = mSessionState.getAutocompleteInput();
+        input.setRequestType(AutocompleteRequestType.SEARCH);
+        mTabletMediator.onUrlFocusChange(/* hasFocus= */ true);
+
+        // Unconventional request type without suggestions: scrim is still not opaque.
+        clearInvocations(mScrimHandler);
+        input.setRequestType(AutocompleteRequestType.AI_MODE);
+        mTabletMediator.onSuggestionsChanged(null, /* hasSuggestions= */ false);
+        verify(mScrimHandler, atLeastOnce()).setUseOpaqueScrim(false);
+        verify(mScrimHandler, never()).setUseOpaqueScrim(true);
     }
 
     @Test

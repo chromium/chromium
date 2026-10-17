@@ -2635,7 +2635,8 @@ public class LocationBarMediator
 
     /**
      * Makes the scrim opaque when the current input uses an unconventional request type and there
-     * are no suggestions to show; otherwise restores the default scrim appearance.
+     * are no suggestions to show; otherwise restores the default scrim appearance. The opaque scrim
+     * is never used in incognito contexts or on tablets.
      *
      * @param hasSuggestions Whether any suggestions are currently present.
      */
@@ -2643,6 +2644,8 @@ public class LocationBarMediator
         if (mScrimHandler == null) return;
         boolean useOpaqueScrim =
                 mCurrentInput != null
+                        && !mIsTablet
+                        && !mLocationBarDataProvider.isIncognitoBranded()
                         && !mCurrentInput.isConventionalRequestType()
                         && !hasSuggestions;
         mScrimHandler.setUseOpaqueScrim(useOpaqueScrim);
