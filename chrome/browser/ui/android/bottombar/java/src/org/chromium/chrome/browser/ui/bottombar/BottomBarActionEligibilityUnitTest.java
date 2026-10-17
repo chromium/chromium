@@ -121,6 +121,14 @@ public class BottomBarActionEligibilityUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testShouldShowBottomBarGlicSetting_DefaultBaseline() {
+        when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(ActionId.GLIC);
+        assertTrue(BottomBarActionEligibility.shouldShowBottomBarGlicSetting(mProfile));
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/true")
     public void testShouldShowBottomBarGlicSetting_NoCachedCandidate_ReturnsFalse() {
         when(mGlicEnablingJniMock.shouldShowSettingsPage(any())).thenReturn(true);

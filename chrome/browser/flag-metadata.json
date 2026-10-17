@@ -1638,6 +1638,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "browser-controls-lockout-duration",
+    "owners": [ "ckitagawa@chromium.org", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "browser-controls-scroll-snap-animation",
     "owners": [
       "anandrv@google.com",

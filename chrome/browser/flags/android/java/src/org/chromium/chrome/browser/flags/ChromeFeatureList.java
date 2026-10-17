@@ -2014,7 +2014,7 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowBottomBarOnGts =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_bottom_bar_on_gts", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarShowGlicSettingToggle =
-            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_glic_setting_toggle", false);
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "show_glic_setting_toggle", true);
     // Whether the "Show bottom toolbar" switch is offered in Appearance settings. Only consulted
     // when the bottom bar is eligible; a disabled AndroidBottomBar flag always hides the switch.
     // Cached to match sAndroidBottomBarDefaultUserEnabled.

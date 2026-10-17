@@ -12498,6 +12498,7 @@ from previous Chrome versions.
   <int value="-753781397" label="MojoUseEventFd:enabled"/>
   <int value="-753747289" label="AudioDucking:disabled"/>
   <int value="-753607213" label="DevToolsIndividualRequestThrottling:enabled"/>
+  <int value="-753179597" label="BrowserControlsLockoutDuration:enabled"/>
   <int value="-753170441" label="LocationProviderManager:disabled"/>
   <int value="-752707368" label="HistoryPagePromoCtaStringVariation:disabled"/>
   <int value="-752554170" label="ShowNewTabAnimations:disabled"/>
@@ -17067,6 +17068,7 @@ from previous Chrome versions.
       label="AutofillEnableAllowlistForBmoCardCategoryBenefits:enabled"/>
   <int value="636736348" label="OmniboxFuseboxUserEdGuidedTour:enabled"/>
   <int value="636909796" label="VaapiAV1Decoder:enabled"/>
+  <int value="637040489" label="BrowserControlsLockoutDuration:disabled"/>
   <int value="637396292" label="AllBookmarks:enabled"/>
   <int value="637452937" label="ChromeHomeSurvey:enabled"/>
   <int value="637744033" label="OmniboxHideAimEntrypointOnUserInput:enabled"/>

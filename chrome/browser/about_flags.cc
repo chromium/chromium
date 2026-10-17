@@ -3439,6 +3439,22 @@ const FeatureEntry::FeatureVariation kAndroidThemeResourceProviderVariations[] =
         {"force light theme", sAndroidThemeResourceProviderParams, nullptr},
 };
 
+const FeatureEntry::FeatureParam kBrowserControlsLockoutDuration1000msParam[] =
+    {{"fullscreen_load_delay_ms", "1000"},
+     {"minimum_show_duration_ms", "1000"}};
+const FeatureEntry::FeatureParam kBrowserControlsLockoutDuration1500msParam[] =
+    {{"fullscreen_load_delay_ms", "1500"},
+     {"minimum_show_duration_ms", "1500"}};
+const FeatureEntry::FeatureParam kBrowserControlsLockoutDuration2000msParam[] =
+    {{"fullscreen_load_delay_ms", "2000"},
+     {"minimum_show_duration_ms", "2000"}};
+
+const FeatureEntry::FeatureVariation
+    kBrowserControlsLockoutDurationVariations[] = {
+        {"1000ms", kBrowserControlsLockoutDuration1000msParam, nullptr},
+        {"1500ms", kBrowserControlsLockoutDuration1500msParam, nullptr},
+        {"2000ms", kBrowserControlsLockoutDuration2000msParam, nullptr}};
+
 const FeatureEntry::FeatureParam kClankMiniOmnibox44dpParams[] = {
     {"mini_toolbar_height_dp", "44"}};
 const FeatureEntry::FeatureParam kClankMiniOmnibox40dpParams[] = {
@@ -11837,6 +11853,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBrowserControlsDebuggingName,
      flag_descriptions::kBrowserControlsDebuggingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kBrowserControlsDebugging)},
+
+    {"browser-controls-lockout-duration",
+     flag_descriptions::kBrowserControlsLockoutDurationName,
+     flag_descriptions::kBrowserControlsLockoutDurationDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kBrowserControlsLockoutDuration,
+         kBrowserControlsLockoutDurationVariations,
+         "BrowserControlsLockoutDuration")},
 
     {"clank-mini-omnibox", flag_descriptions::kClankMiniOmniboxName,
      flag_descriptions::kClankMiniOmniboxDescription, kOsAndroid,

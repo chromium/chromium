@@ -429,6 +429,12 @@ public class BottomBarConfigUtilsUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testIsGlicSettingToggleParamEnabled_DefaultBaseline() {
+        assertTrue(BottomBarConfigUtils.isGlicSettingToggleParamEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testGetBottomBarHeightDp_DefaultBaseline() {
         assertEquals(
                 BottomBarConfigUtils.DEFAULT_BOTTOM_BAR_HEIGHT_DP,

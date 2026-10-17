@@ -5991,6 +5991,12 @@ inline constexpr char kBrowserControlsDebuggingName[] =
 inline constexpr char kBrowserControlsDebuggingDescription[] =
     "Enables logs to debug Android browser controls.";
 
+inline constexpr char kBrowserControlsLockoutDurationName[] =
+    "Browser controls lockout duration";
+inline constexpr char kBrowserControlsLockoutDurationDescription[] =
+    "Enables lockout duration for Android browser controls on page load and "
+    "transient shows.";
+
 inline constexpr char kBrowsingDataModelName[] = "Browsing Data Model";
 inline constexpr char kBrowsingDataModelDescription[] =
     "Enables BDM on Android.";
