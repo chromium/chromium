@@ -11488,6 +11488,21 @@
             ]
         }
     ],
+    "MixedFixedIntervalMatcher": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "MixedFixedIntervalMatcher"
+                    ]
+                }
+            ]
+        }
+    ],
     "MultipleSpareRPHs": [
         {
             "platforms": [
