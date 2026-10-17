@@ -4162,6 +4162,7 @@ const FeatureEntry::FeatureParam kAndroidBottomBar1A60dpParam[] = {
     {"bottom_bar_height_dp", "60"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
     {{"keep_app_menu_in_toolbar", "true"},
+     {"remove_top_padding_for_bottom_omnibox", "false"},
      {"show_glic_setting_toggle", "true"}};
 const FeatureEntry::FeatureParam kAndroidBottomBarShowDomainOnlyParam[] = {
     {"show_glic_setting_toggle", "true"},
