@@ -2349,7 +2349,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/khaledhosny/ots.git' + '@' + Var('ots_revision'),
 
   'src/third_party/libgav1/src':
-    Var('chromium_git') + '/codecs/libgav1.git' + '@' + '085032331f60c10055d32ab52932bd7bd77e6f53',
+    Var('chromium_git') + '/codecs/libgav1.git' + '@' + 'c3c824dcc1b907eed484f88ca7af21c743d27494',
 
   'src/third_party/google-truth/src': {
       'url': Var('chromium_git') + '/external/github.com/google/truth.git' + '@' + '0625eff9afb3a2f230d708378bcadcc656d7e8a0',
