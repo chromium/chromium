@@ -81,10 +81,6 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      omniboxPopupDebugEnabled_: {
-        type: Boolean,
-        reflect: true,
-      },
       isComposeboxMode_: {type: Boolean},
       searchboxLayoutMode_: {type: String},
       caretAnimationsEnabled_: {type: Boolean},
@@ -139,8 +135,6 @@ export class OmniboxEverywhereAppElement extends CrLitElement {
     };
   }
 
-  protected accessor omniboxPopupDebugEnabled_ =
-      loadTimeData.getBoolean('omniboxPopupDebugEnabled');
   protected accessor isHotkeyDropdownOpen_: boolean = false;
   protected accessor isActive_: boolean = true;
   protected accessor isComposeboxMode_: boolean = false;

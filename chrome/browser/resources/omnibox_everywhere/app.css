@@ -72,13 +72,6 @@ omnibox-everywhere-composebox {
   display: block;
 }
 
-:host([omnibox-popup-debug-enabled_])
-    omnibox-everywhere-omnibox::part(searchbox-input) {
-  /* For debugging purposes, makes it more obvious when the WebUI input is
-   * showing. */
-  background-color: lightgreen;
-}
-
 omnibox-everywhere-omnibox::part(dropdown-content) {
   border-radius: inherit;
 }
