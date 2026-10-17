@@ -16,9 +16,6 @@ specific_include_rules = {
   "glic_provider_spec_impl\\.cc": [
     "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
   ],
-  "glic_enabling\\.cc": [
-    "+chrome/browser/glic/gemini_enterprise/geic_enabling.h",
-  ],
   "glic_actor_attempt_otp_filling_.*": [
     "+components/one_time_tokens/core/browser",
   ],

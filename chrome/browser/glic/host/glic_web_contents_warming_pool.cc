@@ -16,6 +16,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_webui_contents_manager.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/browser/web_contents.h"
@@ -221,7 +222,7 @@ GlicWebContentsWarmingPool::CreateContainer() {
   TRACE_EVENT("glic", "GlicWebContentsWarmingPool::CreateContainer");
   bool initially_hidden =
       base::FeatureList::IsEnabled(features::kGlicContentsInitiallyHidden);
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (GlicKeyedService::IsNoWebviewEnabled(profile_)) {
     return std::make_unique<GlicNoWebviewContentsManager>(profile_, enabling_,
                                                           initially_hidden);
   }
@@ -376,7 +377,7 @@ GlicWebContentsWarmingPool::GetWarmedWebContents() const {
   if (!warmed_container_) {
     return std::nullopt;
   }
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (GlicKeyedService::IsNoWebviewEnabled(profile_)) {
     auto* no_webview_container =
         static_cast<GlicNoWebviewContentsManager*>(warmed_container_.get());
     return WarmedWebContents{

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+
 #include <memory>
 #include <string>
 #include <variant>
@@ -22,10 +24,10 @@
 #include "chrome/browser/glic/host/context/glic_share_image_handler.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
-#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -230,7 +232,7 @@ class GlicInteractiveContextMenuTestBase
   }
 
   auto PollForAndInstrumentGlic() {
-    if (features::IsGlicNoWebviewEnabled()) {
+    if (glic::GlicKeyedService::IsNoWebviewEnabled(browser()->GetProfile())) {
       return Steps(UninstrumentWebContents(glic::kGlicContentsElementId, false),
                    UninstrumentWebContents(glic::kGlicHostElementId, false),
                    InAnyContext(Steps(

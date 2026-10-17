@@ -196,8 +196,11 @@ GlicKeyedService::GlicKeyedService(
       legacy_activity_manager_(
           std::make_unique<LegacyGlicActivityManager>(profile_,
                                                       actor_keyed_service)),
+      is_no_webview_enabled_(
+          base::FeatureList::IsEnabled(features::kGlicNoWebview) ||
+          provider_spec().RequiresNoWebview()),
       auth_controller_(
-          features::IsGlicNoWebviewEnabled()
+          is_no_webview_enabled_
               ? nullptr
               : std::make_unique<AuthController>(profile, identity_manager)),
       cold_warming_scheduler_(GlicWarmingScheduler::Options{
@@ -287,6 +290,27 @@ GlicKeyedService::~GlicKeyedService() = default;
 // static
 GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {
   return GlicKeyedServiceFactory::GetGlicKeyedService(context);
+}
+
+// static
+bool GlicKeyedService::IsNoWebviewEnabled(content::BrowserContext* context) {
+  if (!context) {
+    return false;
+  }
+  if (auto* service = GlicKeyedService::Get(context)) {
+    return service->IsNoWebviewEnabled();
+  }
+  // In unit tests (e.g. GlicGuestObserverTest, GlicLocalStorageMigrationTest,
+  // GuestUtilMultiInstanceTest), a TestingProfile may not instantiate
+  // GlicKeyedService; fall back to checking the feature flag for regular
+  // profiles.
+  Profile* profile = Profile::FromBrowserContext(context);
+  return profile && profile->IsRegularProfile() &&
+         base::FeatureList::IsEnabled(features::kGlicNoWebview);
+}
+
+bool GlicKeyedService::IsNoWebviewEnabled() const {
+  return is_no_webview_enabled_;
 }
 
 void GlicKeyedService::Shutdown() {

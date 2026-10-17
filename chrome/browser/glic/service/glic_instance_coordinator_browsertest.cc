@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_manager.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -875,13 +876,13 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        PrintAfterReloadDoesNotCrash) {
-  if (features::IsGlicNoWebviewEnabled()) {
+  auto* glic_service = GlicKeyedService::Get(GetProfile());
+  if (glic_service->IsNoWebviewEnabled()) {
     GTEST_SKIP() << "WebUI printing is not applicable in NoWebview mode.";
   }
   ASSERT_OK_AND_ASSIGN(auto* instance, OpenGlicForActiveTab());
 
   // Trigger a reload.
-  auto* glic_service = GlicKeyedService::Get(GetProfile());
   glic_service->Reload(
       instance->host().webui_contents()->GetPrimaryMainFrame());
 

@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -391,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
                        MAYBE_AccountInvalidatedWhileGlicOpen) {
   TrackGlicInstanceWithTabIndex(0);
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (glic_service()->IsNoWebviewEnabled()) {
     RunTestSequence(ToggleGlicWindow(GlicWindowMode::kAttached),
                     WaitForWebClientConnected(), ForceInvalidateAccount(),
                     WaitForErrorPanelType(mojom::ErrorPanelType::kSignIn),

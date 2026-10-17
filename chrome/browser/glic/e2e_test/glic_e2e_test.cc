@@ -313,7 +313,7 @@ GlicE2ETest::WaitForAndInstrumentGlic() {
   // once the web client connects; waiting for the client to connect first
   // ensures kGlicContentsElementId refers to the guest, not the overlay.
   MultiStep instrument =
-      features::IsGlicNoWebviewEnabled()
+      glic_service()->IsNoWebviewEnabled()
           ? Steps(
                 InstrumentNonTabWebView(kGlicContentsElementId,
                                         kGlicViewElementId),
@@ -528,7 +528,7 @@ void GlicE2ETest::ClientLoadStateChanged(ClientLoadState state) {
   // chrome://glic WebUI does not exist in NoWebview mode, so the client load
   // state is the error signal there. It covers both errors reported through
   // ClientLoadErrorOccurred() and guest error pages (e.g. /sorry/).
-  if (expects_error_ || !features::IsGlicNoWebviewEnabled() ||
+  if (expects_error_ || !glic_service()->IsNoWebviewEnabled() ||
       state != ClientLoadState::kError) {
     return;
   }

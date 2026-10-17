@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -206,7 +207,7 @@ class GlicLocalStorageMigrator {
 
 void MaybeMigrateGlicLocalStorage(content::BrowserContext* browser_context,
                                   GlicClientDataStorage* client_data_storage) {
-  if (!features::IsGlicNoWebviewEnabled() ||
+  if (!GlicKeyedService::IsNoWebviewEnabled(browser_context) ||
       !base::FeatureList::IsEnabled(features::kGlicClientDataStorage) ||
       !GlicEnabling::IsEnabledByGlobalCriteria()) {
     return;

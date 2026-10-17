@@ -41,6 +41,8 @@ class GlicProviderSpec {
   virtual std::string_view GetMetricsInfix() const = 0;
   // Whether browser web actuation (Actor) is supported for this provider.
   virtual bool IsActuationSupported() const = 0;
+  // Whether this provider requires NoWebview mode.
+  virtual bool RequiresNoWebview() const = 0;
 };
 
 }  // namespace glic

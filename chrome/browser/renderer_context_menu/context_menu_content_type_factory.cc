@@ -17,8 +17,8 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/host/guest_util.h"  // nogncheck
-#include "chrome/browser/glic/public/features.h"  // nogncheck
+#include "chrome/browser/glic/host/guest_util.h"            // nogncheck
+#include "chrome/browser/glic/public/glic_keyed_service.h"  // nogncheck
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_glic.h"
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_read_anything.h"
 #endif
@@ -75,8 +75,9 @@ ContextMenuContentTypeFactory::~ContextMenuContentTypeFactory() = default;
 std::unique_ptr<ContextMenuContentType> ContextMenuContentTypeFactory::Create(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
-  if (IsUserSessionBlocked())
+  if (IsUserSessionBlocked()) {
     return std::make_unique<NullContextMenuContentType>(params);
+  }
 
   return CreateInternal(render_frame_host, params);
 }
@@ -86,6 +87,10 @@ std::unique_ptr<ContextMenuContentType>
 ContextMenuContentTypeFactory::CreateInternal(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_EXTENSIONS)
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   if (params.page_url.SchemeIs(content::kChromeUIUntrustedScheme) &&
       params.page_url.host() ==
@@ -93,9 +98,8 @@ ContextMenuContentTypeFactory::CreateInternal(
     return std::make_unique<ContextMenuContentTypeReadAnything>(params);
   }
 
-  if (features::IsGlicNoWebviewEnabled()) {
-    content::WebContents* web_contents =
-        content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (glic::GlicKeyedService::IsNoWebviewEnabled(
+          web_contents ? web_contents->GetBrowserContext() : nullptr)) {
     if (glic::IsAnyGlicWebContents(web_contents)) {
       return std::make_unique<ContextMenuContentTypeGlic>(params);
     }
@@ -114,8 +118,6 @@ ContextMenuContentTypeFactory::CreateInternal(
         web_view_guest->GetWeakPtr(), params));
   }
 
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
   const extensions::mojom::ViewType view_type =
       extensions::GetViewType(web_contents);
 

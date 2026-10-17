@@ -1572,7 +1572,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestRuntimeFeatureOff,
   ExecuteJsTest(
       {.params = base::Value(base::DictValue().Set("triggerError", true))});
 
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!service()->IsNoWebviewEnabled()) {
     ASSERT_OK(WaitForWebUiState(mojom::WebUiState::kError));
   } else {
     ASSERT_OK(WaitForOverlayErrorPanel(mojom::ErrorPanelType::kError));
@@ -3311,7 +3311,7 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kChromeTools));
   }
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (service()->IsNoWebviewEnabled()) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kNoWebview));
   }

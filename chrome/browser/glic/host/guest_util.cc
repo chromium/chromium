@@ -264,7 +264,7 @@ void ConfigureGuestZoom(content::WebContents& guest_contents) {
 GURL MaybeAppendAuthUser(const GURL& guest_url,
                          content::BrowserContext* browser_context) {
   if (!base::FeatureList::IsEnabled(features::kGlicSetAuthUser) ||
-      !features::IsGlicNoWebviewEnabled()) {
+      !GlicKeyedService::IsNoWebviewEnabled(browser_context)) {
     return guest_url;
   }
   if (guest_url.is_empty() || !guest_url.is_valid()) {
@@ -272,9 +272,6 @@ GURL MaybeAppendAuthUser(const GURL& guest_url,
   }
   std::string unused_output;
   if (net::GetValueForKeyInQuery(guest_url, "authuser", &unused_output)) {
-    return guest_url;
-  }
-  if (!browser_context) {
     return guest_url;
   }
   Profile* profile = Profile::FromBrowserContext(browser_context);
@@ -320,7 +317,8 @@ void PrepareGlicGuestWebContents(content::WebContents& guest_contents,
   // In <webview> mode, WebViewGuest attaches printing helpers via
   // ChromeExtensionsAPIClient::AttachWebContentsHelpers. In NoWebview mode,
   // initialize printing explicitly on the guest WebContents.
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (GlicKeyedService::IsNoWebviewEnabled(
+          guest_contents.GetBrowserContext())) {
     printing::InitializePrintingForWebContents(&guest_contents);
   }
 #endif
@@ -901,7 +899,7 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
     state->host_capabilities.push_back(mojom::HostCapability::kNoWebUiLoader);
   }
 
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (GlicKeyedService::IsNoWebviewEnabled(profile)) {
     state->host_capabilities.push_back(mojom::HostCapability::kNoWebview);
   }
 
@@ -990,7 +988,7 @@ void PopulateGlobalClientInitialState(mojom::WebClientInitialState* state,
       glic::prefs::GetFileUploadAllowedCapability(profile->GetPrefs());
 
   state->enable_client_storage =
-      features::IsGlicNoWebviewEnabled() &&
+      glic_service && glic_service->IsNoWebviewEnabled() &&
       base::FeatureList::IsEnabled(features::kGlicClientDataStorage);
   if (state->enable_client_storage && glic_service) {
     state->client_storage = glic_service->client_data_storage().GetAll();

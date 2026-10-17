@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_onboarding_tracker.h"
+#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/synthetic_trial_registry.h"
 #include "components/variations/variations_test_utils.h"
@@ -67,6 +69,20 @@ class GlicMetricsProviderTest : public testing::Test {
   TestingProfileManager* profile_manager() { return testing_profile_manager_; }
   Profile* profile1() { return profile1_; }
   Profile* profile2() { return profile2_; }
+
+  TestingProfile* CreateEnterpriseTestingProfile(
+      const std::string& profile_name) {
+    auto prefs =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    RegisterUserProfilePrefs(prefs->registry());
+    prefs->SetString(prefs::kGlicGeminiEnterpriseUrl,
+                     "https://business.gemini.google/side-panel");
+
+    TestingProfile::Builder builder;
+    builder.SetProfileName(profile_name);
+    builder.SetPrefService(std::move(prefs));
+    return profile_manager()->CreateTestingProfile(std::move(builder), u"", 0);
+  }
 
   std::vector<variations::ActiveGroupId> GetSyntheticFieldTrials() {
     return metrics_service_->Get()
@@ -211,10 +227,7 @@ TEST_F(GlicMetricsProviderTest,
   base::test::ScopedFeatureList geic_feature_list;
   geic_feature_list.InitAndEnableFeature(features::kGeic);
 
-  Profile* default_profile =
-      profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
-  default_profile->GetPrefs()->SetString(prefs::kGlicGeminiEnterpriseUrl,
-                                         "https://business.gemini.google/side-panel");
+  CreateEnterpriseTestingProfile(chrome::kInitialProfile);
 
   GlicMetricsProvider provider;
   provider.ProvideCurrentSessionData(nullptr);
@@ -243,11 +256,10 @@ TEST_F(GlicMetricsProviderTest,
   Profile* default_profile =
       profile_manager()->CreateTestingProfile(chrome::kInitialProfile);
 
-  // Configure profile2 as GeminiEnterprise and invoke Glic there.
-  profile2()->GetPrefs()->SetString(prefs::kGlicGeminiEnterpriseUrl,
-                                    "https://business.gemini.google/side-panel");
+  // Configure an enterprise profile and invoke Glic there.
+  Profile* enterprise_profile = CreateEnterpriseTestingProfile("enterprise");
   const base::Time t1 = base::Time::Now();
-  profile2()->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime, t1);
+  enterprise_profile->GetPrefs()->SetTime(prefs::kGlicLastInvokedTime, t1);
 
   GlicMetricsProvider provider;
   provider.ProvideCurrentSessionData(nullptr);

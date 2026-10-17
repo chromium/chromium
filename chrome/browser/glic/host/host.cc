@@ -362,7 +362,7 @@ GlicPageHandler* Host::FindPageHandlerForWebUiContents(
 }
 
 void Host::NotifyWindowIntentToShow() {
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (glic_service().IsNoWebviewEnabled()) {
     if (contents_ && contents_->ShouldReloadOnShow()) {
       Reload();
       return;
@@ -374,7 +374,7 @@ void Host::NotifyWindowIntentToShow() {
 }
 
 void Host::Zoom(mojom::ZoomAction zoom_action, ZoomSource source) {
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (glic_service().IsNoWebviewEnabled()) {
     if (contents_) {
       contents_->Zoom(zoom_action, source);
     }

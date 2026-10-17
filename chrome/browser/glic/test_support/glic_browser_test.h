@@ -986,8 +986,12 @@ class GlicBrowserTestMixin : public T {
     }
   }
 
+  bool IsNoWebviewEnabled() {
+    return GlicKeyedService::IsNoWebviewEnabled(T::GetProfile());
+  }
+
   [[nodiscard]] TestResult<> WaitForWebUiState(mojom::WebUiState state) {
-    if (features::IsGlicNoWebviewEnabled()) {
+    if (IsNoWebviewEnabled()) {
       if (state == mojom::WebUiState::kReady) {
         return WaitForGlicClient();
       } else {
@@ -1014,7 +1018,7 @@ class GlicBrowserTestMixin : public T {
   [[nodiscard]] TestResult<> WaitForErrorPanelType(
       std::optional<mojom::ErrorPanelType> expected_type,
       GlicInstance* instance = nullptr) {
-    CHECK(features::IsGlicNoWebviewEnabled())
+    CHECK(IsNoWebviewEnabled())
         << "WaitForErrorPanelType only works with GlicNoWebview";
     auto type_to_string =
         [](std::optional<mojom::ErrorPanelType> type) -> std::string {
@@ -1044,7 +1048,7 @@ class GlicBrowserTestMixin : public T {
   [[nodiscard]] TestResult<> WaitForOverlayErrorPanel(
       mojom::ErrorPanelType error_panel_type,
       GlicInstance* instance = nullptr) {
-    if (!features::IsGlicNoWebviewEnabled()) {
+    if (!IsNoWebviewEnabled()) {
       return base::unexpected(
           "kGlicNoWebview must be enabled to use WaitForOverlayErrorPanel()");
     }
@@ -1065,7 +1069,7 @@ class GlicBrowserTestMixin : public T {
   [[nodiscard]] TestResult<> WaitForDisplayState(
       GlicNoWebviewContentsManager::DisplayState display_state,
       GlicInstance* instance = nullptr) {
-    if (!features::IsGlicNoWebviewEnabled()) {
+    if (!IsNoWebviewEnabled()) {
       return WaitForWebUiState(mojom::WebUiState::kReady);
     }
     auto to_string =
@@ -1094,7 +1098,7 @@ class GlicBrowserTestMixin : public T {
   // guarantee the glic view is itself visible.
   [[nodiscard]] TestResult<> WaitUntilGuestIsShowing(
       GlicInstance* instance = nullptr) {
-    if (!features::IsGlicNoWebviewEnabled()) {
+    if (!IsNoWebviewEnabled()) {
       return WaitForWebUiState(mojom::WebUiState::kReady);
     }
     return WaitForDisplayState(
@@ -1104,7 +1108,7 @@ class GlicBrowserTestMixin : public T {
   [[nodiscard]] TestResult<> WaitForGuestState(
       GlicNoWebviewContentsManager::GuestState guest_state,
       GlicInstance* instance = nullptr) {
-    if (!features::IsGlicNoWebviewEnabled()) {
+    if (!IsNoWebviewEnabled()) {
       return base::unexpected(
           "WaitForGuestState only works with GlicNoWebview");
     }

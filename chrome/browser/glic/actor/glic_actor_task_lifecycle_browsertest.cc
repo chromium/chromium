@@ -10,6 +10,7 @@
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/glic/actor/new_glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -1239,9 +1240,10 @@ IN_PROC_BROWSER_TEST_P(GlicActorTaskLifecyclePriorityBrowserTest,
       GlicSidePanelCoordinator::GetForTab(active_tab());
   bool supports_peek = coordinator && coordinator->SupportsPeek();
 
+  const bool is_no_webview = IsNoWebviewEnabled();
   content::WebContents* webui_contents = nullptr;
   content::RenderProcessHost* webui_rph = nullptr;
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     webui_contents = instance->host().webui_contents();
     ASSERT_TRUE(webui_contents);
     webui_rph = webui_contents->GetPrimaryMainFrame()->GetProcess();
@@ -1260,7 +1262,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorTaskLifecyclePriorityBrowserTest,
   EXPECT_EQ(guest_contents->GetVisibility(), content::Visibility::HIDDEN);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(
         RunUntilPriorityIs(webui_rph, base::Process::Priority::kBestEffort));
   }
@@ -1274,7 +1276,7 @@ IN_PROC_BROWSER_TEST_P(GlicActorTaskLifecyclePriorityBrowserTest,
           ? content::ChildProcessImportance::NOT_PERCEPTIBLE
           : content::ChildProcessImportance::NORMAL;
 
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(RunUntilImportanceIs(webui_rph, expected_importance_when_hidden));
     // TODO(crbug.com/525435394): Ensure the guest process is not protected.
     EXPECT_OK(RunUntilImportanceIs(
@@ -1298,21 +1300,21 @@ IN_PROC_BROWSER_TEST_P(GlicActorTaskLifecyclePriorityBrowserTest,
         WaitForWebUiContentsVisibility(instance, content::Visibility::HIDDEN));
     EXPECT_EQ(guest_contents->GetVisibility(), content::Visibility::HIDDEN);
   } else {
-    if (!features::IsGlicNoWebviewEnabled()) {
+    if (!is_no_webview) {
       EXPECT_EQ(webui_contents->GetVisibility(), content::Visibility::HIDDEN);
     }
     EXPECT_EQ(guest_contents->GetVisibility(), content::Visibility::HIDDEN);
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(
         RunUntilPriorityIs(webui_rph, base::Process::Priority::kUserBlocking));
   }
   EXPECT_OK(
       RunUntilPriorityIs(guest_rph, base::Process::Priority::kUserBlocking));
 #else
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(RunUntilImportanceIs(webui_rph,
                                    content::ChildProcessImportance::IMPORTANT));
   }
@@ -1329,14 +1331,14 @@ IN_PROC_BROWSER_TEST_P(GlicActorTaskLifecyclePriorityBrowserTest,
   EXPECT_EQ(active_tab(), second_tab);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(
         RunUntilPriorityIs(webui_rph, base::Process::Priority::kUserVisible));
   }
   EXPECT_OK(
       RunUntilPriorityIs(guest_rph, base::Process::Priority::kUserVisible));
 #else
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(RunUntilImportanceIs(webui_rph,
                                    content::ChildProcessImportance::MODERATE));
   }
@@ -1350,14 +1352,14 @@ IN_PROC_BROWSER_TEST_P(GlicActorTaskLifecyclePriorityBrowserTest,
 
   // Now Glic is not actuating, so the priority should drop.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(
         RunUntilPriorityIs(webui_rph, base::Process::Priority::kBestEffort));
   }
   EXPECT_OK(
       RunUntilPriorityIs(guest_rph, base::Process::Priority::kBestEffort));
 #else
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!is_no_webview) {
     EXPECT_OK(RunUntilImportanceIs(webui_rph, expected_importance_when_hidden));
     // TODO(crbug.com/525435394): Ensure the guest process is not protected.
     EXPECT_OK(RunUntilImportanceIs(

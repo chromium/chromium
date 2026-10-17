@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -436,7 +437,7 @@ MultiStep GlicActorUiTest::StartActorTaskInNewTab(
 MultiStep GlicActorUiTest::RoundTrip(actor::TaskId& task_id) {
   return Steps(Do([this, &task_id]() {
     ASSERT_TRUE(content::ExecJs(GetGlicContents(), "true;"));
-    if (!features::IsGlicNoWebviewEnabled()) {
+    if (!glic_service()->IsNoWebviewEnabled()) {
       ASSERT_TRUE(content::ExecJs(GetGlicHost(task_id), "true;"));
     }
   }));

@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_request_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
@@ -26,14 +26,18 @@ namespace glic {
 
 namespace {
 
-bool IsGlicHeaderInjectionEnabled() {
+bool IsGlicHeaderInjectionEnabled(Profile* profile) {
   return base::FeatureList::IsEnabled(features::kGlicHeader) &&
-         features::IsGlicNoWebviewEnabled();
+         GlicKeyedService::IsNoWebviewEnabled(profile);
 }
 
 bool ShouldInjectGlicHeaders(content::WebContents* web_contents,
                              content::FrameTreeNodeId frame_tree_node_id) {
-  if (!IsGlicHeaderInjectionEnabled()) {
+  Profile* profile =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : nullptr;
+  if (!IsGlicHeaderInjectionEnabled(profile)) {
     return false;
   }
   if (!web_contents || !IsGlicGuest(web_contents)) {

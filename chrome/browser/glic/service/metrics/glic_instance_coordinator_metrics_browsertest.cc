@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -236,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsWarmingTest,
   // expected. Client memory might be 0 if the guest hasn't loaded yet for the
   // warmed instance.
 
-  if (!features::IsGlicNoWebviewEnabled()) {
+  if (!GlicKeyedService::Get(GetProfile())->IsNoWebviewEnabled()) {
     histogram_tester.ExpectSampleValueGreaterThan(
         "Glic.Instance.AvgWebUIPrivateMemoryFootprint.CriticalPressure", 0);
   }

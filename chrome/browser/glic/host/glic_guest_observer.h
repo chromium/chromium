@@ -56,7 +56,8 @@ class GlicGuestObserver
     ~Metrics();
 
     void DidFinishNavigation(content::NavigationHandle* navigation_handle);
-    void DocumentOnLoadCompletedInPrimaryMainFrame();
+    void DocumentOnLoadCompletedInPrimaryMainFrame(
+        content::WebContents* web_contents);
 
    private:
     const base::TimeTicks creation_time_ = base::TimeTicks::Now();

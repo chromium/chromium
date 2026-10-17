@@ -226,7 +226,7 @@ class GlicPolicyTest : public PolicyTest {
   // In NoWebview mode, errors are shown by the overlay error panel instead of
   // the chrome://glic WebUI state. Only valid when NoWebview is enabled.
   static std::optional<mojom::ErrorPanelType> GetErrorPanelType(Host* host) {
-    CHECK(features::IsGlicNoWebviewEnabled());
+    CHECK(GlicKeyedService::IsNoWebviewEnabled(host->profile()));
     auto* manager =
         static_cast<GlicNoWebviewContentsManager*>(host->contents_manager());
     return manager ? manager->error_type() : std::nullopt;
@@ -234,7 +234,7 @@ class GlicPolicyTest : public PolicyTest {
 
   // Returns true if Glic shows the generic load error.
   static bool IsShowingLoadError(Host* host) {
-    if (features::IsGlicNoWebviewEnabled()) {
+    if (GlicKeyedService::IsNoWebviewEnabled(host->profile())) {
       return GetErrorPanelType(host) == mojom::ErrorPanelType::kError;
     }
     return host->GetPrimaryWebUiState() == mojom::WebUiState::kError;
@@ -242,7 +242,7 @@ class GlicPolicyTest : public PolicyTest {
 
   // Returns true if Glic shows the disabled-by-admin page.
   static bool IsShowingDisabledByAdmin(Host* host) {
-    if (features::IsGlicNoWebviewEnabled()) {
+    if (GlicKeyedService::IsNoWebviewEnabled(host->profile())) {
       std::optional<mojom::ErrorPanelType> type = GetErrorPanelType(host);
       return type == mojom::ErrorPanelType::kDisabledByAdmin ||
              type == mojom::ErrorPanelType::kDisabledByAdminWithLink;
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(GlicPolicyTest, DisableGlicWhenIsOpen) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // The close button is part of the chrome://glic WebUI, which is not used in
   // NoWebview mode.
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (GlicKeyedService::IsNoWebviewEnabled(profile_1_)) {
     return;
   }
   // TODO(crbug.com/426583248) Wait for animation to finish instead of using the

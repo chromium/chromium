@@ -9,6 +9,7 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_NonGlic) {
 }
 
 IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_Glic) {
-  if (features::IsGlicNoWebviewEnabled()) {
+  if (IsNoWebviewEnabled()) {
     GTEST_SKIP() << "GuestView is not used in NoWebview mode.";
   }
   EXPECT_EQ(0ULL, GetGuestViewManager(factory()).GetCurrentGuestCount());

@@ -114,6 +114,10 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // Convenience method, may return nullptr.
   static GlicKeyedService* Get(content::BrowserContext* context);
 
+  // Returns whether NoWebview mode is enabled for `context`. Returns false if
+  // `context` is null, ineligible for Glic, or has NoWebview disabled.
+  static bool IsNoWebviewEnabled(content::BrowserContext* context);
+
   // KeyedService
   void Shutdown() override;
 
@@ -228,7 +232,10 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
                          content::RenderFrameHost* frame,
                          const ::GURL& src_url);
 
-  // Null when IsGlicNoWebviewEnabled() is true.
+  // Returns whether NoWebview mode is enabled for this profile.
+  bool IsNoWebviewEnabled() const;
+
+  // Null when IsNoWebviewEnabled() is true.
   AuthController* GetAuthController() { return auth_controller_.get(); }
 
   void AddPreloadCallback(base::OnceCallback<void()> callback);
@@ -324,6 +331,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   std::unique_ptr<LegacyGlicActivityManager> legacy_activity_manager_;
   std::unique_ptr<GlicShareImageHandler> share_image_handler_;
 
+  const bool is_no_webview_enabled_;
   std::unique_ptr<AuthController> auth_controller_;
 
   GlicWarmingScheduler cold_warming_scheduler_;

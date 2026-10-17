@@ -195,6 +195,10 @@ class InteractiveGlicTestMixin : public T {
     T::TearDownOnMainThread();
   }
 
+  bool IsNoWebviewEnabled() {
+    return GlicKeyedService::IsNoWebviewEnabled(this->browser()->GetProfile());
+  }
+
   auto WaitForAndInstrumentGlic(GlicInstrumentMode instrument_mode) {
     if (base::FeatureList::IsEnabled(features::kGlicMultiInstance)) {
       return WaitForAndInstrumentGlicMultiInstance(instrument_mode);
@@ -210,7 +214,7 @@ class InteractiveGlicTestMixin : public T {
     Api::MultiStep steps;
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
-        if (features::IsGlicNoWebviewEnabled()) {
+        if (IsNoWebviewEnabled()) {
           // In NoWebview mode, the guest WebContents is loaded directly into
           // GlicView (top-level), so we instrument GlicView as both the host
           // and contents rather than looking for an inner <webview>.
@@ -287,7 +291,7 @@ class InteractiveGlicTestMixin : public T {
     Api::MultiStep steps;
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
-        if (features::IsGlicNoWebviewEnabled()) {
+        if (IsNoWebviewEnabled()) {
           steps = Api::Steps(WaitForGlicOpen(), WaitForWebClientConnected());
         } else {
           steps = Api::Steps(WaitForGlicOpen(),
@@ -321,7 +325,7 @@ class InteractiveGlicTestMixin : public T {
 
     switch (instrument_mode) {
       case GlicInstrumentMode::kHostAndContents:
-        if (features::IsGlicNoWebviewEnabled()) {
+        if (IsNoWebviewEnabled()) {
           // In NoWebview mode, the guest WebContents is loaded directly into
           // GlicView (top-level), so we instrument GlicView as both the host
           // and contents rather than looking for an inner <webview>.
@@ -913,7 +917,7 @@ class InteractiveGlicTestMixin : public T {
           if (!instance) {
             return "No glic instance";
           }
-          if (features::IsGlicNoWebviewEnabled()) {
+          if (IsNoWebviewEnabled()) {
             auto* manager = static_cast<GlicNoWebviewContentsManager*>(
                 instance->host().contents_manager());
             if (!manager ||
@@ -932,7 +936,7 @@ class InteractiveGlicTestMixin : public T {
 
   auto WaitForErrorPanelType(
       std::optional<mojom::ErrorPanelType> expected_type) {
-    CHECK(features::IsGlicNoWebviewEnabled())
+    CHECK(IsNoWebviewEnabled())
         << "WaitForErrorPanelType only works with GlicNoWebview";
     auto type_to_string =
         [](std::optional<mojom::ErrorPanelType> type) -> std::string {
@@ -1067,7 +1071,6 @@ class InteractiveGlicTestMixin : public T {
   }
 
   GURL GetGuestURL() { return glic_test_environment_.GetGuestURL(); }
-
 
   // `InteractiveGlicTestMixin` is configured to operate a single browser, but
   // it can change which browser it operates. This changes the browser to be
