@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_test_util.h"
@@ -267,6 +268,17 @@ TEST(ToolRegistryTest, AttemptFormFillingToolDefinition) {
   EXPECT_THAT(actual_enum,
               testing::ElementsAreArray(
                   AttemptFormFillingToolRequest::kRequestedDataValues));
+}
+
+TEST(ToolRegistryTest, AttemptLoginToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      AttemptLoginToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kAttemptLogin);
+  EXPECT_EQ(definition->name, AttemptLoginToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
 }
 
 TEST(ToolRegistryTest, AttemptOtpFillingToolDefinition) {
@@ -687,6 +699,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsAttemptFormFillingTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kAttemptFormFilling,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsAttemptLoginTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kAttemptLogin,
                                     &ToolDefinition::id));
 }
 

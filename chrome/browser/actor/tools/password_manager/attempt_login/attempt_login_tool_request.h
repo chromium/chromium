@@ -8,9 +8,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 
@@ -21,6 +23,10 @@ class ToolRequestVisitorFunctor;
 class AttemptLoginToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "AttemptLogin";
+  static constexpr std::string_view kModelFacingName = "attempt_login";
+
+  // Returns the `ToolId::kAttemptLogin` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   static ObservationDelayController::PageStabilityConfig
   GetLoginObservationPageStabilityConfig();

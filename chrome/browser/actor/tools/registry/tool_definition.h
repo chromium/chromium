@@ -89,7 +89,10 @@ enum class ToolId {
   kLoadAndExtractContent = 34,
   // Attempts to fill forms on the active webpage with user information.
   kAttemptFormFilling = 35,
-  kMaxValue = kAttemptFormFilling,
+  // Attempts to log in to the website using saved credentials or social login
+  // buttons.
+  kAttemptLogin = 36,
+  kMaxValue = kAttemptLogin,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

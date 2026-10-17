@@ -5,9 +5,12 @@
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 
 #include <optional>
+#include <string_view>
 
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
@@ -19,6 +22,14 @@
 
 namespace actor {
 
+namespace {
+
+constexpr std::string_view kAttemptLoginToolDescription =
+    "Attempts to log in to the website using saved credentials or social login "
+    "buttons.";
+
+}  // namespace
+
 AttemptLoginToolRequest::AttemptLoginToolRequest(
     ActorSurfaceHandle actor_surface_handle,
     std::optional<PageTarget> password_button,
@@ -28,6 +39,13 @@ AttemptLoginToolRequest::AttemptLoginToolRequest(
       sign_in_with_google_button_(sign_in_with_google_button) {}
 
 AttemptLoginToolRequest::~AttemptLoginToolRequest() = default;
+
+// static
+std::optional<ToolDefinition> AttemptLoginToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kAttemptLogin, kModelFacingName,
+                               kAttemptLoginToolDescription)
+      .Build();
+}
 
 AttemptLoginToolRequest::AttemptLoginToolRequest(
     const AttemptLoginToolRequest&) = default;
