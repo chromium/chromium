@@ -271,8 +271,6 @@ SharedImageFactory::SharedImageFactory(
   }
 
   CHECK(context_state_);
-  scoped_refptr<gles2::FeatureInfo> feature_info =
-      context_state_->feature_info();
 
 #if BUILDFLAG(ENABLE_VULKAN)
   // TODO(crbug.com/500918256): Move VulkanContextProvider creation earlier
@@ -282,15 +280,6 @@ SharedImageFactory::SharedImageFactory(
       context_state_->vk_context_provider();
 #endif
 
-  if (!feature_info) {
-    // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
-    // could be nullptr.
-    bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder;
-    feature_info = new gles2::FeatureInfo(workarounds_, gpu_feature_info);
-    feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
-                             use_passthrough, gles2::DisallowedFeatures());
-  }
-
   // Skia specific factories can't be used without a Skia context.
   if (gr_context_type_ != GrContextType::kNone) {
     auto wrapped_sk_image_factory =
@@ -298,8 +287,18 @@ SharedImageFactory::SharedImageFactory(
     factories_.push_back(std::move(wrapped_sk_image_factory));
   }
 
+  scoped_refptr<gles2::FeatureInfo> feature_info =
+      context_state_->feature_info();
   bool use_gl =
       !is_for_display_compositor_ || gr_context_type_ == GrContextType::kGL;
+  if (use_gl && !feature_info) {
+    // For some unit tests like SharedImageFactoryTest, |shared_context_state_|
+    // could be nullptr.
+    bool use_passthrough = gpu_preferences.use_passthrough_cmd_decoder;
+    feature_info = new gles2::FeatureInfo(workarounds_, gpu_feature_info);
+    feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
+                             use_passthrough, gles2::DisallowedFeatures());
+  }
   if (use_gl) {
     // On Windows readback is slower with GLTextureImageBacking than
     // D3DImageBacking so prefer D3DImageBacking for software GMBs.
@@ -332,7 +331,7 @@ SharedImageFactory::SharedImageFactory(
         enable_webnn_only_d3d_factory);
     factories_.push_back(std::move(d3d_factory));
   }
-  {
+  if (use_gl) {
     auto gl_texture_backing_factory =
         std::make_unique<GLTextureImageBackingFactory>(
             gpu_preferences_, workarounds_, feature_info.get(),
@@ -346,6 +345,7 @@ SharedImageFactory::SharedImageFactory(
   // If Chrome and ANGLE are sharing the same vulkan device queue, AngleVulkan
   // backing will be used for interop.
   if ((gr_context_type_ == GrContextType::kVulkan) &&
+      context_state_->feature_info() &&
       (base::FeatureList::IsEnabled(features::kVulkanFromANGLE))) {
     auto factory = std::make_unique<AngleVulkanImageBackingFactory>(
         gpu_preferences_, workarounds_, context_state_);
@@ -378,8 +378,7 @@ SharedImageFactory::SharedImageFactory(
   }
   if (is_ahb_supported) {
     auto ahb_factory = std::make_unique<AHardwareBufferImageBackingFactory>(
-        feature_info.get(), gpu_preferences_,
-        context_state_->vk_context_provider());
+        feature_info.get(), gpu_preferences_, context_state_);
     ahb_factory_ = ahb_factory.get();
     factories_.push_back(std::move(ahb_factory));
   }

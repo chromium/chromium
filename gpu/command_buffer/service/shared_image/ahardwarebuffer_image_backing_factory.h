@@ -20,8 +20,6 @@ class Size;
 
 namespace gpu {
 
-class VulkanContextProvider;
-
 namespace gles2 {
 class FeatureInfo;
 }  // namespace gles2
@@ -37,7 +35,7 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
   explicit AHardwareBufferImageBackingFactory(
       const gles2::FeatureInfo* feature_info,
       const GpuPreferences& gpu_preferences,
-      const scoped_refptr<VulkanContextProvider>& vulkan_context_provider);
+      const scoped_refptr<SharedContextState>& shared_context_state);
 
   AHardwareBufferImageBackingFactory(
       const AHardwareBufferImageBackingFactory&) = delete;
@@ -92,16 +90,16 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data);
 
-  scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
+  scoped_refptr<SharedContextState> shared_context_state_;
 
   base::flat_set<viz::SharedImageFormat> supported_gl_formats_;
 
   // Used to limit the max size and array layers of AHardwareBuffer.
-  int32_t max_gl_texture_size_ = 0;
-  int32_t max_gl_array_texture_layers_ = 1;
+  int32_t max_texture_size_ = 0;
+  int32_t max_array_texture_layers_ = 1;
 
   const bool use_passthrough_;
-  const GLFormatCaps gl_format_caps_;
+  const std::optional<const GLFormatCaps> gl_format_caps_;
 };
 
 }  // namespace gpu

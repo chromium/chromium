@@ -340,14 +340,15 @@ constexpr SharedImageUsageSet kSupportedUsage =
 // backing.
 class AHardwareBufferImageBacking : public AndroidImageBacking {
  public:
-  AHardwareBufferImageBacking(const Mailbox& mailbox,
-                              const SharedImageInfo& si_info,
-                              base::android::ScopedHardwareBufferHandle handle,
-                              size_t estimated_size,
-                              bool is_thread_safe,
-                              base::ScopedFD initial_upload_fd,
-                              bool use_passthrough,
-                              const GLFormatCaps& gl_format_caps);
+  AHardwareBufferImageBacking(
+      const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
+      base::android::ScopedHardwareBufferHandle handle,
+      size_t estimated_size,
+      bool is_thread_safe,
+      base::ScopedFD initial_upload_fd,
+      bool use_passthrough,
+      const std::optional<const GLFormatCaps>& gl_format_caps);
 
   AHardwareBufferImageBacking(const AHardwareBufferImageBacking&) = delete;
   AHardwareBufferImageBacking& operator=(const AHardwareBufferImageBacking&) =
@@ -472,7 +473,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
 
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
   const bool use_passthrough_;
-  const GLFormatCaps gl_format_caps_;
+  std::optional<const GLFormatCaps> gl_format_caps_;
 };
 
 // Vk backed Skia representation of AHardwareBufferImageBacking.
@@ -588,7 +589,7 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     bool is_thread_safe,
     base::ScopedFD initial_upload_fd,
     bool use_passthrough,
-    const GLFormatCaps& gl_format_caps)
+    const std::optional<const GLFormatCaps>& gl_format_caps)
     : AndroidImageBacking(mailbox,
                           si_info,
                           estimated_size,
@@ -904,6 +905,7 @@ AHardwareBufferImageBacking::GLTextureParams::operator=(GLTextureParams&&) =
 std::optional<AHardwareBufferImageBacking::GLTextureParams>
 AHardwareBufferImageBacking::GetGLTextureParams() {
   DCHECK(hardware_buffer_handle_.is_valid());
+  CHECK(gl_format_caps_);
 
   auto egl_image =
       CreateEGLImageFromAHardwareBuffer(hardware_buffer_handle_.get());
@@ -916,9 +918,9 @@ AHardwareBufferImageBacking::GetGLTextureParams() {
   // is GL_RGB8, so we don't use angle rgbx.
   GLFormatDesc gl_format_desc;
   if (format().PrefersExternalSampler()) {
-    gl_format_desc = gl_format_caps_.ToGLFormatDescExternalSampler(format());
+    gl_format_desc = gl_format_caps_->ToGLFormatDescExternalSampler(format());
   } else {
-    gl_format_desc = gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(
+    gl_format_desc = gl_format_caps_->ToGLFormatDescOverrideHalfFloatType(
         format(), /*plane_index=*/0);
   }
 
@@ -1203,50 +1205,29 @@ AHardwareBufferImageBacking::CreateVulkanImageFromAHB(
 AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     const gles2::FeatureInfo* feature_info,
     const GpuPreferences& gpu_preferences,
-    const scoped_refptr<VulkanContextProvider>& vulkan_context_provider)
+    const scoped_refptr<SharedContextState>& shared_context_state)
     : SharedImageBackingFactory(kSupportedUsage),
-      vulkan_context_provider_(vulkan_context_provider),
+      shared_context_state_(shared_context_state),
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
-      gl_format_caps_(GLFormatCaps(feature_info)) {
+      gl_format_caps_(feature_info ? std::optional<const GLFormatCaps>(
+                                         GLFormatCaps(feature_info))
+                                   : std::nullopt) {
   // Build the feature info for all the supported formats.
-  for (auto format : kSupportedFormats) {
-    if (IsFormatSupportedForGL(format, feature_info->validators(),
-                               gl_format_caps_)) {
-      supported_gl_formats_.insert(format);
+  if (feature_info) {
+    for (auto format : kSupportedFormats) {
+      if (IsFormatSupportedForGL(format, feature_info->validators(),
+                                 *gl_format_caps_)) {
+        supported_gl_formats_.insert(format);
+      }
     }
   }
 
-  // TODO(vikassoni): We are using below GL api calls for now as Vulkan mode
-  // doesn't exist. Once we have vulkan support, we shouldn't query GL in this
-  // code until we are asked to make a GL representation (or allocate a
-  // backing for import into GL)? We may use an AHardwareBuffer exclusively
-  // with Vulkan, where there is no need to require that a GL context is
-  // current. Maybe we can lazy init this if someone tries to create an
-  // AHardwareBuffer with SHARED_IMAGE_USAGE_GLES2_READ |
-  // SHARED_IMAGE_USAGE_GLES2_WRITE || !gpu_preferences.enable_vulkan. When in
-  // Vulkan mode, we should only need this with GLES2.
-  gl::GLApi* api = gl::g_current_gl_context;
-  api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_gl_texture_size_);
-  const bool has_egl_image_array =
-      gl::g_current_gl_driver &&
-      gl::g_current_gl_driver->ext.b_GL_EXT_EGL_image_array &&
-      gl::g_current_gl_driver->fn.glEGLImageTargetTexture2DOESFn;
-  const bool has_egl_image_storage =
-      gl::g_current_gl_driver &&
-      gl::g_current_gl_driver->ext.b_GL_EXT_EGL_image_storage &&
-      gl::g_current_gl_driver->fn.glEGLImageTargetTexStorageEXTFn;
-  if (has_egl_image_array || has_egl_image_storage) {
-    api->glGetIntegervFn(GL_MAX_ARRAY_TEXTURE_LAYERS,
-                         &max_gl_array_texture_layers_);
-    max_gl_array_texture_layers_ = std::max(1, max_gl_array_texture_layers_);
-  } else {
-    max_gl_array_texture_layers_ = 1;
-  }
-
+  max_array_texture_layers_ = shared_context_state_->GetMaxArrayTextureLayers();
+  max_texture_size_ = shared_context_state_->GetMaxTextureSize();
   // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
   // can be used to accurately represent all valid sub-rects, with overflow
   // cases, clamped to INT_MAX, always invalid.
-  max_gl_texture_size_ = std::min(max_gl_texture_size_, INT_MAX - 1);
+  max_texture_size_ = std::min(max_texture_size_, INT_MAX - 1);
 }
 
 AHardwareBufferImageBackingFactory::~AHardwareBufferImageBackingFactory() =
@@ -1264,10 +1245,9 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
   }
 
   CHECK_GE(array_layers, 1u);
-  if (static_cast<int32_t>(array_layers) > max_gl_array_texture_layers_) {
+  if (static_cast<int32_t>(array_layers) > max_array_texture_layers_) {
     LOG(ERROR) << "CreateSharedImage: invalid array_layers=" << array_layers
-               << " max_gl_array_texture_layers="
-               << max_gl_array_texture_layers_;
+               << " max_array_texture_layers=" << max_array_texture_layers_;
     return false;
   }
 
@@ -1287,10 +1267,9 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
   // restrictions for GL import OR both if this backing is needed to be used
   // with both GL and VK.
   if (size.width() < 1 || size.height() < 1 ||
-      size.width() > max_gl_texture_size_ ||
-      size.height() > max_gl_texture_size_) {
+      size.width() > max_texture_size_ || size.height() > max_texture_size_) {
     LOG(ERROR) << "CreateSharedImage: invalid size=" << size.ToString()
-               << " max_gl_texture_size=" << max_gl_texture_size_;
+               << " max_texture_size=" << max_texture_size_;
     return false;
   }
 
@@ -1347,10 +1326,12 @@ AHardwareBufferImageBackingFactory::MakeBacking(
     hwb_desc.usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
   }
 
-  if (vulkan_context_provider_) {
-    std::optional<uint64_t> ahb_usage = GetRecommendedAHBUsage(
-        vulkan_context_provider_->GetDeviceQueue()->GetVulkanPhysicalDevice(),
-        format);
+  if (shared_context_state_->vk_context_provider()) {
+    std::optional<uint64_t> ahb_usage =
+        GetRecommendedAHBUsage(shared_context_state_->vk_context_provider()
+                                   ->GetDeviceQueue()
+                                   ->GetVulkanPhysicalDevice(),
+                               format);
     if (!ahb_usage.has_value()) {
       return nullptr;
     }

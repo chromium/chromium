@@ -130,44 +130,52 @@ CompositorGpuThread::GetSharedContextState() {
   gpu::SharedContextState::ClearForCurrentThread();
   shared_context_state_.reset();
 
-  // Create a new share group. Note that this share group is different from the
-  // share group which gpu main thread uses.
-  auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
-  auto surface = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
-
   const auto& gpu_preferences = gpu_channel_manager_->gpu_preferences();
+  const bool init_gl =
+      gpu_preferences.gr_context_type == gpu::GrContextType::kGL ||
+      !base::FeatureList::IsEnabled(features::kSkipDisabledGLContextOnDrDC);
 
-  const bool use_passthrough_decoder =
-      gpu_preferences.use_passthrough_cmd_decoder;
-  gl::GLContextAttribs attribs =
-      gpu::gles2::GenerateGLContextAttribsForCompositor(
-          use_passthrough_decoder);
-  attribs.angle_context_virtualization_group_number =
-      gl::AngleContextVirtualizationGroup::kDrDc;
+  scoped_refptr<gl::GLShareGroup> share_group;
+  scoped_refptr<gl::GLSurface> surface;
+  scoped_refptr<gl::GLContext> context;
+  if (init_gl) {
+    // Create a new share group. Note that this share group is different from
+    // the share group which gpu main thread uses.
+    share_group = base::MakeRefCounted<gl::GLShareGroup>();
+    surface = gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
 
-  attribs.can_skip_validation = !features::IsANGLEValidationEnabled();
+    const bool use_passthrough_decoder =
+        gpu_preferences.use_passthrough_cmd_decoder;
+    gl::GLContextAttribs attribs =
+        gpu::gles2::GenerateGLContextAttribsForCompositor(
+            use_passthrough_decoder);
+    attribs.angle_context_virtualization_group_number =
+        gl::AngleContextVirtualizationGroup::kDrDc;
 
-  // Compositor thread context doesn't need access textures and semaphores
-  // created with other contexts.
-  attribs.global_texture_share_group = false;
-  attribs.global_semaphore_share_group = false;
+    attribs.can_skip_validation = !features::IsANGLEValidationEnabled();
 
-  // Create a new gl context. Note that this gl context is not part of same
-  // share group which gpu main thread uses. Hence this context does not share
-  // GL resources with the contexts created on gpu main thread.
-  auto context =
-      gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
-  if (!context) {
-    LOG(ERROR) << "Failed to create shared context";
-    return nullptr;
-  }
+    // Compositor thread context doesn't need access textures and semaphores
+    // created with other contexts.
+    attribs.global_texture_share_group = false;
+    attribs.global_semaphore_share_group = false;
 
-  const auto& gpu_feature_info = gpu_channel_manager_->gpu_feature_info();
-  gpu_feature_info.ApplyToGLContext(context.get());
+    // Create a new gl context. Note that this gl context is not part of same
+    // share group which gpu main thread uses. Hence this context does not share
+    // GL resources with the contexts created on gpu main thread.
+    context =
+        gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
+    if (!context) {
+      LOG(ERROR) << "Failed to create shared context";
+      return nullptr;
+    }
 
-  if (!context->MakeCurrent(surface.get())) {
-    LOG(ERROR) << "Failed to make context current";
-    return nullptr;
+    const auto& gpu_feature_info = gpu_channel_manager_->gpu_feature_info();
+    gpu_feature_info.ApplyToGLContext(context.get());
+
+    if (!context->MakeCurrent(surface.get())) {
+      LOG(ERROR) << "Failed to make context current";
+      return nullptr;
+    }
   }
 
   const auto& workarounds = gpu_channel_manager_->gpu_driver_bug_workarounds();
@@ -193,10 +201,13 @@ CompositorGpuThread::GetSharedContextState() {
       /*created_on_compositor_gpu_thread=*/true);
 
   // Initialize GL.
-  if (!shared_context_state->InitializeGL(gpu_preferences, workarounds,
-                                          gpu_feature_info)) {
-    LOG(ERROR) << "Failed to initialize GL for DrDC SharedContextState";
-    return nullptr;
+  if (init_gl) {
+    if (!shared_context_state->InitializeGL(
+            gpu_preferences, workarounds,
+            gpu_channel_manager_->gpu_feature_info())) {
+      LOG(ERROR) << "Failed to initialize GL for DrDC SharedContextState";
+      return nullptr;
+    }
   }
 
   // Initialize Skia.
