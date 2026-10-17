@@ -128,8 +128,6 @@ ui::ElementIdentifier ActionIdToElementIdentifier(actions::ActionId action) {
       return kToolbarSidePanelShowReadingListElementId;
     case kActionSidePanelShowHistoryCluster:
       return kToolbarSidePanelShowHistoryClusterElementId;
-    case kActionShowDownloads:
-      return kToolbarDownloadButtonElementId;
     case kActionClearBrowsingData:
       return kToolbarClearBrowsingDataElementId;
     case kActionPrint:
