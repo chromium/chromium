@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Öğe güncellendi</translation>
 <translation id="1018804590490383958">Tara ve otomatik doldur</translation>
 <translation id="1019990162050689579">Gemini Uygulama Etkinliği</translation>
+<translation id="102471647093736603">Taşımak için basılı tutun</translation>
 <translation id="102645702181682900">Görev başlatıldı</translation>
 <translation id="102916930470544692">Geçiş anahtarı</translation>
 <translation id="1030376737535466765">Şifre Yöneticisi'ni açın</translation>
@@ -194,7 +195,6 @@
 <translation id="154312949627292154">Diğer cihazlarınızdan alınan sekmeleri kilit ekranından açın.</translation>
 <translation id="1544653821167545205">Sayfayı özetle</translation>
 <translation id="1545749641540134597">QR Kodunu Tara</translation>
-<translation id="1545757265410828525">Fiyat geçmişi</translation>
 <translation id="1547610699249301703">Şifreleri paylaşın</translation>
 <translation id="1554043146674176775">AI Modu'nu kapat</translation>
 <translation id="1554477036522844996">Yeni Pencere</translation>
@@ -484,7 +484,6 @@
 <translation id="2434405374328098816"><ph name="WEBSITE" /> adresinde "<ph name="USERNAME" />" için zaten kayıtlı şifreniz var</translation>
 <translation id="2434918313224755415">Gizli modda göz atmak için sola kaydırabilirsiniz.</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
-<translation id="2451607499823206582">İzleniyor</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} geçmiş öğesi}other{{count} geçmiş öğesi}}</translation>
 <translation id="2461070143328828326">Şifre Ayarları</translation>
 <translation id="2462736546165239215">Tarama geçmişinizin tamamını burada bulabilirsiniz.</translation>
@@ -624,6 +623,7 @@
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Güvenliğiniz risk altında olduğunda ziyaret ettiğiniz bazı sayfaların URL'lerini Google'a gönderir</translation>
 <translation id="2883151425485251736">Hesabınızda gizlediğiniz konuları görüp düzenleyin</translation>
+<translation id="2884437560239137197">Dikkat edilmesi gerekli</translation>
 <translation id="288655811176831528">Sekmeyi Kapat</translation>
 <translation id="2888631381369839306">Fiyat takibi bildirimleri etkinleştirildi</translation>
 <translation id="2893168226686371498">Varsayılan tarayıcı</translation>
@@ -1209,6 +1209,7 @@
 <translation id="4808744395915275922">Güncellemeler</translation>
 <translation id="4813345808229079766">Bağlantı</translation>
 <translation id="4821595350501541683">Sekmeler kapatıldı ve tarama verileri silindi</translation>
+<translation id="4823322556950229674">Adres çubuğunu ve geri düğmesini basılı tutarak en alta taşıyabilirsiniz.</translation>
 <translation id="4824480232751123840">Hacim</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ve 1 tane daha}other{{domain} ve {count} tane daha}}</translation>
 <translation id="4826588772550366629">kamera ve mikrofon</translation>
@@ -1464,6 +1465,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="559567008082979829">İndirdikleriniz bir ay sonra silinir.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="560322036295180549">Kuruluşunuz tarafından kapatıldı.</translation>
+<translation id="5604254791550001355">İstemi düzenle</translation>
 <translation id="5611398002774823980">Hesaba kaydet</translation>
 <translation id="5612225021788368236">Varsayılan tarayıcı tanıtımını kapat</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />Dosyanızı seçin<ph name="END_BOLD" />'e dokunun</translation>
@@ -1529,7 +1531,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5768870767339201169">Bıraktığınız yerden devam edin</translation>
 <translation id="5779117921996157216">{count,plural, =1{Güvenliğinizi riske atabilecek {count} tane güvenliği ihlal edilmiş şifreniz var. Güvende kalmak için sorunu hemen giderin.}other{Güvenliğinizi riske atabilecek {count} tane güvenliği ihlal edilmiş şifreniz var. Güvende kalmak için bunları hemen düzeltin.}}</translation>
 <translation id="5791632441210678828">Aşağıdaki feed için sıralama düğmesi.</translation>
-<translation id="5799263916847593256">Fiyat geçmişini görmek için açın.</translation>
 <translation id="5801568494490449797">Tercihler</translation>
 <translation id="5803566855766646066">Bu yeni kartı silmek istediğinizden emin misiniz?</translation>
 <translation id="5804241973901381774">İzinler</translation>
@@ -1667,6 +1668,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6227958838185907047"><ph name="NAME" /> <ph name="EMAIL" /> olarak oturum aç</translation>
 <translation id="6231782223312638214">Önerilen</translation>
 <translation id="6232329973559504466">Gizli Arama</translation>
+<translation id="6233463157595806945">Giriş gerekiyor</translation>
 <translation id="6234310016144827337">Bağlantınızı kontrol edip tekrar deneyin</translation>
 <translation id="6236952928980352967">Uyarıyı Geri Yükle</translation>
 <translation id="623755660902014047">Okuma Modu</translation>
@@ -1697,6 +1699,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6307792728709337290">Bu satın alma işleminde ve Chrome'da yapılacak satın alma işlemlerinde kart bilgilerinizin otomatik olarak doldurulması için kartınızı Google Hesabınıza kaydedin.</translation>
 <translation id="6316141353357700666">Görüntülenen listeden kullanmak istediğiniz şifreyi seçin.</translation>
 <translation id="6321526113093607004">Yer İşaretlerine Ekle</translation>
+<translation id="6322064144568952786">Görev tamamlanamadı</translation>
 <translation id="6324054713176642683">Temalar veya renkler arasından seçim yapın ya da kendi fotoğrafınızı yükleyin.</translation>
 <translation id="6327249202318869726">Gemini, hesabınız için devre dışı bırakıldı. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="6331836477476466332">Sizin için daha güvenli ve daha güçlü bir tarayıcı</translation>
@@ -1879,7 +1882,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6815692190508268848">Görünüm tercihleriniz uygulandı</translation>
 <translation id="681631578600400068">Sürücü belgesini kaydedin</translation>
 <translation id="6825078212112407882">{count,plural, =1{Yer işareti Google Hesabınıza ({email}) kaydedildi}other{{count} yer işareti Google Hesabınıza ({email}) kaydedildi}}</translation>
-<translation id="6826004672264649705">Bu ürün şu anda takip ediliyor. Fiyat geçmişini görmek için açın.</translation>
 <translation id="6830728435402077660">Güvenli değil</translation>
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6842136130964845393">Kayıtlı şifrelerinize her zaman erişebileceğinizden emin olmak için kimliğinizi doğrulayın</translation>
@@ -2014,6 +2016,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7241135764990439166">Gizli mod kullanılamıyor</translation>
 <translation id="7245288034498365666">Düzenli olun ve zamandan tasarruf edin</translation>
 <translation id="7253951228444156601">Şifreler kontrol ediliyor…</translation>
+<translation id="725583671816239562">Görev tamamlandı</translation>
 <translation id="7261217796641151584">Grubu Paylaş</translation>
 <translation id="7266578100016339897">Böylece düzenli şekilde çalışabilirsiniz. Bunu dilediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google Şartları<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />Gemini Uygulamaları Gizlilik Uyarısı<ph name="END_LINK" /> geçerlidir. Gemini bir yapay zeka modeli olduğu için kişiler dahil olmak üzere farklı konular hakkında yanlış bilgi verebilir.</translation>

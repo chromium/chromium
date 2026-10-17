@@ -17,6 +17,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="112640046208448578">Identifikujte stvari ili mesta i kopirajte ili prevodite tekst. Kada koristite pretragu slika, snimak ekrana stranice se šalje na server. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium je podrazumevani pregledač</translation>
 <translation id="1131805035311359397">Da biste proverili da li su lozinke bezbedne od upada u podatke i drugih bezbednosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. Otvoren je prozor bez arhiviranja ili izolovani prozor. Neće se ponovo otvoriti pri ponovnom pokretanju.}one{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. Otvoren je # prozor bez arhiviranja i izolovani prozor na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}few{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. Otvorena su # prozora bez arhiviranja i izolovana prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}other{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. Otvoreno je # prozora bez arhiviranja i izolovanih prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}}</translation>
 <translation id="1153368717515616349">Kliknite na Chromium meni</translation>
 <translation id="1157985233335035034">Nedavni jezici</translation>
 <translation id="1184145431117212167">Instalacija nije uspela jer vaša verzija Windows-a nije podržana.</translation>
@@ -40,6 +41,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1329040302064168406">Prijavite se u Chromium na telefonu</translation>
 <translation id="1330562121671411446">Otkriveni jezik</translation>
 <translation id="1342274909142618978">Izbriši i podatke iz Chromium-a (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvoren je prozor bez arhiviranja ili izolovani prozor. Neće se ponovo otvoriti pri ponovnom pokretanju.}one{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvoren je # prozor bez arhiviranja i izolovani prozor na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}few{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvorena su # prozora bez arhiviranja i izolovana prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}other{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvoreno je # prozora bez arhiviranja i izolovanih prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}}</translation>
 <translation id="1345251407431278948">Zakačeno je. Možete ponovo da pristupite pretrazi slika pomoću novog dugmeta na traci s alatkama</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1388276868779258475">Nastavite sa pregledanjem u pokretu uz aplikaciju Chromium</translation>
@@ -228,6 +230,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Nosite omiljene Google AI alatke sa sobom uz Chromium na iOS-u.</translation>
 <translation id="3264761466044851269">Prijavite se u Chromium da biste preuzeli dodatke i drugo sa uređaja <ph name="DEVICE" /></translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. Izolovani prozor se neće ponovo otvoriti.}one{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # izolovani prozor se neće ponovo otvoriti.}few{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # izolovana prozora se neće ponovo otvoriti.}other{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # izolovanih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="3286538390144397061">Restartuj odmah</translation>
 <translation id="328888136576916638">Nedostaju šifre za Google API. Neke funkcije Chromium-a će biti onemogućene.</translation>
 <translation id="3296368748942286671">Nastavi sa pokretanjem aplikacija u pozadini kada se Chromium zatvori</translation>
@@ -275,6 +278,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
           **Predložite pitanja:** Generišite listu sa 3 do 5 pitanja koja podstiču na razmišljanje i koja korisnik može da postavi da bi bolje razumeo snimak ekrana. Ova pitanja treba da obuhvataju bar jedno koje se konkretno odnosi na vizuelni objekat, njegov dizajn ili položaj.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386243222263310720">Prijavite se u Chromium da biste pristupali obeleživačima i drugom na svim uređajima</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. Izolovani prozor se neće ponovo otvoriti.}one{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. # izolovani prozor se neće ponovo otvoriti.}few{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. # izolovana prozora se neće ponovo otvoriti.}other{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. # izolovanih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="3885770153807205175">Birač jezika</translation>
 <translation id="388648406173476553">Prilagodite i kontrolišite Chromium. Treba da obratite pažnju na nešto – kliknite za više detalja.</translation>
 <translation id="3889543394854987837">Kliknite na ime da biste otvorili Chromium i počnite da pregledate.</translation>
@@ -432,6 +436,7 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="5576587363991567745">Korisnik <ph name="EXISTING_USER" /> je već prijavljen. Da bi vam pregledanje bilo razdvojeno, prijavite se u Chromium preko svog profila kao <ph name="USER_EMAIL_ADDRESS" />. Dobićete i sačuvane informacije i drugo sa <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Greška pri pokretanju: pokrenite program za instalaciju kao redovan korisnik, a ne kao administrator.</translation>
 <translation id="5580770360767802657">Podrazumevano koristite Chromium i zakačite ga</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Izolovani prozor se neće ponovo otvoriti.}one{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # izolovani prozor se neće ponovo otvoriti.}few{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # izolovana prozora se neće ponovo otvoriti.}other{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # izolovanih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="5596627076506792578">Još opcija</translation>
 <translation id="5605834417512968703">Izaberite bilo šta za pretragu pomoću pretrage slika ili pritisnite Escape da biste izašli iz pretrage slika</translation>
 <translation id="5618818588972826921">Izaberite bilo koji tekst ili sliku za pretragu pomoću pretrage slika ili pritisnite Escape da biste izašli iz pretrage slika</translation>
@@ -591,6 +596,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="7003299027384820442">Unesite pristupnu frazu da biste koristili i sačuvali Chromium podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Instaliranje nije uspelo zato što ova verzija operativnog sistema nije podržana.</translation>
 <translation id="7024536598735240744">Greška pri otpakivanju: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Izolovani prozor se neće ponovo otvoriti.}one{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # izolovani prozor se neće ponovo otvoriti.}few{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # izolovana prozora se neće ponovo otvoriti.}other{Napredna zaštita zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. # izolovanih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="7045244423563602563">Prilagodite Chromium sebi</translation>
 <translation id="7047386856539490735">Da li su ovi rezultati korisni?</translation>
 <translation id="705851970750939768">Ažuriraj Chromium</translation>
@@ -670,6 +676,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Otežajte onima koji imaju pristup vašem internet saobraćaju da vide koje sajtove posećujete. Chromium koristi bezbednu vezu da bi tražio IP adresu sajta u DNS-u (sistemu imena domena).</translation>
 <translation id="7810005234485217901">Možete da zakačite pretragu slika da biste joj lako pristupali</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. Otvoren je prozor bez arhiviranja ili izolovani prozor. Neće se ponovo otvoriti pri ponovnom pokretanju.}one{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. Otvoren je # prozor bez arhiviranja i izolovani prozor na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}few{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. Otvorena su # prozora bez arhiviranja i izolovana prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}other{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. Otvoreno je # prozora bez arhiviranja i izolovanih prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}}</translation>
 <translation id="7828527096541974699">Izaberite šta ćete deliti sa Chromium-om</translation>
 <translation id="7828947555739565424">Chromium profil sa ovim nalogom već postoji na ovom uređaju</translation>
 <translation id="7845233973568007926">Hvala vam na instalaciji. Morate da restartujete računar pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
@@ -707,6 +714,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="813913629614996137">Pokreće se…</translation>
 <translation id="8161503455832158203">Otvorite Gemini u Chromium-u pomoću tasterske prečice.</translation>
 <translation id="8164014945047474187">Dodatni uslovi korišćenja usluge za Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvoren je prozor bez arhiviranja ili izolovani prozor. Neće se ponovo otvoriti pri ponovnom pokretanju.}one{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvoren je # prozor bez arhiviranja i izolovani prozor na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}few{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvorena su # prozora bez arhiviranja i izolovana prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}other{Administrator zahteva da ponovo pokrenete Chromium da biste primenili ažuriranje. Otvoreno je # prozora bez arhiviranja i izolovanih prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}}</translation>
 <translation id="81770708095080097">Ova datoteka je opasna, pa ju je Chromium blokirao.</translation>
 <translation id="8177472873527554730">Ne možemo da pronađemo sadržaj na stranici</translation>
 <translation id="8200109504272824693">Unesite pristupnu frazu da biste koristili i sačuvali Chromium podatke na nalogu, <ph name="USER_EMAIL" /></translation>

@@ -251,6 +251,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1984417487208496350">Engin vörn (ekki mælt með)</translation>
 <translation id="1986685561493779662">Þetta nafn er þegar til</translation>
 <translation id="1992244793717364584">Forrit var fjarlægt</translation>
+<translation id="1999115740519098545">Við ræsingu</translation>
 <translation id="200114059308480249">Taka með texta umhverfis í Google leitum?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, festur huliðsflipi með slökkt á hljóði</translation>
 <translation id="2021896219286479412">Stýringar vefsvæðis á öllum skjá</translation>
@@ -265,7 +266,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2056878612599315956">Hlé gert á vefsvæði</translation>
 <translation id="2063047797624276601">Fyrirtækið þitt kveikti á „Enn öruggari vefskoðun“</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Mistókst að sækja eina skrá}one{Mistókst að sækja # skrá}other{Mistókst að sækja # skrár}}</translation>
-<translation id="2066690553719545730">Alltaf sýna gervigreindarstillingu</translation>
 <translation id="2067805253194386918">texti</translation>
 <translation id="2079545284768500474">Afturkalla</translation>
 <translation id="2082238445998314030">Niðurstaða <ph name="RESULT_NUMBER" /> af <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4188638484665452040">Gemini var losað</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome kom í veg fyrir að þetta vefsvæði sendi tilkynningar vegna ruslefnis eða blekkjandi efnis}one{Chrome kom í veg fyrir að þessi vefsvæði sendi tilkynningar vegna ruslefnis eða blekkjandi efnis}other{Chrome kom í veg fyrir að þessi vefsvæði sendi tilkynningar vegna ruslefnis eða blekkjandi efnis}}</translation>
 <translation id="4195643157523330669">Opna í nýjum flipa</translation>
+<translation id="4195814663415092787">Halda áfram þaðan sem frá var horfið</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flipi í þessu tæki}one{# flipi í þessu tæki}other{# flipar í þessu tæki}}</translation>
 <translation id="4198268995694216131">Önnur vefsvæði</translation>
 <translation id="4198423547019359126">Engar tiltækar niðurhalsstaðsetningar</translation>
@@ -808,7 +809,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4216511743389425832">Hlusta á þessa síðu</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, valinn festur huliðsflipi með mynd í mynd</translation>
 <translation id="4225895483398857530">Flýtileið á tækjastiku</translation>
-<translation id="4232376164796433044">Aðgangsorð og sjálfvirk útfylling</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="425582637250725228">Hugsanlegt er að breytingarnar þínar séu ekki vistaðar.</translation>
@@ -1147,6 +1147,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5568069709869097550">Innskráning mistókst</translation>
 <translation id="557018954714092179">Búa til nýja möppu</translation>
 <translation id="5578795271662203820">Leita að þessari mynd á <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Opna tiltekna síðu eða safn síðna</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5599455543593328020">Huliðsstilling</translation>
 <translation id="5601180634394228718">Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
@@ -1177,6 +1178,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5715150588940290235">Eyða vistuðum öryggisnúmerum?</translation>
 <translation id="572328651809341494">Nýlegir flipar</translation>
 <translation id="5728072125198221967">Tengdar Google-þjónustur</translation>
+<translation id="5733447028358645932">Hver skoðaði</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, festur huliðsflipi með hljóði</translation>
 <translation id="5744751019568455640">Hér eru raddirnar sem þú getur valið um til að lesa af vefsíðunum þínum. Ef þér líkar við þessa rödd og vilt að ég haldi áfram að nota hana skaltu ýta á heiti raddarinnar.</translation>
 <translation id="574845902699630049">Deilir sem <ph name="OWNER_FULL_NAME" /></translation>
@@ -1447,6 +1449,7 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="671481426037969117">Tímamælir <ph name="FQDN" /> rann út. Hann byrjar aftur á morgun.</translation>
 <translation id="6716434912087331834">Til að endurheimta nýjan glugga skaltu fækka virkum gluggum í <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eða færri. Óvirkum gluggum er eytt eftir sex mánuði.</translation>
 <translation id="6723740634201835758">Á Google reikningnum þínum</translation>
+<translation id="6725340821578440069">Sía eftir tæki</translation>
 <translation id="6734310707649923383">Þú getur skoðað síður sem þú hefur opnað eða eytt þeim úr ferlinum þínum</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, festur huliðsflipi sem er að taka upp</translation>
 <translation id="6738867403308150051">Sækir…</translation>
@@ -1905,6 +1908,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8387617938027387193">Staðfestu hver þú ert</translation>
 <translation id="8393700583063109961">Senda skilaboð</translation>
 <translation id="8398389123831319859">Ýttu tvisvar og haltu inni til að skipta yfir í huliðsstillingu</translation>
+<translation id="8401904657382223224">Sía eftir hýsli</translation>
 <translation id="8412037385861858490">Til að tryggja öryggi vinnu þinnar í Chrome mun fyrirtækið þitt geta skoðað eða stjórnað tilteknum upplýsingum þegar þú ert skráð(ur) inn á Chrome. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Sýna allan feril</translation>
 <translation id="8413795581997394485">Verndar gegn vefsvæðum, niðurhali og viðbótum sem vitað er að eru hættuleg. Þegar þú opnar vefsvæði sendir Chrome ruglaðan hluta vefslóðarinnar til Google í gegnum traustan þjón sem felur IP-töluna þína. Ef vefsvæði gerir eitthvað grunsamlegt eru heilar vefslóðir og efnisbútar af síðu einnig sendir.</translation>
@@ -2028,6 +2032,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="8863714995118816041">Heimildir leyfðar aftur fyrir <ph name="SITE_NAME" /></translation>
 <translation id="8864055848767439877">Deilir <ph name="TAB_NAME" /> í <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-gögn á reikningnum þínum</translation>
+<translation id="886968456388055613">Sía eftir því hver skoðaði</translation>
 <translation id="8872506776304248286">Opna í forriti</translation>
 <translation id="8880275451109933094">Birta tvær síður</translation>
 <translation id="8890668505403261809">Leitaðu í huliðsflipunum þínum</translation>

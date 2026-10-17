@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">მუნიციპალიტეტი</translation>
 <translation id="2059202684901022309">22 x 34 დუიმი</translation>
 <translation id="2063929825539050431">ხანგრძლივად შეეხეთ მისამართთა ზოლს, რომ ეს გვერდი სწრაფად გაგზავნოთ სხვა მოწყობილობაზე</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 შეთავაზება}other{# შეთავაზება}}</translation>
 <translation id="2066969741541525119">ეს საიტი დაბლოკილია თქვენი ორგანიზაციის მიერ</translation>
 <translation id="2071156619270205202">ეს ბარათი არ აკმაყოფილებს ვირტუალური ბარათის ნომრის მიღების კრიტერიუმებს.</translation>
 <translation id="2071852865256799872">თქვენს ბრაუზერს მართავს თქვენი ორგანიზაცია, თქვენს პროფილს კი — <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">მრავალად გახვრეტა ქვემოთ</translation>
 <translation id="218940509700321686">Comma-Separated Values (CSV)</translation>
 <translation id="2190094353033916816">ამ წესებს განსხვავებული მნიშვნელობები აქვს გამოყენებული მოწყობილობისა და მომხმარებლის დონეებზე. წესი დანიშნულებისამებრ მუშაობს.</translation>
-<translation id="219061769324072544">საკრედიტო,ბარათი,სადებეტო</translation>
 <translation id="2191980191135734720">განბლოკეთ ეკრანი მომდევნო ეტაპზე თქვენი თითის ანაბეჭდის გამოყენებით. ასევე, შეგიძლიათ <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">გასათვალისწინებელი საკითხები</translation>
 <translation id="2195729137168608510">ელფოსტის დაცვა</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">სურათის Y პოზიცია</translation>
 <translation id="2808278141522721006">Windows Hello-ს ჩართვა/გამორთვა შეგიძლიათ აქ: <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">მიმდინარეობს სკანირება...</translation>
+<translation id="282457273878278063">საკონტაქტო ინფორმაციის მართვა</translation>
 <translation id="2824775600643448204">მისამართი და ძიების ზოლი</translation>
 <translation id="2826760142808435982">კავშირი დაშიფრულია და ავთენტიფიცირებულია <ph name="CIPHER" />-ის გამოყენებით, იგი იყენებს <ph name="KX" />-ს, როგორც კოდის გაცვლის მექანიზმს.</translation>
 <translation id="2828797285817981634">მოძრაობის სენსორები ამჟამად დაშვებულია</translation>
@@ -1865,7 +1864,6 @@
 <translation id="4121428309786185360">ვადა გასდის</translation>
 <translation id="4123572138124678573">სამმაგად გახვრეტა ქვემოთ</translation>
 <translation id="412601465078863288">ატვირთვის დრო ამოიწურა</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 სხვა}other{# სხვა}}</translation>
 <translation id="4129810348470013900">წარმოიქმნა შეფერხება. შეამოწმეთ ინტერნეტ-კავშირი და ცადეთ ხელახლა.</translation>
 <translation id="4130226655945681476">ქსელის კაბელების, მოდემის და როუტერის შემოწმება</translation>
 <translation id="4132448310531350254">ფუნქციას file_extension „<ph name="FILE_EXTENSION" />“, რომელსაც მიმართავენ აპები „<ph name="POLICY_IDS_LIST" />“, დუბლიკატი დამმუშავებლები აქვს.</translation>
@@ -3231,7 +3229,6 @@
 <translation id="638289054711715023">თერმოჩაჯდომის აფსკი</translation>
 <translation id="6383221683286411806">მოერიდეთ პოტენციურ ხარჯებს.</translation>
 <translation id="6384448607821972818">ნაჩვენები პაროლის აღდგენა</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 სხვა შეთავაზება}other{# სხვა შეთავაზება}}</translation>
 <translation id="6386565501269869892">კონვერტი You 4</translation>
 <translation id="6387645831795005740">თავდამსხმელები, ზოგჯერ, ახდენენ საიტების იმიტირებას URL-ში მცირე, რთულად შესამჩნევი ცვლილებების შეტანით.</translation>
 <translation id="6389470377220713856">სახელი ბარათზე</translation>

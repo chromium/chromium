@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">市区町村</translation>
 <translation id="2059202684901022309">22x34 インチ</translation>
 <translation id="2063929825539050431">このページを別のデバイスに送信するには、アドレスバーを長押しします</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 件の候補}other{# 件の候補}}</translation>
 <translation id="2066969741541525119">アクセスしようとしたサイトは組織によってブロックされています</translation>
 <translation id="2071156619270205202">このカードでは仮想カード番号はご利用いただけません</translation>
 <translation id="2071852865256799872">お使いのブラウザは組織によって、プロフィールは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">多穴パンチ（下）</translation>
 <translation id="218940509700321686">カンマ区切り値</translation>
 <translation id="2190094353033916816">このポリシーでは、マシンレベルとユーザーレベルで異なる値が適用されます。ポリシーは想定どおりに機能しています。</translation>
-<translation id="219061769324072544">クレジット,カード,デビット</translation>
 <translation id="2191980191135734720">次のステップで画面のロックを解除します（通常は指紋認証を使用します）。<ph name="LINK_TEXT" />こともできます。</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2195729137168608510">電子メールの保護</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">画像の Y 座標</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> で Windows Hello のオンとオフを切り替えることができます</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
+<translation id="282457273878278063">連絡先情報を管理</translation>
 <translation id="2824775600643448204">アドレス検索バー</translation>
 <translation id="2826760142808435982">接続は <ph name="CIPHER" /> を使用して暗号化および認証されており、<ph name="KX" /> が鍵交換メカニズムとして使用されています。</translation>
 <translation id="2828797285817981634">モーション センサーの使用を一時的に許可しました</translation>
@@ -1865,7 +1864,6 @@
 <translation id="4121428309786185360">有効期限</translation>
 <translation id="4123572138124678573">3 穴パンチ（下）</translation>
 <translation id="412601465078863288">アップロードがタイムアウトしました</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
 <translation id="4129810348470013900">エラーが発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="4130226655945681476">ネットワーク ケーブル、モデム、ルーターを確認する</translation>
 <translation id="4132448310531350254">アプリ「<ph name="POLICY_IDS_LIST" />」で参照されている file_extension「<ph name="FILE_EXTENSION" />」のハンドラが重複しています。</translation>
@@ -3231,7 +3229,6 @@
 <translation id="638289054711715023">ホイル（シュリンク）</translation>
 <translation id="6383221683286411806">続行すると料金が請求される可能性があります。</translation>
 <translation id="6384448607821972818">再設定用のパスワードが表示されました</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{他 1 件の候補}other{他 # 件の候補}}</translation>
 <translation id="6386565501269869892">洋形 4 号封筒</translation>
 <translation id="6387645831795005740">不正なユーザーが URL のごく一部を一目ではわからないように改変してサイトを偽装する場合があります。</translation>
 <translation id="6389470377220713856">カード名義人（半角英文字）</translation>

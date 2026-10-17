@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Identifica cose o luoghi e copia o traduci testi. Quando utilizzi la ricerca immagini, al server viene inviato uno screenshot della pagina. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium è il tuo browser predefinito</translation>
 <translation id="1131805035311359397">Per controllare che le tue password siano protette da violazioni dei dati e altri problemi di sicurezza, <ph name="BEGIN_LINK" />accedi a Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{L'amministratore richiede il riavvio di Chromium per applicare questo aggiornamento. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{L'amministratore richiede il riavvio di Chromium per applicare questo aggiornamento. Ci sono # finestre Incognito e finestre isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
 <translation id="1153368717515616349">Fai clic sul menu Chromium</translation>
 <translation id="1157985233335035034">Lingue recenti</translation>
 <translation id="1184145431117212167">Installazione non riuscita perché la versione di Windows non è supportata.</translation>
@@ -37,6 +38,7 @@
 <translation id="1329040302064168406">Accedi a Chromium dallo smartphone</translation>
 <translation id="1330562121671411446">Rileva lingua</translation>
 <translation id="1342274909142618978">Elimina i dati anche da Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{La protezione avanzata richiede il riavvio di Chromium per applicare un aggiornamento. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{La protezione avanzata richiede il riavvio di Chromium per applicare un aggiornamento. Ci sono # finestre Incognito e finestre isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
 <translation id="1345251407431278948">Riquadro fissato. Puoi accedere nuovamente alla ricerca immagini dal nuovo pulsante sulla barra degli strumenti</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1388276868779258475">Usa l'app Chromium per continuare a navigare ovunque ti trovi</translation>
@@ -225,6 +227,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Porta con te i tuoi strumenti Google AI preferiti ovunque ti trovi con Chromium su iOS.</translation>
 <translation id="3264761466044851269">Accedi a Chromium per trovare le tue estensioni e altri dati dal <ph name="DEVICE" /></translation>
+<translation id="326944442937875564">{COUNT,plural, =1{È disponibile un nuovo aggiornamento di Chromium che verrà applicato al prossimo riavvio. La finestra isolata non verrà riaperta.}other{È disponibile un nuovo aggiornamento di Chromium che verrà applicato al prossimo riavvio. # finestre isolate non verranno riaperte.}}</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
 <translation id="328888136576916638">Mancano le chiavi dell'API di Google. Alcune funzionalità di Chromium verranno disattivate.</translation>
 <translation id="3296368748942286671">Continua a eseguire applicazioni in background dopo la chiusura di Chromium</translation>
@@ -272,6 +275,7 @@
           **Suggerisci domande:** genera un elenco puntato di 3-5 domande stimolanti che un utente potrebbe porre per comprendere meglio lo screenshot. Queste domande devono includerne almeno una che riguardi specificamente un oggetto visivo, il suo design o il suo posizionamento.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Accedi a Chromium per trovare i tuoi preferiti e altri dati su tutti i dispositivi</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{L'amministratore richiede il riavvio di Chromium per applicare questo aggiornamento. La finestra isolata non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per applicare questo aggiornamento. # finestre isolate non verranno riaperte.}}</translation>
 <translation id="3885770153807205175">Selettore lingua</translation>
 <translation id="388648406173476553">Personalizza e controlla Chromium. C'è qualcosa che richiede la tua attenzione. Fai clic per avere informazioni dettagliate.</translation>
 <translation id="3889543394854987837">Fai clic sul tuo nome per aprire Chromium e iniziare a navigare.</translation>
@@ -429,6 +433,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> ha già eseguito l’accesso. Per tenere separata la tua navigazione, accedi a Chromium nel tuo profilo per <ph name="USER_EMAIL_ADDRESS" />. Potrai anche accedere alle informazioni salvate e ad altri dati del <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Errore di avvio: esegui il programma di installazione come utente normale, non come amministratore.</translation>
 <translation id="5580770360767802657">Usa Chromium per impostazione predefinita e fissalo</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{L'amministratore richiede il riavvio di Chromium per applicare un aggiornamento. La finestra isolata non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per applicare un aggiornamento. # finestre isolate non verranno riaperte.}}</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5605834417512968703">Seleziona un elemento da cercare con la ricerca immagini o premi Esc per uscire dalla ricerca immagini</translation>
 <translation id="5618818588972826921">Seleziona un testo o un'immagine da cercare con la ricerca immagini o premi Esc per uscire dalla ricerca immagini</translation>
@@ -588,6 +593,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7003299027384820442">Inserisci la tua passphrase per usare e salvare i dati di Chromium nel tuo Account Google, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installazione non riuscita perché questa versione del sistema operativo non è supportata.</translation>
 <translation id="7024536598735240744">Errore decompressione: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{La protezione avanzata richiede il riavvio di Chromium per applicare un aggiornamento. La finestra isolata non verrà riaperta.}other{La protezione avanzata richiede il riavvio di Chromium per applicare un aggiornamento. # finestre isolate non verranno riaperte.}}</translation>
 <translation id="7045244423563602563">Personalizza Chromium</translation>
 <translation id="7047386856539490735">Questi risultati sono utili?</translation>
 <translation id="705851970750939768">Aggiorna Chromium</translation>
@@ -666,6 +672,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Rendi più difficile vedere quali siti visiti alle persone che hanno accesso al tuo traffico internet. Chromium utilizza una connessione sicura per cercare l'indirizzo IP di un sito nel DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Puoi bloccare la ricerca immagini per un facile accesso</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{È disponibile un nuovo aggiornamento di Chromium che verrà applicato al prossimo riavvio. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{È disponibile un nuovo aggiornamento di Chromium che verrà applicato al prossimo riavvio. Ci sono # finestre Incognito e finestre isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
 <translation id="7828527096541974699">Scegli cosa condividere con Chromium</translation>
 <translation id="7828947555739565424">Esiste già un profilo Chromium con questo account su questo dispositivo</translation>
 <translation id="7845233973568007926">L'installazione è terminata. Dovrai riavviare il computer per poter utilizzare <ph name="BUNDLE_NAME" />.</translation>
@@ -703,6 +710,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="813913629614996137">Inizializzazione...</translation>
 <translation id="8161503455832158203">Apri Gemini in Chromium con una scorciatoia da tastiera.</translation>
 <translation id="8164014945047474187">Termini di servizio aggiuntivi di Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{L'amministratore richiede il riavvio di Chromium per applicare un aggiornamento. C'è una finestra Incognito o isolata aperta. Non verrà riaperta dopo il riavvio.}other{L'amministratore richiede il riavvio di Chromium per applicare un aggiornamento. Ci sono # finestre Incognito e finestre isolate aperte nei profili. Non verranno riaperte dopo il riavvio.}}</translation>
 <translation id="81770708095080097">Questo file è pericoloso, pertanto è stato bloccato da Chromium.</translation>
 <translation id="8177472873527554730">Impossibile trovare contenuti nella pagina</translation>
 <translation id="8200109504272824693">Inserisci la tua passphrase per usare e salvare i dati di Chromium nel tuo Account Google, <ph name="USER_EMAIL" /></translation>

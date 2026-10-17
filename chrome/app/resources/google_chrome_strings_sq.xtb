@@ -49,6 +49,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1425903838053942728">{COUNT,plural, =0{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri.}=1{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta rinisësh atë. Më pas, skedat e tua aktuale do të hapen përsëri. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1434626383986940139">Aplikacionet e Chrome Canary</translation>
 <translation id="1439793550875056299">Gozhdo Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. "Dritarja jote e izoluar" nuk do të rihapet.}other{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. # "Dritaret e tua të izoluara" nuk do të rihapen.}}</translation>
 <translation id="146866447420868597">Do të identifikohesh në Chrome?</translation>
 <translation id="1476347941828409626">&amp;Menaxho profilet e Chrome</translation>
 <translation id="1492280395845991349">Rinise për të përfunduar përditësimin e Chrome</translation>
@@ -273,6 +274,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="345171907106878721">Shtoje veten te Chrome</translation>
 <translation id="3453763134178591239">Kushtet e ChromeOS</translation>
 <translation id="3475778264501649775">Merr fjalëkalimet, skedat etj. kur je në lëvizje me aplikacionin e Chrome në telefonin tënd</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. "Dritarja jote e izoluar" nuk do të rihapet.}other{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. # "Dritaret e tua të izoluara" nuk do të rihapen.}}</translation>
 <translation id="3539955434060988644">Hape lidhjen në një drit&amp;are të fshehtë të Chrome</translation>
 <translation id="354621070532799440">Rikujtesë: Veçoritë më të mira të sigurisë të Google në xhepin tënd</translation>
 <translation id="3547866758548131919">Kliko te butoni "Përmblidh" për ta ndarë këtë dokument me Gemini në Chrome për të marrë një përmbledhje të shpejtë dhe për të bërë pyetje vijuese</translation>
@@ -288,12 +290,15 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3622797965165704966">Tani është më e lehtë të përdorësh Chrome me llogarinë tënde të Google dhe në kompjuterët e ndarë.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> është identifikuar tashmë. Për ta mbajtur shfletimin tënd të ndarë, identifikohu në Chrome në profilin tënd si <ph name="USER_EMAIL_ADDRESS" />. Do të marrësh gjithashtu informacionet e ruajtura etj. në të gjitha pajisjet e tua.</translation>
 <translation id="3635073343384702370">Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta nisësh sërish. Më pas, skedat e tua aktuale do të rihapen. "Dritarja jote e izoluar" nuk do të rihapet.}other{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta nisësh sërish. Më pas, skedat e tua aktuale do të rihapen. # "Dritaret e tua të izoluara" nuk do të rihapen.}}</translation>
 <translation id="3636970668267555808">Përfito qasje të lehtë te veçoritë që njeh, që të pëlqejnë dhe që u beson duke caktuar Chrome si shfletuesin tënd të parazgjedhur.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="3667616615096815454">Instalimi nuk mund të kryhej. Aplikacioni është i panjohur për serverin.</translation>
 <translation id="3673813398384385993">Chrome vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
 <translation id="3697952514309507634">Profilet e tjera të Chrome</translation>
 <translation id="3703994572283698466">ChromeOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versioni i Chrome OS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Ofrohet një përditësim i ri për Chrome dhe do të zbatohet sapo ta nisësh sërish. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{Ofrohet një përditësim i ri për Chrome dhe do të zbatohet sapo ta nisësh sërish. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="3718181793972440140">Kjo do të fshijë 1 artikull nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome rekomandon që ta heqësh atë. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" />}other{Chrome rekomandon që t'i heqësh ato. <ph name="BEGIN_LINK" />Mëso më shumë rreth shtesave të mbështetura<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Thelloje kërkimin duke shtuar disa skeda, skedarë dhe vegla duke përdorur butonin "Shto një skedë dhe më shumë".</translation>
@@ -419,6 +424,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="5003967926796347400">Kliko te “Menaxheri i fjalëkalimeve i Google”</translation>
 <translation id="5043786843026425788">Mëso më shumë rreth kërkimit me "Lenten e Google" në Chrome</translation>
 <translation id="504867494566807945">Hap lidhjet në Chrome nga çdo aplikacion. Dhe për qasje të lehtë, ai gozhdohet te shiriti yt i veglave.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{"Mbrojtja e përparuar" kërkon që të nisësh sërish Chrome për të zbatuar një përditësim. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{"Mbrojtja e përparuar" kërkon që të nisësh sërish Chrome për të zbatuar një përditësim. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="5105120510934353742">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 13 ose një version i mëvonshëm. Ky kompjuter përdor macOS 12.</translation>
 <translation id="5114340746415930644">Fut frazën e kalimit për të përdorur dhe ruajtur të dhënat e Chrome në llogarinë tënde <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Identifikohu në Chrome kur identifikohesh në shërbimet e tjera të Google</translation>
@@ -483,6 +489,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Lidhja me internetin nuk mund të kryhej. Serveri proxy kërkon vërtetim.</translation>
 <translation id="5709557627224531708">Caktoje Chrome si shfletuesin tënd të parazgjedhur</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{"Mbrojtja e përparuar" kërkon që të nisësh sërish Chrome për të zbatuar një përditësim. "Dritarja jote e izoluar" nuk do të rihapet.}other{"Mbrojtja e përparuar" kërkon që të nisësh sërish Chrome për të zbatuar një përditësim. # "Dritaret e tua të izoluara" nuk do të rihapen.}}</translation>
 <translation id="5719246646468301581">"Kushtet shtesë të shërbimit" të Google Chrome dhe ChromeOS</translation>
 <translation id="5736850870166430177">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
 <translation id="5742003800414899269">Përdor aplikacionin e Chrome për të marrë veglat më të mira me IA kur je në lëvizje</translation>
@@ -510,6 +517,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5960404530854194706">Chrome do të përditësohet kur të jesh larg</translation>
 <translation id="5980111191913430208">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chrome rekomandon që t'i instalosh ato vetëm nga "<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />"</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{Administratori yt kërkon që të nisësh sërish Chrome për të zbatuar këtë përditësim. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="6008161919456049856">Fjalëkalimet e tua, mënyrat e pagesës dhe adresat që ke ruajtur në "Llogarinë tënde të Google" do të hiqen nga kjo pajisje. Për t'i përdorur përsëri në Chrome, identifikohu përsëri.</translation>
 <translation id="6009821354356307391">Kërko një përgjigje vijuese</translation>
 <translation id="6014316319780893079">Me <ph name="BEGIN_LINK" />veglat nga Chrome<ph name="END_LINK" />, mund të shfletosh në mënyrë të sigurt dhe të qëndrosh në kontroll</translation>
@@ -682,6 +690,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7452987490177144319">{COUNT,plural, =1{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chrome nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}other{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chrome nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}}</translation>
 <translation id="7466577301922356468">Dërgimi automatik i këtyre të dhënave te Google ndihmon në përmirësimin e Chrome. Mund ta ndryshosh këtë cilësim në çdo kohë.</translation>
 <translation id="7477130805345743099">Chrome do të të paralajmërojë para se të ngarkojë një sajt duke përdorur një lidhje të pasigurt</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Ofrohet një përditësim i ri për Chrome dhe do të zbatohet sapo ta nisësh sërish. "Dritarja jote e izoluar" nuk do të rihapet.}other{Ofrohet një përditësim i ri për Chrome dhe do të zbatohet sapo ta nisësh sërish. # "Dritaret e tua të izoluara" nuk do të rihapen.}}</translation>
 <translation id="7481213027396403996">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="749228101751499733">Kur je i identifikuar, mund të përdorësh fjalëkalimet dhe më shumë nga "Llogaria jote e Google" në Chrome. <ph name="SHORTCUT" /> mund të ndryshojë cilësimet e shërbimeve të tua të Google.</translation>
 <translation id="7496017508659652909">Chrome i ngarkon paraprakisht faqet, gjë që e bën më të shpejtë shfletimin dhe kërkimin. <ph name="BEGIN_LINK" />Mëso më shumë për ngarkimin paraprak të faqeve<ph name="END_LINK" /></translation>
@@ -796,6 +805,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8380754585531979907">Përdor tastierën për të naviguar midis Gemini në Chrome dhe skedës sate të hapur.</translation>
 <translation id="8387459386171870978">Vazhdo të përdorësh Chrome</translation>
 <translation id="8394720698884623075">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta nisësh sërish. Më pas, skedat e tua aktuale do të rihapen. Është hapur një "Dritare e izoluar" ose "E fshehtë". Ajo nuk do të rihapet pasi ta nisësh sërish.}other{Përditësimi i Chrome përfundoi. Mund të përdorësh versionin më të fundit sapo ta nisësh sërish. Më pas, skedat e tua aktuale do të rihapen. Janë hapur # "Dritare të izoluara" dhe "Të fshehta" nëpër profile. Ato nuk do të rihapen pasi ta nisësh sërish.}}</translation>
 <translation id="8403038600646341038">Logoja e Chrome brenda një ekrani kompjuteri.</translation>
 <translation id="8418845734693287262">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="842386925677997438">Veglat e sigurisë të Chrome</translation>

@@ -195,7 +195,6 @@
 <translation id="154312949627292154">لاک اسکرین سے اپنے دوسرے آلات سے موصول کردہ ٹیبز کو کھولیں۔</translation>
 <translation id="1544653821167545205">صفحہ کا خلاصہ بیان کریں</translation>
 <translation id="1545749641540134597">‏QR کوڈ اسکین کریں</translation>
-<translation id="1545757265410828525">قیمت کی سرگزشت</translation>
 <translation id="1547610699249301703">پاس ورڈز کا اشتراک کریں</translation>
 <translation id="1554043146674176775">‏‫AI وضع آف کریں</translation>
 <translation id="1554477036522844996">نئی ونڈو</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">آپ نے <ph name="WEBSITE" /> پر "<ph name="USERNAME" />" کے لیے پہلے ہی پاس ورڈ محفوظ کر لیا ہے</translation>
 <translation id="2434918313224755415">آپ پوشیدگی میں براؤز کرنے کے لیے دائیں اسکرول کر سکتے ہیں۔</translation>
 <translation id="2435457462613246316">پاس ورڈ دکھائیں</translation>
-<translation id="2451607499823206582">ٹریکنگ</translation>
 <translation id="2458827363789845126">{count,plural, =1{سرگزشت کا {count} آئٹم}other{سرگزشت کے {count} آئٹمز}}</translation>
 <translation id="2461070143328828326">پاس ورڈ کی ترتیبات</translation>
 <translation id="2462736546165239215">آپ یہاں اپنی تمام براؤزنگ کی سرگزشت تلاش کر سکتے ہیں۔</translation>
@@ -1466,6 +1464,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="559567008082979829">اپنے ڈاؤن لوڈز کو ایک ماہ کے بعد حذف ہونے کیلئے سیٹ کریں۔</translation>
 <translation id="5596627076506792578">مزید اختیارات</translation>
 <translation id="560322036295180549">آپ کی تنظیم کے ذریعے اف کر دیا گیا</translation>
+<translation id="5604254791550001355">پرامپٹ میں ترمیم کریں</translation>
 <translation id="5611398002774823980">اکاؤنٹ میں محفوظ کریں</translation>
 <translation id="5612225021788368236">ڈیفالٹ براؤزر پرومو بند کریں</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />اپنی فائل منتخب کریں<ph name="END_BOLD" /> پر تھپتھپائیں</translation>
@@ -1531,7 +1530,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5768870767339201169">جہاں آپ نے چھوڑا وہیں سے شروع کریں</translation>
 <translation id="5779117921996157216">{count,plural, =1{آپ کے پاس {count} متاثرہ پاس ورڈ ہے جس سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔ محفوظ رہنے کے لیے اسے ابھی صحیح کریں۔}other{آپ کے پاس {count} متاثرہ پاس ورڈز ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔ محفوظ رہنے کے لیے انہیں ابھی صحیح کریں۔}}</translation>
 <translation id="5791632441210678828">مندرجہ ذیل فیڈ کے لیے ترتیب دینے کا بٹن۔</translation>
-<translation id="5799263916847593256">قیمت کی سرگزشت دیکھنے کے لیے کھولیں</translation>
 <translation id="5801568494490449797">ترجیحات</translation>
 <translation id="5803566855766646066">کیا آپ واقعی اس نئے کارڈ کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="5804241973901381774">اجازتیں</translation>
@@ -1881,7 +1879,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6815692190508268848">آپ کی ظاہری ترجیحات لاگو ہو گئیں</translation>
 <translation id="681631578600400068">ڈرائیونگ لائسنس کی معلومات محفوظ کریں</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏بُک مارک آپ کے Google اکاؤنٹ، {email} میں محفوظ کیا گیا}other{‏‫{count} بُک مارکس آپ کے Google اکاؤنٹ، {email} میں محفوظ کیے گئے}}</translation>
-<translation id="6826004672264649705">فی الحال اس پروڈکٹ کو ٹریک کیا جا رہا ہے۔ قیمت کی سرگزشت دیکھنے کے لیے کھولیں</translation>
 <translation id="6830728435402077660">محفوظ نہیں</translation>
 <translation id="6831043979455480757">ترجمہ کریں</translation>
 <translation id="6842136130964845393">اس بات کو یقینی بنانے کیلئے کہ آپ ہمیشہ اپنے محفوظ کردہ پاس ورڈز تک رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>

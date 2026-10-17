@@ -618,7 +618,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2059166748188874810">Umasipala</translation>
 <translation id="2059202684901022309">U-22 x 34 phakathi</translation>
 <translation id="2063929825539050431">Ukuze uthumele ngokushesha leli khasi kwenye idivayisi, thepha futhi ubambe ibha yekheli</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 isiphakamiso}one{# iziphakamiso}other{# iziphakamiso}}</translation>
 <translation id="2066969741541525119">Isayithi elingaphambili livinjwe yinhlangano yakho</translation>
 <translation id="2071156619270205202">Leli khadi alifanelekeli inombolo yekhadi le-virtual</translation>
 <translation id="2071852865256799872">Ibhrawuza yakho ilawulwa yinhlangano yakho futhi iphrofayela yakho ilawulwa yi-<ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2188375229972301266">Ukushaya kaningi phansi</translation>
 <translation id="218940509700321686">Okuhlukaniswe Ngamakhoma</translation>
 <translation id="2190094353033916816">Le nqubomgomo inamanani ahlukene asetshenziswa ezingeni lomshini nelomsebenzisi. Inqubomgomo isebenza njengoba kuhlosiwe.</translation>
-<translation id="219061769324072544">Ikhredithi,Ikhadi,Idebithi</translation>
 <translation id="2191980191135734720">Vula isikrini sakho esinyathelweni esilandelayo, ngokuvamile usebenzisa isigxivizo somunwe. Ungase futhi <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Izinto okufanele uzicabangele</translation>
 <translation id="2195729137168608510">Ukuvikelwa kwe-imeyili</translation>
@@ -1082,6 +1080,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2807052079800581569">Indawo yesithombe engu-Y</translation>
 <translation id="2808278141522721006">Ungavula noma uvale i-Windows Hello ku-<ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Iyaskena...</translation>
+<translation id="282457273878278063">Lawula imininingwane yokuxhumana</translation>
 <translation id="2824775600643448204">Ikheli nebha yosesho</translation>
 <translation id="2826760142808435982">Ukuxhumeka kubetheliwe kwaphinde kwaqinisekiswa kusetshenziswa i-<ph name="CIPHER" /> futhi kusebenzisa i-<ph name="KX" /> njengendlela yokushintshanisa ukhiye.</translation>
 <translation id="2828797285817981634">Izinzwa zokunyakaza zivunyelwe okwamanje</translation>
@@ -1862,7 +1861,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="4121428309786185360">Kuphelelwa isikhathi ngo-</translation>
 <translation id="4123572138124678573">Ukushaya kathathu phansi</translation>
 <translation id="412601465078863288">Ukulayisha kuphelelwe yisikhathi</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 enye}one{# ezinye}other{# ezinye}}</translation>
 <translation id="4129810348470013900">Kukhona okungahambanga kahle. Hlola ukuxhumeka kwakho kwe-inthanethi uphinde uzame futhi.</translation>
 <translation id="4130226655945681476">Ihlola amakhebuli enethiwekhi, imodemu, nomzila</translation>
 <translation id="4132448310531350254">Izibambi eziyimpinda ze-file_extension"<ph name="FILE_EXTENSION" />" okubhekiselwa kuzo ama-app "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3228,7 +3226,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="638289054711715023">Nciphisa i-Foil</translation>
 <translation id="6383221683286411806">Izinkokhiso ezingaba khona ezingaphambili.</translation>
 <translation id="6384448607821972818">Iphasiwedi yokutakula ibonisiwe</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 esinye isiphakamiso}one{# ezinye iziphakamiso}other{# ezinye iziphakamiso}}</translation>
 <translation id="6386565501269869892">Imvilophu ye-You 4</translation>
 <translation id="6387645831795005740">Ngezinye izikhathi abahlaseli balingisa amasayithi ngokwenza izinguquko ezincane, okunzima ukuzibona ku-URL.</translation>
 <translation id="6389470377220713856">Igama kukhadi</translation>

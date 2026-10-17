@@ -8781,17 +8781,6 @@ Not: Bu politika yalnızca uzantıları destekleyen platformlarda geçerlidir.</
       Politikanın False (Yanlış) değerine ayarlanması, İmzalanmış HTTP Takası içeriğinin yüklenmesini önler.</translation>
 <translation id="6368011194414932347">Ana sayfa URL'sini yapılandır</translation>
 <translation id="6368403635025849609">Bu sitelerde JavaScript'e izin ver</translation>
-<translation id="6368652917086795891"><ph name="PRODUCT_NAME" /> hizmetinde <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> için bağlantı ayarlarını yapılandırır.
-
-Bu politika, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> politikasının yerini alacak. İkisi de ayarlanırsa <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> öncelikli olur.
-
-Politika, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> web uygulaması URL'sini <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> aracılığıyla yapılandırır. Bu URL, https şemasını kullanan, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> alan adına işaret eden ve kullanıcı adı veya şifre içermeyen geçerli bir URL olmalıdır. Bu koşullar karşılanmazsa politika yoksayılır ve <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmadan bırakılır.
-
-Bu politika ayarlanırsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, yönetilen bir hesap veya yönetilen tarayıcıyla oturum açan kullanıcılar için yapılandırılır.
-
-Bu politika ayarlanmazsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmaz.
-
-Bu politikanın, <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> entegrasyonunu kontrol etmediğini unutmayın. Söz konusu entegrasyon <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından yönetilebilir.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Yerleşik yapay zeka API'lerinin kullanılmasına izin verme.</translation>
 <translation id="6371005337713685988">İlgili Web Sitesi Grupları Ayarları</translation>

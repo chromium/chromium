@@ -619,7 +619,6 @@
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="2059202684901022309">২২ x ৩৪ ইঞ্চি</translation>
 <translation id="2063929825539050431">এই পৃষ্ঠাটি দ্রুত অন্য ডিভাইসে পাঠাতে, অ্যাড্রেস বারে টাচ করে ধরে থাকুন</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{১টি প্রস্তাব}one{#টি প্রস্তাব}other{#টি প্রস্তাব}}</translation>
 <translation id="2066969741541525119">আপনার প্রতিষ্ঠান আগে থেকেই সাইট ব্লক করেছে</translation>
 <translation id="2071156619270205202">ভার্চুয়াল কার্ড নম্বরের জন্য এই কার্ডটি যোগ্য নয়।</translation>
 <translation id="2071852865256799872">আপনার প্রতিষ্ঠান আপনার ব্রাউজার ম্যানেজ করে এবং <ph name="PROFILE_DOMAIN" /> আপনার প্রোফাইল ম্যানেজ করে</translation>
@@ -712,7 +711,6 @@
 <translation id="2188375229972301266">নিচে মাল্টিপল পাঞ্চ</translation>
 <translation id="218940509700321686">comma-separated values</translation>
 <translation id="2190094353033916816">এই নীতিতে মেশিন ও ব্যবহারকারীর লেভেলে আলাদা আলাদা ভ্যালু প্রয়োগ করা হয়েছে। নীতিটি সঠিকভাবে কাজ করছে।</translation>
-<translation id="219061769324072544">ক্রেডিট,কার্ড,ডেবিট</translation>
 <translation id="2191980191135734720">পরবর্তী ধাপে আপনার স্ক্রিন আনলক করুন, সাধারণত ফিঙ্গারপ্রিন্ট ব্যবহার করে করা হয়। আপনি এভাবেও করতে পারেন <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="2195729137168608510">ইমেল আইডির সুরক্ষা</translation>
@@ -1083,6 +1081,7 @@
 <translation id="2807052079800581569">ছবি Y পজিশন</translation>
 <translation id="2808278141522721006">আপনি <ph name="SETTINGS" />-এ Windows Hello চালু বা বন্ধ করতে পারবেন</translation>
 <translation id="2820957248982571256">স্ক্যান করা হচ্ছে…</translation>
+<translation id="282457273878278063">পরিচিতির তথ্য ম্যানেজ করুন</translation>
 <translation id="2824775600643448204">ঠিকানা এবং সার্চ দণ্ড</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> ব্যবহার করে এই সংযোগটি এনক্রিপ্টেড এবং প্রমাণীকৃত করা হয়েছে এবং কী এক্সচেঞ্জ প্রক্রিয়া হিসাবে <ph name="KX" /> ব্যবহার করে৷</translation>
 <translation id="2828797285817981634">এখনকার মতো মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়েছে</translation>
@@ -1866,7 +1865,6 @@
 <translation id="4121428309786185360">এই তারিখে মেয়াদউত্তীর্ণ হয়</translation>
 <translation id="4123572138124678573">নিচে ট্রিপল পাঞ্চ</translation>
 <translation id="412601465078863288">আপলোড করার সময় শেষ হয়ে গেছে</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{আরও ১টি}one{অন্যান্য #টি}other{অন্যান্য #টি}}</translation>
 <translation id="4129810348470013900">কোনও সমস্যা হয়েছে। ইন্টারনেট কানেকশন ঠিক আছে কিনা দেখে আবার চেষ্টা করুন।</translation>
 <translation id="4130226655945681476">নেটওয়ার্কের তার, মডেম, এবং রাউটার পরীক্ষা করুন</translation>
 <translation id="4132448310531350254">অ্যাপ "<ph name="POLICY_IDS_LIST" />" দ্বারা রেফারেন্স দেওয়া হয়েছে এমন file_extension "<ph name="FILE_EXTENSION" />"-এর ডুপ্লিকেট হ্যান্ডলার।</translation>
@@ -3231,7 +3229,6 @@
 <translation id="638289054711715023">শ্রিঙ্ক ফয়েল</translation>
 <translation id="6383221683286411806">চালিয়ে গেলে চার্জ দিতে হতে পারে।</translation>
 <translation id="6384448607821972818">রিকভারি পাসওয়ার্ড দেখানো হয়েছে</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{আরও ১টি প্রস্তাব}one{অন্যান্য #টি প্রস্তাব}other{অন্যান্য #টি প্রস্তাব}}</translation>
 <translation id="6386565501269869892">এনভেলপ ইউ ৪</translation>
 <translation id="6387645831795005740">ইউআরএলে সামান্য বা সহজে দেখা যায় না এমন পরিবর্তন করে আক্রমণকারীরা সাইট নকল করে।</translation>
 <translation id="6389470377220713856">কার্ডে থাকা নাম</translation>

@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">Без заштита (не се препорачува)</translation>
 <translation id="1986685561493779662">Името веќе постои</translation>
 <translation id="1992244793717364584">Апликацијата е деинсталирана</translation>
+<translation id="1999115740519098545">На стартување</translation>
 <translation id="200114059308480249">Да се вклучи околниот текст во пребарувањата на Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, прикачена картичка „Инкогнито“ со исклучен звук</translation>
 <translation id="2021896219286479412">Контроли на сајтот на цел екран</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">Сајтот е паузиран</translation>
 <translation id="2063047797624276601">Вашата организација вклучи „Подобреното безбедно прелистување“</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 неуспешно преземање}one{# неуспешно преземање}other{# неуспешни преземања}}</translation>
-<translation id="2066690553719545730">Секогаш прикажувај го „AI-режимот“</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2079545284768500474">Врати</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> од <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Gemini е откачен</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome го спречи сајтов да испраќа известувања поради спам или измамнички содржини}one{Chrome ги спречи сајтовиве да испраќаат известувања поради спам или измамнички содржини}other{Chrome ги спречи сајтовиве да испраќаат известувања поради спам или измамнички содржини}}</translation>
 <translation id="4195643157523330669">Отвори во нова картичка</translation>
+<translation id="4195814663415092787">Продолжете каде што сте застанале</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 картичка на уредов}one{# картичка на уредов}other{# картички на уредов}}</translation>
 <translation id="4198268995694216131">Дополнителни сајтови</translation>
 <translation id="4198423547019359126">Нема достапни локации за преземање</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">Слушајте ја страницава</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, избрана закачена картичка „Инкогнито“ со слика во слика</translation>
 <translation id="4225895483398857530">Кратенка за алатникот</translation>
-<translation id="4232376164796433044">Лозинки и автоматско пополнување</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
 <translation id="424864128008805179">Ќе се одјавите од Chrome?</translation>
 <translation id="425582637250725228">Измените што ги направивте можеби нема да се зачуваат.</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">Не може да се најавите</translation>
 <translation id="557018954714092179">Создавање нова папка</translation>
 <translation id="5578795271662203820">Пребарај во <ph name="SEARCH_ENGINE" /> за сликава</translation>
+<translation id="558563010977877295">Отвори одредена страница или група страници</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5599455543593328020">Режим инкогнито</translation>
 <translation id="5601180634394228718">За повеќе поставки што ги користат податоците за подобрување на вашето доживување на Chrome, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@
 <translation id="671481426037969117">Тајмерот за <ph name="FQDN" /> истече. Ќе започне одново утре.</translation>
 <translation id="6716434912087331834">За да вратите нов прозорец, намалете го вкупниот број активни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку. Неактивните прозорци се бришат по 6 месеци.</translation>
 <translation id="6723740634201835758">Во вашата сметка на Google</translation>
+<translation id="6725340821578440069">Филтрирање според уред</translation>
 <translation id="6734310707649923383">Може да ги видите страниците што сте ги отвориле или да ги избришете од историјата</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, прикачена картичка „Инкогнито“ за снимање</translation>
 <translation id="6738867403308150051">Се презема…</translation>
@@ -1905,6 +1907,7 @@
 <translation id="8387617938027387193">Потврдете дека сте вие</translation>
 <translation id="8393700583063109961">Испрати порака</translation>
 <translation id="8398389123831319859">Допрете двапати и задржете за да префрлите на „Инкогнито“</translation>
+<translation id="8401904657382223224">Филтрирање според хост</translation>
 <translation id="8412037385861858490">За заштита на вашата работа на Chrome, вашата организација ќе може да прегледува или да управува со одредени податоци кога сте најавени на Chrome. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Прикажи ја целата историја</translation>
 <translation id="8413795581997394485">Штити од сајтови, преземања и екстензии за коишто се знае дека се опасни. Кога ќе отворите некој сајт, Chrome испраќа замаглен дел од URL-адресата во Google преку сервер за приватност што ја крие вашата IP-адреса. Ако конкретен сајт прави нешто сомнително, ќе се испратат целосните URL-адреси, како и делови од содржините на страницата.</translation>

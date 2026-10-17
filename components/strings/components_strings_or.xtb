@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">ମ୍ୟୁନିସିପାଲିଟି</translation>
 <translation id="2059202684901022309">22 x 34 ଇଞ୍ଚ</translation>
 <translation id="2063929825539050431">ଏହି ପୃଷ୍ଠାକୁ ଶୀଘ୍ର ଅନ୍ୟ ଏକ ଡିଭାଇସକୁ ପଠାଇବା ପାଇଁ ଠିକଣା ବାରକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1ଟି ପରାମର୍ଶ}other{#ଟି ପରାମର୍ଶ}}</translation>
 <translation id="2066969741541525119">ଆଗରେ ଥିବା ସାଇଟକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="2071156619270205202">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ପାଇଁ ଏହି କାର୍ଡଟି ଯୋଗ୍ୟ ନୁହେଁ।</translation>
 <translation id="2071852865256799872">ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଆପଣଙ୍କର ବ୍ରାଉଜର ପରିଚାଳିତ ହୋଇଥାଏ ଏବଂ <ph name="PROFILE_DOMAIN" /> ଦ୍ୱାରା ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ ପରିଚାଳିତ ହୋଇଥାଏ</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">ତଳ ପଟରେ ଏକାଧିକ ପଞ୍ଚ୍</translation>
 <translation id="218940509700321686">କମା ଦ୍ୱାରା-ଅଲଗା ହୋଇଥିବା ମୂଲ୍ୟ</translation>
 <translation id="2190094353033916816">ଏହି ନୀତିରେ ମେସିନ ଏବଂ ୟୁଜର ଲେଭେଲରେ ଭିନ୍ନ ମୂଲ୍ୟ ଲାଗୁ କରାଯାଇଛି। ନୀତିଟି ଆଶାନୁରୂପେ କାର୍ଯ୍ୟ କରୁଛି।</translation>
-<translation id="219061769324072544">କ୍ରେଡିଟ,କାର୍ଡ,ଡେବିଟ</translation>
 <translation id="2191980191135734720">ପରବର୍ତ୍ତୀ ଷ୍ଟେପରେ, ସାଧାରଣତଃ ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରି ଆପଣଙ୍କ ସ୍କ୍ରିନକୁ ଅନଲକ କରନ୍ତୁ। ଆପଣ <ph name="LINK_TEXT" /> ମଧ୍ୟ କରିପାରିବେ।</translation>
 <translation id="2194856509914051091">ବିଚାରଯୋଗ୍ୟ ବିଷୟଗୁଡ଼ିକ</translation>
 <translation id="2195729137168608510">ଇମେଲ୍ ସୁରକ୍ଷା</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">ଛବିର Y ସ୍ଥାନ</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" />ରେ ଆପଣ Windows Helloକୁ ଚାଲୁ କିମ୍ବା ବନ୍ଦ କରିପାରିବେ</translation>
 <translation id="2820957248982571256">ସ୍କାନ୍‌ କରୁଛି...</translation>
+<translation id="282457273878278063">କଣ୍ଟାକ୍ଟ ସୂଚନା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2824775600643448204">ଠିକଣା ଏବଂ ସର୍ଚ୍ଚ ବାର</translation>
 <translation id="2826760142808435982">ମୁଖ୍ୟ ଅଦଳ ବଦଳ କୌଶଳ <ph name="CIPHER" />ର ବ୍ୟବହାର କରି ଏବଂ <ph name="KX" />ର ବ୍ୟବହାର କରି ସଂଯୋଗକୁ ଏନ୍‌କ୍ରାଇପ୍ଟ କରାଯାଇଛି ଏବଂ ପ୍ରମାଣିକରଣ କରାଯାଇଛି।</translation>
 <translation id="2828797285817981634">ବର୍ତ୍ତମାନ ପାଇଁ ମୋସନ ସେନ୍ସରଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
@@ -1862,7 +1861,6 @@
 <translation id="4121428309786185360">ଏହି ତାରିଖରେ ସମୟ ସୀମା ସମାପ୍ତ ହେବ</translation>
 <translation id="4123572138124678573">ତଳ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
 <translation id="412601465078863288">ଅପଲୋଡ କରିବା ସମୟ ସମାପ୍ତ ହୋଇଯାଇଛି</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 ଅନ୍ୟ}other{#ଟି ଅନ୍ୟ}}</translation>
 <translation id="4129810348470013900">କିଛି ତ୍ରୁଟି ହୋଇଛି। ଆପଣଙ୍କ ଇଣ୍ଟର୍ନେଟ କନେକ୍ସନକୁ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="4130226655945681476">ନେଟ୍‌ୱର୍କ କେବଲ୍‌, ମୋଡେମ୍‌ ଏବଂ ରାଉଟର୍‌ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4132448310531350254">ଆପ୍ସ "<ph name="POLICY_IDS_LIST" />" ଦ୍ୱାରା ରେଫରେନ୍ସ କରାଯାଇଥିବା file_extension "<ph name="FILE_EXTENSION" />" ପାଇଁ ଡୁପ୍ଲିକେଟ ହେଣ୍ଡଲର।</translation>
@@ -3227,7 +3225,6 @@
 <translation id="638289054711715023">ସ୍ରିଙ୍କ ଫଏଲ</translation>
 <translation id="6383221683286411806">ଆଗକୁ ସମ୍ଭବତଃ ଶୁଳ୍କ ଦେବାକୁ ପଡ଼ିପାରେ।</translation>
 <translation id="6384448607821972818">ରିକଭରି ପାସୱାର୍ଡ ଦେଖାଯାଇଛି</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1ଟି ଅନ୍ୟ ପରାମର୍ଶ}other{#ଟି ଅନ୍ୟ ପରାମର୍ଶ}}</translation>
 <translation id="6386565501269869892">ଏନଭେଲପ ୟୁ 4</translation>
 <translation id="6387645831795005740">ଆକ୍ରମଣକାରୀମାନେ ବେଳେ ବେଳେ URLରେ ସହଜରେ-ଦେଖା-ଯାଉନଥିବା, ଛୋଟ ପରିବର୍ତ୍ତନ କରି ସାଇଟଗୁଡ଼ିକର ନକଲ କରିଥାନ୍ତି।</translation>
 <translation id="6389470377220713856">କାର୍ଡରେ ଥିବା ନାମ</translation>

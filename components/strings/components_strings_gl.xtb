@@ -618,7 +618,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2059166748188874810">Concello</translation>
 <translation id="2059202684901022309">22 × 34 in</translation>
 <translation id="2063929825539050431">Para enviar rapidamente esta páxina a outro dispositivo, mantén premida a barra de enderezos</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 suxestión}other{# suxestións}}</translation>
 <translation id="2066969741541525119">A túa organización bloqueou o sitio ao que queres acceder</translation>
 <translation id="2071156619270205202">Esta tarxeta non é apta para asociarlle un número de tarxeta virtual.</translation>
 <translation id="2071852865256799872">O teu navegador está xestionado pola túa organización e o teu perfil está xestionado por <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2188375229972301266">Varias perforacións na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
 <translation id="2190094353033916816">Esta política aplicou valores diferentes aos niveis de usuario e de máquina. Aínda así, funciona segundo o previsto.</translation>
-<translation id="219061769324072544">Crédito,Tarxeta,Débito</translation>
 <translation id="2191980191135734720">Desbloquea a pantalla no seguinte paso, normalmente coa túa impresión dixital. Tamén podes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -1082,6 +1080,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2807052079800581569">Posición Y de imaxe</translation>
 <translation id="2808278141522721006">Podes activar e desactivar Windows Hello en <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Buscando…</translation>
+<translation id="282457273878278063">Xestionar a información de contacto</translation>
 <translation id="2824775600643448204">Barra de enderezos e de busca</translation>
 <translation id="2826760142808435982">A conexión cífrase e autentícase con <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de intercambio de claves.</translation>
 <translation id="2828797285817981634">Permiso concedido para usar os sensores por agora</translation>
@@ -1865,7 +1864,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4121428309786185360">Data de caducidade</translation>
 <translation id="4123572138124678573">Tres perforacións na parte inferior</translation>
 <translation id="412601465078863288">Esgotouse o tempo de espera para a carga</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 máis}other{# máis}}</translation>
 <translation id="4129810348470013900">Produciuse un erro. Comproba a conexión a Internet e téntao de novo.</translation>
 <translation id="4130226655945681476">Comproba os cables de rede, o módem e o router</translation>
 <translation id="4132448310531350254">Controladores duplicados para o parámetro file_extension "<ph name="FILE_EXTENSION" />", ao que fan referencia as aplicacións "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3229,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="638289054711715023">Plástico máxico</translation>
 <translation id="6383221683286411806">Posibles cargos de agora en adiante.</translation>
 <translation id="6384448607821972818">Estase mostrando o contrasinal de recuperación</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 suxestión máis}other{# suxestións máis}}</translation>
 <translation id="6386565501269869892">Sobre You-4</translation>
 <translation id="6387645831795005740">Ás veces, os atacantes crean copias de sitios introducindo nos URL cambios pequenos e difíciles de ver.</translation>
 <translation id="6389470377220713856">Nome na tarxeta</translation>

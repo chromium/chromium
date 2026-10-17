@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2059202684901022309">‏22x34 אינץ'</translation>
 <translation id="2063929825539050431">כדי לשלוח במהירות את הדף הזה למכשיר אחר, צריך ללחוץ לחיצה ארוכה על סרגל הכתובות</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{הצעה אחת}one{# הצעות}two{שתי הצעות}other{# הצעות}}</translation>
 <translation id="2066969741541525119">האתר שבכתובת הזו נחסם על ידי הארגון שלך</translation>
 <translation id="2071156619270205202">הכרטיס הזה לא עומד בדרישות לקבלת מספר כרטיס וירטואלי.</translation>
 <translation id="2071852865256799872">הדפדפן מנוהל על ידי הארגון שלך והפרופיל שלך מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">ניקובים מרובים בחלק התחתון</translation>
 <translation id="218940509700321686">‏ערכים מופרדים בפסיקים (CSV)</translation>
 <translation id="2190094353033916816">המדיניות הזו מוגדרת עם ערכים שונים ברמת המחשב וברמת המשתמש. המדיניות פועלת כצפוי.</translation>
-<translation id="219061769324072544">אשראי,כרטיס,חיוב מיידי</translation>
 <translation id="2191980191135734720">בשלב הבא, צריך לבטל את נעילת המסך, בדרך כלל באמצעות טביעת האצבע. אפשר גם <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">מה כדאי לקחת בחשבון</translation>
 <translation id="2195729137168608510">הגנת אימייל </translation>
@@ -1865,7 +1863,6 @@
 <translation id="4121428309786185360">בתוקף עד </translation>
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
 <translation id="412601465078863288">פג הזמן שהוקצב להעלאה</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}one{# נוספים}two{שניים נוספים}other{# נוספים}}</translation>
 <translation id="4129810348470013900">הפעולה לא הצליחה. כדאי לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="4130226655945681476">כדאי לבדוק את כבלי הרשת, את המודם ואת הנתב</translation>
 <translation id="4132448310531350254">‏מתבצעת הפניה לרכיבי handler כפולים עבור סיומת הקובץ '<ph name="FILE_EXTENSION" />' על ידי האפליקציות הבאות: <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3236,7 +3233,6 @@ Del</translation>
 <translation id="638289054711715023">Shrink Foil</translation>
 <translation id="6383221683286411806">ייתכנו חיובים באתר.</translation>
 <translation id="6384448607821972818">סיסמת השחזור מוצגת</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{הצעה אחת נוספת}one{# הצעות נוספות}two{שתי הצעות נוספות}other{# הצעות נוספות}}</translation>
 <translation id="6386565501269869892">‏מעטפה – You 4</translation>
 <translation id="6387645831795005740">‏תוקפים שמחקים אתרים לפעמים משתמשים בכתובת ה-URL של האתר המקורי ועושים בה שינויים קלים ביותר כדי שיהיה קשה להבחין בהבדל.</translation>
 <translation id="6389470377220713856">שם על הכרטיס</translation>

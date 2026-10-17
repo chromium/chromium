@@ -251,6 +251,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1986685561493779662">Name already exists</translation>
 <translation id="1992244793717364584">App was uninstalled</translation>
+<translation id="1999115740519098545">On startup</translation>
 <translation id="200114059308480249">Include surrounding text in Google searches?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pinned muted Incognito tab</translation>
 <translation id="2021896219286479412">Full screen site controls</translation>
@@ -265,7 +266,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2056878612599315956">Site paused</translation>
 <translation id="2063047797624276601">Your organisation turned on Enhanced Safe Browsing</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download failed}other{# downloads failed}}</translation>
-<translation id="2066690553719545730">Always show AI Mode</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2082238445998314030">Result <ph name="RESULT_NUMBER" /> of <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4188638484665452040">Gemini unpinned</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome stopped this site from sending notifications because of spam or deceptive content}other{Chrome stopped these sites from sending notifications because of spam or deceptive content}}</translation>
 <translation id="4195643157523330669">Open in new tab</translation>
+<translation id="4195814663415092787">Continue where you left off</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tab on this device}other{# tabs on this device}}</translation>
 <translation id="4198268995694216131">Additional sites</translation>
 <translation id="4198423547019359126">No available download locations</translation>
@@ -808,7 +809,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4216511743389425832">Listen to this page</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, selected pinned picture-in-picture Incognito tab</translation>
 <translation id="4225895483398857530">Toolbar shortcut</translation>
-<translation id="4232376164796433044">Passwords and autofill</translation>
 <translation id="4242533952199664413">Open settings</translation>
 <translation id="424864128008805179">Sign out of Chrome?</translation>
 <translation id="425582637250725228">Changes that you made may not be saved.</translation>
@@ -1147,6 +1147,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5568069709869097550">Can't sign in</translation>
 <translation id="557018954714092179">Create new folder</translation>
 <translation id="5578795271662203820">Search <ph name="SEARCH_ENGINE" /> for this image</translation>
+<translation id="558563010977877295">Open a specific page or set of pages</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5599455543593328020">Incognito mode</translation>
 <translation id="5601180634394228718">For more settings that use data to improve your Chrome experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="671481426037969117">Your <ph name="FQDN" /> timer ran out. It will start again tomorrow.</translation>
 <translation id="6716434912087331834">To restore a new window, reduce the total number of active windows to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer. Inactive windows are deleted after 6 months.</translation>
 <translation id="6723740634201835758">In your Google Account</translation>
+<translation id="6725340821578440069">Filter by device</translation>
 <translation id="6734310707649923383">You can see the pages that you've visited or delete them from your history</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, pinned recording Incognito tab</translation>
 <translation id="6738867403308150051">Downloading…</translation>
@@ -1905,6 +1907,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8387617938027387193">Verify that it’s you</translation>
 <translation id="8393700583063109961">Send message</translation>
 <translation id="8398389123831319859">Double-tap and hold to switch to Incognito</translation>
+<translation id="8401904657382223224">Filter by host</translation>
 <translation id="8412037385861858490">To secure your work on Chrome, your organisation will be able to view or manage certain information when you're signed in to Chrome. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Show full history</translation>
 <translation id="8413795581997394485">Protects against sites, downloads and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>

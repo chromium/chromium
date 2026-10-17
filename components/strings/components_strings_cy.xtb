@@ -618,7 +618,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2059166748188874810">Bwrdeistref</translation>
 <translation id="2059202684901022309">22 x 34 modfedd</translation>
 <translation id="2063929825539050431">I anfon y dudalen hon yn gyflym i ddyfais arall, pwyswch a daliwch y bar cyfeiriad</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 awgrym}zero{# awgrym}two{# awgrym}few{# awgrym}many{# awgrym}other{# awgrym}}</translation>
 <translation id="2066969741541525119">Mae'r wefan o'ch blaen wedi'i rhwystro gan eich sefydliad</translation>
 <translation id="2071156619270205202">Nid yw'r cerdyn hwn yn gymwys i gael rhif cerdyn rhithwir.</translation>
 <translation id="2071852865256799872">Rheolir eich porwr gan eich sefydliad a rheolir eich proffil gan <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2188375229972301266">Mwy nag un twll ar y gwaelod</translation>
 <translation id="218940509700321686">Gwerthoedd wedi'u Gwahanu gan Goma</translation>
 <translation id="2190094353033916816">Mae gan y polisi hwn wahanol werthoedd a gymhwysir ar lefelau peiriant a defnyddiwr. Mae'r polisi yn gweithio yn ôl y bwriad.</translation>
-<translation id="219061769324072544">Credyd,Cerdyn,Debyd</translation>
 <translation id="2191980191135734720">Datgloi'ch sgrîn yn y cam nesaf, gan ddefnyddio'ch ôl bys fel arfer. Gallwch hefyd <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Pethau i'w hystyried</translation>
 <translation id="2195729137168608510">Diogelwch E-bost</translation>
@@ -1082,6 +1080,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2807052079800581569">Safle Y llun</translation>
 <translation id="2808278141522721006">Gallwch chi droi Windows Hello ymlaen neu ei ddiffodd yn <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Wrthi'n sganio...</translation>
+<translation id="282457273878278063">Rheoli manylion cyswllt</translation>
 <translation id="2824775600643448204">Bar cyfeiriad a chwilio</translation>
 <translation id="2826760142808435982">Mae'r cysylltiad wedi'i amgryptio a'i ddilysu gan ddefnyddio <ph name="CIPHER" /> ac yn defnyddio <ph name="KX" /> fel y mecanwaith cyfnewid allweddau.</translation>
 <translation id="2828797285817981634">Caniateir synwyryddion symudiad am y tro</translation>
@@ -1865,7 +1864,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4121428309786185360">Yn Darfod ar</translation>
 <translation id="4123572138124678573">Tri thwll ar y gwaelod</translation>
 <translation id="412601465078863288">Mae uwchlwytho wedi cymryd gormod o amser</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 arall}zero{# arall}two{# arall}few{# arall}many{# arall}other{# arall}}</translation>
 <translation id="4129810348470013900">Aeth rhywbeth o'i le. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="4130226655945681476">Wrthi'n gwirio'r ceblau rhwydwaith, y modem, a'r llwybrydd</translation>
 <translation id="4132448310531350254">Dyblygu trinyddion ar gyfer file_extension "<ph name="FILE_EXTENSION" />" y cyfeirir ato gan apiau "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3229,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="638289054711715023">Ffoil Crebachu</translation>
 <translation id="6383221683286411806">Taliadau posib o'ch blaen.</translation>
 <translation id="6384448607821972818">Dangosir y cyfrinair adfer</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 awgrym arall}zero{# awgrym arall}two{# awgrym arall}few{# awgrym arall}many{# awgrym arall}other{# awgrym arall}}</translation>
 <translation id="6386565501269869892">Amlen You 4</translation>
 <translation id="6387645831795005740">Weithiau mae ymosodwyr yn dynwared gwefannau drwy wneud newidiadau bach, anodd eu gweld i'r URL.</translation>
 <translation id="6389470377220713856">Enw ar y Cerdyn</translation>

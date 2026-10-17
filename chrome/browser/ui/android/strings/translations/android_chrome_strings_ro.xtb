@@ -251,6 +251,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="1984417487208496350">Fără protecție (nerecomandat)</translation>
 <translation id="1986685561493779662">Numele există deja</translation>
 <translation id="1992244793717364584">Aplicația a fost dezinstalată</translation>
+<translation id="1999115740519098545">La pornire</translation>
 <translation id="200114059308480249">Incluzi text din jur în căutările de pe Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, filă incognito fixată cu sunetul dezactivat</translation>
 <translation id="2021896219286479412">Comenzi site în ecran complet</translation>
@@ -265,7 +266,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2056878612599315956">Site-ul a fost întrerupt</translation>
 <translation id="2063047797624276601">Organizația ta a activat Navigarea sigură îmbunătățită</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{O descărcare nu a reușit}few{# descărcări nu au reușit}other{# de descărcări nu au reușit}}</translation>
-<translation id="2066690553719545730">Afișează întotdeauna Modul AI</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4188638484665452040">S-a anulat fixarea Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome a împiedicat acest site să trimită notificări din cauza spamului sau a conținutului înșelător}few{Chrome a împiedicat aceste site-uri să trimită notificări din cauza spamului sau a conținutului înșelător}other{Chrome a împiedicat aceste site-uri să trimită notificări din cauza spamului sau a conținutului înșelător}}</translation>
 <translation id="4195643157523330669">Deschide în filă nouă</translation>
+<translation id="4195814663415092787">Continuați de unde ați rămas</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{O filă pe acest dispozitiv}few{# file pe acest dispozitiv}other{# de file pe acest dispozitiv}}</translation>
 <translation id="4198268995694216131">Site-uri suplimentare</translation>
 <translation id="4198423547019359126">Nu există locații de descărcare disponibile</translation>
@@ -808,7 +809,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4216511743389425832">Ascultă pagina</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, filă incognito picture-in-picture fixată selectată</translation>
 <translation id="4225895483398857530">Comanda rapidă spre bara de instrumente</translation>
-<translation id="4232376164796433044">Parole și completare automată</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="425582637250725228">Este posibil ca modificările să nu se salveze.</translation>
@@ -1147,6 +1147,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5568069709869097550">Nu se poate conecta</translation>
 <translation id="557018954714092179">Creează un dosar nou</translation>
 <translation id="5578795271662203820">Caută imaginea cu <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Deschide o anumită pagină sau un set de pagini</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5599455543593328020">Modul incognito</translation>
 <translation id="5601180634394228718">Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experiența în Chrome, accesează <ph name="BEGIN_LINK" />Servicii Google<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="671481426037969117">Temporizatorul pentru <ph name="FQDN" /> s-a terminat. Va reîncepe mâine.</translation>
 <translation id="6716434912087331834">Pentru a restabili o fereastră nouă, redu numărul total de ferestre active la cel mult <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Ferestrele inactive se șterg după șase luni.</translation>
 <translation id="6723740634201835758">În Contul Google</translation>
+<translation id="6725340821578440069">Filtrează după dispozitiv</translation>
 <translation id="6734310707649923383">Poți să vezi paginile pe care le-ai accesat sau să le ștergi din istoric</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, filă incognito de înregistrare fixată</translation>
 <translation id="6738867403308150051">Se descarcă...</translation>
@@ -1905,6 +1907,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8387617938027387193">Confirmă-ți identitatea</translation>
 <translation id="8393700583063109961">Trimite un mesaj</translation>
 <translation id="8398389123831319859">Atinge de două ori și ține apăsat pentru a intra în modul incognito</translation>
+<translation id="8401904657382223224">Filtrează după gazdă</translation>
 <translation id="8412037385861858490">Pentru a-ți proteja activitatea în Chrome, organizația ta va putea să vadă sau să gestioneze anumite informații când te conectezi la Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Afișează întregul istoric</translation>
 <translation id="8413795581997394485">Protejează împotriva site-urilor, descărcărilor și extensiilor despre care se știe că sunt periculoase. Când accesezi un site, Chrome trimite la Google o parte obscurizată a adresei URL printr-un server pentru confidențialitate care îți ascunde adresa IP. Dacă un site are un comportament suspect, sunt trimise și adresele URL complete și fragmente din conținutul paginilor.</translation>

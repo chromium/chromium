@@ -17,6 +17,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="112640046208448578">Identifikatu gauzak edo tokiak eta kopiatu edo itzuli testua. Irudi-bilaketa erabiltzen duzunean, orriaren pantaila-argazki bat bidaltzen da zerbitzarira. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium da arakatzaile lehenetsia</translation>
 <translation id="1131805035311359397">Pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chromium-en<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Chromium berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko edo modu isolatuko leiho bat dago irekita. Ez da berriro irekiko berriro exekutatu ondoren.}other{Chromium berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko eta modu isolatuko # leiho daude irekita profiletan. Ez dira berriro irekiko berriro exekutatu ondoren.}}</translation>
 <translation id="1153368717515616349">Sakatu Chromium-eko menua</translation>
 <translation id="1157985233335035034">Azkenaldian erabilitako hizkuntzak</translation>
 <translation id="1184145431117212167">Ezin izan da instalatu, Windows-en bertsio hau ez delako bateragarria.</translation>
@@ -39,6 +40,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1329040302064168406">Hasi Chromium saioa telefonoan</translation>
 <translation id="1330562121671411446">Hauteman hizkuntza</translation>
 <translation id="1342274909142618978">Ezabatu datuak Chromium-etik ere bai (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Eguneratzea aplikatzeko, Chromium berriro exekuta dezazun behar du Babes aurreratua ezarpenak. Ezkutuko moduko edo modu isolatuko leiho bat dago irekita. Ez da berriro irekiko berriro exekutatu ondoren.}other{Eguneratzea aplikatzeko, Chromium berriro exekuta dezazun behar du Babes aurreratua ezarpenak. Ezkutuko moduko eta modu isolatuko # leiho daude irekita profiletan. Ez dira berriro irekiko berriro exekutatu ondoren.}}</translation>
 <translation id="1345251407431278948">Ainguratu da! Tresna-barrako botoi berriaren bidez erabil dezakezu berriro irudi-bilaketa.</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1388276868779258475">Erabili Chromium aplikazioa edonoiz eta edonon arakatzen jarraitzeko</translation>
@@ -227,6 +229,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Eraman Google-ren AA bidezko gogoko tresnak edonora iOS-erako Chromium-ekin.</translation>
 <translation id="3264761466044851269"><ph name="DEVICE" /> gailuko luzapenak eta bestelako datuak eskuratzeko, hasi saioa Chromium-en</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Chromium-en eguneratze bat erabilgarri dago eta berriro exekutatzen duzunean aplikatuko da. Leiho isolatua ez da irekiko berriro.}other{Chromium-en eguneratze bat erabilgarri dago eta berriro exekutatzen duzunean aplikatuko da. # leiho isolatu ez dira irekiko berriro.}}</translation>
 <translation id="3286538390144397061">Berrabiarazi orain</translation>
 <translation id="328888136576916638">Google APIko gakoak falta dira. Chromium-en funtzionalitate batzuk desgaitu egingo dira.</translation>
 <translation id="3296368748942286671">Mantendu atzeko planoko aplikazioak abian Chromium ixten denean</translation>
@@ -274,6 +277,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
           **Iradoki galderak:** sortu pentsarazten duten 3-5 galdera dituen zerrenda buletdun bat, erabiltzaile batek pantaila-argazkia hobeki ulertzeko galdetuko lituzkeenak. Galdera horietako batek gutxienez objektu bisual bati buruzkoa izan behar du, edo haren diseinuari edo kokapenari buruzkoa.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Laster-markak eta bestelako datuak gailu guztietan eskuratzeko, hasi saioa Chromium-en</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Chromium berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. Leiho isolatua ez da irekiko berriro.}other{Chromium berriro exekutatzeko eskatu dizu administratzaileak, eguneratzea aplikatzeko. # leiho isolatu ez dira irekiko berriro.}}</translation>
 <translation id="3885770153807205175">Hizkuntza-hautatzailea</translation>
 <translation id="388648406173476553">Pertsonalizatu eta kontrolatu Chromium. Zure arreta behar duen zerbait dago. Sakatu informazio gehiago ikusteko.</translation>
 <translation id="3889543394854987837">Chromium irekitzeko eta arakatzen hasteko, egin klik zure izenean.</translation>
@@ -431,6 +435,7 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chromium-en zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). Gainera, <ph name="DEVICE" /> gailuan gordetako informazioa eta bestelako datuak lortuko dituzu.</translation>
 <translation id="5579324208890605088">Abiarazte-errorea: exekutatu instalatzailea erabiltzaile arrunt gisa, ez administratzaile gisa.</translation>
 <translation id="5580770360767802657">Erabili Chromium modu lehenetsian eta aingura ezazu</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. Leiho isolatua ez da irekiko berriro.}other{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. # leiho isolatu ez dira irekiko berriro.}}</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5605834417512968703">Hautatu edozer, irudi-bilaketarekin bilatzeko. Irudi-bilaketatik irteteko, sakatu Ihes.</translation>
 <translation id="5618818588972826921">Hautatu testu bat edo irudi bat, hura irudi-bilaketarekin bilatzeko. Irudi-bilaketatik irteteko, sakatu Ihes.</translation>
@@ -590,6 +595,7 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="7003299027384820442">Chromium-eko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
 <translation id="7011190694940573312">Instalazioak huts egin du, sistema eragilearen bertsio hau bateragarria ez delako.</translation>
 <translation id="7024536598735240744">Despaketatze-errorea: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Eguneratzea aplikatzeko, Chromium berriro exekuta dezazun behar du Babes aurreratua ezarpenak. Leiho isolatua ez da irekiko berriro.}other{Eguneratzea aplikatzeko, Chromium berriro exekuta dezazun behar du Babes aurreratua ezarpenak. # leiho isolatu ez dira irekiko berriro.}}</translation>
 <translation id="7045244423563602563">Pertsonalizatu Chromium</translation>
 <translation id="7047386856539490735">Erabilgarriak al dira emaitzak?</translation>
 <translation id="705851970750939768">Eguneratu Chromium</translation>
@@ -669,6 +675,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Zaildu zure Interneteko trafikorako sarbidea duten pertsonei bisitatzen dituzun webguneak ikustea. Chromium-ek konexio seguru bat erabiltzen du DNSan (domeinu-izenen sistema) webgune baten IP helbidea bilatzean.</translation>
 <translation id="7810005234485217901">Irudi-bilaketa erraz erabiltzeko, aingura ezazu</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Chromium-en eguneratze bat erabilgarri dago eta berriro exekutatzen duzunean aplikatuko da. Ezkutuko moduko edo modu isolatuko leiho bat dago irekita. Ez da berriro irekiko berriro exekutatu ondoren.}other{Chromium-en eguneratze bat erabilgarri dago eta berriro exekutatzen duzunean aplikatuko da. Ezkutuko moduko eta modu isolatuko # leiho daude irekita profiletan. Ez dira berriro irekiko berriro exekutatu ondoren.}}</translation>
 <translation id="7828527096541974699">Aukeratu zer partekatu nahi duzun Chromium-ekin</translation>
 <translation id="7828947555739565424">Badago kontu honen Chromium-eko profil bat gailu honetan</translation>
 <translation id="7845233973568007926">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, ordenagailua berrabiarazi behar duzu.</translation>
@@ -706,6 +713,7 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="813913629614996137">Hasieratzen…</translation>
 <translation id="8161503455832158203">Ireki Chromium-eko Gemini lasterbide batekin.</translation>
 <translation id="8164014945047474187">Chromium-en zerbitzu-baldintza gehigarriak</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko edo modu isolatuko leiho bat dago irekita. Ez da berriro irekiko berriro exekutatu ondoren.}other{Chromium berriro exekuta dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko eta modu isolatuko # leiho daude irekita profiletan. Ez dira berriro irekiko berriro exekutatu ondoren.}}</translation>
 <translation id="81770708095080097">Fitxategia arriskutsua da; horregatik, blokeatu egin du Chromium-ek.</translation>
 <translation id="8177472873527554730">Ezin da aurkitu edukirik orrian</translation>
 <translation id="8200109504272824693">Chromium-eko datuak zure kontuan (<ph name="USER_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>

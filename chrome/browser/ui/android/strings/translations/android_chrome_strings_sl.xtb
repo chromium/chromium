@@ -251,6 +251,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1984417487208496350">Brez zaščite (ni priporočljivo)</translation>
 <translation id="1986685561493779662">Ime že obstaja</translation>
 <translation id="1992244793717364584">Aplikacija je bila odmeščena</translation>
+<translation id="1999115740519098545">Ob zagonu</translation>
 <translation id="200114059308480249">Želite vključiti sobesedilo v iskanja v Googlu?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pripeti anonimni zavihek z izklopljenim zvokom</translation>
 <translation id="2021896219286479412">Kontrol. za mesto v celo. načinu</translation>
@@ -265,7 +266,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="2056878612599315956">Spletno mesto začasno ustavljeno</translation>
 <translation id="2063047797624276601">Vaša organizacija je vklopila izboljšano varno brskanje</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 prenos ni uspel}one{# prenos ni uspel}two{# prenosa nista uspela}few{# prenosi niso uspeli}other{# prenosov ni uspelo}}</translation>
-<translation id="2066690553719545730">Vedno pokaži način umetne inteligence</translation>
 <translation id="2067805253194386918">besedilo</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultat od <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4188638484665452040">Gemini je odpet</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome je temu spletnemu mestu preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}one{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}two{Chrome je tema spletnima mestoma preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}few{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}other{Chrome je tem spletnim mestom preprečil pošiljanje obvestil zaradi neželene ali zavajajoče vsebine}}</translation>
 <translation id="4195643157523330669">Odpri v novem zavihku</translation>
+<translation id="4195814663415092787">Nadaljuj prejšnjo sejo</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 zavihek v tej napravi}one{# zavihek v tej napravi}two{# zavihka v tej napravi}few{# zavihki v tej napravi}other{# zavihkov v tej napravi}}</translation>
 <translation id="4198268995694216131">Dodatna spletna mesta</translation>
 <translation id="4198423547019359126">Ni razpoložljivih mest za prenos</translation>
@@ -808,7 +809,6 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4216511743389425832">Poslušanje te strani</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, izbrani pripeti anonimni zavihek s sliko v sliki</translation>
 <translation id="4225895483398857530">Bližnjica do orodne vrstice</translation>
-<translation id="4232376164796433044">Gesla in samodejno izpolnjevanje</translation>
 <translation id="4242533952199664413">Odpri nastavitve</translation>
 <translation id="424864128008805179">Se želite odjaviti iz Chroma?</translation>
 <translation id="425582637250725228">Spremembe, ki ste jih naredili, morda niso shranjene.</translation>
@@ -1147,6 +1147,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5568069709869097550">Vpis ni mogoč</translation>
 <translation id="557018954714092179">Ustvari novo mapo</translation>
 <translation id="5578795271662203820">Za iskanje te slike uporabi <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Odpri ustrezno stran ali več strani</translation>
 <translation id="5596627076506792578">Več možnosti</translation>
 <translation id="5599455543593328020">Anonimni način</translation>
 <translation id="5601180634394228718">Če želite več nastavitev, ki uporabljajo podatke za izboljšanje izkušnje v Chromu, odprite <ph name="BEGIN_LINK" />Googlove storitve<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="671481426037969117">Merilnik časa za <ph name="FQDN" /> je potekel. Jutri se začne znova.</translation>
 <translation id="6716434912087331834">Če želite obnoviti novo okno, zmanjšajte skupno število dejavnih oken na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ali manj. Nedejavna okna se izbrišejo po 6 mesecih.</translation>
 <translation id="6723740634201835758">V računu za Google</translation>
+<translation id="6725340821578440069">Filtriranje glede na napravo</translation>
 <translation id="6734310707649923383">Ogledate si lahko strani, ki ste jih obiskali, ali jih izbrišete iz zgodovine</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, pripeti anonimni zavihek za snemanje</translation>
 <translation id="6738867403308150051">Prenašanje ...</translation>
@@ -1905,6 +1907,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8387617938027387193">Potrdite, da ste res vi</translation>
 <translation id="8393700583063109961">Pošlji sporočilo</translation>
 <translation id="8398389123831319859">Dvakrat se dotaknite in pridržite, če želite preklopiti na anonimni način</translation>
+<translation id="8401904657382223224">Filtriranje glede na gostitelja</translation>
 <translation id="8412037385861858490">Zaradi zaščite vašega dela v Chromu si bo organizacija lahko ogledala nekatere podatke ali jih upravljala, ko boste prijavljeni v Chrome. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Prikaži celotno zgodovino</translation>
 <translation id="8413795581997394485">Ščiti pred spletnimi mesti, prenosi in razširitvami, za katere vemo, da so nevarni. Ko obiščete spletno mesto, Chrome Googlu pošlje zakriti del URL-ja prek strežnika za zasebnost, ki skrije vaš naslov IP. Če spletno mesto naredi kaj sumljivega, se pošljejo tudi celotni URL-ji in delčki vsebine strani.</translation>

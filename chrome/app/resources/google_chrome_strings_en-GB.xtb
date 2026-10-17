@@ -49,6 +49,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen.}=1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your incognito window won't reopen.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your # incognito windows won't reopen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
 <translation id="1439793550875056299">Pin Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Your administrator requires that you relaunch Chrome to apply an update. Your Isolated Window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="146866447420868597">Sign in to Chrome?</translation>
 <translation id="1476347941828409626">&amp;Manage Chrome profiles</translation>
 <translation id="1492280395845991349">Relaunch to finish Chrome update</translation>
@@ -273,6 +274,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="345171907106878721">Add yourself to Chrome</translation>
 <translation id="3453763134178591239">Chrome OS terms</translation>
 <translation id="3475778264501649775">Take your passwords, tabs and more on the go with the Chrome app on your phone</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Your administrator asks that you relaunch Chrome to apply this update. Your Isolated Window won't reopen.}other{Your administrator asks that you relaunch Chrome to apply this update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="3539955434060988644">Open link in Chrome Inco&amp;gnito window</translation>
 <translation id="354621070532799440">Reminder: Google's best safety features in your pocket</translation>
 <translation id="3547866758548131919">Click the Summarise button to share this document with Gemini in Chrome to get a quick overview and ask follow-up questions</translation>
@@ -288,12 +290,15 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your saved info and more on all your devices.</translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your Isolated Window won't reopen.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="3636970668267555808">Get easy access to the features that you know, love and trust by setting Chrome as your default browser.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Your administrator asks that you relaunch Chrome to apply this update. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Your administrator asks that you relaunch Chrome to apply this update. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="3667616615096815454">Unable to install, the application is unknown to the server.</translation>
 <translation id="3673813398384385993">Chrome found that '<ph name="EXTENSION_NAME" />' contains malware</translation>
 <translation id="3697952514309507634">Other Chrome profiles</translation>
 <translation id="3703994572283698466">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex version</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{A new update for Chrome is available and will be applied as soon as you relaunch. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{A new update for Chrome is available and will be applied as soon as you relaunch. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="3718181793972440140">This will delete 1 item from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome recommends that you remove it. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}other{Chrome recommends that you remove them. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Deepen your search by adding multiple tabs, files and tools using the 'Add a tab and more' button.</translation>
@@ -420,6 +425,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5003967926796347400">Click 'Google Password Manager'</translation>
 <translation id="5043786843026425788">Learn more about searching with Google Lens in Chrome</translation>
 <translation id="504867494566807945">Open links in Chrome from any app. Plus for easy access, it gets pinned to your taskbar.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Advanced Protection requires that you relaunch Chrome to apply an update. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Advanced Protection requires that you relaunch Chrome to apply an update. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="5105120510934353742">To get future Google Chrome updates, you'll need macOS 13 or later. This computer is using macOS 12.</translation>
 <translation id="5114340746415930644">Enter your passphrase to use and save Chrome data in your account, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Sign in to Chrome when you sign in to other Google services</translation>
@@ -484,6 +490,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Unable to connect to the Internet. Proxy server requires authentication.</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Advanced Protection requires that you relaunch Chrome to apply an update. Your Isolated Window won't reopen.}other{Advanced Protection requires that you relaunch Chrome to apply an update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="5719246646468301581">Google Chrome and ChromeOS additional terms of service</translation>
 <translation id="5736850870166430177">If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing</translation>
 <translation id="5742003800414899269">Use the Chrome app to take the best AI tools on the go</translation>
@@ -511,6 +518,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5960404530854194706">Chrome will update when you're away</translation>
 <translation id="5980111191913430208">Extensions, apps and themes from unknown sources can harm your device. Chrome recommends only installing them from the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Your administrator requires that you relaunch Chrome to apply an update. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Your administrator requires that you relaunch Chrome to apply an update. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="6008161919456049856">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chrome, sign back in.</translation>
 <translation id="6009821354356307391">Ask a follow-up</translation>
 <translation id="6014316319780893079">With <ph name="BEGIN_LINK" />tools from Chrome<ph name="END_LINK" />, you can browse safely and stay in control</translation>
@@ -683,6 +691,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chrome isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chrome isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
 <translation id="7466577301922356468">Automatically sending this data to Google helps make Chrome better. You can change this setting at any time.</translation>
 <translation id="7477130805345743099">Chrome will warn you before loading any site using an insecure connection</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Isolated Window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="749228101751499733">While you're signed in, you can use your passwords and more from your Google Account in Chrome. <ph name="SHORTCUT" /> can change your Google services settings.</translation>
 <translation id="7496017508659652909">Chrome preloads pages which makes browsing and searching faster. <ph name="BEGIN_LINK" />Learn more about preload pages<ph name="END_LINK" /></translation>
@@ -799,6 +808,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8380754585531979907">Use your keyboard to navigate between Gemini in Chrome and your open tab.</translation>
 <translation id="8387459386171870978">Continue using Chrome</translation>
 <translation id="8394720698884623075">Checks URLs with a list of unsafe sites stored in Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="8403038600646341038">Chrome logo inside a computer screen.</translation>
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>

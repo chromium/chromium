@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2059202684901022309">22 x 34 吋</translation>
 <translation id="2063929825539050431">按住網址列，即可快速將此頁面傳送至其他裝置</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 個建議}other{# 個建議}}</translation>
 <translation id="2066969741541525119">您的機構已封鎖您要瀏覽的網站</translation>
 <translation id="2071156619270205202">此卡不能建立虛擬卡號。</translation>
 <translation id="2071852865256799872">你的瀏覽器由機構管理，個人檔案則由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="218940509700321686">逗號分隔值</translation>
 <translation id="2190094353033916816">此政策在機器和使用者層級套用不同的值。政策運作正常。</translation>
-<translation id="219061769324072544">信用,卡,扣帳</translation>
 <translation id="2191980191135734720">在下一個步驟中解鎖螢幕，通常是使用指紋。你亦可<ph name="LINK_TEXT" />。</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2195729137168608510">電郵保護</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">圖片 Y 位置</translation>
 <translation id="2808278141522721006">您可在「<ph name="SETTINGS" />」中開啟或關閉 Windows Hello</translation>
 <translation id="2820957248982571256">正在掃瞄…</translation>
+<translation id="282457273878278063">管理聯絡資料</translation>
 <translation id="2824775600643448204">網址與搜尋列</translation>
 <translation id="2826760142808435982">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="KX" /> 金鑰交換機制。</translation>
 <translation id="2828797285817981634">目前允許使用動作感應器</translation>
@@ -1864,7 +1863,6 @@
 <translation id="4121428309786185360">到期日</translation>
 <translation id="4123572138124678573">三孔 (底部)</translation>
 <translation id="412601465078863288">上載逾時</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表格資料}other{以及另外 # 項表格資料}}</translation>
 <translation id="4129810348470013900">發生問題，請檢查你的互聯網連線，然後再試一次。</translation>
 <translation id="4130226655945681476">檢查網絡連接線、數據機或路由器</translation>
 <translation id="4132448310531350254">應用程式「<ph name="POLICY_IDS_LIST" />」參照的 file_extension「<ph name="FILE_EXTENSION" />」被指派給多個處理常式。</translation>
@@ -3230,7 +3228,6 @@
 <translation id="638289054711715023">收縮膠膜</translation>
 <translation id="6383221683286411806">稍後可能會收費。</translation>
 <translation id="6384448607821972818">顯示緊復原密碼</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{以及另外 1 個建議項目}other{以及另外 # 個建議項目}}</translation>
 <translation id="6386565501269869892">You 4 信封</translation>
 <translation id="6387645831795005740">攻擊者有時會在網址中加入難以辨識的細微變更來仿冒網站。</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>

@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
 <translation id="2059202684901022309">22 x 34 դյույմ</translation>
 <translation id="2063929825539050431">Այս էջն արագ մեկ այլ սարք ուղարկելու համար հպեք հասցեագոտուն և պահեք</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 առաջարկ}one{# առաջարկ}other{# առաջարկ}}</translation>
 <translation id="2066969741541525119">Այս կայքն արգելափակվել է ձեր կազմակերպության կողմից</translation>
 <translation id="2071156619270205202">Նշված համարը չի կարող օգտագործվել վիրտուալ քարտի համար։</translation>
 <translation id="2071852865256799872">Ձեր դիտարկիչը կառավարվում է ձեր կազմակերպության կողմից, իսկ պրոֆիլը՝ <ph name="PROFILE_DOMAIN" /> տիրույթի կողմից</translation>
@@ -665,6 +664,7 @@
 <translation id="2126374524350484896">PDF-ի թողարկիչ՝</translation>
 <translation id="2127090458081644412">Գաղտնաբառը պահվել է այս սարքում</translation>
 <translation id="2127747486437921899">Շեղ</translation>
+<translation id="2129163794581571479">Աշխատում է Gemini-ի և Personal Intelligence-ի հիման վրա։ Ձեր հարցումները, էջերի վերնագրերն ու URL-ները կարող են ստուգվել՝ բարելավված ինքնալրացումն ավելի լավը դարձնելու համար։ <ph name="BEGIN_LINK" />Կառավարել կարգավորումները<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Ձեր նշած ձևանմուշները չեն կարող կիրառվել, քանի որ DnsOverHttpsMode կանոնը կարգավորված չէ:</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Միացնել վճարումների ինքնալրացումը պատուհանը բացված է ամբողջությամբ։</translation>
@@ -710,7 +710,6 @@
 <translation id="2188375229972301266">Մի քանի անցք ներքևում</translation>
 <translation id="218940509700321686">Ստորակետերով բաժանված արժեքներ</translation>
 <translation id="2190094353033916816">Այս կանոնի դեպքում սարքի և օգտատիրոջ մակարդակներում կիրառվում են տարբեր արժեքներ։ Կանոնը պատշաճ կերպով աշխատում է։</translation>
-<translation id="219061769324072544">Վարկային,քարտ,դեբետային</translation>
 <translation id="2191980191135734720">Հաջորդ քայլում ապակողպեք էկրանը, օրինակ, մատնահետքի միջոցով։ Դուք կարող եք նաև <ph name="LINK_TEXT" />։</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2195729137168608510">Էլփոստի պաշտպանություն</translation>
@@ -1081,6 +1080,7 @@
 <translation id="2807052079800581569">Պատկերի դիրքը Y առանցքով</translation>
 <translation id="2808278141522721006">Windows Hello-ն միացնելու կամ անջատելու համար անցեք <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Որոնում…</translation>
+<translation id="282457273878278063">Կառավարել կոնտակտային տվյալները</translation>
 <translation id="2824775600643448204">Հասցեագոտի և որոնման գոտի</translation>
 <translation id="2826760142808435982">Կապակցումը գաղտնագրված և ստուգված է <ph name="CIPHER" />-ի միջոցով: Որպես բանալիների փոխանակման մեխանիզմ օգտագործվում է <ph name="KX" />-ը:</translation>
 <translation id="2828797285817981634">Շարժման սենսորներն այժմ թույլատրված են</translation>
@@ -1575,6 +1575,7 @@
 <translation id="3655670868607891010">Եթե հաճախակի եք տեսնում այս հաղորդագրությունը, փորձեք հետևյալ <ph name="HELP_LINK" />-ը:</translation>
 <translation id="3658742229777143148">Տարբերակ</translation>
 <translation id="3659521826520353662">Ադմինիստրատորի կողմից սահմանված որ կայքերն են օգտատերերն այցելում և երբ՝ <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Աշխատում է Gemini-ի և Personal Intelligence-ի հիման վրա։ <ph name="BEGIN_LINK" />Կառավարել կարգավորումները<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Որոնել գնման այլ տարբերակներ այս ապրանքը վաճառող այլ խանութներում։</translation>
 <translation id="3664782872746246217">Հիմնաբառեր՝</translation>
 <translation id="3670030362669914947">Քարտի համարը</translation>
@@ -1595,6 +1596,7 @@
 <translation id="3693516565203081475">Ընտրեք վճարման եղանակը</translation>
 <translation id="3698353241727597930">Ձեր ադմինիստրատորն այնպես է կարգավորել, որ <ph name="FILES" /> պահվեն ձեր կազմակերպության կողմից կառավարվող տարածքում <ph name="CLOUD_STORAGE" />։ Այս ֆայլերը կարող են դիտվել, ստուգվել և պահպանվել, երբ ջնջեք դրանք։</translation>
 <translation id="3698629142018988477">«Ստեղծել կայք» կոճակ․ ակտիվացրեք՝ Google Կայքերում հեշտությամբ կայք ստեղծելու համար</translation>
+<translation id="3698708128812719147">Համացանցում ցանկացած տեղ երկու անգամ սեղմեք Ctrl ստեղնը՝ ավելի շատ տեղեկություններ գտնելու և լրացնելու համար</translation>
 <translation id="3700094625653511150">Տարաժամկետ վճարման տարբերակները թաքցնելու համար անցեք <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Դուք օգտագործում եք մատնահետքը գաղտնաբառերի լրացման համար</translation>
 <translation id="3701427423622901115">Վերակայումը հաստատված է։</translation>
@@ -1860,7 +1862,6 @@
 <translation id="4121428309786185360">Ժամկետը լրանում է`</translation>
 <translation id="4123572138124678573">Երեք անցք ներքևում</translation>
 <translation id="412601465078863288">Վերբեռնման ժամանակը սպառվել է</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 այլ}one{# այլ}other{# այլ}}</translation>
 <translation id="4129810348470013900">Սխալ առաջացավ։ Ստուգեք ինտերնետ կապը և նորից փորձեք։</translation>
 <translation id="4130226655945681476">Ստուգել ցանցային մալուխը, մոդեմը և երթուղիչը</translation>
 <translation id="4132448310531350254">«<ph name="FILE_EXTENSION" />» ընդլայնումը նշանակված է մի քանի մշակիչների համար՝ <ph name="POLICY_IDS_LIST" />։</translation>
@@ -1896,6 +1897,7 @@
 <translation id="4185037616931963178">Ապահով կերպով թարմացրեք Redress Number-ը</translation>
 <translation id="4186035307311647330">Այլևս չհետագծել գինը</translation>
 <translation id="4191334393248735295">Երկարություն</translation>
+<translation id="4192770747482479191">Համացանցում ցանկացած տեղ երկու անգամ սեղմեք ⌘ ստեղնը՝ ավելի շատ տեղեկություններ գտնելու և լրացնելու համար</translation>
 <translation id="4195459680867822611">«Տեսնել Chrome-ին առնչվող խորհուրդներ» կոճակ․ ակտիվացրեք՝ Chrome-ի գործառույթների մասին տեղեկանալու համար</translation>
 <translation id="4195643157523330669">Բացել նոր ներդիրով</translation>
 <translation id="4196861286325780578">&amp;Վերարկել տեղափոխումը</translation>
@@ -2844,6 +2846,7 @@
 <translation id="573974402615125334">Ներդիրների խմբերով կիսվելու, դրանց միանալու կամ դրանցում համատեղ աշխատելու համար համաժամացրեք ձեր պատմությունը և ներդիրները</translation>
 <translation id="5740911612628596808">Envelope C9</translation>
 <translation id="574392208103952083">Միջին</translation>
+<translation id="5744350700955456407">Բարելավված ինքնալրացումն այժմ կարող է գտնել և լրացնել տեղեկություններ, օրինակ՝ պատվերների համարները և չվերթների հաստատման կոդերը, այնպիսի հավելվածներից, ինչպիսիք են Gmail-ը և Լուսանկարները</translation>
 <translation id="5745586894920491759">Chrome-ը մշակում է էջերի վերնագրերն ու URL-ներն ամպային սերվերներում</translation>
 <translation id="5745733273847572235">Կարող է հայցել տեղադրության տվյալների օգտագործման թույլտվություն</translation>
 <translation id="5750869797196646528">Ձեռքերի շարժումների հետագծում</translation>
@@ -3225,7 +3228,6 @@
 <translation id="638289054711715023">Կծկվող թաղանթ</translation>
 <translation id="6383221683286411806">Կարող են վճարներ գանձվել</translation>
 <translation id="6384448607821972818">Վերականգնման գաղտնաբառը ցուցադրված է</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 այլ առաջարկ}one{# այլ առաջարկ}other{# այլ առաջարկ}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
 <translation id="6387645831795005740">Հաքերները երբեմն ստեղծում են կայքերի կրկնօրինակներ՝ փոքր-ինչ փոփոխելով դրանց URL-ը, ինչը հնարավոր չէ միանգամից նկատել։</translation>
 <translation id="6389470377220713856">Քարտատիրոջ անունը</translation>

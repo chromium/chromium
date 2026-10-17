@@ -619,7 +619,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2059166748188874810">Kotamadya</translation>
 <translation id="2059202684901022309">22 x 34 inci (55 x 86 cm)</translation>
 <translation id="2063929825539050431">Untuk mengirim halaman ini dengan cepat ke perangkat lain, sentuh lama kolom URL</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 saran}other{# saran}}</translation>
 <translation id="2066969741541525119">Situs yang akan dibuka diblokir oleh organisasi Anda</translation>
 <translation id="2071156619270205202">Kartu ini tidak memenuhi syarat untuk nomor kartu virtual.</translation>
 <translation id="2071852865256799872">Browser dikelola oleh organisasi Anda dan profil Anda dikelola oleh <ph name="PROFILE_DOMAIN" /></translation>
@@ -712,7 +711,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2188375229972301266">Beberapa lubang di bawah</translation>
 <translation id="218940509700321686">Comma Separated Values</translation>
 <translation id="2190094353033916816">Kebijakan ini memiliki nilai berbeda yang diterapkan di tingkat perangkat dan pengguna. Kebijakan ini berfungsi sebagaimana mestinya.</translation>
-<translation id="219061769324072544">Kredit, Kartu, Debit</translation>
 <translation id="2191980191135734720">Buka kunci layar di langkah berikutnya, biasanya menggunakan sidik jari Anda. Anda juga dapat <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
 <translation id="2195729137168608510">Perlindungan Email</translation>
@@ -864,7 +862,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2436186046335138073">Izinkan <ph name="HANDLER_HOSTNAME" /> membuka semua link <ph name="PROTOCOL" />?</translation>
 <translation id="243815215670139125">Kartu ini tidak dapat disimpan di Akun Google Anda. Namun, kartu disimpan ke Chrome di perangkat ini.</translation>
 <translation id="2438874542388153331">Empat lubang di kanan</translation>
-<translation id="2442033148418774391">Isi otomatis lebih cerdas, notifikasi privasi tetap terjaga ditutup</translation>
+<translation id="2442033148418774391">Notifikasi isi otomatis lebih cerdas, privasi tetap terjaga ditutup</translation>
 <translation id="2442865686365739754">Chrome <ph name="BEGIN_EMPHASIS" />tidak akan menyimpan<ph name="END_EMPHASIS" />:
           <ph name="BEGIN_LIST" />
             <ph name="LIST_ITEM" />Histori penjelajahan Anda
@@ -1083,6 +1081,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2807052079800581569">Posisi image Y</translation>
 <translation id="2808278141522721006">Anda dapat mengaktifkan atau menonaktifkan Windows Hello di <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Memindai...</translation>
+<translation id="282457273878278063">Kelola info kontak</translation>
 <translation id="2824775600643448204">Bilah penelusuran dan alamat</translation>
 <translation id="2826760142808435982">Sambungan dienkripsi dan diautentikasi menggunakan <ph name="CIPHER" /> dan menggunakan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
 <translation id="2828797285817981634">Sensor gerakan diizinkan saat ini</translation>
@@ -1865,7 +1864,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4121428309786185360">Kedaluwarsa pada</translation>
 <translation id="4123572138124678573">Tiga lubang di bawah</translation>
 <translation id="412601465078863288">Waktu upload habis</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
 <translation id="4129810348470013900">Terjadi error. Periksa koneksi internet Anda, lalu coba lagi.</translation>
 <translation id="4130226655945681476">Periksa kabel jaringan, modem, dan router</translation>
 <translation id="4132448310531350254">Pengendali duplikat untuk file_extension "<ph name="FILE_EXTENSION" />" yang direferensikan oleh aplikasi "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3229,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="638289054711715023">Foil Shrink</translation>
 <translation id="6383221683286411806">Kemungkinan mengenakan tagihan di awal.</translation>
 <translation id="6384448607821972818">Sandi pemulihan ditampilkan</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 saran lain}other{# saran lain}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
 <translation id="6387645831795005740">Penyerang terkadang meniru situs dengan membuat perubahan kecil dan sulit terlihat pada URL.</translation>
 <translation id="6389470377220713856">Nama di Kartu</translation>

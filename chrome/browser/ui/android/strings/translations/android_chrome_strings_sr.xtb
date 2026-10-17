@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
 <translation id="1986685561493779662">Назив већ постоји</translation>
 <translation id="1992244793717364584">Апликација је деинсталирана</translation>
+<translation id="1999115740519098545">При покретању</translation>
 <translation id="200114059308480249">Желите да уврстите околни текст у Google претраге?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, закачена картица без архивирања са искљученим звуком</translation>
 <translation id="2021896219286479412">Контроле сајта на целом екрану</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">Сајт је паузиран</translation>
 <translation id="2063047797624276601">Организација је укључила побољшано безбедно прегледање</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 преузимање није успело}one{# преузимање није успело}few{# преузимања нису успела}other{# преузимања није успело}}</translation>
-<translation id="2066690553719545730">Увек приказуј AI режим</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. од <ph name="TOTAL_RESULTS" /> резултата</translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Gemini је откачен</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome је спречио овај сајт да шаље обавештења због непожељног или обмањујућег садржаја}one{Chrome је спречио ове сајтове да шаљу обавештења због непожељног или обмањујућег садржаја}few{Chrome је спречио ове сајтове да шаљу обавештења због непожељног или обмањујућег садржаја}other{Chrome је спречио ове сајтове да шаљу обавештења због непожељног или обмањујућег садржаја}}</translation>
 <translation id="4195643157523330669">Отвори на новој картици</translation>
+<translation id="4195814663415092787">Настави претходну сесију</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 картица на овом уређају}one{# картица на овом уређају}few{# картице на овом уређају}other{# картица на овом уређају}}</translation>
 <translation id="4198268995694216131">Додатни сајтови</translation>
 <translation id="4198423547019359126">Нема доступних локација за преузимања</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">Слушајте ову страницу</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, изабрана закачена картица без архивирања у режиму слике у слици</translation>
 <translation id="4225895483398857530">Пречица за траку с алаткама</translation>
-<translation id="4232376164796433044">Лозинке и аутоматско попуњавање</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
 <translation id="424864128008805179">Желите ли да се одјавите из Chrome-а?</translation>
 <translation id="425582637250725228">Промене које сте унели можда неће бити сачуване.</translation>
@@ -1147,6 +1147,7 @@ Google налог можда има друге облике историје п�
 <translation id="5568069709869097550">Не могу да се пријавим</translation>
 <translation id="557018954714092179">Направи нови фолдер</translation>
 <translation id="5578795271662203820">Потражи ову слику на <ph name="SEARCH_ENGINE" />-у</translation>
+<translation id="558563010977877295">Отвори одређену страницу или скуп страница</translation>
 <translation id="5596627076506792578">Још опција</translation>
 <translation id="5599455543593328020">Режим без архивирања</translation>
 <translation id="5601180634394228718">Још подешавања која користе податке за побољшање доживљаја Chrome-а потражите у <ph name="BEGIN_LINK" />Google услугама<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ Google налог можда има друге облике историје п�
 <translation id="671481426037969117">Тајмер апликације <ph name="FQDN" /> је истекао. Почеће поново сутра.</translation>
 <translation id="6716434912087331834">Да бисте вратили нови прозор, смањите укупан број активних прозора на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или мање. Неактивни прозори се бришу после 6 месеци.</translation>
 <translation id="6723740634201835758">На Google налогу</translation>
+<translation id="6725340821578440069">Филтрирај према уређају</translation>
 <translation id="6734310707649923383">Можете да видите странице које сте посетили или да их избришете из историје</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, закачена картица без архивирања за снимање</translation>
 <translation id="6738867403308150051">Преузима се...</translation>
@@ -1905,6 +1907,7 @@ Google налог можда има друге облике историје п�
 <translation id="8387617938027387193">Потврдите идентитет</translation>
 <translation id="8393700583063109961">Пошаљите поруку</translation>
 <translation id="8398389123831319859">Двапут додирните и задржите да бисте прешли у режим без архивирања</translation>
+<translation id="8401904657382223224">Филтрирај према хосту</translation>
 <translation id="8412037385861858490">Да би заштитила ваш рад у Chrome-у, организација ће моћи да прегледа одређене информације или управља њима ако сте пријављени у Chrome. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Прикажи сву историју</translation>
 <translation id="8413795581997394485">Штити вас од сајтова, преузимања и додатака за које се зна да су штетни. Када посетите сајт, Chrome шаље маскирани део URL-а Google-у преко сервера за приватност који крије IP адресу. Ако сајт ради нешто сумњиво, шаљу се и цели URL-ови и делови садржаја странице.</translation>

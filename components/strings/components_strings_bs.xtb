@@ -618,7 +618,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2059166748188874810">Općina</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2063929825539050431">Da brzo pošaljete ovu stranicu na drugi uređaj, dodirnite i zadržite traku za adresu</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{Jedan prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
 <translation id="2066969741541525119">Vaša organizacija je blokirala web lokaciju koja slijedi</translation>
 <translation id="2071156619270205202">Ova kartica ne ispunjava uslove za broj virtuelne kartice.</translation>
 <translation id="2071852865256799872">Vašim preglednikom upravlja vaša organizacija, a profilom <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2188375229972301266">Višestruko bušenje na donjoj strani</translation>
 <translation id="218940509700321686">Vrijednosti odvojene zarezima</translation>
 <translation id="2190094353033916816">Ovo pravilo ima različite vrijednosti primijenjene na nivou uređaja i korisnika. Pravilo funkcionira kako je predviđeno.</translation>
-<translation id="219061769324072544">Kreditna,kartica,debitna</translation>
 <translation id="2191980191135734720">U sljedećem koraku otključajte ekran, obično pomoću otiska prsta. Možete i <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Stvari za razmatranje</translation>
 <translation id="2195729137168608510">Zaštita e-pošte</translation>
@@ -1082,6 +1080,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2807052079800581569">Y položaj slike</translation>
 <translation id="2808278141522721006">Možete uključiti ili isključiti Windows Hello u odjeljku <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Skeniranje...</translation>
+<translation id="282457273878278063">Upravljajte kontakt podacima</translation>
 <translation id="2824775600643448204">Traka za adresu i pretraživanje</translation>
 <translation id="2826760142808435982">Veza je šifrirana i autentificirana koristeći <ph name="CIPHER" /> i koristi <ph name="KX" /> kao glavni mehanizam za razmjenu.</translation>
 <translation id="2828797285817981634">Senzori kretanja su sada dozvoljeni</translation>
@@ -1865,7 +1864,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="4121428309786185360">Ističe</translation>
 <translation id="4123572138124678573">Trostruko bušenje na donjoj strani</translation>
 <translation id="412601465078863288">Otpremanje je isteklo</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{i još 1}one{i još #}few{i još #}other{i još #}}</translation>
 <translation id="4129810348470013900">Nešto nije uredu. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="4130226655945681476">Provjeriti mrežne kablove, modem i ruter</translation>
 <translation id="4132448310531350254">Duplicirani obrađivači za stavku file_extension "<ph name="FILE_EXTENSION" />" koja se spominje u pravilima aplikacija "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3229,6 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="638289054711715023">Skupljajuća folija</translation>
 <translation id="6383221683286411806">Postoje mogući troškovi.</translation>
 <translation id="6384448607821972818">Prikazuje se lozinka za oporavak</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{Još jedan prijedlog}one{Još # prijedlog}few{Još # prijedloga}other{Još # prijedloga}}</translation>
 <translation id="6386565501269869892">Koverta You 4</translation>
 <translation id="6387645831795005740">Napadači ponekad oponašaju web lokacije tako što naprave male, teško primjetne izmjene URL-a.</translation>
 <translation id="6389470377220713856">Ime i prezime na kartici</translation>

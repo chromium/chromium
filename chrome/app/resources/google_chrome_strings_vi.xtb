@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome đã cập nhật xong. Bạn có thể sử dụng phiên bản mới nhất ngay khi chạy lại Chrome. Sau đó, các thẻ hiện tại sẽ mở lại.}=1{Chrome đã cập nhật xong. Bạn có thể sử dụng phiên bản mới nhất ngay khi chạy lại Chrome. Sau đó, các thẻ hiện tại sẽ mở lại. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Chrome đã cập nhật xong. Bạn có thể sử dụng phiên bản mới nhất ngay khi chạy lại Chrome. Sau đó, các thẻ hiện tại sẽ mở lại. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="1434626383986940139">Ứng dụng Chrome Canary</translation>
 <translation id="1439793550875056299">Ghim Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ biệt lập sẽ không mở lại.}other{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ biệt lập sẽ không mở lại.}}</translation>
 <translation id="146866447420868597">Bạn muốn đăng nhập vào Chrome?</translation>
 <translation id="1476347941828409626">&amp;Quản lý hồ sơ trên Chrome</translation>
 <translation id="1492280395845991349">Chạy lại để hoàn tất quá trình cập nhật Chrome</translation>
@@ -271,6 +272,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="345171907106878721">Thêm chính bạn vào Chrome</translation>
 <translation id="3453763134178591239">Điều khoản của ChromeOS</translation>
 <translation id="3475778264501649775">Mang theo mật khẩu, thẻ và nhiều dữ liệu khác mọi lúc, mọi nơi nhờ ứng dụng Chrome trên điện thoại</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Cửa sổ biệt lập sẽ không mở lại.}other{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. # cửa sổ biệt lập sẽ không mở lại.}}</translation>
 <translation id="3539955434060988644">Mở đường liên kết trong cửa sổ ẩn d&amp;anh của Chrome</translation>
 <translation id="354621070532799440">Lời nhắc: Các tính năng an toàn tốt nhất của Google ngay trên điện thoại của bạn</translation>
 <translation id="3547866758548131919">Nhấp vào nút Tóm tắt để chia sẻ tài liệu này với Gemini trong Chrome nhằm xem nhanh nội dung tổng quan và đặt các câu hỏi nối tiếp</translation>
@@ -286,12 +288,15 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3622797965165704966">Giờ đây, việc sử dụng Chrome bằng tài khoản Google của bạn và trên máy tính được chia sẻ trở nên dễ dàng hơn.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chrome trong hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng có thể truy cập thông tin đã lưu và nhiều dữ liệu khác trên mọi thiết bị của mình.</translation>
 <translation id="3635073343384702370">Chrome có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome đã cập nhật xong. Bạn có thể sử dụng phiên bản mới nhất ngay khi chạy lại Chrome. Sau đó, các thẻ hiện tại sẽ mở lại. Cửa sổ biệt lập sẽ không mở lại.}other{Chrome đã cập nhật xong. Bạn có thể sử dụng phiên bản mới nhất ngay khi chạy lại Chrome. Sau đó, các thẻ hiện tại sẽ mở lại. # cửa sổ biệt lập sẽ không mở lại.}}</translation>
 <translation id="3636970668267555808">Dễ dàng truy cập các tính năng bạn biết, yêu thích và tin tưởng bằng cách đặt Chrome làm trình duyệt mặc định.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật này. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="3667616615096815454">Không thể cài đặt, máy chủ không xác định được ứng dụng.</translation>
 <translation id="3673813398384385993">Chrome nhận thấy rằng "<ph name="EXTENSION_NAME" />" chứa phần mềm độc hại</translation>
 <translation id="3697952514309507634">Các hồ sơ khác trên Chrome</translation>
 <translation id="3703994572283698466">ChromeOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung, tương tự như <ph name="BEGIN_LINK_LINUX_OSS" />môi trường phát triển Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Phiên bản ChromeOS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Đã có bản cập nhật Chrome mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chrome. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Đã có bản cập nhật Chrome mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chrome. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="3718181793972440140">Thao tác này sẽ xóa 1 mục khỏi thiết bị này. Để truy xuất dữ liệu của bạn sau, hãy đăng nhập vào Chrome dưới dạng <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome khuyên bạn nên loại bỏ tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />}other{Chrome khuyên bạn nên loại bỏ các tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />.}}</translation>
 <translation id="3729187154190517324">Mở rộng phạm vi tìm kiếm bằng cách thêm nhiều thẻ, tệp và công cụ bằng nút "Thêm một thẻ và các nội dung khác".</translation>
@@ -418,6 +423,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5003967926796347400">Nhấp vào "Trình quản lý mật khẩu của Google"</translation>
 <translation id="5043786843026425788">Tìm hiểu thêm về cách tìm kiếm bằng Google Ống kính trong Chrome</translation>
 <translation id="504867494566807945">Mở đường liên kết trong Chrome từ ứng dụng bất kỳ. Ngoài ra, Chrome sẽ được ghim vào thanh tác vụ để bạn dễ dàng truy cập.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="5105120510934353742">Để nhận các bản cập nhật Google Chrome sau này, bạn cần có macOS 13 trở lên. Máy tính này đang sử dụng macOS 12.</translation>
 <translation id="5114340746415930644">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="USER_EMAIL" /> của bạn</translation>
 <translation id="5120334927898581447">Đăng nhập vào Chrome khi bạn đăng nhập vào các dịch vụ khác của Google</translation>
@@ -480,6 +486,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Không thể kết nối với Internet. Máy chủ proxy yêu cầu xác thực.</translation>
 <translation id="5709557627224531708">Đặt Chrome làm trình duyệt mặc định</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Cửa sổ biệt lập sẽ không mở lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. # cửa sổ biệt lập sẽ không mở lại.}}</translation>
 <translation id="5719246646468301581">Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS</translation>
 <translation id="5736850870166430177">Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang</translation>
 <translation id="5742003800414899269">Dùng ứng dụng Chrome để mang theo các công cụ AI tốt nhất mọi lúc, mọi nơi</translation>
@@ -507,6 +514,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="5960404530854194706">Chrome sẽ cập nhật khi bạn rời đi</translation>
 <translation id="5980111191913430208">Các tiện ích, ứng dụng và giao diện không rõ nguồn gốc có thể làm hại thiết bị của bạn. Chrome đề xuất bạn chỉ nên cài đặt những mục nói trên qua <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Đang tải xuống... Còn <ph name="HOURS" /> giờ.</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Quản trị viên yêu cầu bạn chạy lại Chrome để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="6008161919456049856">Mật khẩu, phương thức thanh toán và địa chỉ mà bạn đã lưu trong Tài khoản Google sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chrome, hãy đăng nhập lại.</translation>
 <translation id="6009821354356307391">Đặt câu hỏi nối tiếp</translation>
 <translation id="6014316319780893079">Với <ph name="BEGIN_LINK" />các công cụ của Chrome<ph name="END_LINK" />, bạn có thể duyệt web an toàn và luôn nắm quyền kiểm soát</translation>
@@ -679,6 +687,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7452987490177144319">{COUNT,plural, =1{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau 1 phút bạn không dùng đến Chrome. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}other{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau # phút bạn không dùng đến Chrome. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}}</translation>
 <translation id="7466577301922356468">Việc tự động gửi dữ liệu này cho Google sẽ giúp cải thiện Chrome. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="7477130805345743099">Chrome sẽ cảnh báo bạn trước khi tải trang web bằng kết nối không an toàn</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Đã có bản cập nhật Chrome mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chrome. Cửa sổ biệt lập sẽ không mở lại.}other{Đã có bản cập nhật Chrome mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chrome. # cửa sổ biệt lập sẽ không mở lại.}}</translation>
 <translation id="7481213027396403996">Lớp bảo mật mạnh nhất của Chrome</translation>
 <translation id="749228101751499733">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chrome. <ph name="SHORTCUT" /> có thể thay đổi chế độ cài đặt cho các dịch vụ của Google mà bạn sử dụng.</translation>
 <translation id="7496017508659652909">Chrome tải trước các trang để giúp bạn duyệt web và tìm kiếm nhanh hơn. <ph name="BEGIN_LINK" />Tìm hiểu thêm về tính năng tải trước trang<ph name="END_LINK" /></translation>
@@ -795,6 +804,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="8380754585531979907">Dùng bàn phím để di chuyển giữa Gemini trong Chrome và thẻ đang mở.</translation>
 <translation id="8387459386171870978">Tiếp tục sử dụng Chrome</translation>
 <translation id="8394720698884623075">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome đã cập nhật xong. Bạn có thể sử dụng phiên bản mới nhất ngay khi chạy lại Chrome. Sau đó, các thẻ hiện tại sẽ mở lại. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Chrome đã cập nhật xong. Bạn có thể sử dụng phiên bản mới nhất ngay khi chạy lại Chrome. Sau đó, các thẻ hiện tại sẽ mở lại. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="8403038600646341038">Biểu trưng Chrome trên màn hình máy tính.</translation>
 <translation id="8418845734693287262">ChromeOS không thể đồng bộ hoá dữ liệu của bạn do thông tin đăng nhập vào tài khoản của bạn đã lỗi thời.</translation>
 <translation id="842386925677997438">Công cụ đảm bảo an toàn của Chrome</translation>

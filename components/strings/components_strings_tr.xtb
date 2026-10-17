@@ -618,7 +618,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2059166748188874810">Belediye</translation>
 <translation id="2059202684901022309">22 x 34 inç</translation>
 <translation id="2063929825539050431">Bu sayfayı başka bir cihaza hızlıca göndermek için adres çubuğuna dokunup basılı tutun</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 öneri}other{# öneri}}</translation>
 <translation id="2066969741541525119">Gideceğiniz site kuruluşunuz tarafından işaretlendi</translation>
 <translation id="2071156619270205202">Bu kart, sanal kart numarası için uygun değil.</translation>
 <translation id="2071852865256799872">Tarayıcınızın yönetimi kuruluşunuz tarafından, profilinizin yönetimi ise <ph name="PROFILE_DOMAIN" /> tarafından yapılıyor</translation>
@@ -711,7 +710,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2188375229972301266">Altta çoklu zımba</translation>
 <translation id="218940509700321686">Virgülle Ayrılmış Değerler</translation>
 <translation id="2190094353033916816">Bu politikaya, makine ve kullanıcı düzeylerinde farklı değerler uygulanmış. Politika beklendiği şekilde çalışıyor.</translation>
-<translation id="219061769324072544">Kredi,Kart,Banka Kartı</translation>
 <translation id="2191980191135734720">Sonraki adımda ekranınızın kilidini açın (genellikle parmak iziniz kullanılır). <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Dikkate alınması gereken noktalar</translation>
 <translation id="2195729137168608510">E-posta Koruması</translation>
@@ -1082,6 +1080,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2807052079800581569">Resim Y konumu</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> bölümünden Windows Hello'yu etkinleştirebilir veya devre dışı bırakabilirsiniz</translation>
 <translation id="2820957248982571256">Taranıyor...</translation>
+<translation id="282457273878278063">İletişim bilgilerini yönet</translation>
 <translation id="2824775600643448204">Adres ve arama çubuğu</translation>
 <translation id="2826760142808435982">Bağlantı <ph name="CIPHER" /> kullanılarak şifrelenmiş ve kimliği doğrulanmıştır. Anahtar değişim mekanizması olarak <ph name="KX" /> kullanılır.</translation>
 <translation id="2828797285817981634">Şu an için hareket sensörlerine izin veriliyor</translation>
@@ -1865,7 +1864,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4121428309786185360">Son Kullanma Tarihi:</translation>
 <translation id="4123572138124678573">Altta üçlü delik</translation>
 <translation id="412601465078863288">Yükleme zaman aşımına uğradı</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 öğe daha}other{# öğe daha}}</translation>
 <translation id="4129810348470013900">Bir sorun oldu. İnternet bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="4130226655945681476">Ağ kabloları, modem ve yönlendirici kontrol ediliyor</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" uygulamaları tarafından başvurulan "<ph name="FILE_EXTENSION" />" dosya uzantısı için kopya işleyiciler.</translation>
@@ -3231,7 +3229,6 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="638289054711715023">Shrink Folyo</translation>
 <translation id="6383221683286411806">Devam etmeniz halinde ödeme yapmanız gerekebilir.</translation>
 <translation id="6384448607821972818">Kurtarma şifresi gösteriliyor</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 öneri daha}other{# öneri daha}}</translation>
 <translation id="6386565501269869892">Zarf You 4</translation>
 <translation id="6387645831795005740">Saldırganlar bazen URL'de görülmesi zor ufak değişiklikler yaparak siteleri taklit ederler.</translation>
 <translation id="6389470377220713856">Karttaki Ad</translation>

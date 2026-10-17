@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">میونسپلٹی</translation>
 <translation id="2059202684901022309">‏‎22 x 34 انچ</translation>
 <translation id="2063929825539050431">اس صفحہ کو فوری طور پر دوسرے آلے پر بھیجنے کے لیے، ایڈریس بار کو ٹچ کریں اور دبائے رکھیں</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 تجویز}other{# تجاویز}}</translation>
 <translation id="2066969741541525119">آگے کی سائٹ کو آپ کی تنظیم نے مسدود کر دیا ہے</translation>
 <translation id="2071156619270205202">یہ کارڈ ورچوئل کارڈ نمبر کیلئے اہل نہیں ہے۔</translation>
 <translation id="2071852865256799872">آپ کے براؤزر کا نظم آپ کی تنظیم کرتی ہے اور آپ کی پروفائل کا نظم <ph name="PROFILE_DOMAIN" /> کرتا ہے</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">نیچے متعدد سوراخ</translation>
 <translation id="218940509700321686">کوما سے الگ کردہ اقدار</translation>
 <translation id="2190094353033916816">اس پالیسی کی مشین اور صارف کی سطح پر مختلف اقدار لاگو ہوتی ہیں۔ پالیسی حسب منشا کام کر رہی ہے۔</translation>
-<translation id="219061769324072544">کریڈٹ، کارڈ، ڈیبٹ</translation>
 <translation id="2191980191135734720">عام طور پر اپنے فنگر پرنٹ کا استعمال کر کے، اگلے مرحلے میں اپنی اسکرین کو غیر مقفل کریں۔ آپ <ph name="LINK_TEXT" /> بھی کر سکتے ہیں۔</translation>
 <translation id="2194856509914051091">قابل غور چیزیں</translation>
 <translation id="2195729137168608510">ای میل کا تحفظ</translation>
@@ -1866,7 +1864,6 @@
 <translation id="4121428309786185360">میعاد کا اختتام</translation>
 <translation id="4123572138124678573">نیچے تین سوراخ</translation>
 <translation id="412601465078863288">اپ لوڈ کرنے کا وقت ختم ہو گیا</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 دیگر}other{# دیگر}}</translation>
 <translation id="4129810348470013900">کچھ غلط ہو گیا۔ اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="4130226655945681476">نیٹ ورک کیبلز، موڈم اور راؤٹر کو چیک کیا جا رہا ہے</translation>
 <translation id="4132448310531350254">‏file_extension "<ph name="FILE_EXTENSION" />" کے لیے ڈپلیکیٹ ہینڈلرز جس کا حوالہ ایپس "<ph name="POLICY_IDS_LIST" />" کے ذریعے دیا گیا ہے۔</translation>
@@ -3233,7 +3230,6 @@
 <translation id="638289054711715023">شرنک فوئل</translation>
 <translation id="6383221683286411806">آگے ممکنہ چارجز لیے جا سکتے ہيں۔</translation>
 <translation id="6384448607821972818">بازیابی کا پاس ورڈ دکھایا گیا ہے</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 دیگر تجویز}other{# دیگر تجاویز}}</translation>
 <translation id="6386565501269869892">‏You 4 لفافہ</translation>
 <translation id="6387645831795005740">‏بعض اوقات حملہ آور URL میں چھوٹی، مشکل سے نظر آنے والی تبدیلیاں کرکے سائٹس کی نقل کرتے ہیں۔</translation>
 <translation id="6389470377220713856">کارڈ پر نام</translation>

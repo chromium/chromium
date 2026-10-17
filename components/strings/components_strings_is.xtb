@@ -618,7 +618,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2059166748188874810">Sveitarfélag</translation>
 <translation id="2059202684901022309">22 x 34 to.</translation>
 <translation id="2063929825539050431">Til að senda þessa síðu í annað tæki á fljótlegan hátt skaltu halda veffangastikunni inni</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{Ein tillaga}one{# tillaga}other{# tillögur}}</translation>
 <translation id="2066969741541525119">Fyrirtækið þitt hefur lokað á vefsvæðið sem þú ert að reyna að opna</translation>
 <translation id="2071156619270205202">Þetta kort er ekki gjaldgengt fyrir sýndarkortsnúmer.</translation>
 <translation id="2071852865256799872">Vafranum þínum er stjórnað af fyrirtækinu þínu og prófílnum þínum er stjórnað af <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2188375229972301266">Mörg göt neðst</translation>
 <translation id="218940509700321686">Gildi aðskilin með kommu</translation>
 <translation id="2190094353033916816">Þessi regla hefur mismunandi gildi sem eru notuð á vélar- og notendastigi. Reglan virkar sem skyldi.</translation>
-<translation id="219061769324072544">Kredit,kort,debet</translation>
 <translation id="2191980191135734720">Taktu skjáinn úr lás í næsta skrefi, yfirleitt með því að nota fingrafar. Þú getur einnig <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">Atriði til að hafa í huga</translation>
 <translation id="2195729137168608510">Tölvupóstvörn</translation>
@@ -1082,6 +1080,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2807052079800581569">Y-staðsetning myndar</translation>
 <translation id="2808278141522721006">Þú getur kveikt eða slökkt á Windows Hello í <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Leitar...</translation>
+<translation id="282457273878278063">Stjórna samskiptaupplýsingum</translation>
 <translation id="2824775600643448204">Veffanga- og leitarstika</translation>
 <translation id="2826760142808435982">Tengingin er dulkóðuð og sannvottuð með <ph name="CIPHER" /> og <ph name="KX" /> er notað sem aðferð til að skiptast á lyklum.</translation>
 <translation id="2828797285817981634">Hreyfiskynjarar leyfðir eins og er</translation>
@@ -1865,7 +1864,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4121428309786185360">Rennur út</translation>
 <translation id="4123572138124678573">Þrjú göt neðst</translation>
 <translation id="412601465078863288">Upphleðsla rann út á tíma</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 í viðbót}one{# í viðbót}other{# í viðbót}}</translation>
 <translation id="4129810348470013900">Eitthvað fór úrskeiðis. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="4130226655945681476">Athugar netsnúrur, mótaldið og beininn</translation>
 <translation id="4132448310531350254">Afrita hjálparforrit fyrir skráarendinguna „<ph name="FILE_EXTENSION" />“ sem er tilgreind af forritunum „<ph name="POLICY_IDS_LIST" />“.</translation>
@@ -3231,7 +3229,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="638289054711715023">Umbúðaplast</translation>
 <translation id="6383221683286411806">Hugsanleg gjöld framundan.</translation>
 <translation id="6384448607821972818">Endurheimtaraðgangsorð sýnt</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{ein tillaga í viðbót}one{# tillaga í viðbót}other{# tillögur í viðbót}}</translation>
 <translation id="6386565501269869892">Umslag: You 4</translation>
 <translation id="6387645831795005740">Stundum herma tölvuþrjótar eftir vefsvæðum með því að gera litlar og illgreinanlegar breytingar á vefslóðinni.</translation>
 <translation id="6389470377220713856">Nafn á korti</translation>

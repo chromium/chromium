@@ -195,7 +195,6 @@
 <translation id="154312949627292154">Apri le schede ricevute dagli altri dispositivi dalla schermata di blocco.</translation>
 <translation id="1544653821167545205">Riassumi la pagina</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
-<translation id="1545757265410828525">Cronologia dei prezzi</translation>
 <translation id="1547610699249301703">Condividi le password</translation>
 <translation id="1554043146674176775">Disattiva AI Mode</translation>
 <translation id="1554477036522844996">Nuova finestra</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">Hai già salvato una password per "<ph name="USERNAME" />" su <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Puoi scorrere verso sinistra per navigare in incognito.</translation>
 <translation id="2435457462613246316">Mostra password</translation>
-<translation id="2451607499823206582">Monitoraggio</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} elemento della cronologia}other{{count} elementi della cronologia}}</translation>
 <translation id="2461070143328828326">Impostazioni password</translation>
 <translation id="2462736546165239215">Qui puoi trovare tutta la tua cronologia di navigazione.</translation>
@@ -625,6 +623,7 @@
 <translation id="2870560284913253234">Sito</translation>
 <translation id="2876369937070532032">Invia a Google gli URL di alcune pagine che visiti quando la tua sicurezza è a rischio</translation>
 <translation id="2883151425485251736">Visualizza e modifica gli argomenti che hai nascosto dal tuo account</translation>
+<translation id="2884437560239137197">Attenzione richiesta</translation>
 <translation id="288655811176831528">Chiudi scheda</translation>
 <translation id="2888631381369839306">Notifiche per il monitoraggio del prezzo attivate</translation>
 <translation id="2893168226686371498">Browser predefinito</translation>
@@ -1466,6 +1465,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="559567008082979829">Imposta l'eliminazione dei download dopo un mese.</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="560322036295180549">Opzione disattivata dall'organizzazione</translation>
+<translation id="5604254791550001355">Modifica prompt</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
 <translation id="5612225021788368236">Chiudi la promozione del browser predefinito</translation>
 <translation id="561269594905823128">Tocca <ph name="BEGIN_BOLD" />Seleziona il file<ph name="END_BOLD" /></translation>
@@ -1531,7 +1531,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5768870767339201169">Riprendi da dove hai interrotto</translation>
 <translation id="5779117921996157216">{count,plural, =1{Hai {count} password compromessa che potrebbe mettere a rischio la tua sicurezza. Sistemala subito per rimanere al sicuro.}other{Hai {count} password compromesse che potrebbero mettere a rischio la tua sicurezza. Sistemale subito per rimanere al sicuro.}}</translation>
 <translation id="5791632441210678828">Pulsante Ordina per il feed Stai seguendo.</translation>
-<translation id="5799263916847593256">Apri per visualizzare la cronologia dei prezzi</translation>
 <translation id="5801568494490449797">Preferenze</translation>
 <translation id="5803566855766646066">Vuoi eliminare questa nuova carta?</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
@@ -1669,6 +1668,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6227958838185907047">Accedi come <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">Suggerito</translation>
 <translation id="6232329973559504466">Ricerca in incognito</translation>
+<translation id="6233463157595806945">Input richiesto</translation>
 <translation id="6234310016144827337">Controlla la connessione e riprova</translation>
 <translation id="6236952928980352967">Ripristina avviso</translation>
 <translation id="623755660902014047">Modalità Lettura</translation>
@@ -1699,7 +1699,8 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6307792728709337290">Salva la carta nel tuo Account Google per la compilazione automatica per questo acquisto e per acquisti futuri effettuati su Chrome.</translation>
 <translation id="6316141353357700666">Scegli la password che vuoi utilizzare dall'elenco visualizzato.</translation>
 <translation id="6321526113093607004">Aggiungi ai preferiti</translation>
-<translation id="6324054713176642683">Scegli tra i temi, i colori oppure carica una foto.</translation>
+<translation id="6322064144568952786">Attività non riuscita</translation>
+<translation id="6324054713176642683">Scegli tra temi e colori, oppure carica una tua foto.</translation>
 <translation id="6327249202318869726">Gemini è disattivato per il tuo account. Contatta l'amministratore per ulteriori informazioni.</translation>
 <translation id="6331836477476466332">Un browser più sicuro e potente per te</translation>
 <translation id="6337234675334993532">Crittografia</translation>
@@ -1881,7 +1882,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6815692190508268848">Preferenze dell'aspetto applicate</translation>
 <translation id="681631578600400068">Salva la patente di guida</translation>
 <translation id="6825078212112407882">{count,plural, =1{Preferito salvato nel tuo Account Google, {email}}other{{count} preferiti salvati nel tuo Account Google, {email}}}</translation>
-<translation id="6826004672264649705">Stai monitorando questo prodotto. Apri per visualizzare la cronologia dei prezzi</translation>
 <translation id="6830728435402077660">Non sicuro</translation>
 <translation id="6831043979455480757">Traduci</translation>
 <translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
@@ -2016,6 +2016,7 @@ Per continuare dal computer, passa a <ph name="OTHER_EMAIL" />. Potrai usare le 
 <translation id="7241135764990439166">Modalità Incognito non disponibile</translation>
 <translation id="7245288034498365666">Organizzati e risparmia tempo</translation>
 <translation id="7253951228444156601">Controllo delle password…</translation>
+<translation id="725583671816239562">Attività completata</translation>
 <translation id="7261217796641151584">Condividi gruppo</translation>
 <translation id="7266578100016339897">In questo modo, è più semplice organizzarsi. Puoi modificare questa opzione nelle impostazioni in qualsiasi momento.</translation>
 <translation id="7270491814777319521">Si applicano i <ph name="BEGIN_LINK" />Termini Google<ph name="END_LINK" /> e l‘<ph name="BEGIN_LINK" />Informativa sulla privacy delle app Gemini<ph name="END_LINK" />. Gemini è un'AI e può commettere errori, anche in merito a persone.</translation>

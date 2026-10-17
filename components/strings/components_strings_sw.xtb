@@ -618,7 +618,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2059166748188874810">Manispaa</translation>
 <translation id="2059202684901022309">Inchi 22 x 34</translation>
 <translation id="2063929825539050431">Ili utume ukurasa huu kwa haraka kwenye kifaa kingine, gusa na ushikilie sehemu ya anwani</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{Pendekezo 1}other{Mapendekezo #}}</translation>
 <translation id="2066969741541525119">Tovuti unayoelekea kuifungua imezuiwa na shirika lako</translation>
 <translation id="2071156619270205202">Huwezi kupata namba ya kadi pepe kwa kutumia kadi hii.</translation>
 <translation id="2071852865256799872">Kivinjari chako kinadhibitiwa na shirika lako na wasifu wako unadhibitiwa na <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2188375229972301266">Toboa mara kadhaa chini</translation>
 <translation id="218940509700321686">Thamani Zilizotenganishwa kwa Koma</translation>
 <translation id="2190094353033916816">Sera hii ina thamani tofauti zinazotumika katika viwango vya mashine na mtumiaji. Sera inafanya kazi kama ilivyokusudiwa.</translation>
-<translation id="219061769324072544">Kadi ya mikopo,Kadi,Kadi ya Malipo</translation>
 <translation id="2191980191135734720">Fungua skrini yako katika hatua inayofuata, kwa kawaida ukitumia alama yako ya kidole. Unaweza pia <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Mambo ya kuzingatia</translation>
 <translation id="2195729137168608510">Ulinzi wa Barua Pepe</translation>
@@ -1082,6 +1080,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2807052079800581569">Mkao wa Picha ya Y</translation>
 <translation id="2808278141522721006">Unaweza kuwasha au kuzima Windows Hello kwenye <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Inatafuta...</translation>
+<translation id="282457273878278063">Dhibiti maelezo ya mawasiliano</translation>
 <translation id="2824775600643448204">Upau wa anwani na utafutaji</translation>
 <translation id="2826760142808435982">Muunganisho umesimbwa kwa njia fiche na kuthibitishwa kupitia <ph name="CIPHER" /> na unatumia <ph name="KX" /> kama utaratibu msingi wa ubadilishaji.</translation>
 <translation id="2828797285817981634">Imeruhusiwa kutumia vitambuzi vya mwendo kwa sasa</translation>
@@ -1865,7 +1864,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4121428309786185360">Muda Wake Unakwisha</translation>
 <translation id="4123572138124678573">Toboa mara tatu chini</translation>
 <translation id="412601465078863288">Muda wa kupakia umeisha</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{Nyingine 1 }other{Nyingine #}}</translation>
 <translation id="4129810348470013900">Hitilafu fulani imetokea. Angalia muunganisho wako wa intaneti kisha ujaribu tena.</translation>
 <translation id="4130226655945681476">Kukagua kebo za mtandao, modemu au kisambaza data</translation>
 <translation id="4132448310531350254">Vidhibiti viwili vya file_extension "<ph name="FILE_EXTENSION" />" vilivyorejelewa na programu "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3229,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="638289054711715023">Ubamba wa Kukunjika</translation>
 <translation id="6383221683286411806">Huenda ukatozwa gharama.</translation>
 <translation id="6384448607821972818">Nenosiri la kurejesha limeonyeshwa</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{Pendekezo jingine 1}other{Mapendekezo mengine #}}</translation>
 <translation id="6386565501269869892">Bahasha ya muundo wa You ya ukubwa wa 4</translation>
 <translation id="6387645831795005740">Wakati mwingine wadukuzi huiga tovuti kwa kufanya mabadiliko madogo ambayo hayaonekani kwa urahisi kwenye URL.</translation>
 <translation id="6389470377220713856">Jina lilio kwenye Kadi</translation>

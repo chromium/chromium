@@ -572,7 +572,6 @@
 <translation id="1433478348197382180">वाचन मोड</translation>
 <translation id="1433980411933182122">स्टार्टअप</translation>
 <translation id="1434659328474177625"><ph name="ISSUER" /> ने तुमच्या ईमेलची पडताळणी केली आहे</translation>
-<translation id="1434886155212424586">होमपेज हे नवीन टॅब पेज आहे</translation>
 <translation id="1435940442311036198">वेगळ्या डिव्हाइसवर पासकी वापरा</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> पर्यंत वैध आहे</translation>
 <translation id="1436671784520050284">सेटअप सुरू ठेवा</translation>
@@ -1036,7 +1035,6 @@
 <translation id="178092663238929451">तुमच्या आसपासच्या लोकांसह फाइल मिळवण्यासाठी आणि पाठवण्याकरिता Nearby सह शेअरिंग सेट करा</translation>
 <translation id="1781164264587898620">नॉइझ कॅन्सलेशन आणि ऑडिओ सुधारणा लागू करा.</translation>
 <translation id="1781291988450150470">सध्याचा पिन</translation>
-<translation id="1781502536226964113">नवे टॅब पेज उघडा</translation>
 <translation id="1781553166608855614">बोली भाषा</translation>
 <translation id="1781771911845953849">खाती आणि सिंक</translation>
 <translation id="1782101999402987960">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अपडेट ब्लॉक केले आहेत</translation>
@@ -1561,7 +1559,6 @@
 <translation id="2184754597051264978">Gemini यापुढे तुम्हाला <ph name="URL" /> मध्ये साइन इन करू शकणार नाही</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Gemini सोबत नवीन चॅट सुरू करा</translation>
-<translation id="2186711480981247270">दुसऱ्या डिव्हाइसवरून शेअर केलेले पेज</translation>
 <translation id="2187675480456493911">तुमच्या खात्यावरील इतर डिव्हाइसशी सिंक केले आहे. इतर वापरकर्त्यांनी बदललेली सेटिंग्ज सिंक केली जाणार नाहीत. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">विस्तार अपडेट केले</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> उघडा</translation>
@@ -2065,7 +2062,6 @@
 <translation id="256481480019204378">Google खाते आयडी</translation>
 <translation id="256517381556987641">फाइल सिंकला आतापर्यंत <ph name="ITEMS_FOUND" /> फाइल आढळल्या आहेत आणि ते अजूनही स्टोरेज जागा तपासत आहे. काही मिनिटांमध्ये फाइल सिंक पुन्हा सुरू करून पहा.</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" /> आणि आणखी <ph name="NUM_OTHER_MEMBERS" /> लोकांसोबत टॅब गटामध्ये सामील व्हा</translation>
-<translation id="256726287944589768">नवीन टॅब पेजवर फूटर दाखवा</translation>
 <translation id="2568774940984945469">इंफोबार कंटेनर</translation>
 <translation id="257088987046510401">थीम</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> साठी रीड-ओन्ली ॲक्सेस मंजूर केला गेला आहे.</translation>
@@ -2235,7 +2231,6 @@
 <translation id="2696675923413008404">या साइटच्या URL सह, त्यावरील आशय Google ला पाठवला जातो आणि या वैशिष्ट्यामध्ये सुधारणा करण्यासाठी मानवी परीक्षणकर्त्यांद्वारे पाहिला जाऊ शकतो</translation>
 <translation id="269941332914175387">तुमचा प्रोफाइल डेटा लोड करण्यासाठी आणि तो एन्क्रिप्ट केलेला ठेवण्यासाठी ब्राउझर पुन्हा लाँच करा</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> कोडसह पिन ऑपरेशन पूर्ण झाले नाही.</translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> वरून शेअर केले</translation>
 <translation id="2701737434167469065"><ph name="EMAIL" /> सह साइन इन करा</translation>
 <translation id="2701960282717219666">नेटवर्क MAC अ‍ॅड्रेस</translation>
 <translation id="2702720509009999256">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी, तुमचे इंटरनेट कनेक्शन तपासा आणि "पुन्हा प्रयत्न करा" किंवा "मूळ संपादकामध्ये उघडा" निवडा.</translation>
@@ -2636,7 +2631,6 @@
 <translation id="2989474696604907455">संलग्न केले नाही</translation>
 <translation id="2989523299700148168">अलीकडे भेट दिलेले</translation>
 <translation id="2989786307324390836">DER-एन्कोडेड बायनरी, एकल सर्टिफिकेट</translation>
-<translation id="2989805286512600854">नवीन टॅबमध्ये उघडा</translation>
 <translation id="2990313168615879645">Google खाते जोडा</translation>
 <translation id="2990375978470734995">हा बदल लागू होण्यासाठी, तुमच्या बाह्य अ‍ॅक्सेसरी पुन्हा कनेक्ट करा.</translation>
 <translation id="2990500505358145117">वर्धित ऑटोफिल शॉर्टकट संपादित करा</translation>
@@ -3910,7 +3904,6 @@
 <translation id="3909701002594999354">सर्व नियंत्रणे दाखवा</translation>
 <translation id="3909791450649380159">क&amp;ट करा</translation>
 <translation id="39103738135459590">अ‍ॅक्टिव्हेशन कोड</translation>
-<translation id="3911824782900911339">नवीन टॅब पेज</translation>
 <translation id="3913689539406883376">तुमचा कॉंप्युटर अनप्लग केलेला असेल, तेव्हा सुरू करा</translation>
 <translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> फोल्डर उघडा</translation>
@@ -4466,7 +4459,6 @@
 <translation id="4354344420232759511">तुम्ही भेट दिलेल्या साइट येथे दिसतील</translation>
 <translation id="4356100841225547054">व्हॉल्यूम बंद करा</translation>
 <translation id="4357583358198801992">टॅब गट दाखवा</translation>
-<translation id="4357812592970409234">नवीन टॅब या तुमच्या पेजच्या बॅकग्राउंडबद्दल अधिक जाणून घ्या</translation>
 <translation id="4358361163731478742">अ‍ॅपसाठी भाषेच्या निवडीला कोणतीही अ‍ॅप्स सपोर्ट करत नाहीत</translation>
 <translation id="4358995225307748864">उघडण्यासाठी अ‍ॅप निवडा</translation>
 <translation id="4359408040881008151">अवलंबून असलेल्या एक्स्टेंशन(ना) मुळे इंस्टॉल केले.</translation>
@@ -6746,7 +6738,6 @@ I feel - विटांची इमारत</translation>
 <translation id="6130887916931372608">कीबोर्ड की</translation>
 <translation id="6131511889181741773">स्प्लॅटर</translation>
 <translation id="6132251717264923430">बटण पिन केले आहे</translation>
-<translation id="6134418895482326458">नवीन टॅब पेज वर फूटर लपवा</translation>
 <translation id="6134428719487602109">सर्व वापरकर्ता खाती काढून टाका आणि तुमचे Chromebook अगदी नव्यासारखे रीसेट करा.</translation>
 <translation id="6135826623269483856">तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची परवानगी नाही</translation>
 <translation id="6136285399872347291">backspace</translation>
@@ -9946,6 +9937,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8563043098557365232">फक्त सिस्टीम सेवांसाठी अनुमती आहे</translation>
 <translation id="8563898784671745643">तळाशी असलेली साइट म्यूट करा</translation>
 <translation id="8564220755011656606">मायक्रोफोन अ‍ॅक्सेस करू शकत नाही</translation>
+<translation id="8564894539416715395">नवीन टॅब पेज</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> यांना काढून टाकायचे आहे का?</translation>
 <translation id="8566916288687510520">नवीन पासवर्ड मिळाला आहे</translation>
 <translation id="8567946600191652875">किमान ६ वर्ण असणे आणि किमान एक अक्षर किंवा चिन्ह असणे आवश्यक आहे</translation>
@@ -10472,6 +10464,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8963117664422609631">साइट सेटिंग्जवर जा</translation>
 <translation id="8964927371396953727">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये, पासवर्ड वापरण्यासाठी आणि सेव्ह करण्यासाठी, हे तुम्हीच असल्याची पडताळणी करा</translation>
 <translation id="8965037249707889821">जुना पासवर्ड एंटर करा</translation>
+<translation id="8967403839792635452">एक्स्टेंशन डेव्हलप करत आहात का? Chrome एक्स्टेंशन डेव्हलपर दस्तऐवजासह <ph name="BEGIN_LINK" />नवीन काय आहे<ph name="END_LINK" /> याविषयी अप टू डेट रहा.</translation>
 <translation id="8967427617812342790">वाचन सूचीमध्ये जोडा</translation>
 <translation id="8968527460726243404">ChromeOS प्रणाली इमेज लेखक</translation>
 <translation id="8968766641738584599">कार्ड सेव्ह करा</translation>

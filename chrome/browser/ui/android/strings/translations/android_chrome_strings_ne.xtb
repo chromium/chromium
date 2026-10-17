@@ -251,6 +251,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1984417487208496350">सुरक्षारहित मोड (सिफारिस गरिँदैन)</translation>
 <translation id="1986685561493779662">नाम पहिलेदेखि नै विद्यमान छ</translation>
 <translation id="1992244793717364584">एप अनइन्स्टल गरिएको छ</translation>
+<translation id="1999115740519098545">सुरूवातमा</translation>
 <translation id="200114059308480249">Google मा कुनै शब्द वा वाक्यांशका बारेमा थप जानकारी खोज्दा सो शब्द वा वाक्यांश वरपरका पाठहरू पनि समावेश गर्ने हो?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, पिन गरिएको म्युट गरिएको इन्कोग्निटो ट्याब</translation>
 <translation id="2021896219286479412">पूर्ण स्क्रिनको साइटका नियन्त्रणहरू</translation>
@@ -265,7 +266,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2056878612599315956">साइट पज गरियो</translation>
 <translation id="2063047797624276601">तपाईंको सङ्गठनले "परिष्कृत सुरक्षित ब्राउजिङ" अन गरेको छ</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{१ वटा डाउनलोड गर्न सकिएन}other{# वटा डाउनलोडहरू गर्न सकिएन}}</translation>
-<translation id="2066690553719545730">AI मोड सधैँ देखाउनुहोस्</translation>
 <translation id="2067805253194386918">पाठ</translation>
 <translation id="2079545284768500474">अन्डू गर्नुहोस्</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> को <ph name="RESULT_NUMBER" /> परिणाम</translation>
@@ -798,6 +798,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4188638484665452040">Gemini अनपिन गरिएको छ</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{स्प्याम वा भ्रामक सामग्रीका कारण Chrome ले यो साइटलाई नोटिफिकेसन पठाउन रोक लगाएको छ}other{स्प्याम वा भ्रामक सामग्रीका कारण Chrome ले यी साइटहरूलाई नोटिफिकेसन पठाउन रोक लगाएको छ}}</translation>
 <translation id="4195643157523330669">नयाँ ट्याबमा खोल्नुहोस्</translation>
+<translation id="4195814663415092787">तपाइँले छोड्नुभएको स्थान देखि जारी राख्नुहोस्</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{यो डिभाइसको एउटा ट्याब}other{यो डिभाइसको # वटा ट्याब}}</translation>
 <translation id="4198268995694216131">थप साइटहरू</translation>
 <translation id="4198423547019359126">डाउनलोडसम्बन्धी कुनै पनि स्थानहरू उपलब्ध छैनन्</translation>
@@ -808,7 +809,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4216511743389425832">यो पेजमा भएको टेक्स्ट सुन्नुहोस्</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, चयन गरिएको पनि नगरिएको Picture-in-Picture इन्कोग्निटो ट्याब</translation>
 <translation id="4225895483398857530">टुलबारको सर्टकट</translation>
-<translation id="4232376164796433044">पासवर्डहरू र अटोफिल</translation>
 <translation id="4242533952199664413">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="424864128008805179">Chrome बाट साइन आउट गर्ने हो?</translation>
 <translation id="425582637250725228">तपाईँले गर्नुभएका परिवर्तनहरू सुरक्षित नहुन सक्छन्।</translation>
@@ -1146,6 +1146,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5568069709869097550">साइन इन गर्न सक्दैन</translation>
 <translation id="557018954714092179">नयाँ फोल्डर बनाउनुहोस्</translation>
 <translation id="5578795271662203820">यस छविको लागि <ph name="SEARCH_ENGINE" /> खोज्नुहोस्</translation>
+<translation id="558563010977877295">कुनै विशेष पृष्ठ वा पृष्ठहरूको सेट खोल्नुहोस्</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
 <translation id="5599455543593328020">इन्कोग्निटो मोड</translation>
 <translation id="5601180634394228718">Chrome मा तपाईंको ब्राउजिङ अनुभवको गुणस्तर सुधार्न डेटा प्रयोग गर्ने थप सेटिङका लागि <ph name="BEGIN_LINK" />Google का सेवा<ph name="END_LINK" />मा जानुहोस्।</translation>
@@ -1446,6 +1447,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="671481426037969117">तपाईंको <ph name="FQDN" /> टाइमरको समय सकियो। यो भोलि फेरि सुरु हुने छ।</translation>
 <translation id="6716434912087331834">नयाँ विन्डो रिस्टोर गर्न सक्रिय विन्डोहरूको कुल सङ्ख्या घटाएर <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> वा सोभन्दा कम बनाउनुहोस्। निष्क्रिय विन्डोहरू ६ महिनापछि मेटाइन्छन्।</translation>
 <translation id="6723740634201835758">तपाईंको Google खातामा</translation>
+<translation id="6725340821578440069">डिभाइसअनुसार फिल्टर गर्नुहोस्</translation>
 <translation id="6734310707649923383">तपाईं आफूले खोलेका पेज हेर्न वा आफ्नो ब्राउजिङ हिस्ट्रीबाट ती पेज मेटाउन सक्नुहुन्छ</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, पिन गरिएको रेकर्डिङ इन्कोग्निटो ट्याब</translation>
 <translation id="6738867403308150051">डाउनलोड गर्दैछ…</translation>
@@ -1904,6 +1906,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8387617938027387193">यो व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8393700583063109961">म्यासेज पठाउनुहोस्</translation>
 <translation id="8398389123831319859">इन्कोग्निटो मोड प्रयोग गर्न डबल ट्याप गरी थिचिरहनुहोस्</translation>
+<translation id="8401904657382223224">होस्टअनुसार फिल्टर गर्नुहोस्</translation>
 <translation id="8412037385861858490">Chrome मा तपाईंको कार्य सुरक्षित राख्न तपाईंको सङ्गठनले तपाईं Chrome मा साइन इन अवस्थामा हुँदा निश्चित जानकारी हेर्न वा व्यवस्थापन गर्न सक्ने छ। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">पूर्ण इतिहास देखाउनुहोस्</translation>
 <translation id="8413795581997394485">खतरनाक मानिने साइट, डाउनलोड र एक्स्टेन्सनहरूबाट सुरक्षित राख्छ। तपाईं वेबसाइटमा जाँदा Chrome ले तपाईंको IP एड्रेस लुकाउने निजी सर्भरमार्फत Google लाई URL को अस्पष्ट भाग पठाउँछ। वेबसाइटमा कुनै शंकास्पद गतिविधि भएका खण्डमा पूरै URL र पेजमा भएका केही सामग्री पनि पठाइन्छन्।</translation>

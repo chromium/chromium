@@ -1020,6 +1020,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="3978162107953847778">Insereix enllaços des de llocs com el teu historial de navegació i Google Drive. També pots inserir emojis, fitxers d'imatge i més. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="3982013579989864579">Vols canviar la sortida d'àudio?</translation>
+<translation id="3983903378684256134">Steam a Chromebook</translation>
 <translation id="3984536049089846927">Pàgina següent</translation>
 <translation id="3986082989454912832">Respon</translation>
 <translation id="3990002060657467458">Trobaràs els controls utilitzats amb més freqüència, com ara la Wi‐Fi, el Bluetooth i el volum, a la configuració ràpida. Des d'aquí també podràs fer captures de pantalla.</translation>
@@ -1636,6 +1637,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="5727460725221669831">Si has oblidat la contrasenya o has canviat la contrasenya del Compte de Google fa poc, prova de recuperar aquest usuari.</translation>
 <translation id="5733630091161562207">Notificació de benvinguda</translation>
 <translation id="573413375004481890">Com que aquest dispositiu no ha pogut admetre totes les pantalles, se n'ha desconnectat una</translation>
+<translation id="5739548907438839901">S'han alliberat <ph name="SIZE" /> d'espai de disc.</translation>
 <translation id="574392208103952083">Mitja</translation>
 <translation id="5745612484876805746">La funció Llum nocturna s'activa automàticament al vespre</translation>
 <translation id="5749214722697335450">Envia dades d'ús i de diagnòstic. Ajuda a millorar la teva experiència a Android enviant automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. Si l'opció de configuració Activitat al web i en aplicacions addicional està activada, és possible que aquestes dades es desin al teu Compte de Google. <ph name="BEGIN_LINK1" />Més informació sobre les mètriques<ph name="BEGIN_LINK1_END" />Més informació<ph name="END_LINK1" /></translation>
@@ -2211,6 +2213,7 @@ Instal·lació nova</translation>
 <translation id="7413851974711031813">Prem la tecla d'escapada per tancar</translation>
 <translation id="7416471219712049036">Desa la pàgina actual</translation>
 <translation id="742594950370306541">La càmera s'està utilitzant.</translation>
+<translation id="7430466159639897874">Tens espai de disc no utilitzat (<ph name="SIZE" />) assignat a la funció obsoleta Steam a Chromebook.</translation>
 <translation id="743058460480092004">La càmera i el micròfon s'estan utilitzant.</translation>
 <translation id="7433708794692032816">Insereix la targeta intel·ligent per continuar utilitzant el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7440404390546433462">Cerca de Google</translation>
@@ -2352,6 +2355,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7781335840981796660">Se suprimiran tots els comptes d'usuari i totes les dades locals.</translation>
 <translation id="7781829728241885113">Ahir</translation>
 <translation id="7787212146956232129">Els dispositius d'entrada i de sortida estan definits. Per canviar-ho, ves a Configuració.</translation>
+<translation id="7790757511772316441">Espai de disc lliure</translation>
 <translation id="7792590255364786396">Visible</translation>
 <translation id="7796735576426975947">S'ha amagat una altra notificació</translation>
 <translation id="7798302898096527229">Prem Cerca o Maj per cancel·lar.</translation>

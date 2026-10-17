@@ -617,7 +617,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2059166748188874810">Munitsipalitet</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2063929825539050431">Bu sahifani boshqa qurilmaga tezkor yuborish uchun manzil qatorini bosib turing</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 ta tavsiya}other{# ta tavsiya}}</translation>
 <translation id="2066969741541525119">Oldindagi sayt tashkilotingiz tomonidan bloklandi</translation>
 <translation id="2071156619270205202">Koʻrsatilgan raqamdan virtual karta raqami sifatida foydalanib boʻlmaydi.</translation>
 <translation id="2071852865256799872">Brauzeringiz tashkilotingiz boshqaruvida va profilingiz <ph name="PROFILE_DOMAIN" /> domenida boshqariladi</translation>
@@ -710,7 +709,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2188375229972301266">Quyidan bir nechta teshik ochish</translation>
 <translation id="218940509700321686">Vergul bilan ajratilgan qiymatlar (CSV)</translation>
 <translation id="2190094353033916816">Bu siyosatda kompyuter va foydalanuvchi darajalari uchun turli qiymatlar belgilangan. Siyosat kutilganidek ishlayapti.</translation>
-<translation id="219061769324072544">Kredit,karta,debet</translation>
 <translation id="2191980191135734720">Keyingi ekranda ekranni qulfdan chiqaring, odatda barmoq izi ishlatiladi. Yana bajarish mumkin: <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Bularni hisobga olish kerak</translation>
 <translation id="2195729137168608510">Elektron pochta himoyasi</translation>
@@ -1081,6 +1079,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2807052079800581569">Tasvirning Y oʻqidagi joylashuvi</translation>
 <translation id="2808278141522721006">Windows Hello himoyasini <ph name="SETTINGS" /> orqali yoqish yoki faolsizlantirish mumkin</translation>
 <translation id="2820957248982571256">Tekshirilmoqda...</translation>
+<translation id="282457273878278063">Kontakt axborotini boshqarish</translation>
 <translation id="2824775600643448204">Manzil va qidiruv paneli</translation>
 <translation id="2826760142808435982">Aloqa shifrlangan va <ph name="CIPHER" /> yordamida tekshirilgan. Kalitlar almashinuvi mexanizmi sifatida <ph name="KX" /> qo‘llanilmoqda.</translation>
 <translation id="2828797285817981634">Hozircha harakat sensorlaridan foydalanish ruxsati berilgan</translation>
@@ -1860,7 +1859,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4121428309786185360">Muddati</translation>
 <translation id="4123572138124678573">Quyidan 3 ta teshik ochish</translation>
 <translation id="412601465078863288">Yuklash vaqti tugadi</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{yana 1 ta}other{yana # ta}}</translation>
 <translation id="4129810348470013900">Xatolik yuz berdi. Internetni tekshiring va qayta urining.</translation>
 <translation id="4130226655945681476">Tarmoq kabellari, modem va routerni tekshiring</translation>
 <translation id="4132448310531350254"><ph name="FILE_EXTENSION" /> kengaytmasi uchun bir nechta standart ishlash vositalari topildi: <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3225,7 +3223,6 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="638289054711715023">Issiqlikka chidamli plyonka</translation>
 <translation id="6383221683286411806">Trafik uchun haq olinishi mumkin.</translation>
 <translation id="6384448607821972818">Zaxiraviy parol chiqarildi</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{yana 1 ta tavsiya}other{yana # ta tavsiya}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
 <translation id="6387645831795005740">Odatda shubhali kimsalar URL manzilda kichik oʻzgarishlar kiritib, saytlarga soxta nusxalar yasaydi.</translation>
 <translation id="6389470377220713856">Karta egasi</translation>

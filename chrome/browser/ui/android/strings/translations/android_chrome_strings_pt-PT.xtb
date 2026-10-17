@@ -251,6 +251,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">O nome já existe</translation>
 <translation id="1992244793717364584">A app foi desinstalada</translation>
+<translation id="1999115740519098545">No arranque</translation>
 <translation id="200114059308480249">Quer incluir o texto circundante nas pesquisas no Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, separador de navegação anónima com som desativado fixado</translation>
 <translation id="2021896219286479412">Controlos de site em ecrã int.</translation>
@@ -265,7 +266,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="2056878612599315956">Site em pausa</translation>
 <translation id="2063047797624276601">A sua organização ativou a Navegação segura melhorada</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 transferência falhada}other{# transferências falhadas}}</translation>
-<translation id="2066690553719545730">Mostrar sempre o Modo IA</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2079545284768500474">Anular</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4188638484665452040">Gemini desafixado</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome impediu este site de enviar notificações devido a spam ou conteúdo enganoso}other{O Chrome impediu estes sites de enviar notificações devido a spam ou conteúdo enganoso}}</translation>
 <translation id="4195643157523330669">Abrir num novo separador</translation>
+<translation id="4195814663415092787">Continuar onde deixou</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 separador neste dispositivo}other{# separadores neste dispositivo}}</translation>
 <translation id="4198268995694216131">Sites adicionais</translation>
 <translation id="4198423547019359126">Não existem localizações de transferência disponíveis.</translation>
@@ -808,7 +809,6 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4216511743389425832">Ouvir esta página</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, separador de navegação anónima no modo ecrã no ecrã fixo selecionado</translation>
 <translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
-<translation id="4232376164796433044">Palavras-passe/preench. autom.</translation>
 <translation id="4242533952199664413">Abrir definições</translation>
 <translation id="424864128008805179">Quer terminar sessão no Chrome?</translation>
 <translation id="425582637250725228">É possível que as alterações não tenham sido efetuadas.</translation>
@@ -1147,6 +1147,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5568069709869097550">Não é possível iniciar sessão</translation>
 <translation id="557018954714092179">Criar nova pasta</translation>
 <translation id="5578795271662203820">Pesquisar a imagem no <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Abrir uma página específica ou um conjunto de páginas</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anónima</translation>
 <translation id="5601180634394228718">Para ver mais definições que usam dados para melhorar a sua experiência do Chrome, aceda aos <ph name="BEGIN_LINK" />serviços Google<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="671481426037969117">O temporizador da app <ph name="FQDN" /> terminou. Recomeça amanhã.</translation>
 <translation id="6716434912087331834">Para restaurar uma nova janela, reduza o número total de janelas ativas para <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos. As janelas inativas são eliminadas após 6 meses.</translation>
 <translation id="6723740634201835758">Na sua Conta Google</translation>
+<translation id="6725340821578440069">Filtre por dispositivo</translation>
 <translation id="6734310707649923383">Pode ver as páginas que visitou ou eliminá-las do seu histórico</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, separador de navegação anónima a gravar fixado</translation>
 <translation id="6738867403308150051">A transferir...</translation>
@@ -1905,6 +1907,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8387617938027387193">Valide a sua identidade</translation>
 <translation id="8393700583063109961">Enviar mensagem</translation>
 <translation id="8398389123831319859">Toque duas vezes sem soltar para mudar para a Navegação anónima</translation>
+<translation id="8401904657382223224">Filtre por anfitrião</translation>
 <translation id="8412037385861858490">Para proteger o seu trabalho no Chrome, a sua organização vai poder ver ou gerir determinadas informações quando tiver sessão iniciada no Chrome. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Mostrar histórico completo</translation>
 <translation id="8413795581997394485">Protege contra sites, transferências e extensões identificados como perigosos. Quando visita um site, o Chrome envia uma parte oculta do URL para a Google através de um servidor de privacidade que oculta o seu endereço IP. Se um site fizer algo suspeito, são também enviados URLs completos e fragmentos de conteúdo da página.</translation>

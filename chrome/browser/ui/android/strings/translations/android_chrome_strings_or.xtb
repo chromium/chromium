@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">କୌଣସି ସୁରକ୍ଷା ନାହିଁ (ସୁପାରିଶ କରାଯାଇ ନାହିଁ)</translation>
 <translation id="1986685561493779662">ନାମ ପୂର୍ବରୁ ଅଛି</translation>
 <translation id="1992244793717364584">ଆପକୁ ଅନଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
+<translation id="1999115740519098545">ଆରମ୍ଭ ପୃଷ୍ଠାରେ</translation>
 <translation id="200114059308480249">Google ସନ୍ଧାନଗୁଡ଼ିକରେ ଆଖପାଖର ଟେକ୍ସଟକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରିବେ କି?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ମ୍ୟୁଟ କରାଯାଇଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="2021896219286479412">ପୂର୍ଣ୍ଣ-ସ୍କ୍ରିନ୍ ସାଇଟ୍ ନିୟନ୍ତ୍ରଣ</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">ସାଇଟ୍‍ ବିରତ ହୋ‍ଇଗଲା</translation>
 <translation id="2063047797624276601">ଆପଣଙ୍କ ସଂସ୍ଥା ଉନ୍ନତ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ଚାଲୁ କରିଛି</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1ଟି ଡାଉନଲୋଡ୍ ବିଫଳ ହୋଇଛି}other{#ଟି ଡାଉନଲୋଡ୍ ବିଫଳ ହୋଇଛି}}</translation>
-<translation id="2066690553719545730">ସର୍ବଦା AI ମୋଡ ଦେଖାନ୍ତୁ</translation>
 <translation id="2067805253194386918">ଟେକ୍ସଟ୍</translation>
 <translation id="2079545284768500474">ଅନଡୁ କରନ୍ତୁ</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />ର <ph name="RESULT_NUMBER" />ଟି ଫଳାଫଳ</translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Geminiକୁ ଅନପିନ କରାଯାଇଛି</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{ସ୍ପାମ କିମ୍ବା ପ୍ରତାରଣାମୂଳକ ବିଷୟବସ୍ତୁ ଯୋଗୁଁ ଏହି ସାଇଟକୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}other{ସ୍ପାମ କିମ୍ବା ପ୍ରତାରଣାମୂଳକ ବିଷୟବସ୍ତୁ ଯୋଗୁଁ ଏହି ସାଇଟଗୁଡ଼ିକୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାରୁ Chrome ବନ୍ଦ କରିଦେଇଛି}}</translation>
 <translation id="4195643157523330669">ନୂତନ ଟ୍ୟାବରେ ଖୋଲନ୍ତୁ</translation>
+<translation id="4195814663415092787">ଆପଣ ଯେଉଁଠାରୁ ଛାଡ଼ିଥିଲେ ସେହିଠାରୁ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ଏହି ଡିଭାଇସରେ 1ଟି ଟାବ}other{ଏହି ଡିଭାଇସରେ #ଟି ଟାବ}}</translation>
 <translation id="4198268995694216131">ଅତିରିକ୍ତ ସାଇଟ</translation>
 <translation id="4198423547019359126">କୌଣସି ଡାଉନ୍‍‍‍ଲୋଡ୍ ହୋଇଥିବା ଲୋକେସନ୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">ଏହି ପୃଷ୍ଠାକୁ ଶୁଣନ୍ତୁ</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, ଚୟନିତ ପିନ କରାଯାଇଥିବା ପିକଚର-ଇନ-ପିକଚର ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="4225895483398857530">ଟୁଲବାର୍ ସର୍ଟକଟ୍</translation>
-<translation id="4232376164796433044">ପାସୱାର୍ଡ ଏବଂ ଅଟୋଫିଲ</translation>
 <translation id="4242533952199664413">ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
 <translation id="424864128008805179">Chromeରୁ ସାଇନ୍‌ ଆଉଟ୍‍ କରିବେ?</translation>
 <translation id="425582637250725228">ଆପଣ କରିଥିବା ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସେଭ୍ ହୋଇନପାରେ।</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">ସାଇନ୍ ଇନ୍ କରିପାରିବ ନାହିଁ</translation>
 <translation id="557018954714092179">ନୂଆ ଫୋଲ୍ଡର ତିଆରି କରନ୍ତୁ</translation>
 <translation id="5578795271662203820">ଏହି ଇମେଜ ପାଇଁ <ph name="SEARCH_ENGINE" /> ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="558563010977877295">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ପୃଷ୍ଠା ବା ପୃଷ୍ଠାର ସେଟ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5599455543593328020">ଇନ୍‍କଗ୍ନିଟୋ ମୋଡ୍</translation>
 <translation id="5601180634394228718">ଆପଣଙ୍କ Chrome ଅନୁଭୂତିକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଡାଟା ବ୍ୟବହାର କରୁଥିବା ଅଧିକ ସେଟିଂସ ନିମନ୍ତେ <ph name="BEGIN_LINK" />Google ସେବାଗୁଡ଼ିକୁ<ph name="END_LINK" /> ଯାଆନ୍ତୁ।</translation>
@@ -1447,6 +1448,7 @@
 <translation id="671481426037969117">ଆପଣଙ୍କର <ph name="FQDN" /> ଟାଇମର୍‌ର ସମୟ ସମାପ୍ତ ହୋଇଗଲା। ଏହା ଆସନ୍ତାକାଲି କାର୍ଯ୍ୟାରମ୍ଭ କରିବ।</translation>
 <translation id="6716434912087331834">ଏକ ନୂଆ ୱିଣ୍ଡୋ ରିଷ୍ଟୋର କରିବା ପାଇଁ ସକ୍ରିୟ ୱିଣ୍ଡୋର ମୋଟ ସଂଖ୍ୟାକୁ <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> କିମ୍ବା ତାଠାରୁ କମ କରନ୍ତୁ। 6 ମାସ ପରେ ନିଷ୍କ୍ରିୟ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଡିଲିଟ କରାଯାଏ।</translation>
 <translation id="6723740634201835758">ଆପଣଙ୍କର Google ଆକାଉଣ୍ଟରେ</translation>
+<translation id="6725340821578440069">ଡିଭାଇସ ଅନୁସାରେ ଫିଲ୍ଟର କରନ୍ତୁ</translation>
 <translation id="6734310707649923383">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଆପଣ ଦେଖିପାରିବେ କିମ୍ବା ଆପଣଙ୍କ ଇତିହାସରୁ ସେଗୁଡ଼ିକୁ ଡିଲିଟ କରିପାରିବେ</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, ପିନ କରାଯାଇଥିବା ରେକର୍ଡ କରୁଥିବା ଇନକଗ୍ନିଟୋ ଟାବ</translation>
 <translation id="6738867403308150051">ଡାଉନ୍‍‍‍ଲୋଡ୍ ହେଉଛି…</translation>
@@ -1905,6 +1907,7 @@
 <translation id="8387617938027387193">ଏହା ଆପଣ ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="8393700583063109961">ମେସେଜ୍‌ ପଠାନ୍ତୁ</translation>
 <translation id="8398389123831319859">ଇନକଗ୍ନିଟୋକୁ ସୁଇଚ କରିବା ପାଇଁ ଦୁଇଥର ଟାପ କରି ଧରି ରଖନ୍ତୁ</translation>
+<translation id="8401904657382223224">ହୋଷ୍ଟ ଅନୁସାରେ ଫିଲ୍ଟର କରନ୍ତୁ</translation>
 <translation id="8412037385861858490">Chromeରେ ଆପଣଙ୍କ ୱାର୍କକୁ ସୁରକ୍ଷିତ କରିବା ପାଇଁ ଆପଣ Chromeରେ ସାଇନ-ଇନ କରିଥିବା ସମୟରେ ଆପଣଙ୍କ ସଂସ୍ଥା କିଛି ନିର୍ଦ୍ଦିଷ୍ଟ ସୂଚନାକୁ ଭ୍ୟୁ କରିବା କିମ୍ବା ପରିଚାଳନା କରିବାକୁ ସକ୍ଷମ ହେବ। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">ସମ୍ପୂର୍ଣ୍ଣ ଇତିବୃତ୍ତି ଦେଖାନ୍ତୁ</translation>
 <translation id="8413795581997394485">ବିପଦଜନକ ପରି ଜଣାପଡ଼ୁଥିବା ସାଇଟ, ଡାଉନଲୋଡ ଏବଂ ଏକ୍ସଟେନସନଗୁଡ଼ିକଠାରୁ ସୁରକ୍ଷିତ ରଖେ। ଆପଣ ଏକ ସାଇଟକୁ ଭିଜିଟ କଲେ, Chrome ଆପଣଙ୍କ IP ଠିକଣାକୁ ଲୁଚାଉଥିବା ଗୋଟିଏ ଗୋପନୀୟତା ସର୍ଭର ମାଧ୍ୟମରେ URLର ଏକ ଅସ୍ପଷ୍ଟ ଅଂଶ Googleକୁ ପଠାଏ। ଯଦି ଏକ ପୃଷ୍ଠା କିଛି ସନ୍ଦେହଜନକ କାର୍ଯ୍ୟ କରେ, ତେବେ ସମ୍ପୂର୍ଣ୍ଣ URL ଏବଂ ପୃଷ୍ଠାର କିଛି ବିଷୟବସ୍ତୁ ମଧ୍ୟ ପଠାଯାଏ।</translation>

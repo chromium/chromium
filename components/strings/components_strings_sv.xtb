@@ -618,7 +618,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2059166748188874810">Kommun</translation>
 <translation id="2059202684901022309">22 x 34 tum</translation>
 <translation id="2063929825539050431">Tryck länge på adressfältet om du snabbt vill skicka den här sidan till en annan enhet</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 förslag}other{# förslag}}</translation>
 <translation id="2066969741541525119">Webbplatsen blockeras av din organisation</translation>
 <translation id="2071156619270205202">Detta kort uppfyller inte kraven för virtuella kortnummer.</translation>
 <translation id="2071852865256799872">Din webbläsare hanteras av din organisation och din profil hanteras av <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2188375229972301266">Flera hål längst ned</translation>
 <translation id="218940509700321686">Kommaavgränsade värden</translation>
 <translation id="2190094353033916816">Den här principen har olika värden som tillämpas på dator- och användarnivå. Principen fungerar som avsett.</translation>
-<translation id="219061769324072544">Kredit,Kort,Betal</translation>
 <translation id="2191980191135734720">Lås upp skärmen i nästa steg, vanligtvis med fingeravtryck. Du kan även <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2195729137168608510">E-postskydd</translation>
@@ -1082,6 +1080,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2807052079800581569">Bild Y – position</translation>
 <translation id="2808278141522721006">Du kan aktivera eller inaktivera Windows Hello i <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Söker …</translation>
+<translation id="282457273878278063">Hantera kontaktuppgifter</translation>
 <translation id="2824775600643448204">Adress- och sökfält</translation>
 <translation id="2826760142808435982">Anslutningen är krypterad och verifieras med <ph name="CIPHER" /> och använder <ph name="KX" /> som nyckelutbytesmekanism.</translation>
 <translation id="2828797285817981634">Rörelsesensorer tillåts för närvarande</translation>
@@ -1865,7 +1864,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4121428309786185360">Giltig till</translation>
 <translation id="4123572138124678573">Tre hål längst ned</translation>
 <translation id="412601465078863288">Tidsgränsen för uppladdning överskreds</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 till}other{# till}}</translation>
 <translation id="4129810348470013900">Något gick fel. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="4130226655945681476">Kontrollera nätverkskablar, modem och router</translation>
 <translation id="4132448310531350254">Dubbla hanterare för filnamnstillägget <ph name="FILE_EXTENSION" /> refereras av apparna <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3231,7 +3229,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="638289054711715023">Krympfolie</translation>
 <translation id="6383221683286411806">Du kan komma att debiteras.</translation>
 <translation id="6384448607821972818">Återställningslösenordet visas</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 annat förslag}other{# andra förslag}}</translation>
 <translation id="6386565501269869892">You 4-kuvert</translation>
 <translation id="6387645831795005740">Ibland försöker hackare efterlikna webbplatser genom att göra små, svårupptäckta ändringar i webbadressen.</translation>
 <translation id="6389470377220713856">Namn på kort</translation>

@@ -251,6 +251,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
 <translation id="1986685561493779662">Název již existuje</translation>
 <translation id="1992244793717364584">Aplikace byla odinstalována</translation>
+<translation id="1999115740519098545">Při spuštění</translation>
 <translation id="200114059308480249">Zahrnovat při vyhledávání na Googlu okolní text?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, připnutá ztlumená anonymní karta</translation>
 <translation id="2021896219286479412">Ovládání webu na celé obrazovce</translation>
@@ -265,7 +266,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2056878612599315956">Web je pozastaven</translation>
 <translation id="2063047797624276601">Vaše organizace zapnula Vylepšené Bezpečné prohlížení</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Stažení 1 souboru se nezdařilo}few{Stažení # souborů se nezdařilo}many{Stažení # souboru se nezdařilo}other{Stažení # souborů se nezdařilo}}</translation>
-<translation id="2066690553719545730">Vždy zobrazovat režim AI</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Vrátit zpět</translation>
 <translation id="2082238445998314030">Výsledek <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4188638484665452040">Tlačítko Gemini bylo odepnuto</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome tomuto webu kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}few{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}many{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}other{Chrome těmto webům kvůli spamu nebo klamavému obsahu zablokoval odesílání oznámení}}</translation>
 <translation id="4195643157523330669">Otevřít na nové kartě</translation>
+<translation id="4195814663415092787">Pokračovat tam, kde jste přestali</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta na tomto zařízení}few{# karty na tomto zařízení}many{# karty na tomto zařízení}other{# karet na tomto zařízení}}</translation>
 <translation id="4198268995694216131">Další weby</translation>
 <translation id="4198423547019359126">Nejsou k dispozici žádná umístění stažených souborů</translation>
@@ -808,7 +809,6 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4216511743389425832">Poslechnout si tuto stránku</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, vybraná připnutá anonymní karta s obrazem v obraze</translation>
 <translation id="4225895483398857530">Zkratka lišty</translation>
-<translation id="4232376164796433044">Hesla a automatické vyplňování</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="425582637250725228">Je možné, že provedené změny nebudou uloženy.</translation>
@@ -1147,6 +1147,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5568069709869097550">Nepodařilo se přihlásit</translation>
 <translation id="557018954714092179">Vytvořit novou složku</translation>
 <translation id="5578795271662203820">Hledat obrázek pomocí <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Otevřít konkrétní stránku nebo skupinu stránek</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5599455543593328020">Anonymní režim</translation>
 <translation id="5601180634394228718">Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chrome najdete v sekci <ph name="BEGIN_LINK" />Služby Google<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="671481426037969117">Časovač <ph name="FQDN" /> vypršel. Spustí se zase zítra.</translation>
 <translation id="6716434912087331834">Pokud chcete obnovit nové okno, snižte celkový počet aktivních oken na maximálně <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Neaktivní okna se po 6 měsících smažou.</translation>
 <translation id="6723740634201835758">V účtu Google</translation>
+<translation id="6725340821578440069">Filtrovat podle zařízení</translation>
 <translation id="6734310707649923383">Můžete si zobrazit stránky, které jste navštívili, a případně je z historie smazat</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, připnutá nahrávající anonymní karta</translation>
 <translation id="6738867403308150051">Stahování…</translation>
@@ -1905,6 +1907,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8387617938027387193">Potvrďte, že jste to vy</translation>
 <translation id="8393700583063109961">Odeslat zprávu</translation>
 <translation id="8398389123831319859">Dvojitým klepnutím a podržením přejdete do anonymního režimu</translation>
+<translation id="8401904657382223224">Filtrovat podle hostitele</translation>
 <translation id="8412037385861858490">Když budete do Chromu přihlášeni, bude moct vaše organizace za účelem zajištění bezpečnosti vaší práce v Chromu zobrazit nebo spravovat určité informace. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Zobrazit celou historii</translation>
 <translation id="8413795581997394485">Chrání před weby, soubory ke stažení a rozšířeními, o kterých je známo, že jsou nebezpečné. Když navštívíte nějaký web, Chrome odešle obfuskovanou část adresy URL do Googlu prostřednictvím serveru pro ochranu soukromí, který skryje vaši IP adresu. Pokud web provede něco podezřelého, odešlou se také úplné adresy URL a části obsahu stránky.</translation>

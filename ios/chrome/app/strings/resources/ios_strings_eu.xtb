@@ -10,6 +10,7 @@
 <translation id="1016495303386450659">Eguneratu da elementua</translation>
 <translation id="1018804590490383958">Eskaneatu eta bete automatikoki</translation>
 <translation id="1019990162050689579">Gemini-ren aplikazioetako jarduerak</translation>
+<translation id="102471647093736603">Eduki sakatuta mugitzeko</translation>
 <translation id="102645702181682900">Hasi da zeregina</translation>
 <translation id="102916930470544692">Sarbide-gakoa</translation>
 <translation id="1030376737535466765">Ireki Pasahitz-kudeatzailea</translation>
@@ -194,7 +195,6 @@
 <translation id="154312949627292154">Ireki beste gailuetatik jasotako fitxak pantaila blokeatutik.</translation>
 <translation id="1544653821167545205">Laburbildu orria</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
-<translation id="1545757265410828525">Prezioen historia</translation>
 <translation id="1547610699249301703">Partekatu pasahitzak</translation>
 <translation id="1554043146674176775">Desaktibatu AA modua</translation>
 <translation id="1554477036522844996">Leiho berria</translation>
@@ -484,7 +484,6 @@
 <translation id="2434405374328098816">Gordeta daukazu jada "<ph name="USERNAME" />" erabiltzaile-izenari eta <ph name="WEBSITE" /> webguneari dagokien pasahitza</translation>
 <translation id="2434918313224755415">Ezkutuko moduan arakatzeko, hatza ezkerrera pasa dezakezu.</translation>
 <translation id="2435457462613246316">Erakutsi pasahitza</translation>
-<translation id="2451607499823206582">Jarraipena egiten</translation>
 <translation id="2458827363789845126">{count,plural, =1{Historiako {count} elementu}other{Historiako {count} elementu}}</translation>
 <translation id="2461070143328828326">Pasahitzen ezarpenak</translation>
 <translation id="2462736546165239215">Arakatze-historia guztia hemen aurki dezakezu.</translation>
@@ -624,6 +623,7 @@
 <translation id="2870560284913253234">Webgunea</translation>
 <translation id="2876369937070532032">Segurtasuna arriskuan dagoenean, ireki dituzun URLetako batzuk bidaltzen dizkio Google-ri</translation>
 <translation id="2883151425485251736">Ikusi eta editatu kontuan ezkutatu dituzun gaiak</translation>
+<translation id="2884437560239137197">Zerbait egin behar duzu</translation>
 <translation id="288655811176831528">Itxi fitxa</translation>
 <translation id="2888631381369839306">Aktibatu dira prezioen jarraipenari buruzko jakinarazpenak</translation>
 <translation id="2893168226686371498">Arakatzaile lehenetsia</translation>
@@ -1209,6 +1209,7 @@
 <translation id="4808744395915275922">Eguneratzeak</translation>
 <translation id="4813345808229079766">Konexioa</translation>
 <translation id="4821595350501541683">Fitxak itxi dira, eta arakatze-datuak ezabatu dira</translation>
+<translation id="4823322556950229674">Helbide-barra eta atzera egiteko botoia behealdera eramateko, eduki sakatuta.</translation>
 <translation id="4824480232751123840">Bolumena</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826588772550366629">kamera eta mikrofonoa</translation>
@@ -1464,6 +1465,7 @@
 <translation id="559567008082979829">Konfiguratu deskargak hilabeteren buruan ezabatzeko.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="560322036295180549">Erakundeak desaktibatu du</translation>
+<translation id="5604254791550001355">Editatu eskaera-mezua</translation>
 <translation id="5611398002774823980">Gorde kontuan</translation>
 <translation id="5612225021788368236">Itxi arakatzaile lehenetsiaren promozioa</translation>
 <translation id="561269594905823128">Sakatu <ph name="BEGIN_BOLD" />Hautatu fitxategia<ph name="END_BOLD" /></translation>
@@ -1529,7 +1531,6 @@
 <translation id="5768870767339201169">Jarraitu utzi zenuen tokitik</translation>
 <translation id="5779117921996157216">{count,plural, =1{Arriskuan dagoen {count} pasahitz daukazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda ezazu.}other{Arriskuan dauden {count} pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea. Segurtasuna bermatzeko, alda itzazu.}}</translation>
 <translation id="5791632441210678828">Jarraitzen jarioko Ordenatu botoia.</translation>
-<translation id="5799263916847593256">Prezioen historia ikusteko, ireki hau</translation>
 <translation id="5801568494490449797">Hobespenak</translation>
 <translation id="5803566855766646066">Ziur txartel berri hau baztertu nahi duzula?</translation>
 <translation id="5804241973901381774">Baimenak</translation>
@@ -1667,6 +1668,7 @@
 <translation id="6227958838185907047">Hasi saioa <ph name="NAME" /> (<ph name="EMAIL" />) gisa</translation>
 <translation id="6231782223312638214">Iradokitakoak</translation>
 <translation id="6232329973559504466">Ezkutuko moduko bilaketa</translation>
+<translation id="6233463157595806945">Informazioa eman behar da</translation>
 <translation id="6234310016144827337">Egiaztatu konektatuta zaudela eta saiatu berriro</translation>
 <translation id="6236952928980352967">Leheneratu abisua</translation>
 <translation id="623755660902014047">Irakurtzeko modua</translation>
@@ -1697,6 +1699,7 @@
 <translation id="6307792728709337290">Gorde txartela Google-ko kontuan, erosketa honetan eta Chrome-n etorkizunean egingo dituzun erosketetan datu hori automatikoki bete dadin.</translation>
 <translation id="6316141353357700666">Aukeratu erabili nahi duzun pasahitza agertuko den zerrendatik.</translation>
 <translation id="6321526113093607004">Gehitu Laster-markak atalean</translation>
+<translation id="6322064144568952786">Zereginak huts egin du</translation>
 <translation id="6324054713176642683">Aukeratu gai edo koloreen artean, edo kargatu zeure argazkia.</translation>
 <translation id="6327249202318869726">Gemini desaktibatuta dago zure kontuan. Informazio gehiago lortzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="6331836477476466332">Zuretzako arakatzaile seguruago eta ahaltsuago bat</translation>
@@ -1879,7 +1882,6 @@
 <translation id="6815692190508268848">Aplikatu dira itxuraren hobespenak</translation>
 <translation id="681631578600400068">Gorde gidabaimena</translation>
 <translation id="6825078212112407882">{count,plural, =1{Laster-marka gorde da Google-ko kontuan ({email})}other{{count} laster-marka gorde dira Google-ko kontuan ({email})}}</translation>
-<translation id="6826004672264649705">Produktu honen jarraipena egiten ari zara. Prezioen historia ikusteko, ireki hau.</translation>
 <translation id="6830728435402077660">Ez da segurua</translation>
 <translation id="6831043979455480757">Itzuli</translation>
 <translation id="6842136130964845393">Gordetako pasahitzak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
@@ -2014,6 +2016,7 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="7241135764990439166">Ez dago erabilgarri ezkutuko modua</translation>
 <translation id="7245288034498365666">Antolatu eta aurreztu denbora</translation>
 <translation id="7253951228444156601">Pasahitzak egiaztatzen…</translation>
+<translation id="725583671816239562">Osatu da zeregina</translation>
 <translation id="7261217796641151584">Partekatu taldea</translation>
 <translation id="7266578100016339897">Horrela, antolatuta edukiko duzu guztia. Ezarpenetan alda dezakezu hori.</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google-ren Baldintzak<ph name="END_LINK" /> eta <ph name="BEGIN_LINK" />Gemini-ren aplikazioen Pribatutasun-oharra<ph name="END_LINK" /> aplikatzen dira. Gemini AA bidezko laguntzaile bat da eta baliteke akatsak egitea (jendeari buruzkoak barne).</translation>
@@ -2056,6 +2059,7 @@ Nahi duzunean has zaitezke berriro.</translation>
 <translation id="7411034503745719324"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />.</translation>
 <translation id="7412027924265291969">Egin aurrera</translation>
 <translation id="741204030948306876">Bai, ados</translation>
+<translation id="7417055777338419059">Programatu, idatzi edo sortu diapositibak</translation>
 <translation id="7419565702166471774">Erabili beti konexio seguruak</translation>
 <translation id="7423098979219808738">Galdetu lehenbizi</translation>
 <translation id="7425053386765766120">Gehitu ordainketa-metodo bat…</translation>

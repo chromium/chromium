@@ -618,7 +618,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2059166748188874810">Gmina</translation>
 <translation id="2059202684901022309">22 x 34 cale</translation>
 <translation id="2063929825539050431">Aby szybko wysłać tę stronę na inne urządzenie, naciśnij i przytrzymaj pasek adresu</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 podpowiedź}few{# podpowiedzi}many{# podpowiedzi}other{# podpowiedzi}}</translation>
 <translation id="2066969741541525119">Strona, którą chcesz otworzyć, została zablokowana przez Twoją organizację</translation>
 <translation id="2071156619270205202">Ta karta nie kwalifikuje się do nadania numeru karty wirtualnej.</translation>
 <translation id="2071852865256799872">Twoją przeglądarką zarządza Twoja organizacja, a Twoim profilem – <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2188375229972301266">Wiele otworów na dole</translation>
 <translation id="218940509700321686">Wartości rozdzielane przecinkami</translation>
 <translation id="2190094353033916816">Ta zasada ma różne wartości stosowane na poziomie komputera i użytkownika. Zasada działa zgodnie z oczekiwaniami.</translation>
-<translation id="219061769324072544">Kredytowa,Karta,Debetowa</translation>
 <translation id="2191980191135734720">W następnym kroku odblokuj ekran, np. odciskiem palca. Możesz też <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2195729137168608510">Ochrona poczty e-mail</translation>
@@ -1082,6 +1080,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2807052079800581569">Pozycja Y obrazu</translation>
 <translation id="2808278141522721006">Jeśli chcesz włączyć lub wyłączyć Windows Hello, otwórz <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Skanuję…</translation>
+<translation id="282457273878278063">Zarządzaj informacjami kontaktowymi</translation>
 <translation id="2824775600643448204">Pasek adresu i wyszukiwania</translation>
 <translation id="2826760142808435982">Połączenie jest szyfrowane i uwierzytelniane algorytmem <ph name="CIPHER" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Czujniki ruchu są na razie dozwolone</translation>
@@ -1865,7 +1864,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4121428309786185360">Wygasa dnia</translation>
 <translation id="4123572138124678573">Trzy otwory z dołu</translation>
 <translation id="412601465078863288">Przekroczono limit czasu przesyłania</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 inny wpis}few{# inne wpisy}many{# innych wpisów}other{# innego wpisu}}</translation>
 <translation id="4129810348470013900">Coś poszło nie tak. Sprawdź połączenie z internetem i spróbuj ponownie.</translation>
 <translation id="4130226655945681476">Sprawdź kable sieciowe, modem i router</translation>
 <translation id="4132448310531350254">Lista „<ph name="POLICY_IDS_LIST" />” aplikacji odwołuje się do zduplikowanych modułów obsługi rozszerzenia pliku „<ph name="FILE_EXTENSION" />”.</translation>
@@ -3231,7 +3229,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="638289054711715023">Folia termokurczliwa</translation>
 <translation id="6383221683286411806">Uważaj na możliwe opłaty.</translation>
 <translation id="6384448607821972818">Wyświetlono hasło przywracania</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 inna podpowiedź}few{# inne podpowiedzi}many{# innych podpowiedzi}other{# innej podpowiedzi}}</translation>
 <translation id="6386565501269869892">Koperta You 4</translation>
 <translation id="6387645831795005740">Złośliwe strony czasami podszywają się pod inne, wprowadzając małe i trudne do zauważenia zmiany w adresie URL.</translation>
 <translation id="6389470377220713856">Imię i nazwisko na karcie</translation>

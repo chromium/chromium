@@ -618,7 +618,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2059202684901022309">22 in x 34 in</translation>
 <translation id="2063929825539050431">To quickly send this page to another device, touch and hold the address bar</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 suggestion}other{# suggestions}}</translation>
 <translation id="2066969741541525119">The site ahead is blocked by your organisation</translation>
 <translation id="2071156619270205202">This card is not eligible for virtual card number.</translation>
 <translation id="2071852865256799872">Your browser is managed by your organisation and your profile is managed by <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="218940509700321686">Comma-separated values</translation>
 <translation id="2190094353033916816">This policy has different values applied at the machine and user levels. The policy is working as intended.</translation>
-<translation id="219061769324072544">Credit,Card,Debit</translation>
 <translation id="2191980191135734720">Unlock your screen in the next step, typically using your fingerprint. You can also <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2195729137168608510">Email Protection</translation>
@@ -1082,6 +1080,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2807052079800581569">Image Y position</translation>
 <translation id="2808278141522721006">You can turn Windows Hello on or off in <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Scanning...</translation>
+<translation id="282457273878278063">Manage contact info</translation>
 <translation id="2824775600643448204">Address and search bar</translation>
 <translation id="2826760142808435982">The connection is encrypted and authenticated using <ph name="CIPHER" /> and uses <ph name="KX" /> as the key exchange mechanism.</translation>
 <translation id="2828797285817981634">Motion sensors allowed for now</translation>
@@ -1865,7 +1864,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4121428309786185360">Expires On</translation>
 <translation id="4123572138124678573">Triple punch bottom</translation>
 <translation id="412601465078863288">Uploading timed out</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 other}other{# others}}</translation>
 <translation id="4129810348470013900">Something went wrong. Please check your Internet connection and try again.</translation>
 <translation id="4130226655945681476">Checking the network cables, modem and router</translation>
 <translation id="4132448310531350254">Duplicate handlers for file_extension <ph name="FILE_EXTENSION" />' referenced by apps '<ph name="POLICY_IDS_LIST" />'.</translation>
@@ -3231,7 +3229,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="638289054711715023">Shrink foil</translation>
 <translation id="6383221683286411806">Potential charges ahead.</translation>
 <translation id="6384448607821972818">Recovery password shown</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 other suggestion}other{# other suggestions}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
 <translation id="6387645831795005740">Attackers sometimes mimic sites by making small, hard-to-see changes to the URL.</translation>
 <translation id="6389470377220713856">Name on card</translation>

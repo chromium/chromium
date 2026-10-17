@@ -618,7 +618,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2059166748188874810">Gemeente</translation>
 <translation id="2059202684901022309">22 x 34 inch</translation>
 <translation id="2063929825539050431">Als je deze pagina snel naar een ander apparaat wilt sturen, houd je je vinger op de adresbalk</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 suggestie}other{# suggesties}}</translation>
 <translation id="2066969741541525119">De site die je wilt bezoeken, is geblokkeerd door je organisatie</translation>
 <translation id="2071156619270205202">Deze kaart kan niet worden gebruikt als een virtueel kaartnummer.</translation>
 <translation id="2071852865256799872">Je browser wordt beheerd door je organisatie en je profiel wordt beheerd door <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2188375229972301266">Meerdere perforaties onder</translation>
 <translation id="218940509700321686">Csv-bestanden</translation>
 <translation id="2190094353033916816">Dit beleid heeft verschillende waarden die zijn toegepast op machine- en gebruikersniveau. Het beleid werkt zoals bedoeld.</translation>
-<translation id="219061769324072544">Creditcard,Kaart,Pinpas</translation>
 <translation id="2191980191135734720">Ontgrendel je scherm in de volgende stap, meestal met je vingerafdruk. Je kunt ook <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2195729137168608510">E-mail beveiligen</translation>
@@ -1860,7 +1858,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4121428309786185360">Verloopt op</translation>
 <translation id="4123572138124678573">Drie perforaties onder</translation>
 <translation id="412601465078863288">Time-out bij uploaden</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 andere persoon}other{# andere mensen}}</translation>
 <translation id="4129810348470013900">Er ging iets mis. Check je internetverbinding en probeer het opnieuw.</translation>
 <translation id="4130226655945681476">Controleer de netwerkkabels, modem en router</translation>
 <translation id="4132448310531350254">Dubbele handlers voor bestandsextensie <ph name="FILE_EXTENSION" /> waarnaar wordt verwezen door apps <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3225,7 +3222,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="638289054711715023">Krimpfolie</translation>
 <translation id="6383221683286411806">Er worden later mogelijk kosten in rekening gebracht.</translation>
 <translation id="6384448607821972818">Herstelwachtwoord getoond</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 andere suggestie}other{# andere suggesties}}</translation>
 <translation id="6386565501269869892">Envelop You 4</translation>
 <translation id="6387645831795005740">Aanvallers maken sites soms na door kleine wijzigingen in de URL aan te brengen die je moeilijk kunt zien.</translation>
 <translation id="6389470377220713856">Naam op pas</translation>

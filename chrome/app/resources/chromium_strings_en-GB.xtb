@@ -17,6 +17,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="112640046208448578">Identify things or places and copy or translate text. When you use image search, a screenshot of the page is sent to the server. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium is your default browser</translation>
 <translation id="1131805035311359397">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Your administrator asks that you relaunch Chromium to apply this update. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Your administrator asks that you relaunch Chromium to apply this update. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="1153368717515616349">Click the Chromium menu</translation>
 <translation id="1157985233335035034">Recent languages</translation>
 <translation id="1184145431117212167">Installation failed because your version of Windows is not supported.</translation>
@@ -40,6 +41,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1329040302064168406">Sign in to Chromium on your phone</translation>
 <translation id="1330562121671411446">Detect language</translation>
 <translation id="1342274909142618978">Also delete data from Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Advanced Protection requires that you relaunch Chromium to apply an update. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Advanced Protection requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="1345251407431278948">Pinned! You can access image search again from the new button on the toolbar</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1388276868779258475">Use the Chromium app to keep browsing on the go</translation>
@@ -228,6 +230,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Take your favourite Google AI tools on the go with Chromium on iOS.</translation>
 <translation id="3264761466044851269">To get your extensions and more from <ph name="DEVICE" />, sign in to Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{A new update for Chromium is available and will be applied as soon as you relaunch. Your Isolated Window won't reopen.}other{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>
@@ -275,6 +278,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
           **Suggest questions:** Generate a bulleted list of 3–5 thought-provoking questions a user could ask to better understand the screenshot. These questions should include at least one that is specifically about a visual object, its design or its placement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">To get your bookmarks and more on all your devices, sign in to Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Your administrator asks that you relaunch Chromium to apply this update. Your Isolated Window won't reopen.}other{Your administrator asks that you relaunch Chromium to apply this update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="3885770153807205175">Language picker</translation>
 <translation id="388648406173476553">Customise and control Chromium. Something needs your attention – click for details.</translation>
 <translation id="3889543394854987837">Click your name to open Chromium and start browsing.</translation>
@@ -432,6 +436,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your saved info and more from <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Startup error: Please run the installer as a regular user, not as administrator.</translation>
 <translation id="5580770360767802657">Use Chromium by default and get it pinned</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Your administrator requires that you relaunch Chromium to apply an update. Your Isolated Window won't reopen.}other{Your administrator requires that you relaunch Chromium to apply an update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="5605834417512968703">Select anything to search with image search or press escape to exit image search</translation>
 <translation id="5618818588972826921">Select any text or image to search with image search or press Escape to exit image search</translation>
@@ -591,6 +596,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="7003299027384820442">Enter your passphrase to use and save Chromium data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
 <translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Advanced Protection requires that you relaunch Chromium to apply an update. Your Isolated Window won't reopen.}other{Advanced Protection requires that you relaunch Chromium to apply an update. Your # Isolated Windows won't reopen.}}</translation>
 <translation id="7045244423563602563">Make Chromium your own</translation>
 <translation id="7047386856539490735">Are these results useful?</translation>
 <translation id="705851970750939768">Update Chromium</translation>
@@ -670,6 +676,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Make it harder for people with access to your Internet traffic to see which sites you visit. Chromium uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">You can pin image search for easy access</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{A new update for Chromium is available and will be applied as soon as you relaunch. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{A new update for Chromium is available and will be applied as soon as you relaunch. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="7828527096541974699">Choose what to share with Chromium</translation>
 <translation id="7828947555739565424">A Chromium profile with this account already exists on this device</translation>
 <translation id="7845233973568007926">Thanks for installing. You must restart your computer before using <ph name="BUNDLE_NAME" />.</translation>
@@ -707,6 +714,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="813913629614996137">Initialising...</translation>
 <translation id="8161503455832158203">Open Gemini in Chromium with a keyboard shortcut.</translation>
 <translation id="8164014945047474187">Chromium additional terms of service</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Your administrator requires that you relaunch Chromium to apply an update. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Your administrator requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="81770708095080097">This file is dangerous, so Chromium has blocked it.</translation>
 <translation id="8177472873527554730">Can't find content in page</translation>
 <translation id="8200109504272824693">Enter your passphrase to use and save Chromium data in your account, <ph name="USER_EMAIL" /></translation>

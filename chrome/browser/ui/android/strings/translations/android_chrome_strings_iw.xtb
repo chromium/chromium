@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="1992244793717364584">האפליקציה הוסרה</translation>
+<translation id="1999115740519098545">כשפותחים את הדפדפן</translation>
 <translation id="200114059308480249">‏לכלול את הטקסט שמסביב בחיפושים ב-Google?</translation>
 <translation id="2004096469149679223">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית שהוצמדה והתוכן בה מושתק</translation>
 <translation id="2021896219286479412">פקדי אתר במסך מלא</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">האתר מושהה</translation>
 <translation id="2063047797624276601">הארגון שלך הפעיל את הגרסה המשופרת של הגלישה הבטוחה</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{הורדה אחת נכשלה}one{# הורדות נכשלו}two{# הורדות נכשלו}other{# הורדות נכשלו}}</translation>
-<translation id="2066690553719545730">‏תמיד להציג את מצב AI</translation>
 <translation id="2067805253194386918">טקסט</translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
 <translation id="2082238445998314030">תוצאה <ph name="RESULT_NUMBER" /> מתוך <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">‏ההצמדה של Gemini בוטלה</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome הפסיק להציג ההתראות מהאתר הזה בגלל ספאם או תוכן מטעה}one{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}two{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}other{‏‫Chrome הפסיק להציג התראות מהאתרים האלה בגלל ספאם או תוכן מטעה}}</translation>
 <translation id="4195643157523330669">פתיחה בכרטיסייה חדשה</translation>
+<translation id="4195814663415092787">אני רוצה להמשיך מהמקום שבו הפסקתי</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{כרטיסייה אחת במכשיר הזה}one{# כרטיסיות במכשיר הזה}two{# כרטיסיות במכשיר הזה}other{# כרטיסיות במכשיר הזה}}</translation>
 <translation id="4198268995694216131">אתרים נוספים</translation>
 <translation id="4198423547019359126">אין מיקומים זמינים להורדה</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">האזנה לדף הזה</translation>
 <translation id="4217657297368492684">‫<ph name="TAB_TITLE" />, כרטיסייה פרטית מוצמדת שנבחרה, במצב "תמונה בתוך תמונה"</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
-<translation id="4232376164796433044">סיסמאות ומילוי אוטומטי</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="425582637250725228">ייתכן שהשינויים שביצעת לא יישמרו.</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">אי אפשר להיכנס</translation>
 <translation id="557018954714092179">יצירת תיקייה חדשה</translation>
 <translation id="5578795271662203820">חיפוש התמונה הזו ב-<ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">פתיחה של דף מסוים או קבוצת דפים</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5599455543593328020">מצב אנונימי</translation>
 <translation id="5601180634394228718">‏כדי לראות אילו הגדרות נוספות מתבססות על נתונים לצורך שיפור חוויית השימוש ב-Chrome, אפשר לעבור אל <ph name="BEGIN_LINK" />שירותי Google<ph name="END_LINK" />.</translation>

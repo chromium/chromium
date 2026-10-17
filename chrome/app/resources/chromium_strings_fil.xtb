@@ -17,6 +17,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="112640046208448578">Tukuyin ang mga bagay o lugar at kopyahin o isalin ang text. Kapag ginamit mo ang Paghahanap ng Larawan, magpapadala ng screenshot ng page sa server. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium ang iyong default na browser</translation>
 <translation id="1131805035311359397">Para makita kung ligtas ang iyong mga password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update na ito. May Incognito o Isolated window na nakabukas. Hindi na ito muling magbubukas pagkatapos mong maglunsad ulit.}one{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update na ito. May # Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}other{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update na ito. May # na Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}}</translation>
 <translation id="1153368717515616349">I-click ang menu ng Chromium</translation>
 <translation id="1157985233335035034">Mga kamakailang wika</translation>
 <translation id="1184145431117212167">Hindi na-install dahil hindi sinusuportahan ang iyong bersyon ng Windows.</translation>
@@ -40,6 +41,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1329040302064168406">Mag-sign in sa Chromium sa iyong telepono</translation>
 <translation id="1330562121671411446">I-detect ang wika</translation>
 <translation id="1342274909142618978">I-delete din ang data mula sa Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang update. May Incognito o Isolated window na nakabukas. Hindi na ito muling magbubukas pagkatapos mong maglunsad ulit.}one{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang update. May # Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}other{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang update. May # na Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}}</translation>
 <translation id="1345251407431278948">Na-pin na! Maa-access mo ulit ang Paghahanap ng Larawan mula sa bagong button sa toolbar</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1388276868779258475">Gamitin ang Chromium app para patuloy na mag-browse nang on the go</translation>
@@ -228,6 +230,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Dalhin ang mga paborito mong Google AI tool nang on the go gamit ang Chromium sa iOS.</translation>
 <translation id="3264761466044851269">Para makuha ang iyong mga extension at higit pa mula sa <ph name="DEVICE" />, mag-sign in sa Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{May available na bagong update para sa Chromium at ia-apply ito sa sandaling maglunsad ka ulit. Hindi na magbubukas ulit ang iyong Isolated window.}one{May available na bagong update para sa Chromium at ia-apply ito sa sandaling maglunsad ka ulit. Hindi na magbubukas ulit ang iyong # Isolated window.}other{May available na bagong update para sa Chromium at ia-apply ito sa sandaling maglunsad ka ulit. Hindi na magbubukas ulit ang iyong # na Isolated window.}}</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
 <translation id="328888136576916638">Nawawala ang mga Google API key. Madi-disable ang ilang pagpapagana ng Chromium.</translation>
 <translation id="3296368748942286671">Patuloy na magpatakbo ng background na apps kapag nakasara ang Chromium</translation>
@@ -275,6 +278,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
           **Magmungkahi ng Mga Tanong:** Bumuo ng naka-bullet na listahan ng 3-5 nagpapaisip na tanong na puwedeng magamit ng isang user para mas maintindihan ang screenshot. Ang mga tanong na ito ay dapat may kasamang kahit isang partikular na tanong na tungkol sa visual na object, o sa disenyo o placement nito.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo, mag-sign in sa Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update na ito. Hindi na magbubukas ulit ang iyong Isolated window.}one{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update na ito. Hindi na magbubukas ulit ang iyong # Isolated window.}other{Hinihiling ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update na ito. Hindi na magbubukas ulit ang iyong # na Isolated window.}}</translation>
 <translation id="3885770153807205175">Picker ng wika</translation>
 <translation id="388648406173476553">I-customize at kontrolin ang Chromium. May kailangan kang pagtuunan ng pansin - mag-click para sa mga detalye.</translation>
 <translation id="3889543394854987837">I-click ang iyong pangalan upang buksan ang Chromium at simulan ang pagba-browse.</translation>
@@ -432,6 +436,7 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="5576587363991567745">Naka-sign in na si <ph name="EXISTING_USER" />. Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chromium sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />. Makukuha mo rin ang iyong naka-save na impormasyon at higit pa mula sa <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Nagkaroon ng error sa startup: patakbuhin ang installer bilang karaniwang user, hindi bilang administrator.</translation>
 <translation id="5580770360767802657">Gamitin ang Chromium bilang default at i-pin ito</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Nire-require ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update. Hindi na magbubukas ulit ang iyong Isolated window.}one{Nire-require ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update. Hindi na magbubukas ulit ang iyong # Isolated window.}other{Nire-require ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update. Hindi na magbubukas ulit ang iyong # na Isolated window.}}</translation>
 <translation id="5596627076506792578">Higit pang opsyon</translation>
 <translation id="5605834417512968703">Pumili ng kahit anong bagay na hahanapin gamit ang Paghahanap ng Larawan o pindutin ang escape para lumabas sa Paghahanap ng Larawan</translation>
 <translation id="5618818588972826921">Pumili ng anumang text o larawan na hahanapin gamit ang Paghahanap ng Larawan o pindutin ang escape para lumabas sa Paghahanap ng Larawan</translation>
@@ -591,6 +596,7 @@ Hindi mase-save ang mga bagong bookmark sa iyong account hangga't hindi ka nagde
 <translation id="7003299027384820442">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chromium sa account mo, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Hindi na-install dahil hindi sinusuportahan ang bersyong ito ng operating system.</translation>
 <translation id="7024536598735240744">Error sa pag-unpack: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang update. Hindi na magbubukas ulit ang iyong Isolated window.}one{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang update. Hindi na magbubukas ulit ang iyong # Isolated window.}other{Nire-require ng Advanced na Proteksyon na ilunsad mo ulit ang Chromium para ma-apply ang update. Hindi na magbubukas ulit ang iyong # na Isolated window.}}</translation>
 <translation id="7045244423563602563">Gawing Iyo ang Chromium</translation>
 <translation id="7047386856539490735">Kapaki-pakinabang ba ang mga resultang ito?</translation>
 <translation id="705851970750939768">I-update ang Chromium</translation>
@@ -670,6 +676,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gawing mas mahirap para sa mga taong may access sa iyong internet traffic na makita kung aling mga site ang binibisita mo. Gumagamit ang Chromium ng secure na koneksyon para hanapin ang IP address ng isang site sa DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Puwede mong i-pin ang Paghahanap ng Larawan para madali itong ma-access</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{May available na bagong update para sa Chromium at ia-apply ito sa sandaling maglunsad ka ulit. May Incognito o Isolated window na nakabukas. Hindi na ito muling magbubukas pagkatapos mong maglunsad ulit.}one{May available na bagong update para sa Chromium at ia-apply ito sa sandaling maglunsad ka ulit. May # Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}other{May available na bagong update para sa Chromium at ia-apply ito sa sandaling maglunsad ka ulit. May # na Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}}</translation>
 <translation id="7828527096541974699">Piliin kung ano ang ise-share sa Chromium</translation>
 <translation id="7828947555739565424">Mayroon nang profile sa Chromium na gumagamit ng account na ito sa device na ito</translation>
 <translation id="7845233973568007926">Salamat sa pag-install. Dapat mong i-restart ang iyong computer bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
@@ -707,6 +714,7 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="813913629614996137">Sinisimulan...</translation>
 <translation id="8161503455832158203">Buksan ang Gemini sa Chromium gamit ang keyboard shortcut.</translation>
 <translation id="8164014945047474187">Mga Karagdagang Tuntunin ng Serbisyo ng Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Nire-require ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update. May Incognito o Isolated window na nakabukas. Hindi na ito muling magbubukas pagkatapos mong maglunsad ulit.}one{Nire-require ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update. May # Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}other{Nire-require ng iyong administrator na ilunsad mo ulit ang Chromium para ma-apply ang update. May # na Incognito at Isolated window na nakabukas sa mga profile. Hindi na muling magbubukas ang mga ito pagkatapos mong maglunsad ulit.}}</translation>
 <translation id="81770708095080097">Mapanganib ang file na ito, kaya na-block ito ng Chromium.</translation>
 <translation id="8177472873527554730">Hindi makita ang content sa page</translation>
 <translation id="8200109504272824693">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chromium sa account mong <ph name="USER_EMAIL" /></translation>

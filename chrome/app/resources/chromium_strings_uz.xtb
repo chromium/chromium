@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Obyekt yoki joylarni aniqlash, nusxalash yoki matn tarjima qilish. Rasm orqali qidiruv ishlatilganda sahifa skrinshoti Google serverlariga yuboriladi. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Qurilmangizdagi asosiy brauzer – Chromium.</translation>
 <translation id="1131805035311359397">Parollarni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalash uchun <ph name="BEGIN_LINK" />Chromium hisobingizga kiring<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda Inkognito yoki izolyatsiyalangan oyna ochiq. Qayta ishga tushirilgandan keyin qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda Profillarda # ta inkognito va izolyatsiyalangan oyna ochiq. Qayta ishga tushirilgandan keyin ular qayta ochilmaydi.}}</translation>
 <translation id="1153368717515616349">Chromium menyusini bosing</translation>
 <translation id="1157985233335035034">Oxirgi tillar</translation>
 <translation id="1184145431117212167">Windows versiyasi mos emasligi uchun oʻrnatilmadi.</translation>
@@ -37,6 +38,7 @@
 <translation id="1329040302064168406">Telefonda Chromium hisobiga kiring</translation>
 <translation id="1330562121671411446">Tilni aniqlash</translation>
 <translation id="1342274909142618978">Chromium maʼlumotlari ham oʻchirilsin (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Kuchaytirilgan himoya yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda. Inkognito yoki izolyatsiyalangan oyna ochiq. Qayta ishga tushirilgandan keyin qayta ochilmaydi.}other{Kuchaytirilgan himoya yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda. Profillarda # ta inkognito va izolyatsiyalangan oyna ochiq. Qayta ishga tushirilgandan keyin ular qayta ochilmaydi.}}</translation>
 <translation id="1345251407431278948">Mahkamlandi! Endi Rasmlar orqali qidiruvni asboblar panelidagi yangi tugma orqali ochish mumkin</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1388276868779258475">Chromium ilovasi bilan internetda kezishni istalgan joyda davom ettiring</translation>
@@ -223,6 +225,7 @@
 <translation id="3258596308407688501">Chromium o‘z jildidan ma’lumotlarni o‘qib yoki yozib ololmadi: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS qurilmasidagi Chromium bilan sevimli Google AI vositalaringiz doim yoningizda.</translation>
 <translation id="3264761466044851269"><ph name="DEVICE" /> qurilmasidagi kengaytmalar va boshqa maʼlumotlaringizni olish uchun Chromium hisobiga kiring</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. Izolyatsiyalangan oyna qayta ochilmaydi.}other{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. # ta izolyatsiyalangan oyna qayta ochilmaydi.}}</translation>
 <translation id="3286538390144397061">Hozir qaytadan ishga tushirish</translation>
 <translation id="328888136576916638">Google API kalitlari yetishmayapti. Chromium’ning ba’zi funksiyalari ishlamasligi mumkin.</translation>
 <translation id="3296368748942286671">Chromium yopilishida orqa fon rejimida ishlayotgan ilovalar to‘xtatilmasin</translation>
@@ -270,6 +273,7 @@
           **Savol takliflari:** Skrinshotni yaxshiroq tushunish uchun foydalanuvchi berishi mumkin 3-5 oʻylantiruvchi savollarning markerlangan roʻyxatini yarating. Bu savollarga vizual obyekt, uning dizayni yoki joylashuvi haqida kamida bittasi kiritilishi kerak.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Barcha qurilmalarda bukmarklarni olish uchun Chromium hisobiga kiring</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda Izolyatsiyalangan oyna qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni soʻramoqda # ta izolyatsiyalangan oyna qayta ochilmaydi.}}</translation>
 <translation id="3885770153807205175">Til tanlash vositasi</translation>
 <translation id="388648406173476553">Chromium brauzerini sozlash va boshqarish. Diqqat qaratishingiz zarur. Batafsil axborot olish uchun bu yerga bosing.</translation>
 <translation id="3889543394854987837">Chromium‘ga kirish uchun o‘z ismingiz ustiga bosing.</translation>
@@ -427,6 +431,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, <ph name="DEVICE" /> qurilmasidagi saqlangan maʼlumotlardan foydalana olasiz.</translation>
 <translation id="5579324208890605088">Ishga tushirishda xato: oʻrnatish faylini oddiy foydalanuvchi (administrator emas) nomidan ishga tushiring.</translation>
 <translation id="5580770360767802657">Chromiumdan birlamchi holatda foydalanish va uni mahkamlash</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Izolyatsiyalangan oyna qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda # ta izolyatsiyalangan oyna qayta ochilmaydi.}}</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5605834417512968703">Rasm orqali qidirish uchun istalgan obyektni tanlang yoki yopish uchun Espace tugmasini bosing</translation>
 <translation id="5618818588972826921">Rasm orqali qidirish uchun undagi istalgan matn yoki rasmni tanlang yoki Esc tugmasini bosib, qidiruvni yoping</translation>
@@ -586,6 +591,7 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="7003299027384820442"><ph name="ACCOUNT_EMAIL" /> hisobingizda Chromium maʼlumotlaridan foydalanish va saqlash uchun kalit iborangizni kiriting</translation>
 <translation id="7011190694940573312">Operatsion tizim versiyasi mos emasligi sababli oʻrnatilmadi.</translation>
 <translation id="7024536598735240744">Arxivdan chiqarish xatosi: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Kuchaytirilgan himoya yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda. Izolyatsiyalangan oyna qayta ochilmaydi.}other{Kuchaytirilgan himoya yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda. # ta izolyatsiyalangan oyna qayta ochilmaydi.}}</translation>
 <translation id="7045244423563602563">Chromium brauzerini oʻzingizga moslashtiring</translation>
 <translation id="7047386856539490735">Bu natijalar foydalimi?</translation>
 <translation id="705851970750939768">Chromium‘ni yangilash</translation>
@@ -665,6 +671,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Internetingizni kuzatuvchi tomonlarga ochadigan saytlaringizni koʻrishni qiyinlashtiring. Chromium DNS (Domen nomlari tizimi) qaydlaridan saytning IP manzilini shifrlangan aloqa yordamida tekshiradi.</translation>
 <translation id="7810005234485217901">Tezkor ochish uchun Rasm orqali qidiruvni mahkamlash mumkin</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. Inkognito yoki izolyatsiyalangan oyna ochiq. Qayta ishga tushirilgandan keyin qayta ochilmaydi.}other{Chromium uchun yangilanish mavjud va brauzer qayta ishga tushirilganda oʻrnatiladi. Profillarda # ta inkognito va izolyatsiyalangan oyna ochiq. Qayta ishga tushirilgandan keyin ular qayta ochilmaydi.}}</translation>
 <translation id="7828527096541974699">Chromium bilan qaysi maʼlumotlarni ulashishni tanlang</translation>
 <translation id="7828947555739565424">Bu hisobli Chromium profili ushbu qurilmada allaqachon mavjud</translation>
 <translation id="7845233973568007926">Oʻrnatganingiz uchun tashakkur! <ph name="BUNDLE_NAME" />ni ishlatishdan oldin kompyuterni qayta ishga tushirishingiz lozim.</translation>
@@ -702,6 +709,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="813913629614996137">Ishga tushirilmoqda...</translation>
 <translation id="8161503455832158203">Chromium ichidagi Gemini panelini tezkor tugma orqali ochish</translation>
 <translation id="8164014945047474187">Chromium Qoʻshimcha xizmat shartlari</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Inkognito yoki izolyatsiyalangan oyna ochiq. Qayta ishga tushirilgandan keyin qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Profillarda # ta inkognito va izolyatsiyalangan oyna ochiq. Brauzer qayta ishga tushirilganda ular qayta ochilmaydi.}}</translation>
 <translation id="81770708095080097">Bu fayl xavfli edi va u Chromium tomonidan bloklandi.</translation>
 <translation id="8177472873527554730">Sahifada kontent topilmadi</translation>
 <translation id="8200109504272824693"><ph name="USER_EMAIL" /> hisobingizda Chromium maʼlumotlaridan foydalanish va saqlash uchun kalit iborangizni kiriting</translation>

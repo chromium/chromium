@@ -618,7 +618,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2059166748188874810">Municipio</translation>
 <translation id="2059202684901022309">22x34 pulgadas</translation>
 <translation id="2063929825539050431">Para enviar rápidamente esta página a otro dispositivo, mantén pulsada la barra de direcciones</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{Una sugerencia}other{# sugerencias}}</translation>
 <translation id="2066969741541525119">Tu organización ha bloqueado el sitio al que quieres acceder</translation>
 <translation id="2071156619270205202">Esta tarjeta no reúne los requisitos necesarios para un número de tarjeta virtual.</translation>
 <translation id="2071852865256799872">Tu organización gestiona tu navegador, y <ph name="PROFILE_DOMAIN" /> gestiona tu perfil</translation>
@@ -711,7 +710,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2188375229972301266">Perforado múltiple en la parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
 <translation id="2190094353033916816">Esta política tiene valores distintos aplicados a nivel de equipo y a nivel de usuario. La política funciona según lo previsto.</translation>
-<translation id="219061769324072544">Crédito,Tarjeta,Débito</translation>
 <translation id="2191980191135734720">Desbloquea la pantalla en el siguiente paso, normalmente con tu huella digital. También puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -1865,7 +1863,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4121428309786185360">Vencimiento el</translation>
 <translation id="4123572138124678573">Perforado triple en la parte inferior</translation>
 <translation id="412601465078863288">Tiempo de espera de subida agotado</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{Uno más}other{# más}}</translation>
 <translation id="4129810348470013900">Se ha producido un error. Comprueba tu conexión a Internet e inténtalo de nuevo.</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
 <translation id="4132448310531350254">Controladores duplicados de la extensión de archivo <ph name="FILE_EXTENSION" /> a los que hacen referencia las aplicaciones <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3231,7 +3228,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="638289054711715023">Papel de aluminio retráctil</translation>
 <translation id="6383221683286411806">Es posible que se cobren cargos en el futuro.</translation>
 <translation id="6384448607821972818">Se ha mostrado la contraseña de recuperación</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{Una sugerencia más}other{# sugerencias más}}</translation>
 <translation id="6386565501269869892">Sobre You 4</translation>
 <translation id="6387645831795005740">Los atacantes suelen imitar los sitios haciendo pequeños cambios en la URL que son difíciles de ver.</translation>
 <translation id="6389470377220713856">Nombre que aparece en la tarjeta</translation>

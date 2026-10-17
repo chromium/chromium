@@ -8629,17 +8629,6 @@ HTTP-заголовок Origin-Agent-Cluster определяет, изолир�
       Если задано значение False, такой контент не загружается.</translation>
 <translation id="6368011194414932347">Настройка URL домашней страницы</translation>
 <translation id="6368403635025849609">Разрешить JavaScript на этих сайтах</translation>
-<translation id="6368652917086795891">Задает настройки подключения <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> в <ph name="PRODUCT_NAME" />.
-
-Правило <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> заменяет это правило. Если заданы оба, приоритет имеет <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />.
-
-Это правило настраивает URL веб-приложения <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> с помощью параметра <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. В качестве значения должен быть указан действительный URL со схемой https, который ведет на домен <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> и не содержит имя пользователя или пароль. Если эти требования не выполняются, правило игнорируется и <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> не настраивается.
-
-Если правило задано, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> настраивается для пользователей, вошедших в систему через управляемый аккаунт или браузер.
-
-Если правило не задано, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> не настраивается.
-
-Обратите внимание, что это правило не управляет общей интеграцией <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Для ее настройки используется правило <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Запретить использование API встроенного ИИ</translation>
 <translation id="6371005337713685988">Настройки функции Related Website Sets</translation>

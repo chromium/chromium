@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali.}=1{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah diluncurkan kembali. Setelah itu, tab saat ini akan dibuka kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1434626383986940139">Aplikasi Chrome Canary</translation>
 <translation id="1439793550875056299">Sematkan Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Administrator mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Terisolasi Anda tidak akan dibuka lagi.}other{Administrator mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Terisolasi Anda tidak akan dibuka lagi.}}</translation>
 <translation id="146866447420868597">Login ke Chrome?</translation>
 <translation id="1476347941828409626">&amp;Kelola profil Chrome</translation>
 <translation id="1492280395845991349">Luncurkan kembali untuk menyelesaikan update Chrome</translation>
@@ -269,6 +270,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="345171907106878721">Tambahkan diri Anda ke Chrome</translation>
 <translation id="3453763134178591239">Persyaratan ChromeOS</translation>
 <translation id="3475778264501649775">Bawa sandi, tab, dan info lainnya kapan saja di mana saja dengan aplikasi Chrome di ponsel Anda</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Administrator meminta Anda meluncurkan kembali Chrome untuk menerapkan update ini. Jendela Terisolasi Anda tidak akan dibuka lagi.}other{Administrator meminta Anda meluncurkan kembali Chrome untuk menerapkan update ini. # jendela Terisolasi Anda tidak akan dibuka lagi.}}</translation>
 <translation id="3539955434060988644">Buka link di jendela Samaran Chrome</translation>
 <translation id="354621070532799440">Pengingat: Fitur keamanan terbaik Google ada di genggaman Anda</translation>
 <translation id="3547866758548131919">Klik tombol Ringkas untuk membagikan dokumen ini ke Gemini di Chrome guna mendapatkan ringkasan cepat dan mengajukan pertanyaan lanjutan</translation>
@@ -284,12 +286,15 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3622797965165704966">Kini, menggunakan Chrome dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan info tersimpan dan data lainnya di semua perangkat Anda.</translation>
 <translation id="3635073343384702370">Chrome dapat memeriksa sandi jika Anda menyimpannya</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah browser diluncurkan kembali. Setelah itu, tab saat ini akan dibuka lagi. Jendela Terisolasi Anda tidak akan dibuka lagi.}other{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah browser diluncurkan kembali. Setelah itu, tab saat ini akan dibuka lagi. # jendela Terisolasi Anda tidak akan dibuka lagi.}}</translation>
 <translation id="3636970668267555808">Dapatkan akses mudah ke fitur yang Anda kenal, suka, dan percaya dengan menyetel Chrome sebagai browser default.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Administrator meminta Anda meluncurkan kembali Chrome untuk menerapkan update ini. Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}other{Administrator meminta Anda meluncurkan kembali Chrome untuk menerapkan update ini. Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}}</translation>
 <translation id="3667616615096815454">Tidak dapat menginstal, aplikasi tidak dikenali oleh server.</translation>
 <translation id="3673813398384385993">Chrome menemukan bahwa "<ph name="EXTENSION_NAME" />" berisi malware</translation>
 <translation id="3697952514309507634">Profil Chrome lainnya</translation>
 <translation id="3703994572283698466">ChromeOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versi ChromeOS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah Chrome diluncurkan kembali. Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}other{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah Chrome diluncurkan kembali. Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}}</translation>
 <translation id="3718181793972440140">Tindakan ini akan menghapus 1 item dari perangkat ini. Untuk mengambil data nanti, login ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" />}other{Chrome merekomendasikan agar Anda menghapusnya. <ph name="BEGIN_LINK" />Pelajari lebih lanjut ekstensi yang didukung<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat menggunakan tombol "Tambahkan tab dan lainnya".</translation>
@@ -416,6 +421,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5003967926796347400">Klik “Pengelola Sandi Google”</translation>
 <translation id="5043786843026425788">Pelajari lebih lanjut cara menelusuri dengan Google Lens di Chrome</translation>
 <translation id="504867494566807945">Buka link di Chrome dari aplikasi apa pun. Selain itu, Chrome akan disematkan ke taskbar Anda untuk memudahkan akses.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}other{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}}</translation>
 <translation id="5105120510934353742">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu macOS 13 atau yang lebih baru. Komputer ini menggunakan macOS 12.</translation>
 <translation id="5114340746415930644">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Login ke Chrome saat Anda login ke layanan Google lainnya</translation>
@@ -476,6 +482,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Tidak dapat terhubung ke internet. Server proxy memerlukan autentikasi.</translation>
 <translation id="5709557627224531708">Setel Chrome sebagai browser default Anda</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Jendela Terisolasi Anda tidak akan dibuka lagi.}other{Perlindungan Lanjutan mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. # jendela Terisolasi Anda tidak akan dibuka lagi.}}</translation>
 <translation id="5719246646468301581">Persyaratan layanan tambahan Google Chrome dan ChromeOS</translation>
 <translation id="5736850870166430177">Jika situs berusaha mencuri sandi Anda, atau jika Anda mendownload file berbahaya, Chrome mungkin juga mengirimkan URL, termasuk bit konten halaman, ke Safe Browsing</translation>
 <translation id="5742003800414899269">Gunakan aplikasi Chrome untuk mengakses alat AI terbaik kapan saja di mana saja</translation>
@@ -503,6 +510,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5960404530854194706">Chrome akan diupdate saat Anda tidak menggunakan perangkat</translation>
 <translation id="5980111191913430208">Ekstensi, aplikasi, dan tema dari sumber tidak dikenal dapat membahayakan perangkat Anda. Chrome merekomendasikan hanya menginstal ekstensi, aplikasi, dan tema dari <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Mendownload... <ph name="HOURS" /> jam lagi</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Administrator mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}other{Administrator mengharuskan Anda meluncurkan kembali Chrome untuk menerapkan update. Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}}</translation>
 <translation id="6008161919456049856">Sandi, metode pembayaran, dan alamat Anda yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chrome, login kembali.</translation>
 <translation id="6009821354356307391">Ajukan pertanyaan lanjutan</translation>
 <translation id="6014316319780893079">Dengan <ph name="BEGIN_LINK" />alat dari Chrome<ph name="END_LINK" />, Anda dapat menjelajah dengan aman dan tetap memegang kendali</translation>
@@ -675,6 +683,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7452987490177144319">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chrome tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chrome tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
 <translation id="7466577301922356468">Mengirimkan data ini secara otomatis ke Google membantu meningkatkan kualitas Chrome. Anda dapat mengubah setelan ini kapan saja.</translation>
 <translation id="7477130805345743099">Chrome akan memperingatkan Anda sebelum memuat situs apa pun menggunakan koneksi yang tidak aman</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah Chrome diluncurkan kembali. Jendela Terisolasi Anda tidak akan dibuka lagi.}other{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah Chrome diluncurkan kembali. # jendela Terisolasi Anda tidak akan dibuka lagi.}}</translation>
 <translation id="7481213027396403996">Dapatkan keamanan terkuat Chrome</translation>
 <translation id="749228101751499733">Saat Anda login, Anda dapat menggunakan sandi Anda dan lainnya dari Akun Google Anda di Chrome. <ph name="SHORTCUT" /> dapat mengubah setelan layanan Google Anda.</translation>
 <translation id="7496017508659652909">Chrome akan melakukan pramuat halaman yang membuat penjelajahan dan penelusuran menjadi lebih cepat. <ph name="BEGIN_LINK" />Pelajari lebih lanjut cara melakukan pramuat halaman<ph name="END_LINK" /></translation>
@@ -789,6 +798,7 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8380754585531979907">Gunakan keyboard untuk beralih antara Gemini di Chrome dan tab yang terbuka.</translation>
 <translation id="8387459386171870978">Terus gunakan Chrome</translation>
 <translation id="8394720698884623075">Memeriksa kesesuaian URL dengan daftar situs tidak aman yang disimpan di Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah browser diluncurkan kembali. Setelah itu, tab saat ini akan dibuka lagi. Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}other{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah browser diluncurkan kembali. Setelah itu, tab saat ini akan dibuka lagi. Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}}</translation>
 <translation id="8403038600646341038">Logo Chrome di dalam layar komputer.</translation>
 <translation id="8418845734693287262">ChromeOS tidak dapat menyinkronkan data Anda karena detail login akun Anda belum diperbarui.</translation>
 <translation id="842386925677997438">Alat keamanan Chrome</translation>

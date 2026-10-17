@@ -8328,17 +8328,6 @@ Origin-Agent-Cluster HTTP ヘッダーは、オリジンキー エージェン�
       このポリシーを False に設定した場合、Signed HTTP Exchange は読み込まれません。</translation>
 <translation id="6368011194414932347">ホームページの URL を指定する</translation>
 <translation id="6368403635025849609">これらのサイトの JavaScript を許可する</translation>
-<translation id="6368652917086795891"><ph name="PRODUCT_NAME" /> で <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> の接続設定を構成します。
-
-このポリシーは <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> ポリシーに置き換えられます。両方を設定した場合は、<ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> が優先されます。
-
-このポリシーでは、<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> を介して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーション URL を設定します。この URL は、HTTPS スキームを使用する有効な URL で、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ドメインを指す必要があります。また、ユーザー名やパスワードを含んではなりません。これらの要件を満たしていない場合、ポリシーは無視され、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
-
-このポリシーを設定した場合、管理対象アカウントまたは管理対象ブラウザでログインしたユーザーに対して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> が構成されます。
-
-このポリシーを未設定のままにした場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は構成されません。
-
-なお、このポリシーは、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで制御できる全般的な <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> の統合を制御するものではありません。</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">組み込みの AI API の使用を許可しない。</translation>
 <translation id="6371005337713685988">関連ウェブサイト セットの設定</translation>

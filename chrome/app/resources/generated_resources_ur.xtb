@@ -572,7 +572,6 @@
 <translation id="1433478348197382180">Reading Mode</translation>
 <translation id="1433980411933182122">اسٹارٹ اپ</translation>
 <translation id="1434659328474177625"><ph name="ISSUER" /> نے آپ کی ای میل کی توثیق کی</translation>
-<translation id="1434886155212424586">ہوم صفحہ نیا ٹیب صفحہ ہے</translation>
 <translation id="1435940442311036198">کسی دوسرے آلے پر پاس کی استعمال کریں</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" /> کیلئے کارآمد ہے</translation>
 <translation id="1436671784520050284">سیٹ اپ جاری رکھیں</translation>
@@ -1027,7 +1026,6 @@
 <translation id="178092663238929451">اپنے آس پاس کے لوگوں سے فائلیں وصول کرنے اور انہیں بھیجنے کے لیے قریبی آلات کے ساتھ اشتراک سیٹ اپ کریں</translation>
 <translation id="1781164264587898620">شور کم کرنے اور آڈیو میں بہتریاں لاگو کریں۔</translation>
 <translation id="1781291988450150470">‏موجودہ PIN</translation>
-<translation id="1781502536226964113">نیا ٹیب صفحہ کھولیں</translation>
 <translation id="1781553166608855614">بول چال کی زبان</translation>
 <translation id="1781771911845953849">اکاؤنٹس اور مطابقت پذیری</translation>
 <translation id="1782101999402987960">آپ کے منتظم کی جانب سے اپ ڈیٹس کو مسدود کر دیا گیا</translation>
@@ -1551,7 +1549,6 @@
 <translation id="2184754597051264978">‏‫Gemini اب آپ کو <ph name="URL" /> میں سائن ان نہیں کر سکے گا</translation>
 <translation id="2186206192313702726">‏Google لینز</translation>
 <translation id="2186539124645132614">‏‫Gemini کے ساتھ نئی چیٹ شروع کریں</translation>
-<translation id="2186711480981247270">صفحہ کا اشتراک دوسرے آلے سے کیا گیا</translation>
 <translation id="2187675480456493911">آپ کے اکاؤنٹ پر موجود دیگر آلات کے ساتھ مطابقت پذیر۔ دوسرے صارفین کے ذریعے ترمیم کی گئی ترتیبات کو مطابقت پذیر نہیں کیا جائے گا۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">ایکسٹینشنز اپ ڈیٹ ہو گئیں</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> کھولیں</translation>
@@ -2052,7 +2049,6 @@
 <translation id="256481480019204378">‏Google اکاؤنٹ ID</translation>
 <translation id="256517381556987641">فائل سِنک کو اب تک <ph name="ITEMS_FOUND" /> فائلز مل چکی ہیں اور اب بھی اسٹوریج کی جگہ کی جانچ جاری ہے۔ چند منٹ بعد فائل سنک کو دوبارہ آن کرنے کی کوشش کریں۔</translation>
 <translation id="2566146433999774844">‫<ph name="OWNER_FIRST_NAME" /> اور <ph name="NUM_OTHER_MEMBERS" /> دیگر کے ساتھ ٹیب گروپ میں شامل ہوں</translation>
-<translation id="256726287944589768">نئے ٹیب صفحہ پر فوٹر دکھائیں</translation>
 <translation id="2568774940984945469">معلومات بار کنٹینر</translation>
 <translation id="257088987046510401">تھیمز</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" /> کیلئے صرف پڑھنے کی رسائی دی گئی ہے۔</translation>
@@ -2221,7 +2217,6 @@
 <translation id="2696675923413008404">‏اس سائٹ کا مواد، بشمول اس کا URL، ‏Google کو بھیجا جاتا ہے اور اس خصوصیت کو بہتر بنانے کے لیے اسے انسانی جائزہ کاران دیکھ سکتے ہیں</translation>
 <translation id="269941332914175387">اپنا پروفائل ڈیٹا لوڈ کرنے اور اسے مرموز رکھنے کے لیے براؤزر کو بند کر کے دوبارہ چلائیں</translation>
 <translation id="2699911226086014512">‏کوڈ <ph name="RETRIES" /> کے ساتھ PIN کی کارروائی ناکام ہو گئی۔</translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" /> سے اشتراک کردہ</translation>
 <translation id="2701737434167469065">سائن ان کریں، <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">‏نیٹ ورک کا MAC پتہ</translation>
 <translation id="2702720509009999256">اپنا انٹرنیٹ کنکشن چیک کریں اور "دوبارہ کوشش کریں" کو منتخب کریں، یا محدود منظر اور ترمیم کے اختیارات استعمال کرنے کے لیے "بنیادی ایڈیٹر میں کھولیں" کا انتخاب کریں۔</translation>
@@ -2622,7 +2617,6 @@
 <translation id="2989474696604907455">منسلک نہیں ہے</translation>
 <translation id="2989523299700148168">حال ہی میں ملاحظہ کردہ</translation>
 <translation id="2989786307324390836">‏DER ان کوڈ کردہ بائنری، واحد سرٹیفیکیٹ</translation>
-<translation id="2989805286512600854">نئے ٹیب میں کھولیں</translation>
 <translation id="2990313168615879645">‏Google اکاؤنٹ شامل کریں</translation>
 <translation id="2990375978470734995">اس تبدیلی کے لاگو ہونے کیلئے، اپنے بیرونی لوازمات کو دوبارہ منسلک کریں۔</translation>
 <translation id="2990500505358145117">بہتر کردہ آٹو فل شارٹ کٹ میں ترمیم کریں</translation>
@@ -3893,7 +3887,6 @@
 <translation id="3909701002594999354">سبھی کنٹرولز کمانڈ دکھائیں</translation>
 <translation id="3909791450649380159">ک&amp;ٹ کریں</translation>
 <translation id="39103738135459590">فعالیت کا کوڈ</translation>
-<translation id="3911824782900911339">نیا ٹیب صفحہ</translation>
 <translation id="3913689539406883376">آپ کا کمپیوٹر ان پلگ ہونے پر آن کریں</translation>
 <translation id="3914173277599553213">مطلوب</translation>
 <translation id="3914568430265141791">فولڈر <ph name="FOLDER_TITLE" /> کھولیں</translation>
@@ -4451,7 +4444,6 @@
 <translation id="4354344420232759511">آپ کی ملاحظہ کردہ سائٹس یہاں ظاہر ہوں گی</translation>
 <translation id="4356100841225547054">والیوم کو آف کریں</translation>
 <translation id="4357583358198801992">ٹیب گروپس دکھائیں</translation>
-<translation id="4357812592970409234">اپنے نئے ٹیب صفحہ کے پس منظر کے بارے میں مزید جانیں</translation>
 <translation id="4358361163731478742">کوئی بھی ایپ ایپ کی زبان کے انتخاب کو سپورٹ نہیں کرتی ہے</translation>
 <translation id="4358995225307748864">کھولنے کیلئے ایپ منتخب کریں</translation>
 <translation id="4359408040881008151">منحصر ایکسٹینشن (ایکسٹینشنز) کی وجہ سے انسٹال کر دیا گیا۔</translation>
@@ -6724,7 +6716,6 @@
 <translation id="6130887916931372608">کی بورڈ کی کلید</translation>
 <translation id="6131511889181741773">اسپلیٹر</translation>
 <translation id="6132251717264923430">بٹن کو پن کیا گیا</translation>
-<translation id="6134418895482326458">نئے ٹیب صفحہ پر فوٹر چھپائیں</translation>
 <translation id="6134428719487602109">‏بالکل نئے کی طرح ہونے کیلئے صارف کے سبھی اکاؤنٹس ہٹائیں اور اپنا Chromebook ری سیٹ کریں۔</translation>
 <translation id="6135826623269483856">آپ کے سبھی ڈسپلیز پر ونڈوز کا نظم کرنے کی اجازت نہیں ہے</translation>
 <translation id="6136285399872347291">بیک اسپیس</translation>
@@ -9918,6 +9909,7 @@
 <translation id="8563043098557365232">صرف سسٹم سروسز کے لیے اجازت ہے</translation>
 <translation id="8563898784671745643">نیچے کی سائٹ کو خاموش کریں</translation>
 <translation id="8564220755011656606">‏Chrome مائیکروفون تک رسائی حاصل کرنے سے قاصر ہے</translation>
+<translation id="8564894539416715395">نئے ٹیب کا صفحہ</translation>
 <translation id="8565021320663436446">‫<ph name="MEMBER_FULL_NAME" /> ہٹائیں؟</translation>
 <translation id="8566916288687510520">نیا پاس ورڈ موصول ہوا</translation>
 <translation id="8567946600191652875">کم از کم 6 حروف کا ہونا چاہیے اور اس میں کم از کم ایک حرف یا علامت شامل ہونی چاہیے</translation>
@@ -10444,6 +10436,7 @@
 <translation id="8963117664422609631">سائٹ ترتیبات پر جائیں</translation>
 <translation id="8964927371396953727">اپنے اکاؤنٹ، <ph name="ACCOUNT_EMAIL" /> میں پاس ورڈز استعمال کرنے اور محفوظ کرنے کے لیے توثیق کریں</translation>
 <translation id="8965037249707889821">پرانا پاس ورڈ درج کریں</translation>
+<translation id="8967403839792635452">‏ایکسٹینشنز ڈویلپ کر رہے ہیں؟ ‫Chrome ایکسٹینشن ڈویلپرز کیلئے دستاویزات کے ساتھ <ph name="BEGIN_LINK" />نیا کیا ہے<ph name="END_LINK" /> اس سے اپ ڈیٹ رہیں۔</translation>
 <translation id="8967427617812342790">پڑھنے کی فہرست میں شامل کریں</translation>
 <translation id="8968527460726243404">‏ChromeOS سسٹم امیج رائٹر</translation>
 <translation id="8968766641738584599">کارڈ کو محفوظ کریں</translation>

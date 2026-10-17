@@ -618,7 +618,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2059166748188874810">Gemeinde</translation>
 <translation id="2059202684901022309">22 x 34 Zoll</translation>
 <translation id="2063929825539050431">Halte die Adressleiste gedrückt, um diese Seite schnell an ein anderes Gerät zu senden</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 Vorschlag}other{# Vorschläge}}</translation>
 <translation id="2066969741541525119">Die angeforderte Website wird von deiner Organisation blockiert</translation>
 <translation id="2071156619270205202">Für diese Karte ist keine virtuelle Kartennummer verfügbar.</translation>
 <translation id="2071852865256799872">Dein Browser wird von deiner Organisation verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2188375229972301266">Mehrfache Lochung unten</translation>
 <translation id="218940509700321686">CSV</translation>
 <translation id="2190094353033916816">Für diese Richtlinie sind auf Computer- und Nutzerebene unterschiedliche Werte festgelegt. Die Richtlinie funktioniert wie vorgesehen.</translation>
-<translation id="219061769324072544">Kreditkarte,Karte,Debitkarte</translation>
 <translation id="2191980191135734720">Du kannst dein Display im nächsten Schritt auf gewohnte Weise per Fingerabdruck entsperren. Du kannst auch <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
 <translation id="2195729137168608510">E-Mail-Schutz</translation>
@@ -1863,7 +1861,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4121428309786185360">Gültig bis</translation>
 <translation id="4123572138124678573">Dreifache Lochung unten</translation>
 <translation id="412601465078863288">Zeitüberschreitung beim Hochladen</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 weiterer}other{# weitere}}</translation>
 <translation id="4129810348470013900">Ein Fehler ist aufgetreten. Prüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="4130226655945681476">Netzwerkkabel, Modem und Router prüfen</translation>
 <translation id="4132448310531350254">Doppelte Handler für die Dateierweiterung „<ph name="FILE_EXTENSION" />“, referenziert durch die Apps „<ph name="POLICY_IDS_LIST" />“.</translation>
@@ -3229,7 +3226,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="638289054711715023">Schrumpffolie</translation>
 <translation id="6383221683286411806">Warnung vor möglichen Kosten.</translation>
 <translation id="6384448607821972818">Wiederherstellungspasswort wird angezeigt</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 weiterer Vorschlag}other{# weitere Vorschläge}}</translation>
 <translation id="6386565501269869892">Umschlag You 4</translation>
 <translation id="6387645831795005740">Angreifer kopieren manchmal Websites und nehmen kleine, unauffällige Änderungen an der URL vor.</translation>
 <translation id="6389470377220713856">Name auf der Karte</translation>

@@ -618,7 +618,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2059166748188874810">Municipalidad</translation>
 <translation id="2059202684901022309">55.88 × 86.36 cm</translation>
 <translation id="2063929825539050431">Para enviar rápidamente esta página a otro dispositivo, mantén presionada la barra de direcciones</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 sugerencia}other{# sugerencias}}</translation>
 <translation id="2066969741541525119">Tu organización bloqueó el sitio que intentas abrir</translation>
 <translation id="2071156619270205202">Esta tarjeta no admite un número de tarjeta virtual.</translation>
 <translation id="2071852865256799872">Tu organización administra el navegador y <ph name="PROFILE_DOMAIN" /> administra tu perfil</translation>
@@ -711,7 +710,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2188375229972301266">Perforaciones múltiples en la parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
 <translation id="2190094353033916816">Esta política tiene diferentes valores aplicados a nivel de la máquina y del usuario. La política funciona según lo previsto.</translation>
-<translation id="219061769324072544">Crédito,Tarjeta,Débito</translation>
 <translation id="2191980191135734720">Desbloquea la pantalla en el siguiente paso, por lo general, con tu huella dactilar. También puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Aspectos para tener en cuenta</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -1082,6 +1080,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2807052079800581569">Posición de la imagen en el eje Y</translation>
 <translation id="2808278141522721006">Puedes activar o desactivar Windows Hello en <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Buscando…</translation>
+<translation id="282457273878278063">Administrar información de contacto</translation>
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda</translation>
 <translation id="2826760142808435982">La conexión se encriptó y autenticó con <ph name="CIPHER" />, y utiliza <ph name="KX" /> como el mecanismo de intercambio de claves.</translation>
 <translation id="2828797285817981634">Se permiten los sensores de movimiento por ahora</translation>
@@ -1866,7 +1865,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4121428309786185360">Vence el</translation>
 <translation id="4123572138124678573">Perforación triple en la parte inferior</translation>
 <translation id="412601465078863288">Se agotó el tiempo de espera para subir tus archivos</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="4129810348470013900">Se produjo un error. Revisa tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="4130226655945681476">Comprobar los cables de red, el módem y el router</translation>
 <translation id="4132448310531350254">Controladores duplicados para la extensión de archivo "<ph name="FILE_EXTENSION" />" a los que hacen referencia las apps "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3232,7 +3230,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="638289054711715023">Plástico retráctil</translation>
 <translation id="6383221683286411806">Es posible que se cobren cargos.</translation>
 <translation id="6384448607821972818">Se muestra la contraseña de recuperación</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 sugerencia más}other{# sugerencias más}}</translation>
 <translation id="6386565501269869892">Sobre You n.º 4</translation>
 <translation id="6387645831795005740">A veces, los atacantes hacen cambios sutiles y difíciles de detectar en la URL a fin de imitar otros sitios.</translation>
 <translation id="6389470377220713856">Nombre en tarj.</translation>

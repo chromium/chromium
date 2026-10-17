@@ -251,6 +251,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
 <translation id="1986685561493779662">Namnet finns redan</translation>
 <translation id="1992244793717364584">Appen har avinstallerats</translation>
+<translation id="1999115740519098545">Vid start</translation>
 <translation id="200114059308480249">Vill du inkludera omgivande text i sökningar på Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, fäst inkognitoflik med ljud av</translation>
 <translation id="2021896219286479412">Helskärmskontroller på webbsidan</translation>
@@ -265,7 +266,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2056878612599315956">Webbplatsen har pausats</translation>
 <translation id="2063047797624276601">Organisationen har aktiverat Förbättrad säker webbsökning</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 nedladdning misslyckades}other{# nedladdningar misslyckades}}</translation>
-<translation id="2066690553719545730">Visa alltid AI-läget</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2082238445998314030">Resultat <ph name="RESULT_NUMBER" /> av <ph name="TOTAL_RESULTS" /></translation>
@@ -799,6 +799,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4188638484665452040">Gemini har lossats</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome har stoppat aviseringar från den här webbplatsen på grund av spam eller bedrägligt innehåll}other{Chrome har stoppat aviseringar från de här webbplatserna på grund av spam eller bedrägligt innehåll}}</translation>
 <translation id="4195643157523330669">Öppna i ny flik</translation>
+<translation id="4195814663415092787">Fortsätt där du slutade</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 flik på den här enheten}other{# flikar på den här enheten}}</translation>
 <translation id="4198268995694216131">Ytterligare webbplatser</translation>
 <translation id="4198423547019359126">Det fins inga tillgängliga nedladdningsplatser</translation>
@@ -809,7 +810,6 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4216511743389425832">Lyssna på sidan</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, vald fäst inkognitoflik med bild-i-bild</translation>
 <translation id="4225895483398857530">Genväg i verktygsfältet</translation>
-<translation id="4232376164796433044">Lösenord och autofyll</translation>
 <translation id="4242533952199664413">Öppna Inställningar</translation>
 <translation id="424864128008805179">Vill du logga ut från Chrome?</translation>
 <translation id="425582637250725228">Ändringar som du har gjort kanske inte sparas.</translation>
@@ -1148,6 +1148,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5568069709869097550">Kan inte logga in</translation>
 <translation id="557018954714092179">Skapa ny mapp</translation>
 <translation id="5578795271662203820">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
+<translation id="558563010977877295">Öppna en viss sida eller en grupp med sidor</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
 <translation id="5601180634394228718">Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
@@ -1448,6 +1449,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="671481426037969117">Timern för <ph name="FQDN" /> har löpt ut. Den börjar om igen i morgon.</translation>
 <translation id="6716434912087331834">Om du vill återställa ett nytt fönster minskar du det totala antalet aktiva fönster till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Inaktiva fönster raderas efter sex månader.</translation>
 <translation id="6723740634201835758">I Google-kontot</translation>
+<translation id="6725340821578440069">Filtrera efter enhet</translation>
 <translation id="6734310707649923383">Du kan se sidor som du har besökt eller radera dem från historiken</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, fäst inkognitoflik som spelas in</translation>
 <translation id="6738867403308150051">Laddar ned …</translation>
@@ -1490,7 +1492,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6858893072923394368">Lägg till sida …</translation>
 <translation id="6864459304226931083">Ladda ned bild</translation>
 <translation id="686490460830618322">Arbetsblad för appfilter</translation>
-<translation id="6865313869410766144">Formuläruppgifter för autofyll</translation>
+<translation id="6865313869410766144">Autofylld formulärdata</translation>
 <translation id="6867400383614725881">Ny inkognitoflik</translation>
 <translation id="686899695320434745">Adresserna krypteras inte med lösenfrasen. Detta gör att du kan använda dem i andra Google-tjänster.</translation>
 <translation id="6870625088374152862">Inloggad som <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -1906,6 +1908,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8387617938027387193">Verifiera din identitet</translation>
 <translation id="8393700583063109961">Skicka meddelande</translation>
 <translation id="8398389123831319859">Dubbeltryck och håll kvar fingret för att byta till inkognito</translation>
+<translation id="8401904657382223224">Filtrera efter värd</translation>
 <translation id="8412037385861858490">För att skydda ditt arbete i Chrome kan organisationen visa eller hantera viss information när du är inloggad i Chrome. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Visa fullständig historik</translation>
 <translation id="8413795581997394485">Skyddar mot skadliga webbplatser, nedladdningar och tillägg. När du besöker en webbplats skickas en obfuskerad del av webbadressen till Google via en integritetsserver som döljer din IP-adress. Om en webbplats gör något misstänkt skickas också fullständiga webbadresser och delar av sidinnehållet.</translation>

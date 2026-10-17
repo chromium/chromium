@@ -17,6 +17,7 @@
 <translation id="112640046208448578">識別物件或地點，並複製或翻譯文字。使用「圖片搜尋」時，系統會將網頁的螢幕截圖傳送到伺服器。<ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium 現為您的預設瀏覽器</translation>
 <translation id="1131805035311359397">如要檢查密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{管理員要求你重新啟動 Chromium 以套用此更新。目前開啟了無痕或隔離視窗。重新啟動後，視窗不會重開。}other{管理員要求你重新啟動 Chromium 以套用此更新。各設定檔目前開啟了 # 個無痕和隔離視窗。重新啟動後，視窗不會重開。}}</translation>
 <translation id="1153368717515616349">按一下 Chromium 選單</translation>
 <translation id="1157985233335035034">最近使用過的語言</translation>
 <translation id="1184145431117212167">你的 Windows 版本不受支援，因此無法安裝。</translation>
@@ -39,6 +40,7 @@
 <translation id="1329040302064168406">在手機登入 Chromium</translation>
 <translation id="1330562121671411446">偵測語言</translation>
 <translation id="1342274909142618978">一併刪除 Chromium 中的資料 (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{「進階保護功能」要求你重新啟動 Chromium 以套用更新。目前開啟了無痕或隔離視窗。重新啟動後，視窗不會重開。}other{「進階保護功能」要求你重新啟動 Chromium 以套用更新。各設定檔目前開啟了 # 個無痕和隔離視窗。重新啟動後，視窗不會重開。}}</translation>
 <translation id="1345251407431278948">已固定！你可以透過工具列嘅新按鈕用多次「圖片搜尋」</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1388276868779258475">Chromium 應用程式讓你隨時隨地繼續瀏覽</translation>
@@ -227,6 +229,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS 版 Chromium 讓你常用的 Google AI 工具隨時隨行。</translation>
 <translation id="3264761466044851269">如要取用<ph name="DEVICE" />上的擴充程式及其他設定，請登入 Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Chromium 有可用的更新，重新啟動後即可套用。隔離視窗不會重開。}other{Chromium 有可用的更新，重新啟動後即可套用。# 個隔離視窗不會重開。}}</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>
@@ -274,6 +277,7 @@
           **建議問題：**以項目符號清單形式生成 3 至 5 條可以啟發思考的問題，幫助使用者深入瞭解螢幕截圖。應該有至少一條具體關於可視物件、其設計或位置的問題。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">如要在你的所有裝置上取用書籤及其他設定，請登入 Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{管理員要求你重新啟動 Chromium 以套用此更新。隔離視窗不會重開。}other{管理員要求你重新啟動 Chromium 以套用此更新。# 個隔離視窗不會重開。}}</translation>
 <translation id="3885770153807205175">語言選擇器</translation>
 <translation id="388648406173476553">自訂及控制 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="3889543394854987837">按一下您的名稱即可開啟 Chromium 並開始瀏覽。</translation>
@@ -431,6 +435,7 @@
 <translation id="5576587363991567745"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可取用<ph name="DEVICE" />上已儲存的資料及其他內容。</translation>
 <translation id="5579324208890605088">啟動錯誤：請以一般使用者 (而非管理員) 身分執行安裝程式。</translation>
 <translation id="5580770360767802657">預設使用 Chromium 並固定在工作列</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{管理員要求你重新啟動 Chromium 以套用更新。隔離視窗不會重開。}other{管理員要求你重新啟動 Chromium 以套用更新。# 個隔離視窗不會重開。}}</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5605834417512968703">選取任何要使用「圖片搜尋」尋找的內容，或按下 Esc 鍵退出「圖片搜尋」</translation>
 <translation id="5618818588972826921">選取任何要使用「圖片搜尋」尋找的文字或圖片，或按下 Esc 鍵退出「圖片搜尋」</translation>
@@ -590,6 +595,7 @@
 <translation id="7003299027384820442">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chromium 資料的密碼短語</translation>
 <translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{「進階保護功能」要求你重新啟動 Chromium 以套用更新。隔離視窗不會重開。}other{「進階保護功能」要求你重新啟動 Chromium 以套用更新。# 個隔離視窗不會重開。}}</translation>
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="7047386856539490735">這些結果有用嗎？</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
@@ -669,6 +675,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">讓可存取你互聯網流量的使用者難以查看你瀏覽的網站。Chromium 會透過安全連線在 DNS (網域名稱系統) 中查詢網站的 IP 位址。</translation>
 <translation id="7810005234485217901">你可以固定「圖片搜尋」，方便之後使用</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Chromium 有可用的更新，重新啟動後即可套用。目前開啟了無痕或隔離視窗。重新啟動後，視窗不會重開。}other{Chromium 有可用的更新，重新啟動後即可套用。各設定檔目前開啟了 # 個無痕和隔離視窗。重新啟動後，視窗不會重開。}}</translation>
 <translation id="7828527096541974699">選擇要與 Chromium 分享的內容</translation>
 <translation id="7828947555739565424">此裝置上已有此帳戶的 Chromium 設定檔</translation>
 <translation id="7845233973568007926">多謝安裝。您必須先重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -706,6 +713,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8161503455832158203">使用鍵盤快速鍵開啟 Chromium 版 Gemini。</translation>
 <translation id="8164014945047474187">Chromium 附加服務條款</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{管理員要求你重新啟動 Chromium 以套用更新。目前開啟了無痕或隔離視窗。重新啟動後，視窗不會重開。}other{管理員要求你重新啟動 Chromium 以套用更新。各設定檔目前開啟了 # 個無痕和隔離視窗。重新啟動後，視窗不會重開。}}</translation>
 <translation id="81770708095080097">此檔案不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="8177472873527554730">在頁面上找不到內容</translation>
 <translation id="8200109504272824693">輸入用於在帳戶 <ph name="USER_EMAIL" /> 中使用及儲存 Chromium 資料的密碼短語</translation>

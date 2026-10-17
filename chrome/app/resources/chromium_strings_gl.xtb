@@ -17,6 +17,7 @@
 <translation id="112640046208448578">Identifica obxectos ou lugares, e copia ou traduce texto. Cando usas a busca de imaxes, envíase unha captura de pantalla da páxina ao servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai # ventás do modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="1153368717515616349">Fai clic no menú de Chromium</translation>
 <translation id="1157985233335035034">Idiomas recentes</translation>
 <translation id="1184145431117212167">Produciuse un erro durante a instalación porque a versión de Windows non é compatible.</translation>
@@ -40,6 +41,7 @@
 <translation id="1329040302064168406">Inicia sesión en Chromium no teléfono</translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
 <translation id="1342274909142618978">Eliminar tamén datos de Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="1345251407431278948">Fixouse o elemento! Podes volver acceder á busca de imaxes desde o novo botón da barra de ferramentas</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1388276868779258475">Usa a aplicación Chromium para seguir navegando esteas onde esteas</translation>
@@ -228,6 +230,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Esteas onde esteas, leva contigo as túas ferramentas de IA de Google favoritas con Chromium en iOS.</translation>
 <translation id="3264761466044851269">Para poder acceder ás túas extensións e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Non se volverá abrir a ventá illada.}other{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Chromium.</translation>
 <translation id="3296368748942286671">Continuar executando aplicacións en segundo plano cando se peche Chromium</translation>
@@ -275,6 +278,7 @@
           **Suxerir preguntas:** Crea unha lista con viñetas de 3 a 5 preguntas que fagan pensar e que un usuario podería facer para comprender mellor a captura de pantalla. Entre as preguntas débese incluír, polo menos, unha que sexa específica sobre un obxecto visual, o seu deseño ou a súa posición.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
 <translation id="386243222263310720">Para poder acceder aos teus marcadores e a outros datos en todos os teus dispositivos, inicia sesión en Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Non se volverá abrir a ventá illada.}other{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="388648406173476553">Personaliza e controla Chromium. Algo precisa a túa atención. Fai clic para obter información.</translation>
 <translation id="3889543394854987837">Fai clic no teu nome para abrir Chromium e comezar a navegar.</translation>
@@ -432,6 +436,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chromium co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás acceder á túa información gardada e moito máis desde <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
 <translation id="5580770360767802657">Utiliza Chromium de forma predeterminada e fíxao na barra de tarefas</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Non se volverá abrir a ventá illada.}other{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5605834417512968703">Selecciona o que queiras atopar coa busca de imaxes ou preme Escape para saír da función</translation>
 <translation id="5618818588972826921">Selecciona calquera texto ou imaxe que queiras procurar mediante a busca de imaxes ou preme Escape para saír da función</translation>
@@ -591,6 +596,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="7003299027384820442">Escribe a túa frase de acceso para usar e gardar os datos de Chromium na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Non se volverá abrir a ventá illada.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Non se volverá abrir # ventás illadas.}}</translation>
 <translation id="7045244423563602563">Personaliza Chromium</translation>
 <translation id="7047386856539490735">Estes resultados son útiles?</translation>
 <translation id="705851970750939768">Actualizar Chromium</translation>
@@ -670,6 +676,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> (versión experimental de Chromium)</translation>
 <translation id="7803986347287457849">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. Chromium usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios).</translation>
 <translation id="7810005234485217901">Podes fixar a busca de imaxes para acceder facilmente</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Hai # ventás de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="7828527096541974699">Escoller o que queres compartir con Chromium</translation>
 <translation id="7828947555739565424">Neste dispositivo xa existe un perfil de Chromium con esta conta</translation>
 <translation id="7845233973568007926">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o ordenador.</translation>
@@ -707,6 +714,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8161503455832158203">Abre Gemini en Chromium cun atallo de teclado.</translation>
 <translation id="8164014945047474187">Condicións de servizo adicionais de Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Hai # ventás do modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso, así que Chromium bloqueouno.</translation>
 <translation id="8177472873527554730">Non se puido atopar contido na páxina</translation>
 <translation id="8200109504272824693">Escribe a túa frase de acceso para usar e gardar os datos de Chromium na túa conta (<ph name="USER_EMAIL" />)</translation>

@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">ማዘጋጃ ቤት</translation>
 <translation id="2059202684901022309">22 x 34 ኢንች</translation>
 <translation id="2063929825539050431">ይህን ገጽ በፍጥነት ወደ ሌላ መሣሪያ ለመላክ የአድራሻ አሞሌውን ነካ አድርገው ይያዙ</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 የአስተያየት ጥቆማ}one{# የአስተያየት ጥቆማዎች}other{# የአስተያየት ጥቆማዎች}}</translation>
 <translation id="2066969741541525119">ከፊት ያለው ጣቢያ በድርጅትዎ ታግዷል</translation>
 <translation id="2071156619270205202">ይህ ካርድ ለምናባዊ ካርድ ቁጥር ብቁ አይደለም።</translation>
 <translation id="2071852865256799872">የእርስዎ አሳሽ የሚተዳደረው በድርጅትዎ ነው እና የእርስዎ መገለጫ የሚተዳደረው በ<ph name="PROFILE_DOMAIN" /> ነው</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">በርካታ ብስ ግርጌ</translation>
 <translation id="218940509700321686">በነጠላ ሰረዝ የተለዩ እሴቶች</translation>
 <translation id="2190094353033916816">ይህ መመሪያ በማሽን እና በተጠቃሚ ደረጃዎች ላይ የተለያዩ እሴቶች አሉት። መመሪያው እንደታሰበው እየሰራ ነው።</translation>
-<translation id="219061769324072544">ክሬዲት,ካርድ,ዴቢት</translation>
 <translation id="2191980191135734720">በተለምዶ የጣት አሻራዎን በመጠቀም በቀጣዩ እርምጃ ውስጥ ማያ ገጽዎን ይክፈቱ። እንዲሁም <ph name="LINK_TEXT" /> ይችላሉ።</translation>
 <translation id="2194856509914051091">ከግምት ውስጥ መግባት ያለባቸው ነገሮች</translation>
 <translation id="2195729137168608510">የኢሜይል መከላከያ</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">የምስል Y አቀማመጥ</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> ውስጥ Windows Helloን ማብራት ወይም ማጥፋት ይችላሉ</translation>
 <translation id="2820957248982571256">በመቃኘት ላይ...</translation>
+<translation id="282457273878278063">የእውቂያ መረጃን ያስተዳድሩ</translation>
 <translation id="2824775600643448204">የአድራሻ እና ፍለጋ አሞሌ</translation>
 <translation id="2826760142808435982">ግንኙነቱ የተመሰጠረ እና <ph name="CIPHER" />ን በመጠቀም የተረጋገጠ ነው፣ እና <ph name="KX" />ን እንደ የቁልፍ መቀያየሪያ ስልት ይጠቀምበታል።</translation>
 <translation id="2828797285817981634">የእንቅስቃሴ ዳሳሾች አሁን ላይ ተፈቅደዋል</translation>
@@ -1864,7 +1863,6 @@
 <translation id="4121428309786185360">ጊዜው የሚያልፍበት</translation>
 <translation id="4123572138124678573">ከታች ሦስቴ ብስ</translation>
 <translation id="412601465078863288">የእረፍት ጊዜን በመስቀል ላይ</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 ሌላ}one{# ሌሎች}other{# ሌሎች}}</translation>
 <translation id="4129810348470013900">የሆነ ስሕተት ተከስቷል። የበይነመረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="4130226655945681476">የአውታረ መረብ ገመዶችን፣ ሞደም እና ራውተርን በመፈተሽ ላይ</translation>
 <translation id="4132448310531350254">ለfile_extension «<ph name="FILE_EXTENSION" />» በመተግበሪያዎች «<ph name="POLICY_IDS_LIST" />» የተጠቀሱ ተቆጣጣሪዎችን ያባዙ።</translation>
@@ -3230,7 +3228,6 @@
 <translation id="638289054711715023">የተሰበሰበ ፎይል</translation>
 <translation id="6383221683286411806">ሊሆኑ የሚችሉ ክፍያ መጠየቂያዎች እየመጡ ነው።</translation>
 <translation id="6384448607821972818">የመልሶ ማግኛ የይለፍ ቃል ይታያል</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 ሌላ የአስተያየት ጥቆማ}one{# ሌሎች የአስተያየት ጥቆማዎች}other{# ሌሎች የአስተያየት ጥቆማዎች}}</translation>
 <translation id="6386565501269869892">ዩ 4 ፖስታ</translation>
 <translation id="6387645831795005740">አጥቂዎች አንዳንድ ጊዜ በዩአርኤሉ ላይ ለመታየት የሚያስቸግሩ አነስተኛ ለውጦችን በማድረግ ጣቢያዎችን ያስመስላሉ።</translation>
 <translation id="6389470377220713856">በካርድ ላይ ያለ ስም</translation>

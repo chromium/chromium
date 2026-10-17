@@ -9006,17 +9006,6 @@ Catatan: Kebijakan ini hanya berlaku untuk platform yang mendukung ekstensi.</tr
       Jika kebijakan disetel ke Salah (False), Signed HTTP Exchange tidak akan dimuat.</translation>
 <translation id="6368011194414932347">Konfigurasikan URL halaman beranda</translation>
 <translation id="6368403635025849609">Izinkan JavaScript di situs ini</translation>
-<translation id="6368652917086795891">Mengonfigurasi setelan koneksi untuk <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> di <ph name="PRODUCT_NAME" />.
-
-Kebijakan ini digantikan oleh kebijakan <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />. Jika keduanya ditetapkan, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> akan diprioritaskan.
-
-Kebijakan ini mengonfigurasi URL aplikasi web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> melalui <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. URL tersebut harus valid, menggunakan skema HTTPS, mengarah ke domain <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, serta tidak mencantumkan nama pengguna maupun sandi. Jika persyaratan ini tidak terpenuhi, kebijakan akan diabaikan dan <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
-
-Jika kebijakan ini disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> akan dikonfigurasi untuk pengguna yang login dengan akun terkelola atau browser terkelola.
-
-Jika kebijakan ini tidak disetel, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> tidak akan dikonfigurasi.
-
-Perhatikan bahwa kebijakan ini tidak mengontrol integrasi <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> umum, yang dapat dikontrol oleh kebijakan <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Jangan izinkan penggunaan API AI bawaan.</translation>
 <translation id="6371005337713685988">Setelan Set Situs Terkait</translation>

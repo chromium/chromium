@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">지방 자치제</translation>
 <translation id="2059202684901022309">22x34인치</translation>
 <translation id="2063929825539050431">이 페이지를 다른 기기로 빠르게 보내려면 주소 표시줄을 길게 터치하세요.</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{제안 1개}other{제안 #개}}</translation>
 <translation id="2066969741541525119">조직에서 차단한 사이트입니다</translation>
 <translation id="2071156619270205202">이 카드로는 가상 카드 번호를 사용할 수 없습니다.</translation>
 <translation id="2071852865256799872">조직에서 브라우저를 관리하고 <ph name="PROFILE_DOMAIN" />에서 프로필을 관리합니다</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">하단 다공 펀칭</translation>
 <translation id="218940509700321686">쉼표로 구분된 값</translation>
 <translation id="2190094353033916816">이 정책은 머신 및 사용자 수준에서 서로 다른 값을 적용합니다. 정책이 의도한 대로 작동하고 있습니다.</translation>
-<translation id="219061769324072544">신용,카드,체크</translation>
 <translation id="2191980191135734720">다음 단계에서는 일반적으로 지문을 사용하여 화면을 잠금 해제합니다. <ph name="LINK_TEXT" />도 가능합니다.</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2195729137168608510">이메일 보호</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">이미지 Y 위치</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" />에서 Windows Hello를 사용 또는 사용 중지할 수 있습니다.</translation>
 <translation id="2820957248982571256">검색 중...</translation>
+<translation id="282457273878278063">연락처 정보 관리</translation>
 <translation id="2824775600643448204">주소창 및 검색창</translation>
 <translation id="2826760142808435982">이 연결은 <ph name="CIPHER" />을(를) 사용하여 암호화되고 인증되며 <ph name="KX" />을(를) 키 교환 매커니즘으로 사용합니다.</translation>
 <translation id="2828797285817981634">현재 움직임 감지 센서가 허용되어 있습니다</translation>
@@ -1865,7 +1864,6 @@
 <translation id="4121428309786185360">만료일:</translation>
 <translation id="4123572138124678573">하단 3공 펀칭</translation>
 <translation id="412601465078863288">업로드 시간 초과</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{외 1개}other{외 #개}}</translation>
 <translation id="4129810348470013900">문제가 발생했습니다. 인터넷 연결을 확인하고 다시 시도해 보세요</translation>
 <translation id="4130226655945681476">네트워크 케이블, 모뎀, 라우터 확인</translation>
 <translation id="4132448310531350254">앱 "<ph name="POLICY_IDS_LIST" />"에서 참조하는 파일 확장자(file_extension) "<ph name="FILE_EXTENSION" />"의 핸들러가 중복됩니다.</translation>
@@ -3231,7 +3229,6 @@
 <translation id="638289054711715023">수축 호일</translation>
 <translation id="6383221683286411806">해당 사이트에서 비용이 청구될 수 있음</translation>
 <translation id="6384448607821972818">비밀번호 재설정 표시</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{그 외 제안 1건}other{그 외 제안 #건}}</translation>
 <translation id="6386565501269869892">봉투 You 4</translation>
 <translation id="6387645831795005740">일부 공격자는 사이트의 URL을 알아채기 어려울 정도로 약간만 변경하여 다른 사이트를 모방합니다.</translation>
 <translation id="6389470377220713856">카드 소유자 이름</translation>

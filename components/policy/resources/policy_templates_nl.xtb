@@ -8578,17 +8578,6 @@ Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</t
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>
 <translation id="6368011194414932347">De homepage-URL configureren</translation>
 <translation id="6368403635025849609">JavaScript toestaan op deze sites</translation>
-<translation id="6368652917086795891">Hiermee worden de verbindingsinstellingen voor <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" /> geconfigureerd.
-
-Dit beleid wordt vervangen door het beleid <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />. Als beide zijn ingesteld, heeft <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> voorrang.
-
-Het beleid stelt de URL van de web-app <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in via <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. Dit moet een geldige URL zijn die het https-schema gebruikt, naar een <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-domein verwijst en geen gebruikersnaam of wachtwoord bevat. Als het niet aan deze vereisten voldoet, wordt het beleid genegeerd en wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet ingesteld.
-
-Als je dit beleid instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ingesteld voor gebruikers die zijn ingelogd met een beheerd account of een beheerde browser.
-
-Als je dit beleid niet instelt, wordt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> niet ingesteld.
-
-Dit beleid beheert niet de algemene integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Die kan worden beheerd door het beleid <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Het gebruik van de ingebouwde AI-API's niet toestaan</translation>
 <translation id="6371005337713685988">Instellingen voor Gerelateerde websitesets</translation>

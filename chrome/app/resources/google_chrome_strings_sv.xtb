@@ -49,6 +49,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen.}=1{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Inkognitofönstret öppnas inte igen.}other{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-appar</translation>
 <translation id="1439793550875056299">Fäst Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Administratören meddelar att du måste starta om Chrome så att en uppdatering tillämpas. Det isolerade fönstret öppnas inte igen.}other{Administratören meddelar att du måste starta om Chrome så att en uppdatering tillämpas. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="146866447420868597">Vill du logga in i Chrome?</translation>
 <translation id="1476347941828409626">&amp;Hantera Chrome-profiler</translation>
 <translation id="1492280395845991349">Starta om för att slutföra uppdateringen av Chrome</translation>
@@ -273,6 +274,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="345171907106878721">Lägg till dig själv i Chrome</translation>
 <translation id="3453763134178591239">Villkor för ChromeOS</translation>
 <translation id="3475778264501649775">Ta med dig dina lösenord, flikar och annat med Chrome-appen på telefonen</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. Det isolerade fönstret öppnas inte igen.}other{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="3539955434060988644">Öppna länken i ett inko&amp;gnitofönster i Chrome</translation>
 <translation id="354621070532799440">Påminnelse: Googles bästa säkerhetsfunktioner i fickan</translation>
 <translation id="3547866758548131919">Klicka på knappen Sammanfatta för att dela det här dokumentet med Gemini i Chrome och få en snabb översikt och ställa följdfrågor</translation>
@@ -288,12 +290,15 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3622797965165704966">Nu är det enklare att använda Chrome med ditt Google-konto och på delade datorer.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även din sparade information med mera på alla dina enheter.</translation>
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Det isolerade fönstret öppnas inte igen.}other{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="3636970668267555808">Få enkel åtkomst till funktionerna du känner till, gillar och litar på genom att ställa in Chrome som standardwebbläsare.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Administratören meddelar att du bör starta om Chrome så att uppdateringen tillämpas. Det finns # inkognitofönster och isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="3667616615096815454">Det gick inte att installera appen. Appen är okänd för servern.</translation>
 <translation id="3673813398384385993">Chrome har upptäckt att <ph name="EXTENSION_NAME" /> innehåller skadlig kod</translation>
 <translation id="3697952514309507634">Andra Chrome-profiler</translation>
 <translation id="3703994572283698466">ChromeOS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" /> program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-version</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. Det finns # inkognitofönster och isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="3718181793972440140">Ett objekt tas bort från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Vi rekommenderar att du tar bort det. <ph name="BEGIN_LINK" />Läs mer om tillägg som stöds<ph name="END_LINK" />}other{Vi rekommenderar att du tar bort dem. <ph name="BEGIN_LINK" />Läs mer om tillägg som stöds<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Fördjupa sökningen genom att lägga till flera flikar, filer och verktyg med knappen Lägg till en flik med mera.</translation>
@@ -420,6 +425,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="5003967926796347400">Klicka på Google Lösenordshantering</translation>
 <translation id="5043786843026425788">Läs mer om att söka med Google Lens i Chrome</translation>
 <translation id="504867494566807945">Öppna länkar från dina appar i Chrome, som dessutom fästs i aktivitetsfältet för enkel åtkomst.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. Det finns # inkognitofönster och isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="5105120510934353742">Du behöver macOS 13 eller senare för att få framtida uppdateringar av Google Chrome. På den här datorn används macOS 12.</translation>
 <translation id="5114340746415930644">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt konto, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Logga in i Chrome när du loggar in i andra tjänster från Google</translation>
@@ -484,6 +490,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Det går inte att ansluta till internet. Proxyservern kräver autentisering.</translation>
 <translation id="5709557627224531708">Ange Chrome som standardwebbläsare</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. Det isolerade fönstret öppnas inte igen.}other{Avancerat skydd kräver att du startar om Chrome för att tillämpa en uppdatering. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="5719246646468301581">Ytterligare användarvillkor för Google Chrome och ChromeOS</translation>
 <translation id="5736850870166430177">Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet</translation>
 <translation id="5742003800414899269">Använd Chrome-appen för att ta med dig de bästa AI-verktygen var du än är</translation>
@@ -511,6 +518,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="5960404530854194706">Chrome uppdateras när du är borta från enheten</translation>
 <translation id="5980111191913430208">Tillägg, appar och teman från okända källor kan skada enheten. Vi rekommenderar att du bara installerar dem från <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Laddar ned … <ph name="HOURS" /> timme/timmar kvar</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Administratören meddelar att du måste starta om Chrome så att en uppdatering tillämpas. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Administratören meddelar att du måste starta om Chrome så att en uppdatering tillämpas. Det finns # inkognitofönster och isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="6008161919456049856">Dina sparade lösenord, betalningsmetoder och adresser i Google-kontot tas bort från den här enheten. Logga in på nytt om du vill använda dem igen i Chrome.</translation>
 <translation id="6009821354356307391">Ställ en följdfråga</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />verktyg från Chrome<ph name="END_LINK" /> kan du surfa säkert och behålla kontrollen</translation>
@@ -683,6 +691,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Organisationen raderar automatiskt webbinformation när Chrome inte har använts på 1 minut. Detta kan innefatta historik, autofyll och nedladdningar. Flikarna förblir öppna.}other{Organisationen raderar automatiskt webbinformation när Chrome inte har använts på # minuter. Detta kan innefatta historik, autofyll och nedladdningar. Flikarna förblir öppna.}}</translation>
 <translation id="7466577301922356468">Genom att automatiskt skicka denna data till Google hjälper du till att göra Chrome bättre. Du kan ändra den här inställningen när som helst.</translation>
 <translation id="7477130805345743099">Chrome varnar dig innan webbplatser med osäkra anslutningar läses in</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. Det isolerade fönstret öppnas inte igen.}other{Det finns en ny Chrome-uppdatering som tillämpas så snart du startar om. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="7481213027396403996">Få det bästa skyddet i Chrome</translation>
 <translation id="749228101751499733">När du är inloggad kan du använda dina lösenord och annat från ditt Google-konto i Chrome. Du kan ändra dina inställningar för Googles tjänster med <ph name="SHORTCUT" />.</translation>
 <translation id="7496017508659652909">Sidor läses in i förväg i Chrome, vilket gör det snabbare att surfa och söka. <ph name="BEGIN_LINK" />Läs mer om att läsa in sidor i förväg<ph name="END_LINK" /></translation>
@@ -799,6 +808,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8380754585531979907">Använd tangentbordet för att navigera mellan Gemini i Chrome och den öppna fliken.</translation>
 <translation id="8387459386171870978">Fortsätt att använda Chrome</translation>
 <translation id="8394720698884623075">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Det finns # inkognitofönster och isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="8403038600646341038">Chrome-logotyp på en datorskärm.</translation>
 <translation id="8418845734693287262">Det gick inte att synkronisera data med ChromeOS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="842386925677997438">Säkerhetsverktyg i Chrome</translation>

@@ -251,6 +251,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1986685561493779662">Naam bestaat al</translation>
 <translation id="1992244793717364584">App is verwijderd</translation>
+<translation id="1999115740519098545">Bij opstarten</translation>
 <translation id="200114059308480249">Omringende tekst opnemen in Google-zoekopdrachten?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, vastgezet incognitotabblad met geluid uit</translation>
 <translation id="2021896219286479412">Siteopties op volledig scherm</translation>
@@ -265,7 +266,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2056878612599315956">Site onderbroken</translation>
 <translation id="2063047797624276601">Je organisatie heeft de uitgebreide versie van Safe Browsing aangezet</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download mislukt}other{# downloads mislukt}}</translation>
-<translation id="2066690553719545730">AI-modus altijd tonen</translation>
 <translation id="2067805253194386918">sms</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2082238445998314030">Resultaat <ph name="RESULT_NUMBER" /> van <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4188638484665452040">Gemini losgemaakt</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome heeft voorkomen dat deze site meldingen stuurt vanwege spam of misleidende content}other{Chrome heeft voorkomen dat deze sites meldingen sturen vanwege spam of misleidende content}}</translation>
 <translation id="4195643157523330669">Openen op nieuw tabblad</translation>
+<translation id="4195814663415092787">Doorgaan waar je gebleven was</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 tabblad op dit apparaat}other{# tabbladen op dit apparaat}}</translation>
 <translation id="4198268995694216131">Meer sites</translation>
 <translation id="4198423547019359126">Geen beschikbare downloadlocaties</translation>
@@ -808,7 +809,6 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="4216511743389425832">Deze pagina beluisteren</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, geselecteerd vastgezet incognitotabblad voor scherm-in-scherm</translation>
 <translation id="4225895483398857530">Snelkoppeling voor werkbalk</translation>
-<translation id="4232376164796433044">Wachtwoorden en automatisch invullen</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
 <translation id="425582637250725228">Wijzigingen die je hebt aangebracht, worden mogelijk niet opgeslagen.</translation>
@@ -1147,6 +1147,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5568069709869097550">Kan niet aanmelden</translation>
 <translation id="557018954714092179">Nieuwe map maken</translation>
 <translation id="5578795271662203820">Zoeken op <ph name="SEARCH_ENGINE" /> naar afbeelding</translation>
+<translation id="558563010977877295">Een specifieke pagina of reeks pagina's openen</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
 <translation id="5601180634394228718">Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen die gegevens gebruiken om je Chrome-functionaliteit te verbeteren.</translation>
@@ -1177,6 +1178,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5715150588940290235">Opgeslagen beveiligingscodes verwijderen?</translation>
 <translation id="572328651809341494">Recente tabbladen</translation>
 <translation id="5728072125198221967">Gekoppelde Google-services</translation>
+<translation id="5733447028358645932">Wie heeft gebrowsed</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, vastgezet incognitotabblad met audio</translation>
 <translation id="5744751019568455640">Dit zijn de stemmen die je kunt kiezen om webpagina's voor te lezen. Als je deze stem leuk vindt en wilt dat ik deze blijf gebruiken, tik je op de naam van de stem.</translation>
 <translation id="574845902699630049">Delen als <ph name="OWNER_FULL_NAME" /></translation>
@@ -2030,6 +2032,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8863714995118816041">Rechten opnieuw toegestaan voor <ph name="SITE_NAME" /></translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> wordt gedeeld met <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-gegevens in je account</translation>
+<translation id="886968456388055613">Filteren op wie heeft gebrowsd</translation>
 <translation id="8872506776304248286">Openen in app</translation>
 <translation id="8880275451109933094">Weergave met twee pagina's</translation>
 <translation id="8890668505403261809">Zoek op je incognitotabbladen</translation>

@@ -251,6 +251,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="1986685561493779662">Il nome esiste già</translation>
 <translation id="1992244793717364584">L'app è stata disinstallata</translation>
+<translation id="1999115740519098545">All'avvio</translation>
 <translation id="200114059308480249">Vuoi includere il testo circostante nelle ricerche Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, scheda Incognito con audio disattivato fissata</translation>
 <translation id="2021896219286479412">Controlli sito a schermo intero</translation>
@@ -265,7 +266,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2056878612599315956">Sito in pausa</translation>
 <translation id="2063047797624276601">La tua organizzazione ha attivato Navigazione sicura avanzata</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 download non riuscito}other{# download non riusciti}}</translation>
-<translation id="2066690553719545730">Mostra sempre AI Mode</translation>
 <translation id="2067805253194386918">testo</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2082238445998314030">Risultato <ph name="RESULT_NUMBER" /> di <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4188638484665452040">Gemini staccato</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome ha impedito a questo sito di inviare notifiche a causa di spam o contenuto ingannevole}other{Chrome ha impedito a questi siti di inviare notifiche a causa di spam o contenuto ingannevole}}</translation>
 <translation id="4195643157523330669">Apri in un'altra scheda</translation>
+<translation id="4195814663415092787">Continua dal punto in cui avevi interrotto</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 scheda su questo dispositivo}other{# schede su questo dispositivo}}</translation>
 <translation id="4198268995694216131">Altri siti</translation>
 <translation id="4198423547019359126">Nessun percorso di download disponibile</translation>
@@ -808,7 +809,6 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4216511743389425832">Ascolta questa pagina</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, scheda Incognito Picture in picture fissata selezionata</translation>
 <translation id="4225895483398857530">Scorciatoia per la barra degli strumenti</translation>
-<translation id="4232376164796433044">Password e compilazione automatica</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="425582637250725228">Le modifiche apportate potrebbero non essere salvate.</translation>
@@ -1147,6 +1147,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5568069709869097550">Non riesco a effettuare l'accesso</translation>
 <translation id="557018954714092179">Crea nuova cartella</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Apri una pagina o un insieme di pagine specifiche</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5599455543593328020">Modalità Incognito</translation>
 <translation id="5601180634394228718">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="671481426037969117">Il timer di <ph name="FQDN" /> è scaduto. Verrà riavviato domani.</translation>
 <translation id="6716434912087331834">Per ripristinare una nuova finestra, riduci il numero totale di finestre attive a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o meno. Le finestre inattive vengono eliminate dopo 6 mesi.</translation>
 <translation id="6723740634201835758">Nel tuo Account Google</translation>
+<translation id="6725340821578440069">Filtra per dispositivo</translation>
 <translation id="6734310707649923383">Puoi visualizzare le pagine che hai visitato o eliminarle dalla cronologia</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, scheda Incognito con registrazione fissata</translation>
 <translation id="6738867403308150051">Download in corso…</translation>
@@ -1905,6 +1907,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8387617938027387193">Verifica la tua identità</translation>
 <translation id="8393700583063109961">Invia messaggio</translation>
 <translation id="8398389123831319859">Tocca due volte e tieni premuto per passare alla modalità Incognito</translation>
+<translation id="8401904657382223224">Filtra per host</translation>
 <translation id="8412037385861858490">Per proteggere il tuo lavoro su Chrome, la tua organizzazione potrà visualizzare o gestire determinate informazioni quando accedi a Chrome. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Mostra cronologia completa</translation>
 <translation id="8413795581997394485">Protegge da siti, download ed estensioni noti per essere pericolosi. Quando visiti un sito, Chrome invia una parte offuscata dell'URL a Google tramite un server di tutela della privacy che nasconde il tuo indirizzo IP. Se un sito effettua attività sospette, vengono inviati anche URL completi e frammenti dei contenuti delle pagine.</translation>

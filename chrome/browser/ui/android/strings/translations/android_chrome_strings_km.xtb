@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">គ្មានការការពារ (មិនណែនាំ)</translation>
 <translation id="1986685561493779662">ឈ្មោះមាន​រួច​ហើយ</translation>
 <translation id="1992244793717364584">កម្មវិធីត្រូវបានលុប</translation>
+<translation id="1999115740519098545">នៅពេលចាប់ផ្តើមដំណើរការ</translation>
 <translation id="200114059308480249">រួមបញ្ចូល​អក្សរដែលនៅជុំវិញ​នៅក្នុង​ការស្វែងរកនៅលើ Google ឬ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលបានបិទ​សំឡេង និងបាន​ខ្ទាស់</translation>
 <translation id="2021896219286479412">ការគ្រប់គ្រងទំព័រពេញអេក្រង់</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">បាន​ផ្អាកគេហទំព័រ</translation>
 <translation id="2063047797624276601">ស្ថាប័ន​របស់អ្នក​បានបើក​ការរុករក​ដោយសុវត្ថិភាពបន្ថែម</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ការទាញយក 1 បាន​បរាជ័យ}other{ការទាញយក # បាន​បរាជ័យ}}</translation>
-<translation id="2066690553719545730">បង្ហាញ​មុខងារ AI ជានិច្ច</translation>
 <translation id="2067805253194386918">អត្ថបទ</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="2082238445998314030">លទ្ធផល <ph name="RESULT_NUMBER" /> នៃ <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">បានដកខ្ទាស់ Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome បានបញ្ឈប់​គេហទំព័រនេះ​មិនឱ្យផ្ញើ​ការជូនដំណឹង ដោយសារតែ​ខ្លឹមសារបញ្ឆោត ឬ​ឥតបានការ}other{Chrome បានបញ្ឈប់​គេហទំព័រ​ទាំងនេះ​មិនឱ្យ​ផ្ញើការជូនដំណឹង ដោយសារតែ​ខ្លឹមសារបញ្ឆោត ឬ​ឥតបានការ}}</translation>
 <translation id="4195643157523330669">បើកនៅក្នុងផ្ទាំងថ្មី</translation>
+<translation id="4195814663415092787">បន្តកន្លែងដែលអ្នកបានចាកចេញ</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ផ្ទាំង 1 នៅលើ​ឧបករណ៍នេះ}other{ផ្ទាំង # នៅលើ​ឧបករណ៍នេះ}}</translation>
 <translation id="4198268995694216131">គេហទំព័របន្ថែម</translation>
 <translation id="4198423547019359126">មិនមាន​ទីតាំង​សម្រាប់​ការទាញយក​ទេ</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">ស្ដាប់ទំព័រនេះ</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​រូបក្នុងរូបដែលបាន​ខ្ទាស់ និង​បានជ្រើសរើស</translation>
 <translation id="4225895483398857530">ផ្លូវកាត់របារឧបករណ៍</translation>
-<translation id="4232376164796433044">ពាក្យសម្ងាត់ និងការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="4242533952199664413">បើកការកំណត់</translation>
 <translation id="424864128008805179">ចង់ចេញពី Chrome មែនទេ?</translation>
 <translation id="425582637250725228">ការផ្លាស់ប្តូរដែលអ្នកបានធ្វើប្រហែលជាមិនបានរក្សាទុកទេ</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">មិនអាចចូលបានទេ</translation>
 <translation id="557018954714092179">បង្កើត​ថត​ថ្មី</translation>
 <translation id="5578795271662203820">ស្វែងរក <ph name="SEARCH_ENGINE" /> សម្រាប់រូបភាពនេះ</translation>
+<translation id="558563010977877295">បើកទំព័រជាក់លាក់ ឬបណ្តុំទំព័រ</translation>
 <translation id="5596627076506792578">ជម្រើសច្រើនទៀត</translation>
 <translation id="5599455543593328020">មុខងារ​ឯកជន</translation>
 <translation id="5601180634394228718">សម្រាប់ការកំណត់ច្រើនទៀតដែលប្រើទិន្នន័យដើម្បីកែលម្អបទពិសោធប្រើប្រាស់ Chrome របស់អ្នក សូមចូលទៅកាន់<ph name="BEGIN_LINK" />សេវាកម្ម Google<ph name="END_LINK" />។</translation>

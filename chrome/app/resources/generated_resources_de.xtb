@@ -572,7 +572,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1433478348197382180">Lesemodus</translation>
 <translation id="1433980411933182122">Starten</translation>
 <translation id="1434659328474177625"><ph name="ISSUER" /> hat deine E-Mail-Adresse bestätigt</translation>
-<translation id="1434886155212424586">Die "Neuer Tab"-Seite ist die Startseite.</translation>
 <translation id="1435940442311036198">Passkey auf einem anderen Gerät verwenden</translation>
 <translation id="1436390408194692385">Gültig für <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Einrichtung fortsetzen</translation>
@@ -1027,7 +1026,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="178092663238929451">Nearby Share einrichten, um Dateien mit Personen in der Nähe auszutauschen</translation>
 <translation id="1781164264587898620">Geräuschunterdrückung und Audioverbesserungen anwenden.</translation>
 <translation id="1781291988450150470">Aktuelle PIN</translation>
-<translation id="1781502536226964113">Seite „Neuer Tab“ öffnen</translation>
 <translation id="1781553166608855614">Gesprochene Sprache</translation>
 <translation id="1781771911845953849">Konten und Synchronisierung</translation>
 <translation id="1782101999402987960">Updates werden von deinem Administrator blockiert</translation>
@@ -1551,7 +1549,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2184754597051264978">Gemini kann dich dann nicht mehr auf <ph name="URL" /> anmelden</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Neuen Chat mit Gemini starten</translation>
-<translation id="2186711480981247270">Von einem anderen Gerät geteilte Seite</translation>
 <translation id="2187675480456493911">Mit anderen Geräten in deinem Konto synchronisiert. Von anderen Nutzern geänderte Einstellungen werden nicht synchronisiert. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Erweiterungen wurden aktualisiert</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> öffnen</translation>
@@ -2052,7 +2049,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="256481480019204378">Google-Konto-ID</translation>
 <translation id="256517381556987641">Durch die Dateisynchronisierung wurden bisher <ph name="ITEMS_FOUND" /> Dateien gefunden. Der Speicherplatz wird noch geprüft. Versuche in einigen Minuten noch einmal, die Dateisynchronisierung zu aktivieren.</translation>
 <translation id="2566146433999774844">Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und <ph name="NUM_OTHER_MEMBERS" /> weiteren Personen beitreten</translation>
-<translation id="256726287944589768">Fußzeile auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="2568774940984945469">Infoleisten-Container</translation>
 <translation id="257088987046510401">Designs</translation>
 <translation id="2572032849266859634">Nur Lesezugriff auf <ph name="VOLUME_NAME" /> wurde zugelassen.</translation>
@@ -2221,7 +2217,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2696675923413008404">Inhalte dieser Website, einschließlich ihrer URL, werden an Google gesendet und möglicherweise von Prüfern angesehen, um diese Funktion zu verbessern</translation>
 <translation id="269941332914175387">Starte den Browser neu, um deine Profildaten zu laden und verschlüsselt zu halten</translation>
 <translation id="2699911226086014512">Fehler beim Festlegen der PIN. Fehlercode: <ph name="RETRIES" />.</translation>
-<translation id="2701330563083355633">Geteilt von <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Anmelden, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Netzwerk-MAC-Adresse</translation>
 <translation id="2702720509009999256">Prüfe deine Internetverbindung und wähle „Noch einmal versuchen“ aus. Du kannst auch „Im Basiseditor öffnen“ auswählen, um eingeschränkte Optionen zum Ansehen und Bearbeiten zu verwenden.</translation>
@@ -2622,7 +2617,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2989474696604907455">Nicht angeschlossen</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
 <translation id="2989786307324390836">DER-verschlüsselte Binärdatei, Einzelzertifikat</translation>
-<translation id="2989805286512600854">In neuem Tab öffnen</translation>
 <translation id="2990313168615879645">Google-Konto hinzufügen</translation>
 <translation id="2990375978470734995">Damit diese Änderung wirksam wird, musst du das externe Zubehör wieder anschließen.</translation>
 <translation id="2990500505358145117">Tastenkombination für erweitertes Autofill bearbeiten</translation>
@@ -3893,7 +3887,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3909701002594999354">Alle Steuerelemente anzeigen</translation>
 <translation id="3909791450649380159">&amp;Ausschneiden</translation>
 <translation id="39103738135459590">Aktivierungscode</translation>
-<translation id="3911824782900911339">"Neuer Tab"-Seite</translation>
 <translation id="3913689539406883376">Aktivieren, wenn der Computer vom Stromnetz getrennt ist</translation>
 <translation id="3914173277599553213">Erforderlich</translation>
 <translation id="3914568430265141791">Ordner „<ph name="FOLDER_TITLE" />“ öffnen</translation>
@@ -4451,7 +4444,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4354344420232759511">Hier findest du die von dir besuchten Websites</translation>
 <translation id="4356100841225547054">Ton ausschalten</translation>
 <translation id="4357583358198801992">Tabgruppen anzeigen</translation>
-<translation id="4357812592970409234">Weitere Informationen zum Hintergrund der Seite „Neuer Tab“</translation>
 <translation id="4358361163731478742">Es sind keine Apps vorhanden, die die Sprachauswahl unterstützen</translation>
 <translation id="4358995225307748864">App zum Öffnen auswählen</translation>
 <translation id="4359408040881008151">Wurde aufgrund der abhängigen Erweiterungen installiert</translation>
@@ -6722,7 +6714,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6130887916931372608">Taste</translation>
 <translation id="6131511889181741773">Spritz­ma­le­rei</translation>
 <translation id="6132251717264923430">Button angepinnt</translation>
-<translation id="6134418895482326458">Fußzeile auf der Seite „Neuer Tab“ ausblenden</translation>
 <translation id="6134428719487602109">Entfernt alle Nutzerkonten und setzt Chromebook auf die Werkseinstellungen zurück.</translation>
 <translation id="6135826623269483856">Websites dürfen Fenster auf allen deinen Bildschirmen nicht verwalten</translation>
 <translation id="6136285399872347291">Letztes Zeichen löschen</translation>
@@ -9917,6 +9908,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8563043098557365232">Nur für Systemdienste zulässig</translation>
 <translation id="8563898784671745643">Untere Website stummschalten</translation>
 <translation id="8564220755011656606">Zugriff auf Mikrofon nicht möglich</translation>
+<translation id="8564894539416715395">Seite „Neuer Tab“</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> entfernen?</translation>
 <translation id="8566916288687510520">Neues Passwort erhalten</translation>
 <translation id="8567946600191652875">Muss mindestens 6 Zeichen lang sein und mindestens einen Buchstaben oder ein Symbol enthalten</translation>
@@ -10443,6 +10435,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8963117664422609631">Website-Einstellungen aufrufen</translation>
 <translation id="8964927371396953727">Bestätige deine Identität, um die Passwörter in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
 <translation id="8965037249707889821">Altes Passwort eingeben</translation>
+<translation id="8967403839792635452">Du entwickelst Erweiterungen? In der Entwicklerdokumentation für Chrome-Erweiterungen findest du alle <ph name="BEGIN_LINK" />Neuigkeiten<ph name="END_LINK" />.</translation>
 <translation id="8967427617812342790">Zur Leseliste hinzufügen</translation>
 <translation id="8968527460726243404">ChromeOS-Systemabbild-Writer</translation>
 <translation id="8968766641738584599">Karte speichern</translation>

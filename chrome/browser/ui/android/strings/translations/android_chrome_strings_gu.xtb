@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">કોઈ સંરક્ષણ નથી (સુઝાવ આપતા નથી)</translation>
 <translation id="1986685561493779662">નામ પહેલેથી જ અસ્તિત્વમાં છે</translation>
 <translation id="1992244793717364584">ઍપ અનઇન્સ્ટૉલ કરવામાં આવી હતી</translation>
+<translation id="1999115740519098545">સ્ટાર્ટઅપ પર</translation>
 <translation id="200114059308480249">શું Google Searchમાં શોધવા માટે આજુબાજુની ટેક્સ્ટ શામેલ કરીએ?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, પિન કરેલું મ્યૂટ કરેલું છૂપું ટૅબ</translation>
 <translation id="2021896219286479412">પૂર્ણ સ્ક્રીન સાઇટ નિયંત્રણો</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">સાઇટ રોકવામાં આવી</translation>
 <translation id="2063047797624276601">તમારી સંસ્થાએ Safe Browsingમાં વધારેલી સુરક્ષા ચાલુ કરી છે</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 ડાઉનલોડ નિષ્ફળ થયું}one{# ડાઉનલોડ નિષ્ફળ થયું}other{# ડાઉનલોડ નિષ્ફળ થયાં}}</translation>
-<translation id="2066690553719545730">હંમેશાં AI મોડ બતાવો</translation>
 <translation id="2067805253194386918">ટેક્સ્ટ</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> માંથી <ph name="RESULT_NUMBER" /> પરિણામ</translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Gemini અનપિન કર્યું</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}one{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}other{સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે}}</translation>
 <translation id="4195643157523330669">નવા ટૅબમાં ખોલો</translation>
+<translation id="4195814663415092787">તમે જ્યાંથી છોડેલું ત્યાંથી ચાલુ કરો</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{આ ડિવાઇસ પર 1 ટૅબ}one{આ ડિવાઇસ પર # ટૅબ}other{આ ડિવાઇસ પર # ટૅબ}}</translation>
 <translation id="4198268995694216131">વધારાની સાઇટ</translation>
 <translation id="4198423547019359126">કોઈ ડાઉનલોડ સ્થાનો ઉપલબ્ધ નથી</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">આ પેજને સાંભળો</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, પસંદ કરેલું પિન કરેલું ચિત્ર-માં-ચિત્રનું છૂપું ટૅબ</translation>
 <translation id="4225895483398857530">ટૂલબારનો શૉર્ટકટ</translation>
-<translation id="4232376164796433044">પાસવર્ડ + ઑટોમૅટિક ભરવાની સુવિધા</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>
 <translation id="424864128008805179">Chromeમાંથી સાઇન આઉટ કરીએ?</translation>
 <translation id="425582637250725228">તમે કરેલા ફેરફારો સાચવવામાં આવ્યાં ન હોઇ શકે.</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="557018954714092179">નવું ફોલ્ડર બનાવો</translation>
 <translation id="5578795271662203820">આ છબી માટે <ph name="SEARCH_ENGINE" /> માં શોધો</translation>
+<translation id="558563010977877295">કોઈ ચોક્કસ પેજ અથવા પેજનો સેટ ખોલો</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5599455543593328020">છૂપો મોડ</translation>
 <translation id="5601180634394228718">તમારા Chromeના અનુભવને બહેતર બનાવવા માટે ડેટાનો ઉપયોગ કરતા વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> પર જાઓ.</translation>
@@ -1447,6 +1448,7 @@
 <translation id="671481426037969117">તમારું <ph name="FQDN" /> ટાઇમર સમાપ્ત થયું. તે આવતી કાલે ફરી શરૂ થશે.</translation>
 <translation id="6716434912087331834">નવી વિન્ડો રિસ્ટોર કરવા માટે, સક્રિય વિન્ડોની કુલ સંખ્યા ઘટાડીને <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> કે તેના કરતાં ઓછી રાખો. નિષ્ક્રિય વિન્ડોને 6 મહિના પછી ડિલીટ કરવામાં આવે છે.</translation>
 <translation id="6723740634201835758">તમારા Google એકાઉન્ટમાં</translation>
+<translation id="6725340821578440069">ડિવાઇસ મુજબ ફિલ્ટર કરો</translation>
 <translation id="6734310707649923383">તમે જે પેજની મુલાકાત લીધી હોય તે પેજને તમારા ઇતિહાસમાં જોઈ શકો છો અથવા તેમાંથી તેને ડિલીટ કરી શકો છો</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, પિન કરેલું રેકોર્ડ કરતું છૂપું ટૅબ</translation>
 <translation id="6738867403308150051">ડાઉનલોડ કરી રહ્યું છે...</translation>
@@ -1905,6 +1907,7 @@
 <translation id="8387617938027387193">આ તમે જ છો તેનો પુરાવો આપો</translation>
 <translation id="8393700583063109961">મેસેજ મોકલો</translation>
 <translation id="8398389123831319859">છૂપા મોડ પર સ્વિચ કરવા માટે, બે વાર ટૅપ કરીને દબાવી રાખો</translation>
+<translation id="8401904657382223224">હોસ્ટ મુજબ ફિલ્ટર કરો</translation>
 <translation id="8412037385861858490">Chrome પર તમારા કાર્યને સુરક્ષિત રાખવા માટે, જ્યારે તમે Chromeમાં સાઇન ઇન કરેલું હોય, ત્યારે તમારી સંસ્થા અમુક માહિતી જોઈ શકે છે અથવા તેને મેનેજ કરી શકશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">પૂર્ણ ઇતિહાસ બતાવો</translation>
 <translation id="8413795581997394485">જોખમકારક જણાતી હોય એવી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે સુરક્ષિત રાખે છે. જ્યારે તમે કોઈ સાઇટની મુલાકાત લો, ત્યારે Chrome પ્રાઇવસી સર્વર મારફતે Googleને તે સાઇટના URLનો વાંચવામાં મુશ્કેલ બનાવેલો ભાગ મોકલે છે, જે તમારા IP ઍડ્રેસને છુપાવે છે. જો સાઇટ પર કોઈ શંકાસ્પદ પ્રવૃત્તિ દેખાય, તો સંપૂર્ણ URLs અને પેજ કન્ટેન્ટના બિટ પણ મોકલવામાં આવે છે.</translation>

@@ -613,7 +613,6 @@
 <translation id="2059166748188874810">మున్సిపాలిటీ</translation>
 <translation id="2059202684901022309">22 x 34 అంగుళాలు</translation>
 <translation id="2063929825539050431">ఈ పేజీని మరొక డివైజ్‌కు త్వరగా పంపడానికి, అడ్రస్ బార్‌ను నొక్కి, పట్టుకోండి</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 సూచన}other{# సూచనలు}}</translation>
 <translation id="2066969741541525119">ముందున్న సైట్ మీ సంస్థ ద్వారా బ్లాక్ చేయబడింది</translation>
 <translation id="2071156619270205202">వర్చువల్ కార్డ్ నంబర్ కోసం ఈ కార్డ్‌కు అర్హత లేదు.</translation>
 <translation id="2071852865256799872">మీ బ్రౌజర్‌ను మీ సంస్థ మేనేజ్ చేస్తోంది, మీ ప్రొఫైల్‌ను <ph name="PROFILE_DOMAIN" /> మేనేజ్ చేస్తోంది</translation>
@@ -706,7 +705,6 @@
 <translation id="2188375229972301266">దిగువ భాగంలో అనేక రంధ్రాలు</translation>
 <translation id="218940509700321686">కామాతో వేరు చేయబడిన విలువలు</translation>
 <translation id="2190094353033916816">ఈ పాలసీకి మెషిన్, యూజర్ స్థాయిలలో వేర్వేరు విలువలు వర్తిస్తాయి. పాలసీ ఉద్దేశించిన విధంగా పని చేస్తోంది.</translation>
-<translation id="219061769324072544">క్రెడిట్,కార్డ్,డెబిట్</translation>
 <translation id="2191980191135734720">తర్వాత దశలో మీ స్క్రీన్‌ను అన్‌లాక్ చేయండి, సాధారణంగా మీ ఫింగర్ ప్రింట్‌ను ఉపయోగించండి. మీరు <ph name="LINK_TEXT" /> కూడా చేయవచ్చు.</translation>
 <translation id="2194856509914051091">పరిగణించాల్సిన విషయాలు</translation>
 <translation id="2195729137168608510">ఈమెయిల్‌ రక్షణ</translation>
@@ -1077,6 +1075,7 @@
 <translation id="2807052079800581569">చిత్రం యొక్క Y కోఆర్డినేట్</translation>
 <translation id="2808278141522721006">మీరు <ph name="SETTINGS" />‌లో Windows Helloను ఆన్ లేదా ఆఫ్ చేయవచ్చు</translation>
 <translation id="2820957248982571256">స్కాన్ చేస్తోంది...</translation>
+<translation id="282457273878278063">కాంటాక్ట్ సమాచారాన్ని మేనేజ్ చేయండి</translation>
 <translation id="2824775600643448204">అడ్రస్‌ మరియు శోధన బార్</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" />ను ఉపయోగించి కనెక్షన్ ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది, ప్రామాణీకరించబడింది మరియు <ph name="KX" />ను కీలకమైన పరివర్తన విధానంగా ఉపయోగిస్తుంది.</translation>
 <translation id="2828797285817981634">మోషన్ సెన్సార్‌లకు ప్రస్తుతం అనుమతి ఉంది</translation>
@@ -1860,7 +1859,6 @@
 <translation id="4121428309786185360">గడువు ముగిసేది</translation>
 <translation id="4123572138124678573">దిగువ భాగంలో మూడు రంధ్రాలు</translation>
 <translation id="412601465078863288">అప్‌లోడ్ చేయడానికి సమయం ముగిసింది</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{మరో 1}other{మరో #}}</translation>
 <translation id="4129810348470013900">ఏదో తప్పు జరిగింది. మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="4130226655945681476">నెట్‌వర్క్ కేబు‌ల్స్, మోడెమ్, ఇంకా రూటర్‌ను చెక్ చేయడం</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" యాప్‌ల ద్వారా రెఫర్ చేయబడిన file_extension "<ph name="FILE_EXTENSION" />"కు డూప్లికేట్ హ్యాండ్లర్‌లు ఉన్నాయి.</translation>
@@ -3226,7 +3224,6 @@
 <translation id="638289054711715023">ష్రింక్ ఫాయిల్</translation>
 <translation id="6383221683286411806">కొనసాగించడం వల్ల ఛార్జ్‌లు చెల్లించాల్సి రావచ్చు.</translation>
 <translation id="6384448607821972818">రికవరీ పాస్‌వర్డ్ చూపబడింది</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 ఇతర సూచన}other{# ఇతర సూచనలు}}</translation>
 <translation id="6386565501269869892">ఎన్వలప్ యూ 4</translation>
 <translation id="6387645831795005740">దాడి చేసేవారు సైట్ URLకు చిన్నవైన మార్పులను తొందరగా కనుక్కోలేని విధంగా చేయడం ద్వారా ఆ సైట్‌లను అనుకరిస్తారు.</translation>
 <translation id="6389470377220713856">కార్డ్‌పై ఉన్న పేరు</translation>

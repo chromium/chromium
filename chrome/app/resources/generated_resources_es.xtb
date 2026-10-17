@@ -572,7 +572,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1433478348197382180">Modo Lectura</translation>
 <translation id="1433980411933182122">Arranque</translation>
 <translation id="1434659328474177625"><ph name="ISSUER" /> ha verificado tu correo</translation>
-<translation id="1434886155212424586">La página de inicio es la página Nueva pestaña</translation>
 <translation id="1435940442311036198">Usar una llave de acceso en otro dispositivo</translation>
 <translation id="1436390408194692385">Validez: <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">Continuar con la configuración</translation>
@@ -1027,7 +1026,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="178092663238929451">Configura Compartir con Nearby para recibir y enviar archivos a personas que estén cerca</translation>
 <translation id="1781164264587898620">Aplicar cancelación de ruido y mejoras de audio.</translation>
 <translation id="1781291988450150470">PIN actual</translation>
-<translation id="1781502536226964113">Abrir la página Nueva pestaña</translation>
 <translation id="1781553166608855614">Idioma hablado</translation>
 <translation id="1781771911845953849">Cuentas y sincronización</translation>
 <translation id="1782101999402987960">Tu administrador ha bloqueado las actualizaciones</translation>
@@ -1551,7 +1549,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2184754597051264978">Gemini ya no podrá iniciar sesión en <ph name="URL" /></translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">Iniciar nueva conversación con Gemini</translation>
-<translation id="2186711480981247270">Página compartida desde otro dispositivo</translation>
 <translation id="2187675480456493911">La red está sincronizada con otros dispositivos de tu cuenta. Los ajustes modificados por otros usuarios no se sincronizarán. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">Se han actualizado las extensiones</translation>
 <translation id="2188881192257509750">Abrir <ph name="APPLICATION" /></translation>
@@ -2053,7 +2050,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="256481480019204378">ID de cuenta de Google</translation>
 <translation id="256517381556987641">Sincronización de archivos ha encontrado <ph name="ITEMS_FOUND" /> archivos hasta ahora y todavía está comprobando el espacio de almacenamiento. Prueba a activar Sincronización de archivos de nuevo dentro de unos minutos.</translation>
 <translation id="2566146433999774844">Unirte al grupo de pestañas con <ph name="OWNER_FIRST_NAME" /> y <ph name="NUM_OTHER_MEMBERS" /> personas más</translation>
-<translation id="256726287944589768">Mostrar pie de página en la página Nueva pestaña</translation>
 <translation id="2568774940984945469">Contenedor de barra de información</translation>
 <translation id="257088987046510401">Temas</translation>
 <translation id="2572032849266859634">Se ha concedido acceso de solo lectura a <ph name="VOLUME_NAME" />.</translation>
@@ -2222,7 +2218,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2696675923413008404">El contenido de este sitio, incluida su URL, se envía a Google y puede que lo vean revisores humanos para mejorar esta función</translation>
 <translation id="269941332914175387">Reinicia el navegador para cargar los datos de tu perfil y mantenerlos cifrados</translation>
 <translation id="2699911226086014512">Error al realizar la operación con PIN con el código <ph name="RETRIES" />.</translation>
-<translation id="2701330563083355633">Compartido desde <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Iniciar sesión, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Dirección MAC de red</translation>
 <translation id="2702720509009999256">Comprueba tu conexión a Internet y elige Reintentar, o bien, para usar opciones limitadas de edición y visualización, selecciona Abrir en el editor básico.</translation>
@@ -2623,7 +2618,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2989474696604907455">no conectado</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
 <translation id="2989786307324390836">DER binario codificado, certificado único</translation>
-<translation id="2989805286512600854">Abrir en una pestaña nueva</translation>
 <translation id="2990313168615879645">Añadir cuenta de Google</translation>
 <translation id="2990375978470734995">Para que se aplique este cambio, vuelve a conectar los accesorios externos.</translation>
 <translation id="2990500505358145117">Editar combinación de teclas de la función Autocompletar mejorada</translation>
@@ -3896,7 +3890,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3909701002594999354">Mostrar todos los &amp;controles</translation>
 <translation id="3909791450649380159">Cor&amp;tar</translation>
 <translation id="39103738135459590">Código de activación</translation>
-<translation id="3911824782900911339">Página Nueva pestaña</translation>
 <translation id="3913689539406883376">Activar cuando el ordenador esté desenchufado</translation>
 <translation id="3914173277599553213">Obligatorio</translation>
 <translation id="3914568430265141791">Abrir carpeta <ph name="FOLDER_TITLE" /></translation>
@@ -4453,7 +4446,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4354344420232759511">Los sitios que visites aparecerán aquí</translation>
 <translation id="4356100841225547054">Desactivar volumen</translation>
 <translation id="4357583358198801992">Mostrar grupos de pestañas</translation>
-<translation id="4357812592970409234">Más información sobre el fondo de la página Nueva pestaña</translation>
 <translation id="4358361163731478742">Ninguna aplicación admite la selección de idioma</translation>
 <translation id="4358995225307748864">Selecciona una aplicación para abrirla</translation>
 <translation id="4359408040881008151">Instalada debido a las extensiones dependientes</translation>
@@ -6727,7 +6719,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6130887916931372608">Tecla del teclado</translation>
 <translation id="6131511889181741773">Salpicaduras</translation>
 <translation id="6132251717264923430">Botón fijado</translation>
-<translation id="6134418895482326458">Ocultar pie de página en la página Nueva pestaña</translation>
 <translation id="6134428719487602109">Elimina todas las cuentas de usuario y restablece el Chromebook para que quede como nuevo.</translation>
 <translation id="6135826623269483856">No tienen permiso para gestionar las ventanas en ninguna de tus pantallas</translation>
 <translation id="6136285399872347291">retroceso</translation>
@@ -9922,6 +9913,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8563043098557365232">Solo se permite para los servicios del sistema</translation>
 <translation id="8563898784671745643">Silenciar sitio de abajo</translation>
 <translation id="8564220755011656606">No se puede acceder al micrófono</translation>
+<translation id="8564894539416715395">Nueva página de pestaña</translation>
 <translation id="8565021320663436446">¿Quitar a <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8566916288687510520">Nueva contraseña recibida</translation>
 <translation id="8567946600191652875">Debe tener al menos 6 caracteres e incluir al menos una letra o un símbolo</translation>
@@ -10448,6 +10440,7 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8963117664422609631">Ir a configuración del sitio</translation>
 <translation id="8964927371396953727">Verifica que eres tú para usar y guardar contraseñas en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="8965037249707889821">Introducir contraseña anterior</translation>
+<translation id="8967403839792635452">¿Desarrollas extensiones? Mantente al día de las <ph name="BEGIN_LINK" />novedades<ph name="END_LINK" /> con la documentación para desarrolladores de extensiones de Chrome.</translation>
 <translation id="8967427617812342790">Añadir a lista de lectura</translation>
 <translation id="8968527460726243404">Escritor de imágenes del sistema de Chrome OS</translation>
 <translation id="8968766641738584599">Guardar tarjeta</translation>

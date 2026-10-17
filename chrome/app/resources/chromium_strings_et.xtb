@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Tuvastage asju ja kohti ning kopeerige või tõlkige teksti. Kui kasutate pildiotsingut, saadetakse lehe ekraanipilt serverisse. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium on teie vaikebrauser</translation>
 <translation id="1131805035311359397">Kui soovite kontrollida, kas teie paroolid on andmetega seotud rikkumiste ja muude turvaprobleemide eest kaitstud, <ph name="BEGIN_LINK" />logige Chromiumi sisse<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Administraator palub teil Chromiumi selle värskenduse rakendamiseks uuesti käivitada. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Administraator palub teil Chromiumi selle värskenduse rakendamiseks uuesti käivitada. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="1153368717515616349">Klõpsake Chromiumi menüül</translation>
 <translation id="1157985233335035034">Hiljutised keeled</translation>
 <translation id="1184145431117212167">Installimine ebaõnnestus, kuna teie Windowsi versiooni ei toetata.</translation>
@@ -38,6 +39,7 @@
 <translation id="1329040302064168406">Logige oma telefonis Chromiumi sisse</translation>
 <translation id="1330562121671411446">Keele tuvastamine</translation>
 <translation id="1342274909142618978">Kustutage ka andmed Chromiumist (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Täiustatud kaitse nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Täiustatud kaitse nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="1345251407431278948">Kinnitatud! Pääsete pildiotsingule taas juurde tööriistariba uue nupu abil.</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1388276868779258475">Kasutage Chromiumi rakendust, et liikvel olles sirvimist jätkata.</translation>
@@ -226,6 +228,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Võtke oma Google'i AI lemmiktööriistad liikvel olles iOS-i Chromiumiga kaasa.</translation>
 <translation id="3264761466044851269">Seadmes <ph name="DEVICE" /> oma laiendustele ja muule sisule juurdepääsemiseks logige sisse Chromiumi.</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Saadaval on uus Chromiumi värskendus, mis rakendatakse taaskäivitamisel. Teie isoleeritud akent ei avata uuesti.}other{Saadaval on uus Chromiumi värskendus, mis rakendatakse taaskäivitamisel. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
 <translation id="328888136576916638">Google API võtmed on puudu. Teatud Chromiumi funktsioonid keelatakse.</translation>
 <translation id="3296368748942286671">Jätka taustarakenduste käitamist pärast Chromiumi sulgemist</translation>
@@ -273,6 +276,7 @@
           **Soovita küsimusi.** Genereeri täpploend 3–5 mõtlemapaneva küsimusega, mille kasutaja võiks ekraanipildi paremaks mõistmiseks esitada. Nende küsimuste hulgas peaks olema vähemalt üks selline, mis käsitleb konkreetselt visuaalset objekti, selle kujundust või paigutust.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386243222263310720">Kõigis oma seadmetes järjehoidjatele ja muule sisule juurdepääsemiseks logige sisse Chromiumi.</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Administraator palub teil Chromiumi selle värskenduse rakendamiseks uuesti käivitada. Teie isoleeritud akent ei avata uuesti.}other{Administraator palub teil Chromiumi selle värskenduse rakendamiseks uuesti käivitada. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="3885770153807205175">Keelevalija</translation>
 <translation id="388648406173476553">Chromiumi kohandamine ja haldamine. Miski vajab teie tähelepanu – klõpsake üksikasjade nägemiseks.</translation>
 <translation id="3889543394854987837">Chromiumi avamiseks ja sirvimise alustamiseks klõpsake oma nimel.</translation>
@@ -430,6 +434,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chromiumi sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete juurde oma salvestatud teabele ja muule järgmises seadmes: <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Käivitamisel ilmnes viga: käitage installiprogrammi tavakasutajana, mitte administraatorina.</translation>
 <translation id="5580770360767802657">Kasutage vaikimisi Chromiumit ja laske see kinnitada</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie isoleeritud akent ei avata uuesti.}other{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5605834417512968703">Valige midagi, mida pildiotsinguga otsida, või vajutage pildiotsingust väljumiseks paoklahvi</translation>
 <translation id="5618818588972826921">Valige pildiotsinguga otsimiseks mis tahes tekst või pilt või vajutage pildiotsingust väljumiseks paoklahvi</translation>
@@ -589,6 +594,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="7003299027384820442">Sisestage pääsukood, et oma kontol <ph name="ACCOUNT_EMAIL" /> Chromiumi andmeid kasutada ja salvestada</translation>
 <translation id="7011190694940573312">Installimine ebaõnnestus, kuna operatsioonisüsteemi seda versiooni ei toetata.</translation>
 <translation id="7024536598735240744">Viga lahtipakkimisel: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Täiustatud kaitse nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie isoleeritud akent ei avata uuesti.}other{Täiustatud kaitse nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="7045244423563602563">Isikupärastage Chromiumi</translation>
 <translation id="7047386856539490735">Kas need tulemused on kasulikud?</translation>
 <translation id="705851970750939768">Värskenda Chromiumi</translation>
@@ -668,6 +674,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Muutke teie internetiliiklusele juurdepääsu omavate inimeste jaoks keerulisemaks vaadata, milliseid saite külastate. Chromium kasutab DNS-ist (domeeninimesüsteemist) saidi IP-aadressi otsimiseks turvalist ühendust.</translation>
 <translation id="7810005234485217901">Saate pildiotsingu hõlpsaks juurdepääsuks kinnitada</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Saadaval on uus Chromiumi värskendus, mis rakendatakse taaskäivitamisel. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Saadaval on uus Chromiumi värskendus, mis rakendatakse taaskäivitamisel. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="7828527096541974699">Valige, mida Chromiumiga jagada</translation>
 <translation id="7828947555739565424">Selle kontoga Chromiumi profiil on selles seadmes juba olemas</translation>
 <translation id="7845233973568007926">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate oma arvuti taaskäivitama.</translation>
@@ -705,6 +712,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="813913629614996137">Lähtestamine …</translation>
 <translation id="8161503455832158203">Avage Gemini Chromiumis klaviatuuri otsetee abil.</translation>
 <translation id="8164014945047474187">Chromiumi täiendavad teenusetingimused</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="81770708095080097">Chromium blokeeris faili, kuna see on ohtlik.</translation>
 <translation id="8177472873527554730">Lehe sisu ei õnnestu leida</translation>
 <translation id="8200109504272824693">Sisestage parool, et oma kontol <ph name="USER_EMAIL" /> Chromiumi andmeid kasutada ja salvestada</translation>

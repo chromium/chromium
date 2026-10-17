@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos.}=1{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir a janela de navegação anónima.}other{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Não é possível reabrir # janelas de navegação anónima.}}</translation>
 <translation id="1434626383986940139">Apps do Chrome para o Canary</translation>
 <translation id="1439793550875056299">Afixar Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{O seu administrador precisa que reinicie o Chrome para aplicar uma atualização. A janela isolada não vai ser reaberta.}other{O seu administrador precisa que reinicie o Chrome para aplicar uma atualização. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="146866447420868597">Iniciar sessão no Chrome?</translation>
 <translation id="1476347941828409626">&amp;Gerir perfis do Chrome</translation>
 <translation id="1492280395845991349">Reinicie para concluir a atualização do Chrome</translation>
@@ -269,6 +270,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="345171907106878721">Adicionar-se ao Chrome</translation>
 <translation id="3453763134178591239">Termos do ChromeOS</translation>
 <translation id="3475778264501649775">Use as suas palavras-passe, separadores e muito mais em qualquer lugar com a app Chrome no telemóvel</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{O seu administrador pede-lhe que reinicie o Chrome para aplicar esta atualização. A janela isolada não vai ser reaberta.}other{O seu administrador pede-lhe que reinicie o Chrome para aplicar esta atualização. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="3539955434060988644">Abrir link numa janela de nave&amp;gação anónima do Chrome</translation>
 <translation id="354621070532799440">Lembrete: as melhores funcionalidades de segurança da Google no seu bolso</translation>
 <translation id="3547866758548131919">Clique no botão Resumir para partilhar este documento com o Gemini no Chrome, obter uma vista geral rápida e fazer perguntas de seguimento</translation>
@@ -284,12 +286,15 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="3622797965165704966">Agora é mais fácil utilizar o Chrome com a sua Conta Google e em computadores partilhados.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chrome no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso às suas informações guardadas e muito mais em todos os seus dispositivos.</translation>
 <translation id="3635073343384702370">O Chrome consegue verificar as suas palavras-passe quando as guarda</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. A janela isolada não vai ser reaberta.}other{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="3636970668267555808">Defina o Chrome como o seu navegador predefinido para ter acesso fácil às funcionalidades que conhece, adora e em que confia.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{O seu administrador pede-lhe que reinicie o Chrome para aplicar esta atualização. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{O seu administrador pede-lhe que reinicie o Chrome para aplicar esta atualização. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="3667616615096815454">Não é possível instalar. O servidor não reconhece a aplicação.</translation>
 <translation id="3673813398384385993">O Chrome encontrou malware na extensão "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3697952514309507634">Outros perfis do Chrome</translation>
 <translation id="3703994572283698466">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versão do ChromeOS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="3718181793972440140">Esta ação elimina 1 item deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{O Chrome recomenda que a remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" />}other{O Chrome recomenda que as remova. <ph name="BEGIN_LINK" />Saiba mais sobre as extensões suportadas<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Aprofunde a sua pesquisa adicionando vários separadores, ficheiros e ferramentas com o botão "Adicionar separador e muito mais".</translation>
@@ -416,6 +421,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5003967926796347400">Clique em "Gestor de Palavras-passe da Google"</translation>
 <translation id="5043786843026425788">Saber mais sobre a pesquisa com o Google Lens no Chrome</translation>
 <translation id="504867494566807945">Abra links no Chrome a partir de qualquer app. Além disso, para um acesso fácil, este é afixado à barra de tarefas.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{A Proteção Avançada requer que reinicie o Chrome para aplicar uma atualização. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{A Proteção Avançada requer que reinicie o Chrome para aplicar uma atualização. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="5105120510934353742">Para receber atualizações futuras do Google Chrome, precisa do macOS 13 ou posterior. Este computador está a usar o macOS 12.</translation>
 <translation id="5114340746415930644">Introduza a sua frase de acesso para usar e guardar dados do Chrome na sua conta, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Inicie sessão no Chrome quando inicia sessão noutros serviços Google</translation>
@@ -476,6 +482,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Não é possível ligar à Internet. O servidor proxy necessita de autenticação.</translation>
 <translation id="5709557627224531708">Definir o Chrome como o navegador predefinido</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{A Proteção Avançada requer que reinicie o Chrome para aplicar uma atualização. A janela isolada não vai ser reaberta.}other{A Proteção Avançada requer que reinicie o Chrome para aplicar uma atualização. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="5719246646468301581">Termos de Utilização Adicionais do Google Chrome e do ChromeOS</translation>
 <translation id="5736850870166430177">Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura</translation>
 <translation id="5742003800414899269">Use a app Chrome para levar as melhores ferramentas de IA consigo para qualquer lugar</translation>
@@ -503,6 +510,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5960404530854194706">O Chrome vai ser atualizado quando estiver ausente</translation>
 <translation id="5980111191913430208">As extensões, as apps e os temas de fontes desconhecidas podem danificar o seu dispositivo. O Chrome recomenda instalá-los apenas a partir da <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">A transferir… Falta(m) <ph name="HOURS" /> hora(s)</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{O seu administrador precisa que reinicie o Chrome para aplicar uma atualização. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{O seu administrador precisa que reinicie o Chrome para aplicar uma atualização. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="6008161919456049856">As suas palavras-passe, métodos de pagamento e moradas guardadas na sua Conta Google vão ser removidas deste dispositivo. Para os usar novamente no Chrome, volte a iniciar sessão.</translation>
 <translation id="6009821354356307391">Faça uma pergunta de seguimento</translation>
 <translation id="6014316319780893079">Com as <ph name="BEGIN_LINK" />ferramentas do Chrome<ph name="END_LINK" />, pode navegar em segurança e manter o controlo</translation>
@@ -675,6 +683,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="7452987490177144319">{COUNT,plural, =1{A sua organização elimina automaticamente os dados de navegação quando o Chrome não é usado durante 1 minuto. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores permanecem abertos.}other{A sua organização elimina automaticamente os dados de navegação quando o Chrome não é usado durante # minutos. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores permanecem abertos.}}</translation>
 <translation id="7466577301922356468">O envio automático destes dados para a Google ajuda a melhorar o Chrome. Pode alterar esta definição em qualquer altura.</translation>
 <translation id="7477130805345743099">O Chrome envia-lhe um aviso antes de carregar qualquer site através de uma ligação insegura</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. A janela isolada não vai ser reaberta.}other{Está disponível uma atualização para o Chrome que será aplicada logo que o reinicie. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="7481213027396403996">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="749228101751499733">Enquanto tiver sessão iniciada, pode usar as palavras-passe e muito mais da sua Conta Google no Chrome. <ph name="SHORTCUT" /> pode alterar as suas definições dos serviços Google.</translation>
 <translation id="7496017508659652909">O Chrome pré-carrega páginas, o que torna a navegação e a pesquisa mais rápidas. <ph name="BEGIN_LINK" />Saiba mais sobre o pré-carregamento de páginas<ph name="END_LINK" /></translation>
@@ -791,6 +800,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="8380754585531979907">Use o teclado para navegar entre o Gemini no Chrome e o separador aberto.</translation>
 <translation id="8387459386171870978">Continuar a usar o Chrome</translation>
 <translation id="8394720698884623075">Verifica os URLs com listas de sites inseguros armazenados no Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{A atualização do Chrome está concluída. Pode usar a versão mais recente assim que reiniciar. Depois, os separadores atuais vão ser reabertos. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="8403038600646341038">Logótipo do Chrome num ecrã de computador.</translation>
 <translation id="8418845734693287262">O ChromeOS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="842386925677997438">Ferramentas de segurança do Chrome</translation>

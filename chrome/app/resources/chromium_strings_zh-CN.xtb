@@ -15,6 +15,7 @@
 <translation id="112640046208448578">识别事物或地点，以及复制或翻译文本。当您使用图片搜索功能时，系统会将相关页面的屏幕截图发送给服务器。<ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium 是您的默认浏览器</translation>
 <translation id="1131805035311359397">若要检查您的密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{您的管理员要求您重新启动 Chromium 以应用此项更新。有无痕式窗口或隔离窗口处于打开状态。重新启动后，这个窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用此项更新。有 # 个无痕式窗口和隔离窗口在多份个人资料中打开。重新启动后，这些窗口不会重新打开。}}</translation>
 <translation id="1153368717515616349">点击 Chromium 菜单</translation>
 <translation id="1157985233335035034">最近选择过的语言</translation>
 <translation id="1184145431117212167">安装失败，因为您的 Windows 版本不受支持。</translation>
@@ -37,6 +38,7 @@
 <translation id="1329040302064168406">在手机上登录 Chromium</translation>
 <translation id="1330562121671411446">检测语言</translation>
 <translation id="1342274909142618978">同时删除 Chromium 中的数据 (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{高级保护计划要求您重新启动 Chromium 以应用一项更新。有无痕式窗口或隔离窗口处于打开状态。重新启动后，这个窗口不会重新打开。}other{高级保护计划要求您重新启动 Chromium 以应用一项更新。有 # 个无痕式窗口和隔离窗口在多份个人资料中打开。重新启动后，这些窗口不会重新打开。}}</translation>
 <translation id="1345251407431278948">已固定！您可以通过工具栏中的新按钮再次使用图片搜索功能</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1388276868779258475">使用 Chromium 应用，随时随地接续浏览体验</translation>
@@ -225,6 +227,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS 版 Chromium 伴您同行，随时随地玩转常用 Google AI 工具。</translation>
 <translation id="3264761466044851269">如需获取<ph name="DEVICE" />中的扩展程序等内容，请登录 Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。隔离窗口将不会重新打开。}other{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。# 个隔离窗口将不会重新打开。}}</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>
@@ -272,6 +275,7 @@
           **建议问题：**生成 3-5 个发人深省的问题，以项目符号列表的形式呈现，帮助用户更深入地理解屏幕截图。这些问题中，至少应有一个是关于某个视觉对象、其设计或其放置位置的问题。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">如需在您的所有设备上获取书签等内容，请登录 Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{您的管理员要求您重新启动 Chromium 以应用此项更新。隔离窗口将不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用此项更新。# 个隔离窗口将不会重新打开。}}</translation>
 <translation id="3885770153807205175">语言选择器</translation>
 <translation id="388648406173476553">自定义和控制 Chromium。出了点需要您注意的状况 - 点击即可查看详情。</translation>
 <translation id="3889543394854987837">点击您的姓名即可打开Chromium并开始浏览。</translation>
@@ -430,6 +434,7 @@
 <translation id="5576587363991567745"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chromium。登录后，您还可以获取<ph name="DEVICE" />中保存的信息等内容。</translation>
 <translation id="5579324208890605088">启动错误：请以普通用户身份（非管理员身份）运行安装程序。</translation>
 <translation id="5580770360767802657">默认使用 Chromium 并将其固定</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{您的管理员要求您重新启动 Chromium 以应用一项更新。隔离窗口将不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用一项更新。# 个隔离窗口将不会重新打开。}}</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5605834417512968703">选择任意内容即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
 <translation id="5618818588972826921">选择任何文字或图片即可使用图片搜索功能进行搜索，按 Esc 键可退出图片搜索功能</translation>
@@ -589,6 +594,7 @@
 <translation id="7003299027384820442">请输入您的口令，以便将 Chromium 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
 <translation id="7011190694940573312">安装失败，因为此版本的操作系统不受支持。</translation>
 <translation id="7024536598735240744">解压缩时出错：<ph name="UNPACK_ERROR" />。</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{高级保护计划要求您重新启动 Chromium 以应用一项更新。隔离窗口将不会重新打开。}other{高级保护计划要求您重新启动 Chromium 以应用一项更新。# 个隔离窗口将不会重新打开。}}</translation>
 <translation id="7045244423563602563">定制您的专属 Chromium</translation>
 <translation id="7047386856539490735">这些结果有用吗？</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
@@ -668,6 +674,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chromium 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
 <translation id="7810005234485217901">您可以固定图片搜索功能以方便访问</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。有无痕式窗口或隔离窗口处于打开状态。重新启动后，这个窗口不会重新打开。}other{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。有 # 个无痕式窗口和隔离窗口在多份个人资料中打开。重新启动后，这些窗口不会重新打开。}}</translation>
 <translation id="7828527096541974699">选择要与 Chromium 分享的内容</translation>
 <translation id="7828947555739565424">此设备上已有一份使用该账号创建的 Chromium 个人资料</translation>
 <translation id="7845233973568007926">感谢您完成安装。您必须重启计算机才能使用 <ph name="BUNDLE_NAME" />。</translation>
@@ -705,6 +712,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8161503455832158203">使用键盘快捷键打开 Chromium 中的 Gemini。</translation>
 <translation id="8164014945047474187">Chromium 附加服务条款</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{您的管理员要求您重新启动 Chromium 以应用一项更新。有无痕式窗口或隔离窗口处于打开状态。重新启动后，这个窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用一项更新。有 # 个无痕式窗口和隔离窗口在多份个人资料中打开。重新启动后，这些窗口不会重新打开。}}</translation>
 <translation id="81770708095080097">此文件存在危险，因此 Chromium 已将其拦截。</translation>
 <translation id="8177472873527554730">在页面中找不到内容</translation>
 <translation id="8200109504272824693">请输入您的口令，以便将 Chromium 数据保存在您的账号 <ph name="USER_EMAIL" /> 中并使用这些数据</translation>

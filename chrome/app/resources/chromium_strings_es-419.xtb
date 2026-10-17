@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Identifica objetos o lugares, y copia o traduce texto. Cuando usas la Búsqueda con imágenes, se envía una captura de pantalla de la página al servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium es tu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar si tus contraseñas están a salvo de violaciones de la seguridad de los datos y otros problemas de seguridad, <ph name="BEGIN_LINK" />accede a Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Tu administrador solicita que reinicies Chromium para aplicar esta actualización. Hay una Ventana aislada o de incógnito abierta. No se volverá a abrir después de reiniciar el navegador.}other{Tu administrador solicita que reinicies Chromium para aplicar esta actualización. Hay # Ventanas aisladas y de incógnito abiertas en los perfiles. No se volverán a abrir después de reiniciar el navegador.}}</translation>
 <translation id="1153368717515616349">Haz clic en el menú de Chromium</translation>
 <translation id="1157985233335035034">Idiomas recientes</translation>
 <translation id="1184145431117212167">Se produjo un error en la instalación porque tu versión de Windows no es compatible.</translation>
@@ -38,6 +39,7 @@
 <translation id="1329040302064168406">Accede a Chromium en tu teléfono</translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
 <translation id="1342274909142618978">Borrar también datos de Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. Hay una Ventana aislada o de incógnito abierta. No se volverá a abrir después de reiniciar el navegador.}other{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. Hay # Ventanas aisladas y de incógnito abiertas en los perfiles. No se volverán a abrir después de reiniciar el navegador.}}</translation>
 <translation id="1345251407431278948">Se fijó. Puedes volver a acceder a la Búsqueda con imágenes desde el nuevo botón en la barra de herramientas.</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1388276868779258475">Usa la app de Chromium para seguir navegando estés donde estés</translation>
@@ -224,6 +226,7 @@
 <translation id="3258596308407688501">Chromium no puede leer y escribir en su directorio de datos: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Aprovecha tus herramientas de IA de Google favoritas estés donde estés con Chromium en iOS.</translation>
 <translation id="3264761466044851269">Para obtener tus extensiones y más de <ph name="DEVICE" />, accede a Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Hay una nueva actualización disponible para Chromium que se aplicará cuando lo reinicies. No se volverá a abrir la Ventana aislada.}other{Hay una nueva actualización disponible para Chromium que se aplicará cuando lo reinicies. No se volverán a abrir las # Ventanas aisladas.}}</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="328888136576916638">Faltan las claves de la API de Google. Se inhabilitarán algunas funciones de Chromium.</translation>
 <translation id="3296368748942286671">Continuar ejecutando aplicaciones en segundo plano cuando Chromium esté cerrado.</translation>
@@ -271,6 +274,7 @@
           **Sugerir preguntas:** Genera una lista con viñetas de 3 a 5 preguntas que inviten a la reflexión que un usuario podría hacer para comprender mejor la captura de pantalla. Estas preguntas deben incluir al menos una que sea específicamente sobre un objeto visual, su diseño o su ubicación.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Para obtener tus favoritos y más en todos tus dispositivos, accede a Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Tu administrador solicita que reinicies Chromium para aplicar esta actualización. No se volverá a abrir la Ventana aislada.}other{Tu administrador solicita que reinicies Chromium para aplicar esta actualización. No se volverán a abrir las # Ventanas aisladas.}}</translation>
 <translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="388648406173476553">Personaliza y controla Chromium. Una alerta necesita tu atención. Haz clic para ver los detalles.</translation>
 <translation id="3889543394854987837">Haz clic en tu nombre para abrir Chromium y empezar a navegar.</translation>
@@ -428,6 +432,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="5576587363991567745">Ya accedió <ph name="EXISTING_USER" />. Para mantener separada la navegación, accede a Chromium en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu información guardada y más de <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Error de inicio: Ejecuta el instalador como usuario normal, no como administrador.</translation>
 <translation id="5580770360767802657">Usa Chromium de forma predeterminada y fíjalo</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Tu administrador requiere que reinicies Chromium para aplicar una actualización. No se volverá a abrir la Ventana aislada.}other{Tu administrador requiere que reinicies Chromium para aplicar una actualización. No se volverán a abrir las # Ventanas aisladas.}}</translation>
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5605834417512968703">Selecciona cualquier elemento para realizar una Búsqueda con imágenes o presiona Escape para salir de la Búsqueda con imágenes</translation>
 <translation id="5618818588972826921">Selecciona cualquier texto o imagen para realizar una Búsqueda con imágenes o presiona Escape para salir de la Búsqueda con imágenes</translation>
@@ -585,6 +590,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7003299027384820442">Ingresa tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">La instalación falló porque esta versión del sistema operativo no es compatible.</translation>
 <translation id="7024536598735240744">Error al momento de desempaquetar: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. No se volverá a abrir la Ventana aislada.}other{La Protección avanzada requiere que reinicies Chromium para aplicar una actualización. No se volverán a abrir las # Ventanas aisladas.}}</translation>
 <translation id="7045244423563602563">Personaliza Chromium a tu medida</translation>
 <translation id="7047386856539490735">¿Te parecen útiles estos resultados?</translation>
 <translation id="705851970750939768">Actualizar Chromium</translation>
@@ -662,6 +668,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" />: Chromium Canary</translation>
 <translation id="7803986347287457849">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. Chromium usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="7810005234485217901">Puedes fijar la Búsqueda con imágenes para acceder fácilmente</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Hay una nueva actualización disponible para Chromium que se aplicará cuando lo reinicies. Hay una Ventana aislada o de incógnito abierta. No se volverá a abrir después de reiniciar el navegador.}other{Hay una nueva actualización disponible para Chromium que se aplicará cuando lo reinicies. Hay # Ventanas aisladas y de incógnito abiertas en los perfiles. No se volverán a abrir después de reiniciar el navegador.}}</translation>
 <translation id="7828527096541974699">Elige qué quieres compartir con Chromium</translation>
 <translation id="7828947555739565424">Ya existe un perfil de Chromium con esta cuenta en este dispositivo</translation>
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
@@ -699,6 +706,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="813913629614996137">Inicializando…</translation>
 <translation id="8161503455832158203">Abre Gemini en Chromium con una combinación de teclas.</translation>
 <translation id="8164014945047474187">Condiciones del Servicio Adicionales de Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Tu administrador requiere que reinicies Chromium para aplicar una actualización. Hay una Ventana aislada o de incógnito abierta. No se volverá a abrir después de reiniciar el navegador.}other{Tu administrador requiere que reinicies Chromium para aplicar una actualización. Hay # Ventanas aisladas y de incógnito abiertas en los perfiles. No se volverán a abrir después de reiniciar el navegador.}}</translation>
 <translation id="81770708095080097">Chromium bloqueó este archivo porque es peligroso.</translation>
 <translation id="8177472873527554730">No se puede encontrar el contenido de la página</translation>
 <translation id="8200109504272824693">Ingresa tu frase de contraseña para usar y guardar datos de Chromium en tu cuenta, <ph name="USER_EMAIL" /></translation>

@@ -8686,17 +8686,6 @@ HTTP-заголовок Origin-Agent-Cluster визначає, як ізолюв
       Якщо для цього правила вибрано значення False, такий контент не завантажуватиметься.</translation>
 <translation id="6368011194414932347">Налаштувати URL-адресу домашньої сторінки</translation>
 <translation id="6368403635025849609">Дозволити JavaScript на цих сайтах</translation>
-<translation id="6368652917086795891">Це правило дає змогу налаштувати параметри підключення <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> у <ph name="PRODUCT_NAME" />.
-
-Воно замінюється правилом <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />. Якщо налаштовано обидва правила, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> матиме перевагу.
-
-Це правило налаштовує URL-адресу вебдодатка <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> за допомогою параметра <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, який має бути дійсною URL-адресою, що використовує схему https, указує на домен <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> і не містить імені користувача або пароля. Якщо він не відповідає цим вимогам, правило ігнорується, а <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> не буде налаштовано.
-
-Якщо налаштувати це правило, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> буде ввімкнено для користувачів, які ввійшли в керований обліковий запис або керований вебпереглядач.
-
-Якщо це правило не налаштувати, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> не буде ввімкнено.
-
-Зверніть увагу, що це правило не керує загальною інтеграцією <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, яка регулюється правилом <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Заборонити використання вбудованих API ШІ.</translation>
 <translation id="6371005337713685988">Налаштування функції наборів пов’язаних веб-сайтів</translation>

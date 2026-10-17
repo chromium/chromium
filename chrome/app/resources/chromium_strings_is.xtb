@@ -17,6 +17,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="112640046208448578">Berðu kennsl á hluti eða staði og afritaðu eða þýddu texta. Þegar þú notar myndaleit er skjámynd af síðunni send til þjónsins. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium er sjálfgefni vafrinn þinn</translation>
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Skráðu þig inn á Chromium<ph name="END_LINK" /> til að athuga hvort aðgangsorðin þín séu óhult fyrir öryggisbrotum og öðrum öryggisvandamálum.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. Huliðsgluggi eða einangraður gluggi er opinn. Hann opnast ekki aftur að endurræsingu lokinni.}one{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. # gluggi (huliðsgluggar og einangraðir gluggar) er opinn á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}other{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. # huliðsgluggar og einangraðir gluggar eru opnir á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}}</translation>
 <translation id="1153368717515616349">Smelltu á Chromium-valmyndina</translation>
 <translation id="1157985233335035034">Nýleg tungumál</translation>
 <translation id="1184145431117212167">Uppsetning mistókst því að þín útgáfa af Windows er ekki studd.</translation>
@@ -40,6 +41,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1329040302064168406">Skráðu þig inn í Chromium í símanum þínum</translation>
 <translation id="1330562121671411446">Greina tungumál</translation>
 <translation id="1342274909142618978">Eyða einnig gögnum úr Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Ítarleg vernd krefst þess að þú endurræsir Chromium til að setja upp uppfærslu. Huliðsgluggi eða einangraður gluggi er opinn. Hann opnast ekki aftur að endurræsingu lokinni.}one{Ítarleg vernd krefst þess að þú endurræsir Chromium til að setja upp uppfærslu. # gluggi (huliðsgluggar og einangraðir gluggar) er opinn á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}other{Ítarleg vernd krefst þess að þú endurræsir Chromium til að setja upp uppfærslu. # huliðsgluggar og einangraðir gluggar eru opnir á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}}</translation>
 <translation id="1345251407431278948">Fest! Nú geturðu opnað myndaleit aftur með því að ýta á nýja hnappinn á tækjastikunni</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1388276868779258475">Notaðu Chromium-forritið til að halda áfram að vafra á ferðinni</translation>
@@ -228,6 +230,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Vertu með uppáhalds gervigreindarverkfæri Google með þér á ferðinni með Chromium í iOS.</translation>
 <translation id="3264761466044851269">Skráðu þig inn á Chromium til að sækja viðbæturnar þínar og fleira í <ph name="DEVICE" /></translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. Einangraði glugginn opnast ekki aftur.}one{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. # einangraður gluggi opnast ekki aftur.}other{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. # einangraðir gluggar opnast ekki aftur.}}</translation>
 <translation id="3286538390144397061">Endurræsa núna</translation>
 <translation id="328888136576916638">Lykla vantar fyrir forritaskil Google. Sumir eiginleikar Chromium verða óvirkir.</translation>
 <translation id="3296368748942286671">Halda áfram að keyra bakgrunnsforrit þegar Chromium er lokað</translation>
@@ -275,6 +278,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
           **Leggja til spurningar:** Búa til punktalista með 3-5 ögrandi spurningum sem notandi gæti spurt til að skilja skjámyndina betur. Þessar spurningar ættu að fela í sér minnst eina sem er sérstaklega um sjónrænt atriði, hönnun þess eða staðsetningu.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386243222263310720">Skráðu þig inn á Chromium til að fá aðgang að bókamerkjunum þínum og fleiru í öllum tækjunum þínum</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. Einangraði glugginn opnast ekki aftur.}one{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. # einangraður gluggi opnast ekki aftur.}other{Kerfisstjórinn þinn vill að þú endurræsir Chromium til að setja upp þessa uppfærslu. # einangraðir gluggar opnast ekki aftur.}}</translation>
 <translation id="3885770153807205175">Tungumálaval</translation>
 <translation id="388648406173476553">Sérsníða og stjórna Chromium. Eitthvað krefst athygli þinnar – smelltu til að sjá nánar.</translation>
 <translation id="3889543394854987837">Smelltu á nafnið þitt til að opna Chromium og byrja að vafra.</translation>
@@ -432,6 +436,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> er þegar innskráð(ur). Til að halda vefskoðun aðskilinni skaltu skrá þig inn á Chromium með þínum eigin prófíl sem <ph name="USER_EMAIL_ADDRESS" />. Þú færð einnig vistuðu upplýsingarnar þínar og fleira úr <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Villa í ræsingu: keyrðu uppsetningarforritið sem venjulegur notandi, ekki sem kerfisstjóri.</translation>
 <translation id="5580770360767802657">Notaðu Chromium sem sjálfgefinn vafra og festu hann</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chromium til að setja upp uppfærslu. Einangraði glugginn opnast ekki aftur.}one{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chromium til að setja upp uppfærslu. # einangraður gluggi opnast ekki aftur.}other{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chromium til að setja upp uppfærslu. # einangraðir gluggar opnast ekki aftur.}}</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5605834417512968703">Veldu hvað sem er til að leita með myndaleit eða ýttu á „Esc“ til að loka myndaleitinni</translation>
 <translation id="5618818588972826921">Veldu hvaða texta eða mynd sem er til að leita með myndaleit eða ýttu á „Esc“ til að loka myndaleitinni</translation>
@@ -591,6 +596,7 @@ Ekki er hægt að vista ný bókamerki á reikningnum þínum fyrr en þú eyði
 <translation id="7003299027384820442">Sláðu inn aðgangsorðið þitt til að nota og vista Chromium-gögn á reikningnum þínum, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Uppsetning mistókst vegna þess að þessi útgáfa af stýrikerfinu er ekki studd.</translation>
 <translation id="7024536598735240744">Villa við afpökkun: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Ítarleg vernd krefst þess að þú endurræsir Chromium til að setja upp uppfærslu. Einangraði glugginn opnast ekki aftur.}one{Ítarleg vernd krefst þess að þú endurræsir Chromium til að setja upp uppfærslu. # einangraður gluggi opnast ekki aftur.}other{Ítarleg vernd krefst þess að þú endurræsir Chromium til að setja upp uppfærslu. # einangraðir gluggar opnast ekki aftur.}}</translation>
 <translation id="7045244423563602563">Lagaðu Chromium að þínum þörfum</translation>
 <translation id="7047386856539490735">Eru þessar niðurstöður gagnlegar?</translation>
 <translation id="705851970750939768">Uppfæra Chromium</translation>
@@ -669,6 +675,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Gerðu fólki með aðgang að netumferðinni þinni erfiðara fyrir að sjá hvaða vefsvæði þú skoðar. Chromium notar örugga tengingu til að finna IP-tölu vefsvæðis í DNS (nafnakerfi léna).</translation>
 <translation id="7810005234485217901">Þú getur fest myndaleit til að hafa greiðan aðgang að henni</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. Huliðsgluggi eða einangraður gluggi er opinn. Hann opnast ekki aftur að endurræsingu lokinni.}one{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. # gluggi (huliðsgluggar og einangraðir gluggar) er opinn á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}other{Ný útgáfa af Chromium er í boði og hún verður notuð um leið og þú endurræsir. # huliðsgluggar og einangraðir gluggar eru opnir á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}}</translation>
 <translation id="7828527096541974699">Veldu hverju á að deila með Chromium</translation>
 <translation id="7828947555739565424">Chromium prófíll með þessum reikningi er þegar til í þessu tæki</translation>
 <translation id="7845233973568007926">Takk fyrir að setja upp. Þú þarft að endurræsa tölvuna áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
@@ -706,6 +713,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="813913629614996137">Frumstillir...</translation>
 <translation id="8161503455832158203">Opnaðu Gemini í Chromium með flýtilykli.</translation>
 <translation id="8164014945047474187">Viðbótarþjónustuskilmálar Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chromium til að setja upp uppfærslu. Huliðsgluggi eða einangraður gluggi er opinn. Hann opnast ekki aftur að endurræsingu lokinni.}one{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chromium til að setja upp uppfærslu. # gluggi (huliðsgluggar og einangraðir gluggar) er opinn á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}other{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chromium til að setja upp uppfærslu. # huliðsgluggar og einangraðir gluggar eru opnir á prófílum. Þessi gluggar opnast ekki aftur eftir endurræsingu.}}</translation>
 <translation id="81770708095080097">Þessi skrá er hættuleg og þess vegna útilokaði Chromium hana.</translation>
 <translation id="8177472873527554730">Ekki tókst að finna efni á síðu</translation>
 <translation id="8200109504272824693">Sláðu inn aðgangsorðið þitt til að nota og vista Chromium-gögn á reikningnum þínum, <ph name="USER_EMAIL" /></translation>

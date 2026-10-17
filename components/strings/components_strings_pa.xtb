@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">ਨਗਰ ਪਾਲਿਕਾ</translation>
 <translation id="2059202684901022309">22 x 34 ਇੰਚ</translation>
 <translation id="2063929825539050431">ਇਸ ਪੰਨੇ ਨੂੰ ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ 'ਤੇ ਤੁਰੰਤ ਭੇਜਣ ਲਈ, ਪਤਾ ਬਾਰ ਨੂੰ ਸਪਰਸ਼ ਕਰ ਕੇ ਦਬਾਈ ਰੱਖੋ</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 ਸੁਝਾਅ}one{# ਸੁਝਾਅ}other{ # ਸੁਝਾਅ}}</translation>
 <translation id="2066969741541525119">ਅੱਗੇ ਦਿੱਤੀ ਸਾਈਟ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀ ਗਈ ਹੈ</translation>
 <translation id="2071156619270205202">ਇਹ ਕਾਰਡ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਲਈ ਯੋਗ ਨਹੀਂ ਹੈ।</translation>
 <translation id="2071852865256799872">ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">ਹੇਠਾਂ ਇੱਕ ਤੋਂ ਵੱਧ ਮੋਰੀਆਂ</translation>
 <translation id="218940509700321686">ਕੌਮੇ ਨਾਲ ਵੱਖ ਕੀਤੇ ਮੁੱਲ</translation>
 <translation id="2190094353033916816">ਇਸ ਨੀਤੀ ਵਿੱਚ ਮਸ਼ੀਨ ਅਤੇ ਵਰਤੋਂਕਾਰ ਪੱਧਰਾਂ 'ਤੇ ਵੱਖ-ਵੱਖ ਮੁੱਲ ਲਾਗੂ ਕੀਤੇ ਗਏ ਹਨ। ਨੀਤੀ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰ ਰਹੀ ਹੈ।</translation>
-<translation id="219061769324072544">ਕ੍ਰੈਡਿਟ,ਕਾਰਡ,ਡੈਬਿਟ</translation>
 <translation id="2191980191135734720">ਆਮ ਤੌਰ 'ਤੇ ਆਪਣਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਵਰਤ ਕੇ, ਅਗਲੇ ਪੜਾਅ ਵਿੱਚ ਆਪਣੀ ਸਕ੍ਰੀਨ ਨੂੰ ਅਣਲਾਕ ਕਰੋ। ਤੁਸੀਂ <ph name="LINK_TEXT" /> ਵੀ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="2194856509914051091">ਵਿਚਾਰੇ ਜਾਣ ਵਾਲੀਆਂ ਚੀਜ਼ਾਂ</translation>
 <translation id="2195729137168608510">ਈਮੇਲ ਸੁਰੱਖਿਆ</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">ਚਿੱਤਰ Y ਸਥਿਤੀ</translation>
 <translation id="2808278141522721006">ਤੁਸੀਂ <ph name="SETTINGS" /> ਵਿੱਚ ਜਾ ਕੇ Windows Hello ਨੂੰ ਚਾਲੂ ਜਾਂ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="2820957248982571256">ਸਕੈਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
+<translation id="282457273878278063">ਸੰਪਰਕ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2824775600643448204">ਪਤਾ ਅਤੇ ਖੋਜ ਬਾਰ</translation>
 <translation id="2826760142808435982">ਕਨੈਕਸ਼ਨ <ph name="CIPHER" /> ਵਰਤਦੇ ਹੋਏ ਐਨਕ੍ਰਿਪਟ ਅਤੇ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਗਿਆ ਹੈ ਅਤੇ ਇਹ <ph name="KX" /> ਨੂੰ ਮੁੱਖ ਐਕਸਚੇਂਜ ਬਣਤਰ ਦੇ ਤੌਰ 'ਤੇ ਵਰਤਦਾ ਹੈ।</translation>
 <translation id="2828797285817981634">ਫ਼ਿਲਹਾਲ ਮੋਸ਼ਨ ਸੈਂਸਰਾਂ ਦੀ ਆਗਿਆ ਹੈ</translation>
@@ -1862,7 +1861,6 @@
 <translation id="4121428309786185360">ਨੂੰ ਮਿਆਦ ਪੁੱਗਦੀ ਹੈ</translation>
 <translation id="4123572138124678573">ਹੇਠਾਂ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
 <translation id="412601465078863288">ਅੱਪਲੋਡ ਦਾ ਟਾਈਮ-ਆਊਟ ਹੋ ਗਿਆ ਹੈ</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 ਹੋਰ}one{# ਹੋਰ}other{# ਹੋਰ}}</translation>
 <translation id="4129810348470013900">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4130226655945681476">ਨੈੱਟਵਰਕ ਕੇਬਲਾਂ, ਮਾਡਮ, ਅਤੇ ਰਾਊਟਰ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="4132448310531350254">ਐਪਾਂ "<ph name="POLICY_IDS_LIST" />" ਵੱਲੋਂ ਰੈਫਰ ਕੀਤੀ ਗਈ file_extension "<ph name="FILE_EXTENSION" />" ਲਈ ਡੁਪਲੀਕੇਟ ਹੈਂਡਲਰ</translation>
@@ -3227,7 +3225,6 @@
 <translation id="638289054711715023">ਸ਼੍ਰਿੰਕ ਫ਼ੋਇਲ</translation>
 <translation id="6383221683286411806">ਇਸ ਸਾਈਟ 'ਤੇ ਜਾਣ ਕਰਕੇ ਸੰਭਾਵਿਤ ਤੌਰ 'ਤੇ ਖਰਚਾ ਪੈ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6384448607821972818">ਰਿਕਵਰੀ ਪਾਸਵਰਡ ਦਿਖਾਇਆ ਗਿਆ</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 ਹੋਰ ਸੁਝਾਅ}one{# ਹੋਰ ਸੁਝਾਅ}other{# ਹੋਰ ਸੁਝਾਅ}}</translation>
 <translation id="6386565501269869892">ਯੂ 4 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="6387645831795005740">ਹਮਲਾਵਰ ਕਦੇ-ਕਦਾਈ URL ਵਿੱਚ ਮੁਸ਼ਕਲ ਨਾਲ ਪਤਾ ਲੱਗਣ ਵਾਲੀਆਂ ਨਿੱਕੀਆਂ ਤਬਦੀਲੀਆਂ ਕਰਕੇ ਸਾਈਟਾਂ ਦੀ ਨਕਲ ਤਿਆਰ ਕਰਦੇ ਹਨ।</translation>
 <translation id="6389470377220713856">ਕਾਰਡ ਤੇ ਨਾਮ</translation>

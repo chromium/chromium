@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">Bələdiyyə</translation>
 <translation id="2059202684901022309">22 x 34 düym</translation>
 <translation id="2063929825539050431">Bu səhifəni başqa cihaza cəld göndərmək üçün ünvan panelinə toxunun və basıb saxlayın</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 təklif}other{# təklif}}</translation>
 <translation id="2066969741541525119">Qarşıdakı sayt təşkilatınız tərəfindən bloklanıb</translation>
 <translation id="2071156619270205202">Bu kart virtual kart nömrəsi üçün uyğun deyil.</translation>
 <translation id="2071852865256799872">Brauzeri təşkilat, profili isə <ph name="PROFILE_DOMAIN" /> idarə edir</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">Aşağıdan çoxsaylı deşik açın</translation>
 <translation id="218940509700321686">Vergüllə ayrılmış dəyərlər</translation>
 <translation id="2190094353033916816">Bu siyasətin cihaz və istifadəçi səviyyələrində tətbiq edilən fərqli dəyərləri var. Siyasət nəzərdə tutulduğu kimi işləyir.</translation>
-<translation id="219061769324072544">Kredit,Kart,Debet</translation>
 <translation id="2191980191135734720">Növbəti addımda tipik olaraq barmaq izinizdən istifadə etməklə ekran kilidini açın. Həmçinin bu üsulla da edə bilərsiniz: <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Nəzərə alınmalı amillər</translation>
 <translation id="2195729137168608510">E-poçt Müdafiəsi</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">Şəklin Y oxu üzrə mövqeyi</translation>
 <translation id="2808278141522721006">Windows Hello'nu <ph name="SETTINGS" /> bölməsində aktiv və ya deaktiv edə bilərsiniz</translation>
 <translation id="2820957248982571256">Skan edilir...</translation>
+<translation id="282457273878278063">Kontakt məlumatını idarə edin</translation>
 <translation id="2824775600643448204">Ünvan və axtarış paneli</translation>
 <translation id="2826760142808435982">Bağlantı şifrələnib və <ph name="CIPHER" /> işlədərək doğrulanıb və açar mübadiləsi olaraq <ph name="KX" /> işlədir.</translation>
 <translation id="2828797285817981634">Hazırda hərəkət sensorlarına icazə verilir</translation>
@@ -1861,7 +1860,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4121428309786185360">Köhnəlmə vaxtı:</translation>
 <translation id="4123572138124678573">Aşağıdan üçlü deşik açın</translation>
 <translation id="412601465078863288">Yükləmə vaxtı bitdi</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{digər 1}other{digər #}}</translation>
 <translation id="4129810348470013900">Xəta oldu. İnternet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="4130226655945681476">Şəbəkə kabelləri, modem və yönləndirici yoxlanılır</translation>
 <translation id="4132448310531350254">Tətbiq "<ph name="POLICY_IDS_LIST" />" tərəfindən istinad edilən "<ph name="FILE_EXTENSION" />" fayl artırması üçün dublikat emalçılar.</translation>
@@ -3227,7 +3225,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="638289054711715023">Büzülən folqa</translation>
 <translation id="6383221683286411806">Potensial ödəniş tutula bilər.</translation>
 <translation id="6384448607821972818">Bərpa parolu görünür</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 digər təklif}other{# digər təkliflər}}</translation>
 <translation id="6386565501269869892">Zərf You 4</translation>
 <translation id="6387645831795005740">Hücumçular bəzən URL-a kiçik, çətin sezilə bilən dəyişikliklər etməklə saytları təqlid edir.</translation>
 <translation id="6389470377220713856">Kart Adı</translation>

@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">Municipiu</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2063929825539050431">Pentru a trimite rapid această pagină pe alt dispozitiv, atinge lung bara de adrese</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 sugestie}few{# sugestii}other{# de sugestii}}</translation>
 <translation id="2066969741541525119">Site-ul care urmează este blocat de organizația ta</translation>
 <translation id="2071156619270205202">Cardul nu este eligibil pentru un număr de card virtual.</translation>
 <translation id="2071852865256799872">Browserul este gestionat de organizația ta, iar profilul este gestionat de <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">Perforare multiplă în partea de jos</translation>
 <translation id="218940509700321686">Valori separate prin virgulă</translation>
 <translation id="2190094353033916816">Această politică are valori diferite aplicate la nivel de dispozitiv și de utilizator. Politica funcționează corespunzător.</translation>
-<translation id="219061769324072544">Credit,Card,Debit</translation>
 <translation id="2191980191135734720">Deblochează ecranul la pasul următor, de obicei cu amprenta. Poți și să <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2195729137168608510">Protecție e-mail</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">Poziția Y a imaginii</translation>
 <translation id="2808278141522721006">Poți să activezi sau să dezactivezi Windows Hello în <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Se scanează...</translation>
+<translation id="282457273878278063">Gestionează informațiile de contact</translation>
 <translation id="2824775600643448204">Bara de adrese și de căutare</translation>
 <translation id="2826760142808435982">Conexiunea este criptată și autentificată utilizând <ph name="CIPHER" /> și folosește <ph name="KX" /> ca mecanism de schimb al cheii.</translation>
 <translation id="2828797285817981634">Folosirea senzorilor de mișcare este permisă momentan</translation>
@@ -1865,7 +1864,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4121428309786185360">Expiră la</translation>
 <translation id="4123572138124678573">Perforare triplă în partea de jos</translation>
 <translation id="412601465078863288">Încărcarea a expirat</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{încă 1}few{încă #}other{încă #}}</translation>
 <translation id="4129810348470013900">A apărut o eroare. Verifică dacă ai conexiune la internet și încearcă din nou.</translation>
 <translation id="4130226655945681476">să verifici cablurile de rețea, modemul și routerul;</translation>
 <translation id="4132448310531350254">Handlere dublură pentru extensia de fișier <ph name="FILE_EXTENSION" /> la care fac referire aplicațiile <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3231,7 +3229,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="638289054711715023">Folie termocontractibilă</translation>
 <translation id="6383221683286411806">Urmează costuri potențiale.</translation>
 <translation id="6384448607821972818">S-a afișat parola de recuperare</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{o altă sugestie}few{alte # sugestii}other{alte # de sugestii}}</translation>
 <translation id="6386565501269869892">Plic personal 4</translation>
 <translation id="6387645831795005740">Uneori, atacatorii imită site-uri aducând modificări mici, greu de observat, adresei URL.</translation>
 <translation id="6389470377220713856">Nume de pe card</translation>

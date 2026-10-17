@@ -618,7 +618,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2059166748188874810">Paikkakunta</translation>
 <translation id="2059202684901022309">22 x 34 tuumaa</translation>
 <translation id="2063929825539050431">Jos haluat lähettää tämän sivun nopeasti toiselle laitteelle, kosketa osoitepalkkia pitkään</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 ehdotus}other{# ehdotusta}}</translation>
 <translation id="2066969741541525119">Organisaatiosi on merkinnyt tämän sivuston</translation>
 <translation id="2071156619270205202">Tälle kortille ei ole saatavilla virtuaalista korttinumeroa.</translation>
 <translation id="2071852865256799872">Organisaatio ylläpitää selaintasi ja <ph name="PROFILE_DOMAIN" /> ylläpitää profiiliasi</translation>
@@ -711,7 +710,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2188375229972301266">Useita reikiä alareunassa</translation>
 <translation id="218940509700321686">CSV-tiedostomuoto</translation>
 <translation id="2190094353033916816">Käytännöllä on eri arvot, joita sovelletaan laite- ja käyttäjätasolla. Käytäntö toimii odotetusti.</translation>
-<translation id="219061769324072544">Credit,Kortti,Debit</translation>
 <translation id="2191980191135734720">Avaa näytön lukitus seuraavassa vaiheessa, yleensä sormenjäljellä. Voit myös vaihtoehtoisesti <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Huomioitavaa</translation>
 <translation id="2195729137168608510">Sähköpostin suojaus</translation>
@@ -1082,6 +1080,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2807052079800581569">Kuvan Y sijainti</translation>
 <translation id="2808278141522721006">Voit laittaa Windows Hellon päälle tai pois päältä kohdasta <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Etsitään…</translation>
+<translation id="282457273878278063">Ylläpidä yhteystietoja</translation>
 <translation id="2824775600643448204">Osoite- ja hakupalkki</translation>
 <translation id="2826760142808435982">Yhteys on salattu ja todennettu <ph name="CIPHER" />:n avulla ja se käyttää menetelmää <ph name="KX" /> avainvaihtomekanismina.</translation>
 <translation id="2828797285817981634">Liiketunnistimet sallittu toistaiseksi</translation>
@@ -1866,7 +1865,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4121428309786185360">Vanhenee</translation>
 <translation id="4123572138124678573">Kolme reikää alareunassa</translation>
 <translation id="412601465078863288">Lataus aikakatkaistu</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
 <translation id="4129810348470013900">Jotain meni pieleen. Tarkista internetyhteytesi ja yritä uudelleen.</translation>
 <translation id="4130226655945681476">Tarkista verkkojohdot, modeemi ja reititin.</translation>
 <translation id="4132448310531350254">Sovellukset (<ph name="POLICY_IDS_LIST" />) viittaavat päällekkäisiin tiedostotunnisteen "<ph name="FILE_EXTENSION" />" käsittelijöihin</translation>
@@ -3232,7 +3230,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="638289054711715023">Kutista folio</translation>
 <translation id="6383221683286411806">Tästä voi seurata kuluja</translation>
 <translation id="6384448607821972818">Palautussalasana näkyvissä</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 muu ehdotus}other{# muuta ehdotusta}}</translation>
 <translation id="6386565501269869892">Kirjekuori 4</translation>
 <translation id="6387645831795005740">Hyökkääjät jäljittelevät joskus sivustoja tekemällä URL-osoitteeseen pieniä muutoksia, joita on vaikea havaita.</translation>
 <translation id="6389470377220713856">Nimi kortissa</translation>

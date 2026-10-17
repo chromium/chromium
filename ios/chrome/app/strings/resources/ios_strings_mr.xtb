@@ -195,7 +195,6 @@
 <translation id="154312949627292154">तुमच्या इतर डिव्हाइसवरून मिळालेले टॅब लॉक स्क्रीनवरून उघडा.</translation>
 <translation id="1544653821167545205">पेजचा सारांश द्या</translation>
 <translation id="1545749641540134597">QR कोड स्कॅन करा</translation>
-<translation id="1545757265410828525">किमतीचा इतिहास</translation>
 <translation id="1547610699249301703">पासवर्ड शेअर करा</translation>
 <translation id="1554043146674176775">AI मोड बंद करा</translation>
 <translation id="1554477036522844996">नवीन विंडो</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">तुम्ही <ph name="WEBSITE" /> वर "<ph name="USERNAME" />" चा पासवर्ड आधीच सेव्ह केला आहे</translation>
 <translation id="2434918313224755415">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी डावीकडे स्क्रोल करू शकता.</translation>
 <translation id="2435457462613246316">पासवर्ड दर्शवा</translation>
-<translation id="2451607499823206582">ट्रॅक करणे</translation>
 <translation id="2458827363789845126">{count,plural, =1{इतिहासाचा {count} आयटम}other{इतिहासाचे {count} आयटम}}</translation>
 <translation id="2461070143328828326">पासवर्ड सेटिंग्ज</translation>
 <translation id="2462736546165239215">तुम्ही तुमचा सर्व ब्राउझिंग इतिहास येथे पाहू शकता.</translation>
@@ -1467,6 +1465,7 @@
 <translation id="559567008082979829">तुमचे डाउनलोड एका महिन्यानंतर हटवले जाण्यासाठी सेट करा.</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="560322036295180549">तुमच्या संस्थेने बंद केले</translation>
+<translation id="5604254791550001355">प्रॉम्प्ट संपादित करा</translation>
 <translation id="5611398002774823980">खात्यामध्ये सेव्ह करा</translation>
 <translation id="5612225021788368236">डीफॉल्ट ब्राउझर प्रोमो बंद करा</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />तुमची फाइल निवडा<ph name="END_BOLD" /> वर टॅप करा</translation>
@@ -1532,7 +1531,6 @@
 <translation id="5768870767339201169">तुम्ही जिथे सोडले होते तिथून सुरुवात करा</translation>
 <translation id="5779117921996157216">{count,plural, =1{तुमच्याकडे ज्यामुळे तुमची सुरक्षा धोक्यात येऊ शकते असा {count} धोक्यात असलेला पासवर्ड आहे. सुरक्षित राहण्यासाठी त्याचे आता निराकरण करा.}other{तुमच्याकडे ज्यांमुळे तुमची सुरक्षा धोक्यात येऊ शकते असे {count} धोक्यात असलेले पासवर्ड आहेत. सुरक्षित राहण्यासाठी त्यांचे आता निराकरण करा.}}</translation>
 <translation id="5791632441210678828">फॉलो करत आहे या फीडसाठी क्रमाने लावा बटण.</translation>
-<translation id="5799263916847593256">किमतीचा इतिहास पाहण्यासाठी उघडा</translation>
 <translation id="5801568494490449797">प्राधान्ये</translation>
 <translation id="5803566855766646066">तुम्हाला हे नवीन कार्ड नक्की काढून टाकायचे आहे का?</translation>
 <translation id="5804241973901381774">परवानग्या</translation>
@@ -1885,7 +1883,6 @@
 <translation id="6815692190508268848">तुमची स्वरूपासंबंधित प्राधान्ये लागू केली आहेत</translation>
 <translation id="681631578600400068">ड्रायव्हरच्या परवान्यासंबंधित माहिती सेव्ह करा</translation>
 <translation id="6825078212112407882">{count,plural, =1{बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या Google खाते मध्ये सेव्ह केले आहेत}}</translation>
-<translation id="6826004672264649705">सध्या हे उत्पादन ट्रॅक करत आहे. किमतीचा इतिहास पाहण्यासाठी उघडा</translation>
 <translation id="6830728435402077660">सुरक्षित नाही</translation>
 <translation id="6831043979455480757">भाषांतर करा</translation>
 <translation id="6842136130964845393">तुम्ही तुमचे सेव्ह केलेले पासवर्ड कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>

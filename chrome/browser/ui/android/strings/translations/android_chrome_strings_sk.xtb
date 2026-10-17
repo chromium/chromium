@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">Bez ochrany (neodporúča sa)</translation>
 <translation id="1986685561493779662">Názov už existuje</translation>
 <translation id="1992244793717364584">Aplikácia bola odinštalovaná</translation>
+<translation id="1999115740519098545">Pri spustení</translation>
 <translation id="200114059308480249">Chcete zahŕňať okolitý text vo vyhľadávaniach na Googli?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, pripnutá karta inkognito s vypnutým zvukom</translation>
 <translation id="2021896219286479412">Ovládanie webu na celú obrazovku</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">Web je pozastavený</translation>
 <translation id="2063047797624276601">Vaša organizácia zapla Zlepšené bezpečné prehliadanie</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Sťahovanie 1 položky zlyhalo}few{Sťahovanie # položiek zlyhalo}many{# downloads failed}other{Sťahovanie # položiek zlyhalo}}</translation>
-<translation id="2066690553719545730">Vždy zobrazovať režim AI</translation>
 <translation id="2067805253194386918">text</translation>
 <translation id="2079545284768500474">Späť</translation>
 <translation id="2082238445998314030">Výsledok <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Gemini bol odopnutý</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome zastavil odosielanie upozornení z tohto webu pre spam alebo klamlivý obsah}few{Chrome zastavil odosielanie upozornení z týchto webov pre spam alebo klamlivý obsah}many{Chrome stopped these sites from sending notifications because of spam or deceptive content}other{Chrome zastavil odosielanie upozornení z týchto webov pre spam alebo klamlivý obsah}}</translation>
 <translation id="4195643157523330669">Otvoriť na novej karte</translation>
+<translation id="4195814663415092787">Pokračujte tam, kde ste prestali</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 karta v tomto zariadení}few{# karty v tomto zariadení}many{# tabs on this device}other{# kariet v tomto zariadení}}</translation>
 <translation id="4198268995694216131">Ďalšie weby</translation>
 <translation id="4198423547019359126">Nie sú k dispozícii žiadne umiestnenia stiahnutých súborov</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">Vypočuť obsah tejto stránky</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, vybraná pripnutá karta inkognito s obrazom v obraze</translation>
 <translation id="4225895483398857530">Skratka panela s nástrojmi</translation>
-<translation id="4232376164796433044">Heslá a automatické dopĺňanie</translation>
 <translation id="4242533952199664413">Otvoriť nastavenia</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="425582637250725228">Zmeny, ktoré ste vykonali, sa nemusia uložiť.</translation>
@@ -1147,6 +1147,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5568069709869097550">Nedá sa prihlásiť</translation>
 <translation id="557018954714092179">Vytvoriť nový priečinok</translation>
 <translation id="5578795271662203820">Hľadať obrázok v službe <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Otvoriť konkrétnu stránku alebo skupinu stránok</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5599455543593328020">Režim inkognito</translation>
 <translation id="5601180634394228718">Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="671481426037969117">Časovač aplikácie <ph name="FQDN" /> vypršal. Spustí sa zase zajtra.</translation>
 <translation id="6716434912087331834">Ak chcete obnoviť nové okno, znížte celkový počet aktívnych okien na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> alebo menej. Neaktívne okná sa po šiestich mesiacoch odstraňujú.</translation>
 <translation id="6723740634201835758">V účte Google</translation>
+<translation id="6725340821578440069">Filtrovať podľa zariadenia</translation>
 <translation id="6734310707649923383">Môžete si zobraziť stránky, ktoré ste navštívili, alebo ich odstrániť z histórie</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, pripnutá karta inkognito s nahrávaním</translation>
 <translation id="6738867403308150051">Sťahuje sa...</translation>
@@ -1905,6 +1907,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8387617938027387193">Overte, že ste to vy</translation>
 <translation id="8393700583063109961">Odoslať správu</translation>
 <translation id="8398389123831319859">Dvojitým klepnutím a pridržaním prepnete do režimu inkognito</translation>
+<translation id="8401904657382223224">Filtrovať podľa hostiteľa</translation>
 <translation id="8412037385861858490">Keď budete Chrome používať s prihláseným účtom, vaša organizácia si bude môcť prezerať alebo spravovať určité informácie, aby zabezpečila vašu prácu v tomto prehliadači. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Zobraziť celú históriu</translation>
 <translation id="8413795581997394485">Chráni pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami. Keď navštívite určitý web, Chrome odošle Googlu znejasnenú časť webovej adresy prostredníctvom servera chrániaceho súkromie, ktorý skryje vašu adresu IP. Ak určitý web vykoná niečo podozrivé, odošlú sa aj úplné webové adresy a časti obsahu stránok.</translation>

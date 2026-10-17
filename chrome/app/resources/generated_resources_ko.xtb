@@ -572,7 +572,6 @@
 <translation id="1433478348197382180">읽기 모드</translation>
 <translation id="1433980411933182122">시작하기</translation>
 <translation id="1434659328474177625"><ph name="ISSUER" />에서 이메일이 인증되었습니다</translation>
-<translation id="1434886155212424586">홈페이지가 새 탭 페이지입니다.</translation>
 <translation id="1435940442311036198">다른 기기의 패스키 사용</translation>
 <translation id="1436390408194692385"><ph name="TICKET_TIME_LEFT" />동안 유효</translation>
 <translation id="1436671784520050284">설정 계속하기</translation>
@@ -1036,7 +1035,6 @@
 <translation id="178092663238929451">주변의 사람과 파일을 주고받으려면 Nearby Share를 설정하세요.</translation>
 <translation id="1781164264587898620">주변 소음 제거 및 오디오 개선을 적용합니다.</translation>
 <translation id="1781291988450150470">현재 PIN</translation>
-<translation id="1781502536226964113">새 탭 페이지 열기</translation>
 <translation id="1781553166608855614">음성 언어</translation>
 <translation id="1781771911845953849">계정 및 동기화</translation>
 <translation id="1782101999402987960">관리자가 업데이트를 차단했습니다.</translation>
@@ -1562,7 +1560,6 @@
 <translation id="2184754597051264978">Gemini가 더 이상 <ph name="URL" />에 자동으로 로그인할 수 없습니다.</translation>
 <translation id="2186206192313702726">Google 렌즈</translation>
 <translation id="2186539124645132614">Gemini와 새 채팅 시작하기</translation>
-<translation id="2186711480981247270">다른 기기에서 공유된 페이지</translation>
 <translation id="2187675480456493911">계정에 연결된 다른 기기와 동기화되어 있습니다. 다른 사용자가 수정한 설정은 동기화되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">확장 프로그램 업데이트됨</translation>
 <translation id="2188881192257509750"><ph name="APPLICATION" /> 열기</translation>
@@ -2066,7 +2063,6 @@
 <translation id="256481480019204378">Google 계정 ID</translation>
 <translation id="256517381556987641">지금까지 파일 동기화에서 파일 <ph name="ITEMS_FOUND" />개를 찾았으며 아직 저장공간을 확인하는 중입니다. 잠시 후에 파일 동기화를 다시 사용 설정해 보세요.</translation>
 <translation id="2566146433999774844"><ph name="OWNER_FIRST_NAME" />님 외 <ph name="NUM_OTHER_MEMBERS" />명이 있는 탭 그룹에 참여</translation>
-<translation id="256726287944589768">새 탭 페이지에 바닥글 표시</translation>
 <translation id="2568774940984945469">정보 표시줄 컨테이너</translation>
 <translation id="257088987046510401">테마</translation>
 <translation id="2572032849266859634"><ph name="VOLUME_NAME" />에 대한 읽기 전용 액세스가 허용되었습니다.</translation>
@@ -2157,6 +2153,7 @@
 <translation id="2636266464805306348">창 제목</translation>
 <translation id="2637313651144986786">탭 검색...</translation>
 <translation id="2637400434494156704">잘못된 PIN입니다. 앞으로 1번 더 시도할 수 있습니다.</translation>
+<translation id="2637852492915204064">탭 검색 닫기</translation>
 <translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" />에 물어보거나 URL을 입력하세요.</translation>
 <translation id="2640299212685523844">GTK 사용</translation>
 <translation id="264083724974021997">휴대전화에 연결 - 대화상자</translation>
@@ -2235,7 +2232,6 @@
 <translation id="2696675923413008404">이 사이트의 콘텐츠(URL 포함)가 Google로 전송되며 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다</translation>
 <translation id="269941332914175387">브라우저를 다시 실행하여 프로필 데이터를 로드하고 암호화된 상태로 유지하세요.</translation>
 <translation id="2699911226086014512">PIN 작업에 실패했습니다. 오류 코드는 <ph name="RETRIES" />입니다.</translation>
-<translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
 <translation id="2701737434167469065">로그인, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">네트워크 MAC 주소</translation>
 <translation id="2702720509009999256">인터넷 연결을 확인하고 '다시 시도'를 선택하거나 '기본 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
@@ -2636,7 +2632,6 @@
 <translation id="2989474696604907455">첨부되지 않음</translation>
 <translation id="2989523299700148168">최근 방문</translation>
 <translation id="2989786307324390836">DER-인코딩 바이너리, 단일 인증서</translation>
-<translation id="2989805286512600854">새 탭에서 열기</translation>
 <translation id="2990313168615879645">Google 계정 추가</translation>
 <translation id="2990375978470734995">이 변경사항을 적용하려면 외부 액세서리를 다시 연결하세요.</translation>
 <translation id="2990500505358145117">향상된 자동 완성 단축키 수정</translation>
@@ -3430,6 +3425,7 @@
 <translation id="3582057310199111521">사기성 사이트에 입력되었으며 정보 유출이 발견됨</translation>
 <translation id="3582299299336701326">밝은 화면을 어둡게 하고 어두운 화면을 밝게 합니다. 색상 반전을 사용 설정 또는 중지하려면 검색 + Ctrl + H를 누르세요.</translation>
 <translation id="3584169441612580296">컴퓨터에서 사진, 음악, 기타 미디어 조회 및 변경</translation>
+<translation id="358562596990359723">탭 검색 닫기</translation>
 <translation id="3586741240886978899">이 사이트에서 사용</translation>
 <translation id="3586806079541226322">파일을 열 수 없음</translation>
 <translation id="3586931643579894722">세부정보 숨기기</translation>
@@ -3909,7 +3905,6 @@
 <translation id="3909701002594999354">모든 제어 기능 표시(&amp;C)</translation>
 <translation id="3909791450649380159">잘라내기(&amp;T)</translation>
 <translation id="39103738135459590">활성화 코드</translation>
-<translation id="3911824782900911339">새 탭 페이지</translation>
 <translation id="3913689539406883376">컴퓨터의 전원이 연결되어 있지 않을 때 사용 설정</translation>
 <translation id="3914173277599553213">필수</translation>
 <translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> 폴더 열기</translation>
@@ -4465,7 +4460,6 @@
 <translation id="4354344420232759511">내가 방문한 사이트가 여기에 표시됩니다.</translation>
 <translation id="4356100841225547054">볼륨 끄기</translation>
 <translation id="4357583358198801992">탭 그룹 표시</translation>
-<translation id="4357812592970409234">새 탭 페이지 배경 자세히 알아보기</translation>
 <translation id="4358361163731478742">앱 언어 선택을 지원하는 앱이 없습니다</translation>
 <translation id="4358995225307748864">열려는 앱 선택</translation>
 <translation id="4359408040881008151">함께 설치된 확장 프로그램입니다.</translation>
@@ -5352,6 +5346,7 @@
 <translation id="5031769842769721381">{SELECTED_ITEMS,plural, =0{주소}=1{주소({SELECTED_ITEMS})}other{주소({SELECTED_ITEMS})}}</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5033137252639132982">움직임 감지 센서 사용이 허용되지 않음</translation>
+<translation id="5034158480345261097"><ph name="ACTOR_NAME" />에서 Google 비밀번호 관리자를 사용하여 나를 대신해 로그인할 수 있습니다. <ph name="BEGIN_LINK" /><ph name="ACTOR_NAME" />에서 데이터를 처리하는 방식 알아보기<ph name="END_LINK" /></translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 자세한 정보를 확인하려면 아래의 '세부정보 더보기'를 선택하세요.</translation>
 <translation id="5037676449506322593">모두 선택</translation>
 <translation id="5038621320029329200">신뢰할 수 있는 인증서</translation>
@@ -6567,6 +6562,7 @@
 <translation id="5985556342298151179">기기 관리자가 설치한 Chrome 앱입니다.</translation>
 <translation id="5985899926376570122">고급</translation>
 <translation id="5986442691296752186">Linux 앱이 USB 기기를 제어하도록 허용합니다.</translation>
+<translation id="5987624353990540124">{COUNT,plural, =1{다시 실행하면 보안 시크릿 창은 다시 열리지 않습니다.}other{다시 실행하면 {COUNT}개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="598810097218913399">할당 삭제</translation>
 <translation id="5988563937187882754">오른쪽 보기</translation>
 <translation id="5989497858237037960">사이트를 탐색하면 페이지 콘텐츠가 암호화되어 기기에 저장됩니다. 이로 인해 Chrome의 성능이 저하될 수 있습니다.</translation>
@@ -6741,7 +6737,6 @@
 <translation id="6130887916931372608">키보드 키</translation>
 <translation id="6131511889181741773">스플래터</translation>
 <translation id="6132251717264923430">버튼이 고정되었습니다</translation>
-<translation id="6134418895482326458">새 탭 페이지에 바닥글 숨기기</translation>
 <translation id="6134428719487602109">모든 사용자 계정을 삭제하고 Chromebook을 새것처럼 재설정합니다.</translation>
 <translation id="6135826623269483856">모든 디스플레이의 창 관리 허용 안함</translation>
 <translation id="6136285399872347291">백스페이스</translation>
@@ -6891,6 +6886,7 @@
 <translation id="6242852299490624841">이 탭에 포커스</translation>
 <translation id="6243774244933267674">서버를 사용할 수 없음</translation>
 <translation id="6244245036423700521">ONC 파일 가져오기</translation>
+<translation id="6244558433635108262">{COUNT,plural, =1{보안 시크릿 창은 다시 열리지 않습니다.}other{#개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="6245523954602476652">Google 비밀번호 관리자에서 액세스할 수 있습니다</translation>
 <translation id="6247557882553405851">Google 비밀번호 관리자</translation>
 <translation id="6247620186971210352">앱이 없습니다.</translation>
@@ -7782,6 +7778,7 @@
 <translation id="6916676294509106572">Outlook Calendar 숨김</translation>
 <translation id="6916818963747321523">모두 펼치기</translation>
 <translation id="6917873303492266709">탭 그룹을 공유하고, 탭 그룹에 참여하며, 탭 그룹에서 공동작업하려면 설정을 열고 Chrome 로그인 허용을 사용 설정하세요.</translation>
+<translation id="6918598482167821721">다른 기기 탭</translation>
 <translation id="6919354101107095996">사이트에 로그인한 다음 다시 다운로드해 보세요</translation>
 <translation id="6919461818524183254">바로가기 선택</translation>
 <translation id="6919952941889172531">이 Chrome 프로필에서 향상된 세이프 브라우징도 사용 설정할까요?</translation>
@@ -8537,6 +8534,7 @@
 <translation id="7495149565104413027">Android 앱</translation>
 <translation id="7497322070873193353">Google AI</translation>
 <translation id="7497981768003291373">최근 캡처한 WebRTC 텍스트 로그가 없습니다.</translation>
+<translation id="7499684925421947861"><ph name="ACTOR_NAME" />에서 나를 대신하여 <ph name="DOMAIN" />에 로그인하도록 허용하시겠습니까?</translation>
 <translation id="7501957181231305652">또는</translation>
 <translation id="7502220299952823578">'항상 사이트를 활성 상태로 유지' 목록에 추가</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> 기기로의 탭 전송 일시중지</translation>
@@ -8720,6 +8718,7 @@
 <translation id="7650178491875594325">로컬 데이터 복원</translation>
 <translation id="7650582458329409456">{COUNT,plural, =1{지문 1개 설정됨}other{지문 {COUNT}개 설정됨}}</translation>
 <translation id="7650677314924139716">현재 데이터 사용 설정은 Wi-Fi만 사용입니다</translation>
+<translation id="7650721582841150356">나중에 다시 실행...</translation>
 <translation id="7651182181030187705">모든 기기에서 이 북마크를 가져오려면 본인 인증을 진행하세요.</translation>
 <translation id="7651400349472467012">인스턴트 핫스팟 사용 가능</translation>
 <translation id="7651754152638505879">작업 일시중지됨</translation>
@@ -9779,6 +9778,7 @@
 <translation id="844059392176531372">'<ph name="GROUP_NAME" />' 탭 그룹 공유</translation>
 <translation id="844063558976952706">항상 이 사이트에서</translation>
 <translation id="8441313165929432954">테더링 사용/사용 중지</translation>
+<translation id="8442599250002885105">{COUNT,plural, =1{시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 해당 창은 다시 열리지 않습니다.}other{프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="8443986842926457191">URL이 2,048자(영문 기준)를 초과합니다.</translation>
 <translation id="8445281870900174108">이 탭에서 카메라를 사용 중입니다.</translation>
 <translation id="8446884382197647889">자세히 알아보기</translation>
@@ -9935,6 +9935,7 @@
 <translation id="8563043098557365232">시스템 서비스에만 허용됨</translation>
 <translation id="8563898784671745643">하단 사이트 음소거</translation>
 <translation id="8564220755011656606">마이크에 액세스할 수 없음</translation>
+<translation id="8564894539416715395">새 탭 페이지</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" />님을 삭제하시겠습니까?</translation>
 <translation id="8566916288687510520">새 비밀번호 수신됨</translation>
 <translation id="8567946600191652875">6자 이상(영문 기준)이어야 하며, 1개 이상의 문자 또는 기호를 포함해야 합니다.</translation>
@@ -10461,6 +10462,7 @@
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>
 <translation id="8964927371396953727"><ph name="ACCOUNT_EMAIL" /> 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요</translation>
 <translation id="8965037249707889821">이전 비밀번호 입력</translation>
+<translation id="8967403839792635452">확장 프로그램을 개발 중이신가요? Chrome 확장 프로그램 개발자 문서를 통해 <ph name="BEGIN_LINK" />새로운 소식<ph name="END_LINK" />을 확인하세요.</translation>
 <translation id="8967427617812342790">읽기 목록에 추가</translation>
 <translation id="8968527460726243404">ChromeOS 시스템 이미지 작성기</translation>
 <translation id="8968766641738584599">카드 저장</translation>
@@ -10552,6 +10554,7 @@
 <translation id="9020362265352758658">4배</translation>
 <translation id="9021662811137657072">바이러스가 발견됨</translation>
 <translation id="902236149563113779">사이트에서는 일반적으로 게임 또는 전방 방향 안내와 같은 AR 기능을 사용하기 위해 카메라 위치를 추적합니다.</translation>
+<translation id="9022465823323373917">{COUNT,plural, =1{{COUNT}개의 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{프로필 전반에 {COUNT}개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="9022847679183471841">이미 <ph name="AVATAR_NAME" />이(가) 이 컴퓨터에서 이 계정을 사용하고 있습니다.</translation>
 <translation id="9023015617655685412">현재 탭을 북마크에 추가</translation>
 <translation id="902319268551617004">기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>

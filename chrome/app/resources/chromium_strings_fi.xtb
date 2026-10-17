@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Tunnista asioita tai paikkoja ja kopioi tai käännä tekstiä. Kun käytät kuvahakua, sivusta lähetetään kuvakaappaus palvelimelle. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium on oletusselaimesi.</translation>
 <translation id="1131805035311359397">Jos haluat tarkistaa, ovatko salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromiumiin<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Järjestelmänvalvoja pyytää Chromiumin uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Järjestelmänvalvoja pyytää Chromiumin uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristetty selainikkuna. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="1153368717515616349">Klikkaa Chromium-valikkoa</translation>
 <translation id="1157985233335035034">Viimeksi käytetyt kielet</translation>
 <translation id="1184145431117212167">Asennus epäonnistui, koska käyttämääsi Windows-versiota ei tueta.</translation>
@@ -38,6 +39,7 @@
 <translation id="1329040302064168406">Kirjaudu Chromiumiin puhelimella</translation>
 <translation id="1330562121671411446">Tunnista kieli</translation>
 <translation id="1342274909142618978">Poista data myös Chromiumista (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Lisäsuojaus edellyttää Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Lisäsuojaus edellyttää Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="1345251407431278948">Kiinnitetty! Voit käyttää kuvahakua jatkossa yläpalkin uudella painikkeella</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1388276868779258475">Jatka selaamista missä tahansa Chromium-sovelluksella</translation>
@@ -226,6 +228,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Ota Googlen tekoälytyökalut iOS:n Chromiumilla mukaan minne menetkin.</translation>
 <translation id="3264761466044851269">Kirjaudu Chromiumiin, niin voit käyttää esimerkiksi laajennuksia tältä laitteelta: <ph name="DEVICE" /></translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Eristettyä selainikkunaa ei avata uudelleen.}other{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. # eristettyä selainikkunaa ei avata uudelleen.}}</translation>
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
 <translation id="328888136576916638">Googlen sovellusliittymän avaimet puuttuvat. Jotkin Chromiumin toiminnoista poistetaan käytöstä.</translation>
 <translation id="3296368748942286671">Jätä taustasovellukset käyntiin, kun Chromium suljetaan</translation>
@@ -273,6 +276,7 @@
           **Ehdota kysymyksiä:** Luo ranskalaisilla viivoilla lista, jossa on 3–5 ajatuksia herättävää kysymystä kuvakaappauksen ymmärtämisen tueksi. Ainakin yhden kysymyksen tulee koskea nimenomaan visuaalista kohdetta, sen asettelua tai sijoittelua.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Kirjaudu Chromiumiin, niin voit käyttää kirjanmerkkejä ja muita tietoja kaikilla laitteilla</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Järjestelmänvalvoja pyytää Chromiumin uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Järjestelmänvalvoja pyytää Chromiumin uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. # eristettyä selainikkunaa ei avata uudelleen.}}</translation>
 <translation id="3885770153807205175">Kielivalitsin</translation>
 <translation id="388648406173476553">Yksilöi ja ylläpidä Chromiumia. Toimenpiteitä vaaditaan. Katso lisätiedot klikkaamalla.</translation>
 <translation id="3889543394854987837">Avaa Chromium klikkaamalla nimeäsi ja aloita selaaminen.</translation>
@@ -430,6 +434,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Saat myös tallennetut tiedot ja muuta sisältöä laitteelta (<ph name="DEVICE" />).</translation>
 <translation id="5579324208890605088">Käynnistysvirhe: Suorita asennusohjelma tavallisena käyttäjänä, ei järjestelmänvalvojana.</translation>
 <translation id="5580770360767802657">Chromiumin käyttäminen oletuksena ja kiinnittäminen</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Järjestelmänvalvoja vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Järjestelmänvalvoja vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # eristettyä selainikkunaa ei avata uudelleen.}}</translation>
 <translation id="5596627076506792578">Lisäasetukset</translation>
 <translation id="5605834417512968703">Valitse, mitä haluat hakea kuvahaulla, tai poistu kuvahausta painamalla Escape</translation>
 <translation id="5618818588972826921">Valitse teksti tai kuva, jota haluat hakea kuvahaulla, tai poistu kuvahausta painamalla Escape</translation>
@@ -589,6 +594,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="7003299027384820442">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chromium-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Asennus epäonnistui, koska tätä käyttöjärjestelmän versiota ei tueta.</translation>
 <translation id="7024536598735240744">Purkamisvirhe: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Lisäsuojaus edellyttää Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Lisäsuojaus edellyttää Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # eristettyä selainikkunaa ei avata uudelleen.}}</translation>
 <translation id="7045244423563602563">Tee Chromiumista näköisesi</translation>
 <translation id="7047386856539490735">Ovatko nämä tulokset hyödyllisiä?</translation>
 <translation id="705851970750939768">Päivitä Chromium</translation>
@@ -668,6 +674,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Chromium käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
 <translation id="7810005234485217901">Kiinnitä kuvahaku, niin löydät sen helposti</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Profiileissa on auki # incognito- ja eristetty selainikkuna. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="7828527096541974699">Valitse, mitä jaat Chromiumille</translation>
 <translation id="7828947555739565424">Tämän tilin Chromium-profiili on jo tällä laitteella</translation>
 <translation id="7845233973568007926">Kiitos asennuksesta. Tietokone pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
@@ -705,6 +712,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8161503455832158203">Avaa Gemini in Chromium pikanäppäimellä.</translation>
 <translation id="8164014945047474187">Chromiumin lisäkäyttöehdot</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Järjestelmänvalvoja vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Järjestelmänvalvoja vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristetty selainikkuna. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="81770708095080097">Tämä tiedosto on vaarallinen, joten Chromium on estänyt sen.</translation>
 <translation id="8177472873527554730">Sisältöä ei löydy sivulta</translation>
 <translation id="8200109504272824693">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chromium-dataa tililläsi: <ph name="USER_EMAIL" /></translation>

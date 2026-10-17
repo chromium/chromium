@@ -8424,17 +8424,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       如果將這項政策設為 False，系統將無法載入 Signed HTTP Exchange。</translation>
 <translation id="6368011194414932347">設定首頁網址</translation>
 <translation id="6368403635025849609">允許這些網站的 JavaScript</translation>
-<translation id="6368652917086795891">設定 <ph name="PRODUCT_NAME" /> 的 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 連線設定。
-
-這項政策將由 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> 政策取代。如果兩者皆已設定，系統會優先採用 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />。
-
-這項政策會透過 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址，該網址必須有效，且須採用 https 配置、指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域，而且不含使用者名稱或密碼。如果不符合這些規定，系統會忽略這項政策，且不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-如果設定這項政策，系統會為登入代管帳戶或受管理瀏覽器的使用者完成 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 設定。
-
-如果未設定這項政策，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-請注意，這項政策不會控管一般的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 整合功能，該功能可透過 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策管理。</translation>
 <translation id="6368671810229507360">網頁即時通訊</translation>
 <translation id="6370742079247037704">禁止使用內建的 AI API。</translation>
 <translation id="6371005337713685988">相關網站集設定</translation>

@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Identifique itens ou locais e copie ou traduza texto. Quando usa a pesquisa de imagens, é enviada uma captura de ecrã da página para o servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">O Chromium é o seu navegador predefinido</translation>
 <translation id="1131805035311359397">Para verificar se as suas palavras-passe estão protegidas contra violação de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />inicie sessão no Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{O seu administrador pede-lhe que reinicie o Chromium para aplicar esta atualização. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{O seu administrador pede-lhe que reinicie o Chromium para aplicar esta atualização. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="1153368717515616349">Clique no menu do Chromium</translation>
 <translation id="1157985233335035034">Idiomas recentes</translation>
 <translation id="1184145431117212167">A instalação falhou porque a sua versão do Windows não é compatível.</translation>
@@ -38,6 +39,7 @@
 <translation id="1329040302064168406">Inicie sessão no Chromium no telemóvel</translation>
 <translation id="1330562121671411446">Detetar idioma</translation>
 <translation id="1342274909142618978">Eliminar também dados do Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{A Proteção Avançada requer que reinicie o Chromium para aplicar uma atualização. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{A Proteção Avançada requer que reinicie o Chromium para aplicar uma atualização. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="1345251407431278948">Fixado! Pode aceder novamente à Pesquisa de imagens através do novo botão na barra de ferramentas</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1388276868779258475">Use a app Chromium para continuar a navegar em qualquer lugar</translation>
@@ -226,6 +228,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Leve as suas ferramentas de IA da Google favoritas consigo para qualquer lugar com o Chromium no iOS.</translation>
 <translation id="3264761466044851269">Para aceder às suas extensões e muito mais do <ph name="DEVICE" />, inicie sessão no Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. A janela isolada não vai ser reaberta.}other{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google estão em falta. Algumas funcionalidades do Chromium serão desativadas.</translation>
 <translation id="3296368748942286671">Continuar a executar aplicações em segundo plano quando o Chromium está fechado</translation>
@@ -273,6 +276,7 @@
           **Sugere perguntas:** gera uma lista com marcas de 3 a 5 perguntas que estimulem o pensamento e que um utilizador possa fazer para compreender melhor a captura de ecrã. Estas perguntas devem incluir, pelo menos, uma que seja especificamente sobre um objeto visual, o respetivo design ou o respetivo posicionamento.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Para aceder aos seus marcadores e muito mais em todos os seus dispositivos, inicie sessão no Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{O seu administrador pede-lhe que reinicie o Chromium para aplicar esta atualização. A janela isolada não vai ser reaberta.}other{O seu administrador pede-lhe que reinicie o Chromium para aplicar esta atualização. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="3885770153807205175">Selecionador de idiomas</translation>
 <translation id="388648406173476553">Personalize e controle o Chromium. É necessária a sua atenção – clique para obter detalhes.</translation>
 <translation id="3889543394854987837">Clique no seu nome para abrir o Chromium e começar a navegar.</translation>
@@ -430,6 +434,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso às suas informações guardadas e muito mais do <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Erro de arranque: execute o instalador como um utilizador normal, não como administrador.</translation>
 <translation id="5580770360767802657">Use o Chromium por predefinição e afixe-o</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{O seu administrador precisa que reinicie o Chromium para aplicar uma atualização. A janela isolada não vai ser reaberta.}other{O seu administrador precisa que reinicie o Chromium para aplicar uma atualização. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5605834417512968703">Selecione o que quer pesquisar com a pesquisa de imagens ou prima a tecla Escape para sair da pesquisa de imagens</translation>
 <translation id="5618818588972826921">Selecione qualquer texto ou imagem para pesquisar com a pesquisa de imagens ou prima a tecla Escape para sair da pesquisa de imagens</translation>
@@ -589,6 +594,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="7003299027384820442">Introduza a sua frase de acesso para usar e guardar dados do Chromium na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">A instalação falhou porque esta versão do sistema operativo não é suportada.</translation>
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{A Proteção Avançada requer que reinicie o Chromium para aplicar uma atualização. A janela isolada não vai ser reaberta.}other{A Proteção Avançada requer que reinicie o Chromium para aplicar uma atualização. As suas # janelas isoladas não vão ser reabertas.}}</translation>
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7047386856539490735">Estes resultados são úteis?</translation>
 <translation id="705851970750939768">Atualizar o Chromium</translation>
@@ -668,6 +674,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Torne mais difícil a visualização dos sites que visita por parte das pessoas com acesso ao seu tráfego da Internet. O Chromium usa uma ligação segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
 <translation id="7810005234485217901">Pode fixar a pesquisa de imagens para um acesso fácil</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{Está disponível uma atualização para o Chromium que será aplicada logo que o reinicie. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="7828527096541974699">Escolha o que quer partilhar com o Chromium</translation>
 <translation id="7828947555739565424">Já existe um perfil do Chromium com esta conta neste dispositivo.</translation>
 <translation id="7845233973568007926">Agradecemos a instalação. Tem de reiniciar o computador antes de usar o <ph name="BUNDLE_NAME" />.</translation>
@@ -705,6 +712,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="813913629614996137">A inicializar...</translation>
 <translation id="8161503455832158203">Abra o Gemini no Chromium com um atalho de teclado.</translation>
 <translation id="8164014945047474187">Termos de Utilização Adicionais do Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{O seu administrador precisa que reinicie o Chromium para aplicar uma atualização. Existe uma janela de navegação anónima ou isolada aberta. Não é possível reabri-la após o reinício.}other{O seu administrador precisa que reinicie o Chromium para aplicar uma atualização. Existem # janelas de navegação anónima e isoladas abertas em vários perfis. Não é possível reabri-las após o reinício.}}</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso. Como tal, o Chromium bloqueou-o.</translation>
 <translation id="8177472873527554730">Não é possível encontrar conteúdo na página</translation>
 <translation id="8200109504272824693">Introduza a sua frase de acesso para usar e guardar dados do Chromium na sua conta, <ph name="USER_EMAIL" /></translation>

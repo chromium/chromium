@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2059202684901022309">22 x 34 英寸</translation>
 <translation id="2063929825539050431">如需将此页面快速发送到其他设备，请轻触并按住地址栏</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 条建议}other{# 条建议}}</translation>
 <translation id="2066969741541525119">您要访问的网站已被贵组织屏蔽</translation>
 <translation id="2071156619270205202">这张卡的卡号无法用作虚拟卡号。</translation>
 <translation id="2071852865256799872">您的浏览器由您的组织管理，您的个人资料由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">多孔（底部）</translation>
 <translation id="218940509700321686">CSV</translation>
 <translation id="2190094353033916816">此政策在计算机级别和用户级别应用了不同的值。政策运行正常。</translation>
-<translation id="219061769324072544">信用卡, 卡, 借记卡, Credit, Card, Debit</translation>
 <translation id="2191980191135734720">请在下一步中解锁屏幕，通常使用指纹解锁。您也可以<ph name="LINK_TEXT" />。</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="2195729137168608510">电子邮件保护</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">图片 Y 轴位置</translation>
 <translation id="2808278141522721006">您可在“<ph name="SETTINGS" />”中开启或关闭 Windows Hello</translation>
 <translation id="2820957248982571256">正在扫描…</translation>
+<translation id="282457273878278063">管理联系信息</translation>
 <translation id="2824775600643448204">地址和搜索栏</translation>
 <translation id="2826760142808435982">该连接使用 <ph name="CIPHER" /> 进行加密和身份验证，并使用 <ph name="KX" /> 作为密钥交换机制。</translation>
 <translation id="2828797285817981634">目前允许使用移动传感器</translation>
@@ -1861,7 +1860,6 @@
 <translation id="4121428309786185360">截止日期</translation>
 <translation id="4123572138124678573">三孔（底部）</translation>
 <translation id="412601465078863288">上传超时</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
 <translation id="4129810348470013900">出了点问题。请检查网络连接情况，然后重试。</translation>
 <translation id="4130226655945681476">检查网线、调制解调器和路由器</translation>
 <translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />”政策中指定的应用所引用的文件扩展名“<ph name="FILE_EXTENSION" />”被分配了多个处理程序。</translation>
@@ -3226,7 +3224,6 @@
 <translation id="638289054711715023">收缩箔</translation>
 <translation id="6383221683286411806">可能产生费用。</translation>
 <translation id="6384448607821972818">已显示恢复密码</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 条其他建议}other{# 条其他建议}}</translation>
 <translation id="6386565501269869892">You 4 信封</translation>
 <translation id="6387645831795005740">攻击者有时会对网址做些令人难以觉察的细微更改来仿冒网站。</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>

@@ -251,6 +251,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1986685561493779662">Ad zaten var</translation>
 <translation id="1992244793717364584">Uygulama kaldırıldı</translation>
+<translation id="1999115740519098545">Başlangıçta</translation>
 <translation id="200114059308480249">Seçilen kelimenin etrafındaki metin Google aramalarına dahil edilsin mi?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Sesi Kapalı Sabit Gizli Sekme</translation>
 <translation id="2021896219286479412">Tam ekran site kontrolleri</translation>
@@ -265,7 +266,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="2056878612599315956">Site duraklatıldı</translation>
 <translation id="2063047797624276601">Kuruluşunuz, Gelişmiş Güvenli Tarama'yı etkinleştirdi</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 indirme işlemi başarısız oldu}other{# indirme işlemi başarısız oldu}}</translation>
-<translation id="2066690553719545730">AI Modu'nu Her Zaman Göster</translation>
 <translation id="2067805253194386918">Kısa mesaj</translation>
 <translation id="2079545284768500474">Geri al</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" /> sonuçtan <ph name="RESULT_NUMBER" /> numaralı sonuç</translation>
@@ -798,6 +798,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4188638484665452040">Gemini'ın sabitlemesi kaldırıldı</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome, spam veya yanıltıcı içerik nedeniyle bu sitenin bildirim göndermesini engelledi}other{Chrome, spam veya yanıltıcı içerik nedeniyle bu sitelerin bildirim göndermesini engelledi}}</translation>
 <translation id="4195643157523330669">Yeni sekmede aç</translation>
+<translation id="4195814663415092787">Kaldığım yerden devam et</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Bu cihazda 1 sekme}other{Bu cihazda # sekme var}}</translation>
 <translation id="4198268995694216131">Ek siteler</translation>
 <translation id="4198423547019359126">Kullanılabilir indirme yeri yok</translation>
@@ -808,7 +809,6 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4216511743389425832">Bu sayfayı sesli oku</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, Seçili Sabit Pencere İçinde Pencere Gizli Sekmesi</translation>
 <translation id="4225895483398857530">Araç çubuğu kısayolu</translation>
-<translation id="4232376164796433044">Şifreler ve Otomatik Doldurma</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="424864128008805179">Chrome oturumu kapatılsın mı?</translation>
 <translation id="425582637250725228">Yaptığınız değişiklikler kaydedilmemiş olabilir.</translation>
@@ -1147,6 +1147,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5568069709869097550">Oturum açılamıyor</translation>
 <translation id="557018954714092179">Yeni klasör oluştur</translation>
 <translation id="5578795271662203820">Bu resmi, <ph name="SEARCH_ENGINE" /> üzerinde ara</translation>
+<translation id="558563010977877295">Belirli bir sayfayı veya sayfa grubunu aç</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5599455543593328020">Gizli mod</translation>
 <translation id="5601180634394228718">Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
@@ -1447,6 +1448,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="671481426037969117"><ph name="FQDN" /> zamanlayıcınızın süresi doldu. Yarın tekrar başlatılacak.</translation>
 <translation id="6716434912087331834">Yeni bir pencereyi geri yüklemek için toplam etkin pencere sayısını en fazla <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> olacak şekilde azaltın. Etkin olmayan pencereler 6 ay sonra silinir.</translation>
 <translation id="6723740634201835758">Google Hesabınızda</translation>
+<translation id="6725340821578440069">Cihaza göre filtrele</translation>
 <translation id="6734310707649923383">Ziyaret ettiğiniz sayfaları görebilir veya geçmişinizden silebilirsiniz</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, Medya Kaydeden Sabit Gizli Sekme</translation>
 <translation id="6738867403308150051">İndiriliyor…</translation>
@@ -1905,6 +1907,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8387617938027387193">Siz olduğunuzu doğrulayın</translation>
 <translation id="8393700583063109961">İleti gönder</translation>
 <translation id="8398389123831319859">Gizli moda geçmek için iki kez dokunup basılı tutun</translation>
+<translation id="8401904657382223224">Ana makineye göre filtrele</translation>
 <translation id="8412037385861858490">Kuruluşunuz, Chrome'da oturum açtığınızda Chrome'daki çalışmanızın güvenliğini sağlamak için belirli bilgileri görüntüleyebilir veya yönetebilir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="8413126021676339697">Tüm geçmişi göster</translation>
 <translation id="8413795581997394485">Tehlikeli olduğu bilinen web siteleri, indirmeler ve uzantılara karşı koruma sağlar. Bir siteyi ziyaret ettiğinizde Chrome, IP adresinizi gizleyen bir gizlilik sunucusu aracılığıyla URL'nin kodu karartılmış bir kısmını Google'a gönderir. Site şüpheli bir işlem gerçekleştirirse tam URL'ler ve sayfa içeriğinin bir kısmı da gönderilir.</translation>

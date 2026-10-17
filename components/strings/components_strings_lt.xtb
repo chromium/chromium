@@ -618,7 +618,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2059202684901022309">22 x 34 col.</translation>
 <translation id="2063929825539050431">Jei norite greitai išsiųsti šį puslapį į kitą įrenginį, palieskite ir palaikykite adreso juostą</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 pasiūlymas}one{# pasiūlymas}few{# pasiūlymai}many{# pasiūlymo}other{# pasiūlymų}}</translation>
 <translation id="2066969741541525119">Svetainę, kurioje ketinate apsilankyti, užblokavo jūsų organizacija</translation>
 <translation id="2071156619270205202">Šiai kortelei negali būti suteiktas virtualios kortelės numeris.</translation>
 <translation id="2071852865256799872">Jūsų naršyklę tvarko jūsų organizacija, o profilį tvarko <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2188375229972301266">Kelios skylės apačioje</translation>
 <translation id="218940509700321686">Kableliais atskirtos vertės</translation>
 <translation id="2190094353033916816">Taikomos skirtingos šios politikos vertės įrenginio ir naudotojo lygiuose. Politika veikia, kaip numatyta.</translation>
-<translation id="219061769324072544">Kreditas, kortelė, debetas</translation>
 <translation id="2191980191135734720">Atrakinkite ekraną atlikdami kitą žingsnį, paprastai naudodami piršto atspaudą. Taip pat galite <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2195729137168608510">El. pašto apsauga</translation>
@@ -1082,6 +1080,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2807052079800581569">Vaizdo Y padėtis</translation>
 <translation id="2808278141522721006">„Windows Hello“ galite įjungti arba išjungti skiltyje „<ph name="SETTINGS" />“</translation>
 <translation id="2820957248982571256">Nuskaitoma...</translation>
+<translation id="282457273878278063">Tvarkyti kontaktinę informaciją</translation>
 <translation id="2824775600643448204">Adreso ir paieškos juosta</translation>
 <translation id="2826760142808435982">Ryšys užšifruotas ir tapatybė nustatyta naudojant <ph name="CIPHER" />. <ph name="KX" /> naudojamas kaip pagrindinis mainų mechanizmas.</translation>
 <translation id="2828797285817981634">Kol kas leidžiama naudoti judesio jutiklius</translation>
@@ -1866,7 +1865,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4121428309786185360">Galiojimo laikas baigiasi</translation>
 <translation id="4123572138124678573">Trys skylės apačioje</translation>
 <translation id="412601465078863288">Baigėsi įkėlimo skirtasis laikas</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{Dar 1}one{Dar #}few{Dar #}many{Dar #}other{Dar #}}</translation>
 <translation id="4129810348470013900">Kažkas nepavyko. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="4130226655945681476">Patikrinti tinklo laidus, modemą ir maršruto parinktuvą</translation>
 <translation id="4132448310531350254">Pasikartojančios failo plėtinio „<ph name="FILE_EXTENSION" />“ doroklės, kurias nurodo programos „<ph name="POLICY_IDS_LIST" />“.</translation>
@@ -3232,7 +3230,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="638289054711715023">Susitraukianti folija</translation>
 <translation id="6383221683286411806">Galimi apmokestinimai.</translation>
 <translation id="6384448607821972818">Rodomas atkūrimo slaptažodis</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{Dar 1 pasiūlymas}one{Dar # pasiūlymas}few{Dar # pasiūlymai}many{Dar # pasiūlymo}other{Dar # pasiūlymų}}</translation>
 <translation id="6386565501269869892">„You 4“ vokas</translation>
 <translation id="6387645831795005740">Atakos vykdytojai kartais sukuria svetainių kopijas ir atlieka nedidelių, sunkiai pastebimų URL pakeitimų.</translation>
 <translation id="6389470377220713856">Vardas kortel.</translation>

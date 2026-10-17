@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Identifica coses o llocs i copia o tradueix text. Quan utilitzes la cerca d'imatges, s'envia al servidor una captura de pantalla de la pàgina. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium és el navegador predeterminat</translation>
 <translation id="1131805035311359397">Per comprovar si les teves contrasenyes estan protegides contra violacions de les dades i contra altres problemes de seguretat, <ph name="BEGIN_LINK" />inicia la sessió a Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="1153368717515616349">Fes clic al menú de Chromium</translation>
 <translation id="1157985233335035034">Idiomes recents</translation>
 <translation id="1184145431117212167">La instal·lació ha fallat perquè la versió de Windows del dispositiu no s'admet.</translation>
@@ -38,6 +39,7 @@
 <translation id="1329040302064168406">Inicia la sessió a Chromium al telèfon</translation>
 <translation id="1330562121671411446">Detecta l'idioma</translation>
 <translation id="1342274909142618978">Suprimeix també les dades de Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{La Protecció avançada requereix que reiniciïs Chromium per aplicar una actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{La Protecció avançada requereix que reiniciïs Chromium per aplicar una actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="1345251407431278948">S'ha fixat. Pots tornar a accedir a la cerca d'imatges des del botó nou de la barra d'eines.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1388276868779258475">Utilitza l'aplicació Chromium per continuar navegant mentre et desplaces</translation>
@@ -226,6 +228,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Mentre et desplaces, porta amb tu les teves eines d'IA de Google preferides amb Chromium a iOS.</translation>
 <translation id="3264761466044851269">Per obtenir les teves extensions i altres dades de <ph name="DEVICE" />, inicia la sessió a Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Hi ha una actualització nova de Chromium disponible i s'aplicarà tan aviat com el reiniciïs. La finestra aïllada no es tornarà a obrir.}other{Hi ha una actualització nova de Chromium disponible i s'aplicarà tan aviat com el reiniciïs. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="328888136576916638">Falten les claus de l'API de Google. Es desactivaran algunes de les funcions de Chromium.</translation>
 <translation id="3296368748942286671">Continua executant les aplicacions en segon pla quan es tanqui Chromium</translation>
@@ -273,6 +276,7 @@
           **Preguntes suggerides**: genera una llista de pics d'entre 3 i 5 preguntes que facin reflexionar i que un usuari podria fer per entendre millor la captura de pantalla. Aquestes preguntes n'han d'incloure com a mínim una que sigui específicament sobre un objecte visual, el seu disseny o el seu emplaçament.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
 <translation id="386243222263310720">Per obtenir les teves adreces d'interès i altres dades en tots els dispositius, inicia la sessió a Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. La finestra aïllada no es tornarà a obrir.}other{L'administrador et demana que reiniciïs Chromium per aplicar aquesta actualització. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="3885770153807205175">Selector d'idioma</translation>
 <translation id="388648406173476553">Personalitza i controla Chromium. Cal la teva intervenció. Fes clic per obtenir més informació.</translation>
 <translation id="3889543394854987837">Feu clic al vostre nom per obrir Chromium i començar a navegar.</translation>
@@ -430,6 +434,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> ja ha iniciat la sessió. Per mantenir la navegació per separat, inicia la sessió a Chromium amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />. També obtindràs la informació desada i altres dades de <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Error d'arrencada: executa l'instal·lador com a usuari normal, no com a administrador.</translation>
 <translation id="5580770360767802657">Utilitza Chromium de manera predeterminada i fixa'l</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. La finestra aïllada no es tornarà a obrir.}other{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5605834417512968703">Selecciona el que vulguis per cercar-ho amb la cerca d'imatges o prem Esc per sortir de la cerca d'imatges</translation>
 <translation id="5618818588972826921">Selecciona el text o la imatge que vulguis cercar amb la cerca d'imatges o prem Esc per sortir de la cerca d'imatges</translation>
@@ -589,6 +594,7 @@ No es poden desar adreces d'interès noves al teu compte fins que no en suprimei
 <translation id="7003299027384820442">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chromium al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">La instal·lació ha fallat perquè aquesta versió del sistema operatiu no és compatible.</translation>
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{La Protecció avançada requereix que reiniciïs Chromium per aplicar una actualització. La finestra aïllada no es tornarà a obrir.}other{La Protecció avançada requereix que reiniciïs Chromium per aplicar una actualització. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="7045244423563602563">Personalitza Chromium</translation>
 <translation id="7047386856539490735">Aquests resultats són útils?</translation>
 <translation id="705851970750939768">Actualitza Chromium</translation>
@@ -668,6 +674,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">Dificulta que les persones amb accés al teu trànsit d'Internet vegin els llocs web que visites. Chromium utilitza una connexió segura per cercar l'adreça IP d'un lloc web al sistema de noms de domini (DNS).</translation>
 <translation id="7810005234485217901">Pots fixar la cerca d'imatges per accedir-hi fàcilment</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Hi ha una actualització nova de Chromium disponible i s'aplicarà tan aviat com el reiniciïs. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{Hi ha una actualització nova de Chromium disponible i s'aplicarà tan aviat com el reiniciïs. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="7828527096541974699">Tria què vols compartir amb Chromium</translation>
 <translation id="7828947555739565424">Ja existeix un perfil de Chromium amb aquest compte en aquest dispositiu</translation>
 <translation id="7845233973568007926">T'agraïm la instal·lació. Has de reiniciar l'equip abans d'utilitzar <ph name="BUNDLE_NAME" />.</translation>
@@ -705,6 +712,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8161503455832158203">Obre Gemini a Chromium amb una drecera de teclat.</translation>
 <translation id="8164014945047474187">Condicions del servei addicionals de Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{L'administrador necessita que reiniciïs Chromium per aplicar una actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="81770708095080097">Chromium ha bloquejat aquest fitxer perquè és perillós.</translation>
 <translation id="8177472873527554730">No es troba contingut a la pàgina</translation>
 <translation id="8200109504272824693">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chromium al teu compte, <ph name="USER_EMAIL" /></translation>

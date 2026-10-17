@@ -195,7 +195,6 @@
 <translation id="154312949627292154">פתיחת כרטיסיות שהתקבלו מהמכשירים האחרים שלך ממסך הנעילה.</translation>
 <translation id="1544653821167545205">סיכום הדף</translation>
 <translation id="1545749641540134597">‏סריקת קוד QR</translation>
-<translation id="1545757265410828525">היסטוריית המחירים</translation>
 <translation id="1547610699249301703">שיתוף סיסמאות</translation>
 <translation id="1554043146674176775">‏השבתת מצב AI</translation>
 <translation id="1554477036522844996">חלון חדש</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">כבר שמרת סיסמה עבור המשתמש "<ph name="USERNAME" />" לאתר <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">כדי לגלוש במצב פרטי, אפשר לגלול שמאלה.</translation>
 <translation id="2435457462613246316">הצגת סיסמה</translation>
-<translation id="2451607499823206582">במעקב</translation>
 <translation id="2458827363789845126">{count,plural, =1{פריט אחד ({count}) מההיסטוריה}one{‫{count} פריטים מההיסטוריה}two{‫{count} פריטים מההיסטוריה}other{‫{count} פריטים מההיסטוריה}}</translation>
 <translation id="2461070143328828326">הגדרות סיסמה</translation>
 <translation id="2462736546165239215">כאן אפשר למצוא את כל היסטוריית הגלישה.</translation>
@@ -1466,6 +1464,7 @@
 <translation id="559567008082979829">אפשר להגדיר שההורדות יימחקו אחרי חודש.</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="560322036295180549">האפשרות הושבתה על ידי הארגון שלך</translation>
+<translation id="5604254791550001355">עריכת הפרומפט</translation>
 <translation id="5611398002774823980">שמירה בחשבון</translation>
 <translation id="5612225021788368236">סגירת המודעה לגבי דפדפן ברירת מחדל</translation>
 <translation id="561269594905823128">לוחצים על <ph name="BEGIN_BOLD" />בחירת קובץ<ph name="END_BOLD" /></translation>
@@ -1531,7 +1530,6 @@
 <translation id="5768870767339201169">להמשיך מהנקודה שבה הפסקת</translation>
 <translation id="5779117921996157216">{count,plural, =1{יש לך סיסמה אחת ({count}) שנחשפה ועלולה לסכן את האבטחה שלך. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.}one{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}two{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}other{יש לך {count} סיסמאות שנחשפו ועלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}}</translation>
 <translation id="5791632441210678828">כפתור למיון של הפיד 'במעקב'.</translation>
-<translation id="5799263916847593256">כדי לראות את היסטוריית המחירים צריך לפתוח את כרטיסיית המעקב</translation>
 <translation id="5801568494490449797">העדפות</translation>
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
 <translation id="5804241973901381774">הרשאות</translation>
@@ -1881,7 +1879,6 @@
 <translation id="6815692190508268848">העדפות העיצוב הוחלו</translation>
 <translation id="681631578600400068">לשמור את רישיון הנהיגה?</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏נשמרה סימנייה בחשבון Google שלך, {email}}one{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}two{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}other{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}}</translation>
-<translation id="6826004672264649705">נכון לעכשיו מתבצע מעקב אחרי המוצר הזה. כדי לראות את היסטוריית המחירים צריך לפתוח את כרטיסיית המעקב</translation>
 <translation id="6830728435402077660">לא מאובטח</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6842136130964845393">כדי לוודא שתמיד תהיה לך גישה לסיסמאות השמורות, עליך לאמת את זהותך</translation>

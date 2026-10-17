@@ -195,7 +195,6 @@
 <translation id="154312949627292154">Geopende tabbladen die je van je andere apparaten krijgt vanaf het vergrendelscherm.</translation>
 <translation id="1544653821167545205">Pagina samenvatten</translation>
 <translation id="1545749641540134597">QR-code scannen</translation>
-<translation id="1545757265410828525">Prijsgeschiedenis</translation>
 <translation id="1547610699249301703">Wachtwoorden delen</translation>
 <translation id="1554043146674176775">AI-modus uitzetten</translation>
 <translation id="1554477036522844996">Nieuw venster</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">Je hebt al een wachtwoord voor <ph name="USERNAME" /> opgeslagen op <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Je kunt naar links scrollen om in de incognitomodus te browsen.</translation>
 <translation id="2435457462613246316">Wachtwoord bekijken</translation>
-<translation id="2451607499823206582">Volgen</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} geschiedenisitem}other{{count} geschiedenisitems}}</translation>
 <translation id="2461070143328828326">Wachtwoordinstellingen</translation>
 <translation id="2462736546165239215">Hier vind je je hele browsegeschiedenis.</translation>
@@ -699,6 +697,7 @@
 <translation id="3140825265190223781">Opgeslagen wachtwoorden en toegangssleutels</translation>
 <translation id="3143515551205905069">Synchronisatie annuleren</translation>
 <translation id="3144126448740580210">KLAAR</translation>
+<translation id="3147048678293362228">Contactgegevens beheren…</translation>
 <translation id="3147521114983561406">Toegangssleutels worden opgeslagen in je wachtwoordmanager. Je kunt ze openen in incognito- en normale tabbladen.</translation>
 <translation id="3148052723910099040">Raster met normale tabbladen</translation>
 <translation id="3148237711805373460">Ernaartoe gaan</translation>
@@ -1467,6 +1466,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="559567008082979829">Stel in dat je downloads na één maand worden verwijderd.</translation>
 <translation id="5596627076506792578">Meer opties</translation>
 <translation id="560322036295180549">Uitgezet door je organisatie</translation>
+<translation id="5604254791550001355">Prompt bewerken</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
 <translation id="5612225021788368236">Promotie voor standaardbrowser sluiten</translation>
 <translation id="561269594905823128">Tik op <ph name="BEGIN_BOLD" />Je bestand selecteren<ph name="END_BOLD" /></translation>
@@ -1532,7 +1532,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="5768870767339201169">Ga verder waar je gebleven was</translation>
 <translation id="5779117921996157216">{count,plural, =1{Je hebt {count} gehackt wachtwoord dat een beveiligingsrisico kan vormen. Pas dit nu aan om beveiligd te blijven.}other{Je hebt {count} gehackte wachtwoorden die een beveiligingsrisico kunnen vormen. Pas ze nu aan om beveiligd te blijven.}}</translation>
 <translation id="5791632441210678828">Knop Sorteren voor de feed Je volgt.</translation>
-<translation id="5799263916847593256">Openen om de prijsgeschiedenis te bekijken</translation>
 <translation id="5801568494490449797">Voorkeuren</translation>
 <translation id="5803566855766646066">Weet je zeker dat je deze nieuwe kaart wilt sluiten?</translation>
 <translation id="5804241973901381774">Rechten</translation>
@@ -1873,6 +1872,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6770452996697898492">[GEBOEKT]</translation>
 <translation id="6775952316617222141">Ga Live met Gemini in Chrome</translation>
 <translation id="6779455296366983087">Je browsegegevens worden verwijderd</translation>
+<translation id="6782311720357312958">Vragen stellen aan Google</translation>
 <translation id="6782531425936234573">Gegevens exporteren</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" /> verwijderen</translation>
 <translation id="6791425686608802741">Tik op Tabblad toevoegen aan nieuwe groep</translation>
@@ -1884,7 +1884,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6815692190508268848">Je weergavevoorkeuren zijn toegepast</translation>
 <translation id="681631578600400068">Rijbewijs opslaan</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{{count} bookmarks opgeslagen in je Google-account {email}}}</translation>
-<translation id="6826004672264649705">Dit product wordt op dit moment gevolgd. Openen om de prijsgeschiedenis te bekijken</translation>
 <translation id="6830728435402077660">Niet beveiligd</translation>
 <translation id="6831043979455480757">Vertalen</translation>
 <translation id="6842136130964845393">Bevestig dat jij het bent zodat je altijd toegang hebt tot je opgeslagen wachtwoorden</translation>

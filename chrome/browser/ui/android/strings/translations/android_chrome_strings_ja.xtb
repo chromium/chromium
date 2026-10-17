@@ -251,6 +251,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="1984417487208496350">保護なし（非推奨）</translation>
 <translation id="1986685561493779662">この名前はすでに存在しています</translation>
 <translation id="1992244793717364584">アプリをアンインストールしました</translation>
+<translation id="1999115740519098545">起動時</translation>
 <translation id="200114059308480249">Google 検索に周辺のテキストを含めますか？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />、ミュート中の固定のシークレット タブ</translation>
 <translation id="2021896219286479412">全画面表示時のサイトの操作項目</translation>
@@ -265,7 +266,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2056878612599315956">サイト一時停止中</translation>
 <translation id="2063047797624276601">セーフ ブラウジング保護強化機能は組織によってオンにされています</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました}other{# 件のダウンロードが失敗しました}}</translation>
-<translation id="2066690553719545730">AI モードを常に表示する</translation>
 <translation id="2067805253194386918">テキスト</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2082238445998314030">結果 <ph name="TOTAL_RESULTS" /> 件中 <ph name="RESULT_NUMBER" /> 件目</translation>
@@ -798,6 +798,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4188638484665452040">Gemini の固定を解除しました</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{スパムまたは虚偽のコンテンツのため、このサイトからの通知の送信を停止しました}other{スパムまたは虚偽のコンテンツのため、これらのサイトからの通知の送信を停止しました}}</translation>
 <translation id="4195643157523330669">新しいタブで開く</translation>
+<translation id="4195814663415092787">前回開いていたページを開く</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{このデバイスの 1 個のタブ}other{このデバイスの # 個のタブ}}</translation>
 <translation id="4198268995694216131">追加のサイト</translation>
 <translation id="4198423547019359126">ダウンロードの保存先はありません</translation>
@@ -808,7 +809,6 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="4216511743389425832">このページを読み上げ</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />、選択されたピクチャー イン ピクチャーの固定シークレット タブ</translation>
 <translation id="4225895483398857530">ツールバー ショートカット</translation>
-<translation id="4232376164796433044">パスワードと自動入力</translation>
 <translation id="4242533952199664413">設定を開く</translation>
 <translation id="424864128008805179">Chrome からログアウトしますか？</translation>
 <translation id="425582637250725228">行った変更が保存されない可能性があります。</translation>
@@ -1147,6 +1147,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="5568069709869097550">ログインできない</translation>
 <translation id="557018954714092179">新規フォルダを作成</translation>
 <translation id="5578795271662203820">この画像を <ph name="SEARCH_ENGINE" /> で検索</translation>
+<translation id="558563010977877295">特定のページまたはページセットを開く</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5599455543593328020">シークレット モード</translation>
 <translation id="5601180634394228718">Chrome を使いやすくするためにデータを使用するその他の設定については、<ph name="BEGIN_LINK" />Google サービス<ph name="END_LINK" />をご覧ください。</translation>
@@ -1447,6 +1448,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="671481426037969117"><ph name="FQDN" /> のタイマーが切れました。タイマーはまた明日開始されます。</translation>
 <translation id="6716434912087331834">新しいウィンドウを復元するには、アクティブなウィンドウの合計数を <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個以下に減らしてください。アクティブでないウィンドウは 6 か月後に削除されます。</translation>
 <translation id="6723740634201835758">Google アカウント</translation>
+<translation id="6725340821578440069">デバイスでフィルタ</translation>
 <translation id="6734310707649923383">アクセスしたページを確認したり履歴から削除したりできます</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />、録画中の固定のシークレット タブ</translation>
 <translation id="6738867403308150051">ダウンロードしています…</translation>
@@ -1905,6 +1907,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="8387617938027387193">本人確認</translation>
 <translation id="8393700583063109961">メッセージを送信</translation>
 <translation id="8398389123831319859">シークレット モードに切り替えるには、ダブルタップして長押しします</translation>
+<translation id="8401904657382223224">ホストでフィルタ</translation>
 <translation id="8412037385861858490">Chrome での作業を保護するため、Chrome へのログイン中、組織は特定の情報を表示または管理できます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">全履歴を表示</translation>
 <translation id="8413795581997394485">危険だと認識されているサイト、ダウンロード、拡張機能から保護します。ユーザーがサイトにアクセスすると、Chrome はユーザーの IP アドレスを隠すプライバシー サーバーを介して、URL の一部を難読化して Google に送信します。サイトで不審な動作が検出された場合は、URL 全体とページ コンテンツの一部も送信されます。</translation>

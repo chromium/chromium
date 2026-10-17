@@ -8808,17 +8808,6 @@ Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ 
       Nếu bạn đặt chính sách này thành False, thì Signed HTTP Exchanges sẽ không tải được.</translation>
 <translation id="6368011194414932347">Định cấu hình URL trang chủ</translation>
 <translation id="6368403635025849609">Cho phép JavaScript trên các trang web này</translation>
-<translation id="6368652917086795891">Định cấu hình chế độ cài đặt kết nối cho <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> trong <ph name="PRODUCT_NAME" />.
-
-Chính sách này sẽ được thay thế bằng chính sách <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />. Nếu bạn đặt cả hai chính sách thì <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> sẽ được ưu tiên áp dụng.
-
-Chính sách này định cấu hình URL ứng dụng web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> thông qua <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. URL này phải là một URL hợp lệ sử dụng lược đồ HTTPS, trỏ đến miền <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> và không chứa tên người dùng hoặc mật khẩu. Nếu không đáp ứng các yêu cầu này, chính sách sẽ bị bỏ qua và <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
-
-Nếu bạn đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ được định cấu hình cho những người dùng đăng nhập bằng tài khoản được quản lý hoặc qua trình duyệt được quản lý.
-
-Nếu bạn không đặt chính sách này, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sẽ không được định cấu hình.
-
-Xin lưu ý rằng chính sách này không kiểm soát việc tích hợp <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> nói chung. Bạn có thể kiểm soát việc tích hợp này qua chính sách <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Không cho phép sử dụng các API AI tích hợp sẵn.</translation>
 <translation id="6371005337713685988">Cài đặt tính năng Nhóm trang web có liên quan</translation>

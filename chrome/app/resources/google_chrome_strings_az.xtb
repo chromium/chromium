@@ -49,6 +49,7 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq.}=1{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. Anonim pəncərə yenidən açılmayacaq.}other{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. # anonim pəncərə yenidən açılmayacaq.}}</translation>
 <translation id="1434626383986940139">Chrome Canary Tətbiqləri</translation>
 <translation id="1439793550875056299">Chrome-u bərkidin</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Administrator güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. İzolə edilmiş pəncərəniz yenidən açılmayacaq.}other{Administrator güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. # İzolə edilmiş pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="146866447420868597">Chrome-a daxil olunsun?</translation>
 <translation id="1476347941828409626">&amp;Chrome profillərini idarə edin</translation>
 <translation id="1492280395845991349">Chrome güncəllənməsini yekunlaşdırmaq üçün yenidən başladın</translation>
@@ -271,6 +272,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="345171907106878721">Özünüzü Chrome'a əlavə edin</translation>
 <translation id="3453763134178591239">ChromeOS şərtləri</translation>
 <translation id="3475778264501649775">Telefonunuzdakı Chrome tətbiqi ilə parollarınızı, tablarınızı və daha çoxunu istənilən vaxt, istənilən yerdə əldə edin</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Administrator bu güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. İzolə edilmiş pəncərəniz yenidən açılmayacaq.}other{Administrator bu güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. # İzolə edilmiş pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="3539955434060988644">Keçidi anonim Chrome pəncərəsində açın</translation>
 <translation id="354621070532799440">Xatırlatma: Google-un ən yaxşı təhlükəsizlik funksiyaları cibinizdədir</translation>
 <translation id="3547866758548131919">Sürətli icmal əldə etmək və əlavə suallar vermək məqsədilə bu sənədi Chrome-da Gemini ilə paylaşmaq üçün İcmallaşdırın düyməsinə klikləyin</translation>
@@ -286,12 +288,15 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="3622797965165704966">İndi Chrome'u Google Hesabınızla və paylaşılan kompüterlərlə işlətmək daha asandır.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> artıq daxil olub. Baxışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. Bütün cihazlarınızda yadda saxladığınız məlumatları və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="3635073343384702370">Chrome yadda saxlanan parolları yoxlaya bilər</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. İzolə edilmiş pəncərəniz yenidən açılmayacaq.}other{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. # İzolə edilmiş pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="3636970668267555808">Chrome-u defolt brauzeriniz kimi ayarlamaqla bildiyiniz, sevdiyiniz və etibar etdiyiniz funksiyalara asanlıqla daxil olun.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Administrator bu güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Administrator bu güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar təkrar açılmayacaq.}}</translation>
 <translation id="3667616615096815454">Quraşdırmaq olmur. Tətbiq serverə məlum deyil.</translation>
 <translation id="3673813398384385993">Chrome "<ph name="EXTENSION_NAME" />" artırmasında zərərli proqram olduğunu aşkar edib</translation>
 <translation id="3697952514309507634">Digər Chrome profilləri</translation>
 <translation id="3703994572283698466">ChromeOS <ph name="BEGIN_LINK_LINUX_OSS" />Linux tərtibat mühiti<ph name="END_LINK_LINUX_OSS" /> kimi əlavə <ph name="BEGIN_LINK_CROS_OSS" />açıq mənbə proqram təminatı<ph name="END_LINK_CROS_OSS" /> ilə əlçatan edilib.</translation>
 <translation id="3716540481907974026">ChromeOS Flex versiyası</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Chrome üçün yeni güncəllənmə əlçatandır. Chrome yenidən işə başladıqdan sonra tətbiq ediləcək. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Chrome üçün yeni güncəllənmə əlçatandır. Chrome yenidən işə başladıqdan sonra tətbiq ediləcək. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar təkrar açılmayacaq.}}</translation>
 <translation id="3718181793972440140">1 element bu cihazdan silinəcək. Sonradan datanızı bərpa etmək üçün Chrome'a <ph name="USER_EMAIL" /> kimi daxil olun.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome onu silməyinizi tövsiyə edir. <ph name="BEGIN_LINK" />Dəstəklənən artırmalar haqqında ətraflı məlumat əldə edin<ph name="END_LINK" />}other{Chrome onları silməyinizi tövsiyə edir. <ph name="BEGIN_LINK" />Dəstəklənən artırmalar haqqında ətraflı məlumat əldə edin<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">"Tab və daha çoxunu əlavə edin" düyməsi vasitəsilə bir neçə tab, fayl və alət əlavə etməklə axtarışınızı dərinləşdirin.</translation>
@@ -418,6 +423,7 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="5003967926796347400">"Google Parol Meneceri" üzərinə klikləyin</translation>
 <translation id="5043786843026425788">Chrome-da Google Linza ilə axtarış haqqında ətraflı məlumat əldə edin</translation>
 <translation id="504867494566807945">Chrome-da istənilən tətbiqdən linkləri açın. Asan giriş üçün o, işləmə panelinə bərkidilir.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Qabaqcıl Qoruma güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Qabaqcıl Qoruma güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar təkrar açılmayacaq.}}</translation>
 <translation id="5105120510934353742">Google Chrome güncəlləmələri əldə etmək üçün macOS 13 və ya yeni versiya tələb olunur. Bu kompüter macOS 12 versiyasından istifadə edir.</translation>
 <translation id="5114340746415930644">Chrome datasını hesabınızda (<ph name="USER_EMAIL" />) istifadə etmək və yadda saxlamaq üçün parol ifadəsini daxil edin</translation>
 <translation id="5120334927898581447">Digər Google xidmətlərinə daxil olduqda Chrome-a daxil olun</translation>
@@ -480,6 +486,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5690427481109656848">Google MMC</translation>
 <translation id="569897634095159764">İnternetə qoşulmaq olmur. Proksi serveri identifikasiya tələb edir.</translation>
 <translation id="5709557627224531708">Chrome'u defolt brauzer kimi quraşdırın</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Qabaqcıl Qoruma güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. İzolə edilmiş pəncərəniz yenidən açılmayacaq.}other{Qabaqcıl Qoruma güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. # İzolə edilmiş pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="5719246646468301581">Google Chrome və ChromeOS üzrə Əlavə Xidmət Şərtləri</translation>
 <translation id="5736850870166430177">Sayt parolunuzu oğurlamağa çalışdıqda və ya zərərli fayl endirdiyinizdə Chrome səhifə məzmunundan kiçik nümunələr də daxil olmaqla, URL'ləri Təhlükəsiz Baxışa göndərə bilər</translation>
 <translation id="5742003800414899269">İstənilən vaxt, istənilən yerdə ən yaxşı Sİ alətlərindən yararlanmaq üçün Chrome tətbiqindən istifadə edin</translation>
@@ -507,6 +514,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5960404530854194706">Chrome siz uzaqda olduqda güncəllənəcək</translation>
 <translation id="5980111191913430208">Naməlum mənbələrdən olan artırma, tətbiq və temalar cihaza zərər verə bilər. Chrome onları yalnız buradan quraşdırmağı tövsiyə edir: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Endirilir... <ph name="HOURS" /> saat qalıb</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Administrator güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Administrator güncəllənməni tətbiq etmək üçün Chrome-u yenidən başlatmağınızı tələb edir. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar təkrar açılmayacaq.}}</translation>
 <translation id="6008161919456049856">Google Hesabınızda saxladığınız parollarınız, ödəniş metodlarınız və ünvanlarınız bu cihazdan silinəcək. Onları Chrome-da yenidən istifadə etmək üçün təkrar daxil olun.</translation>
 <translation id="6009821354356307391">Əlavə sual soruşun</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome alətləri ilə<ph name="END_LINK" /> təhlükəsiz nəzər sala və nəzarət edə bilərsiniz</translation>
@@ -679,6 +687,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7452987490177144319">{COUNT,plural, =1{Chrome 1 dəqiqə istifadə edilmədikdə təşkilat baxış datasını avtomatik silir. Bura tarixçə, avtodoldurma və endirmələr daxil ola bilər. Tablar açıq qalacaq.}other{Chrome # dəqiqə istifadə edilmədikdə təşkilat baxış datasını avtomatik silir. Bura tarixçə, avtodoldurma və endirmələr daxil ola bilər. Tablar açıq qalacaq.}}</translation>
 <translation id="7466577301922356468">Bu datanın avtomatik olaraq Google-a göndərilməsi Chrome-u təkmilləşdirməyə kömək edir. Bu ayarı istənilən vaxt dəyişə bilərsiniz.</translation>
 <translation id="7477130805345743099">Chrome təhlükəli bağlantı ilə sayt yükləməzdən əvvəl xəbərdarlıq edəcək</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Chrome üçün yeni güncəllənmə əlçatandır. Chrome yenidən işə başladıqdan sonra tətbiq ediləcək. İzolə edilmiş pəncərəniz yenidən açılmayacaq.}other{Chrome üçün yeni güncəllənmə əlçatandır. Chrome yenidən işə başladıqdan sonra tətbiq ediləcək. # İzolə edilmiş pəncərəniz yenidən açılmayacaq.}}</translation>
 <translation id="7481213027396403996">Chrome’un ən güclü güvənlik sistemini əldə edin</translation>
 <translation id="749228101751499733">Daxil olduğunuz müddətdə Chrome-da Google Hesabınızdan əldə edilən parolları və s. istifadə edə bilərsiniz. <ph name="SHORTCUT" /> Google xidmətləri ayarlarınızı dəyişə bilər.</translation>
 <translation id="7496017508659652909">Chrome səhifələri əvvəlcədən yükləyərək baxış və axtarışı sürətləndirir. <ph name="BEGIN_LINK" />Səhifələri əvvəlcədən yükləmək haqqında ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -795,6 +804,7 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8380754585531979907">Chrome-da Gemini və açıq tab arasında hərəkət etmək üçün klaviaturadan istifadə edin.</translation>
 <translation id="8387459386171870978">Chrome istifadəsinə davam edin</translation>
 <translation id="8394720698884623075">URL'ləri Chrome'da saxlanılan təhlükəli saytların siyahısı ilə yoxlayır</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar təkrar açılmayacaq.}}</translation>
 <translation id="8403038600646341038">Kompüter ekranında Chrome loqosu.</translation>
 <translation id="8418845734693287262">ChromeOS datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="842386925677997438">Chrome-un güvənlik alətləri</translation>

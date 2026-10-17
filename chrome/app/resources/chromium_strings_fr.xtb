@@ -16,6 +16,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="112640046208448578">Identifiez des objets ou des lieux, et copiez ou traduisez du texte. Lorsque vous utilisez la recherche dans une image, une capture d'écran de la page est envoyée au serveur. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium est votre navigateur par défaut</translation>
 <translation id="1131805035311359397">Pour vérifier si vos mots de passe sont suffisamment sécurisés afin d'empêcher toute violation de données et autres problèmes de sécurité, <ph name="BEGIN_LINK" />connectez-vous à Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne sera pas rouverte après le redémarrage.}one{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. # fenêtre de navigation privée ou isolée est ouverte sur l'ensemble des profils. Elle ne sera pas rouverte après le redémarrage.}other{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. # fenêtres de navigation privée et isolées sont ouvertes sur l'ensemble des profils. Elles ne seront pas rouvertes après le redémarrage.}}</translation>
 <translation id="1153368717515616349">Cliquez sur le menu Chromium</translation>
 <translation id="1157985233335035034">Langues récentes</translation>
 <translation id="1184145431117212167">Échec de l'installation en raison d'une incompatibilité avec votre version de Windows.</translation>
@@ -38,6 +39,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1329040302064168406">Connectez-vous à Chromium sur votre téléphone</translation>
 <translation id="1330562121671411446">Détecter la langue</translation>
 <translation id="1342274909142618978">Supprimer également les données de Chromium (<ph name="URL" />) ?</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne sera pas rouverte après le redémarrage.}one{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtre de navigation privée ou isolée est ouverte sur l'ensemble des profils. Elle ne sera pas rouverte après le redémarrage.}other{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtres de navigation privée et isolées sont ouvertes sur l'ensemble des profils. Elles ne seront pas rouvertes après le redémarrage.}}</translation>
 <translation id="1345251407431278948">Recherche dans des images épinglée ! Vous pouvez de nouveau y accéder à l'aide du nouveau bouton de la barre d'outils.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1388276868779258475">Utilisez l'appli Chromium pour continuer à naviguer où que vous soyez</translation>
@@ -226,6 +228,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Emportez vos outils d'IA de Google préférés partout avec Chromium sur iOS.</translation>
 <translation id="3264761466044851269">Pour accéder à vos extensions et plus encore depuis <ph name="DEVICE" />, connectez-vous à Chromium</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. Votre fenêtre isolée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. # fenêtre isolée ne sera pas rouverte.}other{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="328888136576916638">Les clés API Google sont manquantes. Certaines fonctionnalités de Chromium vont être désactivées.</translation>
 <translation id="3296368748942286671">Poursuivre l'exécution des applications en arrière-plan après la fermeture de Chromium</translation>
@@ -273,6 +276,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
           **Suggère des questions** : génère une liste à puces de trois à cinq questions qui poussent à la réflexion et qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant spécifiquement sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386243222263310720">Pour accéder à vos favoris et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. Votre fenêtre isolée ne sera pas rouverte.}one{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. # fenêtre isolée ne sera pas rouverte.}other{Votre administrateur vous demande de relancer Chromium pour installer cette mise à jour. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="3885770153807205175">Outil de sélection de langue</translation>
 <translation id="388648406173476553">Personnalisez et contrôlez Chromium. Une action de votre part est requise. Cliquez pour en savoir plus.</translation>
 <translation id="3889543394854987837">Cliquez sur votre nom pour ouvrir Chromium et commencer à naviguer.</translation>
@@ -430,6 +434,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> est déjà connecté. Pour séparer votre navigation, connectez-vous à Chromium dans votre propre profil en tant que <ph name="USER_EMAIL_ADDRESS" />. Vous pourrez aussi accéder à vos informations enregistrées et à d'autres données de <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Erreur au démarrage : Veuillez exécuter le programme d'installation en tant qu'utilisateur standard, et non en tant qu'administrateur.</translation>
 <translation id="5580770360767802657">Utilisez Chromium par défaut et épinglez-le</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. Votre fenêtre isolée ne sera pas rouverte.}one{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. # fenêtre isolée ne sera pas rouverte.}other{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="5596627076506792578">Plus d'options</translation>
 <translation id="5605834417512968703">Sélectionnez un objet dans lequel effectuer une recherche à l'aide de la recherche dans des images ou appuyez sur Échap pour quitter cette fonctionnalité</translation>
 <translation id="5618818588972826921">Sélectionnez le texte ou l'image à rechercher, ou appuyez sur Échap pour quitter la recherche dans une image</translation>
@@ -589,6 +594,7 @@ Vous ne pourrez pas enregistrer de nouveaux favoris dans votre compte tant que v
 <translation id="7003299027384820442">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chromium dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">L'installation a échoué, car cette version du système d'exploitation n'est pas compatible.</translation>
 <translation id="7024536598735240744">Erreur de décompression : <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. Votre fenêtre isolée ne sera pas rouverte.}one{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtre isolée ne sera pas rouverte.}other{La Protection Avancée nécessite que vous relanciez Chromium pour appliquer une mise à jour. # fenêtres isolées ne seront pas rouvertes.}}</translation>
 <translation id="7045244423563602563">Personnalisez Chromium</translation>
 <translation id="7047386856539490735">Ces résultats sont-ils utiles ?</translation>
 <translation id="705851970750939768">Mettre à jour Chromium</translation>
@@ -668,6 +674,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir quels sites vous consultez. Chromium utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS).</translation>
 <translation id="7810005234485217901">Vous pouvez épingler la recherche dans des images pour y accéder facilement</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne sera pas rouverte après le redémarrage.}one{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. # fenêtre de navigation privée ou isolée est ouverte sur l'ensemble des profils. Elle ne sera pas rouverte après le redémarrage.}other{Une nouvelle mise à jour de Chromium est disponible et sera appliquée dès que vous relancerez le navigateur. # fenêtres de navigation privée et isolées sont ouvertes sur l'ensemble des profils. Elles ne seront pas rouvertes après le redémarrage.}}</translation>
 <translation id="7828527096541974699">Choisissez ce que vous partagez avec Chromium</translation>
 <translation id="7828947555739565424">Il existe déjà un profil Chromium associé à ce compte sur cet appareil</translation>
 <translation id="7845233973568007926">Merci d'avoir installé notre produit. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
@@ -705,6 +712,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="813913629614996137">Initialisation…</translation>
 <translation id="8161503455832158203">Ouvrez Gemini dans Chromium avec un raccourci clavier.</translation>
 <translation id="8164014945047474187">Conditions d'utilisation supplémentaires de Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. Une fenêtre de navigation privée ou isolée est ouverte. Elle ne sera pas rouverte après le redémarrage.}one{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. # fenêtre de navigation privée ou isolée est ouverte sur l'ensemble des profils. Elle ne sera pas rouverte après le redémarrage.}other{Votre administrateur exige que vous relanciez Chromium pour installer une mise à jour. # fenêtres de navigation privée et isolées sont ouvertes sur l'ensemble des profils. Elles ne seront pas rouvertes après le redémarrage.}}</translation>
 <translation id="81770708095080097">Chromium a bloqué ce fichier, car ce dernier est dangereux.</translation>
 <translation id="8177472873527554730">Impossible de trouver du contenu sur la page</translation>
 <translation id="8200109504272824693">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chromium dans votre compte <ph name="USER_EMAIL" /></translation>

@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals.}=1{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. La finestra d'incògnit no es tornarà a obrir.}other{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la versió més recent tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. Les # finestres d'incògnit no es tornaran a obrir.}}</translation>
 <translation id="1434626383986940139">Aplicacions de Chrome Canary</translation>
 <translation id="1439793550875056299">Fixa Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. La finestra aïllada no es tornarà a obrir.}other{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="146866447420868597">Vols iniciar la sessió a Chrome?</translation>
 <translation id="1476347941828409626">&amp;Gestiona els perfils de Chrome</translation>
 <translation id="1492280395845991349">Reinicia per finalitzar l'actualització de Chrome</translation>
@@ -269,6 +270,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="345171907106878721">Afegeix-me a Chrome</translation>
 <translation id="3453763134178591239">Condicions de Chrome OS</translation>
 <translation id="3475778264501649775">Mentre et desplaces, porta amb tu les teves contrasenyes, pestanyes i més amb l'aplicació Chrome al telèfon</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{L'administrador et demana que reiniciïs Chrome per aplicar aquesta actualització. La finestra aïllada no es tornarà a obrir.}other{L'administrador et demana que reiniciïs Chrome per aplicar aquesta actualització. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="3539955434060988644">Obre l'enllaç en una finestra d'incò&amp;gnit a Chrome</translation>
 <translation id="354621070532799440">Recordatori: les millors funcions de seguretat de Google a la butxaca</translation>
 <translation id="3547866758548131919">Fes clic al botó Resumeix per compartir aquest document amb Gemini a Chrome a fi d'obtenir una visió general ràpida i fer preguntes de seguiment</translation>
@@ -284,12 +286,15 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3622797965165704966">Ara resulta més fàcil utilitzar Chrome amb el vostre compte de Google i en ordinadors compartits.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> ja ha iniciat la sessió. Per mantenir la navegació per separat, inicia la sessió a Chrome amb el teu perfil com a <ph name="USER_EMAIL_ADDRESS" />. També obtindràs la informació desada i altres dades en tots els teus dispositius.</translation>
 <translation id="3635073343384702370">Chrome pot comprovar les teves contrasenyes quan les deses</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la darrera versió tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. La finestra aïllada no es tornarà a obrir.}other{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la darrera versió tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="3636970668267555808">Accedeix fàcilment a les funcions que coneixes, que tant t'agraden i en què confies establint Chrome com a navegador predeterminat.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{L'administrador et demana que reiniciïs Chrome per aplicar aquesta actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{L'administrador et demana que reiniciïs Chrome per aplicar aquesta actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="3667616615096815454">No es pot instal·lar; el servidor no coneix l'aplicació.</translation>
 <translation id="3673813398384385993">Chrome ha detectat que l'extensió "<ph name="EXTENSION_NAME" />" conté programari maliciós</translation>
 <translation id="3697952514309507634">Altres perfils de Chrome</translation>
 <translation id="3703994572283698466">Chrome OS és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l‘<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versió de ChromeOS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="3718181793972440140">Amb aquesta acció, se suprimirà 1 element d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome et recomana que la suprimeixis. <ph name="BEGIN_LINK" />Més informació sobre les extensions admeses<ph name="END_LINK" />}other{Chrome et recomana que les suprimeixis. <ph name="BEGIN_LINK" />Més informació sobre les extensions admeses<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Aprofundeix en la cerca afegint diverses pestanyes, fitxers i eines amb el botó Afegeix una pestanya i més.</translation>
@@ -416,6 +421,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5003967926796347400">Fes clic a Gestor de contrasenyes de Google</translation>
 <translation id="5043786843026425788">Més informació sobre la cerca amb Google Lens a Chrome</translation>
 <translation id="504867494566807945">Obre enllaços a Chrome des de qualsevol aplicació. A més, perquè sigui més fàcil accedir-hi, es fixa a la barra de tasques.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="5105120510934353742">Per obtenir actualitzacions de Google Chrome en un futur, necessitaràs macOS 13 o una versió posterior. Aquest ordinador utilitza macOS 12.</translation>
 <translation id="5114340746415930644">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chrome al teu compte, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Inicia la sessió a Chrome quan iniciïs la sessió en altres serveis de Google</translation>
@@ -476,6 +482,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">No es pot connectar a Internet. El servidor intermediari necessita autenticació.</translation>
 <translation id="5709557627224531708">Defineix Chrome com a navegador predeterminat</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. La finestra aïllada no es tornarà a obrir.}other{La Protecció avançada requereix que reiniciïs Chrome per aplicar una actualització. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="5719246646468301581">Condicions del servei addicionals de Google Chrome i ChromeOS</translation>
 <translation id="5736850870166430177">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chrome també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura</translation>
 <translation id="5742003800414899269">Utilitza l'aplicació Chrome per portar amb tu les millors eines d'IA mentre et desplaces</translation>
@@ -503,6 +510,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="5960404530854194706">Chrome s'actualitzarà quan no hi siguis</translation>
 <translation id="5980111191913430208">Les extensions, les aplicacions i els temes de fonts desconegudes poden malmetre el dispositiu. Chrome recomana que només n'instal·lis de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">S'està baixant… Queden <ph name="HOURS" /> hores</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{L'administrador necessita que reiniciïs Chrome per aplicar una actualització. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="6008161919456049856">Les contrasenyes, les formes de pagament i les adreces que hagis desat al teu Compte de Google se suprimiran d'aquest dispositiu. Per tornar-les a utilitzar a Chrome, inicia la sessió de nou.</translation>
 <translation id="6009821354356307391">Fes una pregunta de seguiment</translation>
 <translation id="6014316319780893079">Amb les <ph name="BEGIN_LINK" />eines de Chrome<ph name="END_LINK" />, pots navegar de manera segura i mantenir el control</translation>
@@ -675,6 +683,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7452987490177144319">{COUNT,plural, =1{La teva organització suprimeix automàticament les dades de navegació quan Chrome no s'utilitza durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}other{La teva organització suprimeix automàticament les dades de navegació quan Chrome no s'utilitza durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}}</translation>
 <translation id="7466577301922356468">Enviar automàticament aquestes dades a Google ajuda a millorar Chrome. Pots canviar aquesta opció de configuració en qualsevol moment.</translation>
 <translation id="7477130805345743099">Chrome t'avisarà abans de carregar qualsevol lloc web amb una connexió no segura</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. La finestra aïllada no es tornarà a obrir.}other{Hi ha una actualització nova de Chrome disponible i s'aplicarà tan aviat com el reiniciïs. # finestres aïllades no es tornaran a obrir.}}</translation>
 <translation id="7481213027396403996">Obtén la seguretat més efectiva de Chrome</translation>
 <translation id="749228101751499733">Mentre tinguis la sessió iniciada, podràs utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chrome. Fes servir <ph name="SHORTCUT" /> per canviar la configuració dels serveis de Google.</translation>
 <translation id="7496017508659652909">Chrome precarrega les pàgines perquè la navegació i la cerca siguin més ràpides. <ph name="BEGIN_LINK" />Obtén més informació sobre la precàrrega de pàgines<ph name="END_LINK" />.</translation>
@@ -791,6 +800,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="8380754585531979907">Utilitza el teclat per navegar entre Gemini a Chrome i la pestanya oberta.</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>
 <translation id="8394720698884623075">Compara els URL amb una llista de llocs web no segurs emmagatzemada a Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la darrera versió tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. Hi ha una finestra d'incògnit o aïllada oberta. No es tornarà a obrir després de reiniciar.}other{Chrome s'ha acabat d'actualitzar. Pots utilitzar-ne la darrera versió tan bon punt reiniciïs Chrome. Després, es tornaran a obrir les pestanyes actuals. Hi ha # finestres d'incògnit i aïllades obertes en tots els perfils. No es tornaran a obrir després de reiniciar.}}</translation>
 <translation id="8403038600646341038">Logotip de Chrome a l'interior d'una pantalla d'ordinador.</translation>
 <translation id="8418845734693287262">Chrome OS no ha pogut sincronitzar les teves dades perquè les dades d'inici de sessió del compte no estan actualitzades.</translation>
 <translation id="842386925677997438">Eines de seguretat de Chrome</translation>

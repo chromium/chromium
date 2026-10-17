@@ -618,7 +618,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2059166748188874810">Kommune</translation>
 <translation id="2059202684901022309">22 x 34 tommer</translation>
 <translation id="2063929825539050431">Hvis du hurtigt vil sende denne side til en anden enhed, skal du holde fingeren på adresselinjen</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 forslag}one{# forslag}other{# forslag}}</translation>
 <translation id="2066969741541525119">Det website, du er på vej til, er blokeret af din organisation</translation>
 <translation id="2071156619270205202">Dette kort er ikke kvalificeret til et virtuelt kortnummer</translation>
 <translation id="2071852865256799872">Din browser administreres af din organisation, og din profil administreres af <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2188375229972301266">Flere huller nederst</translation>
 <translation id="218940509700321686">Kommaseparerede værdier</translation>
 <translation id="2190094353033916816">Denne politik har forskellige værdier, der anvendes på maskin- og brugerniveau. Politikken fungerer efter hensigten.</translation>
-<translation id="219061769324072544">kredit,kort,debet</translation>
 <translation id="2191980191135734720">Lås din skærm op i næste trin – typisk ved hjælp af dit fingeraftryk. Du kan også <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Vigtige oplysninger</translation>
 <translation id="2195729137168608510">Mail-beskyttelse</translation>
@@ -1082,6 +1080,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2807052079800581569">Billedposition Y</translation>
 <translation id="2808278141522721006">Du kan aktivere eller deaktivere Windows Hello i <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Scanner…</translation>
+<translation id="282457273878278063">Administrer kontaktoplysninger</translation>
 <translation id="2824775600643448204">Adresse og søgelinje</translation>
 <translation id="2826760142808435982">Forbindelsen er krypteret og godkendt ved hjælp af <ph name="CIPHER" />, og den anvender <ph name="KX" /> som primær udvekslingsmekanisme.</translation>
 <translation id="2828797285817981634">Brug af bevægelsessensorer er tilladt indtil videre</translation>
@@ -1865,7 +1864,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4121428309786185360">Udløber den</translation>
 <translation id="4123572138124678573">Tre huller nederst</translation>
 <translation id="412601465078863288">Uploaden fik timeout</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 anden/andet}one{# anden/andet}other{# andre}}</translation>
 <translation id="4129810348470013900">Noget gik galt. Tjek din internetforbindelse, og prøv igen.</translation>
 <translation id="4130226655945681476">Tjekke netværkskabler, modem og router</translation>
 <translation id="4132448310531350254">Identiske handlere for filtypen "<ph name="FILE_EXTENSION" />", som der henvises til i applikationerne "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3229,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="638289054711715023">Krympefolie</translation>
 <translation id="6383221683286411806">Potentielle opkrævninger forude</translation>
 <translation id="6384448607821972818">Adgangskode til gendannelse vises</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 andet forslag}one{# andet forslag}other{# andre forslag}}</translation>
 <translation id="6386565501269869892">Konvolut Dig 4</translation>
 <translation id="6387645831795005740">Hackere efterligner nogle gange websites ved at lave små ændringer af webadressen, som er svære at se.</translation>
 <translation id="6389470377220713856">Navn på kort</translation>

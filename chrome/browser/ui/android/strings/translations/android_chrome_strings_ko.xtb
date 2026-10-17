@@ -251,6 +251,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1986685561493779662">이미 사용 중인 이름입니다.</translation>
 <translation id="1992244793717364584">앱이 제거됨</translation>
+<translation id="1999115740519098545">시작 시 설정</translation>
 <translation id="200114059308480249">Google 검색어에 주변 텍스트를 포함하시겠습니까?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, 고정되고 음소거된 시크릿 탭</translation>
 <translation id="2021896219286479412">전체화면 사이트 컨트롤</translation>
@@ -265,7 +266,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2056878612599315956">사이트 일시중지됨</translation>
 <translation id="2063047797624276601">조직에서 향상된 세이프 브라우징을 사용 설정했습니다.</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
-<translation id="2066690553719545730">AI 모드 항상 표시</translation>
 <translation id="2067805253194386918">텍스트</translation>
 <translation id="2079545284768500474">실행취소</translation>
 <translation id="2082238445998314030">전체 결과 <ph name="TOTAL_RESULTS" />개 중 <ph name="RESULT_NUMBER" />개</translation>
@@ -798,6 +798,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4188638484665452040">Gemini 고정 해제됨</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이 사이트의 알림 전송을 중지했습니다.}other{스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이 사이트의 알림 전송을 중지했습니다.}}</translation>
 <translation id="4195643157523330669">새 탭에서 열기</translation>
+<translation id="4195814663415092787">중단한 위치에서 계속하기</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{이 기기의 탭 1개}other{이 기기의 탭 #개}}</translation>
 <translation id="4198268995694216131">추가 사이트</translation>
 <translation id="4198423547019359126">사용할 수 있는 다운로드 위치가 없음</translation>
@@ -808,7 +809,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4216511743389425832">이 페이지의 내용 듣기</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, 선택되고 고정된 PIP 모드 시크릿 탭</translation>
 <translation id="4225895483398857530">툴바 바로가기</translation>
-<translation id="4232376164796433044">비밀번호 및 자동 완성</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="425582637250725228">변경사항이 저장되지 않을 수 있습니다.</translation>
@@ -1147,6 +1147,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5568069709869097550">로그인할 수 없음</translation>
 <translation id="557018954714092179">새 폴더 만들기</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
+<translation id="558563010977877295">특정 페이지 또는 페이지 모음 열기</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5599455543593328020">시크릿 모드</translation>
 <translation id="5601180634394228718">Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />로 이동하세요.</translation>
@@ -1447,6 +1448,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="671481426037969117"><ph name="FQDN" /> 타이머가 종료되었습니다. 타이머는 내일 다시 시작됩니다.</translation>
 <translation id="6716434912087331834">새 창을 복원하려면 활성 창의 총개수를 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />개 이하로 줄이세요. 비활성 창은 6개월 후에 삭제됩니다.</translation>
 <translation id="6723740634201835758">내 Google 계정에서</translation>
+<translation id="6725340821578440069">기기별 필터링</translation>
 <translation id="6734310707649923383">방문한 페이지를 확인하거나 방문 기록에서 삭제할 수 있습니다</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, 고정되고 녹화 중인 시크릿 탭</translation>
 <translation id="6738867403308150051">다운로드 중...</translation>
@@ -1905,6 +1907,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8387617938027387193">본인 인증</translation>
 <translation id="8393700583063109961">메시지 보내기</translation>
 <translation id="8398389123831319859">시크릿 모드로 전환하려면 두 번 탭하고 길게 누르세요.</translation>
+<translation id="8401904657382223224">호스트별 필터링</translation>
 <translation id="8412037385861858490">Chrome에서 업무를 보호하기 위해 Chrome에 로그인하면 조직에서 특정 정보를 보거나 관리할 수 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">방문 기록 전체 보기</translation>
 <translation id="8413795581997394485">위험하다고 알려진 사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호합니다. 사이트를 방문하면 Chrome에서 사용자의 IP 주소를 숨기는 개인 정보 보호 서버를 통해 URL의 난독화된 부분을 Google로 전송합니다. 사이트에서 의심스러운 작업이 수행되면 전체 URL과 일부 페이지 콘텐츠도 전송됩니다.</translation>

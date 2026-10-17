@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1986685561493779662">名称已存在</translation>
 <translation id="1992244793717364584">应用已卸载</translation>
+<translation id="1999115740519098545">起始页面</translation>
 <translation id="200114059308480249">将上下文内容纳入到 Google 搜索查询中？</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />，已固定的无痕式标签页，已设为静音</translation>
 <translation id="2021896219286479412">全屏网站控件</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">网站已被暂停</translation>
 <translation id="2063047797624276601">您的组织已开启“增强型安全浏览”功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 项下载失败}other{# 项下载失败}}</translation>
-<translation id="2066690553719545730">总是显示 AI 模式</translation>
 <translation id="2067805253194386918">文本</translation>
 <translation id="2079545284768500474">撤销</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">已取消固定 Gemini</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome 已阻止此网站发送通知，因为其包含网络垃圾或欺骗性内容}other{Chrome 已阻止这些网站发送通知，因为其包含网络垃圾或欺骗性内容}}</translation>
 <translation id="4195643157523330669">在新标签页中打开</translation>
+<translation id="4195814663415092787">继续浏览上次打开的网页</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{此设备上的 1 个标签页}other{此设备上的 # 个标签页}}</translation>
 <translation id="4198268995694216131">更多网站</translation>
 <translation id="4198423547019359126">没有可用的下载内容保存位置</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">读出此网页的内容</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />，选中的且固定的画中画无痕式标签页</translation>
 <translation id="4225895483398857530">工具栏中的快捷方式</translation>
-<translation id="4232376164796433044">密码和自动填充</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="424864128008805179">要在 Chrome 中退出账号吗？</translation>
 <translation id="425582637250725228">系统可能不会保存您所做的更改。</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">无法登录</translation>
 <translation id="557018954714092179">新建文件夹</translation>
 <translation id="5578795271662203820">在<ph name="SEARCH_ENGINE" />中搜索此图片</translation>
+<translation id="558563010977877295">打开特定网页或一组网页</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5599455543593328020">无痕模式</translation>
 <translation id="5601180634394228718">如需更多使用数据来提升 Chrome 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
@@ -1447,6 +1448,7 @@
 <translation id="671481426037969117">您的 <ph name="FQDN" /> 计时器已结束计时。它将于明天重新开始。</translation>
 <translation id="6716434912087331834">如需恢复一个新窗口，请先将使用中的窗口总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。闲置窗口会在 6 个月后被删除。</translation>
 <translation id="6723740634201835758">在您的 Google 账号中</translation>
+<translation id="6725340821578440069">按设备过滤</translation>
 <translation id="6734310707649923383">您可以查看自己访问过的网页，也可将网页从历史记录中删除</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />，已固定的无痕式标签页，正在录制内容</translation>
 <translation id="6738867403308150051">正在下载…</translation>
@@ -1903,6 +1905,7 @@
 <translation id="8387617938027387193">请验证是您本人在操作</translation>
 <translation id="8393700583063109961">发送消息</translation>
 <translation id="8398389123831319859">点按两次并按住即可切换到无痕模式</translation>
+<translation id="8401904657382223224">按主机过滤</translation>
 <translation id="8412037385861858490">为了保障您在 Chrome 上的工作安全，当您登录 Chrome 后，您的组织将能够查看或管理某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">显示全部历史记录</translation>
 <translation id="8413795581997394485">防范已知危险的网站、下载内容和扩展程序。当您访问某个网站时，Chrome 会通过可隐藏 IP 地址的隐私保护服务器将经过混淆处理的网址片段发送给 Google。如果网站有可疑行为，系统也会发送完整网址和少量网页内容。</translation>

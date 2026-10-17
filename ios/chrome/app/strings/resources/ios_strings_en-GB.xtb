@@ -195,7 +195,6 @@
 <translation id="154312949627292154">Open tabs received from your other devices from the lock screen.</translation>
 <translation id="1544653821167545205">Summarise page</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
-<translation id="1545757265410828525">Price history</translation>
 <translation id="1547610699249301703">Share passwords</translation>
 <translation id="1554043146674176775">Turn off AI Mode</translation>
 <translation id="1554477036522844996">New window</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">You already saved a password for '<ph name="USERNAME" />' at <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">You can scroll left to browse in Incognito.</translation>
 <translation id="2435457462613246316">Show password</translation>
-<translation id="2451607499823206582">Tracking</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} history item}other{{count} history items}}</translation>
 <translation id="2461070143328828326">Password settings</translation>
 <translation id="2462736546165239215">You can find all your browsing history here.</translation>
@@ -625,6 +623,7 @@
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Sends URLs of some pages that you visit to Google, when your security is at risk</translation>
 <translation id="2883151425485251736">See and edit topics that you've hidden from your account</translation>
+<translation id="2884437560239137197">Attention needed</translation>
 <translation id="288655811176831528">Close Tab</translation>
 <translation id="2888631381369839306">Price tracking notifications turned on</translation>
 <translation id="2893168226686371498">Default browser</translation>
@@ -1466,6 +1465,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="559567008082979829">Set your downloads to be deleted after one month.</translation>
 <translation id="5596627076506792578">More options</translation>
 <translation id="560322036295180549">Turned off by your organisation</translation>
+<translation id="5604254791550001355">Edit prompt</translation>
 <translation id="5611398002774823980">Save in account</translation>
 <translation id="5612225021788368236">Close default browser promo</translation>
 <translation id="561269594905823128">Tap <ph name="BEGIN_BOLD" />Select your file<ph name="END_BOLD" /></translation>
@@ -1531,7 +1531,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5768870767339201169">Pick up from where you left off</translation>
 <translation id="5779117921996157216">{count,plural, =1{You have {count} compromised password that could put your security at risk. Fix it now to stay safe.}other{You have {count} compromised passwords that could put your security at risk. Fix them now to stay safe.}}</translation>
 <translation id="5791632441210678828">Sort button for Following feed.</translation>
-<translation id="5799263916847593256">Open to see price history</translation>
 <translation id="5801568494490449797">Preferences</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5804241973901381774">Permissions</translation>
@@ -1669,6 +1668,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6227958838185907047">Sign in as <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">Suggested</translation>
 <translation id="6232329973559504466">Incognito search</translation>
+<translation id="6233463157595806945">Input needed</translation>
 <translation id="6234310016144827337">Check your connection and try again</translation>
 <translation id="6236952928980352967">Restore warning</translation>
 <translation id="623755660902014047">Reading mode</translation>
@@ -1699,6 +1699,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6307792728709337290">Save your card in your Google Account to autofill it for this purchase and future purchases made on Chrome.</translation>
 <translation id="6316141353357700666">Choose the password that you want to use from the list that appears.</translation>
 <translation id="6321526113093607004">Add to bookmarks</translation>
+<translation id="6322064144568952786">Task failed</translation>
 <translation id="6324054713176642683">Choose from themes, colours or upload your own photo.</translation>
 <translation id="6327249202318869726">Gemini is turned off for your account. Contact your admin for more information.</translation>
 <translation id="6331836477476466332">A safer, more powerful browser for you</translation>
@@ -1881,7 +1882,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6815692190508268848">Applied your appearance preferences</translation>
 <translation id="681631578600400068">Save driving licence</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
-<translation id="6826004672264649705">Currently tracking this product. Open to see price history</translation>
 <translation id="6830728435402077660">Not secure</translation>
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6842136130964845393">To make sure that you can always access your saved passwords, verify that it's you</translation>
@@ -2016,6 +2016,7 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL" />. You'll get 
 <translation id="7241135764990439166">Incognito mode is unavailable</translation>
 <translation id="7245288034498365666">Get organised and save time</translation>
 <translation id="7253951228444156601">Checking passwords…</translation>
+<translation id="725583671816239562">Task done</translation>
 <translation id="7261217796641151584">Share group</translation>
 <translation id="7266578100016339897">This helps you stay organised. You can change this in settings at any time.</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google Terms<ph name="END_LINK" /> and the <ph name="BEGIN_LINK" />Gemini Apps Privacy Notice<ph name="END_LINK" /> apply. Gemini is AI and can make mistakes, including about people.</translation>

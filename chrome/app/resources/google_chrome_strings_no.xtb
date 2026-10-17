@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt.}=1{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter på nytt. Deretter åpnes de aktive fanene på nytt. Dine # inkognitovinduer åpnes ikke på nytt.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-apper</translation>
 <translation id="1439793550875056299">Fest Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Administratoren din krever at du starter Chrome start på nytt for å ta i bruk en oppdatering. Det isolerte vinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chrome start på nytt for å ta i bruk en oppdatering. # isolert vindu gjenåpnes ikke.}}</translation>
 <translation id="146866447420868597">Vil du logge på Chrome?</translation>
 <translation id="1476347941828409626">&amp;Administrer Chrome-profiler</translation>
 <translation id="1492280395845991349">Start på nytt for å fullføre Chrome-oppdateringen</translation>
@@ -269,6 +270,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="345171907106878721">Legg til deg selv i Chrome</translation>
 <translation id="3453763134178591239">Vilkår for ChromeOS</translation>
 <translation id="3475778264501649775">Ta med deg passordene, fanene og mer med Chrome-appen på telefonen</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Administratoren din ber deg om å starte Chrome start på nytt for å ta i bruk denne oppdateringen. Det isolerte vinduet ditt blir ikke gjenåpnet.}other{Administratoren din ber deg om å starte Chrome start på nytt for å ta i bruk denne oppdateringen. # isolert vindu gjenåpnes ikke.}}</translation>
 <translation id="3539955434060988644">Åpne linken i et inkognitovindu i Chrome</translation>
 <translation id="354621070532799440">Påminnelse: Googles beste sikkerhetsfunksjoner rett i lommen</translation>
 <translation id="3547866758548131919">Klikk på Oppsummer-knappen for å dele dette dokumentet med Gemini i Chrome, få en rask oversikt og stille oppfølgingsspørsmål</translation>
@@ -284,12 +286,15 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="3622797965165704966">Nå er det enklere å bruke Chrome med Google-kontoen din og på datamaskiner du deler med andre.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chrome i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også den lagrede informasjonen din med mer på alle enhetene dine.</translation>
 <translation id="3635073343384702370">Chrome kan sjekke passordene dine når du lagrer dem</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter start på nytt Deretter åpnes de aktive fanene på nytt. Det isolerte vinduet ditt blir ikke gjenåpnet.}other{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter start på nytt Deretter åpnes de aktive fanene på nytt. # isolert vindu gjenåpnes ikke.}}</translation>
 <translation id="3636970668267555808">Ved å angi Chrome som standardnettleser får du enkel tilgang til funksjonene du kjenner til, liker og stoler på.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Administratoren din ber deg om å starte Chrome start på nytt for å ta i bruk denne oppdateringen. Det er et inkognitovindu eller et isolert vindu åpent. Det blir ikke gjenåpnet når du starter nettleseren start på nytt}other{Administratoren din ber deg om å starte Chrome start på nytt for å ta i bruk denne oppdateringen. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. De åpnes ikke igjen etter start på nytt.}}</translation>
 <translation id="3667616615096815454">Kan ikke installere programmet fordi det er ukjent for tjeneren.</translation>
 <translation id="3673813398384385993">Chrome har oppdaget at «<ph name="EXTENSION_NAME" />» inneholder skadelig programvare</translation>
 <translation id="3697952514309507634">Andre Chrome-profiler</translation>
 <translation id="3703994572283698466">ChromeOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flex-versjon</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome start på nytt Det er et inkognitovindu eller et isolert vindu åpent. Det blir ikke gjenåpnet når du starter nettleseren start på nytt}other{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome start på nytt Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. De åpnes ikke igjen etter start på nytt.}}</translation>
 <translation id="3718181793972440140">Dette sletter 1 element fra denne enheten. For å hente dataene dine igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome anbefaler at du fjerner den. <ph name="BEGIN_LINK" />Finn ut mer om utvidelser som støttes<ph name="END_LINK" />}other{Chrome anbefaler at du fjerner dem. <ph name="BEGIN_LINK" />Finn ut mer om utvidelser som støttes<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Gjør søket mer omfattende ved å legge til flere faner, filer og verktøy med «Legg til en fane med mer»-knappen.</translation>
@@ -416,6 +421,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5003967926796347400">Klikk på «Google Passordlagring»</translation>
 <translation id="5043786843026425788">Finn ut mer om å søke med Google Lens i Chrome</translation>
 <translation id="504867494566807945">Åpne linker i Chrome fra alle apper. For å få enkel tilgang, festes Chrome på oppgavelinjen.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Avansert beskyttelse krever start på nytt av Chrome for å ta i bruk en oppdatering. Det er et inkognitovindu eller et isolert vindu åpent. Det blir ikke gjenåpnet når du starter nettleseren start på nytt}other{Avansert beskyttelse krever start på nytt av Chrome for å ta i bruk en oppdatering. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. De åpnes ikke igjen etter start på nytt.}}</translation>
 <translation id="5105120510934353742">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 13 eller nyere. Denne datamaskinen bruker macOS 12.</translation>
 <translation id="5114340746415930644">Skriv inn passordfrasen din for å bruke og lagre Chrome-data i kontoen din, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Logg på Chrome når du logger på andre Google-tjenester</translation>
@@ -476,6 +482,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Kan ikke koble til internett. Proxy-tjeneren krever autentisering.</translation>
 <translation id="5709557627224531708">Angi Chrome som standardnettleser</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Avansert beskyttelse krever start på nytt av Chrome for å ta i bruk en oppdatering. Det isolerte vinduet ditt blir ikke gjenåpnet.}other{Avansert beskyttelse krever start på nytt av Chrome for å ta i bruk en oppdatering. # isolert vindu gjenåpnes ikke.}}</translation>
 <translation id="5719246646468301581">Tilleggsvilkår for bruk av Google Chrome og ChromeOS</translation>
 <translation id="5736850870166430177">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
 <translation id="5742003800414899269">Bruk Chrome-appen for å ta med deg de beste AI-verktøyene uansett hvor du er</translation>
@@ -503,6 +510,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5960404530854194706">Chrome oppdateres når du er borte</translation>
 <translation id="5980111191913430208">Utvidelser, apper og temaer fra ukjente kilder kan skade enheten din. Chrome anbefaler at du kun installerer dem fra <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Administratoren din krever at du starter Chrome start på nytt for å ta i bruk en oppdatering. Det er et inkognitovindu eller et isolert vindu åpent. Det blir ikke gjenåpnet når du starter nettleseren start på nytt}other{Administratoren din krever at du starter Chrome start på nytt for å ta i bruk en oppdatering. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. De åpnes ikke igjen etter start på nytt.}}</translation>
 <translation id="6008161919456049856">Passordene, betalingsmåtene og adressene du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chrome igjen, logg på igjen.</translation>
 <translation id="6009821354356307391">Be om oppfølging</translation>
 <translation id="6014316319780893079">Med <ph name="BEGIN_LINK" />verktøy fra Chrome<ph name="END_LINK" /> kan du surfe trygt og ha kontroll</translation>
@@ -675,6 +683,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="7452987490177144319">{COUNT,plural, =1{Organisasjonen din sletter nettlesingsdata automatisk når Chrome ikke har vært i bruk på 1 minutt. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}other{Organisasjonen din sletter nettlesingsdata automatisk når Chrome ikke har vært i bruk på # minutter. Dette kan omfatte loggen, autofyll og nedlastinger. Fanene dine forblir åpne.}}</translation>
 <translation id="7466577301922356468">Ved å sende disse dataene til Google automatisk bidrar du til å gjøre Chrome bedre. Du kan endre denne innstillingen når som helst.</translation>
 <translation id="7477130805345743099">Chrome advarer deg før all innlasting av nettsteder via usikre tilkoblinger</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome start på nytt Det isolerte vinduet ditt blir ikke gjenåpnet.}other{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome start på nytt # isolert vindu gjenåpnes ikke.}}</translation>
 <translation id="7481213027396403996">Få den sterkeste sikkerheten i Chrome</translation>
 <translation id="749228101751499733">Når du er logget på, kan du bruke passord med mer fra Google-kontoen din i Chrome. <ph name="SHORTCUT" /> kan endre innstillingene dine for Google-tjenester.</translation>
 <translation id="7496017508659652909">Chrome forhåndslaster sider, slik at det går raskere å surfe og søke. <ph name="BEGIN_LINK" />Finn ut mer om forhåndslasting av sider<ph name="END_LINK" /></translation>
@@ -791,6 +800,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="8380754585531979907">Bruk tastaturet til å navigere mellom Gemini i Chrome og den åpne fanen.</translation>
 <translation id="8387459386171870978">Fortsett å bruke Chrome</translation>
 <translation id="8394720698884623075">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter start på nytt Deretter åpnes de aktive fanene på nytt. Det er et inkognitovindu eller et isolert vindu åpent. Det blir ikke gjenåpnet når du starter nettleseren start på nytt}other{Chrome er ferdig med å oppdatere. Du kan bruke den nyeste versjonen så snart du starter start på nytt Deretter åpnes de aktive fanene på nytt. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. De åpnes ikke igjen etter start på nytt.}}</translation>
 <translation id="8403038600646341038">Chrome-logo på en dataskjerm.</translation>
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="842386925677997438">Sikkerhetsverktøyene i Chrome</translation>

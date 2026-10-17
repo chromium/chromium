@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
 <translation id="1986685561493779662">Името вече съществува</translation>
 <translation id="1992244793717364584">Приложението бе деинсталирано</translation>
+<translation id="1999115740519098545">При стартиране</translation>
 <translation id="200114059308480249">Да се включи ли съседният текст в търсенията с Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, чийто звук е спрян</translation>
 <translation id="2021896219286479412">Контроли за сайтове на цял екран</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">Сайтът е на пауза</translation>
 <translation id="2063047797624276601">Организацията ви включи подобрената защита от Безопасно сърфиране</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно}other{# изтегляния не бяха успешни}}</translation>
-<translation id="2066690553719545730">Режимът с AI да се показва винаги</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2079545284768500474">Отмяна</translation>
 <translation id="2082238445998314030">Резултат <ph name="RESULT_NUMBER" /> от <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Услугата Gemini е освободена</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Chrome спря изпращането на известия от този сайт поради спам или подвеждащо съдържание}other{Chrome спря изпращането на известия от тези сайтове поради спам или подвеждащо съдържание}}</translation>
 <translation id="4195643157523330669">Отваряне в нов раздел</translation>
+<translation id="4195814663415092787">Продължаване оттам, откъдето сте прекъснали</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 раздел на това устройство}other{# раздела на това устройство}}</translation>
 <translation id="4198268995694216131">Допълнителни сайтове</translation>
 <translation id="4198423547019359126">Няма местоположения за изтегляне</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">Слушане на тази страница</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" /> – избран фиксиран раздел „картина в картината“ в режим „инкогнито“</translation>
 <translation id="4225895483398857530">Пряк път в лентата с инструменти</translation>
-<translation id="4232376164796433044">Пароли и автоматично попълване</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
 <translation id="424864128008805179">Искате ли да излезете от Chrome?</translation>
 <translation id="425582637250725228">Направените от вас промени може да не се запазят.</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">Не може да се влезе</translation>
 <translation id="557018954714092179">Създаване на нова папка</translation>
 <translation id="5578795271662203820">Търсене на изображението със: <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Отваряне на конкретна страница или набор от страници</translation>
 <translation id="5596627076506792578">Още опции</translation>
 <translation id="5599455543593328020">Режим „инкогнито“</translation>
 <translation id="5601180634394228718">За още настройки, които използват данни с цел подобряване на практическата ви работа с Chrome, отворете <ph name="BEGIN_LINK" />услугите на Google<ph name="END_LINK" />.</translation>
@@ -1447,6 +1448,7 @@
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
 <translation id="6716434912087331834">За да възстановите нов прозорец, намалете общия брой на активните прозорци до не повече от <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />. Неактивните прозорци се изтриват след 6 месеца.</translation>
 <translation id="6723740634201835758">В профила ви в Google</translation>
+<translation id="6725340821578440069">Филтриране по устройство</translation>
 <translation id="6734310707649923383">Можете да видите посетените от вас страници или да ги изтриете от историята си</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" /> – фиксиран раздел в режим „инкогнито“, който записва</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
@@ -1905,6 +1907,7 @@
 <translation id="8387617938027387193">Потвърдете, че сте вие</translation>
 <translation id="8393700583063109961">Изпратете съобщение</translation>
 <translation id="8398389123831319859">Докоснете два пъти и задръжте, за да превключите към режим „инкогнито“</translation>
+<translation id="8401904657382223224">Филтриране по хост</translation>
 <translation id="8412037385861858490">За да защити работата ви в Chrome, организацията ви ще може да преглежда или управлява определена информация, когато сте влезли в профила си в браузъра. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Цялата история</translation>
 <translation id="8413795581997394485">Защитава срещу сайтове, изтегляния и разширения, за които е известно, че са опасни. Когато посещавате сайт, Chrome изпраща до Google усложнена част от URL адреса чрез поверителен сървър, който скрива IP адреса ви. Ако даден сайт направи нещо подозрително, се изпращат и пълните URL адреси, както и част от съдържанието на страницата.</translation>

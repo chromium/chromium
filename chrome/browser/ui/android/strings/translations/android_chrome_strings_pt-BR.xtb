@@ -251,6 +251,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1986685561493779662">Esse nome já existe</translation>
 <translation id="1992244793717364584">O app foi desinstalado</translation>
+<translation id="1999115740519098545">Inicialização</translation>
 <translation id="200114059308480249">Incluir o texto ao redor nas pesquisas do Google?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, guia anônima com áudio desativado fixada</translation>
 <translation id="2021896219286479412">Controles de site em tela cheia</translation>
@@ -265,7 +266,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2056878612599315956">Site pausado</translation>
 <translation id="2063047797624276601">Sua organização ativou a Navegação Segura com Maior Proteção</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{Falha em 1 download}one{Falha em # download}other{Falha em # downloads}}</translation>
-<translation id="2066690553719545730">Sempre mostrar o Modo IA</translation>
 <translation id="2067805253194386918">texto</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4188638484665452040">Gemini liberado</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{O Chrome impediu esse site de enviar notificações devido a spam ou conteúdo enganoso}one{O Chrome impediu esse site de enviar notificações devido a spam ou conteúdo enganoso}other{O Chrome impediu esses sites de enviarem notificações devido a spam ou conteúdo enganoso}}</translation>
 <translation id="4195643157523330669">Abrir em nova guia</translation>
+<translation id="4195814663415092787">Continuar de onde você parou</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{1 guia neste dispositivo}one{# guia neste dispositivo}other{# guias neste dispositivo}}</translation>
 <translation id="4198268995694216131">Outros sites</translation>
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
@@ -808,7 +809,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4216511743389425832">Ouvir esta página</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, guia anônima picture-in-picture fixada e selecionada</translation>
 <translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
-<translation id="4232376164796433044">Senhas e preenchimento automático</translation>
 <translation id="4242533952199664413">Abrir configurações</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="425582637250725228">É possível que as alterações feitas não sejam salvas.</translation>
@@ -1148,6 +1148,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5568069709869097550">Não consigo acessar</translation>
 <translation id="557018954714092179">Criar pasta</translation>
 <translation id="5578795271662203820">Pesquisar imagem no <ph name="SEARCH_ENGINE" /></translation>
+<translation id="558563010977877295">Abrir uma página específica ou um conjunto de páginas</translation>
 <translation id="5596627076506792578">Mais opções</translation>
 <translation id="5599455543593328020">Modo de navegação anônima</translation>
 <translation id="5601180634394228718">Para conferir mais configurações que usam dados para melhorar sua experiência do Chrome, acesse os <ph name="BEGIN_LINK" />Serviços do Google<ph name="END_LINK" />.</translation>

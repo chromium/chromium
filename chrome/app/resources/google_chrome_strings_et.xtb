@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti.}=1{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti. Teie inkognito akent ei avata uuesti.}other{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks käivitage uuesti. Pärast seda avanevad teie vahelehed uuesti. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="1434626383986940139">Chrome Canary rakendused</translation>
 <translation id="1439793550875056299">Kinnita Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Administraator nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Teie isoleeritud akent ei avata uuesti.}other{Administraator nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="146866447420868597">Kas logida Chrome'i sisse?</translation>
 <translation id="1476347941828409626">&amp;Hallake Chrome'i profiile</translation>
 <translation id="1492280395845991349">Chrome'i värskendamise lõpuleviimiseks käivitage uuesti</translation>
@@ -271,6 +272,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="345171907106878721">Lisa Chrome'i</translation>
 <translation id="3453763134178591239">Chrome OS-i tingimused</translation>
 <translation id="3475778264501649775">Võtke paroolid, vahelehed ja muu endaga kaasa, kasutades telefonis Chrome'i rakendust</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Administraator palub teil Chrome'i selle värskenduse rakendamiseks taaskäivitada. Teie isoleeritud akent ei avata uuesti.}other{Administraator palub teil Chrome'i selle värskenduse rakendamiseks taaskäivitada. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="3539955434060988644">Ava link Chrome'i inko&amp;gnito aknas</translation>
 <translation id="354621070532799440">Meeldetuletus: Google'i parimad ohutusfunktsioonid on teie taskus</translation>
 <translation id="3547866758548131919">Selle dokumendi jagamiseks Chrome'i Geminis klõpsake kokkuvõtte nuppu, et saada kiire ülevaade ja esitada täpsustavaid küsimusi.</translation>
@@ -286,12 +288,15 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3622797965165704966">Nüüd on Chrome'i lihtsam kasutada Google'i kontoga ja jagatud arvutites.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> on juba sisse logitud. Sirvimise eraldi hoidmiseks logige Chrome'i sisse omaenda profiilil kasutajana <ph name="USER_EMAIL_ADDRESS" />. Lisaks pääsete kõigis seadmetes juurde oma salvestatud teabele ja muule.</translation>
 <translation id="3635073343384702370">Chrome saab teie paroole kontrollida, kui olete need salvestanud</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks taaskäivitage. Pärast seda avanevad praegu avatud vahelehed uuesti. Teie isoleeritud akent ei avata uuesti.}other{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks taaskäivitage. Pärast seda avanevad praegu avatud vahelehed uuesti. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="3636970668267555808">Määrake Chrome oma vaikebrauseriks, et saada hõlpsasti juurdepääs funktsioonidele, mida teate, armastate ja usaldate.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Administraator palub teil Chrome'i selle värskenduse rakendamiseks taaskäivitada. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Administraator palub teil Chrome'i selle värskenduse rakendamiseks taaskäivitada. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="3667616615096815454">Ei saa installida, rakendus on serverile tundmatu.</translation>
 <translation id="3673813398384385993">Chrome leidis, et laiendus „<ph name="EXTENSION_NAME" />“ sisaldab pahavara</translation>
 <translation id="3697952514309507634">Muud Chrome'i profiilid</translation>
 <translation id="3703994572283698466">Chrome OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flexi versioon</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="3718181793972440140">See kustutab seadmest ühe üksuse. Hiljem oma andmete toomiseks logige Chrome'i sisse kasutajana <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome soovitab selle eemaldada. <ph name="BEGIN_LINK" />Lisateave toetatud laienduste kohta<ph name="END_LINK" />}other{Chrome soovitab need eemaldada. <ph name="BEGIN_LINK" />Lisateave toetatud laienduste kohta<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Otsingu süvendamiseks lisage mitu vahekaarti, faili ja tööriista, kasutades nuppu „Vahekaardi lisamine ja muu“.</translation>
@@ -418,6 +423,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="5003967926796347400">Klõpsake „Google'i paroolihaldur”</translation>
 <translation id="5043786843026425788">Lisateave Chrome'is Google Lensiga otsimise kohta</translation>
 <translation id="504867494566807945">Avage mis tahes rakenduse lingid Chrome'is. Lihtsaks juurdepääsuks kinnitatakse see teie tegumiribale.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Täiustatud kaitse nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Täiustatud kaitse nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="5105120510934353742">Google Chrome'i tulevaste värskenduste saamiseks on teil vaja operatsioonisüsteemi macOS 13 või uuemat versiooni. See arvuti kasutab operatsioonisüsteemi macOS 12.</translation>
 <translation id="5114340746415930644">Sisestage parool, et Chrome'i andmeid kasutada ja oma kontole <ph name="USER_EMAIL" /> salvestada</translation>
 <translation id="5120334927898581447">Chrome'i sisselogimine teistesse Google'i teenustesse sisselogimisel</translation>
@@ -480,6 +486,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetiga ei õnnestu ühendust luua. Puhverserver nõuab autentimist.</translation>
 <translation id="5709557627224531708">Määrake Chrome vaikebrauseriks</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Täiustatud kaitse nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Teie isoleeritud akent ei avata uuesti.}other{Täiustatud kaitse nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="5719246646468301581">Google Chrome'i ja Chrome OS-i täiendavad teenusetingimused</translation>
 <translation id="5736850870166430177">Kui sait üritab teie parooli varastada või laadite alla kahjuliku faili, võib Chrome saata URL-id ja lehe sisu osad teenusele Google'i ohutu sirvimine.</translation>
 <translation id="5742003800414899269">Kasutage Chrome'i rakendust, et võtta parimad AI-tööriistad liikvel olles kaasa.</translation>
@@ -507,6 +514,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5960404530854194706">Chrome'i värskendatakse, kui olete eemal.</translation>
 <translation id="5980111191913430208">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chrome soovitab need installida ainult järgmisest poest: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Allalaadimine … <ph name="HOURS" /> tund(i) on jäänud</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Administraator nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Administraator nõuab, et taaskäivitaksite Chrome'i värskenduse rakendamiseks. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="6008161919456049856">Teie Google'i kontole salvestatud paroolid, makseviisid ja aadressid eemaldatakse sellest seadmest. Selleks et neid Chrome'is uuesti kasutada, logige taas sisse.</translation>
 <translation id="6009821354356307391">Küsige täpsemalt</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome'i tööriistadega<ph name="END_LINK" /> saate ohutult sirvida ja kõik kontrolli all hoida</translation>
@@ -679,6 +687,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7452987490177144319">{COUNT,plural, =1{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}other{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chrome'i ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}}</translation>
 <translation id="7466577301922356468">Nende andmete Google'ile automaatne saatmine aitab Chrome'i paremaks muuta. Seda seadet saab igal ajal muuta.</translation>
 <translation id="7477130805345743099">Chrome hoiatab teid enne mis tahes saidi laadimist ebaturvalise ühenduse kaudu</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie isoleeritud akent ei avata uuesti.}other{Saadaval on uus Chrome'i värskendus, mis rakendatakse taaskäivitamisel. Teie # isoleeritud akent ei avata uuesti.}}</translation>
 <translation id="7481213027396403996">Hankige Chrome'i parimad turbefunktsioonid</translation>
 <translation id="749228101751499733">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. <ph name="SHORTCUT" /> saab muuta teie Google'i teenuste seadeid.</translation>
 <translation id="7496017508659652909">Chrome eellaadib lehed, muutes sirvimise ja otsimise kiiremaks. <ph name="BEGIN_LINK" />Lisateave lehtede eellaadimise kohta<ph name="END_LINK" /></translation>
@@ -795,6 +804,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="8380754585531979907">Kasutage klaviatuuri, et navigeerida Chrome'i Gemini ja avatud vahelehe vahel.</translation>
 <translation id="8387459386171870978">Jätkan Chrome'i kasutamist.</translation>
 <translation id="8394720698884623075">Kontrollib URL-e Chrome'i talletatud ohtlike saitide loendi alusel.</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks taaskäivitage. Pärast seda avanevad praegu avatud vahelehed uuesti. Avatud on inkognito või isoleeritud aken. Taaskäivitamisel ei avata seda uuesti.}other{Chrome'i värskendamine jõudis lõpule. Uusima versiooni kasutamiseks taaskäivitage. Pärast seda avanevad praegu avatud vahelehed uuesti. Eri profiilide peale kokku on avatud # inkognito või isoleeritud akent. Taaskäivitamisel ei avata neid uuesti.}}</translation>
 <translation id="8403038600646341038">Chrome’i logo arvutiekraanil.</translation>
 <translation id="8418845734693287262">Chrome OS ei saanud andmeid sünkroonida, sest teie konto sisselogimisandmed on aegunud.</translation>
 <translation id="842386925677997438">Chrome'i ohutustööriistad</translation>

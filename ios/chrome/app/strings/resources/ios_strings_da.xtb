@@ -195,7 +195,6 @@
 <translation id="154312949627292154">Åbn faner, der er modtaget fra dine andre enheder, via låseskærmen.</translation>
 <translation id="1544653821167545205">Opsummer siden</translation>
 <translation id="1545749641540134597">Scan QR-kode</translation>
-<translation id="1545757265410828525">Prishistorik</translation>
 <translation id="1547610699249301703">Del adgangskoder</translation>
 <translation id="1554043146674176775">Deaktiver AI-tilstand</translation>
 <translation id="1554477036522844996">Nyt vindue</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">Du har allerede gemt en adgangskode for "<ph name="USERNAME" />" på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan rulle til venstre for at browse i inkognito.</translation>
 <translation id="2435457462613246316">Vis adgangskode</translation>
-<translation id="2451607499823206582">Overvågning</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} historikelement}one{{count} historikelement}other{{count} historikelementer}}</translation>
 <translation id="2461070143328828326">Adgangskodeindstillinger</translation>
 <translation id="2462736546165239215">Du kan se hele din browserhistorik her.</translation>
@@ -625,6 +623,7 @@
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">Sender webadresser på nogle sider, som du besøger, til Google, når din sikkerhed er truet</translation>
 <translation id="2883151425485251736">Se og rediger de emner, du har skjult på din konto</translation>
+<translation id="2884437560239137197">Kræver din opmærksomhed</translation>
 <translation id="288655811176831528">Luk fane</translation>
 <translation id="2888631381369839306">Notifikationer om prissporing er aktiveret</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
@@ -1466,6 +1465,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="559567008082979829">Angiv, at dine downloads skal slettes efter én måned.</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="560322036295180549">Deaktiveret af din organisation</translation>
+<translation id="5604254791550001355">Rediger prompt</translation>
 <translation id="5611398002774823980">Gem på konto</translation>
 <translation id="5612225021788368236">Luk promovering af standardbrowser</translation>
 <translation id="561269594905823128">Tryk på <ph name="BEGIN_BOLD" />Vælg din fil<ph name="END_BOLD" /></translation>
@@ -1531,7 +1531,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5768870767339201169">Fortsæt, hvor du slap</translation>
 <translation id="5779117921996157216">{count,plural, =1{Du har {count} kompromitteret adgangskode, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}one{Du har {count} kompromitteret adgangskode, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}other{Du har {count} kompromitterede adgangskoder, hvilket kan udgøre en sikkerhedsrisiko. Løs problemet nu for at forblive beskyttet.}}</translation>
 <translation id="5791632441210678828">Knappen Sortér for feedet Følger.</translation>
-<translation id="5799263916847593256">Åbn for at se prishistorikken</translation>
 <translation id="5801568494490449797">Præferencer</translation>
 <translation id="5803566855766646066">Er du sikker på, at du vil kassere dette nye kort?</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
@@ -1669,6 +1668,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6227958838185907047">Log ind som <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">Foreslået</translation>
 <translation id="6232329973559504466">Søgning i inkognitotilstand</translation>
+<translation id="6233463157595806945">Input er påkrævet</translation>
 <translation id="6234310016144827337">Tjek din forbindelse, og prøv igen</translation>
 <translation id="6236952928980352967">Gendan advarsel</translation>
 <translation id="623755660902014047">Læsetilstand</translation>
@@ -1699,6 +1699,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6307792728709337290">Gem dit kort på din Google-konto for at udfylde kortoplysninger automatisk ved dette og fremtidige køb i Chrome.</translation>
 <translation id="6316141353357700666">Vælg den adgangskode, du vil bruge, på den liste, der vises.</translation>
 <translation id="6321526113093607004">Føj til Bogmærker</translation>
+<translation id="6322064144568952786">Opgaven mislykkedes</translation>
 <translation id="6324054713176642683">Vælg mellem temaer og farver, eller upload dit eget billede.</translation>
 <translation id="6327249202318869726">Gemini er deaktiveret for din konto. Kontakt din administrator for at få flere oplysninger.</translation>
 <translation id="6331836477476466332">En mere sikker og effektiv browser til dig</translation>
@@ -1881,7 +1882,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6815692190508268848">Dine præferencer for udseende er anvendt</translation>
 <translation id="681631578600400068">Gem kørekort</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{{count} bogmærke er gemt på din Google-konto, {email}}other{{count} bogmærker er gemt på din Google-konto, {email}}}</translation>
-<translation id="6826004672264649705">Der holdes øje med dette produkt. Åbn for at se prishistorikken</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
 <translation id="6831043979455480757">Oversæt</translation>
 <translation id="6842136130964845393">Verificer din identitet for at sikre, at du altid har adgang til dine gemte adgangskoder</translation>
@@ -2016,6 +2016,7 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="7241135764990439166">Inkognitotilstand er ikke tilgængelig</translation>
 <translation id="7245288034498365666">Få overblik, og spar tid</translation>
 <translation id="7253951228444156601">Tjekker adgangskoder…</translation>
+<translation id="725583671816239562">Opgaven er udført</translation>
 <translation id="7261217796641151584">Del gruppe</translation>
 <translation id="7266578100016339897">Dette hjælper dig med at bevare overblikket. Du kan til enhver tid ændre dette i indstillingerne.</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Googles servicevilkår<ph name="END_LINK" /> og <ph name="BEGIN_LINK" />privatlivsmeddelelsen for Gemini-apps<ph name="END_LINK" /> er gældende. Gemini er en AI-assistent og kan begå fejl, herunder om personer.</translation>
@@ -2177,6 +2178,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7758789811447313947">Violet tema</translation>
 <translation id="7759809451544302770">Valgfrit</translation>
 <translation id="7765158879357617694">Flyt</translation>
+<translation id="7767651976342854115">Der opstod en fejl med indstillingen for dataforbrug.</translation>
 <translation id="7768507955883790804">Websites følger automatisk denne indstilling, når du besøger dem</translation>
 <translation id="7772032839648071052">Bekræft adgangssætning</translation>
 <translation id="7772948288262733182">Velkommen tilbage</translation>

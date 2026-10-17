@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">เทศบาล</translation>
 <translation id="2059202684901022309">22 x 34 นิ้ว</translation>
 <translation id="2063929825539050431">หากต้องการส่งหน้านี้ไปยังอุปกรณ์อื่นอย่างรวดเร็ว ให้แตะแถบที่อยู่ค้างไว้</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 คำแนะนำ}other{# คำแนะนำ}}</translation>
 <translation id="2066969741541525119">องค์กรของคุณได้บล็อกเว็บไซต์ที่คุณกำลังจะเข้าชม</translation>
 <translation id="2071156619270205202">บัตรนี้ไม่มีสิทธิ์ใช้หมายเลขบัตรเสมือน</translation>
 <translation id="2071852865256799872">เบราว์เซอร์ได้รับการจัดการโดยองค์กร และโปรไฟล์ของคุณได้รับการจัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">เจาะรูด้านล่างหลายรู</translation>
 <translation id="218940509700321686">ค่าที่คั่นด้วยคอมมา</translation>
 <translation id="2190094353033916816">นโยบายนี้มีค่าที่แตกต่างกันซึ่งใช้ในระดับเครื่องและระดับผู้ใช้ นโยบายทำงานตามที่ตั้งใจไว้</translation>
-<translation id="219061769324072544">เครดิต,บัตร,เดบิต</translation>
 <translation id="2191980191135734720">ปลดล็อกหน้าจอในขั้นตอนถัดไป โดยปกติจะใช้ลายนิ้วมือ หรืออาจ<ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">สิ่งที่ควรพิจารณา</translation>
 <translation id="2195729137168608510">การป้องกันอีเมล </translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">ตำแหน่งรูปภาพตามแกน Y</translation>
 <translation id="2808278141522721006">คุณเปิดหรือปิด Windows Hello ได้ใน<ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
+<translation id="282457273878278063">จัดการข้อมูลติดต่อ</translation>
 <translation id="2824775600643448204">ที่อยู่และแถบค้นหา</translation>
 <translation id="2826760142808435982">การเชื่อมต่อถูกเข้ารหัสและรับรองความถูกต้องโดยใช้ <ph name="CIPHER" /> และใช้ <ph name="KX" /> เป็นกลไกการแลกเปลี่ยนคีย์</translation>
 <translation id="2828797285817981634">อนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวในตอนนี้</translation>
@@ -1864,7 +1863,6 @@
 <translation id="4121428309786185360">หมดอายุเมื่อวันที่</translation>
 <translation id="4123572138124678573">เจาะรูด้านล่าง 3 รู</translation>
 <translation id="412601465078863288">การอัปโหลดหมดเวลาแล้ว</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{อีก 1 รายการ}other{อีก # รายการ}}</translation>
 <translation id="4129810348470013900">เกิดข้อผิดพลาด ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="4130226655945681476">ตรวจสอบสายเครือข่าย โมเด็ม และเราเตอร์</translation>
 <translation id="4132448310531350254">ตัวแฮนเดิลซ้ำกันสําหรับ file_extension "<ph name="FILE_EXTENSION" />" ที่อ้างอิงโดยแอป "<ph name="POLICY_IDS_LIST" />"</translation>
@@ -3230,7 +3228,6 @@
 <translation id="638289054711715023">ฟอยล์หด</translation>
 <translation id="6383221683286411806">อาจมีการเรียกเก็บเงิน</translation>
 <translation id="6384448607821972818">แสดงรหัสผ่านสำหรับการกู้คืนแล้ว</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{อีก 1 คำแนะนำ}other{อีก # คำแนะนำ}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
 <translation id="6387645831795005740">บางครั้งผู้โจมตีจะเลียนแบบเว็บไซต์ต่างๆ โดยทำการเปลี่ยนแปลงเล็กๆ น้อยๆ ที่สังเกตเห็นได้ยากกับ URL</translation>
 <translation id="6389470377220713856">ชื่อบนบัตร</translation>

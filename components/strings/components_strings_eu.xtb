@@ -618,7 +618,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2059166748188874810">Udalerria</translation>
 <translation id="2059202684901022309">55,88 × 86,36 cm (22 × 34 in)</translation>
 <translation id="2063929825539050431">Orri hau beste gailu batera bizkor bidaltzeko, eduki sakatuta helbide-barra</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 iradokizun}other{# iradokizun}}</translation>
 <translation id="2066969741541525119">Webgune hori blokeatuta dauka zure erakundeak</translation>
 <translation id="2071156619270205202">Txartela ez da egokia txartel birtualaren zenbaki bat izateko.</translation>
 <translation id="2071852865256799872">Zure erakundeak kudeatzen du arakatzailea, eta zure profila, aldiz, <ph name="PROFILE_DOMAIN" /> domeinuak</translation>
@@ -665,6 +664,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2126374524350484896">PDFaren egilea:</translation>
 <translation id="2127090458081644412">Gorde da pasahitza gailuan</translation>
 <translation id="2127747486437921899">Etzana</translation>
+<translation id="2129163794581571479">Gemini-ren adimen pertsonalizatuarekin. Baliteke eskaerak, orrien izenak eta URLak berrikustea, betetze automatiko hobetua hobetzeko. <ph name="BEGIN_LINK" />Kudeatu ezarpenak<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Baliteke zehaztu dituzun txantiloiak ez aplikatzea, DnsOverHttpsMode gidalerroa ez delako ezarri.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Ordainketen betetze automatikoa gaitzeko beheko panela altuera osoan ireki da.</translation>
@@ -710,7 +710,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2188375229972301266">Hainbat zulo behean</translation>
 <translation id="218940509700321686">Komaz bereizitako balioak</translation>
 <translation id="2190094353033916816">Gidalerro honek balio desberdinak ditu makina- eta erabiltzaile-mailetan. Gidalerroak espero bezala funtzionatzen du.</translation>
-<translation id="219061769324072544">Kreditu,Txartela,Zordunketa</translation>
 <translation id="2191980191135734720">Desblokeatu pantaila hurrengo urratsean, normalean hatz-marka erabiliz. Bestela, <ph name="LINK_TEXT" /> dezakezu.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2195729137168608510">Posta elektronikoaren babesa</translation>
@@ -1081,6 +1080,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2807052079800581569">Irudiaren Y ardatzaren posizioa</translation>
 <translation id="2808278141522721006">Windows Hello aktibatu edo desaktibatzeko, joan <ph name="SETTINGS" /> atalera</translation>
 <translation id="2820957248982571256">Bilatzen…</translation>
+<translation id="282457273878278063">Kudeatu harremanetarako informazioa</translation>
 <translation id="2824775600643448204">Helbide- eta bilaketa-barra</translation>
 <translation id="2826760142808435982">Konexioa <ph name="CIPHER" /> bidez enkriptatuta eta autentifikatuta dago eta <ph name="KX" /> erabiltzen du gako-trukaketarako mekanismo gisa.</translation>
 <translation id="2828797285817981634">Oraingoz, eman da mugimendu-sentsoreak erabiltzeko baimena</translation>
@@ -1571,6 +1571,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3655670868607891010">Hau maiz agertzen bazaizu, saiatu honekin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3659521826520353662">Administratzaileak definitutako zein webgune bisitatzen diren eta noiz: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Gemini-ren adimen pertsonalizatuarekin. <ph name="BEGIN_LINK" />Kudeatu ezarpenak<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Bilatu erosteko aukera gehiago produktu hau saltzen duten beste denda batzuetan.</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
 <translation id="3670030362669914947">Zenbakia</translation>
@@ -1591,6 +1592,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3693516565203081475">Aukeratu ordainketa-metodoa</translation>
 <translation id="3698353241727597930"><ph name="FILES" /> enpresak kudeatutako <ph name="CLOUD_STORAGE" /> bidez gordetzeko konfiguratu ditu ezarpenak administratzaileak. Fitxategi horiek ezabatzen dituzunean, baliteke gainbegiratzea, ikuskatzea eta atxikitzea.</translation>
 <translation id="3698629142018988477">Webgune bat sortzeko botoia: aktiba ezazu Google Sites-en webgune bat bizkor sortzeko</translation>
+<translation id="3698708128812719147">Sakatu Ktrl birritan sareko edozein tokitan informazio gehiago aurkitzeko eta automatikoki betetzeko</translation>
 <translation id="3700094625653511150">Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Zure hatz-marka erabiltzen ari zara pasahitzak betetzeko</translation>
 <translation id="3701427423622901115">Berrezarri dira balio lehenetsiak.</translation>
@@ -1858,7 +1860,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4121428309786185360">Iraungitze data:</translation>
 <translation id="4123572138124678573">Hiru zulo behean</translation>
 <translation id="412601465078863288">Kargatzeko denbora-muga gainditu da</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{Beste 1}other{Beste #}}</translation>
 <translation id="4129810348470013900">Arazoren bat izan da. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="4130226655945681476">Sareko kablea, modema eta bideratzailea egiaztatu.</translation>
 <translation id="4132448310531350254"><ph name="FILE_EXTENSION" /> fitxategi-luzapenaren kudeatzaile bikoiztuei egiten diete erreferentzia <ph name="POLICY_IDS_LIST" /> darabilten aplikazioek.</translation>
@@ -1894,6 +1895,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4185037616931963178">Eguneratu zuzenketa-zenbakia modu seguruan</translation>
 <translation id="4186035307311647330">Utzi prezioaren jarraipena egiteari</translation>
 <translation id="4191334393248735295">Luzera</translation>
+<translation id="4192770747482479191">Sakatu ⌘ birritan sareko edozein tokitan informazio gehiago aurkitzeko eta automatikoki betetzeko</translation>
 <translation id="4195459680867822611">Chrome-ri buruzko aholkuak ikusteko botoia: aktiba ezazu Chrome-ren eginbideei buruzko informazioa lortzeko</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4196861286325780578">&amp;Berregin mugitzea</translation>
@@ -2841,6 +2843,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="573974402615125334">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko, sinkronizatu historia eta fitxak</translation>
 <translation id="5740911612628596808">C9 gutun-azala</translation>
 <translation id="574392208103952083">Ertaina</translation>
+<translation id="5744350700955456407">Orain, betetze automatiko hobetuak informazioa aurkitu eta bete dezake (adibidez, eskaera-zenbakiak eta hegaldien berrespen-kodeak) Gmail, Argazkiak eta antzeko aplikazioetan</translation>
 <translation id="5745586894920491759">Chrome-k hodeian prozesatzen ditu orrien izenak eta URLak</translation>
 <translation id="5745733273847572235">Kokapena eska dezake</translation>
 <translation id="5750869797196646528">Eskuen jarraipena</translation>
@@ -3221,7 +3224,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="638289054711715023">Uzkurtze-xafla</translation>
 <translation id="6383221683286411806">Baliteke aurrera egiteko ordaindu behar izatea.</translation>
 <translation id="6384448607821972818">Berreskuratzeko pasahitza erakusten da</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{Beste 1 iradokizun}other{Beste # iradokizun}}</translation>
 <translation id="6386565501269869892">You gutun-azala 4</translation>
 <translation id="6387645831795005740">Batzuetan, erasotzaileek webgune ofizialen plantak egiten dituzte URLari aldaketa oso txikiak eginda.</translation>
 <translation id="6389470377220713856">Txartelaren titularra</translation>

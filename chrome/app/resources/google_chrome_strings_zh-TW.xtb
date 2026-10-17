@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁。}=1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，但無痕視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，但有 # 個無痕視窗不會重新開啟。}}</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
 <translation id="1439793550875056299">釘選 Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{系統管理員要求你重新啟動 Chrome，以套用更新。隔離視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。# 個隔離視窗不會重新開啟。}}</translation>
 <translation id="146866447420868597">要登入 Chrome 嗎？</translation>
 <translation id="1476347941828409626">管理 Chrome 設定檔(&amp;M)</translation>
 <translation id="1492280395845991349">重新啟動即可完成 Chrome 更新程序</translation>
@@ -267,6 +268,7 @@
 <translation id="345171907106878721">新增為 Chrome 使用者</translation>
 <translation id="3453763134178591239">Chrome OS 條款</translation>
 <translation id="3475778264501649775">使用手機版 Chrome，密碼、分頁等資料隨身帶著走</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{系統管理員要求你重新啟動 Chrome，以套用這項更新。隔離視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用這項更新。# 個隔離視窗不會重新開啟。}}</translation>
 <translation id="3539955434060988644">在 Chrome 無痕視窗中開啟連結(&amp;G)</translation>
 <translation id="354621070532799440">提醒：將 Google 最頂尖的安全防護功能帶在身邊</translation>
 <translation id="3547866758548131919">點選「摘要」按鈕，即可與 Chrome 內建 Gemini 分享這份文件，快速取得內容總覽並提出後續問題</translation>
@@ -282,12 +284,15 @@
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
 <translation id="3628103251823745322">目前登入的帳戶為：<ph name="EXISTING_USER" />。如要分開保存你的瀏覽資料，請在 Chrome 中登入自己的設定檔 (<ph name="USER_EMAIL_ADDRESS" />)。你還能在所有裝置上存取已儲存的資訊和其他資料。</translation>
 <translation id="3635073343384702370">若有已存密碼，Chrome 可執行安全檢查</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，隔離視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，# 個隔離視窗不會重新開啟。}}</translation>
 <translation id="3636970668267555808">將 Chrome 設為預設瀏覽器，輕鬆使用你熟悉、喜愛且信任的功能。</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{系統管理員要求你重新啟動 Chrome，以套用這項更新。目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用這項更新。各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="3667616615096815454">伺服器無法辨識應用程式，因此無法安裝。</translation>
 <translation id="3673813398384385993">Chrome 偵測到「<ph name="EXTENSION_NAME" />」含有惡意軟體</translation>
 <translation id="3697952514309507634">其他 Chrome 設定檔</translation>
 <translation id="3703994572283698466">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="3716540481907974026">ChromeOS Flex 版本</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Chrome 有可用的更新，重新啟動後即可套用。目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{Chrome 有可用的更新，重新啟動後即可套用。各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="3718181793972440140">登出後，系統會將 1 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chrome。</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" />}other{Chrome 建議你移除。<ph name="BEGIN_LINK" />進一步瞭解支援的擴充功能<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">使用「新增分頁和其他相關資訊」按鈕，新增多個分頁、檔案和工具，進一步搜尋所需資訊。</translation>
@@ -413,6 +418,7 @@
 <translation id="5003967926796347400">按一下「Google 密碼管理工具」</translation>
 <translation id="5043786843026425788">進一步瞭解如何透過 Chrome 使用 Google 智慧鏡頭搜尋</translation>
 <translation id="504867494566807945">Chrome 將開啟任何應用程式的連結。此外，Chrome 會固定在工作列，方便你隨時使用。</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{「進階保護」要求你重新啟動 Chrome，以套用更新。目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{「進階保護」要求你重新啟動 Chrome，以套用更新。各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="5105120510934353742">如果之後要更新 Google Chrome，需使用 macOS 13 以上版本。這部電腦目前搭載的版本為 macOS 12。</translation>
 <translation id="5114340746415930644">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="USER_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
 <translation id="5120334927898581447">登入其他 Google 服務時一併登入 Chrome</translation>
@@ -475,6 +481,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">無法連線至網際網路。Proxy 伺服器需要驗證。</translation>
 <translation id="5709557627224531708">將 Chrome 設為預設瀏覽器</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{「進階保護」要求你重新啟動 Chrome，以套用更新。隔離視窗不會重新開啟。}other{「進階保護」要求你重新啟動 Chrome，以套用更新。# 個隔離視窗不會重新開啟。}}</translation>
 <translation id="5719246646468301581">Google Chrome 和 ChromeOS 的《附加服務條款》</translation>
 <translation id="5736850870166430177">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chrome 可能也會將網址 (包括部分網頁內容) 傳送至安全瀏覽功能</translation>
 <translation id="5742003800414899269">使用 Chrome 應用程式，隨時隨地運用最佳 AI 工具</translation>
@@ -502,6 +509,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5960404530854194706">Chrome 會在你離開時更新</translation>
 <translation id="5980111191913430208">來源不明的擴充功能、應用程式和主題可能會損害裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{系統管理員要求你重新啟動 Chrome，以套用更新。目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{系統管理員要求你重新啟動 Chrome，以套用更新。各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="6008161919456049856">你儲存在 Google 帳戶中的密碼、付款方式和地址將從這部裝置中移除。如要在 Chrome 中再次使用這些資料，請重新登入。</translation>
 <translation id="6009821354356307391">繼續提問</translation>
 <translation id="6014316319780893079">Chrome 提供<ph name="BEGIN_LINK" />各種實用工具<ph name="END_LINK" />，讓你放心瀏覽網路，掌控一切設定</translation>
@@ -674,6 +682,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{貴機構會在 Chrome 閒置 1 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}other{貴機構會在 Chrome 閒置 # 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}}</translation>
 <translation id="7466577301922356468">自動將這些資料傳送給 Google，協助改進 Chrome。你隨時可以變更這項設定。</translation>
 <translation id="7477130805345743099">在使用不安全的連線載入任何網站前，Chrome 會發出警告</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Chrome 有可用的更新，重新啟動後即可套用。隔離視窗不會重新開啟。}other{Chrome 有可用的更新，重新啟動後即可套用。# 個隔離視窗不會重新開啟。}}</translation>
 <translation id="7481213027396403996">獲得 Chrome 最強大的安全防護</translation>
 <translation id="749228101751499733">登入帳戶就能在 Chrome 中使用 Google 帳戶儲存的密碼和其他資訊。按下 <ph name="SHORTCUT" /> 可變更 Google 服務設定。</translation>
 <translation id="7496017508659652909">Chrome 會預先載入網頁，加快瀏覽與搜尋速度。<ph name="BEGIN_LINK" />進一步瞭解預先載入網頁功能<ph name="END_LINK" /></translation>
@@ -790,6 +799,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8380754585531979907">使用鍵盤在 Chrome 內建 Gemini 和開啟的分頁之間切換。</translation>
 <translation id="8387459386171870978">繼續使用 Chrome</translation>
 <translation id="8394720698884623075">可使用儲存在 Chrome 中的不安全網站清單檢查網址</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，目前有開啟無痕或隔離視窗。重新啟動後，這個視窗不會重新開啟。}other{Chrome 已完成更新。重新啟動後即可立即使用最新版本。屆時會重新開啟你目前的分頁，各設定檔中目前共開啟 # 個無痕和隔離視窗。重新啟動後，這些視窗不會重新開啟。}}</translation>
 <translation id="8403038600646341038">電腦螢幕畫面中的 Chrome 標誌。</translation>
 <translation id="8418845734693287262">你的帳戶登入詳細資料尚未更新，因此 Chrome OS 無法同步處理你的資料。</translation>
 <translation id="842386925677997438">Chrome 安全工具</translation>

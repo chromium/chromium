@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">بلدية</translation>
 <translation id="2059202684901022309">22 × 34 بوصة</translation>
 <translation id="2063929825539050431">يمكنك إرسال هذه الصفحة بسرعة إلى جهاز آخر عن طريق النقر مع الاستمرار على شريط العناوين</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{اقتراح واحد}zero{# اقتراح}two{اقتراحان (#)}few{# اقتراحات}many{# اقتراحًا}other{# اقتراح}}</translation>
 <translation id="2066969741541525119">تحظر مؤسستك الوصول إلى الموقع الإلكتروني الذي تحاول زيارته</translation>
 <translation id="2071156619270205202">رقم هذه البطاقة غير مؤهَّل للاستخدام كرقم بطاقة افتراضية.</translation>
 <translation id="2071852865256799872">تتولّى مؤسستك إدارة متصفِّحك، كما أنّ ملفك الشخصي يخضع لإدارة <ph name="PROFILE_DOMAIN" />.</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">عمل عدة ثقوب في الأسفل</translation>
 <translation id="218940509700321686">قيم مفصولة بفواصل</translation>
 <translation id="2190094353033916816">يتم تطبيق قيم مختلفة لهذه السياسة على مستوى الجهاز والمستخدم. وبالتالي، تعمل السياسة على النحو المطلوب.</translation>
-<translation id="219061769324072544">الائتمان،البطاقة،السحب الآلي</translation>
 <translation id="2191980191135734720">يمكنك فتح قفل الشاشة في الخطوة التالية، وعادةً ما يتم ذلك باستخدام بصمة إصبعك أو من خلال <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2195729137168608510">حماية البريد الإلكتروني</translation>
@@ -1865,7 +1863,6 @@
 <translation id="4121428309786185360">تاريخ انتهاء الصلاحية</translation>
 <translation id="4123572138124678573">عمل ثلاثة ثقوب بالأسفل</translation>
 <translation id="412601465078863288">انتهت مهلة التحميل</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{عنصر واحد آخر}zero{# عنصر آخر}two{عنصران آخران (#)}few{# عناصر أخرى}many{# عنصرًا آخر}other{# عنصر آخر}}</translation>
 <translation id="4129810348470013900">حدث خطأ. يُرجى التحقّق من الاتصال بالإنترنت ثم إعادة المحاولة.</translation>
 <translation id="4130226655945681476">التحقق من كابلات الشبكة، والمودم، وجهاز التوجيه</translation>
 <translation id="4132448310531350254">تم رصد أكثر من معالج لامتداد الملف "<ph name="FILE_EXTENSION" />" ضِمن التطبيقات التالية: "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3228,6 @@
 <translation id="638289054711715023">قصدير منكمش</translation>
 <translation id="6383221683286411806">رسوم محتملة في انتظارك.</translation>
 <translation id="6384448607821972818">تم عرض كلمة مرور الاسترداد</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{اقتراح واحد آخر}zero{# اقتراح آخر}two{اقتراحان آخران (#)}few{# اقتراحات أخرى}many{# اقتراحًا آخر}other{# اقتراح آخر}}</translation>
 <translation id="6386565501269869892">‏ظرف You 4</translation>
 <translation id="6387645831795005740">‏يحاكي المخترِقون أحيانًا المواقع الإلكترونية من خلال إجراء تغييرات بسيطة يصعب رؤيتها على عنوان URL.</translation>
 <translation id="6389470377220713856">الاسم المكتوب على البطاقة</translation>

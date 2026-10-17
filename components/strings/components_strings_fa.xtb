@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">شهرداری</translation>
 <translation id="2059202684901022309">۳۴ × ۲۲ اینچ</translation>
 <translation id="2063929825539050431">برای ارسال سریع این صفحه به دستگاهی دیگر، نوار نشانی را لمس کنید و نگه دارید</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{۱ پیشنهاد}one{# پیشنهاد}other{# پیشنهاد}}</translation>
 <translation id="2066969741541525119">سازمان شما سایت پیش‌رو را مسدود کرده است</translation>
 <translation id="2071156619270205202">این کارت برای شماره کارت مجازی واجدشرایط نیست.</translation>
 <translation id="2071852865256799872">مرورگرتان تحت مدیریت سازمانتان و نمایه‌تان تحت مدیریت <ph name="PROFILE_DOMAIN" /> است</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">چندین سوراخ در پایین</translation>
 <translation id="218940509700321686">مقادیر جداشده با کاما</translation>
 <translation id="2190094353033916816">این خط‌مشی مقادیر متفاوتی در سطح ماشین و کاربر دارد. خط‌مشی همان‌طور که درنظر گرفته شده است کار می‌کند.</translation>
-<translation id="219061769324072544">اعتباری،کارت،نقدی</translation>
 <translation id="2191980191135734720">در مرحله بعد، قفل صفحه را باز کنید که معمولاً بااستفاده از اثر انگشتتان انجام می‌شود. همچنین می‌توانید این کارها را انجام دهید:
     <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">مواردی که باید درنظر داشت</translation>
@@ -1083,6 +1081,7 @@
 <translation id="2807052079800581569">‏موقعیت Y تصویر</translation>
 <translation id="2808278141522721006">‏می‌توانید Windows Hello را در <ph name="SETTINGS" /> روشن یا خاموش کنید</translation>
 <translation id="2820957248982571256">درحال اسکن کردن…</translation>
+<translation id="282457273878278063">مدیریت اطلاعات تماس</translation>
 <translation id="2824775600643448204">نوار جستجو و آدرس</translation>
 <translation id="2826760142808435982">اتصال با استفاده از <ph name="CIPHER" /> رمزگذاری و راستی‌آزمایی شده است و از <ph name="KX" /> به عنوان مکانیسم تبادل کلید استفاده می‌کند.</translation>
 <translation id="2828797285817981634">حسگرهای حرکتی فعلاً مجاز هستند</translation>
@@ -1866,7 +1865,6 @@
 <translation id="4121428309786185360">تاریخ انقضا</translation>
 <translation id="4123572138124678573">سه سوراخ در پایین</translation>
 <translation id="412601465078863288">مهلت زمانی بارگذاری تمام شد</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{۱ مورد دیگر}one{# مورد دیگر}other{# مورد دیگر}}</translation>
 <translation id="4129810348470013900">مشکلی پیش آمد. اتصال اینترنت را بررسی کنید و دوباره امتحان کنید.</translation>
 <translation id="4130226655945681476">بررسی کابل‌های شبکه، مودم یا رهیاب</translation>
 <translation id="4132448310531350254">کنترل‌کننده تکراری برای پسوند فایل «<ph name="FILE_EXTENSION" />» که توسط برنامه‌های «<ph name="POLICY_IDS_LIST" />» ارجاع داده شده است.</translation>
@@ -3232,7 +3230,6 @@
 <translation id="638289054711715023">فویل شرینک</translation>
 <translation id="6383221683286411806">احتمالاً هزینه‌هایی اعمال می‌شود.</translation>
 <translation id="6384448607821972818">گذرواژه بازیابی نمایش داده شد</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{۱ پیشنهاد دیگر}one{# پیشنهاد دیگر}other{# پیشنهاد دیگر}}</translation>
 <translation id="6386565501269869892">پاکت یو ۴</translation>
 <translation id="6387645831795005740">گاهی اوقات مهاجمین با ایجاد تغییرات کوچک در نشانی وب که به‌آسانی دیده نمی‌شود، سایت‌ها را جعل می‌کنند.</translation>
 <translation id="6389470377220713856">نام روی کارت</translation>

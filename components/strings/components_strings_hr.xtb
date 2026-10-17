@@ -618,7 +618,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2059166748188874810">Općina</translation>
 <translation id="2059202684901022309">22 x 34 inča</translation>
 <translation id="2063929825539050431">Da biste ovu stranicu brzo poslali na drugi uređaj, dodirnite i zadržite adresnu traku</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 prijedlog}one{# prijedlog}few{# prijedloga}other{# prijedloga}}</translation>
 <translation id="2066969741541525119">Vaša organizacija blokirala je web-lokaciju koja slijedi</translation>
 <translation id="2071156619270205202">Ova kartica ne ispunjava kriterije za broj virtualne kartice.</translation>
 <translation id="2071852865256799872">Preglednikom upravlja vaša organizacija, a profilom upravlja <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2188375229972301266">Višestruko bušenje pri dnu</translation>
 <translation id="218940509700321686">Vrijednosti odvojene zarezima</translation>
 <translation id="2190094353033916816">To pravilo ima različite vrijednosti koje se primjenjuju na razini uređaja i korisnika. Pravilo funkcionira kako je predviđeno.</translation>
-<translation id="219061769324072544">Kreditna,Kartica,Debitna</translation>
 <translation id="2191980191135734720">U sljedećem koraku otključajte zaslon, obično pomoću otiska prsta. Dostupne su i sljedeće opcije: <ph name="LINK_TEXT" /></translation>
 <translation id="2194856509914051091">Važne napomene</translation>
 <translation id="2195729137168608510">Zaštita e-pošte</translation>
@@ -1082,6 +1080,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2807052079800581569">Y-položaj slike</translation>
 <translation id="2808278141522721006">Windows Hello možete uključiti ili isključiti u odjeljku <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Traženje...</translation>
+<translation id="282457273878278063">Upravljajte podacima za kontakt</translation>
 <translation id="2824775600643448204">Adresna traka i traka za pretraživanje</translation>
 <translation id="2826760142808435982">Veza je kriptirana i autentificirana šifrom <ph name="CIPHER" />, a <ph name="KX" /> služi za mehanizam razmjene ključeva.</translation>
 <translation id="2828797285817981634">Senzori kretanja zasad su dopušteni</translation>
@@ -1864,7 +1863,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4121428309786185360">Ističe</translation>
 <translation id="4123572138124678573">Trostruko bušenje pri dnu</translation>
 <translation id="412601465078863288">Prijenos je istekao</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 druga stavka}one{# druga stavka}few{# druge stavke}other{# drugih stavki}}</translation>
 <translation id="4129810348470013900">Nešto nije u redu. Provjerite internetsku vezu i pokušajte ponovno.</translation>
 <translation id="4130226655945681476">provjerite mrežne kabele, modem i usmjerivač</translation>
 <translation id="4132448310531350254">Duplicirani rukovatelji za datotečni nastavak <ph name="FILE_EXTENSION" /> navedeni u aplikacijama <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3230,7 +3228,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="638289054711715023">Folija za smanjivanje</translation>
 <translation id="6383221683286411806">Ako nastavite, moguća je naplata.</translation>
 <translation id="6384448607821972818">Prikazana je zaporka za oporavak</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 drugi prijedlog}one{# drugi prijedlog}few{# druga prijedloga}other{# drugih prijedloga}}</translation>
 <translation id="6386565501269869892">Omotnica You 4</translation>
 <translation id="6387645831795005740">Napadači ponekad oponašaju web-lokacije unošenjem malih, teško uočljivih promjena u URL.</translation>
 <translation id="6389470377220713856">Ime na kartici</translation>

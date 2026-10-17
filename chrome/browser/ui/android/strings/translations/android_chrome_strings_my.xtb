@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="1986685561493779662">အမည်မှာ ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="1992244793717364584">အက်ပ်ကို ဖြုတ်လိုက်သည်</translation>
+<translation id="1999115740519098545">အစပြုချိန်တွင်</translation>
 <translation id="200114059308480249">Google ရှာဖွေမှုများတွင် ဝန်းကျင်ရှိစာသားကို ထည့်သွင်းမလား။</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />၊ ပင်ထိုးထားသည့် အသံပိတ်ထားသော ရုပ်ဖျက်တဘ်</translation>
 <translation id="2021896219286479412">မျက်နှာပြင်အပြည့် ထိန်းချုပ်မှု</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">ဝဘ်ဆိုက် ခဏရပ်ထားသည်</translation>
 <translation id="2063047797624276601">သင့်အဖွဲ့အစည်းက ‘အရည်အသွေးမြှင့် ဘေးကင်းလုံခြုံသည့် အသုံးပြုမှု’ ကို ဖွင့်ထားသည်</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ}}</translation>
-<translation id="2066690553719545730">AI မုဒ်ကို အမြဲပြပါ</translation>
 <translation id="2067805253194386918">စာသား</translation>
 <translation id="2079545284768500474">တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="2082238445998314030">အဖြေ <ph name="RESULT_NUMBER" /> / <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Gemini ကို ပင်ဖြုတ်လိုက်သည်</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{စပမ်း (သို့) လှည့်ဖြားသည့် အကြောင်းအရာကြောင့် Chrome သည် ဤဝဘ်ဆိုက်ထံမှ အကြောင်းကြားချက် ပို့ခြင်းကို ပိတ်ပင်ထားသည်}other{စပမ်း (သို့) လှည့်ဖြားသည့် အကြောင်းအရာကြောင့် Chrome သည် ဤဝဘ်ဆိုက်များထံမှ အကြောင်းကြားချက် ပို့ခြင်းကို ပိတ်ပင်ထားသည်}}</translation>
 <translation id="4195643157523330669">တဘ်အသစ်တွင် ဖွင့်ရန်</translation>
+<translation id="4195814663415092787">သင်ချန်ထားသည့်နေရာမှ ဆက်မည်</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{ဤစက်ပေါ်ရှိ တဘ် ၁ ခု}other{ဤစက်ပေါ်ရှိ တဘ် # ခု}}</translation>
 <translation id="4198268995694216131">နောက်ထပ် ဝဘ်ဆိုက်များ</translation>
 <translation id="4198423547019359126">ဒေါင်းလုဒ်တည်နေရာ မရှိပါ</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">ဤစာမျက်နှာကို နားထောင်ရန်</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />၊ နှစ်ခုထပ်၍ ကြည့်ခြင်း ရုပ်ဖျက်တဘ် တစ်ခုထက်ပိုပြီး ရွေးထားသည်</translation>
 <translation id="4225895483398857530">ကိရိယာဘား ဖြတ်လမ်းလင့်ခ်</translation>
-<translation id="4232376164796433044">စကားဝှက်များ၊ အော်တိုဖြည့်ခြင်း</translation>
 <translation id="4242533952199664413">ဆက်တင်များကို ဖွင့်ရန်</translation>
 <translation id="424864128008805179">Chrome မှထွက်မလား။</translation>
 <translation id="425582637250725228">သင်ပြုလုပ်ခဲ့သည့် ပြောင်းလဲချက်များကို သိမ်းဆည်းမည်မဟုတ်ပါ။</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">လက်မှတ်ထိုးဝင်၍ မရပါ။</translation>
 <translation id="557018954714092179">ဖိုင်တွဲအသစ်ကို လုပ်ရန်</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" /> က ဒီပုံအတွက် ရှာဖွေနေ</translation>
+<translation id="558563010977877295">တိကျသည့် စာမျက်နှာ သို့မဟုတ် စာမျက်နှာအုပ်စုကို ဖွင့်ရန်</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5599455543593328020">ရုပ်ဖျက် မုဒ်</translation>
 <translation id="5601180634394228718">သင်၏ Chrome အသုံးပြုမှု ပိုကောင်းစေရန် ဒေတာအသုံးပြုသော နောက်ထပ်ဆက်တင်များအတွက် <ph name="BEGIN_LINK" />Google ဝန်ဆောင်မှုများ<ph name="END_LINK" /> သို့သွားပါ။</translation>

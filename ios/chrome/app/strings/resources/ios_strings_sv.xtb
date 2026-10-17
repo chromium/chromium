@@ -195,7 +195,6 @@
 <translation id="154312949627292154">Öppna flikar som du har fått från andra enheter från låsskärmen.</translation>
 <translation id="1544653821167545205">Sammanfatta sidan</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
-<translation id="1545757265410828525">Prishistorik</translation>
 <translation id="1547610699249301703">Dela lösenord</translation>
 <translation id="1554043146674176775">Inaktivera AI-läge</translation>
 <translation id="1554477036522844996">Nytt fönster</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">Du har redan sparat ett lösenord för <ph name="USERNAME" /> på <ph name="WEBSITE" /></translation>
 <translation id="2434918313224755415">Du kan scrolla åt vänster för att surfa inkognito.</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
-<translation id="2451607499823206582">Spårning</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} historikobjekt}other{{count} historikobjekt}}</translation>
 <translation id="2461070143328828326">Lösenordsinställningar</translation>
 <translation id="2462736546165239215">Du hittar all din webbhistorik här.</translation>
@@ -625,6 +623,7 @@
 <translation id="2870560284913253234">Webbplats</translation>
 <translation id="2876369937070532032">Webbadresser till vissa sidor som du besöker skickas till Google när din säkerhet är utsatt för risk.</translation>
 <translation id="2883151425485251736">Se och redigera ämnen som har dolts i kontot</translation>
+<translation id="2884437560239137197">Åtgärder krävs</translation>
 <translation id="288655811176831528">Stäng fliken</translation>
 <translation id="2888631381369839306">Aviseringar om prisbevakning har aktiverats</translation>
 <translation id="2893168226686371498">Standardwebbläsare</translation>
@@ -1466,6 +1465,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="559567008082979829">Ställ in att dina nedladdningar ska raderas efter en månad.</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="560322036295180549">Inaktiverat av organisationen</translation>
+<translation id="5604254791550001355">Redigera prompt</translation>
 <translation id="5611398002774823980">Spara i kontot</translation>
 <translation id="5612225021788368236">Stäng kampanj för standardwebbläsare</translation>
 <translation id="561269594905823128">Tryck på <ph name="BEGIN_BOLD" />Välj fil<ph name="END_BOLD" /></translation>
@@ -1531,7 +1531,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5768870767339201169">Fortsätt där du slutade</translation>
 <translation id="5779117921996157216">{count,plural, =1{Du har {count} utsatt lösenord som kan innebära en säkerhetsrisk. Åtgärda det nu för att hålla dig säker.}other{Du har {count} utsatta lösenord som kan innebära en säkerhetsrisk. Åtgärda dem nu för att hålla dig säker.}}</translation>
 <translation id="5791632441210678828">Knappen Sortera för flödet Följer.</translation>
-<translation id="5799263916847593256">Öppna för att se prishistorik</translation>
 <translation id="5801568494490449797">Inställningar</translation>
 <translation id="5803566855766646066">Vill du slänga det här nya kortet?</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
@@ -1669,6 +1668,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6227958838185907047">Logga in som <ph name="NAME" /> <ph name="EMAIL" /></translation>
 <translation id="6231782223312638214">Förslag</translation>
 <translation id="6232329973559504466">Inkognitosökning</translation>
+<translation id="6233463157595806945">Input krävs</translation>
 <translation id="6234310016144827337">Kontrollera anslutningen och försök igen</translation>
 <translation id="6236952928980352967">Återställ varning</translation>
 <translation id="623755660902014047">Läsläge</translation>
@@ -1699,6 +1699,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6307792728709337290">Spara kortet i Google-kontot för att autofylla det för det här köpet och framtida köp i Chrome.</translation>
 <translation id="6316141353357700666">Välj det lösenord du vill använda i listan som visas.</translation>
 <translation id="6321526113093607004">Lägg till i bokmärken</translation>
+<translation id="6322064144568952786">Uppgiften misslyckades</translation>
 <translation id="6324054713176642683">Välj bland teman och färger eller ladda upp ett eget foto.</translation>
 <translation id="6327249202318869726">Gemini har inaktiverats för ditt konto. Kontakta administratören om du vill ha mer information.</translation>
 <translation id="6331836477476466332">En säkrare och kraftfullare webbläsare för dig</translation>
@@ -1881,7 +1882,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6815692190508268848">Dina utseendeinställningar har tillämpats</translation>
 <translation id="681631578600400068">Spara körkortet</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmärket har sparats i ditt Google-konto, {email}}other{{count} bokmärken har sparats i ditt Google-konto, {email}}}</translation>
-<translation id="6826004672264649705">Bevakar för närvarande den här produkten. Öppna för att se prishistorik</translation>
 <translation id="6830728435402077660">Inte säkert</translation>
 <translation id="6831043979455480757">Översätt</translation>
 <translation id="6842136130964845393">Verifiera din identitet så att du alltid får åtkomst till dina sparade lösenord</translation>
@@ -2016,6 +2016,7 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="7241135764990439166">Inkognitoläget är inte tillgängligt</translation>
 <translation id="7245288034498365666">Få ordning och spara tid</translation>
 <translation id="7253951228444156601">Kontrollerar lösenord …</translation>
+<translation id="725583671816239562">Uppgiften har slutförts</translation>
 <translation id="7261217796641151584">Dela grupp</translation>
 <translation id="7266578100016339897">Detta hjälper dig att hålla ordning. Du kan ändra detta i inställningarna när som helst.</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Googles villkor<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />integritetsmeddelandet för Gemini-apparna<ph name="END_LINK" /> gäller. Gemini är AI och den kan göra misstag, inklusive om personer.</translation>
@@ -2177,6 +2178,7 @@ Du kan starta om när som helst.</translation>
 <translation id="7758789811447313947">Lila tema</translation>
 <translation id="7759809451544302770">Valfritt</translation>
 <translation id="7765158879357617694">Flytta</translation>
+<translation id="7767651976342854115">Ett fel uppstod i inställningen för dataanvändning.</translation>
 <translation id="7768507955883790804">Webbplatser som du besöker följer automatiskt den här inställningen</translation>
 <translation id="7772032839648071052">Bekräfta lösenfras</translation>
 <translation id="7772948288262733182">Välkommen tillbaka</translation>

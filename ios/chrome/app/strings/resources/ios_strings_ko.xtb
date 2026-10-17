@@ -195,7 +195,6 @@
 <translation id="154312949627292154">다른 기기에서 받은 탭을 잠금 화면에서 엽니다.</translation>
 <translation id="1544653821167545205">페이지 요약</translation>
 <translation id="1545749641540134597">QR 코드 스캔</translation>
-<translation id="1545757265410828525">가격 변동 내역</translation>
 <translation id="1547610699249301703">비밀번호 공유</translation>
 <translation id="1554043146674176775">AI 모드 사용 중지</translation>
 <translation id="1554477036522844996">새 창</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816"><ph name="USERNAME" />님의 <ph name="WEBSITE" /> 비밀번호는 이미 저장되어 있습니다.</translation>
 <translation id="2434918313224755415">왼쪽으로 스크롤하여 시크릿 모드에서 탐색할 수 있습니다.</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
-<translation id="2451607499823206582">추적</translation>
 <translation id="2458827363789845126">{count,plural, =1{방문 기록 항목 {count}개}other{방문 기록 항목 {count}개}}</translation>
 <translation id="2461070143328828326">비밀번호 설정</translation>
 <translation id="2462736546165239215">여기에서 모든 방문 기록을 확인할 수 있습니다.</translation>
@@ -625,6 +623,7 @@
 <translation id="2870560284913253234">사이트</translation>
 <translation id="2876369937070532032">보안상의 위험이 있을 때 일부 방문 페이지의 URL을 Google로 전송합니다.</translation>
 <translation id="2883151425485251736">계정에서 숨긴 주제 확인 및 수정</translation>
+<translation id="2884437560239137197">주의 필요</translation>
 <translation id="288655811176831528">탭 닫기</translation>
 <translation id="2888631381369839306">가격 추적 알림이 사용 설정됨</translation>
 <translation id="2893168226686371498">기본 브라우저</translation>
@@ -1466,6 +1465,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="559567008082979829">다운로드한 파일이 1개월 후에 삭제되도록 설정합니다.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="560322036295180549">조직에서 사용 중지했습니다.</translation>
+<translation id="5604254791550001355">프롬프트 수정</translation>
 <translation id="5611398002774823980">계정에 저장</translation>
 <translation id="5612225021788368236">기본 브라우저 프로모션 닫기</translation>
 <translation id="561269594905823128"><ph name="BEGIN_BOLD" />파일 선택<ph name="END_BOLD" />을 탭합니다.</translation>
@@ -1531,7 +1531,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5768870767339201169">중단한 지점부터 다시 시작하세요</translation>
 <translation id="5779117921996157216">{count,plural, =1{유출된 비밀번호가 {count}개 있어서 보안을 위협할 수 있습니다. 안전을 위해 지금 문제를 해결하세요.}other{유출된 비밀번호가 {count}개 있어서 보안을 위협할 수 있습니다. 안전을 위해 지금 문제를 해결하세요.}}</translation>
 <translation id="5791632441210678828">팔로우 피드의 정렬 버튼.</translation>
-<translation id="5799263916847593256">가격 변동 내역을 보려면 여세요.</translation>
 <translation id="5801568494490449797">환경설정</translation>
 <translation id="5803566855766646066">새 카드를 삭제하시겠습니까?</translation>
 <translation id="5804241973901381774">권한</translation>
@@ -1669,6 +1668,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6227958838185907047"><ph name="NAME" /> <ph name="EMAIL" />(으)로 로그인</translation>
 <translation id="6231782223312638214">추천</translation>
 <translation id="6232329973559504466">시크릿 검색</translation>
+<translation id="6233463157595806945">입력 필요</translation>
 <translation id="6234310016144827337">연결 상태를 확인한 후 다시 시도하세요.</translation>
 <translation id="6236952928980352967">경고 복원</translation>
 <translation id="623755660902014047">읽기 모드</translation>
@@ -1699,6 +1699,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6307792728709337290">Google 계정에 카드를 저장하면 이번 구매는 물론, 향후 Chrome에서 구매 시에도 카드 정보가 자동으로 완성됩니다.</translation>
 <translation id="6316141353357700666">표시되는 목록에서 사용할 비밀번호를 선택합니다.</translation>
 <translation id="6321526113093607004">북마크에 추가</translation>
+<translation id="6322064144568952786">작업 실패</translation>
 <translation id="6324054713176642683">테마, 색상 중에서 선택하거나 직접 사진을 업로드하세요.</translation>
 <translation id="6327249202318869726">계정에서 Gemini가 사용 중지되었습니다. 자세한 내용은 관리자에게 문의하세요.</translation>
 <translation id="6331836477476466332">더 안전하고 강력한 브라우저</translation>
@@ -1881,7 +1882,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6815692190508268848">모양 환경설정이 적용되었습니다.</translation>
 <translation id="681631578600400068">운전면허증 저장</translation>
 <translation id="6825078212112407882">{count,plural, =1{북마크가 Google 계정({email})에 저장되었습니다.}other{북마크 {count}개가 Google 계정({email})에 저장되었습니다.}}</translation>
-<translation id="6826004672264649705">현재 이 제품을 추적 중입니다. 가격 변동 내역을 보려면 여세요.</translation>
 <translation id="6830728435402077660">안전하지 않음</translation>
 <translation id="6831043979455480757">번역</translation>
 <translation id="6842136130964845393">저장된 비밀번호에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
@@ -2016,6 +2016,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7241135764990439166">시크릿 모드를 사용할 수 없음</translation>
 <translation id="7245288034498365666">정리 및 시간 절약</translation>
 <translation id="7253951228444156601">비밀번호 확인 중…</translation>
+<translation id="725583671816239562">작업 완료</translation>
 <translation id="7261217796641151584">그룹 공유</translation>
 <translation id="7266578100016339897">이렇게 하면 정리 상태를 유지할 수 있습니다. 설정에서 언제든지 변경할 수 있습니다</translation>
 <translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google 약관<ph name="END_LINK" /> 및 <ph name="BEGIN_LINK" />Gemini 앱 개인정보처리방침<ph name="END_LINK" />이 적용됩니다. Gemini는 AI이며 인물 등에 관한 정보 제공 시 실수를 할 수 있습니다.</translation>

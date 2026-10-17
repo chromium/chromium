@@ -618,7 +618,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2059166748188874810">Samosprávná oblast</translation>
 <translation id="2059202684901022309">22 × 34 palců</translation>
 <translation id="2063929825539050431">Podržením adresního řádku můžete tuto stránku rychle odeslat do jiného zařízení</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 návrh}few{# návrhy}many{# návrhu}other{# návrhů}}</translation>
 <translation id="2066969741541525119">Web, na který se pokoušíte přejít, je vaší organizací blokován</translation>
 <translation id="2071156619270205202">Tato karta není pro číslo virtuální karty vhodná.</translation>
 <translation id="2071852865256799872">Váš prohlížeč spravuje vaše organizace a váš profil spravuje doména <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2188375229972301266">Několik děr dole</translation>
 <translation id="218940509700321686">Hodnoty oddělené čárkami</translation>
 <translation id="2190094353033916816">Toto nastavení zásad má na úrovni počítače a na úrovni uživatele různou hodnotu. Toto nastavení zásad funguje správně.</translation>
-<translation id="219061769324072544">Kreditní,Karta,Debetní</translation>
 <translation id="2191980191135734720">V dalším kroku odemkněte obrazovku, obvykle otiskem prstu. Nebo můžete <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Co je třeba zvážit</translation>
 <translation id="2195729137168608510">Ochrana e-mailu</translation>
@@ -1082,6 +1080,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2807052079800581569">Pozice obrázku na ose Y</translation>
 <translation id="2808278141522721006">Windows Hello můžete zapnout nebo vypnout v <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Vyhledávání...</translation>
+<translation id="282457273878278063">Spravovat kontaktní údaje</translation>
 <translation id="2824775600643448204">Adresní a vyhledávací řádek</translation>
 <translation id="2826760142808435982">Připojení je šifrováno a ověřeno pomocí šifry <ph name="CIPHER" /> a jako mechanismus výměny klíčů používá <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Senzory pohybu jsou pro tentokrát povoleny</translation>
@@ -1861,7 +1860,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4121428309786185360">Konec platnosti</translation>
 <translation id="4123572138124678573">Tři otvory dole</translation>
 <translation id="412601465078863288">Časový limit nahrávání vypršel</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 další}few{# další}many{# další}other{# dalších}}</translation>
 <translation id="4129810348470013900">Něco se pokazilo. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="4130226655945681476">Zkontrolovat síťové kabely, modem a směrovač</translation>
 <translation id="4132448310531350254">Aplikace <ph name="POLICY_IDS_LIST" /> odkazují na duplicitní obslužné nástroje pro příponu souboru <ph name="FILE_EXTENSION" />.</translation>
@@ -3226,7 +3224,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="638289054711715023">Smršťovací fólie</translation>
 <translation id="6383221683286411806">Pozor na možné poplatky na webu, který se chystáte navštívit</translation>
 <translation id="6384448607821972818">Je zobrazeno heslo pro obnovení</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 další návrh}few{# další návrhy}many{# dalšího návrhu}other{# dalších návrhů}}</translation>
 <translation id="6386565501269869892">Obálka You 4</translation>
 <translation id="6387645831795005740">Útočníci někdy weby napodobují tak, že v adrese URL provádějí drobné, obtížně odhalitelné změny.</translation>
 <translation id="6389470377220713856">Jméno na kartě</translation>

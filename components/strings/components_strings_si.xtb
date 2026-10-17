@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">නගර සභාව</translation>
 <translation id="2059202684901022309">අඟ 22 x 34</translation>
 <translation id="2063929825539050431">මෙම පිටුව ඉක්මනින් වෙනත් උපාංගයකට යැවීමට, ලිපින තීරුව ස්පර්ශ කර අල්ලාගෙන සිටින්න</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{යෝජනා 1}one{යෝජනා #}other{යෝජනා #}}</translation>
 <translation id="2066969741541525119">ඉදිරි අඩවිය ඔබේ සංවිධානය විසින් අවහිර කර ඇත</translation>
 <translation id="2071156619270205202">මෙම කාඩ්පත අතථ්‍ය කාඩ්පත් අංකයකට සුදුසුකම් නොලබයි.</translation>
 <translation id="2071852865256799872">ඔබේ බ්‍රවුසර කළමනා කරනු ලබන්නේ ඔබේ සංවිධානය විසිනි, ඔබේ පැතිකඩ කළමනා කරනු ලබන්නේ <ph name="PROFILE_DOMAIN" /> විසිනි</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">පහළට ඇනීම් බොහොමයක්</translation>
 <translation id="218940509700321686">කොමාවෙන් වෙන් කළ අගයන්</translation>
 <translation id="2190094353033916816">මෙම ප්‍රතිපත්තියට යන්ත්‍ර සහ පරිශීලක මට්ටම්වල යෙදෙන විවිධ අගයන් ඇත. ප්‍රතිපත්තිය අපේක්ෂිත පරිදි ක්‍රියා කරයි.</translation>
-<translation id="219061769324072544">ණය,කාඩ්පත,හර</translation>
 <translation id="2191980191135734720">මීළඟ පියවරේ දී, සාමාන්‍යයෙන් ඔබේ ඇඟිලි සලකුණ භාවිතයෙන් ඔබේ තිරය අගුළු හරින්න. ඔබට <ph name="LINK_TEXT" /> ද කළ හැක.</translation>
 <translation id="2194856509914051091">සලකා බැලිය යුතු කරුණු</translation>
 <translation id="2195729137168608510">ඊමේල් ආරක්ෂාව</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">රූපය Y ස්ථානය</translation>
 <translation id="2808278141522721006">ඔබට <ph name="SETTINGS" /> තුළ Windows Hello ක්‍රියාත්මක හෝ ක්‍රියා විරහිත කළ හැක</translation>
 <translation id="2820957248982571256">ස්කෑන් කරමින්...</translation>
+<translation id="282457273878278063">සම්බන්ධතා තතු කළමනාකරණය කරන්න</translation>
 <translation id="2824775600643448204">ලිපිනය සහ සෙවීම් බාර් එක</translation>
 <translation id="2826760142808435982">සම්බන්ධතාවය සංකේතනය කර <ph name="CIPHER" /> භාවිතයෙන් සත්‍යාපනය කර ඇති අතර කේත හුවමාරු ක්‍රමවේදය ලෙස <ph name="KX" /> භාවිතා කරයි.</translation>
 <translation id="2828797285817981634">චලන සංවේදකවලට දැනට ඉඩ දී ඇත</translation>
@@ -1865,7 +1864,6 @@
 <translation id="4121428309786185360">මෙදින කල්ඉකුත් වේ</translation>
 <translation id="4123572138124678573">පහළට තුන්වරක් අනින්න</translation>
 <translation id="412601465078863288">උඩුගත කිරීමේ කාලය නිමා විය</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{වෙනත් 1}one{වෙනත් #}other{වෙනත් #}}</translation>
 <translation id="4129810348470013900">යමක් වැරදී ඇත. ඔබේ අන්තර්ජාල සබැඳුම පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="4130226655945681476">ජාල කේබල, මොඩමය, සහ රවුටරය පරීක්ෂා කරමින්</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" යෙදුම් මගින් යොමු කරන ලද "<ph name="FILE_EXTENSION" />" file_extension සඳහා අනුපත් හසුරු.</translation>
@@ -3231,7 +3229,6 @@
 <translation id="638289054711715023">ලෝපත් හැකිළීම</translation>
 <translation id="6383221683286411806">ඉදිරියට තිබිය හැකි ගාස්තු.</translation>
 <translation id="6384448607821972818">ප්‍රතිසාධන මුරපදය පෙන්වා ඇත</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{වෙනත් යෝජනා 1}one{වෙනත් යෝජනා #}other{වෙනත් යෝජනාවන් #}}</translation>
 <translation id="6386565501269869892">ලියුම් කවරය ඔබ 4</translation>
 <translation id="6387645831795005740">ප්‍රහාරකයින් සමහර විට URL වෙත කුඩා, බැලීමට අපහසු වෙනස්කම් කිරීමෙන් වෙබ් අඩවි අනුකරණය කරයි.</translation>
 <translation id="6389470377220713856">කාඩ්පතෙහි ඇති නම</translation>

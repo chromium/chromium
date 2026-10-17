@@ -618,7 +618,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2059166748188874810">Vald</translation>
 <translation id="2059202684901022309">22 × 34 tolli</translation>
 <translation id="2063929825539050431">Selle lehe kiireks saatmiseks teise seadmesse puudutage pikalt aadressiriba</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 soovitus}other{# soovitust}}</translation>
 <translation id="2066969741541525119">Teie organisatsioon on selle saidi blokeerinud</translation>
 <translation id="2071156619270205202">Seda kaarti ei saa virtuaalkaardi numbrina kasutada.</translation>
 <translation id="2071852865256799872">Teie brauserit haldab teie organisatsioon ja teie profiili haldab <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2188375229972301266">Mitu auku all</translation>
 <translation id="218940509700321686">Komaeraldusega väärtused</translation>
 <translation id="2190094353033916816">Sellel reeglil on seadme ja kasutaja tasemel erinevad väärtused. Reegel toimib eelduspäraselt.</translation>
-<translation id="219061769324072544">Krediit,kaart,deebet</translation>
 <translation id="2191980191135734720">Järgmises etapis avage ekraani lukust (tavaliselt sõrmejälje abil). Võite ka <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Olulised aspektid</translation>
 <translation id="2195729137168608510">Meilikaitse</translation>
@@ -1082,6 +1080,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2807052079800581569">Pildi asend Y-teljel</translation>
 <translation id="2808278141522721006">Jaotises <ph name="SETTINGS" /> saate Windows Hello sisse ja välja lülitada</translation>
 <translation id="2820957248982571256">Skannimine …</translation>
+<translation id="282457273878278063">Kontaktteabe haldamine</translation>
 <translation id="2824775600643448204">Aadressi- ja otsinguriba</translation>
 <translation id="2826760142808435982">Ühendus on krüptitud ja autenditud üksusega <ph name="CIPHER" /> ning kasutab peamise vahetusmehhanismina üksust <ph name="KX" />.</translation>
 <translation id="2828797285817981634">Liikumisandurid on praegu lubatud</translation>
@@ -1865,7 +1864,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="4121428309786185360">Aegumiskuupäev</translation>
 <translation id="4123572138124678573">Kolm auku all</translation>
 <translation id="412601465078863288">Üleslaadimine aegus</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{veel 1}other{veel #}}</translation>
 <translation id="4129810348470013900">Midagi läks valesti. Kontrollige internetiühendust ja proovige uuesti.</translation>
 <translation id="4130226655945681476">Kontrollige võrgukaableid, modemit ja ruuterit</translation>
 <translation id="4132448310531350254">Failinimelaienduse „<ph name="FILE_EXTENSION" />“ töötlejaks on määratud mitu rakendust: „<ph name="POLICY_IDS_LIST" />“.</translation>
@@ -3231,7 +3229,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="638289054711715023">Termokahanev kile</translation>
 <translation id="6383221683286411806">Jätkamisega võivad kaasneda tasud.</translation>
 <translation id="6384448607821972818">Kuvati taastamise parool.</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{veel 1 soovitus}other{veel # soovitust}}</translation>
 <translation id="6386565501269869892">Ümbrik You 4</translation>
 <translation id="6387645831795005740">Ründajad imiteerivad mõnikord saite, tehes URL-is väikeseid raskestimärgatavaid muudatusi.</translation>
 <translation id="6389470377220713856">Nimi kaardil</translation>

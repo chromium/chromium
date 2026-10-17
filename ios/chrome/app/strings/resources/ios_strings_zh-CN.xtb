@@ -195,7 +195,6 @@
 <translation id="154312949627292154">在锁屏状态下打开从其他设备接收的标签页。</translation>
 <translation id="1544653821167545205">总结页面内容</translation>
 <translation id="1545749641540134597">扫描二维码</translation>
-<translation id="1545757265410828525">既往价格</translation>
 <translation id="1547610699249301703">分享密码</translation>
 <translation id="1554043146674176775">关闭 AI 模式</translation>
 <translation id="1554477036522844996">打开新的窗口</translation>
@@ -485,7 +484,6 @@
 <translation id="2434405374328098816">您已经在 <ph name="WEBSITE" /> 上保存了“<ph name="USERNAME" />”的密码</translation>
 <translation id="2434918313224755415">向左滚动即可在无痕模式下浏览内容。</translation>
 <translation id="2435457462613246316">显示密码</translation>
-<translation id="2451607499823206582">正在跟踪</translation>
 <translation id="2458827363789845126">{count,plural, =1{{count} 项历史记录}other{{count} 项历史记录}}</translation>
 <translation id="2461070143328828326">密码设置</translation>
 <translation id="2462736546165239215">您可在此处找到您的所有浏览记录。</translation>
@@ -625,6 +623,7 @@
 <translation id="2870560284913253234">网站</translation>
 <translation id="2876369937070532032">当您面临安全风险时，将您所访问的部分网页的网址发送给 Google</translation>
 <translation id="2883151425485251736">查看和修改您已在账号中设为隐藏的主题</translation>
+<translation id="2884437560239137197">需要注意</translation>
 <translation id="288655811176831528">关闭标签页</translation>
 <translation id="2888631381369839306">已开启价格跟踪通知</translation>
 <translation id="2893168226686371498">默认浏览器</translation>
@@ -1466,6 +1465,7 @@
 <translation id="559567008082979829">设置为在一个月后自动删除下载内容。</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="560322036295180549">已被贵组织关闭</translation>
+<translation id="5604254791550001355">修改提示</translation>
 <translation id="5611398002774823980">保存到账号</translation>
 <translation id="5612225021788368236">关闭默认浏览器宣传内容</translation>
 <translation id="561269594905823128">点按<ph name="BEGIN_BOLD" />选择文件<ph name="END_BOLD" /></translation>
@@ -1531,7 +1531,6 @@
 <translation id="5768870767339201169">无缝衔接之前的进度</translation>
 <translation id="5779117921996157216">{count,plural, =1{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}other{您有 {count} 个已泄露的密码，这可能会给您带来安全风险。请立即修改以确保安全。}}</translation>
 <translation id="5791632441210678828">用于对所关注 Feed 进行排序的按钮。</translation>
-<translation id="5799263916847593256">打开即可查看价格历史记录</translation>
 <translation id="5801568494490449797">偏好设置</translation>
 <translation id="5803566855766646066">确定要舍弃这张新信用卡吗？</translation>
 <translation id="5804241973901381774">权限</translation>
@@ -1669,6 +1668,7 @@
 <translation id="6227958838185907047">以<ph name="NAME" /> (<ph name="EMAIL" />) 的身份登录</translation>
 <translation id="6231782223312638214">建议</translation>
 <translation id="6232329973559504466">无痕搜索</translation>
+<translation id="6233463157595806945">需要输入内容</translation>
 <translation id="6234310016144827337">请检查网络连接，然后重试</translation>
 <translation id="6236952928980352967">恢复警告</translation>
 <translation id="623755660902014047">朗读模式</translation>
@@ -1699,6 +1699,7 @@
 <translation id="6307792728709337290">将卡片保存至 Google 账号，以便在本次及日后使用 Chrome 购物时自动填充信息。</translation>
 <translation id="6316141353357700666">从显示的列表中选择要使用的密码。</translation>
 <translation id="6321526113093607004">添加到书签</translation>
+<translation id="6322064144568952786">任务失败</translation>
 <translation id="6324054713176642683">选择主题、颜色，或上传自己的照片。</translation>
 <translation id="6327249202318869726">您的账号已停用 Gemini。如需了解详情，请与管理员联系。</translation>
 <translation id="6331836477476466332">更安全、更强大的浏览器</translation>
@@ -1881,7 +1882,6 @@
 <translation id="6815692190508268848">已应用外观偏好设置</translation>
 <translation id="681631578600400068">保存驾照信息</translation>
 <translation id="6825078212112407882">{count,plural, =1{书签已保存到您的 Google 账号 {email}}other{{count} 个书签已保存到您的 Google 账号 {email}}}</translation>
-<translation id="6826004672264649705">正在跟踪此商品。打开即可查看价格历史记录</translation>
 <translation id="6830728435402077660">不安全</translation>
 <translation id="6831043979455480757">翻译</translation>
 <translation id="6842136130964845393">若要确保您能随时访问自己的已保存密码，请验证是您本人在操作</translation>
@@ -2016,6 +2016,7 @@
 <translation id="7241135764990439166">无痕模式不可用</translation>
 <translation id="7245288034498365666">保持井井有条，省时省力</translation>
 <translation id="7253951228444156601">正在检查密码…</translation>
+<translation id="725583671816239562">任务处理完成</translation>
 <translation id="7261217796641151584">共享分组</translation>
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
 <translation id="7270491814777319521">须遵守<ph name="BEGIN_LINK" />《Google 条款》<ph name="END_LINK" />和<ph name="BEGIN_LINK" />《Gemini 应用隐私权声明》<ph name="END_LINK" />。Gemini 是一款 AI 工具，可能会出现错误（包括与人相关的信息）。</translation>

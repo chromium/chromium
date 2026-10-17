@@ -618,7 +618,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2059166748188874810">Komunë</translation>
 <translation id="2059202684901022309">22 x 34 inç</translation>
 <translation id="2063929825539050431">Për ta dërguar me shpejtësi këtë faqe në një pajisje tjetër, prek dhe mbaj shtypur shiritin e adresave</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 sugjerim}other{# sugjerime}}</translation>
 <translation id="2066969741541525119">Sajti ku je drejtuar është bllokuar nga organizata jote</translation>
 <translation id="2071156619270205202">Kjo kartë nuk është e përshtatshme për numrin e kartës virtuale.</translation>
 <translation id="2071852865256799872">Shfletuesi yt menaxhohet nga organizata jote dhe profili yt menaxhohet nga <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2188375229972301266">Shumë shpime poshtë</translation>
 <translation id="218940509700321686">Vlera të ndara me presje</translation>
 <translation id="2190094353033916816">Kjo politikë ka vlera të ndryshme të zbatuara në nivelin e makinës dhe të përdoruesit. Politika po funksionon siç pritet.</translation>
-<translation id="219061769324072544">Kredit,Kartë,Debit</translation>
 <translation id="2191980191135734720">Shkyç ekranin në hapin tjetër, zakonisht duke përdorur gjurmën tënde të gishtit. Gjithashtu, mund <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2195729137168608510">Mbrojtja e mail-it</translation>
@@ -1082,6 +1080,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2807052079800581569">Pozicioni i imazhit në boshtin Y</translation>
 <translation id="2808278141522721006">Mund ta aktivizosh ose çaktivizosh Windows Hello te "<ph name="SETTINGS" />"</translation>
 <translation id="2820957248982571256">Po skanon...</translation>
+<translation id="282457273878278063">Menaxho informacionet e kontaktit</translation>
 <translation id="2824775600643448204">Shiriti i adresës dhe i kërkimit</translation>
 <translation id="2826760142808435982">Lidhja është e enkriptuar dhe e vërtetuar me <ph name="CIPHER" /> dhe përdor <ph name="KX" /> si mekanizëm kryesor shkëmbimi.</translation>
 <translation id="2828797285817981634">Sensorët e lëvizjes lejohen për momentin</translation>
@@ -1865,7 +1864,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4121428309786185360">Skadon në</translation>
 <translation id="4123572138124678573">Tri shpime poshtë</translation>
 <translation id="412601465078863288">Koha e ngarkimit skadoi</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 tjetër}other{# të tjerë}}</translation>
 <translation id="4129810348470013900">Ndodhi një gabim. Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="4130226655945681476">Të kontrollosh kabllot e rrjetit, modemin dhe router-in</translation>
 <translation id="4132448310531350254">Përpunues dublikatë për file_extension "<ph name="FILE_EXTENSION" />" që i referohen aplikacionet "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3230,7 +3228,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="638289054711715023">Letër alumini për mbështjellje</translation>
 <translation id="6383221683286411806">Tarifime të mundshme përpara.</translation>
 <translation id="6384448607821972818">Fjalëkalimi i rikuperimit është shfaqur</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 sugjerim tjetër}other{# sugjerime të tjera}}</translation>
 <translation id="6386565501269869892">Zarf You 4</translation>
 <translation id="6387645831795005740">Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek URL-ja ndryshime të vogla që janë të vështira për t'u shikuar.</translation>
 <translation id="6389470377220713856">Emri në kartë</translation>

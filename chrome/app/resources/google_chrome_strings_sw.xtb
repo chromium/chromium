@@ -49,6 +49,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya.}=1{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya. Dirisha lako fiche halitafunguka upya.}other{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya zaidi mara tu utakapofungua tena. Baada ya hapo, vichupo vya sasa vitafunguka upya. Madirisha fiche yako # hayatafunguka upya.}}</translation>
 <translation id="1434626383986940139">Programu za Chrome Canary</translation>
 <translation id="1439793550875056299">Bandika Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Msimamizi wako anakuhitaji ufungue Chrome tena ili utumie sasisho. Dirisha lako Huru halitafunguka upya.}other{Msimamizi wako anakuhitaji ufungue Chrome tena ili utumie sasisho. Madirisha yako # Huru hayatafunguka upya.}}</translation>
 <translation id="146866447420868597">Ungependa kuingia kwenye Chrome?</translation>
 <translation id="1476347941828409626">Dhibiti Wasifu kwenye Chrome</translation>
 <translation id="1492280395845991349">Fungua tena ili umalize kusasisha Chrome</translation>
@@ -273,6 +274,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="345171907106878721">Jiongeze kwenye Chrome</translation>
 <translation id="3453763134178591239">Sheria na masharti ya Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="3475778264501649775">Pata manenosiri, vichupo na zaidi popote ulipo ukitumia programu ya Chrome kwenye simu yako</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Msimamizi wako anakuomba ufungue Chrome tena ili utumie sasisho hili. Dirisha lako Huru halitafunguka upya.}other{Msimamizi wako anakuomba ufungue Chrome tena ili utumie sasisho hili. Madirisha yako # Huru hayatafunguka upya.}}</translation>
 <translation id="3539955434060988644">Fungua kiungo katika Dirisha la Faraghani la Chrome</translation>
 <translation id="354621070532799440">Kikumbusho: Vipengele bora vya usalama vya Google kiganjani mwako</translation>
 <translation id="3547866758548131919">Ruhusu Gemini kwenye Chrome ifikie hati hii kwa kubofya kitufe cha Andaa muhtasari ili upate muhtasari wa haraka na uulize maswali ya nyongeza</translation>
@@ -288,12 +290,15 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="3622797965165704966">Sasa ni rahisi zaidi kutumia Chrome pamoja na Akaunti yako ya Google na kwenye kompyuta zinazoshirikiwa.</translation>
 <translation id="3628103251823745322">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />. Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti ya Chrome kwenye wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />. Pia utapata taarifa zako zilizohifadhiwa na zaidi kwenye vifaa vyako vyote.</translation>
 <translation id="3635073343384702370">Chrome inaweza kukagua manenosiri yako unapoyahifadhi</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya kabisa pindi utakapoifungua tena. Baada ya hapo, vichupo vyako vya sasa vitafunguka upya. Dirisha lako Huru halitafunguka upya.}other{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya kabisa pindi utakapoifungua tena. Baada ya hapo, vichupo vyako vya sasa vitafunguka upya. Madirisha yako # Huru hayatafunguka upya.}}</translation>
 <translation id="3636970668267555808">Weka Chrome iwe kivinjari chako chaguomsingi ili upate uwezo wa kufikia kwa urahisi vipengele unavyovifahamu, unavyopenda na unavyoamini.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Msimamizi wako anakuomba ufungue Chrome tena ili utumie sasisho hili. Kuna dirisha Huru au la Faraghani lililofunguliwa. Halitafunguka upya baada ya kulifungua tena.}other{Msimamizi wako anakuomba ufungue Chrome tena ili utumie sasisho hili. Kuna madirisha # Huru na ya Faraghani yaliyofunguliwa kwenye wasifu mbalimbali. Hayatafunguka upya baada ya kuyafungua tena.}}</translation>
 <translation id="3667616615096815454">Imeshindwa kusakinisha, seva haitambui programu hii.</translation>
 <translation id="3673813398384385993">Chrome imegundua kwamba "<ph name="EXTENSION_NAME" />" ina programu hasidi</translation>
 <translation id="3697952514309507634">Wasifu mwingine kwenye Chrome</translation>
 <translation id="3703994572283698466">Mfumo wa uendeshaji wa Chrome unawezeshwa na <ph name="BEGIN_LINK_CROS_OSS" />programu huria<ph name="END_LINK_CROS_OSS" /> za ziada, kama vile <ph name="BEGIN_LINK_LINUX_OSS" />mazingira ya wasanidi programu wa Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Toleo la ChromeOS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Sasisho jipya la Chrome linapatikana na litaanza kutumika pindi utakapoifungua tena. Kuna dirisha Huru au la Faraghani lililofunguliwa. Halitafunguka upya baada ya kulifungua tena.}other{Sasisho jipya la Chrome linapatikana na litaanza kutumika pindi utakapoifungua tena. Kuna madirisha # Huru na ya Faraghani yaliyofunguliwa kwenye wasifu mbalimbali. Hayatafunguka upya baada ya kuyafungua tena.}}</translation>
 <translation id="3718181793972440140">Hatua hii itafuta kipengee 1 kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome inapendekeza ukiondoe. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu viendelezi vinavyotumika<ph name="END_LINK" />}other{Chrome inapendekeza uviondoe. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu viendelezi vinavyotumika<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Boresha utafutaji wako kwa kuweka vichupo, faili na zana nyingi ukitumia kitufe cha "Weka kichupo na zaidi".</translation>
@@ -420,6 +425,7 @@ Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</tran
 <translation id="5003967926796347400">Bofya “Kidhibiti cha Manenosiri cha Google”</translation>
 <translation id="5043786843026425788">Pata maelezo zaidi kuhusu kutafuta ukitumia Lenzi ya Google kwenye Chrome</translation>
 <translation id="504867494566807945">Fungua viungo kwenye Chrome ukitumia programu yoyote. Pia, itabandikwa katika upauzana wako ili ufikie kwa urahisi.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Kuna dirisha Huru au la Faraghani lililofunguliwa. Halitafunguka upya baada ya kulifungua tena.}other{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Kuna madirisha # Huru na ya Faraghani yaliyofunguliwa kwenye wasifu mbalimbali. Hayatafunguka upya baada ya kuyafungua tena.}}</translation>
 <translation id="5105120510934353742">Utahitaji toleo la macOS 13 au matoleo mapya zaidi ili upate masasisho ya Google Chrome ya siku zijazo. Kompyuta hii inatumia toleo la macOS 12.</translation>
 <translation id="5114340746415930644">Weka kauli yako ya siri ili utumie na uhifadhi data ya Chrome katika akaunti yako, <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Ingia katika akaunti kwenye Chrome unapoingia kwenye akaunti za huduma nyingine za Google</translation>
@@ -484,6 +490,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Imeshindwa kuunganisha kwenye Intaneti. Seva mbadala inahitaji uthibitishaji.</translation>
 <translation id="5709557627224531708">Weka Chrome iwe kivinjari chako chaguomsingi</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Dirisha lako Huru halitafunguka upya.}other{Mipangilio ya Ulinzi wa Hali ya Juu hukuhitaji ufungue Chrome tena ili utumie sasisho. Madirisha yako # Huru hayatafunguka upya.}}</translation>
 <translation id="5719246646468301581">Sheria na masharti ya ziada ya Google Chrome na ChromeOS</translation>
 <translation id="5736850870166430177">Ikiwa tovuti inajaribu kuiba nenosiri lako au unapopakua faili hatari, Chrome inaweza pia kutuma URL, ikiwa ni pamoja na sehemu za maudhui ya ukurasa, kwenye kipengele cha Kuvinjari Salama</translation>
 <translation id="5742003800414899269">Tumia programu ya Chrome ili upate zana bora za akiliunde popote ulipo</translation>
@@ -511,6 +518,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5960404530854194706">Chrome itasasishwa wakati hauitumii</translation>
 <translation id="5980111191913430208">Viendelezi, programu na mandhari kutoka vyanzo visivyojulikana vinaweza kudhuru kifaa chako. Chrome inapendekeza uviweke kutoka <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> pekee</translation>
 <translation id="6003112304606738118">Inapakua... Zimesalia saa <ph name="HOURS" /></translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Msimamizi wako anakuhitaji ufungue Chrome tena ili utumie sasisho. Kuna dirisha Huru au la Faraghani lililofunguliwa. Halitafunguka upya baada ya kulifungua tena.}other{Msimamizi wako anakuhitaji ufungue Chrome tena ili utumie sasisho. Kuna madirisha # Huru na ya Faraghani yaliyofunguliwa kwenye wasifu mbalimbali. Hayatafunguka upya baada ya kuyafungua tena.}}</translation>
 <translation id="6008161919456049856">Manenosiri, njia za kulipa na anwani ulizohifadhi katika Akaunti yako ya Google zitaondolewa kwenye kifaa hiki. Ili uzitumie tena katika Chrome, ingia katika akaunti.</translation>
 <translation id="6009821354356307391">Uliza swali la nyongeza</translation>
 <translation id="6014316319780893079">Kwa kutumia <ph name="BEGIN_LINK" />zana kutoka Chrome<ph name="END_LINK" />, unaweza kuvinjari kwa usalama na kuwa na udhibiti</translation>
@@ -683,6 +691,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Shirika lako hufuta kiotomatiki data ya kuvinjari Chrome isipotumika kwa dakika 1. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako havitafungwa.}other{Shirika lako hufuta kiotomatiki data ya kuvinjari Chrome isipotumika kwa dakika #. Data hii inaweza kujumuisha historia, maelezo yaliyojazwa kiotomatiki na vipakuliwa. Vichupo vyako havitafungwa.}}</translation>
 <translation id="7466577301922356468">Kutuma data hii kwa Google kiotomatiki husaidia kuboresha Chrome. Unaweza kubadilisha mipangilio hii wakati wowote.</translation>
 <translation id="7477130805345743099">Chrome itakutahadharisha kabla ya kupakia tovuti yoyote kwa kutumia muunganisho usio salama</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Sasisho jipya la Chrome linapatikana na litaanza kutumika pindi utakapoifungua tena. Dirisha lako Huru halitafunguka upya.}other{Sasisho jipya la Chrome linapatikana na litaanza kutumika pindi utakapoifungua tena. Madirisha yako # Huru hayatafunguka upya.}}</translation>
 <translation id="7481213027396403996">Pata usalama thabiti zaidi kutoka Chrome</translation>
 <translation id="749228101751499733">Wakati umeingia katika akaunti, unaweza kutumia manenosiri yako na mengineyo kwenye Akaunti yako ya Google katika Chrome. <ph name="SHORTCUT" /> inaweza kubadilisha mipangilio yako ya huduma za Google.</translation>
 <translation id="7496017508659652909">Chrome hupakia mapema kurasa, hali inayofanya shughuli za kuvinjari na utafutaji ziwe za haraka zaidi. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu kurasa zinazopakiwa mapema<ph name="END_LINK" /></translation>
@@ -799,6 +808,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8380754585531979907">Tumia kibodi yako kusogeza kati ya Gemini kwenye Chrome na kichupo chako ulichofungua.</translation>
 <translation id="8387459386171870978">Endelea kutumia Chrome</translation>
 <translation id="8394720698884623075">Hukagua URL ili kuona iwapo zipo kwenye orodha ya tovuti zisizo salama zilizohifadhiwa katika Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya kabisa pindi utakapoifungua tena. Baada ya hapo, vichupo vyako vya sasa vitafunguka upya. Kuna dirisha Huru au la Faraghani lililofunguliwa. Halitafunguka upya baada ya kulifungua tena.}other{Chrome imemaliza kusasisha. Unaweza kutumia toleo jipya kabisa pindi utakapoifungua tena. Baada ya hapo, vichupo vyako vya sasa vitafunguka upya. Kuna madirisha # Huru na ya Faraghani yaliyofunguliwa kwenye wasifu mbalimbali. Hayatafunguka upya baada ya kuyafungua tena.}}</translation>
 <translation id="8403038600646341038">Nembo ya Chrome ndani ya skrini ya kompyuta.</translation>
 <translation id="8418845734693287262">Mfumo wa Uendeshaji wa Chrome haukusawazisha data yako kwa sababu maelezo yako ya kuingia katika akaunti yamepitwa na wakati.</translation>
 <translation id="842386925677997438">Zana za usalama za Chrome</translation>

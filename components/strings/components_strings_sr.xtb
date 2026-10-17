@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">Општина</translation>
 <translation id="2059202684901022309">22×34 in</translation>
 <translation id="2063929825539050431">Да бисте брзо послали ову страницу на други уређај, додирните и задржите траку за адресу</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 предлог}one{# предлог}few{# предлога}other{# предлога}}</translation>
 <translation id="2066969741541525119">Организација је блокирала сајт у наставку</translation>
 <translation id="2071156619270205202">Ова картица не испуњава услове за број виртуелне картице.</translation>
 <translation id="2071852865256799872">Прегледачем управља организација, а профилом управља <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">Вишеструко бушење на дну</translation>
 <translation id="218940509700321686">Вредности раздвојене зарезима</translation>
 <translation id="2190094353033916816">Ове смернице имају различите вредности које се примењују на нивоу уређаја и корисника. Смернице функционишу како треба.</translation>
-<translation id="219061769324072544">Кредитна,картица,дебитна</translation>
 <translation id="2191980191135734720">Откључајте екран у следећем кораку, обично помоћу отиска прста. Можете и да <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Шта треба имати у виду</translation>
 <translation id="2195729137168608510">Заштита е-поште</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">Позиција слике на Y оси</translation>
 <translation id="2808278141522721006">Можете да укључите или искључите Windows Hello у <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Скенира се...</translation>
+<translation id="282457273878278063">Управљајте контакт информацијама</translation>
 <translation id="2824775600643448204">Трака за адресу и претрагу</translation>
 <translation id="2826760142808435982">Веза је шифрована и њена аутентичност је потврђена помоћу <ph name="CIPHER" /> и користи <ph name="KX" /> као механизам за размену шифара.</translation>
 <translation id="2828797285817981634">За сада су сензори покрета дозвољени</translation>
@@ -1865,7 +1864,6 @@
 <translation id="4121428309786185360">Истиче</translation>
 <translation id="4123572138124678573">Троструко бушење на дну</translation>
 <translation id="412601465078863288">Време за отпремање је истекло</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{још 1}one{још #}few{још #}other{још #}}</translation>
 <translation id="4129810348470013900">Дошло је до грешке. Проверите интернет везу и пробајте поново.</translation>
 <translation id="4130226655945681476">да проверите мрежне каблове, модем и рутер</translation>
 <translation id="4132448310531350254">Дуплирани обрађивачи за екстензију фајла<ph name="FILE_EXTENSION" /> наведени у апликацијама <ph name="POLICY_IDS_LIST" />.</translation>
@@ -3230,7 +3228,6 @@
 <translation id="638289054711715023">Скупљајућа фолија</translation>
 <translation id="6383221683286411806">Очекују вас потенцијални трошкови.</translation>
 <translation id="6384448607821972818">Приказује се лозинка за опоравак</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{још 1 предлог}one{још # предлог}few{још # предлога}other{још # предлога}}</translation>
 <translation id="6386565501269869892">Коверта You 4</translation>
 <translation id="6387645831795005740">Нападачи понекад имитирају сајтове тако што незнатно и скоро неприметно измене URL.</translation>
 <translation id="6389470377220713856">Име и презиме на картици</translation>

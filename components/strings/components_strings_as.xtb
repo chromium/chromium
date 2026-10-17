@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">পৌৰসভা</translation>
 <translation id="2059202684901022309">২২ x ৩৪ ইঞ্চি</translation>
 <translation id="2063929825539050431">এই পৃষ্ঠাখন ক্ষিপ্ৰতাৰে অন্য এটা ডিভাইচলৈ পঠিয়াবলৈ, ঠিকনাৰ বাৰডালত স্পৰ্শ কৰি ৰাখক</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{১টা পৰামৰ্শ}one{#টা পৰামৰ্শ}other{#টা পৰামৰ্শ}}</translation>
 <translation id="2066969741541525119">খুলিবলৈ লোৱা ছাইটটো আপোনাৰ প্ৰতিষ্ঠানে অৱৰোধ কৰিছে</translation>
 <translation id="2071156619270205202">ভাৰ্চুৱেল কাৰ্ড নম্বৰৰ বাবে এই কাৰ্ডখন যোগ্য নহয়।</translation>
 <translation id="2071852865256799872">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ ব্ৰাউজাৰ পৰিচালনা কৰে আৰু আপোনাৰ <ph name="PROFILE_DOMAIN" />এ আপোনাৰ প্ৰ’ফাইল পৰিচালনা কৰে</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">তলৰ অংশত একাধিক পাঞ্চ কৰক</translation>
 <translation id="218940509700321686">কমাৰ দ্বাৰা পৃথক কৰা মান</translation>
 <translation id="2190094353033916816">এই নীতিটোৰ মেচিন আৰু ব্যৱহাৰকাৰীৰ স্তৰত বিভিন্ন মান প্ৰয়োগ কৰা হৈছে। নীতিটোৱে বিচৰা ধৰণে কাম কৰি আছে।</translation>
-<translation id="219061769324072544">ক্ৰেডিট,কাৰ্ড,ডেবিট</translation>
 <translation id="2191980191135734720">পৰৱৰ্তী পদক্ষেপত আপোনাৰ স্ক্ৰীনখন আনলক কৰক, সাধাৰণতে আপোনাৰ ফিংগাৰপ্ৰিণ্ট ব্যৱহাৰ কৰি। আপুনি লগতে <ph name="LINK_TEXT" /> কৰিব পাৰে।</translation>
 <translation id="2194856509914051091">বিবেচনা কৰিব লগা বিষয়</translation>
 <translation id="2195729137168608510">ইমেইল সুৰক্ষা</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">প্ৰতিচ্ছবিৰ Y স্থান</translation>
 <translation id="2808278141522721006">আপুনি <ph name="SETTINGS" />ত Windows Hello অন অথবা অফ কৰিব পাৰে</translation>
 <translation id="2820957248982571256">স্কেন কৰি থকা হৈছে...</translation>
+<translation id="282457273878278063">যোগাযোগৰ তথ্য পৰিচালনা কৰক</translation>
 <translation id="2824775600643448204">ঠিকনা আৰু সন্ধানৰ বাৰ</translation>
 <translation id="2826760142808435982">এই সংযোগটো এনক্ৰিপ্ট কৰিবলৈ তথা সেইটোৰ বিশ্বাসযোগ্যতাৰ সত্যাপন কৰিবলৈ <ph name="CIPHER" /> ব্যৱহাৰ কৰা হৈছে আৰু সেইটোৱে <ph name="KX" />ক সলনা সলনিৰ মুখ্য উপায় হিচাপে ব্যৱহাৰ কৰে।</translation>
 <translation id="2828797285817981634">বৰ্তমান ম’শ্বন ছেন্সৰৰ অনুমতি দিয়া হৈছে</translation>
@@ -1862,7 +1861,6 @@
 <translation id="4121428309786185360">ম্যাদ উকলাৰ সময়</translation>
 <translation id="4123572138124678573">তলৰ অংশত তিনিবাৰ পাঞ্চ কৰক</translation>
 <translation id="412601465078863288">আপল’ড কৰাৰ সময় উকলিছে</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{অন্য ১টা}one{অন্য #টা}other{অন্য #টা}}</translation>
 <translation id="4129810348470013900">কিবা ভুল হ’ল। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="4130226655945681476">নেটৱৰ্ক কেব’ল, ম’ডেম আৰু ৰাউটাৰ পৰীক্ষা কৰি থকা হৈছে</translation>
 <translation id="4132448310531350254">এপৰ "<ph name="POLICY_IDS_LIST" />"এ উল্লেখ কৰা file_extension "<ph name="FILE_EXTENSION" />"ৰ বাবে ডুপ্লিকেট নিয়ন্ত্ৰক।</translation>
@@ -3226,7 +3224,6 @@
 <translation id="638289054711715023">সংকুচিত ফইল</translation>
 <translation id="6383221683286411806">মাচুল ভৰিব লগা হ'ব পাৰে।</translation>
 <translation id="6384448607821972818">পুনৰুদ্ধাৰৰ পাছৱৰ্ড দেখুওৱা হ’ল</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{১টা অন্য পৰামর্শ}one{#টা অন্য পৰামর্শ}other{#টা অন্য পৰামর্শ}}</translation>
 <translation id="6386565501269869892">এনভেল’প আপুনি ৪</translation>
 <translation id="6387645831795005740">আক্ৰমণকাৰীসকলে কেতিয়াবা URLটোত সৰু, চকুত নপৰা সালসলনি কৰি ছাইটসমূহ নকল কৰিব পাৰে।</translation>
 <translation id="6389470377220713856">কার্ডত থকা নাম</translation>

@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">22 x 34 in</translation>
 <translation id="2063929825539050431">हे पेज दुसऱ्या डिव्हाइसवर झटपट पाठवण्यासाठी, अ‍ॅड्रेस बारला स्पर्श करून धरून ठेवा</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 सूचना}other{# सूचना}}</translation>
 <translation id="2066969741541525119">पुढील साइट तुमच्या संस्थेद्वारे ब्लॉक केलेली आहे</translation>
 <translation id="2071156619270205202">हे कार्ड व्हर्च्युअल कार्ड नंबरसाठी पात्र नाही.</translation>
 <translation id="2071852865256799872">तुमची संस्था तुमचा ब्राउझर व्यवस्थापित करते आणि <ph name="PROFILE_DOMAIN" />तुमची प्रोफाइल व्यवस्थापित करते</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">मल्टिपल पंच बॉटम</translation>
 <translation id="218940509700321686">स्वल्पविरामाने विभक्त केलेली मूल्ये</translation>
 <translation id="2190094353033916816">या धोरणामध्ये मशीन आणि वापरकर्ता या पातळ्यांवर वेगवेगळी मूल्ये लागू केली आहेत. धोरण अपेक्षेप्रमाणे काम करत आहे.</translation>
-<translation id="219061769324072544">क्रेडिट,कार्ड,डेबिट</translation>
 <translation id="2191980191135734720">तुम्ही पुढील पायरीमध्ये साधारणपणे तुमची फिंगरप्रिंट वापरून तुमची स्क्रीन अनलॉक करा. तुम्ही <ph name="LINK_TEXT" /> देखील करू शकता.</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2195729137168608510">ईमेल संरक्षण</translation>
@@ -1865,7 +1863,6 @@
 <translation id="4121428309786185360">रोजी कालबाह्य होत आहे</translation>
 <translation id="4123572138124678573">ट्रिपल पंच बॉटम</translation>
 <translation id="412601465078863288">अपलोड करणे टाइम आउट झाले</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{अन्य 1}other{अन्य #}}</translation>
 <translation id="4129810348470013900">काहीतरी चुकले. तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="4130226655945681476">नेटवर्क केबल, मोडेम आणि राउटर तपासत आहे</translation>
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />". अ‍ॅप्सद्वारे संदर्भ दिलेल्या file_extension "<ph name="FILE_EXTENSION" />" साठी डुप्लिकेट हँडलर.</translation>
@@ -3232,7 +3229,6 @@
 <translation id="638289054711715023">श्रींक फॉइल</translation>
 <translation id="6383221683286411806">पुढे संभाव्य शुल्क आहे.</translation>
 <translation id="6384448607821972818">रिकव्हरी पासवर्ड दाखवला आहे</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 अन्य सूचना}other{# अन्य सूचना}}</translation>
 <translation id="6386565501269869892">एन्व्हलप यू ४</translation>
 <translation id="6387645831795005740">हल्लेखोर काहीवेळा URL मध्ये छोटे व पाहण्यासाठी कठीण असलेले बदल करून बनावट साइट बनवतात.</translation>
 <translation id="6389470377220713856">कार्डवरील नाव</translation>

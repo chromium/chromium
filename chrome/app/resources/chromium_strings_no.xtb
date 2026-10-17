@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Identifiser ting eller steder, og kopier eller oversett tekst. Når du bruker bildesøk, sendes et skjermbilde av siden til tjeneren. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium er standardnettleseren din</translation>
 <translation id="1131805035311359397">For å sjekke om passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. Det er ett inkognitovindu eller ett isolert vindu åpent. Gjenåpning skjer ikke når du starter nettleseren på nytt.}other{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. Gjenåpning skjer ikke når du starter nettleseren på nytt.}}</translation>
 <translation id="1153368717515616349">Klikk på Chromium-menyen</translation>
 <translation id="1157985233335035034">Nylig brukte språk</translation>
 <translation id="1184145431117212167">Installasjonen mislyktes fordi du bruker en Windows-versjon som ikke støttes.</translation>
@@ -38,6 +39,7 @@
 <translation id="1329040302064168406">Logg på Chromium på telefonen</translation>
 <translation id="1330562121671411446">Gjenkjenn språk</translation>
 <translation id="1342274909142618978">Slett også data fra Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Det er ett inkognitovindu eller ett isolert vindu åpent. Gjenåpning skjer ikke når du starter nettleseren på nytt.}other{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. Gjenåpning skjer ikke når du starter nettleseren på nytt.}}</translation>
 <translation id="1345251407431278948">Festet. Du kan åpne bildesøk igjen via den nye knappen på verktøylinjen</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1388276868779258475">Bruk Chromium-appen for å surfe uansett hvor du er</translation>
@@ -226,6 +228,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Ta med deg favorittverktøyene dine fra Google AI på farten med Chromium på iOS.</translation>
 <translation id="3264761466044851269">Logg på Chromium for å få utvidelsene med mer fra <ph name="DEVICE" />.</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Det isolerte vinduet gjenåpnes ikke.}other{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. De # isolerte vinduene gjenåpnes ikke.}}</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="328888136576916638">API-nøkler for Google mangler. Noe funksjonalitet i Chromium blir deaktivert.</translation>
 <translation id="3296368748942286671">Fortsett å kjøre bakgrunnsprogrammer når Chromium er lukket</translation>
@@ -273,6 +276,7 @@
           **Foreslå spørsmål:** Generer en punktliste med tre til fem tankevekkende spørsmål en bruker kan stille for å forstå skjermbildet bedre. Disse spørsmålene må inneholde minst ett som handler spesifikt om et visuelt objekt, utformingen av det eller plasseringen av det.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386243222263310720">Logg på Chromium for å få bokmerkene med mer på alle enhetene.</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. Det isolerte vinduet gjenåpnes ikke.}other{Administratoren din ber deg om å starte Chromium på nytt for å ta i bruk denne oppdateringen. De # isolerte vinduene gjenåpnes ikke.}}</translation>
 <translation id="3885770153807205175">Språkvelger</translation>
 <translation id="388648406173476553">Tilpass og kontroller Chromium. Det er noe du må se på – klikk for mer informasjon.</translation>
 <translation id="3889543394854987837">Klikk på navnet ditt for å åpne Chromium og starte surfingen.</translation>
@@ -430,6 +434,7 @@ Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalis
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> er allerede logget på. For å holde surfingen din atskilt, logg på Chromium i din egen profil som <ph name="USER_EMAIL_ADDRESS" />. Du får også den lagrede informasjonen din med mer fra <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Oppstartsfeil: Kjør installasjonsprogrammet som vanlig bruker, ikke som administrator.</translation>
 <translation id="5580770360767802657">Bruk Chromium som standard, og fest den</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Det isolerte vinduet gjenåpnes ikke.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # isolerte vinduene gjenåpnes ikke.}}</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5605834417512968703">Velg hva som helst for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
 <translation id="5618818588972826921">Velg tekst eller bilder for å søke med bildesøk, eller trykk på Esc for å avslutte bildesøk</translation>
@@ -589,6 +594,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="7003299027384820442">Skriv inn passordfrasen din for å bruke og lagre Chromium-data i kontoen din, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installasjonen mislyktes fordi denne versjonen av operativsystemet ikke støttes.</translation>
 <translation id="7024536598735240744">Feil ved utpakking: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Det isolerte vinduet gjenåpnes ikke.}other{Avansert beskyttelse krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # isolerte vinduene gjenåpnes ikke.}}</translation>
 <translation id="7045244423563602563">Gi Chromium et personlig preg</translation>
 <translation id="7047386856539490735">Er disse resultatene nyttige?</translation>
 <translation id="705851970750939768">Oppdater Chromium</translation>
@@ -668,6 +674,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chromium bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="7810005234485217901">Du kan feste bildesøk for enklere tilgang</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Det er ett inkognitovindu eller ett isolert vindu åpent. Gjenåpning skjer ikke når du starter nettleseren på nytt.}other{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. Gjenåpning skjer ikke når du starter nettleseren på nytt.}}</translation>
 <translation id="7828527096541974699">Velg hva du vil dele med Chromium</translation>
 <translation id="7828947555739565424">Det finnes allerede en Chromium-profil med denne kontoen på denne enheten</translation>
 <translation id="7845233973568007926">Installasjonen er fullført. Start datamaskinen på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
@@ -705,6 +712,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="813913629614996137">Initialiserer …</translation>
 <translation id="8161503455832158203">Åpne Gemini i Chromium med en hurtigtast.</translation>
 <translation id="8164014945047474187">Tilleggsvilkår for bruk av Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Det er ett inkognitovindu eller ett isolert vindu åpent. Gjenåpning skjer ikke når du starter nettleseren på nytt.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Det er # inkognitovinduer og isolerte vinduer åpne i flere profiler. Gjenåpning skjer ikke når du starter nettleseren på nytt.}}</translation>
 <translation id="81770708095080097">Denne filen er farlig, så Chromium har blokkert den.</translation>
 <translation id="8177472873527554730">Finner ikke innhold på siden</translation>
 <translation id="8200109504272824693">Skriv inn passordfrasen din for å bruke og lagre Chromium-data i kontoen din, <ph name="USER_EMAIL" /></translation>

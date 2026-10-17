@@ -49,6 +49,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다.}=1{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창은 다시 열리지 않습니다.}other{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창 #개는 다시 열리지 않습니다.}}</translation>
 <translation id="1434626383986940139">Chrome Canary 앱</translation>
 <translation id="1439793550875056299">Chrome 고정</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="146866447420868597">Chrome에 로그인하시겠습니까?</translation>
 <translation id="1476347941828409626">Chrome 프로필 관리(&amp;M)</translation>
 <translation id="1492280395845991349">다시 실행하여 Chrome 업데이트 완료</translation>
@@ -273,6 +274,7 @@
 <translation id="345171907106878721">Chrome에 본인 추가</translation>
 <translation id="3453763134178591239">ChromeOS 약관</translation>
 <translation id="3475778264501649775">휴대전화에서 Chrome 앱을 사용하여 이동 중에도 비밀번호, 탭 등을 이용하세요</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="3539955434060988644">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="354621070532799440">알림: 주머니에 쏙 들어가는 Google 최고의 안전 기능</translation>
 <translation id="3547866758548131919">요약 버튼을 클릭하여 Chrome의 Gemini와 이 문서를 공유하고 간략한 개요를 확인한 후 후속 질문을 하세요.</translation>
@@ -288,12 +290,15 @@
 <translation id="3622797965165704966">이제 Google 계정으로 공유 컴퓨터에서 Chrome을 손쉽게 사용할 수 있습니다.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다.</translation>
 <translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="3636970668267555808">Chrome을 기본 브라우저로 설정하여 잘 알고 즐겨 사용하며 신뢰하는 기능에 간편하게 액세스하세요.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="3667616615096815454">설치할 수 없습니다. 서버에서 애플리케이션을 알 수 없습니다.</translation>
 <translation id="3673813398384385993">Chrome에서 "<ph name="EXTENSION_NAME" />"에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="3697952514309507634">기타 Chrome 프로필</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="3716540481907974026">ChromeOS Flex 버전</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="3718181793972440140">항목 1개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" />}other{Chrome에서 삭제할 것을 권장합니다. <ph name="BEGIN_LINK" />지원되는 확장 프로그램에 대해 자세히 알아보기<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">'탭 등 배경 정보 추가' 버튼으로 여러 탭, 파일, 도구를 추가하여 심층적으로 검색하세요.</translation>
@@ -419,6 +424,7 @@
 <translation id="5003967926796347400">'Google 비밀번호 관리자'를 클릭합니다</translation>
 <translation id="5043786843026425788">Chrome에서 Google 렌즈로 검색하는 방법 자세히 알아보기</translation>
 <translation id="504867494566807945">모든 앱에서 Chrome으로 링크를 엽니다. 또한 쉽게 액세스할 수 있도록 작업 표시줄에 고정됩니다</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{고급 보호를 사용하려면 Chrome을 다시 실행하여 업데이트를 적용해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{고급 보호를 사용하려면 Chrome을 다시 실행하여 업데이트를 적용해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="5105120510934353742">향후 Chrome 업데이트를 받으려면 macOS 13 이상이 필요합니다. 이 컴퓨터에서는 macOS 12를 사용 중입니다.</translation>
 <translation id="5114340746415930644"><ph name="USER_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 암호를 입력하세요</translation>
 <translation id="5120334927898581447">다른 Google 서비스에 로그인할 때 Chrome에 로그인</translation>
@@ -483,6 +489,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">인터넷에 연결할 수 없습니다. 프록시 서버를 인증해야 합니다.</translation>
 <translation id="5709557627224531708">Chrome을 기본 브라우저로 설정</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{고급 보호를 사용하려면 Chrome을 다시 실행하여 업데이트를 적용해야 합니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{고급 보호를 사용하려면 Chrome을 다시 실행하여 업데이트를 적용해야 합니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="5719246646468301581">Chrome 및 ChromeOS 추가 서비스 약관</translation>
 <translation id="5736850870166430177">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="5742003800414899269">Chrome 앱을 사용하여 이동 중에도 최고의 AI 도구를 활용하세요.</translation>
@@ -510,6 +517,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="5960404530854194706">사용자가 자리를 비우면 Chrome이 업데이트됩니다</translation>
 <translation id="5980111191913430208">알 수 없는 소스의 확장 프로그램, 앱, 테마는 기기를 손상시킬 수 있습니다. Chrome에서는 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에서 다운로드한 확장 프로그램, 앱, 테마만 설치할 것을 권장합니다.</translation>
 <translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="6008161919456049856">Google 계정에 저장된 비밀번호, 결제 수단, 주소가 이 기기에서 삭제됩니다. Chrome에서 다시 사용하려면 다시 로그인하세요</translation>
 <translation id="6009821354356307391">이어서 질문하세요.</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chrome의 도구<ph name="END_LINK" />로 안전하게 탐색하고 관리할 수 있습니다.</translation>
@@ -682,6 +690,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Chrome을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}other{Chrome을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}}</translation>
 <translation id="7466577301922356468">이 데이터를 Google에 자동으로 전송하면 Chrome을 개선하는 데 도움이 됩니다. 언제든지 이 설정을 변경할 수 있습니다.</translation>
 <translation id="7477130805345743099">Chrome에서 안전하지 않은 연결을 사용해 사이트를 로드하기 전에 경고를 표시합니다.</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="749228101751499733">로그인한 상태로 Chrome에서 Google 계정의 비밀번호 등을 사용할 수 있습니다. <ph name="SHORTCUT" />에서 Google 서비스 설정을 변경할 수 있습니다.</translation>
 <translation id="7496017508659652909">Chrome에서 페이지를 미리 로드하여 더 빠르게 탐색하고 검색할 수 있습니다. <ph name="BEGIN_LINK" />페이지 미리 로드에 관해 자세히 알아보기<ph name="END_LINK" /></translation>
@@ -798,6 +807,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8380754585531979907">키보드를 사용하여 Chrome의 Gemini와 열려 있는 탭 사이를 이동할 수 있습니다.</translation>
 <translation id="8387459386171870978">Chrome 계속 사용</translation>
 <translation id="8394720698884623075">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="8403038600646341038">컴퓨터 화면에 표시된 Chrome 로고입니다.</translation>
 <translation id="8418845734693287262">계정의 로그인 세부정보가 오래되어 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="842386925677997438">Chrome의 안전 도구</translation>

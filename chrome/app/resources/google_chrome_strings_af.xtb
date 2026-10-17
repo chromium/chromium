@@ -49,6 +49,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1425903838053942728">{COUNT,plural, =0{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word.}=1{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou Incognito-venster sal nie weer oopgemaak word nie.}other{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou # Incognito-vensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1434626383986940139">Chrome Kanarie-programme</translation>
 <translation id="1439793550875056299">Speld Chrome vas</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Jou admin vereis dat jy Chrome herbegin om ’n opdatering toe te pas. Jou geïsoleerde venster sal nie weer oopmaak nie.}other{Jou admin vereis dat jy Chrome herbegin om ’n opdatering toe te pas. Jou # geïsoleerde vensters sal nie weer oopmaak nie.}}</translation>
 <translation id="146866447420868597">Meld by Chrome aan?</translation>
 <translation id="1476347941828409626">&amp;Bestuur Chrome-profiele</translation>
 <translation id="1492280395845991349">Herbegin om Chrome-opdatering te voltooi</translation>
@@ -273,6 +274,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="345171907106878721">Voeg jouself by Chrome</translation>
 <translation id="3453763134178591239">Chrome-bedryfstelsel se bepalings</translation>
 <translation id="3475778264501649775">Neem jou wagwoorde, oortjies en meer saam met jou terwyl jy aan die beweeg is met die Chrome-app op jou foon</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Jou admin vra dat jy Chrome herbegin om hierdie opdatering toe te pas. Jou geïsoleerde venster sal nie weer oopmaak nie.}other{Jou admin vra dat jy Chrome herbegin om hierdie opdatering toe te pas. Jou # geïsoleerde vensters sal nie weer oopmaak nie.}}</translation>
 <translation id="3539955434060988644">Maak skakel in Chrome Inco&amp;gnito-venster oop</translation>
 <translation id="354621070532799440">Onthounota: Google se beste veiligheidkenmerke in jou sak</translation>
 <translation id="3547866758548131919">Klik die Som Op-knoppie om hierdie dokument met Gemini in Chrome te deel om ’n vinnige oorsig te kry en opvolgvrae te vra</translation>
@@ -288,12 +290,15 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="3622797965165704966">Nou is dit makliker om Chrome met jou Google-rekening en op gedeelde rekenaars te gebruik.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> is reeds aangemeld. Meld in jou eie profiel as <ph name="USER_EMAIL_ADDRESS" /> by Chrome aan om jou blaai-aktiwiteit apart te hou. Jy sal ook jou gestoorde inligting en meer op al jou toestelle kry.</translation>
 <translation id="3635073343384702370">Chrome kan jou wagwoorde nagaan wanneer jy hulle stoor</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou geïsoleerde venster sal nie weer oopmaak nie.}other{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. Jou # geïsoleerde vensters sal nie weer oopmaak nie.}}</translation>
 <translation id="3636970668267555808">Kry maklik toegang tot die kenmerke wat jy ken, van hou en vertrou deur Chrome as jou verstekblaaier te stel.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Jou admin vra dat jy Chrome herbegin om hierdie opdatering toe te pas. ’n Incognito- of geïsoleerde venster is oop. Dit sal nie weer oopmaak nadat jy herbegin het nie.}other{Jou admin vra dat jy Chrome herbegin om hierdie opdatering toe te pas. # Incognito- en geïsoleerde vensters is in alle profiele oop. Hulle sal nie weer oopmaak nadat jy herbegin het nie.}}</translation>
 <translation id="3667616615096815454">Kan nie installeer nie, die app is onbekend aan die bediener.</translation>
 <translation id="3673813398384385993">Chrome het bevind dat "<ph name="EXTENSION_NAME" />" wanware bevat</translation>
 <translation id="3697952514309507634">Ander Chrome-profiele</translation>
 <translation id="3703994572283698466">Chrome-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" /> soos die geval ook is met <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Chrome OS Flex-weergawe</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{’n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. ’n Incognito- of geïsoleerde venster is oop. Dit sal nie weer oopmaak nadat jy herbegin het nie.}other{’n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. # Incognito- en geïsoleerde vensters is in alle profiele oop. Hulle sal nie weer oopmaak nadat jy herbegin het nie.}}</translation>
 <translation id="3718181793972440140">Dit sal 1 item op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome beveel aan dat jy dit verwyder. <ph name="BEGIN_LINK" />Kry meer inligting oor gesteunde uitbreidings<ph name="END_LINK" />}other{Chrome beveel aan dat jy hulle verwyder. <ph name="BEGIN_LINK" />Kry meer inligting oor gesteunde uitbreidings<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Voeg verskeie oortjies, lêers en nutsgoed by met die “Voeg ’n oortjie en meer by”-knoppie om dieper te soek.</translation>
@@ -420,6 +425,7 @@ Probeer om optimering toe te laat as hierdie bladsy nie werk soos verwag nie.</t
 <translation id="5003967926796347400">Klik “Google Wagwoordbestuurder”</translation>
 <translation id="5043786843026425788">Kry meer inligting oor hoe om met Google Lens in Chrome te soek</translation>
 <translation id="504867494566807945">Maak skakels in Chrome vanaf enige app oop. Dit word ook vir maklike toegang in jou taakbalk vasgespeld.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Gevorderde Beskerming vereis dat jy Chrome herbegin om ’n opdatering toe te pas. ’n Incognito- of geïsoleerde venster is oop. Dit sal nie weer oopmaak nadat jy herbegin het nie.}other{Gevorderde Beskerming vereis dat jy Chrome herbegin om ’n opdatering toe te pas. # Incognito- en geïsoleerde vensters is in alle profiele oop. Hulle sal nie weer oopmaak nadat jy herbegin het nie.}}</translation>
 <translation id="5105120510934353742">Jy het macOS 13 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik macOS 12.</translation>
 <translation id="5114340746415930644">Voer jou wagfrase in om Chrome-data in jou rekening, <ph name="USER_EMAIL" />, te gebruik en te stoor</translation>
 <translation id="5120334927898581447">Meld aan by Chrome wanneer jy by ander Google-dienste aanmeld</translation>
@@ -484,6 +490,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Kon nie aan die internet koppel nie. Instaanbediener vereis stawing.</translation>
 <translation id="5709557627224531708">Stel Chrome as jou verstekblaaier</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Gevorderde Beskerming vereis dat jy Chrome herbegin om ’n opdatering toe te pas. Jou geïsoleerde venster sal nie weer oopmaak nie.}other{Gevorderde Beskerming vereis dat jy Chrome herbegin om ’n opdatering toe te pas. Jou # geïsoleerde vensters sal nie weer oopmaak nie.}}</translation>
 <translation id="5719246646468301581">Google Chrome en ChromeOS se bykomende diensbepalings</translation>
 <translation id="5736850870166430177">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chrome dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
 <translation id="5742003800414899269">Gebruik die Chrome-app om die beste KI-nutsgoed saam te neem terwyl jy aan die beweeg is</translation>
@@ -511,6 +518,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5960404530854194706">Chrome sal opdateer wanneer jy weg is</translation>
 <translation id="5980111191913430208">Uitbreidings, apps en temas van onbekende bronne af kan jou toestel beskadig. Chrome beveel aan dat hulle net uit die <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> geïnstalleer word</translation>
 <translation id="6003112304606738118">Laai tans af … <ph name="HOURS" /> uur oor</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Jou admin vereis dat jy Chrome herbegin om ’n opdatering toe te pas. ’n Incognito- of geïsoleerde venster is oop. Dit sal nie weer oopmaak nadat jy herbegin het nie.}other{Jou admin vereis dat jy Chrome herbegin om ’n opdatering toe te pas. # Incognito- en geïsoleerde vensters is in alle profiele oop. Hulle sal nie weer oopmaak nadat jy herbegin het nie.}}</translation>
 <translation id="6008161919456049856">Jou wagwoorde, betaalmetodes en adresse wat jy in jou Google-rekening gestoor het, sal van hierdie toestel verwyder word. Meld weer aan as jy hulle weer in Chrome wil gebruik.</translation>
 <translation id="6009821354356307391">Vra vir ’n opvolg</translation>
 <translation id="6014316319780893079">Met <ph name="BEGIN_LINK" />nutsgoed van Chrome<ph name="END_LINK" /> kan jy veilig blaai en in beheer bly</translation>
@@ -683,6 +691,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{Jou organisasie vee blaaierdata outomaties uit nadat Chrome 1 minuut lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou oortjies sal oopbly.}other{Jou organisasie vee blaaierdata outomaties uit nadat Chrome # minute lank nie gebruik is nie. Dit kan geskiedenis, outovul en aflaaie insluit. Jou oortjies sal oopbly.}}</translation>
 <translation id="7466577301922356468">As hierdie data outomaties na Google toe gestuur word, help dit om Chrome beter te maak. Jy kan hierdie instelling enige tyd verander.</translation>
 <translation id="7477130805345743099">Chrome sal jou waarsku voordat enige werf met ’n onveilige verbinding gelaai word</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{’n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou geïsoleerde venster sal nie weer oopmaak nie.}other{’n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou # geïsoleerde vensters sal nie weer oopmaak nie.}}</translation>
 <translation id="7481213027396403996">Kry Chrome se sterkste beskerming</translation>
 <translation id="749228101751499733">Terwyl jy aangemeld is, kan jy jou wagwoorde en meer van jou Google-rekening in Chrome gebruik. <ph name="SHORTCUT" /> kan jou Google-dienste-instellings verander.</translation>
 <translation id="7496017508659652909">Chrome laai bladsye vooraf, wat blaai en soek vinniger maak. <ph name="BEGIN_LINK" />Kry meer inligting oor voorafgelaaide bladsye<ph name="END_LINK" /></translation>
@@ -799,6 +808,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="8380754585531979907">Gebruik jou sleutelbord om tussen Gemini in Chrome en jou oop oortjie te navigeer.</translation>
 <translation id="8387459386171870978">Hou aan om Chrome te gebruik</translation>
 <translation id="8394720698884623075">Vergelyk URL'e met 'n lys onveilige werwe wat in Chrome geberg is</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. ’n Incognito- of geïsoleerde venster is oop. Dit sal nie weer oopmaak nadat jy herbegin het nie.}other{Chrome het klaar opgedateer. Jy kan die jongste weergawe gebruik sodra jy herbegin het. Jou huidige oortjies sal daarna weer oopgemaak word. # Incognito- en geïsoleerde vensters is in alle profiele oop. Hulle sal nie weer oopmaak nadat jy herbegin het nie.}}</translation>
 <translation id="8403038600646341038">Chrome-logo binne ’n rekenaarskerm.</translation>
 <translation id="8418845734693287262">Chrome-bedrystelsel kon nie jou data sinkroniseer nie omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="842386925677997438">Chrome se veiligheidnutsgoed</translation>

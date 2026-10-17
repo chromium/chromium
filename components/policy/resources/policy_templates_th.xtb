@@ -8594,17 +8594,6 @@ Use Case ทั่วไปของนโยบายนี้คือกา�
       การตั้งค่านโยบายเป็น "เท็จ" จะป้องกันไม่ให้ Signed HTTP Exchange โหลด</translation>
 <translation id="6368011194414932347">กำหนดค่า URL ของหน้าแรก</translation>
 <translation id="6368403635025849609">อนุญาตให้ใช้ JavaScript บนไซต์เหล่านี้</translation>
-<translation id="6368652917086795891">กำหนดการตั้งค่าการเชื่อมต่อสำหรับ <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ใน <ph name="PRODUCT_NAME" />
-
-นโยบายนี้จะถูกแทนที่ด้วยนโยบาย <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> หากตั้งค่าทั้ง 2 รายการ <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> จะมีความสำคัญเหนือกว่า
-
-นโยบายจะกำหนดค่า URL ของเว็บแอปพลิเคชัน <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ผ่าน <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> ซึ่งต้องเป็น URL ที่ถูกต้องซึ่งใช้รูปแบบ https, ชี้ไปยังโดเมน <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> และไม่มีชื่อผู้ใช้หรือรหัสผ่าน หากไม่เป็นไปตามข้อกำหนดเหล่านี้ ระบบจะไม่สนใจนโยบายและ <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> จะไม่ได้รับการกำหนดค่า
-
-หากตั้งค่านโยบายนี้ ระบบจะกำหนดค่า <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> สำหรับผู้ใช้ที่ลงชื่อเข้าใช้ด้วยบัญชีที่มีการจัดการหรือเบราว์เซอร์ที่มีการจัดการ
-
-หากไม่ได้ตั้งค่านโยบายนี้ ระบบจะไม่กำหนดค่า <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />
-
-โปรดทราบว่านโยบายนี้ไม่ได้ควบคุมการผสานรวม <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> ทั่วไป ซึ่งควบคุมได้ด้วยนโยบาย <ph name="GEMINI_SETTINGS_POLICY_NAME" /></translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">ไม่อนุญาตให้ใช้ AI API ในตัว</translation>
 <translation id="6371005337713685988">การตั้งค่าชุดเว็บไซต์ที่เกี่ยวข้อง</translation>

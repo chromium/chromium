@@ -8992,17 +8992,6 @@ Nota: Esta política solo se aplica a las plataformas que admiten extensiones.</
       Si estableces la política como falsa, no se cargarán los intercambios HTTP firmados.</translation>
 <translation id="6368011194414932347">Configurar la dirección URL de la página principal</translation>
 <translation id="6368403635025849609">Permitir JavaScript en estos sitios</translation>
-<translation id="6368652917086795891">Establece la configuración de conexión para <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> en <ph name="PRODUCT_NAME" />.
-
-La política <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> reemplazará esta política. Si se establecen ambas, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> tiene prioridad.
-
-La política configura la URL de la aplicación web de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> a través de <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, que debe ser una URL válida que use el esquema https, apunte a un dominio de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> y no incluya un nombre de usuario ni una contraseña. Si la política no cumple con estos requisitos, se ignorará y <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> quedará sin configurar.
-
-Si estableces esta política, se configurará <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> para los usuarios que accedan con una cuenta o un navegador administrados.
-
-Si no estableces esta política, no se configurará <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.
-
-Ten en cuenta que esta política no controla la integración general de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que puede controlarse con la política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">No permitir el uso de las APIs de IA integradas.</translation>
 <translation id="6371005337713685988">Configuración de Conjuntos de sitios web relacionados</translation>

@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1986685561493779662">Ижил нэр ашиглалтад байна</translation>
 <translation id="1992244793717364584">Аппыг устгасан</translation>
+<translation id="1999115740519098545">Эхлүүлэх</translation>
 <translation id="200114059308480249">Google-н хайлтуудад эргэн тойрны текстийг оруулах уу?</translation>
 <translation id="2004096469149679223"><ph name="TAB_TITLE" />, Бэхлэгдэж, дууг нь хаасан нууцлалтай таб</translation>
 <translation id="2021896219286479412">Бүтэн дэлгэцийн сайтын хяналт</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">Сайтыг түр зогсоосон</translation>
 <translation id="2063047797624276601">Танай байгууллага Сайжруулсан аюулгүй хөтчийг асаасан байна</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{1 таталт амжилтгүй боллоо}other{# таталт амжилтгүй боллоо}}</translation>
-<translation id="2066690553719545730">ХОУ-ы горимыг үргэлж харуулах</translation>
 <translation id="2067805253194386918">текст</translation>
 <translation id="2079545284768500474">Буцаах</translation>
 <translation id="2082238445998314030"><ph name="TOTAL_RESULTS" />-ын <ph name="RESULT_NUMBER" /> илэрц байна</translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">Gemini-г бэхэлснийг болиулсан</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{Спам, хууран мэхэлсэн контентын улмаас Chrome энэ сайтыг мэдэгдэл илгээхийг нь зогсоосон}other{Спам, хууран мэхэлсэн контентын улмаас Chrome эдгээр сайтыг мэдэгдэл илгээхийг нь зогсоосон}}</translation>
 <translation id="4195643157523330669">Шинэ таб дээр нээх</translation>
+<translation id="4195814663415092787">Орхисон хэсгээсээ үргэлжлүүлэх</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{Энэ төхөөрөмжийн 1 таб}other{Энэ төхөөрөмжийн # таб}}</translation>
 <translation id="4198268995694216131">Бусад сайт</translation>
 <translation id="4198423547019359126">Татах боломжтой байршил алга</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">Энэ хуудсыг сонсох</translation>
 <translation id="4217657297368492684"><ph name="TAB_TITLE" />, Сонгосон, бэхэлсэн, Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="4225895483398857530">Самбарын товчлол</translation>
-<translation id="4232376164796433044">Нууц үг, автоматаар бөглөх хэсэг</translation>
 <translation id="4242533952199664413">Нээлттэй тохиргоо</translation>
 <translation id="424864128008805179">Chrome-с гарах уу?</translation>
 <translation id="425582637250725228">Таны хийсэн өөрчлөлтийг хадгалаагүй байж болзошгүй.</translation>
@@ -1147,6 +1147,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5568069709869097550">Нэвтрэх боломжгүй</translation>
 <translation id="557018954714092179">Шинэ фолдер үүсгэх</translation>
 <translation id="5578795271662203820">Энэ зургийг <ph name="SEARCH_ENGINE" />-ээс хайна уу</translation>
+<translation id="558563010977877295">Тодорхой нэг хуудас, эсвэл бүлэг хуудас нээх</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5599455543593328020">нууцлалын горим</translation>
 <translation id="5601180634394228718">Таны Chrome-н хэрэглээг сайжруулахын тулд өгөгдөл ашигладаг бусад тохиргоог авах бол <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" /> рүү очно уу.</translation>
@@ -1447,6 +1448,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="671481426037969117">Таны <ph name="FQDN" />-н цаг хэмжигчийн хугацаа дууссан байна. Энэ нь маргааш дахин эхэлнэ.</translation>
 <translation id="6716434912087331834">Шинэ цонх сэргээхийн тулд идэвхтэй цонхны нийт тоог <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> эсвэл түүнээс цөөн болгож багасгана уу. Идэвхгүй цонхыг 6 сарын дараа устгадаг.</translation>
 <translation id="6723740634201835758">Таны Google бүртгэлд</translation>
+<translation id="6725340821578440069">Төхөөрөмжөөр шүүх</translation>
 <translation id="6734310707649923383">Та түүхээсээ зочилсон хуудсаа харах эсвэл устгах боломжтой</translation>
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />, Бэхлэгдэж, бичлэг хийж буй нууцлалтай таб</translation>
 <translation id="6738867403308150051">Татаж байна…</translation>
@@ -1905,6 +1907,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8387617938027387193">Өөрийгөө мөн болохыг бататгана уу</translation>
 <translation id="8393700583063109961">Мессеж илгээх</translation>
 <translation id="8398389123831319859">Нууцлалтай горим руу сэлгэхийн тулд хоёр товшоод удаан дарна уу</translation>
+<translation id="8401904657382223224">Хостоор шүүх</translation>
 <translation id="8412037385861858490">Таны Chrome дээрх ажлыг хамгаалахын тулд таныг Chrome-д нэвтрэхэд танай байгууллага тодорхой мэдээллийг харах, удирдах боломжтой болно. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">Бүрэн түүхийг харуулах</translation>
 <translation id="8413795581997394485">Аюултай гэдэг нь мэдэгдсэн сайт, татаж авсан файл болон өргөтгөлүүдээс хамгаална. Таныг сайтад зочлох үед Chrome таны IP хаягийг нуудаг нууцлалын серверээр дамжуулан URL-н будлиулсан хэсгийг Google-д илгээнэ. Хэрэв сайт ямар нэг сэжигтэй зүйл хийвэл бүтэн URL болон хуудасны контентын багахан хэсгийг мөн илгээдэг.</translation>

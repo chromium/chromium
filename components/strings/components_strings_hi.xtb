@@ -619,7 +619,6 @@
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">22 x 34 इंच</translation>
 <translation id="2063929825539050431">इस पेज को किसी दूसरे डिवाइस पर तुरंत भेजने के लिए, पता बार को दबाकर रखें</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 सुझाव}one{# सुझाव}other{# सुझाव}}</translation>
 <translation id="2066969741541525119">आपको जिस साइट पर जाना है उसे आपके संगठन ने ब्लॉक किया है</translation>
 <translation id="2071156619270205202">इस कार्ड को वर्चुअल कार्ड के तौर पर इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="2071852865256799872">आपके ब्राउज़र को आपका संगठन और आपकी प्रोफ़ाइल को <ph name="PROFILE_DOMAIN" /> मैनेज करता है</translation>
@@ -712,7 +711,6 @@
 <translation id="2188375229972301266">नीचे की ओर एक से ज़्यादा पंच</translation>
 <translation id="218940509700321686">कॉमा लगाकर अलग की गई वैल्यू</translation>
 <translation id="2190094353033916816">जब इस नीति को मशीन लेवल पर लागू किया जाता है, तो इसकी सेटिंग, उपयोगकर्ता लेवल पर लागू सेटिंग से अलग होती है. यह नीति अच्छे तरीके से काम कर रही है.</translation>
-<translation id="219061769324072544">क्रेडिट,कार्ड,डेबिट</translation>
 <translation id="2191980191135734720">अगले चरण में, अपना फ़िंगरप्रिंट इस्तेमाल करके स्क्रीन अनलॉक करें. इसके अलावा, <ph name="LINK_TEXT" /> भी तरीका इस्तेमाल किया जा सकता है.</translation>
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
 <translation id="2195729137168608510">ईमेल सुरक्षा</translation>
@@ -1083,6 +1081,7 @@
 <translation id="2807052079800581569">इमेज Y की स्थिति</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> में, Windows Hello को चालू या बंद किया जा सकता है</translation>
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
+<translation id="282457273878278063">संपर्क जानकारी मैनेज करें</translation>
 <translation id="2824775600643448204">पता और सर्च बार</translation>
 <translation id="2826760142808435982"><ph name="CIPHER" /> का इस्तेमाल करके कनेक्शन को एन्क्रिप्ट (सुरक्षित) किया गया है और उसकी पुष्टि की गई है. साथ ही, यह मुख्य एक्सचेंज तकनीक के रूप में <ph name="KX" /> का इस्तेमाल करता है.</translation>
 <translation id="2828797285817981634">मोशन सेंसर को फ़िलहाल अनुमति मिल गई है</translation>
@@ -1865,7 +1864,6 @@
 <translation id="4121428309786185360">इस तारीख को खत्म</translation>
 <translation id="4123572138124678573">नीचे की ओर ट्रिपल पंच</translation>
 <translation id="412601465078863288">अपलोड करने का समय खत्म हो गया</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 अन्य}one{# अन्‍य}other{# अन्‍य}}</translation>
 <translation id="4129810348470013900">कोई गड़बड़ी हुई. अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
 <translation id="4130226655945681476">नेटवर्क केबल, मोडेम और राउटर की जाँच करें</translation>
 <translation id="4132448310531350254">ऐप्लिकेशन "<ph name="POLICY_IDS_LIST" />" से जुड़े file_extensions "<ph name="FILE_EXTENSION" />" के लिए डुप्लीकेट हैंडलर.</translation>
@@ -3231,7 +3229,6 @@
 <translation id="638289054711715023">शृंक फ़ॉयल</translation>
 <translation id="6383221683286411806">आगे शुल्क लग सकते हैं.</translation>
 <translation id="6384448607821972818">रिकवरी पासवर्ड दिखाया गया</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 अन्‍य सुझाव}one{# अन्‍य सुझाव}other{# अन्‍य सुझाव}}</translation>
 <translation id="6386565501269869892">यू 4 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="6387645831795005740">हमलावर कभी-कभी यूआरएल में छोटे और नज़र न आने वाले बदलाव करके साइट की नकल कर लेते हैं.</translation>
 <translation id="6389470377220713856">कार्ड पर नाम</translation>

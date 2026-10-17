@@ -251,6 +251,7 @@
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="1986685561493779662">نام ازقبل وجود دارد</translation>
 <translation id="1992244793717364584">حذف نصب شدن برنامه</translation>
+<translation id="1999115740519098545">هنگام شروع به کار</translation>
 <translation id="200114059308480249">‏نوشتار اطراف در جستجوهای Google لحاظ شوند؟</translation>
 <translation id="2004096469149679223">‫<ph name="TAB_TITLE" />، زبانه ناشناس بی‌صدای سنجاق‌شده</translation>
 <translation id="2021896219286479412">کنترل‌های سایت تمام‌صفحه</translation>
@@ -265,7 +266,6 @@
 <translation id="2056878612599315956">سایت موقتاً متوقف شد</translation>
 <translation id="2063047797624276601">سازمانتان «مرور ایمن پیشرفته» را روشن کرده است</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{۱ بارگیری انجام نشد}one{# بارگیری انجام نشد}other{# بارگیری انجام نشد}}</translation>
-<translation id="2066690553719545730">همیشه نشان دادن «حالت هوشواره‌ای»</translation>
 <translation id="2067805253194386918">نوشتار</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" /> نتیجه از <ph name="TOTAL_RESULTS" /></translation>
@@ -798,6 +798,7 @@
 <translation id="4188638484665452040">‏سنجاق Gemini برداشته شد</translation>
 <translation id="4189344235004694858">{NUM_REVOKED_PERMISSIONS,plural, =1{‏‫Chrome ارسال اعلان از این سایت را به‌دلیل هرزنامه یا محتوای گمراه‌کننده متوقف کرد}one{‏‫Chrome ارسال اعلان از این سایت را به‌دلیل هرزنامه یا محتوای گمراه‌کننده متوقف کرد}other{‏‫Chrome ارسال اعلان از این سایت‌ها را به‌دلیل هرزنامه یا محتوای گمراه‌کننده متوقف کرد}}</translation>
 <translation id="4195643157523330669">باز کردن در زبانه جدید</translation>
+<translation id="4195814663415092787">ادامه از جایی که ترک کردید</translation>
 <translation id="4197828496439691735">{NUM_TABS,plural, =1{یک زبانه در این دستگاه}one{# زبانه در این دستگاه}other{# زبانه در این دستگاه}}</translation>
 <translation id="4198268995694216131">سایت‌های بیشتر</translation>
 <translation id="4198423547019359126">مکانی برای بارگیری دردسترس نیست</translation>
@@ -808,7 +809,6 @@
 <translation id="4216511743389425832">خواندن این صفحه</translation>
 <translation id="4217657297368492684">‫<ph name="TAB_TITLE" />، زبانه ناشناس سنجاق‌شده انتخابی تصویردرتصویر</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
-<translation id="4232376164796433044">گذرواژه‌ها و تکمیل خودکار</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="425582637250725228">تغییراتی که انجام داده‌اید ممکن است ذخیره نشده باشند.</translation>
@@ -1147,6 +1147,7 @@
 <translation id="5568069709869097550">ورود به سیستم ممکن نیست</translation>
 <translation id="557018954714092179">ایجاد پوشه جدید</translation>
 <translation id="5578795271662203820">جستجوی <ph name="SEARCH_ENGINE" /> برای این تصویر</translation>
+<translation id="558563010977877295">باز کردن یک صفحه خاص یا مجموعه‌ای از صفحات</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5599455543593328020">حالت ناشناس</translation>
 <translation id="5601180634394228718">‏برای تنظیمات بیشتری که از داده‌ها برای بهبود تجربه شما در Chrome استفاده می‌کنند، به <ph name="BEGIN_LINK" />سرویس‌های Google<ph name="END_LINK" /> بروید.</translation>
@@ -1447,6 +1448,7 @@
 <translation id="671481426037969117">تایمر <ph name="FQDN" /> شما متوقف شد. دوباره فردا شروع به کار می‌کند.</translation>
 <translation id="6716434912087331834">برای بازگرداندن پنجره جدید، تعداد کل پنجره‌های فعال را به <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> یا کمتر کاهش دهید. پنجره‌های غیرفعال پس‌از ۶ ماه حذف می‌شوند.</translation>
 <translation id="6723740634201835758">‏در «حساب Google»</translation>
+<translation id="6725340821578440069">فیلتر کردن براساس دستگاه</translation>
 <translation id="6734310707649923383">می‌توانید صفحه‌هایی را که از آن‌ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه حذف کنید</translation>
 <translation id="6737429434215739253">‫<ph name="TAB_TITLE" />، زبانه ناشناس ضبط سنجاق‌شده</translation>
 <translation id="6738867403308150051">در حال بارگیری…</translation>
@@ -1905,6 +1907,7 @@
 <translation id="8387617938027387193">درستی‌سنجی کردن هویت</translation>
 <translation id="8393700583063109961">ارسال پیام</translation>
 <translation id="8398389123831319859">برای رفتن به حالت «ناشناس»، دو تک‌ضرب بزنید و نگه دارید</translation>
+<translation id="8401904657382223224">فیلتر کردن براساس میزبان</translation>
 <translation id="8412037385861858490">‏برای حفظ امنیت کارهای شما در Chrome، سازمان شما می‌تواند اطلاعات مشخصی را هنگام ورود به سیستم Chrome مشاهده یا مدیریت کند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8413126021676339697">نمایش کل سابقه</translation>
 <translation id="8413795581997394485">‏دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌هایی که خطرناک بودن آن‌ها مشخص شده است از شما محافظت می‌کند. هنگامی که از سایتی بازدید می‌کنید، Chrome بخش مبهم‌سازی‌شده‌ای از نشانی وب را ازطریق سرور حافظ حریم خصوصی که نشانی IP شما را پنهان کرده است به Google ارسال می‌کند. اگر سایتی کار مشکوکی انجام دهد، نشانی‌های وب کامل و بخش‌هایی از محتوای صفحه نیز ارسال می‌شود.</translation>

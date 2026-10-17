@@ -8773,17 +8773,6 @@ Origin-Agent-Cluster: 헤더가 설정되지 않았을 때 M111의 기본값은 
       정책을 False로 설정하면 서명된 HTTP 교환(SXG)이 로드되지 않습니다.</translation>
 <translation id="6368011194414932347">홈페이지 URL 설정</translation>
 <translation id="6368403635025849609">이 사이트에서 자바스크립트 허용</translation>
-<translation id="6368652917086795891"><ph name="PRODUCT_NAME" />에서 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />의 연결 설정을 구성합니다.
-
-이 정책은 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> 정책으로 대체됩니다. 둘 다 설정된 경우 <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />가 우선 적용됩니다.
-
-정책은 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />을 통해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 웹 애플리케이션 URL을 구성합니다. 이 URL은 https 스키마를 사용하고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 도메인을 가리키며 사용자 이름 또는 비밀번호를 포함하지 않는 유효한 URL이어야 합니다. 이러한 요구사항을 충족하지 않으면 정책이 무시되고 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />가 구성되지 않은 상태로 유지됩니다.
-
-이 정책을 설정하면 관리 계정 또는 관리 브라우저로 로그인한 사용자에 대해 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성됩니다.
-
-정책을 설정하지 않으면 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 제품이 구성되지 않습니다.
-
-이 정책은 일반적인 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 통합을 제어하지 않습니다. 일반적인 통합은 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 정책으로 제어할 수 있습니다.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">내장된 AI API의 사용을 허용하지 않음</translation>
 <translation id="6371005337713685988">관련 웹사이트 세트 설정</translation>

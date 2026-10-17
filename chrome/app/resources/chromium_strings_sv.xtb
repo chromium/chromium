@@ -17,6 +17,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="112640046208448578">Identifiera saker eller platser och kopiera eller översätt text. När du använder bildsökning skickas en skärmbild av sidan till servern. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium är din standardwebbläsare</translation>
 <translation id="1131805035311359397"><ph name="BEGIN_LINK" />Logga in i Chromium<ph name="END_LINK" /> om du vill kontrollera att dina lösenord skyddas från dataintrång och andra säkerhetsproblem.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="1153368717515616349">Klicka på Chromium-menyn</translation>
 <translation id="1157985233335035034">Nyligen använda språk</translation>
 <translation id="1184145431117212167">Installationen misslyckades eftersom du använder en version av Windows som inte stöds.</translation>
@@ -40,6 +41,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1329040302064168406">Logga in i Chromium på telefonen</translation>
 <translation id="1330562121671411446">Identifiera språk</translation>
 <translation id="1342274909142618978">Radera även data från Chromium (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="1345251407431278948">Fäst! Du kan komma åt Bildsökning igen från den nya knappen i verktygsfältet</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1388276868779258475">Använd Chromium-appen för att fortsätta surfa var du än är</translation>
@@ -228,6 +230,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Ta med dina favoritverktyg från Google AI var du än är med Chromium på iOS.</translation>
 <translation id="3264761466044851269">Logga in i Chromium om du vill få tillgång till dina tillägg med mera från <ph name="DEVICE" /></translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. Det isolerade fönstret öppnas inte igen.}other{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="328888136576916638">Googles API-nycklar saknas. Vissa funktioner i Google Chromium kommer att vara inaktiverade.</translation>
 <translation id="3296368748942286671">Fortsätt köra bakgrundsappar när Chromium avslutas</translation>
@@ -275,6 +278,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
           **Föreslå frågor:** Skapa en punktlista med tre till fem tankeväckande frågor som en användare kan ställa för att bättre förstå skärmbilden. Minst en fråga ska handla specifikt om ett visuellt objekt, dess design eller placering.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386243222263310720">Logga in i Chromium om du vill få tillgång till dina bokmärken med mera på alla dina enheter</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. Det isolerade fönstret öppnas inte igen.}other{Administratören meddelar att du bör starta om Chromium så att uppdateringen tillämpas. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="3885770153807205175">Språkväljare</translation>
 <translation id="388648406173476553">Anpassa och kontrollera Chromium. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="3889543394854987837">Öppna Chromium genom att klicka på ditt namn och börja surfa.</translation>
@@ -432,6 +436,7 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> är redan inloggad. Du kan hålla isär webbinformationen genom att logga in i Chromium i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina sparade uppgifter med mera från <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Startfel: Kör installationsprogrammet som vanlig användare, inte som administratör.</translation>
 <translation id="5580770360767802657">Använd Chromium som standard och fäst den</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. Det isolerade fönstret öppnas inte igen.}other{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5605834417512968703">Välj vad du vill söka efter med bildsökning eller tryck på Escape för att avsluta bildsökningen</translation>
 <translation id="5618818588972826921">Välj text eller bild att söka efter med bildsökning eller tryck på Escape för att avsluta bildsökningen</translation>
@@ -591,6 +596,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="7003299027384820442">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installationen misslyckades eftersom den här versionen av operativsystemet inte stöds.</translation>
 <translation id="7024536598735240744">Uppackningsfel: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. Det isolerade fönstret öppnas inte igen.}other{Avancerat skydd kräver att du startar om Chromium så att en uppdatering tillämpas. # isolerade fönster öppnas inte igen.}}</translation>
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="7047386856539490735">Är de här resultaten användbara?</translation>
 <translation id="705851970750939768">Uppdatera Chromium</translation>
@@ -670,6 +676,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> – Chromium Canary</translation>
 <translation id="7803986347287457849">Gör det svårare för personer som har åtkomst till din internettrafik att se vilka webbplatser du besöker. Chromium använder en säker anslutning för att söka efter en webbplats IP-adress i domännamnssystemet (DNS).</translation>
 <translation id="7810005234485217901">Du kan fästa Bildsökning för enkel åtkomst</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Det finns en ny Chromium-uppdatering som tillämpas så snart du startar om. Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="7828527096541974699">Välj vad du vill dela med Chromium</translation>
 <translation id="7828947555739565424">Det finns redan en Chromium-profil med detta konto på enheten</translation>
 <translation id="7845233973568007926">Tack för att du installerat programmet. Du måste starta om datorn innan du använder <ph name="BUNDLE_NAME" />.</translation>
@@ -707,6 +714,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="813913629614996137">Initierar …</translation>
 <translation id="8161503455832158203">Öppna Gemini i Chromium med ett kortkommando.</translation>
 <translation id="8164014945047474187">Ytterligare användarvillkor för Chromium</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. Det finns # inkognitofönster eller isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="81770708095080097">Filen är farlig och har blockerats av Chromium.</translation>
 <translation id="8177472873527554730">Det gick inte att hitta innehåll på sidan</translation>
 <translation id="8200109504272824693">Ange lösenfrasen om du vill använda och spara Chromium-data i ditt konto, <ph name="USER_EMAIL" /></translation>

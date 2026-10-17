@@ -618,7 +618,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2059166748188874810">Município</translation>
 <translation id="2059202684901022309">22 x 34 pol.</translation>
 <translation id="2063929825539050431">Para enviar rapidamente esta página para outro dispositivo, toque sem soltar na barra de endereço</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 sugestão}other{# sugestões}}</translation>
 <translation id="2066969741541525119">O site seguinte foi bloqueado pela sua organização</translation>
 <translation id="2071156619270205202">Este cartão não é elegível para um número de cartão virtual.</translation>
 <translation id="2071852865256799872">O navegador é gerido pela sua organização e o seu perfil é gerido pelo domínio <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por vírgulas</translation>
 <translation id="2190094353033916816">Esta política tem valores diferentes aplicados aos níveis da máquina e do utilizador. A política está a funcionar conforme previsto.</translation>
-<translation id="219061769324072544">Crédito,Cartão,Débito</translation>
 <translation id="2191980191135734720">Desbloqueie o ecrã no passo seguinte, normalmente, com a sua impressão digital. Também pode <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
 <translation id="2195729137168608510">Protecção de email</translation>
@@ -1082,6 +1080,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2807052079800581569">Posição Y da imagem</translation>
 <translation id="2808278141522721006">Pode ativar ou desativar o Windows Hello em <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">A analisar...</translation>
+<translation id="282457273878278063">Gerir informações de contacto</translation>
 <translation id="2824775600643448204">Barra de pesquisa e endereço</translation>
 <translation id="2826760142808435982">A ligação é encriptada e autenticada com <ph name="CIPHER" /> e utiliza <ph name="KX" /> como mecanismo de troca de chaves.</translation>
 <translation id="2828797285817981634">Sensores de movimento permitidos por agora</translation>
@@ -1865,7 +1864,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4121428309786185360">Expira em</translation>
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
 <translation id="412601465078863288">O carregamento excedeu o tempo limite</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
 <translation id="4129810348470013900">Algo correu mal. Verifique a ligação à Internet e tente novamente.</translation>
 <translation id="4130226655945681476">Rever os cabos de rede, o modem e o router</translation>
 <translation id="4132448310531350254">Controladores duplicados para a file_extension "<ph name="FILE_EXTENSION" />" referenciada pelas apps "<ph name="POLICY_IDS_LIST" />".</translation>
@@ -3231,7 +3229,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="638289054711715023">Filme retrátil</translation>
 <translation id="6383221683286411806">Possíveis cobranças se prosseguir.</translation>
 <translation id="6384448607821972818">Palavra-passe de recuperação apresentada</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 outra sugestão}other{# outras sugestões}}</translation>
 <translation id="6386565501269869892">Envelope You 4</translation>
 <translation id="6387645831795005740">Por vezes, os atacantes imitam sites ao efetuarem alterações pequenas e difíceis de detetar no URL.</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>

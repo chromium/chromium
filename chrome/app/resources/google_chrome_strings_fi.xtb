@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen.}=1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito-ikkunaasi ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1434626383986940139">Chrome Canary -sovellukset</translation>
 <translation id="1439793550875056299">Kiinnitä Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{Järjestelmänvalvoja vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Järjestelmänvalvoja vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="146866447420868597">Haluatko kirjautua Chromeen?</translation>
 <translation id="1476347941828409626">Hallinnoi Chrome-profiileja</translation>
 <translation id="1492280395845991349">Viimeistele Chrome-päivitys käynnistämällä se uudelleen</translation>
@@ -269,6 +270,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="345171907106878721">Lisää itsesi Chromeen</translation>
 <translation id="3453763134178591239">Chrome-käyttöjärjestelmän käyttöehdot</translation>
 <translation id="3475778264501649775">Chrome-sovelluksella voit käyttää esimerkiksi salasanoja ja välilehtiä puhelimella missä tahansa</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Järjestelmänvalvoja pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Järjestelmänvalvoja pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="3539955434060988644">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
 <translation id="354621070532799440">Muistutus: Googlen parhaat turvaominaisuudet taskussasi</translation>
 <translation id="3547866758548131919">Klikkaa Tee yhteenveto ‑painiketta, niin voit jakaa dokumentin Gemini in Chromelle, saada nopean yleiskatsauksen ja esittää jatkokysymyksiä</translation>
@@ -284,12 +286,15 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3622797965165704966">Nyt voit helpommin käyttää Chromea Google-tililläsi ja jaetuilla tietokoneilla.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää tallennettuja tietoja ja muuta kaikilla laitteillasi.</translation>
 <translation id="3635073343384702370">Chrome voi tarkistaa salasanasi, kun tallennat niitä</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Eristettyä selainikkunaa ei avata uudelleen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="3636970668267555808">Kun valitset Chromen oletusselaimeksi, saat helposti käyttöösi tutut, luotettavat ominaisuudet.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Järjestelmänvalvoja pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Järjestelmänvalvoja pyytää Chromen uudelleenkäynnistystä, jotta tämä päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="3667616615096815454">Asennus ei onnistu, palvelin ei tunnista sovellusta.</translation>
 <translation id="3673813398384385993">Chrome havaitsi, että "<ph name="EXTENSION_NAME" />" sisältää haittaohjelmia</translation>
 <translation id="3697952514309507634">Muut Chrome-profiilit</translation>
 <translation id="3703994572283698466">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">ChromeOS Flexin versio</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="3718181793972440140">Yksi kohde poistetaan pysyvästi  tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome suosittelee poistamaan sen. <ph name="BEGIN_LINK" />Lue lisää tuetuista laajennuksista<ph name="END_LINK" />}other{Chrome suosittelee poistamaan ne. <ph name="BEGIN_LINK" />Lue lisää tuetuista laajennuksista<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Tee hausta tarkempi lisäämällä useita välilehtiä, tiedostoja ja työkaluja "Lisää välilehti ja muuta" ‑painikkeella.</translation>
@@ -416,6 +421,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5003967926796347400">Valitse "Google Salasanat"</translation>
 <translation id="5043786843026425788">Lue lisää Google Lensilla hakemisesta Chromessa</translation>
 <translation id="504867494566807945">Avaa minkä tahansa sovelluksen linkit Chromessa. Lisäksi se kiinnitetään tehtäväpalkkiin, jotta pääset siihen helposti.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="5105120510934353742">Sinulla on oltava macOS 13 tai uudempi, jotta saat tulevia Google Chromen päivityksiä. Tällä tietokoneella on macOS 12.</translation>
 <translation id="5114340746415930644">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="USER_EMAIL" /></translation>
 <translation id="5120334927898581447">Kirjaudu Chromeen, kun kirjaudut muihin Googlen palveluihin</translation>
@@ -476,6 +482,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Internetyhteyden muodostaminen ei onnistu. Välityspalvelin edellyttää todennusta.</translation>
 <translation id="5709557627224531708">Aseta Chrome oletusselaimeksi</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Eristettyä selainikkunaa ei avata uudelleen.}other{Lisäsuojaus edellyttää Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="5719246646468301581">Google Chromen ja ChromeOS:n lisäkäyttöehdot</translation>
 <translation id="5736850870166430177">Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä</translation>
 <translation id="5742003800414899269">Lataa Chrome-sovellus ja käytä parhaita tekoälytyökaluja missä tahansa</translation>
@@ -503,6 +510,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5960404530854194706">Chrome päivittyy, kun olet poissa</translation>
 <translation id="5980111191913430208">Jos laajennukset, sovellukset ja teemat ovat tuntemattomista lähteistä, ne voivat vahingoittaa laitetta. Chrome suosittelee niiden asentamista vain täältä: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{Järjestelmänvalvoja vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Järjestelmänvalvoja vaatii Chromen uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="6008161919456049856">Google-tilille tallennetut salasanat, maksutavat ja osoitteet poistetaan tältä laitteelta. Jos haluat käyttää niitä uudelleen Chromessa, kirjaudu takaisin sisään.</translation>
 <translation id="6009821354356307391">Esitä lisäkysymys</translation>
 <translation id="6014316319780893079"><ph name="BEGIN_LINK" />Chromen työkaluilla<ph name="END_LINK" /> voit selata turvallisesti ja pitää ohjat omissa käsissäsi</translation>
@@ -675,6 +683,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7452987490177144319">{COUNT,plural, =1{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromea ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}other{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromea ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}}</translation>
 <translation id="7466577301922356468">Datan automaattinen lähettäminen Googlelle auttaa parantamaan Chromea. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="7477130805345743099">Chrome varoittaa sinua ennen kuin lataat sivustoja suojaamattomalla yhteydellä</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Eristettyä selainikkunaa ei avata uudelleen.}other{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. # eristettyä ikkunaa ei avata uudelleen.}}</translation>
 <translation id="7481213027396403996">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="749228101751499733">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa. <ph name="SHORTCUT" /> voi muuttaa Googlen palvelujen asetuksiasi.</translation>
 <translation id="7496017508659652909">Chrome esilataa sivuja, mikä nopeuttaa selaamista ja hakemista. <ph name="BEGIN_LINK" />Lue lisää sivujen esilatauksesta<ph name="END_LINK" /></translation>
@@ -791,6 +800,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="8380754585531979907">Siirry Gemini in Chromen ja avoimen välilehden välillä näppäimistöllä.</translation>
 <translation id="8387459386171870978">Jatka Chromen käyttöä</translation>
 <translation id="8394720698884623075">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen listan avulla</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="8403038600646341038">Chrome-logo tietokoneen näytöllä.</translation>
 <translation id="8418845734693287262">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="842386925677997438">Chromen turvallisuustyökalut</translation>

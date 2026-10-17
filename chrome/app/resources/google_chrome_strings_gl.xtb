@@ -49,6 +49,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{Actualizouse Chrome. Podes usar a versión máis recente tan pronto como o reinicies. Despois volverán abrirse as pestanas actuais.}=1{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. A ventá do modo de incógnito non se volverá abrir.}other{Actualizouse Chrome. Cando reinicies o dispositivo, xa podes usar a versión máis recente. Despois volverán abrirse as pestanas actuais. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1434626383986940139">Aplicacións de Chrome Canary</translation>
 <translation id="1439793550875056299">Fixar Chrome</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Non se volverá abrir a ventá illada.}other{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Non se volverá abrir # ventás illadas.}}</translation>
 <translation id="146866447420868597">Queres iniciar sesión en Chrome?</translation>
 <translation id="1476347941828409626">&amp;Xestionar perfís de Chrome</translation>
 <translation id="1492280395845991349">Reiniciar para completar a actualización de Chrome</translation>
@@ -273,6 +274,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="345171907106878721">Engádete a Chrome</translation>
 <translation id="3453763134178591239">Condicións de Chrome OS</translation>
 <translation id="3475778264501649775">Leva os teus contrasinais, pestanas e moito máis onde queiras coa aplicación de Chrome no teléfono</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chrome para aplicar esta actualización. Non se volverá abrir a ventá illada.}other{A persoa que che administra a conta solicita que reinicies Chrome para aplicar esta actualización. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="3539955434060988644">Abrir ligazón nunha ventá do modo de incó&amp;gnito de Chrome</translation>
 <translation id="354621070532799440">Recordatorio: As mellores funcións de seguranza de Google no teu peto</translation>
 <translation id="3547866758548131919">Facer clic no botón Resumir para compartir este documento con Gemini en Chrome e obter un resumo rápido, así como para facer consultas adicionais</translation>
@@ -288,12 +290,15 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="3622797965165704966">Agora é máis fácil utilizar Chrome coa túa conta de Google e en ordenadores compartidos.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chrome co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás acceder á túa información gardada e moito máis en todos os teus dispositivos.</translation>
 <translation id="3635073343384702370">Chrome pode comprobar os teus contrasinais cando os gardes</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{Chrome terminou de actualizarse. Cando reinicies o dispositivo, xa poderás usar a versión máis recente. Despois volverán abrirse as pestanas actuais. Non se volverá abrir a ventá illada.}other{Chrome terminou de actualizarse. Cando reinicies o dispositivo, xa poderás usar a versión máis recente. Despois volverán abrirse as pestanas actuais. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="3636970668267555808">Define Chrome como navegador predeterminado para acceder con facilidade ás funcións que xa coñeces, que tanto che gustan e nas que confías.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chrome para aplicar esta actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta solicita que reinicies Chrome para aplicar esta actualización. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="3667616615096815454">Non se puido levar a cabo a instalación. O servidor non recoñece a aplicación.</translation>
 <translation id="3673813398384385993">Chrome detectou que "<ph name="EXTENSION_NAME" />" contén software malicioso</translation>
 <translation id="3697952514309507634">Outros perfís de Chrome</translation>
 <translation id="3703994572283698466">Chrome OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, igual que o <ph name="BEGIN_LINK_LINUX_OSS" />contorno de programación de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="3716540481907974026">Versión de Chrome OS Flex</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chrome que se aplicará en canto o reinicies. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{Hai dispoñible unha actualización nova para Chrome que se aplicará en canto o reinicies. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="3718181793972440140">Esta acción eliminará 1 elemento deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{Chrome recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}other{Chrome recomenda que as quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">Para afondar na busca, agrega varias pestanas, ficheiros e ferramentas co botón Engadir unha pestana e moito máis.</translation>
@@ -420,6 +425,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5003967926796347400">Fai clic en Xestor de contrasinais de Google</translation>
 <translation id="5043786843026425788">Máis información sobre como facer consultas con Google Lens en Chrome</translation>
 <translation id="504867494566807945">Abre ligazóns en Chrome desde calquera aplicación. Ademais, o navegador fíxase na barra de tarefas para que poidas acceder a el facilmente.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="5105120510934353742">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 13 ou unha versión posterior. Este ordenador ten macOS 12.</translation>
 <translation id="5114340746415930644">Escribe a túa frase de acceso para usar e gardar os datos de Chrome na túa conta (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Iniciar sesión en Chrome cando inicies sesión noutros servizos de Google</translation>
@@ -484,6 +490,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Non se puido establecer conexión con Internet. O servidor proxy require autenticación.</translation>
 <translation id="5709557627224531708">Define Chrome como navegador predeterminado</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. Non se volverá abrir a ventá illada.}other{A opción Protección avanzada require que reinicies Chrome para aplicar unha actualización. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="5719246646468301581">Condicións de servizo adicionais de Google Chrome e ChromeOS</translation>
 <translation id="5736850870166430177">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chrome tamén pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
 <translation id="5742003800414899269">Usa a aplicación Chrome para levar contigo as mellores ferramentas de IA esteas onde esteas</translation>
@@ -511,6 +518,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5960404530854194706">Chrome actualizarase cando non esteas usando o dispositivo</translation>
 <translation id="5980111191913430208">As extensións, as aplicacións e os temas de fontes descoñecidas poden danar o dispositivo. Chromium recomenda que os instales só desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="6003112304606738118">Descargando… Tempo restante: <ph name="HOURS" /> h</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta esixe que reinicies Chrome para aplicar unha actualización. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="6008161919456049856">Os contrasinais, métodos de pago e enderezos que gardes na túa Conta de Google quitaranse deste dispositivo. Para usalos de novo en Chrome, volve iniciar sesión.</translation>
 <translation id="6009821354356307391">Facer outra consulta</translation>
 <translation id="6014316319780893079">Coas <ph name="BEGIN_LINK" />ferramentas de Chrome<ph name="END_LINK" />, podes navegar de maneira segura e manter o control</translation>
@@ -683,6 +691,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7452987490177144319">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chrome leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>
 <translation id="7466577301922356468">O envío automático destes datos a Google axuda a mellorar Chrome. Podes cambiar esta opción en calquera momento.</translation>
 <translation id="7477130805345743099">Chrome mostrarache unha advertencia antes de cargar un sitio cunha conexión pouco segura</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chrome que se aplicará en canto o reinicies. Non se volverá abrir a ventá illada.}other{Hai dispoñible unha actualización nova para Chrome que se aplicará en canto o reinicies. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="7481213027396403996">Goza da máxima seguranza de Chrome</translation>
 <translation id="749228101751499733">Mentres teñas a sesión iniciada, poderás usar os teus contrasinais, ademais doutros datos da túa Conta de Google, en Chrome. <ph name="SHORTCUT" /> pode cambiar a túa configuración dos servizos de Google.</translation>
 <translation id="7496017508659652909">Chrome precarga as páxinas para que navegar e facer buscas sexa máis rápido. <ph name="BEGIN_LINK" />Máis información sobre como precargar páxinas<ph name="END_LINK" /></translation>
@@ -799,6 +808,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="8380754585531979907">Usa o teclado para navegar entre Gemini en Chrome e a pestana que tes aberta.</translation>
 <translation id="8387459386171870978">Seguir usando Chrome</translation>
 <translation id="8394720698884623075">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chrome</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{Chrome terminou de actualizarse. Cando reinicies o dispositivo, xa poderás usar a versión máis recente. Despois volverán abrirse as pestanas actuais. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{Chrome terminou de actualizarse. Cando reinicies o dispositivo, xa poderás usar a versión máis recente. Despois volverán abrirse as pestanas actuais. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="8403038600646341038">O logotipo de Chrome dentro da pantalla dun ordenador.</translation>
 <translation id="8418845734693287262">Chrome OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="842386925677997438">Ferramentas de privacidade de Chrome</translation>

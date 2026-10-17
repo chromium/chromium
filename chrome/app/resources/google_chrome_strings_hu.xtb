@@ -47,6 +47,7 @@
 <translation id="1425903838053942728">{COUNT,plural, =0{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni.}=1{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. Az inkognitó ablak nem fog újra megnyílni.}other{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="1434626383986940139">Chrome Canary-alkalmazások</translation>
 <translation id="1439793550875056299">A Chrome kitűzése</translation>
+<translation id="1446616215961349840">{COUNT,plural, =1{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. Az izolált ablak nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. A(z) # izolált ablak nem fog újra megnyílni.}}</translation>
 <translation id="146866447420868597">Bejelentkezik a Chrome-ba?</translation>
 <translation id="1476347941828409626">&amp;Chrome-profilok kezelése</translation>
 <translation id="1492280395845991349">Indítsa újra a Chrome frissítésének befejezéséhez</translation>
@@ -269,6 +270,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="345171907106878721">Adja hozzá magát a Chrome-ban</translation>
 <translation id="3453763134178591239">ChromeOS – Szerződési Feltételek</translation>
 <translation id="3475778264501649775">A telefonjára telepített Chrome alkalmazással útközben is hozzáférhet jelszavaihoz, lapjaihoz és sok minden máshoz</translation>
+<translation id="353676578689292511">{COUNT,plural, =1{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. Az izolált ablak nem fog újra megnyílni.}other{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. A(z) # izolált ablak nem fog újra megnyílni.}}</translation>
 <translation id="3539955434060988644">Link megnyitása Chrome-inkognitóablakban</translation>
 <translation id="354621070532799440">Emlékeztető: A Google legjobb biztonsági funkciói a zsebében</translation>
 <translation id="3547866758548131919">A Összegzés gombra kattintva megoszthatja ezt a dokumentumot a Geminivel a Chrome-ban, hogy gyors áttekintést kapjon, és utánkövető kérdéseket tehessen fel</translation>
@@ -284,12 +286,15 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="3622797965165704966">Google-fiókjával most még egyszerűbben használhatja a Chrome-ot közösen használt számítógépeken.</translation>
 <translation id="3628103251823745322"><ph name="EXISTING_USER" /> már bejelentkezett. Ha szeretné elkülöníteni böngészési tevékenységeit, jelentkezzen be a Chrome-ban a saját profiljába a következő e-mail-címmel: <ph name="USER_EMAIL_ADDRESS" />. Egyebek mellett a mentett adataihoz is hozzáférhet bármely eszközén.</translation>
 <translation id="3635073343384702370">A Chrome képes a jelszavak ellenőrzésére, amikor Ön menti őket</translation>
+<translation id="3635447126111966800">{COUNT,plural, =1{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. Az izolált ablak nem fog újra megnyílni.}other{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. A(z) # izolált ablak nem fog újra megnyílni.}}</translation>
 <translation id="3636970668267555808">A Chrome alapértelmezett böngészőként való beállításával könnyen hozzáférhet a már ismert, szeretett és megbízható funkciókhoz.</translation>
+<translation id="3658647790151923487">{COUNT,plural, =1{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. Van megnyitott inkognitó vagy izolált ablak. Az újraindítás után nem fog újra megnyílni.}other{Rendszergazdája arra kéri, hogy indítsa újra a Chrome-ot a frissítés alkalmazásához. # inkognitó és izolált ablak van megnyitva a profilokban. Az újraindítás után nem fognak újra megnyílni.}}</translation>
 <translation id="3667616615096815454">A telepítés sikertelen volt, mert az alkalmazás ismeretlen a szerver számára.</translation>
 <translation id="3673813398384385993">A Chrome kártékony programot talált a következőben: „<ph name="EXTENSION_NAME" />”</translation>
 <translation id="3697952514309507634">Egyéb Chrome-profilok</translation>
 <translation id="3703994572283698466">A ChromeOS létrejöttéhez egyéb <ph name="BEGIN_LINK_CROS_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_CROS_OSS" /> is hozzájárultak, ahogyan a <ph name="BEGIN_LINK_LINUX_OSS" />Linux fejlesztői környezet<ph name="END_LINK_LINUX_OSS" /> létrejöttéhez is.</translation>
 <translation id="3716540481907974026">ChromeOS Flex verziója</translation>
+<translation id="371672359236374684">{COUNT,plural, =1{Új Chrome-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. Van megnyitott inkognitó vagy izolált ablak. Az újraindítás után nem fog újra megnyílni.}other{Új Chrome-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. # inkognitó és izolált ablak van megnyitva a profilokban. Az újraindítás után nem fognak újra megnyílni.}}</translation>
 <translation id="3718181793972440140">Ezzel egyetlen elemet töröl az eszközről. Az adatok későbbi lekéréséhez jelentkezzen be a Chrome-ba a következő e-mail-címmel: <ph name="USER_EMAIL" />.</translation>
 <translation id="3723744677043446310">{NUM_EXTENSIONS,plural, =1{A Chrome az eltávolítását javasolja. <ph name="BEGIN_LINK" />További információ a támogatott bővítményekről.<ph name="END_LINK" />}other{A Chrome az eltávolításukat javasolja. <ph name="BEGIN_LINK" />További információ a támogatott bővítményekről.<ph name="END_LINK" />}}</translation>
 <translation id="3729187154190517324">A „Lap és egyebek hozzáadása” gombbal több lapot, fájlt és eszközt is hozzáadhat a keresés elmélyítése céljából.</translation>
@@ -416,6 +421,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5003967926796347400">Kattintson a „Google Jelszókezelő” lehetőségre</translation>
 <translation id="5043786843026425788">További információ a Google Lens szolgáltatással való keresésről a Chrome-ban</translation>
 <translation id="504867494566807945">A Chrome-ban bármely alkalmazásból megnyithatja a linkeket. A Chrome a tálcára is ki lesz tűzve, így könnyen hozzáférhet.</translation>
+<translation id="5098698934038952252">{COUNT,plural, =1{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. Van megnyitott inkognitó vagy izolált ablak. Az újraindítás után nem fog újra megnyílni.}other{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. # inkognitó és izolált ablak van megnyitva a profilokban. Az újraindítás után nem fognak újra megnyílni.}}</translation>
 <translation id="5105120510934353742">Ha a jövőben Google Chrome-frissítéseket szeretne kapni, akkor a macOS 13-as vagy újabb verziójára lesz szüksége. Ezen a számítógépen a macOS 12 fut.</translation>
 <translation id="5114340746415930644">Adja meg összetett jelszavát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="USER_EMAIL" />)</translation>
 <translation id="5120334927898581447">Bejelentkezés a Chrome-ba, amikor más Google-szolgáltatásokba is bejelentkezik</translation>
@@ -476,6 +482,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Nem lehet csatlakozni az internethez. A proxyszerver hitelesítést igényel.</translation>
 <translation id="5709557627224531708">A Chrome beállítása alapértelmezett böngészőként</translation>
+<translation id="5717779012650642443">{COUNT,plural, =1{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. Az izolált ablak nem fog újra megnyílni.}other{A Speciális védelemhez újra kell indítania a Chrome-ot a frissítés alkalmazásához. A(z) # izolált ablak nem fog újra megnyílni.}}</translation>
 <translation id="5719246646468301581">A Google Chrome és a ChromeOS kiegészítő szerződési feltételei</translation>
 <translation id="5736850870166430177">Ha valamelyik webhely megpróbálja ellopni az Ön jelszavát, illetve ha Ön kártékony fájlt tölt le, akkor a Chrome elküldheti az URL-eket is (az oldal tartalmának részeivel együtt) a Biztonságos Böngészésnek.</translation>
 <translation id="5742003800414899269">A Chrome app használatával útközben is használhatja a legjobb AI-eszközöket</translation>
@@ -503,6 +510,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="5960404530854194706">A Chrome akkor frissít, amikor Ön nincs a gépnél</translation>
 <translation id="5980111191913430208">Az ismeretlen forrásból származó bővítmények, alkalmazások és témák károsíthatják az eszközt. A Chrome azt javasolja, hogy csak a következő helyről telepítse őket: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Letöltés… <ph name="HOURS" /> óra van hátra</translation>
+<translation id="6004427865367382148">{COUNT,plural, =1{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. Van megnyitott inkognitó vagy izolált ablak. Az újraindítás után nem fog újra megnyílni.}other{A rendszergazda előírta, hogy újra kell indítania a Chrome-ot a frissítés alkalmazásához. # inkognitó és izolált ablak van megnyitva a profilokban. Az újraindítás után nem fognak újra megnyílni.}}</translation>
 <translation id="6008161919456049856">A Google-fiókjába mentett jelszavai, fizetési módjai és címei el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chrome-ban, jelentkezzen be újra.</translation>
 <translation id="6009821354356307391">Kiegészítő keresés kérése</translation>
 <translation id="6014316319780893079">A <ph name="BEGIN_LINK" />Chrome eszközeivel<ph name="END_LINK" /> biztonságosan böngészhet, és kézben tarthatja az irányítást</translation>
@@ -675,6 +683,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7452987490177144319">{COUNT,plural, =1{Szervezete automatikusan törli a böngészési adatokat, ha a Chrome 1 percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A lapok nyitva maradnak.}other{Szervezete automatikusan törli a böngészési adatokat, ha a Chrome # percig nincs használatban. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltések. A lapok nyitva maradnak.}}</translation>
 <translation id="7466577301922356468">Az adatok Google-nak való automatikus elküldésével segít a Chrome fejlesztésében. Ezt a beállítást bármikor módosíthatja.</translation>
 <translation id="7477130805345743099">A Chrome figyelmezteti Önt a nem biztonságos kapcsolatot használó webhelyek betöltése előtt</translation>
+<translation id="7478526480756448309">{COUNT,plural, =1{Új Chrome-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. Az izolált ablak nem fog újra megnyílni.}other{Új Chrome-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. A(z) # izolált ablak nem fog újra megnyílni.}}</translation>
 <translation id="7481213027396403996">Állítsa be a Chrome legerősebb védelmét</translation>
 <translation id="749228101751499733">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chrome-ban. A(z) <ph name="SHORTCUT" /> billentyűparancs módosíthatja a Google-szolgáltatásokra vonatkozó beállításait.</translation>
 <translation id="7496017508659652909">A Chrome előre betölti az oldalakat, ami felgyorsítja a böngészést és a keresést. <ph name="BEGIN_LINK" />További információ az oldalak előtöltéséről<ph name="END_LINK" /></translation>
@@ -791,6 +800,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="8380754585531979907">A billentyűzet segítségével válthat a Gemini a Chrome-ban és a megnyitott lap között.</translation>
 <translation id="8387459386171870978">A Chrome használatának folytatása</translation>
 <translation id="8394720698884623075">Ellenőrzi az URL-eket a Chrome-ban a nem biztonságos webhelyekről tárolt lista alapján.</translation>
+<translation id="8402881611069691789">{COUNT,plural, =1{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. Van megnyitott inkognitó vagy izolált ablak. Az újraindítás után nem fog újra megnyílni.}other{A Chrome frissítése befejeződött. Az újraindítás után a legújabb verziót használhatja. Ezt követően a jelenlegi lapok újra meg fognak nyílni. # inkognitó és izolált ablak van megnyitva a profilokban. Az újraindítás után nem fognak újra megnyílni.}}</translation>
 <translation id="8403038600646341038">A Chrome logója egy számítógép képernyőjén.</translation>
 <translation id="8418845734693287262">A ChromeOS nem tudta szinkronizálni az adatokat, mert a fiók bejelentkezési adatai elavultak.</translation>
 <translation id="842386925677997438">A Chrome biztonsági eszközei</translation>

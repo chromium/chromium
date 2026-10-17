@@ -618,7 +618,6 @@
 <translation id="2059166748188874810">નગરપાલિકા</translation>
 <translation id="2059202684901022309">22 x 34 ઇંચ</translation>
 <translation id="2063929825539050431">આ પેજને ઝડપથી બીજા ડિવાઇસ પર મોકલવા માટે, ઍડ્રેસ બારને ટચ કરીને થોડીવાર દબાવી રાખો</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 સૂચન}one{# સૂચન}other{# સૂચન}}</translation>
 <translation id="2066969741541525119">આગળની સાઇટ તમારી સંસ્થા દ્વારા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2071156619270205202">આ કાર્ડનો નંબર, વર્ચ્યુઅલ કાર્ડ નંબર તરીકે ઉપયોગ માટેની યોગ્યતા ધરાવતો નથી.</translation>
 <translation id="2071852865256799872">તમારી સંસ્થા દ્વારા તમારું બ્રાઉઝર મેનેજ કરવામાં આવે છે અને <ph name="PROFILE_DOMAIN" /> દ્વારા તમારી પ્રોફાઇલ મેનેજ કરવામાં આવે છે</translation>
@@ -711,7 +710,6 @@
 <translation id="2188375229972301266">નીચેની બાજુએ એકથી વધુ કાણાં પાડો</translation>
 <translation id="218940509700321686">અલ્પવિરામથી વિભાજિત મૂલ્યો</translation>
 <translation id="2190094353033916816">આ પૉલિસીમાં મશીન અને વપરાશકર્તાના લેવલ પર અલગ-અલગ મૂલ્યો લાગુ કરવામાં આવ્યા છે. પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે.</translation>
-<translation id="219061769324072544">ક્રેડિટ,કાર્ડ,ડેબિટ</translation>
 <translation id="2191980191135734720">આગલા પગલામાં, સામાન્ય રીતે તમારી ફિંગરપ્રિન્ટનો ઉપયોગ કરીને, તમારી સ્ક્રીનને અનલૉક કરો. તમે <ph name="LINK_TEXT" /> પણ કરી શકો છો.</translation>
 <translation id="2194856509914051091">ધ્યાનમાં લેવા જેવી બાબતો</translation>
 <translation id="2195729137168608510">ઇમેઇલ સુરક્ષા</translation>
@@ -1082,6 +1080,7 @@
 <translation id="2807052079800581569">છબીની Y અક્ષ પરની સ્થિતિ</translation>
 <translation id="2808278141522721006">તમે <ph name="SETTINGS" />માં જઈને Windows Hello ચાલુ કે બંધ કરી શકો છો</translation>
 <translation id="2820957248982571256">સ્કૅન કરી રહ્યાં છીએ…</translation>
+<translation id="282457273878278063">સંપર્ક માહિતી મેનેજ કરો</translation>
 <translation id="2824775600643448204">સરનામું અને શોધ બાર</translation>
 <translation id="2826760142808435982">કનેક્શન <ph name="CIPHER" />નો ઉપયોગ કરીને એન્ક્રિપ્ટ અને પ્રમાણિત કરેલુંં છે અને મુખ્ય એક્સચેન્જ મેકેનિઝ્મ તરીકે <ph name="KX" />નો ઉપયોગ કરે છે.</translation>
 <translation id="2828797285817981634">હાલ પૂરતું મોશન સેન્સરને મંજૂરી આપવામાં આવી છે</translation>
@@ -1865,7 +1864,6 @@
 <translation id="4121428309786185360">ના રોજ સમાપ્ત થાય છે</translation>
 <translation id="4123572138124678573">નીચેની તરફ ત્રણ કાણાં પાડો</translation>
 <translation id="412601465078863288">અપલોડ કરવાનો સમય સમાપ્ત થયો</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 અન્ય}one{# અન્ય}other{# અન્ય}}</translation>
 <translation id="4129810348470013900">કંઈક ખોટું થયું. તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="4130226655945681476">નેટવર્ક કેબલ્સ, મૉડેમ અને રાઉટર તપાસીને</translation>
 <translation id="4132448310531350254">ઍપ "<ph name="POLICY_IDS_LIST" />" દ્વારા રેફરન્સ આપવામાં આવેલા file_extension "<ph name="FILE_EXTENSION" />" માટેના ડુપ્લિકેટ હૅન્ડલર.</translation>
@@ -3231,7 +3229,6 @@
 <translation id="638289054711715023">ફૉઇલ સંકોચો</translation>
 <translation id="6383221683286411806">આગળ ઉપર શુલ્ક લાગવાની શક્યતા.</translation>
 <translation id="6384448607821972818">રિકવરી પાસવર્ડ બતાવવામાં આવ્યો</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 અન્ય સૂચન}one{# અન્ય સૂચન}other{# અન્ય સૂચન}}</translation>
 <translation id="6386565501269869892">એન્વલપ યુ 4</translation>
 <translation id="6387645831795005740">હુમલાખોરો URLમાં સરળતાથી ન જોઈ શકાય એવા ગૌણ ફેરફારો કરીને કેટલીક વખત સાઇટની નકલ કરે છે.</translation>
 <translation id="6389470377220713856">કાર્ડ પરનું નામ</translation>

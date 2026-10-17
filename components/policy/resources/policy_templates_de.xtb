@@ -8606,17 +8606,6 @@ Hinweis: Diese Richtlinie gilt nur für Plattformen, die Erweiterungen unterstü
       Wenn die Richtlinie auf "False" gesetzt ist, werden die Signed HTTP Exchanges nicht geladen.</translation>
 <translation id="6368011194414932347">Startseiten-URL konfigurieren</translation>
 <translation id="6368403635025849609">JavaScript auf diesen Websites zulassen</translation>
-<translation id="6368652917086795891">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
-
-Diese Richtlinie wird durch die Richtlinie „<ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />“ ersetzt. Wenn beide konfiguriert sind, hat „<ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />“ Vorrang.
-
-Die Richtlinie konfiguriert die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung über <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />. Dies muss eine gültige URL sein, die das HTTPS-Schema verwendet, auf eine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Domain verweist und keinen Nutzernamen oder kein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt unkonfiguriert.
-
-Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
-
-Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
-
-Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Integration, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Nicht zulassen, dass Seiten die integrierten KI-APIs verwenden.</translation>
 <translation id="6371005337713685988">Einstellungen für Gruppen ähnlicher Websites</translation>

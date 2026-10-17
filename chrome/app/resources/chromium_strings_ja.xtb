@@ -15,6 +15,7 @@
 <translation id="112640046208448578">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。画像検索を使用すると、ページのスクリーンショットがサーバーに送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">既定のブラウザは Chromium です</translation>
 <translation id="1131805035311359397">パスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
 <translation id="1153368717515616349">Chromium メニューをクリックする</translation>
 <translation id="1157985233335035034">最近使用した言語</translation>
 <translation id="1184145431117212167">Windows のバージョンがサポートされていないためインストールできませんでした。</translation>
@@ -37,6 +38,7 @@
 <translation id="1329040302064168406">スマートフォンで Chromium にログイン</translation>
 <translation id="1330562121671411446">検出言語</translation>
 <translation id="1342274909142618978">Chromium（<ph name="URL" />）からもデータを削除する</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{高度な保護機能を使用している場合は、アップデートを適用するために Chromium を再起動する必要があります。シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{高度な保護機能を使用している場合は、アップデートを適用するために Chromium を再起動する必要があります。プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
 <translation id="1345251407431278948">固定しました。ツールバーの新しいボタンから、画像検索にアクセスできます</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1388276868779258475">Chromium アプリで、ブラウジングを外出先でも続けられます</translation>
@@ -225,6 +227,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS 版 Chromium で、お気に入りの Google AI ツールを外出先でも利用できます。</translation>
 <translation id="3264761466044851269"><ph name="DEVICE" /> の拡張機能などを使用するには、Chromium にログインしてください</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。アイソレート ウィンドウは、再起動後は自動的には開きません。}other{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のアイソレート ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="328888136576916638">Google API キーが欠落しています。Chromium の一部の機能は無効になります。</translation>
 <translation id="3296368748942286671">Chromium を閉じた際にバックグラウンド アプリの処理を続行する</translation>
@@ -272,6 +275,7 @@
           **質問の提案:** スクリーンショットの理解を深めるためにユーザーが質問しそうな項目を箇条書きで 3～5 つ生成します。視覚的なオブジェクトやそのデザイン、または配置に関する具体的な質問が 1 つ以上含まれます。</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">すべてのデバイスで同じブックマークやその他の設定を使用するには、Chromium にログインしてください</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。アイソレート ウィンドウは、再起動後は自動的には開きません。}other{管理者が、このアップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のアイソレート ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3885770153807205175">言語選択ツール</translation>
 <translation id="388648406173476553">Chromium をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
 <translation id="3889543394854987837">Chromium を開いてブラウジングを始めるには、名前をクリックしてください。</translation>
@@ -427,6 +431,7 @@
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> がすでにログインしています。ブラウジング環境を分ける場合は、<ph name="USER_EMAIL_ADDRESS" /> として自分用のプロフィールで Chromium にログインしてください。<ph name="DEVICE" /> で保存した情報などを使用できます。</translation>
 <translation id="5579324208890605088">起動エラー: 管理者ではなく標準ユーザーとしてインストーラを実行してください。</translation>
 <translation id="5580770360767802657">Chromium を既定に設定してタスクバーに固定する</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。アイソレート ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のアイソレート ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5605834417512968703">画像検索で検索する範囲を選択してください。Esc キーを押すと画像検索を終了します</translation>
 <translation id="5618818588972826921">画像検索で検索するテキストまたは画像を選択してください。Esc キーを押すと画像検索を終了します。</translation>
@@ -586,6 +591,7 @@
 <translation id="7003299027384820442">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chromium のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="7011190694940573312">このバージョンのオペレーティング システムはサポートされていないため、インストールできませんでした。</translation>
 <translation id="7024536598735240744">解凍エラー: <ph name="UNPACK_ERROR" />。</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{高度な保護機能を使用している場合は、アップデートを適用するために Chromium を再起動する必要があります。アイソレート ウィンドウは、再起動後は自動的には開きません。}other{高度な保護機能を使用している場合は、アップデートを適用するために Chromium を再起動する必要があります。現在開いている # 個のアイソレート ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="7045244423563602563">Chromium を独自にカスタマイズ</translation>
 <translation id="7047386856539490735">この結果は役に立ちましたか？</translation>
 <translation id="705851970750939768">Chromium を更新</translation>
@@ -665,6 +671,7 @@
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chromium では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="7810005234485217901">画像検索を固定して簡単にアクセスできます</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
 <translation id="7828527096541974699">Chromium と共有する内容を選択</translation>
 <translation id="7828947555739565424">このアカウントの Chromium プロファイルは、このデバイスにすでに存在します</translation>
 <translation id="7845233973568007926">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはコンピュータを再起動してください。</translation>
@@ -702,6 +709,7 @@
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8161503455832158203">Gemini in Chromium を開くときに、キーボード ショートカットを使用します。</translation>
 <translation id="8164014945047474187">Chromium 追加利用規約</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウまたはアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。プロファイル全体で # 個のシークレット ウィンドウとアイソレート ウィンドウが開いていますが、再起動後は自動的には開きません。}}</translation>
 <translation id="81770708095080097">このファイルは危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="8177472873527554730">ページにコンテンツが見つかりません</translation>
 <translation id="8200109504272824693">アカウント「<ph name="USER_EMAIL" />」で Chromium のデータを使用、保存するには、パスフレーズを入力してください</translation>

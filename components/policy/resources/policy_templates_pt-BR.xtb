@@ -8980,17 +8980,6 @@ Observação: esta política só se aplica a plataformas que são compatíveis c
       Se ela for definida como falsa, conteúdos Signed HTTP Exchanges não serão carregados.</translation>
 <translation id="6368011194414932347">Configurar o URL da página inicial</translation>
 <translation id="6368403635025849609">Permitir o JavaScript nestes sites</translation>
-<translation id="6368652917086795891">Define as configurações de conexão do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> no <ph name="PRODUCT_NAME" />.
-
-Esta política está sendo substituída pela política <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" />. Se as duas opções forem definidas, <ph name="GEMINI_ENTERPRISE_URL_POLICY_NAME" /> terá precedência.
-
-A política configura o URL do aplicativo da web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> pelo <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />, que precisa ser um URL válido que use o esquema https, aponte para um domínio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> e não inclua um nome de usuário ou senha. Se não atender a esses requisitos, a política será ignorada e o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ficará sem configuração.
-
-Se esta política for definida, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> será configurado para os usuários que fizerem login com uma conta ou um navegador gerenciado.
-
-Se esta política ficar sem definição, o <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> não será configurado.
-
-Esta política não controla a integração geral do <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que pode ser controlada pela política <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="6368671810229507360">WebRTC</translation>
 <translation id="6370742079247037704">Proíba o uso de APIs de IA integradas.</translation>
 <translation id="6371005337713685988">Configurações dos conjuntos de sites relacionados</translation>
@@ -10840,7 +10829,7 @@ A definição desta política não garante que algoritmos específicos sejam neg
 
 Esta política existe para permitir que operadores de servidores que querem oferecer suporte a clientes com e sem requisitos de compliance façam a diferenciação entre esses clientes e usem apenas determinados algoritmos não padrão com maior força criptográfica para aqueles que os preferem explicitamente.
 
-Definir a política como "<ph name="CNSA2_NAME" />" configura o <ph name="PRODUCT_NAME" /> para preferir métodos de troca de chaves necessários para conformidade com a versão 2.0 do Commercial National Security Algorithm Suite (CNSA 2.0), um conjunto de algoritmos criptográficos promulgado pela Agência de Segurança Nacional dos EUA.
+Definir a política como "<ph name="CNSA2_NAME" />" configura o <ph name="PRODUCT_NAME" /> para preferir métodos de troca de chaves necessários para compliance com a versão 2.0 do Commercial National Security Algorithm Suite (CNSA 2.0), um conjunto de algoritmos criptográficos promulgado pela Agência de Segurança Nacional dos EUA.
 
 Se a política não for definida ou for definida como "<ph name="DEFAULT_NAME" />", o <ph name="PRODUCT_NAME" /> usará os métodos de troca de chaves padrão.
 

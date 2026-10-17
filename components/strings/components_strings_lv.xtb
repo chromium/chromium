@@ -618,7 +618,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2059166748188874810">Pašvaldība</translation>
 <translation id="2059202684901022309">22 x 34 collas</translation>
 <translation id="2063929825539050431">Lai ātri nosūtītu šo lapu uz citu ierīci, pieskarieties adrešu joslai un turiet to.</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 ieteikums}zero{# ieteikumi}one{# ieteikums}other{# ieteikumi}}</translation>
 <translation id="2066969741541525119">Šo vietni ir bloķējusi jūsu organizācija</translation>
 <translation id="2071156619270205202">Šī karte neatbilst virtuālās kartes numuram.</translation>
 <translation id="2071852865256799872">Pārlūku pārvalda jūsu organizācija, un jūsu profilu pārvalda <ph name="PROFILE_DOMAIN" /></translation>
@@ -711,7 +710,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2188375229972301266">Vairāki caurumi apakšdaļā</translation>
 <translation id="218940509700321686">Komatatdalītas vērtības</translation>
 <translation id="2190094353033916816">Šai politikai ir atšķirīgas vērtības, kas tiek lietotas ierīces un lietotāja līmenī. Politika darbojas, kā paredzēts.</translation>
-<translation id="219061769324072544">Kredītkarte,karte,debetkarte</translation>
 <translation id="2191980191135734720">Nākamajā darbībā atbloķējiet ekrānu (parasti izmantojot pirksta nospiedumu). Varat arī <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2195729137168608510">E-pasta aizsardzība</translation>
@@ -1082,6 +1080,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2807052079800581569">Attēla pozīcija uz Y ass</translation>
 <translation id="2808278141522721006">Varat ieslēgt vai izslēgt funkciju Windows Hello sadaļā <ph name="SETTINGS" />.</translation>
 <translation id="2820957248982571256">Notiek meklēšana...</translation>
+<translation id="282457273878278063">Pārvaldīt kontaktinformāciju</translation>
 <translation id="2824775600643448204">Adreses un meklēšanas josla</translation>
 <translation id="2826760142808435982">Savienojums ir šifrēts un autentificēts, izmantojot <ph name="CIPHER" />, un tajā tiek izmantots <ph name="KX" /> kā atslēgu apmaiņas mehānisms.</translation>
 <translation id="2828797285817981634">Pašlaik ir atļauts izmantot kustību sensorus</translation>
@@ -1863,7 +1862,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4121428309786185360">Beigu datums</translation>
 <translation id="4123572138124678573">Trīs caurumi apakšdaļā</translation>
 <translation id="412601465078863288">Augšupielādei iestājās noildze</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{vēl 1}zero{vēl #}one{vēl #}other{vēl #}}</translation>
 <translation id="4129810348470013900">Radās kļūda. Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="4130226655945681476">Pārbaudiet tīkla kabeļus, modemu un maršrutētāju</translation>
 <translation id="4132448310531350254">Faila paplašinājumam “<ph name="FILE_EXTENSION" />” ir dublēti apdarinātāji, kas norādīti lietotnēs: “<ph name="POLICY_IDS_LIST" />”.</translation>
@@ -3229,7 +3227,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="638289054711715023">Sarūkoša plēve</translation>
 <translation id="6383221683286411806">Iespējams, tiks pieprasīta maksa.</translation>
 <translation id="6384448607821972818">Tiek rādīta atkopšanas parole</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{vēl 1 ieteikums}zero{vēl # ieteikumi}one{vēl # ieteikums}other{vēl # ieteikumi}}</translation>
 <translation id="6386565501269869892">Aploksne You 4</translation>
 <translation id="6387645831795005740">Uzbrucēji dažkārt atdarina vietnes, veicot nelielas un grūti pamanāmas izmaiņas vietrādī URL.</translation>
 <translation id="6389470377220713856">Vārds un uzvārds uz kartes</translation>

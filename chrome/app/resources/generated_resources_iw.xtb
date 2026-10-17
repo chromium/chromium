@@ -572,7 +572,6 @@
 <translation id="1433478348197382180">מצב קריאה</translation>
 <translation id="1433980411933182122">הפעלה</translation>
 <translation id="1434659328474177625">‫<ph name="ISSUER" /> אימת את כתובת האימייל שלך</translation>
-<translation id="1434886155212424586">דף הבית הוא הדף 'כרטיסייה חדשה'</translation>
 <translation id="1435940442311036198">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="1436390408194692385">תקף למשך <ph name="TICKET_TIME_LEFT" /></translation>
 <translation id="1436671784520050284">להמשך ההגדרה</translation>
@@ -1036,7 +1035,6 @@
 <translation id="178092663238929451">הגדרת 'שיתוף מהיר' מאפשרת לך לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
 <translation id="1781164264587898620">החלת סינון רעשים ושיפורים באודיו.</translation>
 <translation id="1781291988450150470">קוד אימות נוכחי</translation>
-<translation id="1781502536226964113">פתיחת הדף 'כרטיסייה חדשה'</translation>
 <translation id="1781553166608855614">שפת ההקראה</translation>
 <translation id="1781771911845953849">חשבונות וסנכרון</translation>
 <translation id="1782101999402987960">העדכונים חסומים על ידי מנהל המערכת</translation>
@@ -1560,7 +1558,6 @@
 <translation id="2184754597051264978">‏מעכשיו Gemini לא יוכל להכניס אותך לחשבון באתר <ph name="URL" /></translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186539124645132614">‏התחלת שיחה חדשה עם Gemini</translation>
-<translation id="2186711480981247270">הדף שותף ממכשיר אחר</translation>
 <translation id="2187675480456493911">בוצע סנכרון עם מכשירים אחרים בחשבון שלך. הגדרות ששונו על-ידי משתמשים אחרים לא יסונכרנו. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="2187906491731510095">התוספים עודכנו</translation>
 <translation id="2188881192257509750">פתיחת <ph name="APPLICATION" /></translation>
@@ -2064,7 +2061,6 @@
 <translation id="256481480019204378">‏מספר חשבון Google</translation>
 <translation id="256517381556987641">בסנכרון הקבצים נמצאו עד עכשיו <ph name="ITEMS_FOUND" /> קבצים ונפח האחסון עדיין בבדיקה. אפשר לנסות להפעיל את סנכרון הקבצים שוב בעוד כמה דקות.</translation>
 <translation id="2566146433999774844">הצטרפות לקבוצת כרטיסיות עם <ph name="OWNER_FIRST_NAME" /> ועוד <ph name="NUM_OTHER_MEMBERS" /> משתמשים</translation>
-<translation id="256726287944589768">הצגת כותרת תחתונה בדף הכרטיסייה החדשה</translation>
 <translation id="2568774940984945469">גורם מכיל של סרגל המידע</translation>
 <translation id="257088987046510401">ערכות נושא</translation>
 <translation id="2572032849266859634">ניתנה הרשאה לקריאה בלבד ב-<ph name="VOLUME_NAME" />.</translation>
@@ -2233,7 +2229,6 @@
 <translation id="2696675923413008404">‏התוכן מהאתר הזה, כולל כתובת ה-URL שלו, נשלח אל Google ויכול להיות שבודקים אנושיים יראו אותו כדי לשפר את התכונה הזו</translation>
 <translation id="269941332914175387">כדי לטעון את נתוני הפרופיל ולהשאיר אותם מוצפנים, צריך להפעיל מחדש את הדפדפן</translation>
 <translation id="2699911226086014512">פעולת קוד האימות נכשלה עם הקוד <ph name="RETRIES" />.</translation>
-<translation id="2701330563083355633">שותפה מהמכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">כניסה, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">‏כתובת MAC ברשת</translation>
 <translation id="2702720509009999256">צריך לבדוק את החיבור לאינטרנט ולבחור באפשרות 'ניסיון חוזר', או לבחור באפשרות 'פתיחה בכלי לעריכה בסיסית' כדי להשתמש באפשרויות מוגבלות לתצוגה ולעריכה.</translation>
@@ -2634,7 +2629,6 @@
 <translation id="2989474696604907455">לא מחובר</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
 <translation id="2989786307324390836">‏בינארי בקידוד DER, אישור יחיד</translation>
-<translation id="2989805286512600854">פתיחה בכרטיסייה חדשה</translation>
 <translation id="2990313168615879645">‏הוספת חשבון Google</translation>
 <translation id="2990375978470734995">כדי שהשינוי הזה ייכנס לתוקף, צריך לחבר מחדש את האביזרים החיצוניים.</translation>
 <translation id="2990500505358145117">עריכת מקשי הקיצור למילוי אוטומטי משופר</translation>
@@ -3907,7 +3901,6 @@
 <translation id="3909701002594999354">הצגת כל &amp;הפקדים</translation>
 <translation id="3909791450649380159">גז&amp;ירה</translation>
 <translation id="39103738135459590">קוד הפעלה</translation>
-<translation id="3911824782900911339">דף 'כרטיסייה חדשה'</translation>
 <translation id="3913689539406883376">להפעיל כשהמחשב מנותק</translation>
 <translation id="3914173277599553213">נדרש</translation>
 <translation id="3914568430265141791">פתיחת התיקייה <ph name="FOLDER_TITLE" /></translation>
@@ -4465,7 +4458,6 @@
 <translation id="4354344420232759511">אתרים שבהם ביקרת יופיעו כאן</translation>
 <translation id="4356100841225547054">כיבוי השמע</translation>
 <translation id="4357583358198801992">הצגה של קבוצות כרטיסיות</translation>
-<translation id="4357812592970409234">מידע נוסף על הרקע של דף הכרטיסייה החדשה</translation>
 <translation id="4358361163731478742">אין אפליקציות שתומכות בבחירת שפה לאפליקציה</translation>
 <translation id="4358995225307748864">בחירת אפליקציה לפתיחה</translation>
 <translation id="4359408040881008151">הותקן מפני שיש תוספים התלויים בו.</translation>
@@ -6742,7 +6734,6 @@
 <translation id="6130887916931372608">מקש במקלדת</translation>
 <translation id="6131511889181741773">נתזים</translation>
 <translation id="6132251717264923430">הכפתור הוצמד</translation>
-<translation id="6134418895482326458">הסתרת הכותרת התחתונה בדף הכרטיסייה החדשה</translation>
 <translation id="6134428719487602109">‏הסרת כל חשבונות המשתמשים ואיפוס Chromebook כך שיהיה כמו חדש.</translation>
 <translation id="6135826623269483856">אין הרשאה לנהל את החלונות בכל המסכים</translation>
 <translation id="6136285399872347291">מחיקת תו אחד</translation>
@@ -9941,6 +9932,7 @@
 <translation id="8563043098557365232">יש אישור רק לשירותי מערכת</translation>
 <translation id="8563898784671745643">השתקת האתר התחתון</translation>
 <translation id="8564220755011656606">אין גישה למיקרופון</translation>
+<translation id="8564894539416715395">דף כרטיסייה חדשה</translation>
 <translation id="8565021320663436446">להסיר את <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8566916288687510520">התקבלה סיסמה חדשה</translation>
 <translation id="8567946600191652875">הסיסמה חייבת להכיל 6 תווים לפחות ולכלול לפחות אות אחת או תו מיוחד אחד</translation>
@@ -10467,6 +10459,7 @@
 <translation id="8963117664422609631">כניסה להגדרות האתר</translation>
 <translation id="8964927371396953727">עליך לאמת את הזהות שלך כדי להשתמש בסיסמאות ולשמור אותן בחשבון <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="8965037249707889821">יש להזין את הסיסמה הישנה</translation>
+<translation id="8967403839792635452">‏מפתחים תוספים? אפשר לגלות <ph name="BEGIN_LINK" />מה חדש<ph name="END_LINK" /> במאמרי העזרה למפתחים של תוספים ל-Chrome.</translation>
 <translation id="8967427617812342790">הוספה לרשימת הקריאה</translation>
 <translation id="8968527460726243404">‏כותב תמונת המערכת של מערכת ההפעלה של Chrome</translation>
 <translation id="8968766641738584599">שמירת הכרטיס</translation>

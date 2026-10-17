@@ -618,7 +618,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2059166748188874810">Törvényhatósági terület</translation>
 <translation id="2059202684901022309">22 × 34 hüvelyk</translation>
 <translation id="2063929825539050431">Ha gyorsan szeretné elküldeni ezt az oldalt egy másik eszközre, tartsa lenyomva a címsávot</translation>
-<translation id="2064691555167957331">{COUNT,plural, =1{1 javaslat}other{# javaslat}}</translation>
 <translation id="2066969741541525119">A megnyitni kívánt webhelyet letiltotta az Ön szervezete</translation>
 <translation id="2071156619270205202">Ez a kártya nem használható virtuális kártyaszámmal.</translation>
 <translation id="2071852865256799872">Böngészőjét a szervezete, a profilját pedig a(z) <ph name="PROFILE_DOMAIN" /> kezeli</translation>
@@ -711,7 +710,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2188375229972301266">Több lyuk alul</translation>
 <translation id="218940509700321686">Vesszővel tagolt értékek</translation>
 <translation id="2190094353033916816">Ez a házirend különböző értékeket alkalmaz a gép és a felhasználó szintjén. A házirend a várakozásoknak megfelelően működik.</translation>
-<translation id="219061769324072544">Hitel,Kártya,Bankkártya</translation>
 <translation id="2191980191135734720">A következő lépésben oldja fel a képernyőt, például az ujjlenyomatával. <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2195729137168608510">E-mail védelem</translation>
@@ -1082,6 +1080,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2807052079800581569">Kép Y-pozíciója</translation>
 <translation id="2808278141522721006">A Windows Hello funkciót itt kapcsolhatja be vagy ki: <ph name="SETTINGS" /></translation>
 <translation id="2820957248982571256">Keresés…</translation>
+<translation id="282457273878278063">Kapcsolatfelvételi adatok kezelése</translation>
 <translation id="2824775600643448204">Cím- és keresősáv</translation>
 <translation id="2826760142808435982">A kapcsolat <ph name="KX" /> algoritmust használ kulcscserélő mechanizmusként, kódolása pedig <ph name="CIPHER" /> használatával történt.</translation>
 <translation id="2828797285817981634">A mozgásérzékelők használata jelenleg engedélyezve van</translation>
@@ -1862,7 +1861,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4121428309786185360">Lejár:</translation>
 <translation id="4123572138124678573">Három lyuk alul</translation>
 <translation id="412601465078863288">Időtúllépés történt a feltöltés során</translation>
-<translation id="4129401438321186435">{COUNT,plural, =1{1 egyéb}other{# egyéb}}</translation>
 <translation id="4129810348470013900">Hiba történt. Ellenőrizze az internetkapcsolatot, majd próbálkozzon újra.</translation>
 <translation id="4130226655945681476">A hálózati kábelek, a modem és a router ellenőrzése</translation>
 <translation id="4132448310531350254">A(z) „<ph name="POLICY_IDS_LIST" />” alkalmazások által hivatkozott „<ph name="FILE_EXTENSION" />” file_extension ismétlődő kezelői.</translation>
@@ -3228,7 +3226,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="638289054711715023">Zsugorfólia</translation>
 <translation id="6383221683286411806">Itt fizetésre próbálhatják rávenni.</translation>
 <translation id="6384448607821972818">Helyreállítási jelszó megjelenítve</translation>
-<translation id="6386120369904791316">{COUNT,plural, =1{1 egyéb javaslat}other{# egyéb javaslat}}</translation>
 <translation id="6386565501269869892">You 4 boríték</translation>
 <translation id="6387645831795005740">A támadók néha úgy próbálnak meg webhelyeket utánozni, hogy apró, alig észrevehető változtatásokkal rendelkező URL-címeket használnak.</translation>
 <translation id="6389470377220713856">A kártyán szereplő név</translation>

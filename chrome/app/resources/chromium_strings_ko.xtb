@@ -17,6 +17,7 @@
 <translation id="112640046208448578">사물 또는 장소를 식별하고 텍스트를 복사하거나 번역합니다. 이미지 검색을 사용하면 페이지의 스크린샷이 서버로 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium이 기본 브라우저로 설정되어 있습니다.</translation>
 <translation id="1131805035311359397">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chromium에 로그인<ph name="END_LINK" />하세요.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="1153368717515616349">Chromium 메뉴를 클릭합니다</translation>
 <translation id="1157985233335035034">최근에 사용한 언어</translation>
 <translation id="1184145431117212167">지원되지 않는 Windows 버전으로 인해 설치할 수 없습니다.</translation>
@@ -39,6 +40,7 @@
 <translation id="1329040302064168406">휴대전화에서 Chromium에 로그인</translation>
 <translation id="1330562121671411446">언어 감지</translation>
 <translation id="1342274909142618978">Chromium(<ph name="URL" />)에서도 데이터 삭제</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{고급 보호를 사용하려면 Chromium을 다시 실행하여 업데이트를 적용해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{고급 보호를 사용하려면 Chromium을 다시 실행하여 업데이트를 적용해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="1345251407431278948">고정되었습니다. 툴바의 새 버튼에서 이미지 검색을 다시 이용할 수 있습니다</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1388276868779258475">Chromium 앱을 사용하여 이동 중에도 탐색하세요.</translation>
@@ -227,6 +229,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS에서 Chromium을 사용하여 이동 중에도 즐겨 사용하는 Google AI 도구를 활용하세요.</translation>
 <translation id="3264761466044851269"><ph name="DEVICE" />에서 확장 프로그램 등을 사용하려면 Chromium에 로그인하세요</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="328888136576916638">Google API 키가 누락되었습니다. Chromium의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="3296368748942286671">Chromium 종료 후에도 백그라운드 앱을 계속 실행</translation>
@@ -274,6 +277,7 @@
           **질문 추천:** 사용자가 스크린샷을 더 잘 파악하기 위해 물어볼 법하면서 생각할 거리를 주는 질문 3~5개를 글머리기호 목록 형식으로 생성해 줘. 질문에는 시각적 객체, 디자인 또는 배치에 관한 질문이 하나 이상 포함되어야 해.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">모든 기기에서 북마크 등을 사용하려면 Chromium에 로그인하세요</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{관리자가 이 업데이트를 적용하려면 사용자가 Chromium을 다시 시작하도록 설정했습니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="3889543394854987837">Chromium을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
@@ -431,6 +435,7 @@
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 <ph name="DEVICE" />에서 저장된 정보 등을 사용할 수 있습니다.</translation>
 <translation id="5579324208890605088">시작 오류: 관리자가 아닌 일반 사용자로 설치 프로그램을 실행하세요.</translation>
 <translation id="5580770360767802657">Chromium을 기본 브라우저로 사용하고 고정하세요</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5605834417512968703">이미지 검색으로 검색할 항목을 선택하거나 Esc 키를 눌러 이미지 검색을 종료하세요.</translation>
 <translation id="5618818588972826921">이미지 검색으로 검색할 텍스트 또는 이미지를 선택하거나 Esc 키를 눌러 이미지 검색을 종료하세요</translation>
@@ -590,6 +595,7 @@
 <translation id="7003299027384820442"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="7011190694940573312">이 운영체제 버전은 지원되지 않으므로 설치에 실패했습니다.</translation>
 <translation id="7024536598735240744">압축해제 오류(<ph name="UNPACK_ERROR" />)가 발생했습니다.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{고급 보호를 사용하려면 Chromium을 다시 실행하여 업데이트를 적용해야 합니다. 보안 시크릿 창은 다시 열리지 않습니다.}other{고급 보호를 사용하려면 Chromium을 다시 실행하여 업데이트를 적용해야 합니다. #개의 보안 시크릿 창은 다시 열리지 않습니다.}}</translation>
 <translation id="7045244423563602563">나만의 Chromium 만들기</translation>
 <translation id="7047386856539490735">결과가 유용한가요?</translation>
 <translation id="705851970750939768">Chromium 업데이트</translation>
@@ -669,6 +675,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chromium은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
 <translation id="7810005234485217901">이미지 검색을 고정하면 쉽게 액세스할 수 있습니다</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{새 Chromium 업데이트가 있습니다. Chromium을 다시 실행하면 업데이트가 바로 적용됩니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="7828527096541974699">Chromium과 공유할 항목 선택</translation>
 <translation id="7828947555739565424">이 계정을 사용하는 Chromium 프로필이 기기에 이미 존재합니다</translation>
 <translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
@@ -706,6 +713,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="813913629614996137">초기화 중...</translation>
 <translation id="8161503455832158203">키보드 단축키를 사용하여 Chromium의 Gemini를 엽니다.</translation>
 <translation id="8164014945047474187">Chromium 추가 서비스 약관</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="81770708095080097">이 파일은 위험하므로 Chromium에서 차단했습니다.</translation>
 <translation id="8177472873527554730">페이지의 콘텐츠를 찾을 수 없음</translation>
 <translation id="8200109504272824693"><ph name="USER_EMAIL" /> 계정에서 Chromium 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>

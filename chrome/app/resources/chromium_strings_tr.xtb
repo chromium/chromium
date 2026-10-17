@@ -15,6 +15,7 @@
 <translation id="112640046208448578">Nesneleri veya yerleri tanımlayın ve metni kopyalayın ya da çevirin. Görsel Arama'yı kullandığınızda sayfanın ekran görüntüsü sunucuya gönderilir. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium varsayılan tarayıcınız</translation>
 <translation id="1131805035311359397">Şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Yöneticiniz bu güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı istiyor. Gizli veya yalıtılmış pencere açık. Yeniden başlattığınızda bu pencere tekrar açılmaz.}other{Yöneticiniz bu güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı istiyor. Profiller genelinde # gizli ve yalıtılmış pencere açık. Yeniden başlattığınızda bu pencereler tekrar açılmaz.}}</translation>
 <translation id="1153368717515616349">Chromium menüsünü tıklayın</translation>
 <translation id="1157985233335035034">Son kullanılan diller</translation>
 <translation id="1184145431117212167">Windows sürümünüz desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
@@ -37,6 +38,7 @@
 <translation id="1329040302064168406">Telefonunuzdan Chromium'da oturum açın</translation>
 <translation id="1330562121671411446">Dili algıla</translation>
 <translation id="1342274909142618978">Chromium'daki verileri de sil (<ph name="URL" />)</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Gizli veya yalıtılmış pencere açık. Yeniden başlattığınızda bu pencere tekrar açılmaz.}other{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Profiller genelinde # gizli ve yalıtılmış pencere açık. Yeniden başlattığınızda bu pencereler tekrar açılmaz.}}</translation>
 <translation id="1345251407431278948">Sabitlendi. Araç çubuğundaki yeni düğmeyi kullanarak Görsel Arama'ya tekrar erişebilirsiniz</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1388276868779258475">Hareket halindeyken göz atmaya devam etmek için Chromium uygulamasını kullanın</translation>
@@ -223,6 +225,7 @@
 <translation id="3258596308407688501">Chromium veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">iOS'te Chromium ile en sevdiğiniz Google Yapay Zeka araçlarını hareket halindeyken kullanın.</translation>
 <translation id="3264761466044851269"><ph name="DEVICE" /> cihazınızdaki uzantılarınıza ve diğer öğelerinize erişmek için Chromium'da oturum açın</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Chromium için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. Yalıtılmış pencereniz yeniden açılmayacak.}other{Chromium için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. # yalıtılmış pencereniz yeniden açılmayacak.}}</translation>
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
 <translation id="328888136576916638">Google API anahtarları eksik. Chromium'un bazı işlevleri devre dışı bırakılacak.</translation>
 <translation id="3296368748942286671">Chromium kapandığında arka plan uygulamaları çalıştırmaya devam et</translation>
@@ -270,6 +273,7 @@
           **Soru Öner:** Kullanıcının ekran görüntüsünü daha iyi anlamak için sorabileceği 3-5 düşündürücü sorudan oluşan bir madde işaretli liste oluştur. Bu sorulardan en az biri görsel bir nesne, tasarımı veya yerleşimiyle ilgili olmalı.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chromium'da oturum açın</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Yöneticiniz bu güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı istiyor. Yalıtılmış pencereniz yeniden açılmayacak.}other{Yöneticiniz bu güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı istiyor. # yalıtılmış pencereniz yeniden açılmayacak.}}</translation>
 <translation id="3885770153807205175">Dil seçici</translation>
 <translation id="388648406173476553">Chromium'u özelleştirin ve kontrol edin. İlgilenmeniz gereken bir konu var. Ayrıntılar için tıklayın.</translation>
 <translation id="3889543394854987837">Chromium'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>
@@ -427,6 +431,7 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> zaten oturum açmış durumda. Göz atma işlemlerinizi ayrı tutmak için Chromium'da kendi profilinizde <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açın. Ayrıca, <ph name="DEVICE" /> içindeki kayıtlı bilgilerinize ve diğer öğelere de erişebilirsiniz.</translation>
 <translation id="5579324208890605088">Başlatma hatası: Lütfen yükleyiciyi yönetici olarak değil, normal bir kullanıcı olarak çalıştırın.</translation>
 <translation id="5580770360767802657">Varsayılan olarak Chromium'u kullanın ve sabitleyin</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Yalıtılmış pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. # yalıtılmış pencereniz yeniden açılmayacak.}}</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
 <translation id="5605834417512968703">Görsel Arama ile aramak istediğiniz öğeyi seçin veya Görsel Arama'dan çıkmak için Escape tuşuna basın</translation>
 <translation id="5618818588972826921">Görsel Arama ile aramak istediğiniz metni veya resmi seçin ya da Görsel Arama'dan çıkmak için Escape tuşuna basın</translation>
@@ -586,6 +591,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="7003299027384820442">Chromium verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için parolanızı girin</translation>
 <translation id="7011190694940573312">İşletim sisteminin bu sürümü desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="7024536598735240744">Paket açma hatası: <ph name="UNPACK_ERROR" />.</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Yalıtılmış pencereniz yeniden açılmayacak.}other{Gelişmiş Koruma, bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. # yalıtılmış pencereniz yeniden açılmayacak.}}</translation>
 <translation id="7045244423563602563">Chromium'u Kendinize Uyarlayın</translation>
 <translation id="7047386856539490735">Bu sonuçları yararlı buldunuz mu?</translation>
 <translation id="705851970750939768">Chromium'u güncelle</translation>
@@ -665,6 +671,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7790626492778995050"><ph name="PAGE_TITLE" /> - Chromium Canary</translation>
 <translation id="7803986347287457849">İnternet trafiğinize erişimi olan kişilerin, ziyaret ettiğiniz siteleri görmesini zorlaştırın. Chromium, DNS'de (Alan Adı Sistemi) bir sitenin IP adresini aramak için güvenli bağlantı kullanır.</translation>
 <translation id="7810005234485217901">Daha kolay erişmek için Görsel Arama'yı sabitleyebilirsiniz</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Chromium için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. Gizli veya yalıtılmış pencere açık. Yeniden başlattığınızda bu pencere tekrar açılmaz.}other{Chromium için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. Profiller genelinde # gizli ve yalıtılmış pencere açık. Yeniden başlattığınızda bu pencereler tekrar açılmaz.}}</translation>
 <translation id="7828527096541974699">Chromium ile paylaşılacak öğeleri seçin</translation>
 <translation id="7828947555739565424">Cihazda bu hesaba sahip bir Chromium profili zaten var</translation>
 <translation id="7845233973568007926">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce bilgisayarınızı yeniden başlatmanız gerekir.</translation>
@@ -702,6 +709,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
 <translation id="8161503455832158203">Chromium'da Gemini'ı klavye kısayoluyla açın.</translation>
 <translation id="8164014945047474187">Chromium Ek Hizmet Şartları</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Gizli veya yalıtılmış pencere açık. Yeniden başlattığınızda bu pencere tekrar açılmaz.}other{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Profiller genelinde # gizli ve yalıtılmış pencere açık. Yeniden başlattığınızda bu pencereler tekrar açılmaz.}}</translation>
 <translation id="81770708095080097">Bu dosya tehlikeli olduğu için Chromium tarafından engellendi.</translation>
 <translation id="8177472873527554730">Sayfada içerik bulunamadı</translation>
 <translation id="8200109504272824693">Chromium verilerini kullanmak ve <ph name="USER_EMAIL" /> hesabınıza kaydetmek için parolanızı girin</translation>
