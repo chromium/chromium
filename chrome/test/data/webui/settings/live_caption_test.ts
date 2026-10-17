@@ -4,6 +4,7 @@
 
 import 'chrome://settings/lazy_load.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {CaptionsBrowserProxyImpl, getLanguageHelperInstance, LanguageHelperImpl} from 'chrome://settings/lazy_load.js';
 import type {SettingsAddLanguagesDialogElement, SettingsLiveCaptionElement} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
@@ -57,6 +58,22 @@ suite('LiveCaptionSection', function() {
     loadTimeData.overrideValues({
       enableLiveCaptionMultiLanguage: true,
       enableLiveTranslate: true,
+      enableLiveCaptionSpeechRecognitionSmallExpertModel: false,
+      speechRecognitionSmallExpertModelTitle: 'Small expert model',
+      speechRecognitionSmallExpertModelSubtitle: 'On-device model',
+      speechRecognitionSmallExpertModelDeleteButton: 'Delete model',
+      speechRecognitionSmallExpertModelDownloadProgress:
+          'Downloading speech recognition files... $1%',
+      speechRecognitionSmallExpertModelDownloadComplete:
+          'Speech files downloaded',
+      speechRecognitionSmallExpertModelDownloadError:
+          'Can\'t download speech files. Try again later.',
+    });
+  });
+
+  teardown(function() {
+    loadTimeData.overrideValues({
+      enableLiveCaptionSpeechRecognitionSmallExpertModel: false,
     });
   });
 
@@ -261,4 +278,340 @@ suite('LiveCaptionSection', function() {
     assertStringContains(moreButtons[1]!.ariaLabel!, 'French');
     assertStringContains(moreButtons[1]!.ariaLabel!, defaultLabel);
   });
+
+  test(
+      'SpeechRecognitionSmallExpertModel enabled UI elements and hidden ' +
+          'language pack list',
+      async function() {
+        loadTimeData.overrideValues({
+          enableLiveCaptionSpeechRecognitionSmallExpertModel: true,
+          speechRecognitionSmallExpertModelSubtitle: 'On-device model',
+        });
+        liveCaptionSection.remove();
+        liveCaptionSection = document.createElement('settings-live-caption');
+        document.body.appendChild(liveCaptionSection);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        await prefService.setPrefValue(
+            'accessibility.captions.live_caption_enabled', true);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const speechRecognitionSmallExpertModelSection =
+            liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+                '#speechRecognitionSmallExpertModelSection');
+        assertTrue(!!speechRecognitionSmallExpertModelSection);
+        assertTrue(speechRecognitionSmallExpertModelSection.classList.contains(
+            'sub-item'));
+
+        const speechRecognitionSmallExpertModelTitle =
+            liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+                '#speechRecognitionSmallExpertModelTitle');
+        assertTrue(!!speechRecognitionSmallExpertModelTitle);
+        assertEquals(
+            'Small expert model',
+            speechRecognitionSmallExpertModelTitle.textContent?.trim());
+
+        const secondary =
+            speechRecognitionSmallExpertModelSection.querySelector<HTMLElement>(
+                '.secondary');
+        assertTrue(!!secondary);
+        assertEquals('On-device model', secondary.textContent?.trim());
+
+        // Verify title includes size when available.
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed', 'kInstalled',
+            100, '', '', '150 MB');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+        assertEquals(
+            'Small expert model (150 MB)',
+            speechRecognitionSmallExpertModelTitle.textContent?.trim());
+        assertEquals('On-device model', secondary.textContent?.trim());
+
+        const addLanguage =
+            liveCaptionSection.shadowRoot.querySelector('#addLanguage');
+        assertFalse(!!addLanguage);
+
+        const languageList =
+            liveCaptionSection.shadowRoot.querySelector('#languageList');
+        assertFalse(!!languageList);
+      });
+
+  test(
+      'SpeechRecognitionSmallExpertModel downloading and error states',
+      async function() {
+        loadTimeData.overrideValues({
+          enableLiveCaptionSpeechRecognitionSmallExpertModel: true,
+          speechRecognitionSmallExpertModelSubtitle: 'On-device model',
+        });
+        liveCaptionSection.remove();
+        liveCaptionSection = document.createElement('settings-live-caption');
+        document.body.appendChild(liveCaptionSection);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        await prefService.setPrefValue(
+            'accessibility.captions.live_caption_enabled', true);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const section =
+            liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+                '#speechRecognitionSmallExpertModelSection');
+        assertTrue(!!section);
+
+        // Downloading state
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed',
+            'kDownloading', 50, '1 MB/s', '10s', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        let progressSpan =
+            section.querySelector<HTMLElement>('span.cr-secondary-text');
+        assertTrue(!!progressSpan);
+        assertEquals(
+            'Downloading speech recognition files... 50% (1 MB/s - 10s)',
+            progressSpan.textContent?.trim());
+
+        // Installing state
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed',
+            'kInstalling', 100, '', '', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        progressSpan =
+            section.querySelector<HTMLElement>('span.cr-secondary-text');
+        assertTrue(!!progressSpan);
+        assertEquals(
+            'Downloading speech recognition files... 100%',
+            progressSpan.textContent?.trim());
+
+        // Error state
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed', 'kError', 0,
+            '', '', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        let errorSpan =
+            section.querySelector<HTMLElement>('span.cr-secondary-text');
+        assertTrue(!!errorSpan);
+        assertEquals(
+            'Can\'t download speech files. Try again later.',
+            errorSpan.textContent?.trim());
+
+        // Error corrupt persistent state
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed',
+            'kErrorCorruptPersistent', 0, '', '', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        errorSpan =
+            section.querySelector<HTMLElement>('span.cr-secondary-text');
+        assertTrue(!!errorSpan);
+        assertEquals(
+            'Can\'t download speech files. Try again later.',
+            errorSpan.textContent?.trim());
+
+        // Delete button should not be present in downloading / error states
+        let deleteBtn = section.querySelector<HTMLElement>(
+            '#deleteSpeechRecognitionSmallExpertModelButton');
+        assertFalse(!!deleteBtn);
+
+        // Installed state
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed', 'kInstalled',
+            100, '', '', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const completeSpan =
+            section.querySelector<HTMLElement>('span.cr-secondary-text');
+        assertTrue(!!completeSpan);
+        assertEquals(
+            'Speech files downloaded', completeSpan.textContent?.trim());
+
+        // Delete button should now be present
+        deleteBtn = section.querySelector<HTMLElement>(
+            '#deleteSpeechRecognitionSmallExpertModelButton');
+        assertTrue(!!deleteBtn);
+
+        // Transition back to downloading
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed',
+            'kDownloading', 25, '', '', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        deleteBtn = section.querySelector<HTMLElement>(
+            '#deleteSpeechRecognitionSmallExpertModelButton');
+        assertFalse(!!deleteBtn);
+      });
+
+  test(
+      'SpeechRecognitionSmallExpertModel delete button deletes model and ' +
+          'sets pref to false',
+      async function() {
+        loadTimeData.overrideValues({
+          enableLiveCaptionSpeechRecognitionSmallExpertModel: true,
+          speechRecognitionSmallExpertModelSubtitle: 'On-device model',
+        });
+        liveCaptionSection.remove();
+        liveCaptionSection = document.createElement('settings-live-caption');
+        document.body.appendChild(liveCaptionSection);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        await prefService.setPrefValue(
+            'accessibility.captions.live_caption_enabled', true);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const section =
+            liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+                '#speechRecognitionSmallExpertModelSection');
+        assertTrue(!!section);
+
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed', 'kInstalled',
+            100, '', '', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const deleteBtn = section.querySelector<HTMLElement>(
+            '#deleteSpeechRecognitionSmallExpertModelButton');
+        assertTrue(!!deleteBtn);
+
+        deleteBtn.click();
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const isEnabled =
+            prefService
+                .getPref<boolean>('accessibility.captions.live_caption_enabled')
+                .value;
+        assertFalse(isEnabled);
+
+        await browserProxy.whenCalled(
+            'deleteSpeechRecognitionSmallExpertModel');
+      });
+
+  test(
+      'enabling Live Caption with SpeechRecognitionSmallExpertModel ' +
+          'invokes installSpeechRecognitionSmallExpertModel',
+      async function() {
+        loadTimeData.overrideValues({
+          enableLiveCaptionSpeechRecognitionSmallExpertModel: true,
+        });
+        liveCaptionSection.remove();
+        liveCaptionSection = document.createElement('settings-live-caption');
+        document.body.appendChild(liveCaptionSection);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const toggle = liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+            '#liveCaptionToggleButton');
+        assertTrue(!!toggle);
+        toggle.click();
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        await browserProxy.whenCalled(
+            'installSpeechRecognitionSmallExpertModel');
+      });
+
+  test(
+      'SpeechRecognitionSmallExpertModel preserves size on redundant state ' +
+          'updates',
+      async function() {
+        loadTimeData.overrideValues({
+          enableLiveCaptionSpeechRecognitionSmallExpertModel: true,
+        });
+        liveCaptionSection.remove();
+        liveCaptionSection = document.createElement('settings-live-caption');
+        document.body.appendChild(liveCaptionSection);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        await prefService.setPrefValue(
+            'accessibility.captions.live_caption_enabled', true);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const section =
+            liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+                '#speechRecognitionSmallExpertModelSection');
+        assertTrue(!!section);
+
+        const title = liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+            '#speechRecognitionSmallExpertModelTitle');
+        assertTrue(!!title);
+
+        // State update with size provided
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed', 'kInstalled',
+            100, '', '', '150 MB');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+        assertEquals('Small expert model (150 MB)', title.textContent?.trim());
+
+        // Subsequent update without size should preserve existing size
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed', 'kInstalled',
+            100, '', '', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+        assertEquals('Small expert model (150 MB)', title.textContent?.trim());
+      });
+
+  test(
+      'reconnecting SettingsLiveCaptionElement restores WebUI listeners',
+      async function() {
+        loadTimeData.overrideValues({
+          enableLiveCaptionSpeechRecognitionSmallExpertModel: true,
+        });
+        liveCaptionSection.remove();
+        liveCaptionSection = document.createElement('settings-live-caption');
+        document.body.appendChild(liveCaptionSection);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        await prefService.setPrefValue(
+            'accessibility.captions.live_caption_enabled', true);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        // Simulate navigating away in SPA (disconnecting from DOM)
+        liveCaptionSection.remove();
+        await microtasksFinished();
+
+        // Simulate navigating back to page (reconnecting to DOM)
+        document.body.appendChild(liveCaptionSection);
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const section =
+            liveCaptionSection.shadowRoot.querySelector<HTMLElement>(
+                '#speechRecognitionSmallExpertModelSection');
+        assertTrue(!!section);
+
+        // Verify that WebUI listeners are active after reconnection
+        webUIListenerCallback(
+            'speech-recognition-small-expert-model-state-changed',
+            'kDownloading', 75, '500 KB/s', '3s', '');
+        await liveCaptionSection.updateComplete;
+        await microtasksFinished();
+
+        const progressSpan =
+            section.querySelector<HTMLElement>('span.cr-secondary-text');
+        assertTrue(!!progressSpan);
+        assertEquals(
+            'Downloading speech recognition files... 75% (500 KB/s - 3s)',
+            progressSpan.textContent?.trim());
+      });
 });

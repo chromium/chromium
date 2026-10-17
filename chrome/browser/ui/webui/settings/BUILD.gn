@@ -67,6 +67,7 @@ source_set("settings") {
     "//chrome/browser/profile_resetter:profile_reset_report_proto",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/screen_ai:screen_ai_install_state",
+    "//chrome/browser/speech",
     "//chrome/browser/themes",
     "//chrome/browser/ui/safety_hub",
     "//chrome/browser/ui/search_engines",

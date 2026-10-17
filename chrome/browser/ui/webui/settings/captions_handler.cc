@@ -5,14 +5,19 @@
 #include "chrome/browser/ui/webui/settings/captions_handler.h"
 
 #include <algorithm>
+#include <cmath>
 #include <iterator>
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/live_caption/pref_names.h"
@@ -24,6 +29,8 @@
 #include "media/base/media_switches.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/time_format.h"
+#include "ui/base/text/bytes_formatting.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
@@ -95,18 +102,44 @@ void CaptionsHandler::RegisterMessages() {
       "installLanguagePacks",
       base::BindRepeating(&CaptionsHandler::HandleInstallLanguagePacks,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "installSpeechRecognitionSmallExpertModel",
+      base::BindRepeating(
+          &CaptionsHandler::HandleInstallSpeechRecognitionSmallExpertModel,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "deleteSpeechRecognitionSmallExpertModel",
+      base::BindRepeating(
+          &CaptionsHandler::HandleDeleteSpeechRecognitionSmallExpertModel,
+          base::Unretained(this)));
 }
 
 void CaptionsHandler::OnJavascriptAllowed() {
   if (soda_available_) {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
   }
+  if (base::FeatureList::IsEnabled(
+          media::kLiveCaptionSpeechRecognitionSmallExpertModel) &&
+      g_browser_process &&
+      g_browser_process->speech_recognition_small_expert_model_installer()) {
+    small_expert_model_observation_.Reset();
+    small_expert_model_observation_.Observe(
+        g_browser_process->speech_recognition_small_expert_model_installer());
+    speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState state =
+            g_browser_process->speech_recognition_small_expert_model_installer()
+                ->GetSpeechRecognitionSmallExpertModelState();
+    OnSpeechRecognitionSmallExpertModelStateChanged(state);
+  }
 }
 
 void CaptionsHandler::OnJavascriptDisallowed() {
+  installed_string_timer_.Stop();
+  weak_factory_.InvalidateWeakPtrs();
   if (soda_available_) {
     speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   }
+  small_expert_model_observation_.Reset();
 }
 
 void CaptionsHandler::HandleLiveCaptionSectionReady(
@@ -293,6 +326,163 @@ void CaptionsHandler::OnSodaInstallCleanProgress() {
                       base::Value(speech::GetLanguageName(language_code)));
   }
   newly_installed_languages_.clear();
+}
+
+void CaptionsHandler::HandleInstallSpeechRecognitionSmallExpertModel(
+    const base::ListValue& /*args*/) {
+  AllowJavascript();
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (profile && g_browser_process &&
+      g_browser_process->speech_recognition_small_expert_model_installer()) {
+    g_browser_process->speech_recognition_small_expert_model_installer()
+        ->InstallSpeechRecognitionSmallExpertModel(profile);
+  }
+}
+
+void CaptionsHandler::HandleDeleteSpeechRecognitionSmallExpertModel(
+    const base::ListValue& /*args*/) {
+  AllowJavascript();
+  weak_factory_.InvalidateWeakPtrs();
+  if (g_browser_process &&
+      g_browser_process->speech_recognition_small_expert_model_installer()) {
+    g_browser_process->speech_recognition_small_expert_model_installer()
+        ->UninstallSpeechRecognitionSmallExpertModel();
+  }
+}
+
+void CaptionsHandler::OnSpeechRecognitionSmallExpertModelProgress(
+    int progress,
+    double bytes_per_sec,
+    base::TimeDelta eta) {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+  std::u16string speed_str;
+  if (std::isfinite(bytes_per_sec) && bytes_per_sec > 0) {
+    speed_str = ui::FormatSpeed(
+        base::ByteSize(base::saturated_cast<uint64_t>(bytes_per_sec)));
+  }
+  std::u16string eta_str;
+  if (eta.is_positive()) {
+    eta_str = ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                                     ui::TimeFormat::LENGTH_SHORT, eta);
+  }
+  FireWebUIListener("speech-recognition-small-expert-model-state-changed",
+                    base::Value("kDownloading"), base::Value(progress),
+                    base::Value(speed_str), base::Value(eta_str),
+                    base::Value(""));
+}
+
+void CaptionsHandler::OnSpeechRecognitionSmallExpertModelStateChanged(
+    speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState state) {
+  if (!IsJavascriptAllowed()) {
+    return;
+  }
+  std::string state_str;
+  switch (state) {
+    case speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState::kNotInstalled:
+      state_str = "kNotInstalled";
+      break;
+    case speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState::kDownloading:
+      state_str = "kDownloading";
+      break;
+    case speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState::kInstalling:
+      state_str = "kInstalling";
+      break;
+    case speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState::kInstalled:
+      state_str = "kInstalled";
+      break;
+    case speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState::kError:
+      state_str = "kError";
+      break;
+    case speech::SpeechRecognitionSmallExpertModelInstaller::
+        SpeechRecognitionSmallExpertModelState::kErrorCorruptPersistent:
+      state_str = "kErrorCorruptPersistent";
+      break;
+  }
+  int progress =
+      (state == speech::SpeechRecognitionSmallExpertModelInstaller::
+                    SpeechRecognitionSmallExpertModelState::kInstalled ||
+       state == speech::SpeechRecognitionSmallExpertModelInstaller::
+                    SpeechRecognitionSmallExpertModelState::kInstalling)
+          ? 100
+          : 0;
+
+  if (state == speech::SpeechRecognitionSmallExpertModelInstaller::
+                   SpeechRecognitionSmallExpertModelState::kInstalled) {
+    // Immediately notify WebUI so UI transitions to installed state instantly.
+    FireWebUIListener("speech-recognition-small-expert-model-state-changed",
+                      base::Value(state_str), base::Value(progress),
+                      base::Value(""), base::Value(""), base::Value(""));
+
+    auto* installer =
+        g_browser_process
+            ? g_browser_process
+                  ->speech_recognition_small_expert_model_installer()
+            : nullptr;
+    base::FilePath model_dir =
+        installer ? installer->GetSpeechRecognitionSmallExpertModelPath()
+                  : base::FilePath();
+
+    if (model_dir.empty() || !model_dir.IsAbsolute()) {
+      return;
+    }
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(
+            [](const base::FilePath& path) -> int64_t {
+              if (base::DirectoryExists(path)) {
+                return base::ComputeDirectorySize(path);
+              }
+              std::optional<int64_t> size = base::GetFileSize(path);
+              if (size.has_value()) {
+                return size.value();
+              }
+              return 0;
+            },
+            model_dir),
+        base::BindOnce(
+            [](base::WeakPtr<CaptionsHandler> handler, std::string state_str,
+               int progress, int64_t size_bytes) {
+              if (!handler) {
+                return;
+              }
+              if (!handler->IsJavascriptAllowed()) {
+                return;
+              }
+              auto* installer =
+                  g_browser_process
+                      ? g_browser_process
+                            ->speech_recognition_small_expert_model_installer()
+                      : nullptr;
+              if (!installer ||
+                  installer->GetSpeechRecognitionSmallExpertModelState() !=
+                      speech::SpeechRecognitionSmallExpertModelInstaller::
+                          SpeechRecognitionSmallExpertModelState::kInstalled) {
+                return;
+              }
+              std::u16string size_str;
+              if (size_bytes > 0) {
+                size_str = ui::FormatBytes(
+                    base::ByteSize(static_cast<uint64_t>(size_bytes)));
+              }
+              handler->FireWebUIListener(
+                  "speech-recognition-small-expert-model-state-changed",
+                  base::Value(state_str), base::Value(progress),
+                  base::Value(""), base::Value(""), base::Value(size_str));
+            },
+            weak_factory_.GetWeakPtr(), state_str, progress));
+  } else {
+    FireWebUIListener("speech-recognition-small-expert-model-state-changed",
+                      base::Value(state_str), base::Value(progress),
+                      base::Value(""), base::Value(""), base::Value(""));
+  }
 }
 
 }  // namespace settings

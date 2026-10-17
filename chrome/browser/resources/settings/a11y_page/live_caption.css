@@ -28,3 +28,7 @@
 #defaultLanguageLabel {
   color: var(--cr-secondary-text-color);
 }
+
+.sub-item {
+  padding-inline-start: var(--cr-section-indent-padding, 36px);
+}

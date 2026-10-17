@@ -158,6 +158,15 @@
     <message name="IDS_SETTINGS_CAPTIONS_MASK_OFFENSIVE_WORDS_TITLE" desc="Name of the setting to hide profanity (offensive words) for the Live Caption feature.">
       Hide profanity
     </message>
+    <message name="IDS_SETTINGS_CAPTIONS_SPEECH_RECOGNITION_SMALL_EXPERT_MODEL_SECTION_TITLE" desc="Title for Small expert model section.">
+      Small expert model
+    </message>
+    <message name="IDS_SETTINGS_CAPTIONS_SPEECH_RECOGNITION_SMALL_EXPERT_MODEL_SECTION_SUBTITLE" desc="Subtitle describing Small expert model feature.">
+      On-device model
+    </message>
+    <message name="IDS_SETTINGS_CAPTIONS_SPEECH_RECOGNITION_SMALL_EXPERT_MODEL_DELETE_BUTTON" desc="Button label to delete Small expert model component package.">
+      Delete model
+    </message>
     <message name="IDS_SETTINGS_ENABLE_CARET_BROWSING_TITLE" desc="Name of the setting to enable Caret Browsing, which allows you to move around any web page using a text caret.">
       Navigate pages with a text cursor
     </message>

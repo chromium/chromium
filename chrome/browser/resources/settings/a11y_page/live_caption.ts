@@ -13,15 +13,17 @@
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/icons.html.js';
 import '../controls/settings_toggle_button.js';
 
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CaptionsBrowserProxy, LiveCaptionLanguage, LiveCaptionLanguageList} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {CaptionsBrowserProxyImpl} from '/shared/settings/a11y_page/captions_browser_proxy.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -39,21 +41,14 @@ import './live_translate.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderLitElement} from '//resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 // </if>
 // clang-format on
 
+const SettingsLiveCaptionElementBase = I18nMixinLit(
+    WebUiListenerMixinLit(PrefServiceObserverMixinLit(CrLitElement)));
 
-// <if expr="is_chromeos">
-const SettingsLiveCaptionElementBase =
-    WebUiListenerMixinLit(PrefServiceObserverMixinLit(CrLitElement));
-// </if>
 // <if expr="not is_chromeos">
-const SettingsLiveCaptionElementBase = WebUiListenerMixinLit(
-    PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement)));
-
 export interface SettingsLiveCaptionElement {
   $: {
     menu: CrLazyRenderLitElement<CrActionMenuElement>,
@@ -85,6 +80,12 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
        */
       enableLiveCaptionSubtitle_: {type: String},
       enableLiveCaptionMultiLanguage_: {type: Boolean},
+      enableLiveCaptionSpeechRecognitionSmallExpertModel_: {type: Boolean},
+      speechRecognitionSmallExpertModelState_: {type: String},
+      speechRecognitionSmallExpertModelProgress_: {type: Number},
+      speechRecognitionSmallExpertModelSpeed_: {type: String},
+      speechRecognitionSmallExpertModelEta_: {type: String},
+      speechRecognitionSmallExpertModelSize_: {type: String},
 
       // <if expr="not is_chromeos">
       liveCaptionLanguagePref_: {type: Object},
@@ -102,6 +103,18 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
       loadTimeData.getString('captionsEnableLiveCaptionSubtitle');
   protected accessor enableLiveCaptionMultiLanguage_: boolean =
       loadTimeData.getBoolean('enableLiveCaptionMultiLanguage');
+  protected accessor enableLiveCaptionSpeechRecognitionSmallExpertModel_:
+      boolean = loadTimeData.valueExists(
+                    'enableLiveCaptionSpeechRecognitionSmallExpertModel') ?
+      loadTimeData.getBoolean(
+          'enableLiveCaptionSpeechRecognitionSmallExpertModel') :
+      false;
+  protected accessor speechRecognitionSmallExpertModelState_: string =
+      'kNotInstalled';
+  protected accessor speechRecognitionSmallExpertModelProgress_: number = 0;
+  protected accessor speechRecognitionSmallExpertModelSpeed_: string = '';
+  protected accessor speechRecognitionSmallExpertModelEta_: string = '';
+  protected accessor speechRecognitionSmallExpertModelSize_: string = '';
   // <if expr="not is_chromeos">
   protected accessor liveCaptionLanguagePref_:
       chrome.settingsPrivate.PrefObject<string>|undefined;
@@ -127,22 +140,18 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
     this.mirrorPref(
         'accessibility.captions.live_caption_language',
         'liveCaptionLanguagePref_');
-    // </if>
-  }
 
-  override firstUpdated(changedProperties: PropertyValues<this>) {
-    super.firstUpdated(changedProperties);
+    if (!this.enableLiveCaptionSpeechRecognitionSmallExpertModel_) {
+      this.browserProxy_.getInstalledLanguagePacks().then(
+          (installedLanguagePacks: LiveCaptionLanguageList) => {
+            this.installedLanguagePacks_ = installedLanguagePacks;
+          });
 
-    // <if expr="not is_chromeos">
-    this.browserProxy_.getInstalledLanguagePacks().then(
-        (installedLanguagePacks: LiveCaptionLanguageList) => {
-          this.installedLanguagePacks_ = installedLanguagePacks;
-        });
-
-    this.browserProxy_.getAvailableLanguagePacks().then(
-        (availableLanguagePacks: LiveCaptionLanguageList) => {
-          this.availableLanguagePacks_ = availableLanguagePacks;
-        });
+      this.browserProxy_.getAvailableLanguagePacks().then(
+          (availableLanguagePacks: LiveCaptionLanguageList) => {
+            this.availableLanguagePacks_ = availableLanguagePacks;
+          });
+    }
     // </if>
 
     // <if expr="is_chromeos">
@@ -159,7 +168,75 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
                 sodaDownloadProgress, languageCode));
     // </if>
 
+    this.addWebUiListener(
+        'speech-recognition-small-expert-model-state-changed',
+        (state: string, progress: number, speed?: string, eta?: string,
+         size?: string) =>
+            this.onSpeechRecognitionSmallExpertModelStateChanged_(
+                state, progress, speed, eta, size));
+
     this.browserProxy_.liveCaptionSectionReady();
+  }
+
+  protected onSpeechRecognitionSmallExpertModelStateChanged_(
+      state: string, progress: number, speed?: string, eta?: string,
+      size?: string) {
+    this.speechRecognitionSmallExpertModelState_ = state;
+    this.speechRecognitionSmallExpertModelProgress_ = progress;
+    this.speechRecognitionSmallExpertModelSpeed_ = speed || '';
+    this.speechRecognitionSmallExpertModelEta_ = eta || '';
+    if (state === 'kInstalled') {
+      if (size) {
+        this.speechRecognitionSmallExpertModelSize_ = size;
+      }
+    } else {
+      this.speechRecognitionSmallExpertModelSize_ = '';
+    }
+  }
+
+  protected computeSpeechRecognitionSmallExpertModelSize_(): string {
+    if (this.speechRecognitionSmallExpertModelSize_) {
+      return ` (${this.speechRecognitionSmallExpertModelSize_})`;
+    }
+    return '';
+  }
+
+  protected computeSpeechRecognitionSmallExpertModelStatus_(): string {
+    if (this.speechRecognitionSmallExpertModelState_ === 'kDownloading' ||
+        this.speechRecognitionSmallExpertModelState_ === 'kInstalling') {
+      return this.computeSpeechRecognitionSmallExpertModelDownloadProgress_();
+    }
+    if (this.speechRecognitionSmallExpertModelState_ === 'kInstalled') {
+      return this.i18n('speechRecognitionSmallExpertModelDownloadComplete');
+    }
+    if (this.speechRecognitionSmallExpertModelState_ === 'kError' ||
+        this.speechRecognitionSmallExpertModelState_ ===
+            'kErrorCorruptPersistent') {
+      return this.i18n('speechRecognitionSmallExpertModelDownloadError');
+    }
+    return '';
+  }
+
+  protected computeSpeechRecognitionSmallExpertModelDownloadProgress_():
+      string {
+    let progressText = this.i18n(
+        'speechRecognitionSmallExpertModelDownloadProgress',
+        this.speechRecognitionSmallExpertModelProgress_);
+    const details = [
+      this.speechRecognitionSmallExpertModelSpeed_,
+      this.speechRecognitionSmallExpertModelEta_,
+    ].filter(Boolean).join(' - ');
+    if (details) {
+      progressText += ` (${details})`;
+    }
+    return progressText;
+  }
+
+  protected onDeleteSpeechRecognitionSmallExpertModelClick_() {
+    PrefService.getInstance().setPrefValue(
+        'accessibility.captions.live_caption_enabled', false);
+    this.browserProxy_.deleteSpeechRecognitionSmallExpertModel();
+    focusWithoutInk(this.getLiveCaptionToggle());
   }
 
   /**
@@ -185,10 +262,16 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
         'Accessibility.LiveCaption.EnableFromSettings', liveCaptionEnabled);
 
     // <if expr="not is_chromeos">
-    if (this.installedLanguagePacks_.length === 0) {
+    if (!this.enableLiveCaptionSpeechRecognitionSmallExpertModel_ &&
+        this.installedLanguagePacks_.length === 0) {
       this.installLanguagePacks_([this.liveCaptionLanguagePref_!.value]);
     }
     // </if>
+
+    if (this.enableLiveCaptionSpeechRecognitionSmallExpertModel_ &&
+        liveCaptionEnabled) {
+      this.browserProxy_.installSpeechRecognitionSmallExpertModel();
+    }
   }
 
   protected onLiveCaptionMaskOffensiveWordsChange_(event: Event) {
@@ -308,7 +391,9 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
    *     as download progress for Live Caption.
    */
   private onSodaDownloadProgressChanged_(sodaDownloadProgress: string) {
-    this.enableLiveCaptionSubtitle_ = sodaDownloadProgress;
+    if (!this.enableLiveCaptionSpeechRecognitionSmallExpertModel_) {
+      this.enableLiveCaptionSubtitle_ = sodaDownloadProgress;
+    }
   }
   // </if>
 
@@ -327,7 +412,9 @@ export class SettingsLiveCaptionElement extends SettingsLiveCaptionElementBase {
   private onSodaDownloadProgressChangedForLanguage_(
       sodaDownloadProgress: string, languageCode: string) {
     if (!this.enableLiveCaptionMultiLanguage_) {
-      this.enableLiveCaptionSubtitle_ = sodaDownloadProgress;
+      if (!this.enableLiveCaptionSpeechRecognitionSmallExpertModel_) {
+        this.enableLiveCaptionSubtitle_ = sodaDownloadProgress;
+      }
       return;
     }
 

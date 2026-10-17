@@ -19,6 +19,31 @@ ${!this.enableLiveCaptionMultiLanguage_ ? html`
     </settings-toggle-button>
   </div>
   <cr-collapse ?opened="${this.isLiveCaptionEnabled_}">
+    ${this.enableLiveCaptionSpeechRecognitionSmallExpertModel_ ? html`
+      <div id="speechRecognitionSmallExpertModelSection"
+          class="cr-row continuation sub-item">
+        <div class="flex settings-box-text">
+          <div id="speechRecognitionSmallExpertModelTitle" class="label">
+            $i18n{speechRecognitionSmallExpertModelTitle}${
+                this.computeSpeechRecognitionSmallExpertModelSize_()}
+          </div>
+          <div class="secondary">
+            $i18n{speechRecognitionSmallExpertModelSubtitle}
+          </div>
+        </div>
+        <span aria-live="polite" class="cr-secondary-text cr-row-gap">
+          ${this.computeSpeechRecognitionSmallExpertModelStatus_()}
+        </span>
+        ${this.speechRecognitionSmallExpertModelState_ === 'kInstalled' ? html`
+          <cr-icon-button iron-icon="cr:delete"
+              id="deleteSpeechRecognitionSmallExpertModelButton"
+              @click="${this.onDeleteSpeechRecognitionSmallExpertModelClick_}"
+              title="$i18n{speechRecognitionSmallExpertModelDeleteButton}"
+              aria-label="$i18n{speechRecognitionSmallExpertModelDeleteButton}">
+          </cr-icon-button>
+        ` : ''}
+      </div>
+    ` : ''}
     <settings-toggle-button id="maskOffensiveWordsToggleButton"
         pref-key="accessibility.captions.live_caption_mask_offensive_words"
         @change="${this.onLiveCaptionMaskOffensiveWordsChange_}"
@@ -37,6 +62,32 @@ ${this.enableLiveCaptionMultiLanguage_ ? html`
     </settings-toggle-button>
   </div>
   <cr-collapse ?opened="${this.isLiveCaptionEnabled_}">
+    ${this.enableLiveCaptionSpeechRecognitionSmallExpertModel_ ? html`
+      <div id="speechRecognitionSmallExpertModelSection"
+          class="cr-row continuation sub-item">
+        <div class="flex settings-box-text">
+          <div id="speechRecognitionSmallExpertModelTitle" class="label">
+            $i18n{speechRecognitionSmallExpertModelTitle}${
+                this.computeSpeechRecognitionSmallExpertModelSize_()}
+          </div>
+          <div class="secondary">
+            $i18n{speechRecognitionSmallExpertModelSubtitle}
+          </div>
+        </div>
+        <span aria-live="polite" class="cr-secondary-text cr-row-gap">
+          ${this.computeSpeechRecognitionSmallExpertModelStatus_()}
+        </span>
+        ${this.speechRecognitionSmallExpertModelState_ === 'kInstalled' ? html`
+          <cr-icon-button iron-icon="cr:delete"
+              id="deleteSpeechRecognitionSmallExpertModelButton"
+              @click="${this.onDeleteSpeechRecognitionSmallExpertModelClick_}"
+              title="$i18n{speechRecognitionSmallExpertModelDeleteButton}"
+              aria-label="$i18n{speechRecognitionSmallExpertModelDeleteButton}">
+          </cr-icon-button>
+        ` : ''}
+      </div>
+    ` : ''}
+    ${!this.enableLiveCaptionSpeechRecognitionSmallExpertModel_ ? html`
     <div class="cr-row continuation">
       <div class="flex settings-box-text">
         $i18n{captionsManageLanguagesTitle}
@@ -71,6 +122,7 @@ ${this.enableLiveCaptionMultiLanguage_ ? html`
         `)}
       </div>
     </div>
+    ` : ''}
     <settings-toggle-button id="maskOffensiveWordsToggleButton"
         pref-key="accessibility.captions.live_caption_mask_offensive_words"
         @change="${this.onLiveCaptionMaskOffensiveWordsChange_}"
@@ -81,6 +133,7 @@ ${this.enableLiveCaptionMultiLanguage_ ? html`
     <settings-live-translate></settings-live-translate>
   ` : ''}
 ` : ''}
+
 ${this.showAddLanguagesDialog_ ? html`
   <settings-add-languages-dialog id="addLanguagesDialog"
       .languages="${this.filterAvailableLanguagePacks_()}"

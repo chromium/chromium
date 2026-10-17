@@ -39,6 +39,10 @@ export interface CaptionsBrowserProxy {
   removeLanguagePack(languageCode: string): void;
 
   installLanguagePacks(languageCodes: string[]): void;
+
+  installSpeechRecognitionSmallExpertModel(): void;
+
+  deleteSpeechRecognitionSmallExpertModel(): void;
 }
 
 export class CaptionsBrowserProxyImpl implements CaptionsBrowserProxy {
@@ -66,6 +70,14 @@ export class CaptionsBrowserProxyImpl implements CaptionsBrowserProxy {
 
   installLanguagePacks(languageCodes: string[]) {
     chrome.send('installLanguagePacks', languageCodes);
+  }
+
+  installSpeechRecognitionSmallExpertModel() {
+    chrome.send('installSpeechRecognitionSmallExpertModel');
+  }
+
+  deleteSpeechRecognitionSmallExpertModel() {
+    chrome.send('deleteSpeechRecognitionSmallExpertModel');
   }
 
   static getInstance(): CaptionsBrowserProxy {

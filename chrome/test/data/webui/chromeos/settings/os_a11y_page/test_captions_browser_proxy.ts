@@ -19,6 +19,8 @@ export class TestCaptionsBrowserProxy extends TestBrowserProxy implements
       'getTranslatableLanguages',
       'removeLanguagePack',
       'installLanguagePacks',
+      'installSpeechRecognitionSmallExpertModel',
+      'deleteSpeechRecognitionSmallExpertModel',
     ]);
 
     this.availableLanguagePacks_ = [
@@ -70,6 +72,14 @@ export class TestCaptionsBrowserProxy extends TestBrowserProxy implements
 
   installLanguagePacks(languageCodes: string[]) {
     this.methodCalled('installLanguagePacks', languageCodes);
+  }
+
+  installSpeechRecognitionSmallExpertModel() {
+    this.methodCalled('installSpeechRecognitionSmallExpertModel');
+  }
+
+  deleteSpeechRecognitionSmallExpertModel() {
+    this.methodCalled('deleteSpeechRecognitionSmallExpertModel');
   }
 
   setInstalledLanguagePacks(installedLanguagePacks: LiveCaptionLanguageList) {
