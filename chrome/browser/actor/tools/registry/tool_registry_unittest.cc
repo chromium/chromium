@@ -16,6 +16,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/bookmark_management_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
@@ -230,6 +231,42 @@ TEST(ToolRegistryTest, PerformSearchToolDefinition) {
               HasParamOfType(PerformSearchToolRequest::kQueryParam, "string"));
   EXPECT_THAT(*definition,
               RequiresParam(PerformSearchToolRequest::kQueryParam));
+}
+
+TEST(ToolRegistryTest, AttemptFormFillingToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      AttemptFormFillingToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kAttemptFormFilling);
+  EXPECT_EQ(definition->name, AttemptFormFillingToolRequest::kModelFacingName);
+  EXPECT_THAT(*definition,
+              HasParamOfType(AttemptFormFillingToolRequest::kDomNodeIdParam,
+                             "integer"));
+  EXPECT_THAT(*definition,
+              RequiresParam(AttemptFormFillingToolRequest::kDomNodeIdParam));
+  EXPECT_THAT(*definition,
+              HasParamOfType(AttemptFormFillingToolRequest::kRequestedDataParam,
+                             "string"));
+  EXPECT_THAT(
+      *definition,
+      RequiresParam(AttemptFormFillingToolRequest::kRequestedDataParam));
+
+  const base::DictValue* properties =
+      definition->parameters_json_schema.FindDict("properties");
+  ASSERT_TRUE(properties);
+  const base::DictValue* requested_data_prop =
+      properties->FindDict(AttemptFormFillingToolRequest::kRequestedDataParam);
+  ASSERT_TRUE(requested_data_prop);
+  const base::ListValue* enum_list = requested_data_prop->FindList("enum");
+  ASSERT_TRUE(enum_list);
+  std::vector<std::string> actual_enum;
+  for (const base::Value& item : *enum_list) {
+    ASSERT_TRUE(item.is_string());
+    actual_enum.push_back(item.GetString());
+  }
+  EXPECT_THAT(actual_enum,
+              testing::ElementsAreArray(
+                  AttemptFormFillingToolRequest::kRequestedDataValues));
 }
 
 TEST(ToolRegistryTest, AttemptOtpFillingToolDefinition) {
@@ -638,6 +675,18 @@ TEST(ToolRegistryTest, GetAllToolsContainsPerformSearchTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kPerformSearch,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsAttemptFormFillingTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kAttemptFormFilling,
                                     &ToolDefinition::id));
 }
 

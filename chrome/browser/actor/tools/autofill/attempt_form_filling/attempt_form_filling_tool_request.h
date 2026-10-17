@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_AUTOFILL_ATTEMPT_FORM_FILLING_ATTEMPT_FORM_FILLING_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_AUTOFILL_ATTEMPT_FORM_FILLING_ATTEMPT_FORM_FILLING_TOOL_REQUEST_H_
 
+#include <array>
 #include <iosfwd>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "chrome/browser/actor/actor_surface_handle.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
@@ -22,6 +26,11 @@ class ToolRequestVisitorFunctor;
 class AttemptFormFillingToolRequest : public TabToolRequest {
  public:
   static constexpr char kName[] = "AttemptFormFilling";
+  static constexpr std::string_view kModelFacingName = "attempt_form_filling";
+  static constexpr std::string_view kDomNodeIdParam = "dom_node_id";
+  static constexpr std::string_view kRequestedDataParam = "requested_data";
+  static constexpr std::array<std::string_view, 3> kRequestedDataValues = {
+      "address", "credit_card", "login"};
   using RequestedData = autofill::ActorFormFillingRequestedData;
 
   struct FormFillingRequest {
@@ -48,6 +57,9 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
   AttemptFormFillingToolRequest& operator=(
       const AttemptFormFillingToolRequest&);
   ~AttemptFormFillingToolRequest() override;
+
+  // Returns the `ToolId::kAttemptFormFilling` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,

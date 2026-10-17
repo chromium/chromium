@@ -87,7 +87,9 @@ enum class ToolId {
   kScript = 33,
   // Loads a set of URLs in background tabs and extracts their page content.
   kLoadAndExtractContent = 34,
-  kMaxValue = kLoadAndExtractContent,
+  // Attempts to fill forms on the active webpage with user information.
+  kAttemptFormFilling = 35,
+  kMaxValue = kAttemptFormFilling,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

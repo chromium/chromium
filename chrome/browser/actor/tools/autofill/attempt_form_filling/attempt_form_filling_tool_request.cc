@@ -4,13 +4,18 @@
 
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool_request.h"
 
+#include <optional>
 #include <ostream>
+#include <string_view>
 #include <variant>
 
 #include "base/containers/span.h"
 #include "base/strings/to_string.h"
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/tools/autofill/attempt_form_filling/attempt_form_filling_tool.h"
+#include "chrome/browser/actor/tools/registry/tool_definition.h"
+#include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
+#include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
@@ -19,6 +24,17 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
+
+namespace {
+
+constexpr std::string_view kAttemptFormFillingToolDescription =
+    "Attempts to fill forms on the active webpage with user information.";
+constexpr std::string_view kDomNodeIdParamDescription =
+    "The numeric DOM node ID of the target form field to fill.";
+constexpr std::string_view kRequestedDataParamDescription =
+    "The type of data to fill: 'address', 'credit_card', or 'login'.";
+
+}  // namespace
 
 AttemptFormFillingToolRequest::FormFillingRequest::FormFillingRequest() =
     default;
@@ -51,6 +67,20 @@ AttemptFormFillingToolRequest& AttemptFormFillingToolRequest::operator=(
     const AttemptFormFillingToolRequest&) = default;
 
 AttemptFormFillingToolRequest::~AttemptFormFillingToolRequest() = default;
+
+// static
+std::optional<ToolDefinition>
+AttemptFormFillingToolRequest::GetToolDefinition() {
+  return ToolDefinitionBuilder(ToolId::kAttemptFormFilling, kModelFacingName,
+                               kAttemptFormFillingToolDescription)
+      .SetToolParameterSchema(
+          ToolSchemaBuilder()
+              .AddIntegerProperty(kDomNodeIdParam, kDomNodeIdParamDescription)
+              .AddStringEnumProperty(kRequestedDataParam,
+                                     kRequestedDataParamDescription,
+                                     kRequestedDataValues))
+      .Build();
+}
 
 ToolRequest::CreateToolResult AttemptFormFillingToolRequest::CreateTool(
     TaskId task_id,
