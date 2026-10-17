@@ -186,6 +186,7 @@ class AppParentalControlsHandlerBrowserTest : public InProcessBrowserTest {
         std::make_unique<arc::FakeAppInstance>(arc_app_list_prefs_);
 
     observer_ = std::make_unique<AppParentalControlsTestObserver>();
+    GetHandler()->AddObserver(observer()->GenerateRemote());
   }
 
   void TearDownOnMainThread() override {
@@ -197,15 +198,18 @@ class AppParentalControlsHandlerBrowserTest : public InProcessBrowserTest {
   }
 
   std::string InstallArcApp(const std::string& package_name) {
-    base::RunLoop run_loop;
+    auto app = CreateArcAppInfo(package_name);
+    observer()->SetUpWaiterForAppUpdate(
+        ArcAppListPrefs::GetAppId(package_name, app->activity));
+
     arc_app_instance_->SendPackageAdded(
         CreateArcAppPackage(package_name)->Clone());
 
     std::vector<arc::mojom::AppInfoPtr> apps;
-    apps.emplace_back(CreateArcAppInfo(package_name));
+    apps.emplace_back(std::move(app));
 
     arc_app_instance_->SendPackageAppListRefreshed(package_name, apps);
-    run_loop.RunUntilIdle();
+    observer()->WaitForAppUpdate();
 
     return arc::ArcPackageNameToAppId(package_name, profile());
   }
@@ -258,7 +262,6 @@ IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
                        BlockAndUnblockApp) {
   AppParentalControlsHandler* handler = GetHandler();
-  handler->AddObserver(observer()->GenerateRemote());
 
   std::string arc_app_id = InstallArcApp("com.example.app1");
 
@@ -302,7 +305,6 @@ IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest, UninstallApp) {
   AppParentalControlsHandler* handler = GetHandler();
-  handler->AddObserver(observer()->GenerateRemote());
 
   std::string arc_app_package1 = "com.example.app1";
   std::string arc_app_id1 = InstallArcApp(arc_app_package1);
@@ -335,7 +337,6 @@ IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest, UninstallApp) {
 IN_PROC_BROWSER_TEST_F(AppParentalControlsHandlerBrowserTest,
                        OnControlsDisabled) {
   AppParentalControlsHandler* handler = GetHandler();
-  handler->AddObserver(observer()->GenerateRemote());
 
   std::string arc_app_id = InstallArcApp("com.example.app1");
 
