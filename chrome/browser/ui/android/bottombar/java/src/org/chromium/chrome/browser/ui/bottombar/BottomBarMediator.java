@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.CandidateAction;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
-import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -537,12 +536,9 @@ public class BottomBarMediator
         PropertyModel actionModel = mGlicActionSupplier.get();
         if (actionModel == null) return;
 
-        HighlightParams highlightParams = new HighlightParams(HighlightShape.RECTANGLE);
-        highlightParams.setBoundsRespectPadding(true);
-        int circleRadius =
-                mContext.getResources()
-                        .getDimensionPixelSize(R.dimen.bottom_bar_button_highlight_radius);
-        highlightParams.setCornerRadius(circleRadius);
+        HighlightParams highlightParams =
+                BottomBarUtils.createButtonHighlightParams(
+                        mContext, /* useNewTabBackgroundRadius= */ false);
 
         IphIntent iphIntent =
                 new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC)
@@ -580,18 +576,9 @@ public class BottomBarMediator
                         .setStringResId(R.string.iph_android_bottom_bar_new_tab)
                         .setAccessibilityResId(R.string.iph_android_bottom_bar_new_tab);
 
-        HighlightParams newTabHighlightParams = new HighlightParams(HighlightShape.RECTANGLE);
-        newTabHighlightParams.setBoundsRespectPadding(true);
-        if (mButtonManager.hasCenteredButton()) {
-            newTabHighlightParams.setCornerRadius(
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_radius));
-        } else {
-            int circleRadius =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.bottom_bar_button_highlight_radius);
-            newTabHighlightParams.setCornerRadius(circleRadius);
-        }
+        HighlightParams newTabHighlightParams =
+                BottomBarUtils.createButtonHighlightParams(
+                        mContext, mButtonManager.hasCenteredButton());
         newTabIphBuilder.setHighlightParams(newTabHighlightParams);
         IphIntent newTabIph =
                 newTabIphBuilder

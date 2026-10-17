@@ -333,6 +333,10 @@ public class BottomBarView extends LinearLayout {
         }
     }
 
+    public boolean isNewTabBackgroundVisible() {
+        return Boolean.TRUE.equals(mNewTabBackgroundVisible);
+    }
+
     private void setNewTabButtonBackground(Drawable drawable) {
         if (mNewTabButton.getBackground() == drawable) {
             return;
