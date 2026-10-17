@@ -16,6 +16,7 @@ import static androidx.core.view.WindowInsetsCompat.Type.tappableElement;
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.view.View;
 
 import androidx.annotation.IntDef;
@@ -40,6 +41,7 @@ import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 
 import java.lang.annotation.Retention;
@@ -81,6 +83,10 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
 
     // Cached state
     private @Nullable WindowInsetsCompat mLastSeenRawWindowInset;
+    // The last raw insets after status bar preservation was applied (see
+    // #onApplyWindowInsets). These are the insets forwarded to consumers and used for the safe
+    // area.
+    private @Nullable WindowInsetsCompat mLastAdjustedWindowInsets;
     private static @Nullable WindowInsetsCompat sInitialRawWindowInsetsForTesting;
 
     // Edge-to-edge investigations
@@ -95,6 +101,11 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     // Set to true when navbar insets are missing for the first time after non-zero navbar insets
     // were seen, indicating a regression in navbar insets being provided.
     private boolean mObservedNonZeroNavBarRegression;
+
+    // Whether the status bar was visible when the window last had focus. Used to ignore transient
+    // status bar hiding caused by translucent overlay activities (e.g. Samsung's ChooserActivity)
+    // taking window focus and hiding statusBars while Chrome remains visible underneath.
+    private boolean mStatusBarsVisibleWhenFocused = true;
 
     /** Allows observing changes to the window insets from Android system UI. */
     public interface WindowInsetObserver {
@@ -246,8 +257,8 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
      * @param contextWeakRef A weak reference to the context.
      * @param enableKeyboardOverlayMode Whether the keyboard can be considered to be in "overlay"
      *     mode, where its inset shouldn't affect the size of the viewport.
-     * @param enableExtraEdgeToEdgeLogging Whether extra logs should be emitted related to
-           insets and edge-to-edge state.
+     * @param enableExtraEdgeToEdgeLogging Whether extra logs should be emitted related to insets
+     *     and edge-to-edge state.
      */
     public InsetObserver(
             ImmutableWeakReference<View> rootViewWeakRef,
@@ -317,6 +328,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         } else if (sInitialRawWindowInsetsForTesting != null) {
             mLastSeenRawWindowInset = sInitialRawWindowInsetsForTesting;
         }
+        mLastAdjustedWindowInsets = mLastSeenRawWindowInset;
         ViewCompat.setWindowInsetsAnimationCallback(rootView, mWindowInsetsAnimationProxyCallback);
         ViewCompat.setOnApplyWindowInsetsListener(rootView, this);
     }
@@ -542,6 +554,27 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         Log.i(TAG, "-----");
     }
 
+    /**
+     * Returns whether the status bars are hidden, i.e. they have no visible insets but would have
+     * non-zero insets if shown. Always false below R, where status bar visibility is not reliably
+     * reported.
+     */
+    private static boolean areStatusBarsHidden(WindowInsetsCompat insets) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
+        Insets statusBarInsetsIgnoringVisibility = insets.getInsetsIgnoringVisibility(statusBars());
+        return Insets.NONE.equals(insets.getInsets(statusBars()))
+                && statusBarInsetsIgnoringVisibility != null
+                && !Insets.NONE.equals(statusBarInsetsIgnoringVisibility);
+    }
+
+    /** Returns a copy of {@code insets} with the status bars marked visible at full size. */
+    private static WindowInsetsCompat withStatusBarsVisible(WindowInsetsCompat insets) {
+        return new WindowInsetsCompat.Builder(insets)
+                .setInsets(statusBars(), insets.getInsetsIgnoringVisibility(statusBars()))
+                .setVisible(statusBars(), /* visible= */ true)
+                .build();
+    }
+
     @Override
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
         mLastSeenRawWindowInset = insets;
@@ -549,6 +582,19 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
         if (mEnableExtraEdgeToEdgeLogging) emitExtraEdgeToEdgeLogs(insets);
 
         verifyInsetsForEdgeToEdge(insets);
+
+        // A translucent overlay activity (e.g. Samsung's ChooserActivity) can take window focus and
+        // hide the status bars while Chrome is still visible underneath. Keep the status bars
+        // visible for Chrome's layout unless they were already hidden while Chrome had focus
+        // (e.g. fullscreen).
+        boolean statusBarsHidden = areStatusBarsHidden(insets);
+        if (view.hasWindowFocus() || !statusBarsHidden) {
+            mStatusBarsVisibleWhenFocused = !statusBarsHidden;
+        } else if (mStatusBarsVisibleWhenFocused
+                && UiAndroidFeatureList.sAndroidPreserveStatusBarInsetsWhenUnfocused.isEnabled()) {
+            insets = withStatusBarsVisible(insets);
+        }
+        mLastAdjustedWindowInsets = insets;
 
         updateDisplayCutoutRect(insets);
         insets = forwardToInsetConsumers(insets);
@@ -636,18 +682,17 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     /** Get the safe area from the WindowInsets, store it and notify any observers. */
     private void updateCurrentSafeArea() {
         // When display cutout already included in the system bar insets, do not consider it as safe
-        // area.
+        // area. Use the adjusted insets so that status bars hidden by an overlay activity while
+        // Chrome is unfocused are still considered to cover the display cutout.
         Insets extraInsets = Insets.NONE;
         Context context = mContextReference.get();
-        if (getLastRawWindowInsets() != null && context != null) {
+        WindowInsetsCompat insets = mLastAdjustedWindowInsets;
+        if (insets != null && context != null) {
             boolean shouldPadDisplayCutout =
-                    WindowInsetsUtils.shouldPadDisplayCutout(getLastRawWindowInsets(), context);
+                    WindowInsetsUtils.shouldPadDisplayCutout(insets, context);
             extraInsets =
-                    getLastRawWindowInsets()
-                            .getInsets(
-                                    shouldPadDisplayCutout
-                                            ? systemBars() + displayCutout()
-                                            : systemBars());
+                    insets.getInsets(
+                            shouldPadDisplayCutout ? systemBars() + displayCutout() : systemBars());
         }
         Rect newSafeArea =
                 new Rect(

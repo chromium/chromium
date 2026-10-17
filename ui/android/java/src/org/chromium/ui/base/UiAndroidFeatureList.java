@@ -60,6 +60,13 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ false);
 
+    // A CachedFlag because InsetObserver may receive insets before native is initialized.
+    public static final CachedFlag sAndroidPreserveStatusBarInsetsWhenUnfocused =
+            newCachedFlag(
+                    UiAndroidFeatures.ANDROID_PRESERVE_STATUS_BAR_INSETS_WHEN_UNFOCUSED,
+                    /* defaultValue= */ true,
+                    /* defaultValueInTests= */ true);
+
     public static final CachedFlag sAndroidWindowOcclusion =
             newCachedFlag(
                     UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION,
@@ -152,6 +159,7 @@ public class UiAndroidFeatureList {
 
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
             List.of(
+                    sAndroidPreserveStatusBarInsetsWhenUnfocused,
                     sAndroidUseDisplayTopology,
                     sAndroidWindowOcclusion,
                     sConnectedDisplayDensityDebugLogs,

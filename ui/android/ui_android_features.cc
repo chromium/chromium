@@ -10,6 +10,9 @@ namespace ui {
 
 BASE_FEATURE(kAndroidHDR, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidPreserveStatusBarInsetsWhenUnfocused,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAndroidResourceMemoryOptimization,
              base::FEATURE_ENABLED_BY_DEFAULT);
 

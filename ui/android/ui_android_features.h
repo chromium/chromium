@@ -18,6 +18,12 @@ namespace ui {
 // ships.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidHDR);
 
+// Kill switch for keeping status bar insets visible in InsetObserver while
+// Chrome's window is unfocused and another window (e.g. a translucent share
+// sheet) has hidden the status bars.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(
+    kAndroidPreserveStatusBarInsetsWhenUnfocused);
+
 // Drops the cached bitmap in SoftwareDraw immediately after capture.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kAndroidResourceMemoryOptimization);
 
