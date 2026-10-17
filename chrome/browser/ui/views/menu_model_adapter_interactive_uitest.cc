@@ -6,30 +6,15 @@
 
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/build_config.h"
+#include "chrome/browser/ui/views/menu_test_base.h"
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
-#include "chrome/test/base/interactive_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
-#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
-#include "ui/views/test/menu_test_utils.h"
-#include "ui/views/widget/root_view.h"
-#include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_MAC)
-#include "ui/views/controls/menu/menu_closure_animation_mac.h"
-#endif
 
 namespace {
 
@@ -159,52 +144,21 @@ class TopMenuModel final : public CommonMenuModel {
 
 }  // namespace
 
-class MenuModelAdapterTest : public ViewEventTestBase {
+class MenuModelAdapterTest : public MenuTestBase {
  public:
   MenuModelAdapterTest() = default;
   ~MenuModelAdapterTest() override = default;
 
-  // ViewEventTestBase implementation.
-
-  void SetUp() override {
-    ViewEventTestBase::SetUp();
-
-    std::unique_ptr<views::MenuItemView> menu =
-        menu_model_adapter_.CreateMenu();
-    menu_ = menu.get();
-    menu_runner_ = std::make_unique<views::MenuRunner>(
-        std::move(menu), views::MenuRunner::HAS_MNEMONICS);
+  // MenuTestBase:
+  void BuildMenu(views::MenuItemView* menu) override {
+    // The adapter must be the delegate so that ui::MenuModel receives
+    // MenuWillShow()/MenuWillClose() notifications.
+    menu->set_delegate(&menu_model_adapter_);
+    menu_model_adapter_.BuildMenu(menu);
   }
 
-  void TearDown() override {
-    menu_ = nullptr;
-    menu_runner_.reset();
-
-    button_ = nullptr;
-    ViewEventTestBase::TearDown();
-  }
-
-  std::unique_ptr<views::View> CreateContentsView() override {
-    auto button = std::make_unique<views::MenuButton>(
-        base::BindRepeating(&MenuModelAdapterTest::ButtonPressed,
-                            base::Unretained(this)),
-        u"Menu Adapter Test");
-    button_ = button.get();
-    return button;
-  }
-
-  gfx::Size GetPreferredSizeForContents() const override {
-    return button_->GetPreferredSize();
-  }
-
-  // ViewEventTestBase implementation
-  void DoTestOnMessageLoop() override {
-    Click(button_, CreateEventTask(this, &MenuModelAdapterTest::Step1));
-  }
-
-  // Open the submenu.
-  void Step1() {
-    views::SubmenuView* topmenu = menu_->GetSubmenu();
+  void DoTestWithMenuOpen() override {
+    views::SubmenuView* topmenu = menu()->GetSubmenu();
     ASSERT_TRUE(topmenu);
     ASSERT_TRUE(topmenu->IsShowing());
     ASSERT_FALSE(top_menu_model_.IsSubmenuShowing());
@@ -217,12 +171,12 @@ class MenuModelAdapterTest : public ViewEventTestBase {
 
   // Rebuild the menu which should close the submenu.
   void Step2() {
-    views::SubmenuView* topmenu = menu_->GetSubmenu();
+    views::SubmenuView* topmenu = menu()->GetSubmenu();
     ASSERT_TRUE(topmenu);
     ASSERT_TRUE(topmenu->IsShowing());
     ASSERT_TRUE(top_menu_model_.IsSubmenuShowing());
 
-    menu_model_adapter_.BuildMenu(menu_);
+    menu_model_adapter_.BuildMenu(menu());
 
     ASSERT_TRUE(base::CurrentUIThread::IsSet());
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -232,19 +186,18 @@ class MenuModelAdapterTest : public ViewEventTestBase {
   // Verify that the submenu MenuModel received the close callback
   // and close the menu.
   void Step3() {
-    views::SubmenuView* topmenu = menu_->GetSubmenu();
+    views::SubmenuView* topmenu = menu()->GetSubmenu();
     ASSERT_TRUE(topmenu);
     ASSERT_TRUE(topmenu->IsShowing());
     ASSERT_FALSE(top_menu_model_.IsSubmenuShowing());
 
     // Click the button to exit the menu.
-    Click(button_, CreateEventTask(this, &MenuModelAdapterTest::Step4));
+    Click(button(), CreateEventTask(this, &MenuModelAdapterTest::Step4));
   }
 
   // All done.
   void Step4() {
-    views::SubmenuView* topmenu = menu_->GetSubmenu();
-    views::test::WaitForMenuClosureAnimation();
+    views::SubmenuView* topmenu = menu()->GetSubmenu();
     ASSERT_TRUE(topmenu);
     ASSERT_FALSE(topmenu->IsShowing());
     ASSERT_FALSE(top_menu_model_.IsSubmenuShowing());
@@ -253,29 +206,8 @@ class MenuModelAdapterTest : public ViewEventTestBase {
   }
 
  private:
-  // Generate a mouse click on the specified view and post a new task.
-  virtual void Click(views::View* view, base::OnceClosure next) {
-    ui_test_utils::MoveMouseToCenterAndClick(
-        view, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
-        std::move(next));
-  }
-
-  void ButtonPressed() {
-    menu_runner_->RunMenuAt(button_->GetWidget(), button_->button_controller(),
-                            button_->GetBoundsInScreen(),
-                            views::MenuAnchorPosition::kTopLeft,
-                            ui::mojom::MenuSourceType::kNone);
-  }
-
-  raw_ptr<views::MenuButton> button_ = nullptr;
   TopMenuModel top_menu_model_;
   views::MenuModelAdapter menu_model_adapter_{&top_menu_model_};
-  std::unique_ptr<views::MenuRunner> menu_runner_;
-  raw_ptr<views::MenuItemView> menu_ = nullptr;
-#if BUILDFLAG(IS_MAC)
-  views::MenuClosureAnimationMac::ScopedDisableAnimationsForTesting
-      disable_closure_animations_;
-#endif
 };
 
 // If this flakes, disable and log details in http://crbug.com/40432443.

@@ -22,6 +22,7 @@
 #endif
 
 namespace views {
+class MenuButton;
 class MenuItemView;
 class MenuRunner;
 }  // namespace views
@@ -65,6 +66,7 @@ class MenuTestBase : public ViewEventTestBase,
   int last_command() const { return last_command_; }
 
  protected:
+  views::MenuButton* button() { return button_; }
   views::MenuRunner* menu_runner() { return menu_runner_.get(); }
 
   // Called to populate the menu.
