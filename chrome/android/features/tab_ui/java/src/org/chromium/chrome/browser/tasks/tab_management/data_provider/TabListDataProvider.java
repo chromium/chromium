@@ -174,16 +174,7 @@ public abstract class TabListDataProvider {
         TabModel model = getTabModelIfTabStateInitialized();
         if (model == null) return;
 
-        int index = getInsertionIndex(model, tabId);
-        if (index == TabList.INVALID_TAB_INDEX) return;
-
-        TabItem item = createTabItem(TabModelUtils.getCurrentTab(model), tab);
-
-        // Pass the preceding item as an anchor (or null for the start of the tab region) so UI
-        // consumers can insert relative to it without index offset math around non-tab items.
-        TabListItem previousItem = getPreviousItem(index);
-        mItems.add(index, item);
-        notifyObservers(obs -> obs.onItemsInserted(List.of(item), previousItem));
+        insertItem(model, createTabItem(TabModelUtils.getCurrentTab(model), tab));
     }
 
     /**
@@ -221,7 +212,7 @@ public abstract class TabListDataProvider {
         // Temporarily remove the moving item before finding the new insertion index so downward
         // moves evaluate insertion position accurately.
         TabListItem movedItem = mItems.remove(fromIndex);
-        int toIndex = getInsertionIndex(model, tabId);
+        int toIndex = getInsertionIndex(model, movedItem);
         int insertIndex = toIndex != TabList.INVALID_TAB_INDEX ? toIndex : fromIndex;
         mItems.add(insertIndex, movedItem);
 
@@ -301,9 +292,7 @@ public abstract class TabListDataProvider {
         if (mItems.get(index) instanceof TabItem tabItem) {
             boolean isPinned = tab.getIsPinned();
             if (tabItem.isPinned() != isPinned) {
-                TabItem updatedItem = tabItem.withPinned(isPinned);
-                mItems.set(index, updatedItem);
-                notifyObservers(obs -> obs.onItemUpdated(updatedItem, PayloadType.PIN_STATE));
+                updateItemAt(index, tabItem.withPinned(isPinned), PayloadType.PIN_STATE);
             }
         }
     }
@@ -328,31 +317,60 @@ public abstract class TabListDataProvider {
         notifyObservers(obs -> obs.onTabClosureCommitted(tab.getId()));
     }
 
+    /**
+     * Inserts a {@link TabListItem} into {@link #mItems} at its {@link TabModel} position and
+     * notifies observers via {@link TabListDataObserver#onItemsInserted}.
+     *
+     * @param model The active {@link TabModel}.
+     * @param item The {@link TabListItem} to insert.
+     */
+    protected void insertItem(TabModel model, TabListItem item) {
+        int index = getInsertionIndex(model, item);
+        if (index == TabList.INVALID_TAB_INDEX) return;
+
+        // Pass the preceding item as an anchor (or null for the start of the tab region) so UI
+        // consumers can insert relative to it without index offset math around non-tab items.
+        TabListItem previousItem = getPreviousItem(index);
+        mItems.add(index, item);
+        notifyObservers(obs -> obs.onItemsInserted(List.of(item), previousItem));
+    }
+
+    /**
+     * Replaces the {@link TabListItem} at {@code index} in {@link #mItems} with {@code updatedItem}
+     * and notifies observers via {@link TabListDataObserver#onItemUpdated}.
+     *
+     * @param index The index in {@link #mItems} to update.
+     * @param updatedItem The updated {@link TabListItem} to store at {@code index}.
+     * @param payload The {@link PayloadType} indicating which property changed.
+     */
+    protected void updateItemAt(int index, TabListItem updatedItem, @PayloadType int payload) {
+        mItems.set(index, updatedItem);
+        notifyObservers(obs -> obs.onItemUpdated(updatedItem, payload));
+    }
+
     private void updateSelection(int index, boolean isSelected) {
         TabListItem currentItem = mItems.get(index);
         if (currentItem.isSelected() == isSelected) return;
 
-        TabListItem updatedItem = currentItem.withSelected(isSelected);
-        mItems.set(index, updatedItem);
-        notifyObservers(obs -> obs.onItemUpdated(updatedItem, PayloadType.SELECTION));
+        updateItemAt(index, currentItem.withSelected(isSelected), PayloadType.SELECTION);
     }
 
     private int indexOfTabId(@TabId int tabId) {
         if (tabId == Tab.INVALID_TAB_ID) return TabList.INVALID_TAB_INDEX;
         for (int i = 0; i < mItems.size(); i++) {
-            if (isTabItem(mItems.get(i), tabId)) return i;
+            if (matchesTabId(mItems.get(i), tabId)) return i;
         }
         return TabList.INVALID_TAB_INDEX;
     }
 
-    private int getInsertionIndex(TabModel model, @TabId int targetTabId) {
+    private int getInsertionIndex(TabModel model, TabListItem targetItem) {
         int itemIndex = 0;
         for (Tab tab : model) {
             int tabId = tab.getId();
-            if (tabId == targetTabId) return itemIndex;
+            if (matchesTabId(targetItem, tabId)) return itemIndex;
             // Advance past tabs that are already projected in mItems; filtered-out tabs are
             // skipped without incrementing itemIndex.
-            if (itemIndex < mItems.size() && isTabItem(mItems.get(itemIndex), tabId)) {
+            if (itemIndex < mItems.size() && matchesTabId(mItems.get(itemIndex), tabId)) {
                 itemIndex++;
             }
         }
@@ -366,7 +384,7 @@ public abstract class TabListDataProvider {
         return index > 0 && index <= mItems.size() ? mItems.get(index - 1) : null;
     }
 
-    private static boolean isTabItem(TabListItem item, @TabId int tabId) {
+    private static boolean matchesTabId(TabListItem item, @TabId int tabId) {
         return item instanceof TabItem tabItem && tabItem.getTabId() == tabId;
     }
 
