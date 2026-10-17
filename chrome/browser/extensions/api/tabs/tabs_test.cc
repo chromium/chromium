@@ -297,6 +297,18 @@ class ExtensionTabsTest : public ExtensionApiTest {
     return utils::ToDict(utils::RunFunctionAndReturnSingleResult(
         function.get(), update_info, profile()));
   }
+
+  // Moves the tab `tab_id` with `move_properties` and returns the moved tab.
+  base::DictValue RunMoveFunction(const Extension* extension,
+                                  int tab_id,
+                                  const std::string& move_properties) {
+    auto function = base::MakeRefCounted<TabsMoveFunction>();
+    function->set_extension(extension);
+    return utils::ToDict(utils::RunFunctionAndReturnSingleResult(
+        function.get(),
+        base::StringPrintf("[%d, %s]", tab_id, move_properties.c_str()),
+        profile()));
+  }
 };
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
@@ -3880,6 +3892,50 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   std::string error = utils::RunFunctionAndReturnError(
       function.get(), args, profile(), utils::FunctionMode::kNone);
   EXPECT_EQ(tabs_constants::kInvalidTabIndexBreaksGroupContiguity, error);
+}
+
+// Tests that an index past the end of the window moves the tab to the end.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveIndexPastEndMovesToEnd) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveIndexPastEndTest").Build();
+  TabListInterface* tab_list = GetTabListInterface();
+  auto [tab_ids, web_contentses] = CreateAndGetTabData(tab_list, 3);
+
+  base::DictValue tab =
+      RunMoveFunction(extension.get(), tab_ids[0], R"({"index": 10000})");
+
+  EXPECT_EQ(2, utils::GetInteger(tab, "index"));
+  EXPECT_EQ(web_contentses[0], tab_list->GetTab(2)->GetContents());
+}
+
+// Tests that an index of -1 moves the tab to the end of the target window.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsMoveNegativeIndexAcrossWindowsMovesToEnd) {
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveNegativeIndexTest").Build();
+  auto [tab_ids, web_contentses] =
+      CreateAndGetTabData(GetTabListInterface(), 2);
+  BrowserWindowInterface* window_2 =
+      CreateBrowserWindowWithType(BrowserWindowInterface::Type::TYPE_NORMAL);
+  TabListInterface* tab_list2 = TabListInterface::From(window_2);
+  CreateAndGetTabData(tab_list2, 2);
+
+  base::DictValue tab = RunMoveFunction(
+      extension.get(), tab_ids[0],
+      base::StringPrintf(R"({"windowId": %d, "index": -1})",
+                         ExtensionTabUtil::GetWindowId(window_2)));
+
+  EXPECT_EQ(2, utils::GetInteger(tab, "index"));
+  ASSERT_EQ(3, tab_list2->GetTabCount());
+  EXPECT_EQ(web_contentses[0], tab_list2->GetTab(2)->GetContents());
+}
+
+// Tests that moving an empty list of tabs fails.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TabsMoveEmptyTabListFails) {
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  EXPECT_EQ("No tabs given.",
+            utils::RunFunctionAndReturnError(
+                function.get(), R"([[], {"index": 0}])", profile()));
 }
 
 // Tests that saved tabs in a group can be moved.

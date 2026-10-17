@@ -127,44 +127,13 @@ loadScript.then(async function() {
           }));
     },
 
-    function moveWithNegativeIndex() {
-      // Check that the tab/window state is what we expect after doing moves.
-      function checkMoveResults() {
-        chrome.tabs.query({windowId: firstWindowId}, pass(function(tabs) {
-                            assertEq(3, tabs.length);
-                            assertTrue(newTabUrls.includes(tabs[0].url));
-                            assertEq(pageUrl('a'), tabs[1].url);
-                            assertEq(pageUrl('c'), tabs[2].url);
-
-                            chrome.tabs.query(
-                                {windowId: secondWindowId},
-                                pass(function(tabs) {
-                                  assertEq(4, tabs.length);
-                                  assertEq(pageUrl('b'), tabs[0].url);
-                                  assertTrue(newTabUrls.includes(tabs[1].url));
-                                  assertEq(pageUrl('d'), tabs[2].url);
-                                  assertEq(pageUrl('e'), tabs[3].url);
-                                }));
-                          }));
-      }
-
-      // A -1 move index means move the tab to the end of the window.
-      chrome.tabs.move(
-          moveTabIds['e'], {windowId: secondWindowId, index: -1},
-          pass(function(tabE) {
-            assertEq(3, tabE.index);
-            checkMoveResults();
-          }));
-    },
-
     function remove() {
       chrome.tabs.remove(moveTabIds['d'], pass(function() {
                            chrome.tabs.query(
                                {windowId: secondWindowId}, pass(function(tabs) {
-                                 assertEq(3, tabs.length);
+                                 assertEq(2, tabs.length);
                                  assertEq(pageUrl('b'), tabs[0].url);
                                  assertTrue(newTabUrls.includes(tabs[1].url));
-                                 assertEq(pageUrl('e'), tabs[2].url);
                                }));
                          }));
     },
@@ -181,7 +150,7 @@ loadScript.then(async function() {
             assertEq(pageUrl('a'), tabsA[1].url);
             assertEq(2, tabsA[1].index);
             chrome.tabs.query({windowId: secondWindowId}, pass(function(tabsB) {
-                                assertEq(5, tabsB.length);
+                                assertEq(4, tabsB.length);
                               }));
           }));
     },
@@ -214,14 +183,7 @@ loadScript.then(async function() {
         caught = true;
       }
       assertTrue(caught);
-      chrome.tabs.move(moveTabIds['b'], {index: 10000}, pass(function(tabB) {
-                         assertEq(2, tabB.index);
-                       }));
-    },
-
-    // Check that attempting to move an empty list of tabs doesn't crash browser
-    function moveEmptyTabList() {
-      chrome.tabs.move([], {index: 0}, fail('No tabs given.'));
+      chrome.test.succeed();
     },
 
     // Check that attempting to move a non-existent tab returns an error.
