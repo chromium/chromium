@@ -820,4 +820,35 @@ public class LocationBarModelUnitTest {
             model.destroy();
         }
     }
+
+    @Test
+    public void shouldEmphasizeHttpsScheme_DependsOnBrandColorAndIncognito() {
+        doReturn(true).when(mRegularTabMock).isInitialized();
+        doReturn(false).when(mRegularTabMock).isNativePage();
+        mLocationBarModel.setTab(mRegularTabMock, mRegularProfileMock);
+
+        // Default theme color (e.g. tablet or unthemed page) -> emphasize HTTPS scheme.
+        Assert.assertFalse(mLocationBarModel.isUsingBrandColor());
+        Assert.assertTrue(mLocationBarModel.shouldEmphasizeHttpsScheme());
+
+        // Custom brand color on regular web page -> do not emphasize HTTPS scheme.
+        mLocationBarModel.setPrimaryColor(android.graphics.Color.RED);
+        Assert.assertTrue(mLocationBarModel.isUsingBrandColor());
+        Assert.assertFalse(mLocationBarModel.shouldEmphasizeHttpsScheme());
+
+        // Native page ignores brand color -> emphasize HTTPS scheme.
+        doReturn(true).when(mRegularTabMock).isNativePage();
+        mLocationBarModel.setPrimaryColor(android.graphics.Color.RED);
+        Assert.assertFalse(mLocationBarModel.isUsingBrandColor());
+        Assert.assertTrue(mLocationBarModel.shouldEmphasizeHttpsScheme());
+
+        // Incognito tab -> never emphasize HTTPS scheme.
+        doReturn(true).when(mPrimaryOtrProfileMock).isIncognitoBranded();
+        doReturn(true).when(mIncognitoTabMock).isInitialized();
+        doReturn(mUserDataHost).when(mIncognitoTabMock).getUserDataHost();
+        mLocationBarModel.setTab(mIncognitoTabMock, mPrimaryOtrProfileMock);
+        mLocationBarModel.setPrimaryColor(android.graphics.Color.RED);
+        Assert.assertFalse(mLocationBarModel.isUsingBrandColor());
+        Assert.assertFalse(mLocationBarModel.shouldEmphasizeHttpsScheme());
+    }
 }
