@@ -24,7 +24,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {SuggestInventory} from 'chrome://resources/mojo/components/omnibox/browser/fusebox_action.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, TabAttachmentSource} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNear, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -339,21 +339,20 @@ suite('NewTabPageAppTest', () => {
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
 
-      // Make sure page is scrollable.
+      // Make sure #rhsContent, the scroll container, is scrollable.
+      const rhsContent = $$<HTMLElement>(app, '#rhsContent')!;
       const spacer = document.createElement('div');
       spacer.style.width = '100%';
       spacer.style.height = '10000px';
       spacer.style.flexShrink = '0';
-      $$(app, '#rhsContent')!.append(spacer);
+      rhsContent.append(spacer);
 
       // Simulates a vertical scroll.
       const scrollY = async (y: number) => {
-        window.scroll(0, y);
-        // `window.scroll` doesn't automatically trigger scroll event.
-        window.dispatchEvent(new Event('scroll'));
-        // Wait for position update to propagate.
-        await new Promise<void>(
-            resolve => requestAnimationFrame(() => resolve()));
+        rhsContent.scrollTop = y;
+        // Setting `scrollTop` dispatches the scroll event asynchronously.
+        rhsContent.dispatchEvent(new Event('scroll'));
+        await microtasksFinished();
       };
 
       // Act (no bounce).
@@ -3767,6 +3766,12 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
     }
 
+    function setLhsWidth(width: number) {
+      const leftHandSide = $$<HTMLElement>(app, '#lhsWrapper');
+      assertTrue(!!leftHandSide);
+      leftHandSide.style.width = `${width}px`;
+    }
+
     async function showBackgroundImageAttribution() {
       const theme = createTheme();
       theme.backgroundImageAttribution1 = 'foo';
@@ -3786,7 +3791,32 @@ suite('NewTabPageAppTest', () => {
 
       const leftHandSide = $$(app, 'cr-left-hand-side');
       assertTrue(!!leftHandSide);
-      assertEquals('forcedLhs', leftHandSide.id);
+      assertEquals('lhsWrapper', leftHandSide.id);
+    });
+
+    test('RHS content fills the RHS height', async () => {
+      await setThreadsRailEnabled(true);
+
+      const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+      assertTrue(!!rhsWrapper);
+      const rhsContent = $$<HTMLElement>(app, '#rhsContent');
+      assertTrue(!!rhsContent);
+      assertEquals(rhsWrapper.clientHeight, rhsContent.offsetHeight);
+    });
+
+    test('RHS scrolls horizontally when its content is wider', async () => {
+      await setThreadsRailEnabled(true);
+      await setRhsWrapperWidth(100);
+
+      const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+      assertTrue(!!rhsWrapper);
+      assertTrue(rhsWrapper.scrollWidth > rhsWrapper.clientWidth);
+      // Only sticks if #rhsWrapper is a scroll container. Not necessarily 10:
+      // scroll offsets snap to physical pixels, so with a fractional device
+      // pixel ratio, e.g. on Android, it can be off by more than
+      // LAYOUT_TOLERANCE_PX.
+      rhsWrapper.scrollLeft = 10;
+      assertGT(rhsWrapper.scrollLeft, 0);
     });
 
     test('shortcuts use the window width when feature disabled', async () => {
@@ -3853,16 +3883,15 @@ suite('NewTabPageAppTest', () => {
     test('attribution starts at the RHS when feature enabled', async () => {
       await setThreadsRailEnabled(true);
       await showBackgroundImageAttribution();
-      const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
-      assertTrue(!!rhsWrapper);
 
-      // The LHS doesn't take up space yet, so make room for it by hand.
-      rhsWrapper.style.marginInlineStart = '200px';
+      setLhsWidth(200);
 
       const attribution = $$(app, '#backgroundImageAttribution');
       assertTrue(!!attribution);
       const attributionStyle = getComputedStyle(attribution);
       assertNear(216, parseFloat(attributionStyle.left), LAYOUT_TOLERANCE_PX);
+      const rhsWrapper = $$<HTMLElement>(app, '#rhsWrapper');
+      assertTrue(!!rhsWrapper);
       // Not offsetWidth, which is rounded to a whole px.
       assertNear(
           rhsWrapper.getBoundingClientRect().width / 2,

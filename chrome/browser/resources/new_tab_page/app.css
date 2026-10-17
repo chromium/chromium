@@ -534,11 +534,8 @@ ntp-lens-upload-dialog {
   }
 }
 
-#forcedLhs {
-  height: 100%;
-  inset-inline-start: 0;
-  position: fixed;
-  z-index: 2;
+#lhsWrapper {
+  flex-shrink: 0;
 }
 
 /* The query container for the @container rules above. This can't be
@@ -547,14 +544,22 @@ ntp-lens-upload-dialog {
 #rhsWrapper {
   container: rhsWrapper / inline-size;
   flex-grow: 1;
+  /* #rhsContent scrolls vertically. This scrolls horizontally when
+   * #rhsContent is wider, e.g. at 500% zoom. */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 #rhsContent {
-  align-items: center;
+  /* safe: children wider than this column are start-aligned instead of
+   * centered, so they can't spill over #lhsWrapper. */
+  align-items: safe center;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--ntp-one-google-bar-height));
+  height: 100%;
   min-width: fit-content; /* Prevents OneGoogleBar cutoff at 500% zoom. */
+  overflow: auto;
   padding-top: var(--ntp-one-google-bar-height);
   position: relative;
   z-index: 1;
