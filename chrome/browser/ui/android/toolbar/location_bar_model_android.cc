@@ -80,8 +80,14 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
       url.host() == chrome::kChromeUINewTabHost) {
     return true;
   }
-  if (search::IsWebUiNtpEnabledForDesktopAndroid() && url.SchemeIs(content::kChromeUIScheme) &&
-      url.host() == chrome::kChromeUINewTabPageHost) {
+
+  // Desktop Android routes chrome://newtab to a WebUI NTP: the 1P NTP for
+  // Google, or the Chrome-owned fallback 3P NTP for non-Google DSEs that do
+  // not provide their own remote NTP.
+  if (search::IsWebUiNtpEnabledForDesktopAndroid() &&
+      url.SchemeIs(content::kChromeUIScheme) &&
+      (url.host() == chrome::kChromeUINewTabPageHost ||
+       url.host() == chrome::kChromeUINewTabPageThirdPartyHost)) {
     return true;
   }
 
