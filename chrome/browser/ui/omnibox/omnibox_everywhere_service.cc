@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_feature_promo_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_prefs.h"
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/omnibox_everywhere_ui_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -328,10 +329,18 @@ void OmniboxEverywhereService::NavigateInBrowserWindow(
 gfx::Rect OmniboxEverywhereService::CalculateInPlaceWindowBounds(
     const gfx::Rect& popup_bounds,
     const gfx::Rect& work_area) {
-  int x = popup_bounds.x() + (popup_bounds.width() - kInPlaceWindowWidth) / 2;
-  int y = popup_bounds.y();
-  gfx::Rect bounds(x, y, kInPlaceWindowWidth, kInPlaceWindowHeight);
-  bounds.AdjustToFit(work_area);
+  const int width =
+      omnibox::kOmniboxEverywhereScreenshotNewWindowWidthParam.Get();
+  const int height =
+      omnibox::kOmniboxEverywhereScreenshotNewWindowHeightParam.Get();
+  const int vertical_offset =
+      omnibox::kOmniboxEverywhereScreenshotNewWindowVerticalOffsetParam.Get();
+  const int x = popup_bounds.x() + (popup_bounds.width() - width) / 2;
+  const int y = popup_bounds.y() - vertical_offset;
+  gfx::Rect bounds(x, y, width, height);
+  if (!work_area.IsEmpty()) {
+    bounds.AdjustToFit(work_area);
+  }
   return bounds;
 }
 
@@ -339,15 +348,13 @@ gfx::Rect OmniboxEverywhereService::GetInPlaceWindowBounds() const {
   const views::Widget* widget = ui_manager() ? ui_manager()->widget() : nullptr;
   auto* screen = display::Screen::Get();
   if (!widget || !screen) {
-    return gfx::Rect(0, 0, kInPlaceWindowWidth, kInPlaceWindowHeight);
+    return gfx::Rect(
+        0, 0, omnibox::kOmniboxEverywhereScreenshotNewWindowWidthParam.Get(),
+        omnibox::kOmniboxEverywhereScreenshotNewWindowHeightParam.Get());
   }
   const gfx::Rect popup_bounds = widget->GetWindowBoundsInScreen();
   const gfx::Rect work_area =
       screen->GetDisplayMatching(popup_bounds).work_area();
-  if (work_area.IsEmpty()) {
-    return gfx::Rect(popup_bounds.x(), popup_bounds.y(), kInPlaceWindowWidth,
-                     kInPlaceWindowHeight);
-  }
   return CalculateInPlaceWindowBounds(popup_bounds, work_area);
 }
 

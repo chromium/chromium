@@ -80,6 +80,12 @@ BASE_DECLARE_FEATURE(kWebUIOmniboxAimPopupDisableAnimation);
 BASE_DECLARE_FEATURE(kWebUIOmniboxFullPopupDoubleClick);
 BASE_DECLARE_FEATURE(kOmniboxEverywhere);
 BASE_DECLARE_FEATURE(kOmniboxEverywhereScreenshotNewWindow);
+extern const base::FeatureParam<int>
+    kOmniboxEverywhereScreenshotNewWindowWidthParam;
+extern const base::FeatureParam<int>
+    kOmniboxEverywhereScreenshotNewWindowHeightParam;
+extern const base::FeatureParam<int>
+    kOmniboxEverywhereScreenshotNewWindowVerticalOffsetParam;
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupDebug);
 BASE_DECLARE_FEATURE(kWebUIOmniboxPopupSelectionControl);
 // Caret animation for omnibox

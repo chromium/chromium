@@ -124,9 +124,22 @@ BASE_FEATURE(kWebUIOmniboxFullPopupDoubleClick, ENABLED);
 // If enabled, enables OmniboxEverywhere popup triggered by shortcut.
 BASE_FEATURE(kOmniboxEverywhere, DISABLED);
 // If enabled, submitting a query with screenshots attached in Omnibox
-// Everywhere opens the result in a new 800x600 browser window aligned with the
+// Everywhere opens the result in a new browser window aligned with the
 // Omnibox Everywhere popup.
 BASE_FEATURE(kOmniboxEverywhereScreenshotNewWindow, ENABLED);
+// Controls the width of the new browser window opened for screenshot queries in
+// Omnibox Everywhere.
+const base::FeatureParam<int> kOmniboxEverywhereScreenshotNewWindowWidthParam{
+    &kOmniboxEverywhereScreenshotNewWindow, "WindowWidth", 800};
+// Controls the height of the new browser window opened for screenshot queries
+// in Omnibox Everywhere.
+const base::FeatureParam<int> kOmniboxEverywhereScreenshotNewWindowHeightParam{
+    &kOmniboxEverywhereScreenshotNewWindow, "WindowHeight", 800};
+// Controls the upward vertical offset of the new browser window relative to
+// the Omnibox Everywhere popup's top edge.
+const base::FeatureParam<int>
+    kOmniboxEverywhereScreenshotNewWindowVerticalOffsetParam{
+        &kOmniboxEverywhereScreenshotNewWindow, "VerticalOffset", 200};
 // Controls multiline searchbox support in OmniboxEverywhere.
 const base::FeatureParam<bool> kOmniboxEverywhereMultilineParam{
     &kOmniboxEverywhere, "Multiline", true};
