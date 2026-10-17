@@ -9,6 +9,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
@@ -167,7 +168,7 @@ TEST_F(SearchHandlerTest, AddAndRemove) {
   // Add printing search tags to registry and search for "Print".
   AddSearchTags(GetPrintingSearchConcepts());
   handler_remote_.FlushForTesting();
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&] { return observer_.num_calls() > 0; }));
   EXPECT_EQ(1u, observer_.num_calls());
 
   std::vector<mojom::SearchResultPtr> search_results;
