@@ -249,6 +249,7 @@ public class MainSettingsFragmentTest {
     /** Test for the "Account" section. */
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testStartup() {
         startSettings();
 
@@ -625,6 +626,7 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomepageOff() {
         mHomepageTestRule.disableHomepageForTest();
         startSettings();
@@ -643,6 +645,7 @@ public class MainSettingsFragmentTest {
      */
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomepageSummaryUpdatesOnHomepageStateChange() {
         // Start with the homepage enabled.
         mHomepageTestRule.useDefaultHomepageForTest();
@@ -708,6 +711,7 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL + ":remove_home_button_everywhere/false")
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testHomeButtonRemovalDisabled() {
         startSettings();
 
@@ -907,6 +911,7 @@ public class MainSettingsFragmentTest {
         startSettings();
 
         Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
+        Assert.assertNull(mMainSettings.findPreference(MainSettings.PREF_HOMEPAGE));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -920,6 +925,10 @@ public class MainSettingsFragmentTest {
                 .removeEntry(
                         MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 MainSettings.PREF_ADDRESS_BAR));
+        verify(mSearchIndexDataMock)
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_HOMEPAGE));
     }
 
     @Test
@@ -932,6 +941,7 @@ public class MainSettingsFragmentTest {
         startSettings();
 
         assertSettingsExists(MainSettings.PREF_ADDRESS_BAR, AddressBarSettingsFragment.class);
+        assertSettingsExists(MainSettings.PREF_HOMEPAGE, HomepageSettings.class);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -945,6 +955,10 @@ public class MainSettingsFragmentTest {
                 .removeEntry(
                         MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
                                 MainSettings.PREF_ADDRESS_BAR));
+        verify(mSearchIndexDataMock, never())
+                .removeEntry(
+                        MainSettings.SEARCH_INDEX_DATA_PROVIDER.getUniqueId(
+                                MainSettings.PREF_HOMEPAGE));
     }
 
     @Test

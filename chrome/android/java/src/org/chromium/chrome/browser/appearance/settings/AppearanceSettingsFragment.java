@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -49,12 +50,13 @@ import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 /** Fragment to manage appearance settings. */
 @NullMarked
 public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
-        implements CustomDividerFragment {
+        implements CustomDividerFragment, HomepageManager.HomepageStateListener {
 
     public static final String PREF_ADDRESS_BAR = "address_bar";
     public static final String PREF_BOOKMARK_BAR = "bookmark_bar";
     public static final String PREF_BOOKMARK_BAR_SWITCH = "bookmark_bar_switch";
     public static final String PREF_BOTTOM_BAR_SWITCH = "bottom_bar_switch";
+    public static final String PREF_HOMEPAGE = "homepage";
     public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
     public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_TAB_POSITION = "tab_position";
@@ -84,6 +86,7 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         initAddressBarPref();
         initToolbarShortcutPref();
         initBottomBarPref();
+        initHomepagePref();
         initTabPositionPref();
     }
 
@@ -124,10 +127,25 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         updateAddressBarPref();
         updateUiThemePref();
         updateBottomBarPref();
+        if (shouldShowHomepagePref(getContext())) {
+            HomepageManager.getInstance().addListener(this);
+            updateHomepagePref();
+        }
         updateTabPositionPref();
 
         TrackerFactory.getTrackerForProfile(getProfile())
                 .notifyEvent(EventConstants.SETTINGS_APPEARANCE_OPENED);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        HomepageManager.getInstance().removeListener(this);
+    }
+
+    @Override
+    public void onHomepageStateUpdated() {
+        updateHomepagePref();
     }
 
     @Override
@@ -331,6 +349,21 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                 });
     }
 
+    private void initHomepagePref() {
+        if (!shouldShowHomepagePref(getContext())) {
+            removePreference(PREF_HOMEPAGE);
+        }
+    }
+
+    private void updateHomepagePref() {
+        Preference homepagePref = findPreference(PREF_HOMEPAGE);
+        if (homepagePref == null) return;
+        homepagePref.setSummary(
+                HomepageManager.getInstance().isHomepageEnabled()
+                        ? R.string.text_on
+                        : R.string.text_off);
+    }
+
     /** Initializes the bottom bar switch, or removes it when it should not be offered. */
     private void initBottomBarPref() {
         if (!BottomBarConfigUtils.shouldShowSettingsToggle(getContext())) {
@@ -464,6 +497,11 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         return BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context);
     }
 
+    static boolean shouldShowHomepagePref(Context context) {
+        return BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)
+                && HomepageManager.shouldShowHomepageSettings();
+    }
+
     static boolean shouldShowBookmarkPref(Context context) {
         return BookmarkBarUtils.isDeviceBookmarkBarCompatible(context);
     }
@@ -508,6 +546,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
                                 getBookmarkBarVisibilityStateSummaryRes(profile));
                     } else {
                         indexData.removeEntryForKey(prefFragment, PREF_BOOKMARK_BAR);
+                    }
+
+                    if (!shouldShowHomepagePref(context)) {
+                        indexData.removeEntryForKey(prefFragment, PREF_HOMEPAGE);
                     }
 
                     if (!VerticalTabUtils.isVerticalTabsEligible(context)) {

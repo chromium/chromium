@@ -363,6 +363,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
         // Ensure the preference disabled state is reflected when device is folded or unfolded.
         updateAddressBarPreference();
+        updateHomepagePreference();
     }
 
     @Override
@@ -788,12 +789,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updateHomepagePreference() {
-        if (!HomepageManager.shouldShowHomepageSettings()) {
+        if (!shouldShowHomepagePref(getContext())) {
             removePreferenceIfPresent(PREF_HOMEPAGE);
         } else {
             Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
             setOnOffSummary(homepagePref, HomepageManager.getInstance().isHomepageEnabled());
         }
+    }
+
+    private static boolean shouldShowHomepagePref(Context context) {
+        return !BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(context)
+                && HomepageManager.shouldShowHomepageSettings();
     }
 
     private void setOnOffSummary(Preference pref, boolean isOn) {
@@ -962,7 +968,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!MultiWindowUtils.isOnStartupSettingsUiEnabled()) {
                         indexData.removeEntry(getUniqueId(PREF_ON_STARTUP));
                     }
-                    if (!HomepageManager.shouldShowHomepageSettings()) {
+                    if (!shouldShowHomepagePref(context)) {
                         indexData.removeEntry(getUniqueId(PREF_HOMEPAGE));
                     }
                 }

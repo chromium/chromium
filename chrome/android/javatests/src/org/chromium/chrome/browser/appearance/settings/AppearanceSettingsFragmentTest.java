@@ -19,10 +19,12 @@ import static org.chromium.chrome.browser.appearance.settings.AppearanceSettings
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOOKMARK_BAR_SWITCH;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_BOTTOM_BAR_SWITCH;
+import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_HOMEPAGE;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_TAB_POSITION;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_TOOLBAR_SHORTCUT;
 import static org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment.PREF_UI_THEME;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.BOTTOM_BAR_ENABLED;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.HOMEPAGE_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.VERTICAL_TABS_ENABLED;
@@ -61,6 +63,8 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
@@ -183,6 +187,7 @@ public class AppearanceSettingsFragmentTest {
         ChromeSharedPreferences.getInstance().removeKey(BOTTOM_BAR_ENABLED);
         AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.TOP_SETTINGS);
         ChromeSharedPreferences.getInstance().removeKey(TOOLBAR_TOP_ANCHORED);
+        ChromeSharedPreferences.getInstance().removeKey(HOMEPAGE_ENABLED);
     }
 
     @AfterClass
@@ -786,6 +791,56 @@ public class AppearanceSettingsFragmentTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testHomepagePreferenceIsAbsentWhenBottomBarDisabled() {
+        launchSettings();
+        assertNull(mSettings.findPreference(PREF_HOMEPAGE));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testHomepagePreferenceIsAbsentOnTablet() {
+        DeviceInfo.setIsFoldableForTesting(false);
+        launchSettings();
+        assertNull(mSettings.findPreference(PREF_HOMEPAGE));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR + ":move_toolbar_settings_to_appearance/false")
+    public void testHomepagePreferenceIsAbsentWhenMoveParamOff() {
+        launchSettings();
+        assertNull(mSettings.findPreference(PREF_HOMEPAGE));
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.PHONE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    public void testHomepagePreferenceIsPresentWhenEligible() throws ClassNotFoundException {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(true));
+        launchSettings();
+
+        final var homepagePref = assertSettingsExists(PREF_HOMEPAGE, HomepageSettings.class);
+        final var context = mSettings.getContext();
+        assertEquals(context.getString(R.string.text_on), homepagePref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(false));
+        assertEquals(context.getString(R.string.text_off), homepagePref.getSummary());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(true));
+        assertEquals(context.getString(R.string.text_on), homepagePref.getSummary());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
     public void testSearchIndex_MoveToolbarSettingsNotEligible() {
         var context = ContextUtils.getApplicationContext();
         String prefFragment = AppearanceSettingsFragment.class.getName();
@@ -794,6 +849,7 @@ public class AppearanceSettingsFragmentTest {
                 context, mIndexData, mProfile);
 
         verify(mIndexData).removeEntryForKey(prefFragment, PREF_ADDRESS_BAR);
+        verify(mIndexData).removeEntryForKey(prefFragment, PREF_HOMEPAGE);
         verify(mIndexData, never())
                 .updateEntryForKey(eq(prefFragment), eq(PREF_TOOLBAR_SHORTCUT), anyInt());
     }
@@ -811,6 +867,7 @@ public class AppearanceSettingsFragmentTest {
                 context, mIndexData, mProfile);
 
         verify(mIndexData).removeEntryForKey(prefFragment, PREF_ADDRESS_BAR);
+        verify(mIndexData).removeEntryForKey(prefFragment, PREF_HOMEPAGE);
         verify(mIndexData, never())
                 .updateEntryForKey(eq(prefFragment), eq(PREF_TOOLBAR_SHORTCUT), anyInt());
     }
@@ -827,6 +884,7 @@ public class AppearanceSettingsFragmentTest {
                 context, mIndexData, mProfile);
 
         verify(mIndexData, never()).removeEntryForKey(prefFragment, PREF_ADDRESS_BAR);
+        verify(mIndexData, never()).removeEntryForKey(prefFragment, PREF_HOMEPAGE);
         verify(mIndexData)
                 .updateEntryForKey(
                         prefFragment, PREF_TOOLBAR_SHORTCUT, R.string.address_bar_shortcut);
