@@ -211,8 +211,7 @@ void CastDetailedView::RemoveAllViews() {
   scroll_content()->RemoveAllChildViews();
   add_access_code_device_ = nullptr;
   if (zero_state_view_) {
-    RemoveChildViewT(zero_state_view_.get());
-    zero_state_view_ = nullptr;
+    RemoveChildViewT(zero_state_view_.ExtractAsDangling());
   }
 }
 

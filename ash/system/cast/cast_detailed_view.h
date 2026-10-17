@@ -99,7 +99,7 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   raw_ptr<HoverHighlightView> add_access_code_device_ = nullptr;
 
   // View shown when no cast devices are available.
-  raw_ptr<views::View, DanglingUntriaged> zero_state_view_ = nullptr;
+  raw_ptr<views::View> zero_state_view_ = nullptr;
 
   base::WeakPtrFactory<CastDetailedView> weak_factory_{this};
 };
