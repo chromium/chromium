@@ -53,8 +53,6 @@ void AudioDeviceSelectionTestBase::SetUp() {
 
   CrasAudioHandler::Initialize(mojo::NullRemote(), audio_pref_handler_);
   cras_audio_handler_ = CrasAudioHandler::Get();
-
-  base::RunLoop().RunUntilIdle();
 }
 
 void AudioDeviceSelectionTestBase::TearDown() {
