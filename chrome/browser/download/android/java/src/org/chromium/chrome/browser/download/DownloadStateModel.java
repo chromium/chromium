@@ -114,7 +114,7 @@ public class DownloadStateModel implements OfflineContentProvider.Observer, Dest
     }
 
     /** Returns whether {@code item} is in progress, pending or paused. */
-    static boolean isActive(OfflineItem item) {
+    public static boolean isActive(OfflineItem item) {
         switch (item.state) {
             case OfflineItemState.IN_PROGRESS:
             case OfflineItemState.PENDING:

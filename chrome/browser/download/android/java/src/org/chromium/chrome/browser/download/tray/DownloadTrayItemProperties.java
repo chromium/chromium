@@ -23,7 +23,7 @@ class DownloadTrayItemProperties {
     /** The file name. */
     static final WritableObjectPropertyKey<CharSequence> TITLE = new WritableObjectPropertyKey<>();
 
-    /** The status line below the file name, e.g. "4.3 MB • Done". */
+    /** The status line below the file name, e.g. the download's size and state. */
     static final WritableObjectPropertyKey<CharSequence> DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
