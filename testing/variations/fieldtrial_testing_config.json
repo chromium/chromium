@@ -5439,22 +5439,6 @@
             ]
         }
     ],
-    "D3D12VideoEncodeAccelerator": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "D3D12SharedImageEncode",
-                        "D3D12VideoEncodeAccelerator"
-                    ]
-                }
-            ]
-        }
-    ],
     "DbdPasswordRemovalOnAndroid": [
         {
             "platforms": [

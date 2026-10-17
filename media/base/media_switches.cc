@@ -1598,7 +1598,7 @@ BASE_FEATURE(kCastStreamingWinHardwareH264, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable VP9 kSVC decoding with HW decoder for webrtc use case on Windows.
 BASE_FEATURE(kD3D11Vp9kSVCHWDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kD3D12SharedImageEncode, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kD3D12SharedImageEncode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether to use D3D12 video decoder instead of D3D11 when supported.
 BASE_FEATURE(kD3D12VideoDecoder, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1606,7 +1606,7 @@ BASE_FEATURE(kD3D12VideoDecoder, base::FEATURE_DISABLED_BY_DEFAULT);
 // Controls whether to enable D3D12 video encode accelerator.
 // Owner: zhibo1.wang@intel.com
 // Expiry: When enabled by default.
-BASE_FEATURE(kD3D12VideoEncodeAccelerator, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kD3D12VideoEncodeAccelerator, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kD3D12VideoEncodeAcceleratorL1T3,
              base::FEATURE_DISABLED_BY_DEFAULT);
