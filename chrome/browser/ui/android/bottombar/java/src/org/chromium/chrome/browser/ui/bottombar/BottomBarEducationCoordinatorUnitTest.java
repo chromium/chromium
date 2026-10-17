@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.bottombar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
 import android.view.LayoutInflater;
@@ -37,6 +39,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -359,6 +362,105 @@ public class BottomBarEducationCoordinatorUnitTest {
         verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
         assertEquals(BrowserControlsState.BOTH, mVisibilityDelegate.get().intValue());
         assertFalse(isBubbleShowing());
+    }
+
+    @Test
+    @Config(qualifiers = "land")
+    public void testReShowOnRotation() {
+        setupForShow();
+        triggerShow();
+
+        // Should be called initially
+        verify(mScrimManager, times(1)).showScrim(any());
+        assertEquals(BrowserControlsState.SHOWN, mVisibilityDelegate.get().intValue());
+
+        View firstBubble = mCoordinator.getBubbleViewForTesting();
+
+        // Simulate rotation to portrait
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        newConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mCoordinator.onConfigurationChanged(newConfig);
+
+        assertFalse(isBubbleShowing());
+
+        // Wait for layout changes to propagate
+        mBottomBarView.layout(0, 0, 200, 200);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        ShadowLooper.idleMainLooper();
+
+        // Should NOT trigger tracker dismissed
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+
+        // Assert popup shown again (getBubbleViewForTesting)
+        assertTrue(isBubbleShowing());
+        assertNotSame(firstBubble, mCoordinator.getBubbleViewForTesting());
+
+        // Scrim and token should NOT be requested again on re-show!
+        verify(mScrimManager, times(1)).showScrim(any());
+        assertEquals(BrowserControlsState.SHOWN, mVisibilityDelegate.get().intValue());
+
+        mCoordinator.dismiss();
+        assertEquals(BrowserControlsState.BOTH, mVisibilityDelegate.get().intValue());
+    }
+
+    @Test
+    public void testIgnoredConfigChange() {
+        setupForShow();
+        triggerShow();
+
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        mCoordinator.onConfigurationChanged(newConfig);
+
+        // Flow shouldn't be disrupted
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+        assertTrue(isBubbleShowing());
+    }
+
+    @Test
+    public void testOnControlsPositionChangedDismisses() {
+        setupForShow();
+        triggerShow();
+
+        mCoordinator.onControlsPositionChanged(ControlsPosition.BOTTOM);
+
+        verify(mTracker, times(1)).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    public void testComputeBubbleAnchorTop_ClearsBottomOmnibox() {
+        setupForShow();
+        // Stack the omnibox directly above the bottom bar, as when the controls are at the bottom.
+        mControlContainer.layout(0, 1600, 1080, 1800);
+        ((View) mBottomBarView.getParent()).layout(0, 1800, 1080, 2000);
+        int[] rootLocation = new int[2];
+        ((View) mControlContainer.getParent()).getLocationInWindow(rootLocation);
+        int omniboxTop = rootLocation[1] + 1600;
+        int bottomBarTop = rootLocation[1] + 1800;
+
+        assertEquals(
+                omniboxTop,
+                BottomBarEducationCoordinator.computeBubbleAnchorTop(
+                        ControlsPosition.BOTTOM, mBottomBarView, mControlContainer));
+        assertEquals(
+                bottomBarTop,
+                BottomBarEducationCoordinator.computeBubbleAnchorTop(
+                        ControlsPosition.TOP, mBottomBarView, mControlContainer));
+        assertEquals(
+                bottomBarTop,
+                BottomBarEducationCoordinator.computeBubbleAnchorTop(
+                        ControlsPosition.BOTTOM, mBottomBarView, null));
+    }
+
+    @Test
+    public void testObserversRegisteredOnlyWhileShowing() {
+        setupForShow();
+        verify(mVisibilityManager, never()).addObserver(any());
+
+        triggerShow();
+        verify(mVisibilityManager).addObserver(mCoordinator);
+
+        mCoordinator.dismiss();
+        verify(mVisibilityManager).removeObserver(mCoordinator);
     }
 
     private boolean isBubbleShowing() {

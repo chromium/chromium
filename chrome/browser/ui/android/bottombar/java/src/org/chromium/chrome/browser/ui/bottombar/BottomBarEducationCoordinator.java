@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +18,7 @@ import androidx.annotation.IntDef;
 import org.chromium.base.CallbackUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -55,7 +58,8 @@ import java.util.function.Supplier;
  * the bottom bar remains above the scrim.
  */
 @NullMarked
-public class BottomBarEducationCoordinator {
+public class BottomBarEducationCoordinator
+        implements BrowserControlsStateProvider.Observer, ComponentCallbacks {
 
     private final Context mContext;
     private final ScrimManager mScrimManager;
@@ -71,6 +75,7 @@ public class BottomBarEducationCoordinator {
     private ViewTreeObserver.@Nullable OnGlobalLayoutListener mGlobalLayoutListener;
     private @Nullable Tracker mActiveTracker;
     private @State int mState = State.IDLE;
+    private int mLastOrientation = Configuration.ORIENTATION_UNDEFINED;
 
     @IntDef({State.IDLE, State.SHOWING_BUBBLE, State.DONE})
     @Retention(RetentionPolicy.SOURCE)
@@ -159,15 +164,21 @@ public class BottomBarEducationCoordinator {
         }
 
         mState = State.SHOWING_BUBBLE;
+        // Record the orientation the bubble is first shown in; only later changes re-show it.
+        mLastOrientation = mContext.getResources().getConfiguration().orientation;
+        mContext.registerComponentCallbacks(this);
+        mBrowserControlsVisibilityManager.addObserver(this);
+
         mActiveTracker = tracker;
         showScrimAndLockControls(anchorView);
-        showBubble(anchorView);
+        showBubble();
     }
 
     /** Dismisses the education bubble and hides the scrim. */
     public void dismiss() {
         if (mState != State.SHOWING_BUBBLE) return;
         mState = State.DONE;
+        unregisterObservers();
         removeLayoutListeners();
         if (mActiveTracker != null) {
             mActiveTracker.dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
@@ -193,6 +204,25 @@ public class BottomBarEducationCoordinator {
                 && glicButton != null
                 && glicButton.isShown()
                 && glicButton.getWidth() > 0;
+    }
+
+    /**
+     * Returns the window y-coordinate that the education bubble should sit above. With the omnibox
+     * at the bottom, the toolbar in {@code controlContainer} is stacked directly above the bottom
+     * bar and is also kept above the scrim, so the bubble has to clear it as well.
+     */
+    static int computeBubbleAnchorTop(
+            @ControlsPosition int controlsPosition,
+            View bottomBarView,
+            @Nullable View controlContainer) {
+        int[] location = new int[2];
+        bottomBarView.getLocationInWindow(location);
+        int top = location[1];
+        if (controlsPosition == ControlsPosition.BOTTOM && controlContainer != null) {
+            controlContainer.getLocationInWindow(location);
+            top = Math.min(top, location[1]);
+        }
+        return top;
     }
 
     static int computeArrowOffset(
@@ -246,7 +276,7 @@ public class BottomBarEducationCoordinator {
     // ClickableViewAccessibility is suppressed because setTouchInterceptor only consumes touches
     // outside the popup bounds to keep the bubble modal without triggering a click action.
     @SuppressLint("ClickableViewAccessibility")
-    private void showBubble(View anchorView) {
+    private void showBubble() {
         boolean geminiFocusedParam = BottomBarConfigUtils.isEducationGeminiFocused();
         View glicButton = mBottomBarView.getContainerForAction(ActionId.GLIC);
         boolean geminiFocused = shouldUseGeminiVariant(geminiFocusedParam, glicButton);
@@ -297,12 +327,37 @@ public class BottomBarEducationCoordinator {
                         .getDimensionPixelSize(R.dimen.bottom_bar_education_bubble_anchor_gap);
         RectProvider rectProvider =
                 new RectProvider() {
+                    private final View.OnLayoutChangeListener mListener =
+                            (_, _, _, _, _, _, _, _, _) -> notifyRectChanged();
+
+                    @Override
+                    public void startObserving(Observer observer) {
+                        super.startObserving(observer);
+                        if (mControlContainer != null) {
+                            mControlContainer.addOnLayoutChangeListener(mListener);
+                        }
+                        mBottomBarView.addOnLayoutChangeListener(mListener);
+                    }
+
+                    @Override
+                    public void stopObserving() {
+                        if (mControlContainer != null) {
+                            mControlContainer.removeOnLayoutChangeListener(mListener);
+                        }
+                        mBottomBarView.removeOnLayoutChangeListener(mListener);
+                        super.stopObserving();
+                    }
+
                     @Override
                     public Rect getRect() {
                         int[] bottomLoc = new int[2];
                         mBottomBarView.getLocationInWindow(bottomLoc);
-                        int top = bottomLoc[1];
-                        int bottom = top + mBottomBarView.getHeight();
+                        int bottom = bottomLoc[1] + mBottomBarView.getHeight();
+                        int top =
+                                computeBubbleAnchorTop(
+                                        mBrowserControlsVisibilityManager.getControlsPosition(),
+                                        mBottomBarView,
+                                        mControlContainer);
 
                         int[] targetLoc = new int[2];
                         if (arrowTarget != null) {
@@ -319,7 +374,7 @@ public class BottomBarEducationCoordinator {
         arrow.setCornerRadiusPx(ViewUtils.dpToPx(mContext, 16));
         arrow.setBubbleColor(SemanticColorUtils.getMenuBgColor(mContext));
 
-        View rootView = anchorView.getRootView();
+        View rootView = mBottomBarView.getRootView();
         mPopupWindow =
                 new AnchoredPopupWindow.Builder(
                                 mContext, rootView, arrow, () -> bubbleView, rectProvider)
@@ -393,6 +448,11 @@ public class BottomBarEducationCoordinator {
         mBottomBarView.getViewTreeObserver().addOnGlobalLayoutListener(mGlobalLayoutListener);
     }
 
+    private void unregisterObservers() {
+        mContext.unregisterComponentCallbacks(this);
+        mBrowserControlsVisibilityManager.removeObserver(this);
+    }
+
     private void removeLayoutListeners() {
         if (mGlobalLayoutListener != null) {
             mBottomBarView
@@ -413,6 +473,28 @@ public class BottomBarEducationCoordinator {
         if (mPopupWindow != null && mState == State.SHOWING_BUBBLE) {
             dismiss();
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (newConfig.orientation == mLastOrientation) return;
+        mLastOrientation = newConfig.orientation;
+        if (mState != State.SHOWING_BUBBLE || mPopupWindow == null) return;
+
+        // Null the field before dismissing so onPopupDismissed() does not end the flow; the scrim,
+        // controls token and tracker session stay active while the bubble is re-anchored.
+        AnchoredPopupWindow popup = mPopupWindow;
+        mPopupWindow = null;
+        popup.dismiss();
+        waitForLayout(this::showBubble);
+    }
+
+    @Override
+    public void onLowMemory() {}
+
+    @Override
+    public void onControlsPositionChanged(@ControlsPosition int controlsPosition) {
+        dismiss();
     }
 
     @Nullable View getBubbleViewForTesting() {
