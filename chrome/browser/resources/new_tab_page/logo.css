@@ -31,25 +31,29 @@
 }
 
 #logo {
+  --ntp-logo-image:
+      url(chrome://resources/cr_components/searchbox/icons/google_logo.svg);
   forced-color-adjust: none;
   height: 92px;
   width: 272px;
 }
 
 :host([use-google-logo26_]) #logo {
+  --ntp-logo-image:
+      url(chrome://resources/cr_components/searchbox/icons/google_logo_26/google_logo.svg);
   height: 82px;
   width: 270px;
 }
 
 :host([single-colored]) #logo {
-  -webkit-mask-image: url(./icons/google_logo.svg);
+  -webkit-mask-image: var(--ntp-logo-image);
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100%;
   background-color: var(--ntp-logo-color);
 }
 
 :host(:not([single-colored])) #logo {
-  background-image: url(./icons/google_logo.svg);
+  background-image: var(--ntp-logo-image);
   background-repeat: no-repeat;
   background-size: 100%;
 }

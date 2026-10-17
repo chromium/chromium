@@ -903,15 +903,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddResourcePaths(kNewTabSharedResources);
 #endif  // BUILDFLAG(OPTIMIZE_WEBUI)
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Overrides the mapping installed by SetupWebUIDataSource() above, so the
-  // stable logo path serves the 2026 version of the Google logo.
-  if (UseGoogleLogo26()) {
-    source->AddResourcePath("icons/google_logo.svg",
-                            IDR_NEW_TAB_PAGE_BRANDED_GOOGLE_LOGO_SVG);
-  }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
   // Allow embedding of iframes for the doodle and
   // chrome-untrusted://new-tab-page for other external content and resources.
   // NOTE: Use caution when overriding content security policies as that cean
