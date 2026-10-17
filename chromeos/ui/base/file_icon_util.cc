@@ -175,7 +175,7 @@ namespace internal {
 IconType GetIconTypeForPath(const base::FilePath& filepath) {
   // Changes to this map should be reflected in
   // ui/file_manager/base/gn/file_types.json5
-  static const auto extension_to_icon =
+  static constexpr auto kExtensionToIcon =
       base::MakeFixedFlatMap<std::string_view, IconType>({
           // Image
           {".JPEG", IconType::kImage},
@@ -290,8 +290,8 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
       });
 
   const auto it =
-      extension_to_icon.find(base::ToUpperASCII(filepath.Extension()));
-  if (it != extension_to_icon.end()) {
+      kExtensionToIcon.find(base::ToUpperASCII(filepath.Extension()));
+  if (it != kExtensionToIcon.end()) {
     return it->second;
   } else {
     return IconType::kGeneric;
@@ -299,40 +299,42 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
 }
 
 IconType GetIconTypeFromString(const std::string& icon_type_string) {
-  static const base::NoDestructor<std::map<std::string, IconType>>
-      type_string_to_icon_type(
-          {{"archive", IconType::kArchive},
-           {"audio", IconType::kAudio},
-           {"chart", IconType::kChart},
-           {"excel", IconType::kExcel},
-           {"drive", IconType::kDrive},
-           {"folder", IconType::kFolder},
-           {"gdoc", IconType::kGdoc},
-           {"gdraw", IconType::kGdraw},
-           {"generic", IconType::kGeneric},
-           {"gform", IconType::kGform},
-           {"gmap", IconType::kGmap},
-           {"gprj", IconType::kGproject},
-           {"gsheet", IconType::kGsheet},
-           {"gsite", IconType::kGsite},
-           {"gmaillayout", IconType::kGmaillayout},
-           {"gslides", IconType::kGslide},
-           {"gtable", IconType::kGtable},
-           {"image", IconType::kImage},
-           {"linux", IconType::kLinux},
-           {"pdf", IconType::kPdf},
-           {"ppt", IconType::kPpt},
-           {"script", IconType::kScript},
-           {"shared", IconType::kFolderShared},
-           {"sites", IconType::kSites},
-           // TODO(crbug.com/345312503): would img.zst work here?
-           {"tini", IconType::kTini},
-           {"video", IconType::kVideo},
-           {"word", IconType::kWord}});
+  static constexpr auto kIconTypeStringToIconType =
+      base::MakeFixedFlatMap<std::string_view, IconType>({
+          {"archive", IconType::kArchive},
+          {"audio", IconType::kAudio},
+          {"chart", IconType::kChart},
+          {"excel", IconType::kExcel},
+          {"drive", IconType::kDrive},
+          {"folder", IconType::kFolder},
+          {"gdoc", IconType::kGdoc},
+          {"gdraw", IconType::kGdraw},
+          {"generic", IconType::kGeneric},
+          {"gform", IconType::kGform},
+          {"gmap", IconType::kGmap},
+          {"gprj", IconType::kGproject},
+          {"gsheet", IconType::kGsheet},
+          {"gsite", IconType::kGsite},
+          {"gmaillayout", IconType::kGmaillayout},
+          {"gslides", IconType::kGslide},
+          {"gtable", IconType::kGtable},
+          {"image", IconType::kImage},
+          {"linux", IconType::kLinux},
+          {"pdf", IconType::kPdf},
+          {"ppt", IconType::kPpt},
+          {"script", IconType::kScript},
+          {"shared", IconType::kFolderShared},
+          {"sites", IconType::kSites},
+          // TODO(crbug.com/345312503): would img.zst work here?
+          {"tini", IconType::kTini},
+          {"video", IconType::kVideo},
+          {"word", IconType::kWord},
+      });
 
-  const auto& icon_it = type_string_to_icon_type->find(icon_type_string);
-  if (icon_it != type_string_to_icon_type->end())
+  const auto icon_it = kIconTypeStringToIconType.find(icon_type_string);
+  if (icon_it != kIconTypeStringToIconType.end()) {
     return icon_it->second;
+  }
   return IconType::kGeneric;
 }
 
