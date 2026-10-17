@@ -5,11 +5,14 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_CAMERA_CANCEL_CAMERA_UPLOAD_DIALOG_H_
 #define CHROMEOS_ASH_EXPERIENCES_CAMERA_CANCEL_CAMERA_UPLOAD_DIALOG_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -35,10 +38,11 @@ class CancelCameraUploadDialog {
 
   void OnCancelClicked(ui::DialogModelDelegate*);
   void OnCloseClicked(ui::DialogModelDelegate*);
+  void CloseWidget(views::Widget::ClosedReason reason);
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSkipDialogCheckboxId);
   ClickedCallback clicked_callback_;
-  base::WeakPtr<views::Widget> widget_ = nullptr;
+  std::unique_ptr<views::Widget> widget_;
   base::WeakPtrFactory<CancelCameraUploadDialog> weak_ptr_factory_{this};
 };
 

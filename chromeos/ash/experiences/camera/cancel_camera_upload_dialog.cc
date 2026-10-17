@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/ptr_util.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -66,9 +67,12 @@ CancelCameraUploadDialog::CancelCameraUploadDialog(ClickedCallback callback)
   auto dialog_delegate = views::BubbleDialogModelHost::CreateModal(
       std::move(dialog_model), ui::mojom::ModalType::kSystem,
       /*autosize=*/false);
-  widget_ = constrained_window::CreateBrowserModalDialogViews(
-                std::move(dialog_delegate), parent)
-                ->GetWeakPtr();
+  dialog_delegate->SetOwnershipOfNewWidget(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget_ = base::WrapUnique(constrained_window::CreateBrowserModalDialogViews(
+      std::move(dialog_delegate), parent));
+  widget_->MakeCloseSynchronous(base::BindOnce(
+      &CancelCameraUploadDialog::CloseWidget, weak_ptr_factory_.GetWeakPtr()));
   widget_->Show();
 }
 
@@ -85,4 +89,8 @@ void CancelCameraUploadDialog::OnCloseClicked(
                         model_delegate->dialog_model()
                             ->GetCheckboxByUniqueId(kSkipDialogCheckboxId)
                             ->is_checked());
+}
+
+void CancelCameraUploadDialog::CloseWidget(views::Widget::ClosedReason reason) {
+  widget_.reset();
 }
