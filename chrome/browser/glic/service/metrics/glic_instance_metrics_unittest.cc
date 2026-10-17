@@ -1985,4 +1985,64 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(GlicProvider::kGemini,
                                          GlicProvider::kGeminiEnterprise));
 
+TEST_F(GlicInstanceMetricsTest,
+       FreImpressionCuiTracker_SuccessOnUpfrontFreAndCancelledOnMessageFirst) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicOptInImpressionMetrics);
+
+  ShowOptions show_options{FloatingShowOptions{}};
+
+  // 1. Upfront FRE: user opens Glic while unconsented and FRE is shown.
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  metrics_.OnOptinImpression();
+  metrics_.OnClientReady();
+
+  histogram_tester_.ExpectBucketCount("Glic.CUI.FreImpression.Outcome",
+                                      GlicCuiOutcome::kSuccess, 1);
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.CUI.FreImpression.Latency.Success", base::Milliseconds(250), 1);
+
+  // 2. Message-First FRE: user opens Glic while unconsented and submits input
+  // before FRE is shown -> resolves as kUnknownCancel without recording
+  // latency.
+  metrics_.OnInstanceHidden();
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  task_environment_.FastForwardBy(base::Milliseconds(120));
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText,
+                                mojom::PromptType::kTypedText);
+
+  histogram_tester_.ExpectBucketCount("Glic.CUI.FreImpression.Outcome",
+                                      GlicCuiOutcome::kUnknownCancel, 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency", 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       FreImpressionCuiTracker_SuccessWhenWarmedInBackground) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicOptInImpressionMetrics);
+
+  ShowOptions show_options{FloatingShowOptions{}};
+
+  // Instance is warmed in the background while hidden: the web client becomes
+  // ready and signals OnOptinImpression() before the panel becomes visible or
+  // opened.
+  metrics_.OnOptinImpression();
+  metrics_.OnClientReady();
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Outcome", 0);
+
+  // User opens the warmed instance: OnVisibilityChanged(true) records the
+  // pending opt-in impression, and OnOpen() immediately resolves the FRE
+  // impression CUI tracker as kSuccess.
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+
+  histogram_tester_.ExpectBucketCount("Glic.CUI.FreImpression.Outcome",
+                                      GlicCuiOutcome::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency.Success",
+                                     1);
+}
+
 }  // namespace glic

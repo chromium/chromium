@@ -405,6 +405,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   bool is_client_ready_ = false;
   GuestActionableState guest_actionable_;
   bool is_opt_in_pending_ = false;
+  bool opt_in_impression_recorded_for_current_open_ = false;
   bool has_consented_ = false;
   OptInShownCallback opt_in_shown_callback_;
 

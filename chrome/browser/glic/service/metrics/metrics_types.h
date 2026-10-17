@@ -365,7 +365,8 @@ enum class GlicInstanceEvent {
   // Logged for all tab context requests (including focused tab requests, which
   // also log kFocusedTabContextRequested).
   kTabContextRequested = 54,
-  kMaxValue = kTabContextRequested,
+  kOptInImpression = 55,
+  kMaxValue = kOptInImpression,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicInstanceEvent)
 

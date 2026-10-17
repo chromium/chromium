@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_fre_impression_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/glic_submit_query_cui_tracker.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -271,6 +272,8 @@ void GlicInstanceMetrics::MaybeRecordOptInImpression() {
     opt_in_shown_callback_.Run(GetUkmSourceIdForTab(tab));
   }
   is_opt_in_pending_ = false;
+  opt_in_impression_recorded_for_current_open_ = true;
+  LogEvent(GlicInstanceEvent::kOptInImpression);
 }
 
 void GlicInstanceMetrics::OnGlicScrollAttempt() {
@@ -797,6 +800,7 @@ void GlicInstanceMetrics::OnInstanceHidden() {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Hide"));
   LogEvent(GlicInstanceEvent::kInstanceHidden);
   MaybeRecordTimeToDismissWhileLoading();
+  opt_in_impression_recorded_for_current_open_ = false;
 }
 
 void GlicInstanceMetrics::OnClose() {
@@ -814,6 +818,7 @@ void GlicInstanceMetrics::OnClose() {
   actionable_invocation_state_ = {};
   // A frame submitted during this invocation is stale for the next one.
   guest_actionable_.frame_submitted_while_hidden = false;
+  opt_in_impression_recorded_for_current_open_ = false;
 }
 
 bool GlicInstanceMetrics::MarkShownAndCheckIfFirstTime(EmbedderKey key) {
@@ -863,6 +868,15 @@ void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
 
   // 2. Log Events
   LogEvent(GlicInstanceEvent::kOpen);
+  if (!GlicEnabling::HasConsentedForProfile(profile_)) {
+    auto fre_tracker = std::make_unique<GlicFreImpressionCuiTracker>();
+    if (opt_in_impression_recorded_for_current_open_) {
+      fre_tracker->OnEvent(GlicInstanceEvent::kOptInImpression);
+      opt_in_impression_recorded_for_current_open_ = false;
+    } else {
+      cui_trackers_.push_back(std::move(fre_tracker));
+    }
+  }
 
   // 3. Record Actions
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Open"));

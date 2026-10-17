@@ -712,6 +712,50 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.CUI.FreImpression.Latency{Outcome}" units="ms"
+    expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>
+    Records the latency from invoking Glic when the user has not yet consented
+    to rendering the FRE opt-in impression {Outcome}. Includes upfront FRE flows
+    as well as pending-prompt entrypoints that navigate directly to the opt-in
+    prompt on open. Deferred FRE flows where the Glic input box is presented and
+    focused or submitted before the opt-in prompt resolve as UnknownCancel and
+    are excluded from this latency histogram so user typing time does not skew
+    open-to-FRE latency.
+  </summary>
+  <token key="Outcome">
+    <variant name="" summary="regardless of the outcome"/>
+    <variant name=".Abandoned"
+        summary="when the interaction was abandoned by the user closing or
+                 hiding the UI before the FRE impression was shown"/>
+    <variant name=".Failed" summary="when the interaction failed"/>
+    <variant name=".FailedLatency"
+        summary="when the FRE impression was shown but exceeded the latency
+                 threshold"/>
+    <variant name=".Success" summary="when the FRE impression was shown"/>
+  </token>
+</histogram>
+
+<histogram name="Glic.CUI.FreImpression.Outcome" enum="GlicCuiOutcome"
+    expires_after="2027-06-15">
+  <owner>dewittj@chromium.org</owner>
+  <owner>glic@google.com</owner>
+  <summary>
+    Records the outcome of rendering the FRE opt-in impression after invoking
+    Glic when the user has not yet consented: Success when the opt-in impression
+    is shown (including when already rendered in a background-warmed instance
+    prior to open); Abandoned when the user closes or hides the Glic panel
+    before the opt-in impression is shown; Failed when the WebUI enters an
+    error, offline, unavailable, unresponsive, guest-error, disabled-by-admin,
+    location-mismatch, or ineligible-account state before the impression is
+    shown; UnknownCancel when a deferred FRE flow focuses or submits the prompt
+    input before showing the opt-in impression; and Superseded if a new open
+    starts while a previous tracker is still active.
+  </summary>
+</histogram>
+
 <histogram name="Glic.CUI.SubmitQuery.Latency{Outcome}" units="ms"
     expires_after="2027-06-15">
   <owner>dewittj@chromium.org</owner>

@@ -618,6 +618,7 @@ chromium-metrics-reviews@google.com.
   <int value="52" label="WebUI State Ineligible Account"/>
   <int value="53" label="Client Ready"/>
   <int value="54" label="Tab Context Requested"/>
+  <int value="55" label="Opt-In Impression"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicInstanceEvent) -->

@@ -78,6 +78,8 @@ source_set("glic") {
     "public/glic_cui_tracker.cc",
     "public/glic_cui_tracker.h",
     "public/glic_enabling.h",
+    "public/glic_fre_impression_cui_tracker.cc",
+    "public/glic_fre_impression_cui_tracker.h",
     "public/glic_instance.cc",
     "public/glic_instance.h",
     "public/glic_instance_id.h",

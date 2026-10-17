@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_fre_impression_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_submit_query_cui_tracker.h"
 #include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
@@ -108,6 +109,56 @@ TEST_F(GlicCuiTrackerTest, SubmitQueryTrackerResolvesOnEvents) {
 
   histogram_tester_.ExpectUniqueSample("Glic.CUI.SubmitQuery.Outcome",
                                        GlicCuiOutcome::kSuccess, 1);
+}
+
+TEST_F(GlicCuiTrackerTest, FreImpressionTrackerResolvesOnOptInImpression) {
+  {
+    GlicFreImpressionCuiTracker tracker;
+    EXPECT_FALSE(tracker.OnEvent(GlicInstanceEvent::kClientReady));
+    EXPECT_TRUE(tracker.OnEvent(GlicInstanceEvent::kOptInImpression));
+  }
+
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.FreImpression.Outcome",
+                                       GlicCuiOutcome::kSuccess, 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency", 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency.Success",
+                                     1);
+}
+
+TEST_F(GlicCuiTrackerTest,
+       FreImpressionTrackerCancelsOnUserInputSubmittedForMessageFirstFre) {
+  {
+    GlicFreImpressionCuiTracker tracker;
+    EXPECT_TRUE(tracker.OnEvent(GlicInstanceEvent::kUserInputSubmitted));
+  }
+
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.FreImpression.Outcome",
+                                       GlicCuiOutcome::kUnknownCancel, 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency", 0);
+}
+
+TEST_F(GlicCuiTrackerTest, FreImpressionTrackerAbandonsOnCloseOrHide) {
+  {
+    GlicFreImpressionCuiTracker tracker;
+    EXPECT_TRUE(tracker.OnEvent(GlicInstanceEvent::kClose));
+  }
+
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.FreImpression.Outcome",
+                                       GlicCuiOutcome::kAbandoned, 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency.Abandoned",
+                                     1);
+}
+
+TEST_F(GlicCuiTrackerTest, FreImpressionTrackerFailsOnWebUiError) {
+  {
+    GlicFreImpressionCuiTracker tracker;
+    EXPECT_TRUE(tracker.OnEvent(GlicInstanceEvent::kWebUiStateError));
+  }
+
+  histogram_tester_.ExpectUniqueSample("Glic.CUI.FreImpression.Outcome",
+                                       GlicCuiOutcome::kFailed, 1);
+  histogram_tester_.ExpectTotalCount("Glic.CUI.FreImpression.Latency.Failed",
+                                     1);
 }
 
 }  // namespace glic
