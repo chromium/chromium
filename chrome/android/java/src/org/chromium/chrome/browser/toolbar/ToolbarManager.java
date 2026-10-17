@@ -232,6 +232,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarEducationDialogCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
@@ -536,6 +537,7 @@ public class ToolbarManager
     private @Nullable ToolbarPositionController mToolbarPositionController;
     private @Nullable UndoBarThrottle mUndoBarThrottle;
     private final @Nullable BottomBarHostManager mBottomBarHostManager;
+    private @Nullable BottomBarEducationDialogCoordinator mBottomBarEducationDialogCoordinator;
     private final @Nullable OneshotSupplier<HubManager> mHubManagerSupplier;
 
     private OverridableTabCount mOverridableTabCount;
@@ -2545,7 +2547,28 @@ public class ToolbarManager
         enableTabGroupUiControls();
         if (BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
             enableBottomBar();
+        } else if (BottomBarConfigUtils.isBottomBarEligible(mActivity)
+                && BottomBarConfigUtils.isEducationEnabled()) {
+            mBottomBarEducationDialogCoordinator =
+                    new BottomBarEducationDialogCoordinator(
+                            mActivity, mModalDialogManagerSupplier.get(), mActivityTabProvider);
         }
+    }
+
+    /**
+     * Shows the bottom bar's startup promo, if any: the bottom bar's own promo when the bar is on,
+     * or the opt-in education dialog when it is off.
+     *
+     * @param profile The profile to check the promo's eligibility against.
+     * @return Whether a promo is showing or has claimed the startup promo slot.
+     */
+    public boolean maybeShowBottomBarPromo(Profile profile) {
+        // The host manager is only created when the bottom bar is on.
+        if (mBottomBarHostManager != null) {
+            return mBottomBarHostManager.maybeShowPromoDialog(profile);
+        }
+        return mBottomBarEducationDialogCoordinator != null
+                && mBottomBarEducationDialogCoordinator.maybeShow(profile);
     }
 
     private void enableTabGroupUiControls() {
@@ -3036,6 +3059,10 @@ public class ToolbarManager
         if (mIsDestroyed) return;
         mIsDestroyed = true;
 
+        if (mBottomBarEducationDialogCoordinator != null) {
+            mBottomBarEducationDialogCoordinator.destroy();
+            mBottomBarEducationDialogCoordinator = null;
+        }
         if (mAppInstalledDelegate != null) {
             mAppInstalledDelegate.destroy();
             mAppInstalledDelegate = null;

@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.actions.ActionId;
@@ -144,10 +146,20 @@ public class BottomBarEducationCoordinator
     }
 
     /**
+     * Returns whether the opt-in dialog handed over to the tooltip chain before the activity
+     * recreated.
+     */
+    boolean hasPendingTooltips() {
+        return ChromeSharedPreferences.getInstance()
+                .readBoolean(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS, false);
+    }
+
+    /**
      * @param profile The current Profile.
      * @return Whether the education IPH would be shown if requested.
      */
     public boolean wouldShow(Profile profile) {
+        if (hasPendingTooltips()) return true;
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile.getOriginalProfile());
         return tracker != null
                 && tracker.isInitialized()
@@ -162,6 +174,14 @@ public class BottomBarEducationCoordinator
 
         if (!mBottomBarView.isLaidOut() || !mBottomBarView.isShown()) {
             waitForLayout(this::maybeShow);
+            return;
+        }
+
+        if (hasPendingTooltips()) {
+            ChromeSharedPreferences.getInstance()
+                    .removeKey(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS);
+            activate(State.SHOWING_TOOLTIPS);
+            startTooltipChain();
             return;
         }
 
@@ -186,15 +206,26 @@ public class BottomBarEducationCoordinator
             return;
         }
 
-        mState = State.SHOWING_BUBBLE;
-        // Record the orientation the bubble is first shown in; only later changes re-show it.
+        activate(State.SHOWING_BUBBLE);
+        mActiveTracker = tracker;
+        showScrim(anchorView);
+        showBubble();
+    }
+
+    /**
+     * Starts the flow in {@code state}: registers observers and keeps the browser controls shown
+     * until {@link #dismiss()}.
+     */
+    private void activate(@State int state) {
+        mState = state;
+        // Record the orientation the flow is first shown in; only later changes re-show it.
         mLastOrientation = mContext.getResources().getConfiguration().orientation;
         mContext.registerComponentCallbacks(this);
         mBrowserControlsVisibilityManager.addObserver(this);
-
-        mActiveTracker = tracker;
-        showScrimAndLockControls(anchorView);
-        showBubble();
+        mBrowserControlsToken =
+                mBrowserControlsVisibilityManager
+                        .getBrowserVisibilityDelegate()
+                        .showControlsPersistent();
     }
 
     /** Dismisses the education bubble and hides the scrim. */
@@ -286,7 +317,7 @@ public class BottomBarEducationCoordinator
                 : bottomAppBarContainer;
     }
 
-    private void showScrimAndLockControls(View anchorView) {
+    private void showScrim(View anchorView) {
         mScrimModel =
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, anchorView)
@@ -303,19 +334,17 @@ public class BottomBarEducationCoordinator
                         .build();
 
         mScrimManager.showScrim(mScrimModel);
-        mBrowserControlsToken =
-                mBrowserControlsVisibilityManager
-                        .getBrowserVisibilityDelegate()
-                        .showControlsPersistent();
     }
 
     // ClickableViewAccessibility is suppressed because setTouchInterceptor only consumes touches
     // outside the popup bounds to keep the bubble modal without triggering a click action.
     @SuppressLint("ClickableViewAccessibility")
     private void showBubble() {
-        boolean geminiFocusedParam = BottomBarConfigUtils.isEducationGeminiFocused();
+        Profile profile = mProfileSupplier.get();
+        boolean glicFocusedParam =
+                profile != null && BottomBarEducationUtils.shouldUseGlicVariant(profile);
         View glicButton = mBottomBarView.getContainerForAction(ActionId.GLIC);
-        boolean geminiFocused = shouldUseGeminiVariant(geminiFocusedParam, glicButton);
+        boolean geminiFocused = shouldUseGeminiVariant(glicFocusedParam, glicButton);
 
         // TODO(crbug.com/574564735): Record which button the user clicked (Show me, Switch back
         // or the Settings link).

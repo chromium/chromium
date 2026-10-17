@@ -3063,7 +3063,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private boolean maybeShowPromo(Profile profile) {
         // NOTE: Only one promo can be shown in one run to avoid nagging users too much.
 
-        if (mBottomBarHostManager != null && mBottomBarHostManager.maybeShowPromoDialog(profile)) {
+        if (mToolbarManager != null && mToolbarManager.maybeShowBottomBarPromo(profile)) {
             return true;
         }
         if (FullscreenSigninPromoLauncher.launchPromoIfNeeded(

@@ -821,6 +821,31 @@ public class BottomBarMediatorUnitTest {
     }
 
     @Test
+    public void testEducation_HasPendingTooltips_MaybeShowCalledWithoutClaimingSlot() {
+        createMediator(true, false);
+        assertNotNull(mMediator);
+        when(mEducationCoordinator.hasPendingTooltips()).thenReturn(true);
+        mOmniboxFocusStateSupplier.set(false); // visible
+
+        // Even without claiming the promo slot, maybeShow should be called
+        // because there are pending tooltips that should bypass the startup queue.
+        mMediator.onStartupPromoFlowFinished(false);
+        verify(mEducationCoordinator).maybeShow();
+    }
+
+    @Test
+    public void testEducation_HasPendingTooltips_Incognito_NotCalled() {
+        when(mTab.isOffTheRecord()).thenReturn(true);
+        createMediator(true, false);
+        assertNotNull(mMediator);
+        when(mEducationCoordinator.hasPendingTooltips()).thenReturn(true);
+        mOmniboxFocusStateSupplier.set(false); // visible
+
+        mMediator.onStartupPromoFlowFinished(false);
+        verify(mEducationCoordinator, never()).maybeShow();
+    }
+
+    @Test
     public void testEducation_NotClaimed_NotCalled() {
         createMediator(true, false);
         assertNotNull(mMediator);

@@ -802,6 +802,15 @@ public class ToolbarManagerUnitTest {
     }
 
     @Test
+    public void testMaybeShowBottomBarPromo_delegatesToBottomBarHostManager() {
+        when(mBottomBarHostManager.maybeShowPromoDialog(mProfile)).thenReturn(true);
+        assertTrue(mToolbarManager.maybeShowBottomBarPromo(mProfile));
+
+        when(mBottomBarHostManager.maybeShowPromoDialog(mProfile)).thenReturn(false);
+        assertFalse(mToolbarManager.maybeShowBottomBarPromo(mProfile));
+    }
+
+    @Test
     public void testFullscreenHairlineVisibility() {
         ArgumentCaptor<FullscreenManager.Observer> captor =
                 ArgumentCaptor.forClass(FullscreenManager.Observer.class);

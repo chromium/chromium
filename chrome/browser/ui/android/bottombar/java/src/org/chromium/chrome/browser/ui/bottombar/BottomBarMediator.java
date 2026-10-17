@@ -290,7 +290,8 @@ public class BottomBarMediator
         if (!mStartupPromoFlowFinished) return;
         boolean isBottomBarVisible = mIsVisible == TriState.TRUE;
 
-        if (mEducationCoordinator != null && mEducationClaimedPromoSlot) {
+        if (mEducationCoordinator != null
+                && (mEducationClaimedPromoSlot || mEducationCoordinator.hasPendingTooltips())) {
             Tab currentTab = mTabSupplier.get();
             if (isBottomBarVisible && currentTab != null && !currentTab.isOffTheRecord()) {
                 mEducationCoordinator.maybeShow();

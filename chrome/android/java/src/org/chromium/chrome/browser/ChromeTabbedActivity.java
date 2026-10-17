@@ -1675,7 +1675,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             TabbedStartupCoordinator.onNativeInitialized(originalProfile);
 
-            if (BottomBarConfigUtils.shouldShowSettingsToggle(this)) {
+            // Observe BOTTOM_BAR_ENABLED when the Settings toggle or the education flow (where
+            // tapping "Try it now" in the opt-in dialog enables the bottom bar) can change it, so
+            // the activity recreates to inflate or remove the bottom bar. The observer registers
+            // itself with ActivityLifecycleDispatcher and unregisters on destroy.
+            if (BottomBarConfigUtils.shouldObserveBottomBarEnabledChanges(this)) {
                 new BottomBarEnabledChangeObserver(
                         this,
                         getLifecycleDispatcher(),

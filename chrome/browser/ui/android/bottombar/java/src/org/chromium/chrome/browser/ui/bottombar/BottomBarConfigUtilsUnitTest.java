@@ -192,6 +192,43 @@ public class BottomBarConfigUtilsUnitTest {
 
     @Test
     @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":show_settings_toggle/false/education_enabled/true")
+    public void testShouldObserveBottomBarEnabledChanges_Eligible_EducationEnabled() {
+        assertTrue(BottomBarConfigUtils.shouldObserveBottomBarEnabledChanges(mContext));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":show_settings_toggle/false/education_enabled/false")
+    public void testShouldObserveBottomBarEnabledChanges_Eligible_BothParamsFalse() {
+        assertFalse(BottomBarConfigUtils.shouldObserveBottomBarEnabledChanges(mContext));
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":show_settings_toggle/false/education_enabled/true")
+    public void testShouldObserveBottomBarEnabledChanges_Tablet_EducationEnabled() {
+        // The observer only compares the user's choice, which defaults to true, so observing where
+        // the bar is not eligible would recreate the activity in a loop.
+        assertTrue(BottomBarConfigUtils.isBottomBarUserEnabled());
+        assertFalse(BottomBarConfigUtils.shouldObserveBottomBarEnabledChanges(mContext));
+    }
+
+    @Test
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":show_settings_toggle/false/education_enabled/true")
+    public void testShouldObserveBottomBarEnabledChanges_Automotive_EducationEnabled() {
+        DeviceInfo.setIsAutomotiveForTesting(true);
+        assertFalse(BottomBarConfigUtils.shouldObserveBottomBarEnabledChanges(mContext));
+    }
+
+    @Test
+    @EnableFeatures(
             ChromeFeatureList.ANDROID_BOTTOM_BAR + ":move_toolbar_settings_to_appearance/true")
     public void testShouldMoveToolbarSettingsToAppearance_Eligible_ParamTrue() {
         assertTrue(BottomBarConfigUtils.shouldMoveToolbarSettingsToAppearance(mContext));

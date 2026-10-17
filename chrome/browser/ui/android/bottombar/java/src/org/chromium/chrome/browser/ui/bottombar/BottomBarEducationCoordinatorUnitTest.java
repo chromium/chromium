@@ -53,6 +53,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicEnablingJni;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -88,6 +90,7 @@ public class BottomBarEducationCoordinatorUnitTest {
     private View mControlContainer;
     private BottomBarButtonContainer mGlicBtn;
     private BottomBarEducationCoordinator mCoordinator;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
 
     @Before
     public void setUp() {
@@ -104,6 +107,10 @@ public class BottomBarEducationCoordinatorUnitTest {
                         ObservableSuppliers.alwaysFalse());
         when(mVisibilityManager.getBrowserVisibilityDelegate()).thenReturn(mVisibilityDelegate);
         when(mVisibilityManager.getControlsPosition()).thenReturn(ControlsPosition.TOP);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+        when(mGlicEnablingJniMock.isPolicyEnforced(any())).thenReturn(true);
     }
 
     @After
@@ -112,6 +119,7 @@ public class BottomBarEducationCoordinatorUnitTest {
             mCoordinator.destroy();
         }
         TrackerFactory.setTrackerForTests(null);
+        BottomBarActionEligibility.setCachedCandidateExtraActionForTesting(null);
     }
 
     @Test
@@ -599,8 +607,116 @@ public class BottomBarEducationCoordinatorUnitTest {
         verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
     }
 
+    @Test
+    public void testWouldShow_ReturnsTrueWhenPendingTooltips() {
+        setupForShow();
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(false);
+        setPendingTooltips();
+        assertTrue(mCoordinator.wouldShow(mProfile));
+    }
+
+    @Test
+    public void testPendingTooltips_StartsTooltipChainWithoutBubble() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        // The hand-over does not depend on the tracker.
+        when(mTracker.isInitialized()).thenReturn(false);
+        setPendingTooltips();
+
+        triggerShow();
+
+        TextBubble tooltip = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip);
+        assertTrue(tooltip.getDismissOnTouchInteractionForTesting());
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_tooltip_gemini),
+                getTooltipText(tooltip));
+        assertNull(mCoordinator.getBubbleViewForTesting());
+        assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .contains(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS));
+        verify(mScrimManager, never()).showScrim(any());
+        verify(mTracker, never()).shouldTriggerHelpUi(any());
+        verify(mVisibilityManager).addObserver(mCoordinator);
+        assertEquals(BrowserControlsState.SHOWN, mVisibilityDelegate.get().intValue());
+
+        mCoordinator.dismiss();
+        verify(mVisibilityManager).removeObserver(mCoordinator);
+        assertEquals(BrowserControlsState.BOTH, mVisibilityDelegate.get().intValue());
+        verify(mTracker, never()).dismissed(any());
+    }
+
+    @Test
+    @Config(qualifiers = "land")
+    public void testPendingTooltips_RotationReshowsCurrentTooltip() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        setPendingTooltips();
+        triggerShow();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        newConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mCoordinator.onConfigurationChanged(newConfig);
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+
+        mBottomBarView.layout(0, 0, 1080, 2000);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble newTooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(newTooltip1);
+        assertNotSame(tooltip1, newTooltip1);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_tooltip_gemini),
+                getTooltipText(newTooltip1));
+        assertEquals(BrowserControlsState.SHOWN, mVisibilityDelegate.get().intValue());
+    }
+
+    @Test
+    @Config(qualifiers = "land")
+    @EnableFeatures(
+            ChromeFeatureList.ANDROID_BOTTOM_BAR
+                    + ":education_enabled/true/education_gemini_focused/true")
+    public void testNullProfileWhenShowingBubble_UsesDefaultCopy() {
+        setupForShow();
+        triggerShow();
+        TextView title = mCoordinator.getBubbleViewForTesting().findViewById(R.id.education_title);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_title_gemini),
+                title.getText().toString());
+
+        // The bubble is re-created on rotation, after the profile went away.
+        mProfile = null;
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        newConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mCoordinator.onConfigurationChanged(newConfig);
+        mBottomBarView.layout(0, 0, 200, 200);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(isBubbleShowing());
+        title = mCoordinator.getBubbleViewForTesting().findViewById(R.id.education_title);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_title_ergonomics),
+                title.getText().toString());
+    }
+
     private boolean isBubbleShowing() {
         return mCoordinator.getBubbleViewForTesting() != null;
+    }
+
+    private void setPendingTooltips() {
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.BOTTOM_BAR_EDUCATION_PENDING_TOOLTIPS, true);
+    }
+
+    private static String getTooltipText(TextBubble tooltip) {
+        TextView msgView = tooltip.getTextBubbleContentViewForTesting().findViewById(R.id.message);
+        return msgView.getText().toString();
     }
 
     private void allowTooltipsToShowInRobolectric() {
