@@ -4167,13 +4167,49 @@ const FeatureEntry::FeatureParam kAndroidBottomBarKeepAppMenuInToolbarParam[] =
 const FeatureEntry::FeatureParam kAndroidBottomBarShowDomainOnlyParam[] = {
     {"show_glic_setting_toggle", "true"},
     {"show_domain_only", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm1Params[] = {
+    {"default_user_enabled", "true"},
+    {"education_enabled", "true"},
+    {"education_gemini_focused", "false"},
+    {"keep_app_menu_in_toolbar", "false"},
+    {"show_glic_setting_toggle", "true"},
+    {"show_settings_toggle", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm2Params[] = {
+    {"default_user_enabled", "true"},
+    {"education_enabled", "true"},
+    {"education_gemini_focused", "true"},
+    {"keep_app_menu_in_toolbar", "true"},
+    {"show_glic_setting_toggle", "true"},
+    {"show_settings_toggle", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm3Params[] = {
+    {"default_user_enabled", "true"},
+    {"education_enabled", "true"},
+    {"education_gemini_focused", "true"},
+    {"keep_app_menu_in_toolbar", "false"},
+    {"show_glic_setting_toggle", "true"},
+    {"show_settings_toggle", "true"}};
+const FeatureEntry::FeatureParam kAndroidBottomBarEducationArm4Params[] = {
+    {"default_user_enabled", "false"},
+    {"education_enabled", "true"},
+    {"education_gemini_focused", "false"},
+    {"keep_app_menu_in_toolbar", "false"},
+    {"show_glic_setting_toggle", "true"},
+    {"show_settings_toggle", "true"}};
 const FeatureEntry::FeatureVariation kAndroidBottomBarVariations[] = {
     {"- 1A", kAndroidBottomBar1AParam, nullptr},
     {"- 1A (48dp)", kAndroidBottomBar1A48dpParam, nullptr},
     {"- 1A (60dp)", kAndroidBottomBar1A60dpParam, nullptr},
     {"- 1A with show domain only", kAndroidBottomBarShowDomainOnlyParam,
      nullptr},
-    {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr}};
+    {"- 1B", kAndroidBottomBarKeepAppMenuInToolbarParam, nullptr},
+    {"- Education Arm 1 (Opt-out, 5 buttons, Ergonomics)",
+     kAndroidBottomBarEducationArm1Params, nullptr},
+    {"- Education Arm 2 (Opt-out, 4 buttons, Gemini)",
+     kAndroidBottomBarEducationArm2Params, nullptr},
+    {"- Education Arm 3 (Opt-out, 5 buttons, Gemini)",
+     kAndroidBottomBarEducationArm3Params, nullptr},
+    {"- Education Arm 4 (Opt-in, 5 buttons, Ergonomics)",
+     kAndroidBottomBarEducationArm4Params, nullptr}};
 
 const FeatureEntry::FeatureParam kHomeButtonRemovalEverywhereParam[] = {
     {"remove_home_button_everywhere", "true"}};
