@@ -81,7 +81,8 @@ ${this.loadState_ === 'loaded' && this.topic ? html`
     <topic-summary-panel role="tabpanel" aria-label="${this.tabNames_[0]}"
         .topic="${this.topic}" .feedback="${this.feedback_}"
         @open-related-tabs="${this.onOpenRelatedTabs_}"
-        @query-feedbacks-change="${this.onQueryFeedbacksChange_}">
+        @query-feedbacks-change="${this.onQueryFeedbacksChange_}"
+        @collection-feedbacks-change="${this.onCollectionFeedbacksChange_}">
     </topic-summary-panel>
     ${this.feedbackEnabled_ ? html`
       <!-- Temporary Fishfood Feedback -->

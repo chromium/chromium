@@ -17,9 +17,9 @@ export function getHtml(this: TopicSummaryPanelElement) {
     @click="${this.onOpenRelatedTabsClick_}">
   Open related tabs
 </cr-button>
-${this.topic?.collections.map((collection, index) => html`
+${this.topic?.collections.map(collection => html`
   <topic-collection-carousel .collection="${collection}"
-      .feedback="${this.getCollectionFeedback_(index)}" data-index="${index}"
+      .feedback="${this.getCollectionFeedback_(collection)}"
       @collection-feedback-change="${this.onCollectionFeedbackChange_}">
   </topic-collection-carousel>
 `)}

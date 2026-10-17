@@ -11,19 +11,19 @@ import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {browserProxyFactory} from '../context_hub.mojom-webui.js';
+import {browserProxyFactory, TopicRating} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_collection_carousel.css.js';
 import {getHtml} from './topic_collection_carousel.html.js';
-import {isTopicsFishfoodFeedbackEnabled} from './topic_utils.js';
-import type {Collection, CollectionFeedback, CollectionItem} from './topic_utils.js';
+import {createEmptyCollectionFeedback, isTopicsFishfoodFeedbackEnabled, isVisitRejected, setVisitsRejected, toTopicRating} from './topic_utils.js';
+import type {Collection, CollectionItem, TopicCollectionFeedback} from './topic_utils.js';
 
 // Size of the favicon drawn in a card's image area.
 const CARD_FAVICON_SIZE = 32;
 
 // Fired with the collection's feedback whenever the rater edits it.
 export type CollectionFeedbackChangeEvent =
-    CustomEvent<{feedback: CollectionFeedback}>;
+    CustomEvent<{feedback: TopicCollectionFeedback}>;
 
 export interface TopicCollectionCarouselElement {
   $: {
@@ -67,7 +67,7 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   }
 
   accessor collection: Collection|null = null;
-  accessor feedback: CollectionFeedback|null = null;
+  accessor feedback: TopicCollectionFeedback|null = null;
   protected accessor feedbackEnabled_: boolean =
       isTopicsFishfoodFeedbackEnabled();
   protected accessor canScrollBack_: boolean = false;
@@ -110,7 +110,7 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   }
 
   protected isRated_(liked: boolean): boolean {
-    return this.feedback?.liked === liked;
+    return this.feedback?.rating === toTopicRating(liked);
   }
 
   protected getRatingAriaLabel_(prefix: string): string {
@@ -119,7 +119,8 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   }
 
   protected isItemRejected_(item: CollectionItem): boolean {
-    return !!this.feedback?.rejectedItemUrls.includes(item.url);
+    return isVisitRejected(
+        this.feedback?.rejectedItemVisits || [], item.visitTime);
   }
 
   protected getRejectAriaLabel_(item: CollectionItem): string {
@@ -129,7 +130,10 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   protected onRatingClick_(e: Event) {
     const liked = (e.currentTarget as HTMLElement).dataset['liked'] === 'true';
     // Clicking the selected rating again clears it.
-    this.updateFeedback_({liked: this.isRated_(liked) ? null : liked});
+    this.updateFeedback_({
+      rating: this.isRated_(liked) ? TopicRating.kUnrated :
+                                     toTopicRating(liked),
+    });
   }
 
   protected onRejectClick_(e: Event) {
@@ -138,26 +142,25 @@ export class TopicCollectionCarouselElement extends CrLitElement {
     if (!item) {
       return;
     }
-    const others =
-        (this.feedback?.rejectedItemUrls || []).filter(url => url !== item.url);
     this.updateFeedback_({
-      rejectedItemUrls: this.isItemRejected_(item) ? others :
-                                                     [...others, item.url],
+      rejectedItemVisits: setVisitsRejected(
+          this.feedback?.rejectedItemVisits || [], [item.visitTime],
+          !this.isItemRejected_(item)),
     });
   }
 
-  private updateFeedback_(changes: Partial<CollectionFeedback>) {
+  // Reports the edited feedback. `feedback` is owned by the page, which passes
+  // it back down once it's stored.
+  private updateFeedback_(changes: Partial<TopicCollectionFeedback>) {
     if (!this.collection) {
       return;
     }
-    const feedback: CollectionFeedback = {
-      liked: null,
-      rejectedItemUrls: [],
-      ...this.feedback,
+    const feedback: TopicCollectionFeedback = {
+      ...(this.feedback ||
+          createEmptyCollectionFeedback(this.collection.title)),
       ...changes,
       title: this.collection.title,
     };
-    this.feedback = feedback;
     this.fire('collection-feedback-change', {feedback});
   }
 

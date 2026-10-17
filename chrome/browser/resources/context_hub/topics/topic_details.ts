@@ -24,7 +24,7 @@ import {getCss} from './topic_details.css.js';
 import {getHtml} from './topic_details.html.js';
 import type {TopicFeedbackChangeEvent} from './topic_feedback_controls.js';
 import type {TopicSitesDialogElement} from './topic_sites_dialog.js';
-import type {QueryFeedbacksChangeEvent} from './topic_summary_panel.js';
+import type {CollectionFeedbacksChangeEvent, QueryFeedbacksChangeEvent} from './topic_summary_panel.js';
 import {createDuplicateTopicSnapshot, createEmptyTopicFeedback, createTopicSnapshot, getOpenableUrls, getTopicQueries, getTopicSites, isCrIcon, isTopicFeedbackEmpty, isTopicsEnabled, isTopicsFishfoodFeedbackEnabled, toTopicItem} from './topic_utils.js';
 import type {TopicFeedback, TopicItem, TopicVisit} from './topic_utils.js';
 import type {RejectedVisitsChangeEvent} from './topic_visits_panel.js';
@@ -262,6 +262,10 @@ export class TopicDetailsElement extends CrLitElement {
 
   protected onQueryFeedbacksChange_(e: QueryFeedbacksChangeEvent) {
     this.updateFeedback_({queryFeedbacks: e.detail.queryFeedbacks});
+  }
+
+  protected onCollectionFeedbacksChange_(e: CollectionFeedbacksChangeEvent) {
+    this.updateFeedback_({collectionFeedbacks: e.detail.collectionFeedbacks});
   }
 
   protected onRejectedVisitsChange_(e: RejectedVisitsChangeEvent) {

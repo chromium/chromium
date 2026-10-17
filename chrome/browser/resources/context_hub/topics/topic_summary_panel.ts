@@ -13,20 +13,27 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {CollectionFeedbackChangeEvent} from './topic_collection_carousel.js';
 import {getCss} from './topic_summary_panel.css.js';
 import {getHtml} from './topic_summary_panel.html.js';
-import {getOpenableUrls, getTopicQueries, isCollectionFeedbackEmpty, isTopicsFishfoodFeedbackEnabled} from './topic_utils.js';
-import type {CollectionFeedback, TopicFeedback, TopicItem, TopicQuery, TopicQueryFeedback} from './topic_utils.js';
+import {getOpenableUrls, getTopicQueries, isTopicsFishfoodFeedbackEnabled, setCollectionFeedback} from './topic_utils.js';
+import type {Collection, TopicCollectionFeedback, TopicFeedback, TopicItem, TopicQuery, TopicQueryFeedback} from './topic_utils.js';
 
 // Fired with the rated queries whenever the rater rates one.
 export type QueryFeedbacksChangeEvent =
     CustomEvent<{queryFeedbacks: TopicQueryFeedback[]}>;
+
+// Fired with the feedback on all of the topic's collections whenever the rater
+// edits one. Built from the carousels' per-collection
+// `CollectionFeedbackChangeEvent`s.
+export type CollectionFeedbacksChangeEvent =
+    CustomEvent<{collectionFeedbacks: TopicCollectionFeedback[]}>;
 
 // The "Summary" tab of the topic details page: the topic's summary, then a
 // carousel per collection. Its "Open related tabs" button fires an
 // `open-related-tabs` event; the page owns opening the tabs.
 //
 // When fishfood feedback is enabled, it also lists the topic's continuation
-// queries for rating, and fires `query-feedbacks-change` when one is rated;
-// the page owns storing the feedback.
+// queries for rating, and fires `query-feedbacks-change` when one is rated,
+// and `collection-feedbacks-change` when a collection is rated or one of its
+// pages flagged; the page owns storing the feedback.
 // TODO(crbug.com/558572977): Use internationalized strings once GRD strings
 // are added.
 export class TopicSummaryPanelElement extends CrLitElement {
@@ -49,7 +56,6 @@ export class TopicSummaryPanelElement extends CrLitElement {
       feedback: {type: Object},
       feedbackEnabled_: {type: Boolean},
       queries_: {type: Array},
-      collectionFeedbacks_: {type: Object},
     };
   }
 
@@ -59,34 +65,27 @@ export class TopicSummaryPanelElement extends CrLitElement {
       isTopicsFishfoodFeedbackEnabled();
   // The queries to rate. Derived from `topic`.
   protected accessor queries_: TopicQuery[] = [];
-  // Feedback on the topic's collections, keyed by index in
-  // `topic.collections`.
-  // TODO(b/568422896): Store in TopicFeedback, via the page, once the mojom
-  // has fields for collections. Until then it's lost on reload.
-  protected accessor collectionFeedbacks_: Map<number, CollectionFeedback> =
-      new Map();
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('topic')) {
       this.queries_ = this.topic ? getTopicQueries(this.topic) : [];
-      this.collectionFeedbacks_ = new Map();
     }
   }
 
-  protected getCollectionFeedback_(index: number): CollectionFeedback|null {
-    return this.collectionFeedbacks_.get(index) || null;
+  // Collections are identified by title, which stays meaningful if the
+  // backend reorders them.
+  protected getCollectionFeedback_(collection: Collection):
+      TopicCollectionFeedback|null {
+    return this.feedback?.collectionFeedbacks.find(
+               feedback => feedback.title === collection.title) ||
+        null;
   }
 
   protected onCollectionFeedbackChange_(e: CollectionFeedbackChangeEvent) {
-    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
-    const collectionFeedbacks = new Map(this.collectionFeedbacks_);
-    if (isCollectionFeedbackEmpty(e.detail.feedback)) {
-      collectionFeedbacks.delete(index);
-    } else {
-      collectionFeedbacks.set(index, e.detail.feedback);
-    }
-    this.collectionFeedbacks_ = collectionFeedbacks;
+    const collectionFeedbacks = setCollectionFeedback(
+        this.feedback?.collectionFeedbacks || [], e.detail.feedback);
+    this.fire('collection-feedbacks-change', {collectionFeedbacks});
   }
 
   protected hasOpenableUrls_(): boolean {

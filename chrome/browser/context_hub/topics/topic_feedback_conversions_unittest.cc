@@ -50,6 +50,12 @@ mojom::TopicFeedbackPtr MakeFullFeedback() {
   feedback->duplicate_of = mojom::DuplicateTopicSnapshot::New(
       "topic_dup", "Duplicate title",
       std::vector<base::Time>{now - base::Days(1)});
+  feedback->collection_feedbacks.push_back(mojom::TopicCollectionFeedback::New(
+      "Collection one", mojom::TopicRating::kLiked,
+      std::vector<base::Time>{now - base::Hours(2)}));
+  feedback->collection_feedbacks.push_back(mojom::TopicCollectionFeedback::New(
+      "Collection two", mojom::TopicRating::kUnrated,
+      std::vector<base::Time>{now - base::Hours(1)}));
   return feedback;
 }
 
@@ -181,6 +187,34 @@ TEST(TopicFeedbackConversionsTest, SkipsMalformedTimes) {
   mojom::TopicFeedbackPtr actual = TopicFeedbackFromDict(kTopicId, dict);
   ASSERT_TRUE(actual);
   EXPECT_THAT(actual->rejected_visits, ElementsAre(FixedTime()));
+}
+
+TEST(TopicFeedbackConversionsTest, SkipsMalformedCollectionFeedbacks) {
+  base::DictValue dict = MakeMinimalDict();
+  dict.Set("collection_feedbacks",
+           base::ListValue()
+               .Append("not a dict")
+               // Missing `title`.
+               .Append(base::DictValue().Set(
+                   "rating", static_cast<int>(mojom::TopicRating::kLiked)))
+               // An unknown rating reads as unrated, and malformed times are
+               // skipped.
+               .Append(base::DictValue()
+                           .Set("title", "kept")
+                           .Set("rating", 10000)
+                           .Set("rejected_item_visits",
+                                base::ListValue()
+                                    .Append("not a time")
+                                    .Append(base::TimeToValue(FixedTime())))));
+
+  mojom::TopicFeedbackPtr actual = TopicFeedbackFromDict(kTopicId, dict);
+  ASSERT_TRUE(actual);
+  ASSERT_EQ(1u, actual->collection_feedbacks.size());
+  EXPECT_EQ("kept", actual->collection_feedbacks[0]->title);
+  EXPECT_EQ(mojom::TopicRating::kUnrated,
+            actual->collection_feedbacks[0]->rating);
+  EXPECT_THAT(actual->collection_feedbacks[0]->rejected_item_visits,
+              ElementsAre(FixedTime()));
 }
 
 TEST(TopicFeedbackConversionsTest, DropsMalformedDuplicateOf) {

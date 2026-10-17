@@ -93,7 +93,8 @@ export function hasDetailedFeedback(feedback: TopicFeedback|undefined):
     boolean {
   return !!feedback && feedback.rating !== TopicRating.kUnrated &&
       (feedback.queryFeedbacks.length > 0 ||
-       feedback.rejectedVisits.length > 0 || !!feedback.duplicateOf);
+       feedback.rejectedVisits.length > 0 || !!feedback.duplicateOf ||
+       feedback.collectionFeedbacks.length > 0);
 }
 
 function readStoredCoverageTopicIds(): string[] {

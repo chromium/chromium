@@ -30,6 +30,8 @@ constexpr char kCommentKey[] = "comment";
 constexpr char kQueryFeedbacksKey[] = "query_feedbacks";
 constexpr char kRejectedVisitsKey[] = "rejected_visits";
 constexpr char kDuplicateOfKey[] = "duplicate_of";
+constexpr char kCollectionFeedbacksKey[] = "collection_feedbacks";
+constexpr char kRejectedItemVisitsKey[] = "rejected_item_visits";
 constexpr char kIdKey[] = "id";
 constexpr char kTitleKey[] = "title";
 constexpr char kEmojiKey[] = "emoji";
@@ -194,6 +196,58 @@ mojom::DuplicateTopicSnapshotPtr DuplicateFromDict(
       *id, *title, TimesFromList(dict->FindList(kVisitTimesKey)));
 }
 
+// Missing, non-integer, or unknown ratings fall back to kUnrated.
+mojom::TopicRating RatingFromInt(std::optional<int> raw_rating) {
+  if (raw_rating) {
+    auto rating = static_cast<mojom::TopicRating>(*raw_rating);
+    if (mojom::IsKnownEnumValue(rating)) {
+      return rating;
+    }
+  }
+  return mojom::TopicRating::kUnrated;
+}
+
+base::ListValue CollectionFeedbacksToList(
+    const std::vector<mojom::TopicCollectionFeedbackPtr>&
+        collection_feedbacks) {
+  base::ListValue list;
+  list.reserve(collection_feedbacks.size());
+  for (const mojom::TopicCollectionFeedbackPtr& collection_feedback :
+       collection_feedbacks) {
+    list.Append(
+        base::DictValue()
+            .Set(kTitleKey, collection_feedback->title)
+            .Set(kRatingKey, static_cast<int>(collection_feedback->rating))
+            .Set(kRejectedItemVisitsKey,
+                 TimesToList(collection_feedback->rejected_item_visits)));
+  }
+  return list;
+}
+
+// Skips elements that are not dictionaries or lack a title.
+std::vector<mojom::TopicCollectionFeedbackPtr> CollectionFeedbacksFromList(
+    const base::ListValue* list) {
+  std::vector<mojom::TopicCollectionFeedbackPtr> collection_feedbacks;
+  if (!list) {
+    return collection_feedbacks;
+  }
+  collection_feedbacks.reserve(list->size());
+  for (const base::Value& value : *list) {
+    const base::DictValue* dict = value.GetIfDict();
+    if (!dict) {
+      continue;
+    }
+    const std::string* title = dict->FindString(kTitleKey);
+    if (!title) {
+      continue;
+    }
+    collection_feedbacks.push_back(mojom::TopicCollectionFeedback::New(
+        *title, RatingFromInt(dict->FindInt(kRatingKey)),
+        TimesFromList(dict->FindList(kRejectedItemVisitsKey))));
+  }
+  return collection_feedbacks;
+}
+
 }  // namespace
 
 base::DictValue TopicFeedbackToDict(const mojom::TopicFeedback& feedback) {
@@ -209,6 +263,8 @@ base::DictValue TopicFeedbackToDict(const mojom::TopicFeedback& feedback) {
   if (feedback.duplicate_of) {
     dict.Set(kDuplicateOfKey, DuplicateToDict(*feedback.duplicate_of));
   }
+  dict.Set(kCollectionFeedbacksKey,
+           CollectionFeedbacksToList(feedback.collection_feedbacks));
   return dict;
 }
 
@@ -222,14 +278,7 @@ mojom::TopicFeedbackPtr TopicFeedbackFromDict(const std::string& topic_id,
   auto feedback = mojom::TopicFeedback::New();
   feedback->id = topic_id;
   feedback->snapshot = std::move(snapshot);
-  // Missing, non-integer, or unknown ratings fall back to kUnrated.
-  feedback->rating = mojom::TopicRating::kUnrated;
-  if (std::optional<int> raw_rating = dict.FindInt(kRatingKey)) {
-    auto rating = static_cast<mojom::TopicRating>(*raw_rating);
-    if (mojom::IsKnownEnumValue(rating)) {
-      feedback->rating = rating;
-    }
-  }
+  feedback->rating = RatingFromInt(dict.FindInt(kRatingKey));
   feedback->defects = DefectsFromList(dict.FindList(kDefectsKey));
   if (const std::string* comment = dict.FindString(kCommentKey)) {
     feedback->comment = *comment;
@@ -238,6 +287,8 @@ mojom::TopicFeedbackPtr TopicFeedbackFromDict(const std::string& topic_id,
       QueryFeedbacksFromList(dict.FindList(kQueryFeedbacksKey));
   feedback->rejected_visits = TimesFromList(dict.FindList(kRejectedVisitsKey));
   feedback->duplicate_of = DuplicateFromDict(dict.FindDict(kDuplicateOfKey));
+  feedback->collection_feedbacks =
+      CollectionFeedbacksFromList(dict.FindList(kCollectionFeedbacksKey));
   return feedback;
 }
 

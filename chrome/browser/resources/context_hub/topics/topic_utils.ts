@@ -11,9 +11,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import {TopicDefectCategory, TopicRating} from '../context_hub.mojom-webui.js';
-import type {DuplicateTopicSnapshot, Topic, TopicCollection, TopicCollectionItem, TopicContinuationQuery, TopicFeedback, TopicSnapshot, TopicVisit} from '../context_hub.mojom-webui.js';
+import type {DuplicateTopicSnapshot, Topic, TopicCollection, TopicCollectionFeedback, TopicCollectionItem, TopicContinuationQuery, TopicFeedback, TopicSnapshot, TopicVisit} from '../context_hub.mojom-webui.js';
 
-export type {TopicContinuationQuery, TopicFeedback, TopicQueryFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
+export type {TopicCollectionFeedback, TopicContinuationQuery, TopicFeedback, TopicQueryFeedback, TopicVisit} from '../context_hub.mojom-webui.js';
 
 // A page in a `Collection`, as rendered on its carousel card.
 export interface CollectionItem {
@@ -21,8 +21,8 @@ export interface CollectionItem {
   url: string;
   // The backend's site name, or the page's domain when it didn't send one.
   siteName: string;
-  // Time of the topic's visit the page was resolved to, which identifies it
-  // among the topic's visits.
+  // Time of the topic's visit the page was resolved to, which identifies it in
+  // `TopicCollectionFeedback.rejectedItemVisits`.
   visitTime: Time;
 }
 
@@ -286,7 +286,8 @@ export function isTopicFeedbackEmpty(feedback: TopicFeedback): boolean {
   return feedback.rating === TopicRating.kUnrated &&
       feedback.defects.length === 0 && !hasTopicFeedbackComment(feedback) &&
       feedback.queryFeedbacks.length === 0 &&
-      feedback.rejectedVisits.length === 0 && !feedback.duplicateOf;
+      feedback.rejectedVisits.length === 0 && !feedback.duplicateOf &&
+      feedback.collectionFeedbacks.length === 0;
 }
 
 // Matches the cap `PageHandler::OpenGlicPanel()` applies browser-side.
@@ -311,23 +312,37 @@ export function getTopicQueries(topic: TopicItem): TopicQuery[] {
       .slice(0, MAX_SUGGESTED_PROMPTS);
 }
 
-// A fishfood rater's feedback on one of a topic's collections (carousels):
-// whether it's useful, and which of its pages don't belong in it.
-// TODO(b/568422896): Replace with a mojom struct stored in TopicFeedback once
-// it has fields for collections. Until then this is only kept in the page.
-export interface CollectionFeedback {
-  // The collection's title when rated.
-  title: string;
-  // Null if not rated.
-  liked: boolean|null;
-  // URLs of the pages the rater flagged as not belonging.
-  rejectedItemUrls: string[];
+// The rating a thumbs up (`liked`) or thumbs down gives.
+export function toTopicRating(liked: boolean): TopicRating {
+  return liked ? TopicRating.kLiked : TopicRating.kDisliked;
 }
 
-// Whether `feedback` holds nothing worth keeping.
-export function isCollectionFeedbackEmpty(feedback: CollectionFeedback):
+// Returns unrated feedback, with no pages flagged, on the collection titled
+// `title`.
+export function createEmptyCollectionFeedback(title: string):
+    TopicCollectionFeedback {
+  return {title, rating: TopicRating.kUnrated, rejectedItemVisits: []};
+}
+
+// Whether `feedback` holds nothing worth storing.
+export function isCollectionFeedbackEmpty(feedback: TopicCollectionFeedback):
     boolean {
-  return feedback.liked === null && feedback.rejectedItemUrls.length === 0;
+  return feedback.rating === TopicRating.kUnrated &&
+      feedback.rejectedItemVisits.length === 0;
+}
+
+// Returns `collectionFeedbacks` with `feedback` replacing the one on the same
+// collection in place, appended if there is none, or dropped if `feedback` is
+// empty.
+export function setCollectionFeedback(
+    collectionFeedbacks: readonly TopicCollectionFeedback[],
+    feedback: TopicCollectionFeedback): TopicCollectionFeedback[] {
+  if (isCollectionFeedbackEmpty(feedback)) {
+    return collectionFeedbacks.filter(other => other.title !== feedback.title);
+  }
+  const replaced = collectionFeedbacks.map(
+      other => other.title === feedback.title ? feedback : other);
+  return replaced.includes(feedback) ? replaced : [...replaced, feedback];
 }
 
 // Captures what `topic` looks like now, to store as the topic another one
@@ -392,12 +407,16 @@ export function toTopicItem(topic: Topic): TopicItem {
 // opened in a tab and has a title.
 function toCollections(collections: TopicCollection[]): Collection[] {
   return collections.map(toCollection)
-      .filter(collection => !!collection.title && collection.items.length > 0);
+      .filter(
+          collection =>
+              !!collection.title.trim() && collection.items.length > 0);
 }
 
 function toCollection(collection: TopicCollection): Collection {
   return {
-    title: collection.title.trim(),
+    // Not trimmed: it identifies the collection in `TopicCollectionFeedback`
+    // and in the exported feedback, so it must match the backend's title.
+    title: collection.title,
     items: collection.items.filter(item => isWebUrl(item.url))
                .map(toCollectionItem)
                .filter(item => !!item.title),
