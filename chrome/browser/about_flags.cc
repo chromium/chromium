@@ -3908,6 +3908,25 @@ const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
 const FeatureEntry::FeatureVariation kGlicActorTransientTasksVariations[] = {
     {"(force transient)", kGlicActorTransientTasksForceTransient, nullptr}};
 
+const FeatureEntry::FeatureParam kActorLoginObservationStartDelay2500ms[] = {
+    {"start_delay", "2500ms"}};
+const FeatureEntry::FeatureParam kActorLoginObservationStartDelay2000ms[] = {
+    {"start_delay", "2000ms"}};
+const FeatureEntry::FeatureParam kActorLoginObservationStartDelay1500ms[] = {
+    {"start_delay", "1500ms"}};
+const FeatureEntry::FeatureParam kActorLoginObservationStartDelay1000ms[] = {
+    {"start_delay", "1000ms"}};
+const FeatureEntry::FeatureParam kActorLoginObservationStartDelay500ms[] = {
+    {"start_delay", "500ms"}};
+
+const FeatureEntry::FeatureVariation
+    kActorLoginObservationStartDelayVariations[] = {
+        {"with 2500ms delay", kActorLoginObservationStartDelay2500ms, nullptr},
+        {"with 2000ms delay", kActorLoginObservationStartDelay2000ms, nullptr},
+        {"with 1500ms delay", kActorLoginObservationStartDelay1500ms, nullptr},
+        {"with 1000ms delay", kActorLoginObservationStartDelay1000ms, nullptr},
+        {"with 500ms delay", kActorLoginObservationStartDelay500ms, nullptr}};
+
 // Makes cursor movement effectively instant. Uses 1ms rather than 0ms because
 // the actor overlay waits for `transitionend`, which zero-length CSS
 // transitions don't fire.
@@ -11145,6 +11164,13 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kGlicBackgroundActuationTabGroupSync)},
 #endif  // BUILDFLAG(IS_ANDROID)
+    {"actor-login-observation-start-delay",
+     flag_descriptions::kActorLoginObservationStartDelayName,
+     flag_descriptions::kActorLoginObservationStartDelayDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(actor::kActorLoginObservationStartDelay,
+                                    kActorLoginObservationStartDelayVariations,
+                                    "ActorLoginObservationStartDelay")},
     {"actor-observe-screenshot-default",
      flag_descriptions::kActorObserveScreenshotDefaultName,
      flag_descriptions::kActorObserveScreenshotDefaultDescription, kOsDesktop,

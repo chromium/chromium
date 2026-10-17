@@ -1866,6 +1866,13 @@ inline constexpr char kActorLiveNotificationDescription[] =
     "Enables live notification (promoted ongoing) support for Actor tasks on "
     "Android.";
 
+inline constexpr char kActorLoginObservationStartDelayName[] =
+    "Actor login observation start delay";
+inline constexpr char kActorLoginObservationStartDelayDescription[] =
+    "Controls how long the actor waits after a login action before it starts "
+    "waiting for the page to stabilize. Defaults to 3s; Disabled removes the "
+    "delay.";
+
 inline constexpr char kActorNotificationIntentRoutingName[] =
     "Actor notification intent routing";
 inline constexpr char kActorNotificationIntentRoutingDescription[] =

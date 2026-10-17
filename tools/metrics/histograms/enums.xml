@@ -18851,6 +18851,7 @@ from previous Chrome versions.
   <int value="1177120582" label="InstallableInkDrop:disabled"/>
   <int value="1177174300" label="LayoutNGTable:disabled"/>
   <int value="1177628103" label="GaiaActionButtons:disabled"/>
+  <int value="1177804660" label="ActorLoginObservationStartDelay:disabled"/>
   <int value="1177821222" label="CCTNavigationInfoScreenshot:enabled"/>
   <int value="1178566071" label="EnableAccountPreviewData:enabled"/>
   <int value="1178640449" label="ProductivityLauncher:disabled"/>
@@ -19445,6 +19446,7 @@ from previous Chrome versions.
   <int value="1338606926" label="BatterySaverModeAvailable:enabled"/>
   <int value="1338745937" label="NotificationWidthIncrease:disabled"/>
   <int value="1338864675" label="EnableTouchableAppContextMenu:disabled"/>
+  <int value="1338864810" label="ActorLoginObservationStartDelay:enabled"/>
   <int value="1339191800" label="OmniboxMaxZeroSuggestMatches:disabled"/>
   <int value="1339426771" label="TopSitesFromSiteEngagement:disabled"/>
   <int value="1340525505" label="CrOSLateBootMissiveStorage:enabled"/>
