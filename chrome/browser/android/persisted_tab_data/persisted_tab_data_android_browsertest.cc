@@ -97,6 +97,10 @@ class PersistedTabDataAndroidBrowserTest : public AndroidBrowserTest {
 
   void OnDeferredStartup() { PersistedTabDataAndroid::OnDeferredStartup(); }
 
+  void ResetDeferredStartup() {
+    PersistedTabDataAndroid::deferred_startup_complete_ = false;
+  }
+
   const base::circular_deque<PersistedTabDataAndroidDeferredRequest>&
   GetDeferredRequests() {
     return PersistedTabDataAndroid::GetDeferredRequests();
@@ -237,6 +241,11 @@ IN_PROC_BROWSER_TEST_F(PersistedTabDataAndroidBrowserTest,
       another_tab());
   another_tab_bar_persisted_tab_data_android.SetValue(false);
 
+  // ProcessInitializationHandler queues PersistedTabData::onDeferredStartup as
+  // an idle handler during browser startup, which may already have fired during
+  // SetUpOnMainThread(). Reset the flag so the deferred request queue is
+  // deterministically exercised.
+  ResetDeferredStartup();
   base::RunLoop run_loop[4];
   int beginning_deferred_request_size = GetDeferredRequests().size();
   FooPersistedTabDataAndroid::From(
