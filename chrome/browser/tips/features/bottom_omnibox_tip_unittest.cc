@@ -14,10 +14,10 @@
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/tips/core/tips_prefs.h"
 #include "chrome/browser/tips/core/tips_service_test_base.h"
+#include "chrome/browser/tips/core/tips_signal_keys.h"
 #include "chrome/browser/tips/core/tips_types.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
-#include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,13 +66,13 @@ TEST_F(BottomOmniboxTipTest, IsEligible_Eligible) {
   std::map<std::string, float> signals;
   EXPECT_TRUE(tip_.IsEligible(signals, pref_service_));
 
-  signals[segmentation_platform::kBottomOmniboxStatus] = 0.0f;
+  signals[kBottomOmniboxStatus] = 0.0f;
   EXPECT_TRUE(tip_.IsEligible(signals, pref_service_));
 }
 
 TEST_F(BottomOmniboxTipTest, IsEligible_BottomOmniboxActive) {
   std::map<std::string, float> signals;
-  signals[segmentation_platform::kBottomOmniboxStatus] = 1.0f;
+  signals[kBottomOmniboxStatus] = 1.0f;
 
   EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
 }
@@ -126,7 +126,7 @@ TEST_F(BottomOmniboxTipTest, DetermineBestTip_BottomOmnibox_NoShowWhenActive) {
   service_->RegisterFeature(std::make_unique<BottomOmniboxTip>());
 
   std::map<std::string, float> custom_signals = {
-      {segmentation_platform::kBottomOmniboxStatus, 1.0f},
+      {kBottomOmniboxStatus, 1.0f},
   };
 
   EXPECT_EQ(DetermineBestTipSync(custom_signals), std::nullopt);

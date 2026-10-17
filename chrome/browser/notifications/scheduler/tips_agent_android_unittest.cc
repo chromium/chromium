@@ -15,6 +15,7 @@
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tips/core/tips_service.h"
+#include "chrome/browser/tips/core/tips_signal_keys.h"
 #include "chrome/browser/tips/core/tips_types.h"
 #include "chrome/browser/tips/tips_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
@@ -94,8 +95,7 @@ TEST_F(TipsAgentAndroidTest, TestScheduleNewNotification) {
   EXPECT_CALL(*mock_tips_service_, DetermineBestTip(_, _)).Times(0);
 
   TipsAgentAndroid::ScheduleNewNotification(
-      profile_.get(), {{segmentation_platform::kBottomOmniboxStatus, 1.0f}},
-      &mock_service_);
+      profile_.get(), {{tips::kBottomOmniboxStatus, 1.0f}}, &mock_service_);
 
   ASSERT_TRUE(captured_context);
   auto it = captured_context->metadata_args.find(
@@ -136,7 +136,7 @@ TEST_F(TipsAgentAndroidTest,
 
   // Arbitrary feature-defined signals should be forwarded verbatim.
   const std::map<std::string, float> custom_signals = {
-      {segmentation_platform::kBottomOmniboxStatus, 0.0f},
+      {tips::kBottomOmniboxStatus, 0.0f},
       {"some_feature_signal", 42.0f},
   };
 
@@ -163,7 +163,7 @@ TEST_F(TipsAgentAndroidTest,
   feature_list.InitAndEnableFeature(chrome::android::kTipsSelfService);
 
   const std::map<std::string, float> custom_signals = {
-      {segmentation_platform::kBottomOmniboxStatus, 1.0f}};
+      {tips::kBottomOmniboxStatus, 1.0f}};
 
   EXPECT_CALL(*mock_segmentation_service_, GetClassificationResult(_, _, _, _))
       .Times(0);

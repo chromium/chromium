@@ -67,6 +67,7 @@ android_library("java") {
 # targets without depending on (or forming a cycle with) the tips
 # implementation in ":java".
 android_library("public_java") {
+  srcjar_deps = [ ":signal_keys_srcjar" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tips/TipsPromoCustomizer.java",
     "java/src/org/chromium/chrome/browser/tips/TipsPromoHandler.java",
@@ -77,6 +78,11 @@ android_library("public_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
+}
+
+java_cpp_strings("signal_keys_srcjar") {
+  sources = [ "//chrome/browser/tips/core/tips_signal_keys.h" ]
+  class_name = "org.chromium.chrome.browser.tips.TipsSignalKeys"
 }
 
 java_cpp_enum("jni_enums") {

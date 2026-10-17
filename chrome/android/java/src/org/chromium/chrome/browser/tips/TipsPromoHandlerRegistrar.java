@@ -8,6 +8,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lens.tips.GoogleLensTipsPromoHandler;
 import org.chromium.chrome.browser.quick_delete.tips.QuickDeleteTipsPromoHandler;
 import org.chromium.chrome.browser.safe_browsing.tips.EnhancedSafeBrowsingTipsPromoHandler;
+import org.chromium.chrome.browser.toolbar.tips.BottomOmniboxTipsPromoHandler;
 
 /**
  * Registers the self-service {@link TipsPromoHandler} implementations owned by individual feature
@@ -30,5 +31,7 @@ public final class TipsPromoHandlerRegistrar {
                 TipsNotificationsFeatureType.QUICK_DELETE, QuickDeleteTipsPromoHandler::new);
         TipsPromoHandlerFactory.register(
                 TipsNotificationsFeatureType.GOOGLE_LENS, GoogleLensTipsPromoHandler::new);
+        TipsPromoHandlerFactory.register(
+                TipsNotificationsFeatureType.BOTTOM_OMNIBOX, BottomOmniboxTipsPromoHandler::new);
     }
 }

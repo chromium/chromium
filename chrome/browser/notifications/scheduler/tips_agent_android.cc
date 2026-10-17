@@ -22,6 +22,7 @@
 #include "chrome/browser/tips/core/tips_feature.h"
 #include "chrome/browser/tips/core/tips_prefs.h"
 #include "chrome/browser/tips/core/tips_service.h"
+#include "chrome/browser/tips/core/tips_signal_keys.h"
 #include "chrome/browser/tips/core/tips_types.h"
 #include "chrome/browser/tips/core/tips_utils.h"
 #include "chrome/browser/tips/tips_service_factory.h"
@@ -188,8 +189,7 @@ void TipsAgentAndroid::ScheduleNewNotification(
   // `custom_signals`. Default to false (omnibox in the top position) if not
   // supplied, matching the pre-existing fallback when the controls position
   // could not be determined.
-  auto bottom_omnibox_it =
-      custom_signals.find(segmentation_platform::kBottomOmniboxStatus);
+  auto bottom_omnibox_it = custom_signals.find(tips::kBottomOmniboxStatus);
   bool is_bottom_omnibox = bottom_omnibox_it != custom_signals.end() &&
                            bottom_omnibox_it->second != 0.0f;
   input_context->metadata_args.emplace(

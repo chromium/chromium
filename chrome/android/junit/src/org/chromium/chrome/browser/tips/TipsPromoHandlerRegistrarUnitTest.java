@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.tips.GoogleLensTipsPromoHandler;
 import org.chromium.chrome.browser.quick_delete.tips.QuickDeleteTipsPromoHandler;
 import org.chromium.chrome.browser.safe_browsing.tips.EnhancedSafeBrowsingTipsPromoHandler;
+import org.chromium.chrome.browser.toolbar.tips.BottomOmniboxTipsPromoHandler;
 
 /** Unit tests for {@link TipsPromoHandlerRegistrar}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,6 +71,19 @@ public class TipsPromoHandlerRegistrarUnitTest {
                 TipsPromoHandlerFactory.getHandler(TipsNotificationsFeatureType.GOOGLE_LENS);
         assertNotNull(handler);
         assertTrue(handler instanceof GoogleLensTipsPromoHandler);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TIPS_SELF_SERVICE)
+    public void testRegisterAll_RegistersBottomOmniboxHandler() {
+        assertNull(TipsPromoHandlerFactory.getHandler(TipsNotificationsFeatureType.BOTTOM_OMNIBOX));
+
+        TipsPromoHandlerRegistrar.registerAll();
+
+        TipsPromoHandler handler =
+                TipsPromoHandlerFactory.getHandler(TipsNotificationsFeatureType.BOTTOM_OMNIBOX);
+        assertNotNull(handler);
+        assertTrue(handler instanceof BottomOmniboxTipsPromoHandler);
     }
 
     @Test

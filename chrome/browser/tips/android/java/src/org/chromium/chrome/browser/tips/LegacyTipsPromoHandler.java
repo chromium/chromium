@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tips;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.Intent;
 
@@ -86,7 +84,10 @@ class LegacyTipsPromoHandler implements TipsPromoHandler {
 
     @Override
     public void onPromoAccepted(WindowAndroid windowAndroid) {
-        Context context = assumeNonNull(windowAndroid.getContext().get());
+        // The hosting activity outlives the promo in practice, but bail out rather than crash if
+        // its context has already been released.
+        Context context = windowAndroid.getContext().get();
+        if (context == null) return;
         switch (mFeatureType) {
             case TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING:
                 Intent intent =

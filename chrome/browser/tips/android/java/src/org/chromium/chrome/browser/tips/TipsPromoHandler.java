@@ -67,13 +67,11 @@ public interface TipsPromoHandler {
      * this feature's native {@code TipsFeature} consumes when determining eligibility. Signals
      * retrievable natively (prefs, UMA, etc.) should instead be declared on the native side.
      *
-     * <p>Keys must match the signal names expected by the native {@code TipsFeature::IsEligible}
-     * implementation. The returned map is merged with those of all other registered handlers and
-     * passed across JNI as a single map, so keys should be unique per feature.
-     *
-     * <p>TODO(crbug.com/559732659): Define signal keys once in a shared native header (e.g.
-     * //chrome/browser/tips/core/tips_signal_keys.h) and generate the Java constants via
-     * java_cpp_strings, rather than borrowing SegmentationPlatformConstants.
+     * <p>Keys must be constants from {@link TipsSignalKeys}, which is generated from
+     * //chrome/browser/tips/core/tips_signal_keys.h so that Java and the native {@code
+     * TipsFeature::IsEligible} implementation share a single definition. The returned map is merged
+     * with those of all other registered handlers and passed across JNI as a single map, so keys
+     * must be unique per feature.
      *
      * <p>This is invoked at notification scheduling time (on startup and periodically while Chrome
      * is in the foreground), not when the promo is shown, so implementations must be cheap and free

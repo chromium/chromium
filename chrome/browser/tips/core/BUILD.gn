@@ -4,6 +4,7 @@
 
 source_set("types") {
   sources = [
+    "tips_signal_keys.h",
     "tips_types.cc",
     "tips_types.h",
   ]

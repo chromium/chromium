@@ -29,8 +29,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tips.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.tips.TipsPromoHandler;
 import org.chromium.chrome.browser.tips.TipsPromoHandlerFactory;
+import org.chromium.chrome.browser.tips.TipsSignalKeys;
 import org.chromium.chrome.browser.tips.TipsUtils;
-import org.chromium.components.segmentation_platform.SegmentationPlatformConstants;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -150,14 +150,16 @@ public class TipsAgent {
      */
     private static Map<String, Float> collectCustomSignals(WindowAndroid windowAndroid) {
         Map<String, Float> customSignals = new HashMap<>();
-        // TODO(crbug.com/568415688): This seed exists only while the legacy (non self-service)
-        // ranker path still requires the bottom omnibox status, and until the bottom omnibox tip
-        // supplies this signal from its own TipsPromoHandler#getCustomSignals. Handler-provided
-        // values below take precedence over this seed. Once both are true, remove this seed and
-        // isBottomOmniboxActive(), which also drops this class's last chrome_java-internal
-        // dependency and unblocks moving the scheduling logic back into TipsUtils.
+        // TODO(crbug.com/568415688): This seed exists only because the legacy (non self-service)
+        // ranker path still requires the bottom omnibox status. With self-service enabled, the
+        // bottom omnibox tip supplies this signal from BottomOmniboxTipsPromoHandler, and
+        // handler-provided values below take precedence over this seed. Remove this seed and
+        // isBottomOmniboxActive() once the legacy path is removed. Moving the scheduling logic
+        // back into TipsUtils does not need to wait for that: switch isBottomOmniboxActive() to
+        // BrowserControlsStateProviderSupplier, which drops this class's last chrome_java-internal
+        // dependency.
         customSignals.put(
-                SegmentationPlatformConstants.BOTTOM_OMNIBOX_STATUS,
+                TipsSignalKeys.BOTTOM_OMNIBOX_STATUS,
                 isBottomOmniboxActive(windowAndroid) ? 1.0f : 0.0f);
         customSignals.putAll(TipsPromoHandlerFactory.collectCustomSignals(windowAndroid));
         return customSignals;
