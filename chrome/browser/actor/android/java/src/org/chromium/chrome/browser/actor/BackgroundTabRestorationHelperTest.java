@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -24,10 +25,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.app.tabmodel.TabCacheManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -47,9 +51,11 @@ import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link BackgroundTabRestorationHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Config(shadows = {ShadowSystemClock.class})
 public class BackgroundTabRestorationHelperTest {
     private static final @TabId int TAB_ID = 101;
     private static final int DESTINATION_INDEX = 2;
@@ -664,6 +670,12 @@ public class BackgroundTabRestorationHelperTest {
         Tab existingTab = mock(Tab.class);
         when(mNormalTabModel.getTabById(10)).thenReturn(existingTab);
 
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY)
+                        .build();
+
         List<Tab> restoredTabs =
                 BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
                         TabOrchestratorType.TABBED,
@@ -675,5 +687,123 @@ public class BackgroundTabRestorationHelperTest {
         verify(mBackgroundTabPool).removeTabById(10);
         verify(mBackgroundTabPool, never()).loadTabByOriginalId(10);
         verify(mBackgroundTabPool).cleanupPostRestore();
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testMaybeRestoreBackgroundTab_recordsColdRestoreLatency() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        TabState tabState = new TabState();
+        tabState.contentsState = mWebContentsState;
+
+        when(mBackgroundTabPool.loadTabByPlaceholderId(TAB_ID))
+                .thenAnswer(
+                        invocation -> {
+                            ShadowSystemClock.advanceBy(80, TimeUnit.MILLISECONDS);
+                            return mBackgroundPoolTab;
+                        });
+        when(mBackgroundPoolTab.attachTab(eq(mNormalTabModel), eq(DESTINATION_INDEX), eq(tabState)))
+                .thenAnswer(
+                        invocation -> {
+                            ShadowSystemClock.advanceBy(45, TimeUnit.MILLISECONDS);
+                            return mTab;
+                        });
+        doAnswer(
+                        invocation -> {
+                            ShadowSystemClock.advanceBy(50, TimeUnit.MILLISECONDS);
+                            return null;
+                        })
+                .when(mWebContentsState)
+                .destroy();
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY, 125);
+
+        Tab restoredTab =
+                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        tabState,
+                        /* isAuthoritativeStore= */ true);
+
+        assertEquals(mTab, restoredTab);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testMaybeRestoreBackgroundTab_tabNotFound_doesNotRecordLatency() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        when(mBackgroundTabPool.loadTabByPlaceholderId(TAB_ID)).thenReturn(null);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY)
+                        .build();
+
+        Tab restoredTab =
+                BackgroundTabRestorationHelper.maybeRestoreBackgroundTab(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        TAB_ID,
+                        DESTINATION_INDEX,
+                        null,
+                        /* isAuthoritativeStore= */ true);
+
+        assertNull(restoredTab);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_ACTUATION)
+    public void testRestoreRemainingBackgroundTabs_recordsColdRestoreLatency() {
+        BackgroundTabPoolManager.setPoolForTesting(mBackgroundTabPool);
+        BackgroundPoolTab coldTab1 = mock(BackgroundPoolTab.class);
+        BackgroundPoolTab coldTab2 = mock(BackgroundPoolTab.class);
+        Tab restoredTab1 = mock(Tab.class);
+        Tab restoredTab2 = mock(Tab.class);
+        when(restoredTab1.getId()).thenReturn(1);
+        when(restoredTab2.getId()).thenReturn(2);
+
+        when(mNormalTabModel.getTabById(1)).thenReturn(null);
+        when(mNormalTabModel.getTabById(2)).thenReturn(null);
+        when(mBackgroundTabPool.loadTabByOriginalId(1))
+                .thenAnswer(
+                        invocation -> {
+                            ShadowSystemClock.advanceBy(110, TimeUnit.MILLISECONDS);
+                            return coldTab1;
+                        });
+        when(mBackgroundTabPool.loadTabByOriginalId(2))
+                .thenAnswer(
+                        invocation -> {
+                            ShadowSystemClock.advanceBy(190, TimeUnit.MILLISECONDS);
+                            return coldTab2;
+                        });
+        when(mNormalTabModel.getCount()).thenReturn(0).thenReturn(1);
+        when(coldTab1.attachTab(eq(mNormalTabModel), eq(0))).thenReturn(restoredTab1);
+        when(coldTab2.attachTab(eq(mNormalTabModel), eq(1))).thenReturn(restoredTab2);
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                ActorMetrics.ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY,
+                                110,
+                                190)
+                        .build();
+
+        List<Tab> restoredTabs =
+                BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs(
+                        TabOrchestratorType.TABBED,
+                        mTabModelSelector,
+                        List.of(1, 2),
+                        /* isAuthoritativeStore= */ true);
+
+        assertEquals(2, restoredTabs.size());
+        watcher.assertExpected();
     }
 }

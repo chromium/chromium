@@ -1083,4 +1083,15 @@ public class ActorMetricsTest {
         mActorMetrics.onTaskStateChangedForTesting(taskId, ActorTaskState.FINISHED);
         watcher.assertExpected();
     }
+
+    @Test
+    public void testRecordColdRestoreLatency() {
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        ActorMetrics.ACTOR_BACKGROUND_ACTUATION_COLD_RESTORE_LATENCY, 250);
+
+        ActorMetrics.recordColdRestoreLatency(250);
+
+        watcher.assertExpected();
+    }
 }

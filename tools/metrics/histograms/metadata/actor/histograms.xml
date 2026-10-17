@@ -142,6 +142,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Actor.BackgroundActuation.Restore.ColdRestore.Latency"
+    units="ms" expires_after="2027-10-15">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <owner>clank-actor@google.com</owner>
+  <summary>
+    Records the latency of restoring and attaching a background tab from
+    BackgroundTabPool during tab state initialization (via
+    BackgroundTabRestorationHelper.maybeRestoreBackgroundTab or
+    BackgroundTabRestorationHelper.restoreRemainingBackgroundTabs). Note that
+    this metric is only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.BackgroundActuation.Restore.Latency.Total{StartupType}"
     units="ms" expires_after="2027-10-14">
   <owner>bbetini@google.com</owner>
