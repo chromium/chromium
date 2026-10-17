@@ -998,6 +998,7 @@ void ActorKeyedService::AddPendingTask(
       triggering_context_id, PendingTask{triggering_context_id});
   if (inserted) {
     NotifyPendingTaskCountChanged();
+    pending_task_added_callback_list_.Notify(triggering_context_id);
   }
 }
 
@@ -1021,6 +1022,11 @@ base::CallbackListSubscription
 ActorKeyedService::AddPendingTaskCountChangedCallback(
     PendingTaskCountChangedCallback callback) {
   return pending_task_count_change_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription ActorKeyedService::AddPendingTaskAddedCallback(
+    PendingTaskAddedCallback callback) {
+  return pending_task_added_callback_list_.Add(std::move(callback));
 }
 
 void ActorKeyedService::NotifyPendingTaskCountChanged() {

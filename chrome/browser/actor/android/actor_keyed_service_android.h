@@ -55,6 +55,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
       const std::string& glic_trigger_message_id);
   void OnMessageTriggerTaskStopped(const std::string& glic_trigger_message_id);
   void OnPendingTaskCountChanged(size_t pending_count);
+  void OnPendingTaskAdded(const std::string& context_id);
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
   raw_ptr<ActorKeyedService> service_;
@@ -63,6 +64,7 @@ class ActorKeyedServiceAndroid : public base::SupportsUserData::Data {
   base::CallbackListSubscription ensure_fgs_started_subscription_;
   base::CallbackListSubscription message_trigger_task_stopped_subscription_;
   base::CallbackListSubscription pending_task_count_subscription_;
+  base::CallbackListSubscription pending_task_added_subscription_;
 };
 
 void CreateBackgroundTabForTask(

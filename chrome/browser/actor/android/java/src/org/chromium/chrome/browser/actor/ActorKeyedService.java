@@ -205,6 +205,14 @@ public class ActorKeyedService {
         }
     }
 
+    @CalledByNative
+    private void onPendingTaskAdded(
+            @JniType("Profile*") Profile profile,
+            @JniType("std::string") String glicTriggerMessageId) {
+        ActorForegroundServiceController.get()
+                .startBackgroundActuation(profile, glicTriggerMessageId);
+    }
+
     /** Returns the number of pending tasks currently preparing resources. */
     public int getPendingTasksCount() {
         if (mNativePtr == 0) return 0;

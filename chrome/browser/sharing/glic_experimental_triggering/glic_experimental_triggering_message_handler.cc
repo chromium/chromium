@@ -305,7 +305,7 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
       actor::ActorKeyedService* actor_service =
           actor::ActorKeyedService::Get(profile_);
       if (actor_service) {
-        VLOG(1) << "GlicTrigger: Triggering ActorForegroundService from native";
+        VLOG(1) << "GlicTrigger: Registering pending task in ActorKeyedService";
         if (!actor_service_observation_.IsObserving()) {
           actor_service_observation_.Observe(actor_service);
         }
@@ -314,15 +314,7 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
             MessageData{std::move(message), std::move(done_callback),
                         std::move(result_logger)});
         if (!already_pending) {
-          // TODO(b/540892797): Avoid starting an Android Foreground
-          // Service (FGS) if it is redundant or unnecessary:
-          // 1. If Chrome is already in the foreground, starting an FGS is
-          //    unnecessary and adds asynchronous JNI/IPC overhead.
-          // 2. If a task is already active and executing (meaning the initial
-          //    tab preparation is complete and the queue is cleared),
-          //    subsequent control messages (e.g., INTERRUPT or STOP) should not
-          //    trigger EnsureForegroundServiceStarted() again.
-          actor_service->EnsureForegroundServiceStarted(context_id);
+          actor_service->AddPendingTask(context_id);
         }
         return;
       }
