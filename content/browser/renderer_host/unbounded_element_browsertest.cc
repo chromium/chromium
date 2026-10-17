@@ -2044,6 +2044,184 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_EQ(view->GetViewBounds(), window->GetBounds());
 }
 
+// Verifies that a privileged cross-site subframe (authorized via
+// ContentBrowserClient::IsUnboundedElementAllowed and
+// ContentBrowserClient::IsUnboundedElementEscapingAllowed, such as an
+// allowlisted chrome-extension:// subframe embedded inside a trusted
+// outermost main frame) with allow="unbounded-element" can escape both its
+// iframe bounds and the top-level root view bounds, whereas if the outermost
+// main frame is not trusted by IsUnboundedElementEscapingAllowed, the bounds
+// remain clamped to the root view.
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       PrivilegedCrossSiteSubframeCanEscapeRootView) {
+  class PrivilegedSubframeBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    bool IsUnboundedElementAllowed(
+        RenderFrameHost* render_frame_host) override {
+      return render_frame_host &&
+             render_frame_host->GetLastCommittedOrigin().host() == "b.com";
+    }
+
+    bool IsUnboundedElementEscapingAllowed(
+        RenderFrameHost* subframe,
+        RenderFrameHost* outermost_main_frame) override {
+      return IsUnboundedElementAllowed(subframe) && outermost_main_frame &&
+             outermost_main_frame->GetLastCommittedOrigin().host() == "a.com";
+    }
+  };
+  PrivilegedSubframeBrowserClient browser_client;
+
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  GURL iframe_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  std::string setup_script = base::StringPrintf(R"(
+    const iframe = document.createElement('iframe');
+    iframe.id = 'subframe';
+    iframe.allow = 'unbounded-element';
+    iframe.src = '%s';
+    iframe.style.cssText = 'width:200px; height:200px; position:absolute; ' +
+        'top:50px; left:50px; border:none;';
+    document.body.appendChild(iframe);
+  )",
+                                                iframe_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), setup_script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  ASSERT_TRUE(iframe->IsCrossProcessSubframe());
+  WaitForHitTestData(iframe);
+
+  std::string iframe_script = R"(
+    document.body.innerHTML = `
+      <style>
+        body { margin: 0; padding: 0; }
+        #target {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100px;
+          height: 100px;
+        }
+      </style>
+      <div id="target" unbounded></div>
+    `;
+    document.getElementById('target').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(iframe, iframe_script));
+  WaitForFrameReady();
+  MainThreadFrameObserver iframe_frame_observer(iframe->GetRenderWidgetHost());
+  iframe_frame_observer.Wait();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
+      primary_main_frame_host()->GetRenderWidgetHost()->GetView());
+  ASSERT_TRUE(view);
+
+  window->UpdateBounds(gfx::Rect(-100, -100, 3000, 3000));
+  EXPECT_FALSE(view->GetViewBounds().Contains(window->GetBounds()));
+}
+
+// Verifies that if an untrusted outermost main frame (c.com) embeds a trusted
+// intermediate frame (a.com) which in turn embeds a privileged subframe
+// (b.com), ContentBrowserClient::IsUnboundedElementEscapingAllowed rejects the
+// untrusted outermost main frame and clamps the unbounded element to the root
+// view bounds.
+IN_PROC_BROWSER_TEST_P(
+    UnboundedElementBrowserTest,
+    PrivilegedSubframeInUntrustedOutermostMainFrameClampedToRootView) {
+  class PrivilegedSubframeBrowserClient
+      : public ContentBrowserTestContentBrowserClient {
+   public:
+    bool IsUnboundedElementAllowed(
+        RenderFrameHost* render_frame_host) override {
+      return render_frame_host &&
+             render_frame_host->GetLastCommittedOrigin().host() == "b.com";
+    }
+
+    bool IsUnboundedElementEscapingAllowed(
+        RenderFrameHost* subframe,
+        RenderFrameHost* outermost_main_frame) override {
+      return IsUnboundedElementAllowed(subframe) && outermost_main_frame &&
+             outermost_main_frame->GetLastCommittedOrigin().host() == "a.com";
+    }
+  };
+  PrivilegedSubframeBrowserClient browser_client;
+
+  GURL outer_url(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), outer_url));
+
+  GURL middle_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  std::string outer_script = base::StringPrintf(R"(
+    const iframe = document.createElement('iframe');
+    iframe.id = 'middle';
+    iframe.allow = 'unbounded-element';
+    iframe.src = '%s';
+    iframe.style.cssText = 'width:300px; height:300px; position:absolute; ' +
+        'top:10px; left:10px; border:none;';
+    document.body.appendChild(iframe);
+  )",
+                                                middle_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(), outer_script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* middle_frame = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(middle_frame);
+
+  GURL inner_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  std::string middle_script = base::StringPrintf(R"(
+    const iframe = document.createElement('iframe');
+    iframe.id = 'inner';
+    iframe.allow = 'unbounded-element';
+    iframe.src = '%s';
+    iframe.style.cssText = 'width:200px; height:200px; position:absolute; ' +
+        'top:10px; left:10px; border:none;';
+    document.body.appendChild(iframe);
+  )",
+                                                 inner_url.spec().c_str());
+  EXPECT_TRUE(ExecJs(middle_frame, middle_script));
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+
+  RenderFrameHost* inner_frame = ChildFrameAt(middle_frame, 0);
+  ASSERT_TRUE(inner_frame);
+  ASSERT_TRUE(inner_frame->IsCrossProcessSubframe());
+  WaitForHitTestData(inner_frame);
+
+  std::string inner_script = R"(
+    document.body.innerHTML = `
+      <style>
+        body { margin: 0; padding: 0; }
+        #target {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100px;
+          height: 100px;
+        }
+      </style>
+      <div id="target" unbounded></div>
+    `;
+    document.getElementById('target').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(inner_frame, inner_script));
+  WaitForFrameReady();
+  MainThreadFrameObserver inner_frame_observer(
+      inner_frame->GetRenderWidgetHost());
+  inner_frame_observer.Wait();
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  RenderWidgetHostViewBase* view = static_cast<RenderWidgetHostViewBase*>(
+      primary_main_frame_host()->GetRenderWidgetHost()->GetView());
+  ASSERT_TRUE(view);
+
+  window->UpdateBounds(gfx::Rect(-100, -100, 3000, 3000));
+  EXPECT_EQ(view->GetViewBounds(), window->GetBounds());
+}
+
 // A cross-site (OOPIF) iframe without allow="unbounded-element" must be
 // constrained to the iframe's bounds, including when oversized bounds are sent
 // directly to the browser.

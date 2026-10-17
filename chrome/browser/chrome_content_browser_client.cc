@@ -280,6 +280,7 @@
 #include "components/error_page/common/error_page_switches.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/google/core/common/google_switches.h"
+#include "components/google/core/common/google_util.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
@@ -4467,6 +4468,16 @@ bool ChromeContentBrowserClient::IsUnboundedElementAllowed(
   }
 #endif
   return false;
+}
+
+bool ChromeContentBrowserClient::IsUnboundedElementEscapingAllowed(
+    content::RenderFrameHost* subframe,
+    content::RenderFrameHost* outermost_main_frame) {
+  return IsUnboundedElementAllowed(subframe) && outermost_main_frame &&
+         google_util::IsGoogleDomainUrl(
+             outermost_main_frame->GetLastCommittedOrigin().GetURL(),
+             google_util::ALLOW_SUBDOMAIN,
+             google_util::ALLOW_NON_STANDARD_PORTS);
 }
 
 bool ChromeContentBrowserClient::IsUnboundedElementAllowedForSubframesOf(

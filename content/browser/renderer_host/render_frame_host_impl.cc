@@ -11311,8 +11311,10 @@ RenderFrameHostImpl::GetUnboundedElementConstrainingBoundsInScreen(
   }
   bool allow_escaping =
       (GetUnboundedElementAuth() == UnboundedElementAuth::kAllowedPrivileged &&
-       GetOutermostMainFrame()->GetUnboundedElementAuth() ==
-           UnboundedElementAuth::kAllowedPrivileged) ||
+       (GetOutermostMainFrame()->GetUnboundedElementAuth() ==
+            UnboundedElementAuth::kAllowedPrivileged ||
+        GetContentClient()->browser()->IsUnboundedElementEscapingAllowed(
+            this, GetOutermostMainFrame()))) ||
       base::FeatureList::IsEnabled(
           blink::features::kUnsafeEscapingUnboundedElementOnTheOpenWeb);
   if (root_view && !allow_escaping) {

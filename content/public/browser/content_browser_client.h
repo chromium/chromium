@@ -1271,6 +1271,14 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Unbounded Element API (for example, specific component extensions).
   virtual bool IsUnboundedElementAllowed(RenderFrameHost* render_frame_host);
 
+  // Returns true if `subframe` is allowed to escape the viewport bounds of an
+  // unprivileged `outermost_main_frame` when using the Unbounded Element API
+  // (for example, an allowlisted component extension subframe embedded in a
+  // trusted top-level origin).
+  virtual bool IsUnboundedElementEscapingAllowed(
+      RenderFrameHost* subframe,
+      RenderFrameHost* outermost_main_frame);
+
   // Returns true if subframes of a privileged outermost main frame with the
   // given `origin` may use the non-privileged Unbounded Element API (subject
   // to permissions policy).

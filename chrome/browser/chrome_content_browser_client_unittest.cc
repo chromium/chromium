@@ -2985,6 +2985,24 @@ TEST_F(ChromeContentBrowserClientUnboundedElementTest,
       ->RegisterConfigProvider(
           std::make_unique<TestUnboundedConfigProvider>(kExtensionId));
   EXPECT_TRUE(client.IsUnboundedElementAllowed(extension_rfh));
+  EXPECT_FALSE(
+      client.IsUnboundedElementEscapingAllowed(extension_rfh, main_rfh()));
+
+  NavigateAndCommit(GURL("https://www.google.com/search?q=test"));
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  content::RenderFrameHost* google_extension_rfh =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("extension");
+  content::RenderFrameHostTester::For(google_extension_rfh)
+      ->InitializeRenderFrameIfNeeded();
+  content::OverrideLastCommittedOrigin(
+      google_extension_rfh,
+      url::Origin::Create(
+          component_extension->ResolveExtensionURL("index.html")));
+  EXPECT_TRUE(client.IsUnboundedElementEscapingAllowed(google_extension_rfh,
+                                                       main_rfh()));
+  EXPECT_FALSE(
+      client.IsUnboundedElementEscapingAllowed(main_rfh(), main_rfh()));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 

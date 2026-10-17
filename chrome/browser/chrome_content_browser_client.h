@@ -499,6 +499,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host) override;
   bool IsUnboundedElementAllowed(
       content::RenderFrameHost* render_frame_host) override;
+  // Returns true if `subframe` is an allowlisted extension allowed to use the
+  // Unbounded Element API and `outermost_main_frame` has a trusted origin,
+  // permitting the element to escape the root view's bounds.
+  bool IsUnboundedElementEscapingAllowed(
+      content::RenderFrameHost* subframe,
+      content::RenderFrameHost* outermost_main_frame) override;
   // TODO(crbug.com/571879162): Remove this temporary allowlist.
   bool IsUnboundedElementAllowedForSubframesOf(
       const url::Origin& origin) override;
