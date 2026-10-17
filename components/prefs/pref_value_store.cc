@@ -114,13 +114,26 @@ PrefValueStore::PrefStoreType PrefValueStore::ControllingPrefStoreForPref(
 bool PrefValueStore::GetValue(std::string_view name,
                               base::Value::Type type,
                               const base::Value** out_value) const {
-  // Check the |PrefStore|s in order of their priority from highest to lowest,
-  // looking for the first preference value with the given |name| and |type|.
-  for (size_t i = 0; i <= PREF_STORE_TYPE_MAX; ++i) {
-    if (GetValueFromStoreWithType(name, type, static_cast<PrefStoreType>(i),
-                                  out_value))
-      return true;
+  if (GetValueFromNonDefaultStores(name, type, out_value)) {
+    return true;
   }
+  return GetValueFromStoreWithType(name, type, DEFAULT_STORE, out_value);
+}
+
+bool PrefValueStore::GetValueFromNonDefaultStores(
+    std::string_view name,
+    base::Value::Type type,
+    const base::Value** out_value) const {
+  // Check the non-default |PrefStore|s in order of their priority from highest
+  // to lowest, looking for the first preference value with the given |name| and
+  // |type|.
+  for (size_t i = 0; i < DEFAULT_STORE; ++i) {
+    if (GetValueFromStoreWithType(name, type, static_cast<PrefStoreType>(i),
+                                  out_value)) {
+      return true;
+    }
+  }
+  *out_value = nullptr;
   return false;
 }
 

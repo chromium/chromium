@@ -606,7 +606,14 @@ PrefService::Preference::Preference(const PrefService* service,
       pref_service_(CHECK_DEREF(service)) {}
 
 const base::Value* PrefService::Preference::GetValue() const {
-  return pref_service_->GetPreferenceValue(name_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(pref_service_->sequence_checker_);
+
+  const base::Value* found_value = nullptr;
+  CHECK(pref_value_store()->GetValue(name_, type_, &found_value))
+      << "Must register pref before getting its value: " << name_;
+  CHECK(found_value);
+  CHECK_EQ(found_value->type(), type_);
+  return found_value;
 }
 
 const base::Value* PrefService::Preference::GetRecommendedValue() const {
@@ -674,16 +681,20 @@ const base::Value* PrefService::GetPreferenceValue(
   const base::Value::Type default_type = default_value->type();
 
   const base::Value* found_value = nullptr;
-  // GetValue shouldn't fail because every registered preference has at least a
-  // default value.
-  CHECK(pref_value_store_->GetValue(path, default_type, &found_value));
-  CHECK(found_value);
-  // The type is expected to match here thanks to a verification in
-  // PrefValueStore::GetValueFromStoreWithType which discards polluted values
-  // (and we should at least get a matching type from the default store if no
-  // other store has a valid value+type).
-  CHECK_EQ(found_value->type(), default_type);
-  return found_value;
+  if (pref_value_store_->GetValueFromNonDefaultStores(path, default_type,
+                                                      &found_value)) {
+    CHECK(found_value);
+    // The type is expected to match here thanks to a verification in
+    // PrefValueStore::GetValueFromStoreWithType which discards polluted values.
+    CHECK_EQ(found_value->type(), default_type);
+    return found_value;
+  }
+
+  // If no non-default store overrides `path`, return `default_value` directly
+  // (already retrieved above from `pref_registry_->defaults()`, which is
+  // `pref_value_store_`'s DEFAULT_STORE) instead of looking up `path` in
+  // DefaultPrefStore a second time.
+  return default_value;
 }
 
 // static

@@ -122,6 +122,11 @@ class COMPONENTS_PREFS_EXPORT PrefValueStore {
                 base::Value::Type type,
                 const base::Value** out_value) const;
 
+  // Like GetValue(), but checks only non-default stores.
+  bool GetValueFromNonDefaultStores(std::string_view name,
+                                    base::Value::Type type,
+                                    const base::Value** out_value) const;
+
   // Gets the recommended value for the given preference name that has the
   // specified value type. A value stored in the recommended PrefStore that has
   // the matching |name| but a non-matching |type| is silently ignored. Returns
