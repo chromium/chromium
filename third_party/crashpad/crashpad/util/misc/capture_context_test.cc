@@ -47,8 +47,14 @@ void TestCaptureContext() {
   // reference program counter.
   uintptr_t pc = ProgramCounterFromContext(context_1);
 
+// TODO(crbug.com/574131848): Re-enable the "nearby" check on arm64 debug builds
+// once it tolerates larger function prologues. Since LLVM 4149fd77e859, AArch64
+// GlobalISel no longer runs the Localizer at -O0, so constants are materialized
+// in the entry block and the first `CaptureContext()` call lands more than 128
+// bytes into `TestCaptureContext()`.
 #if !defined(ADDRESS_SANITIZER) && !defined(ARCH_CPU_MIPS_FAMILY) && \
-    !defined(MEMORY_SANITIZER)
+    !defined(MEMORY_SANITIZER) &&                                    \
+    !(defined(ARCH_CPU_ARM64) && !defined(NDEBUG))
   // Sanitizers can cause enough code bloat that the “nearby” check would
   // likely fail.
   const uintptr_t kReferencePC =

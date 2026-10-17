@@ -240,8 +240,11 @@ ci.builder(
             ),
             "perfetto_unittests": targets.mixin(
                 # TODO(crbug.com/40761189): Error messages only show up in klog.
+                # TODO(crbug.com/574123811): Re-enable the
+                # BytecodeInterpreterCastTest cases once the int64 to double
+                # filter cast no longer relies on undefined behavior.
                 args = [
-                    "--gtest_filter=-PagedMemoryTest.AccessUncommittedMemoryTriggersASAN",
+                    "--gtest_filter=-PagedMemoryTest.AccessUncommittedMemoryTriggersASAN:ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854774784_000000_Gt:ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854774784_000000_Le:ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854775808_000000_Ge:ToDouble/BytecodeInterpreterCastTest.Cast/9223372036854775806_Double_9223372036854775808_000000_Lt",
                 ],
             ),
             "services_unittests": targets.mixin(
