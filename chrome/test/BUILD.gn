@@ -3922,16 +3922,7 @@ if (!is_android) {
       public_deps += [ "//chrome/browser/first_run:test_support" ]
     }
     if (enable_dice_support) {
-      sources += [
-        "../browser/ui/views/profiles/profile_picker_test_base.cc",
-        "../browser/ui/views/profiles/profile_picker_test_base.h",
-      ]
       public_deps += [ "//chrome/browser/ui/profiles" ]
-      deps += [
-        "//chrome/browser/ui/profiles:test_support",
-        "//chrome/browser/ui/views/profiles:profile_picker_sign_in_provider",
-        "//chrome/browser/ui/views/profiles:profile_picker_view",
-      ]
     }
 
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
