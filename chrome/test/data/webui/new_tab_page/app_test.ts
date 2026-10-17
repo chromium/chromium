@@ -3818,6 +3818,28 @@ suite('NewTabPageAppTest', () => {
           assertFalse(searchbox.canShowSecondarySide);
           assertStyle(rhsContent, '--ntp-search-box-width', '561px');
         });
+
+    suite('Modules', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({modulesEnabled: true});
+      });
+
+      test('modules use the window width when feature disabled', async () => {
+        await setThreadsRailEnabled(false);
+
+        const modules = app.shadowRoot.querySelector('ntp-modules');
+        assertTrue(!!modules);
+        assertEquals(null, modules.widthContainer);
+      });
+
+      test('modules use the RHS width when feature enabled', async () => {
+        await setThreadsRailEnabled(true);
+
+        const modules = app.shadowRoot.querySelector('ntp-modules');
+        assertTrue(!!modules);
+        assertEquals($$(app, '#rhsWrapper'), modules.widthContainer);
+      });
+    });
   });
 
   suite('VoiceSearchCoherence', () => {
