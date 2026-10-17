@@ -32,6 +32,7 @@
 #include "chrome/browser/actor/tools/registry/tool_registry.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
@@ -54,7 +55,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
-#include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/sessions/core/session_id.h"
@@ -188,10 +188,10 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
       case actor::ToolId::kCloseTab:
         CloseCurrentTab(std::move(callback));
         return;
-#if !BUILDFLAG(IS_ANDROID)
       case actor::ToolId::kSwitchTab:
         SwitchTab(tool_request.arguments, std::move(callback));
         return;
+#if !BUILDFLAG(IS_ANDROID)
       case actor::ToolId::kOpenKnownPage:
         OpenKnownPage(tool_request.arguments, std::move(callback));
         return;
@@ -259,8 +259,8 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kSeekToTimestamp,
       actor::ToolId::kTranslatePage,
       actor::ToolId::kCloseTab,
-#if !BUILDFLAG(IS_ANDROID)
       actor::ToolId::kSwitchTab,
+#if !BUILDFLAG(IS_ANDROID)
       actor::ToolId::kOpenKnownPage,
       actor::ToolId::kEnterFullscreen,
       actor::ToolId::kExitFullscreen,
@@ -502,7 +502,6 @@ void ToolController::ReloadPage(ToolResponseCallback callback) {
       std::move(callback));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ToolController::SwitchTab(const base::DictValue& arguments,
                                ToolResponseCallback callback) {
   const std::string* query =
@@ -518,6 +517,7 @@ void ToolController::SwitchTab(const base::DictValue& arguments,
                 std::move(callback));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void ToolController::OpenKnownPage(const base::DictValue& arguments,
                                    ToolResponseCallback callback) {
   const std::string* query =

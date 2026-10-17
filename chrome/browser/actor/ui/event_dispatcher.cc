@@ -129,9 +129,7 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<SeekMediaToolRequest>,
     NoUiEvents<SelectToolRequest>,
     NoUiEvents<SiteBasedSearchToolRequest>,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<SwitchTabToolRequest>,
-#endif
     NoUiEvents<TranslatePageToolRequest>,
     [](const TypeToolRequest& tr) {
       std::optional<tabs::TabHandle> tab = GetTabHandle(tr);
@@ -187,9 +185,7 @@ constexpr absl::Overload PostToolEventsFn{
     NoUiEvents<SeekMediaToolRequest>,
     NoUiEvents<SelectToolRequest>,
     NoUiEvents<SiteBasedSearchToolRequest>,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<SwitchTabToolRequest>,
-#endif
     NoUiEvents<TranslatePageToolRequest>,
     NoUiEvents<TypeToolRequest>,
     NoUiEvents<WaitToolRequest>,

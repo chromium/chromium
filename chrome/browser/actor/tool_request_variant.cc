@@ -142,11 +142,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const SiteBasedSearchToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void Apply(const SwitchTabToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#endif
   void Apply(const TranslatePageToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }

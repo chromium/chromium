@@ -14,28 +14,24 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/string_search.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "content/public/common/url_constants.h"
-#include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "base/i18n/string_search.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#include "content/public/common/url_constants.h"
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -45,7 +41,6 @@ namespace {
 // URLs and still find valid matches without scanning everything.
 constexpr size_t kMaxSearchMatches = 10;
 
-#if !BUILDFLAG(IS_ANDROID)
 // Case- and accent-insensitive substring test. Page titles are routinely
 // non-ASCII, so ASCII-only lowercasing would fail to match them (e.g. a tab
 // titled "ÄPFEL" would not match the query "äpfel").
@@ -54,7 +49,6 @@ bool ContainsCaseInsensitive(std::u16string_view haystack,
   return base::i18n::StringSearchIgnoringCaseAndAccents(
       needle, haystack, /*match_index=*/nullptr, /*match_length=*/nullptr);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void OnHistoryQueryFinished(PageMatchesCallback callback,
                             UrlMatchFilter filter,
@@ -96,7 +90,6 @@ bool AreUrlsEquivalentForDeduplication(const GURL& a, const GURL& b) {
   return a.EqualsIgnoringRef(b);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 std::vector<TabMatch> FindMatchingTabs(BrowserWindowInterface* browser,
                                        std::string_view query,
                                        UrlMatchFilter filter) {
@@ -104,16 +97,15 @@ std::vector<TabMatch> FindMatchingTabs(BrowserWindowInterface* browser,
     return {};
   }
 
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
-  if (!tab_strip_model) {
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (!tab_list) {
     return {};
   }
 
   const std::u16string query16 = base::UTF8ToUTF16(query);
   std::vector<TabMatch> matched_tabs;
 
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
     if (!tab) {
       continue;
     }
@@ -155,7 +147,6 @@ tabs::TabInterface* ResolveTabInWindow(const TabMatch& match,
   }
   return tab;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::vector<PageMatch> FindMatchingBookmarks(Profile* profile,
                                              std::string_view query,

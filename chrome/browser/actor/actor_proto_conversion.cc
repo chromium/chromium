@@ -1122,11 +1122,11 @@ constexpr absl::Overload kGetCapabilityFn{
     ToUnknown<RemoveBookmarkToolRequest>,
     ToUnknown<ScrollPageToolRequest>,
     ToUnknown<SiteBasedSearchToolRequest>,
+    ToUnknown<SwitchTabToolRequest>,
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     ToUnknown<EnterFullscreenToolRequest>,
     ToUnknown<ExitFullscreenToolRequest>,
     ToUnknown<OpenKnownPageToolRequest>,
-    ToUnknown<SwitchTabToolRequest>,
 #endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 };
 

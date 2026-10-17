@@ -62,9 +62,7 @@ using ToolRequestVariant = std::variant<ActivateTabToolRequest,
                                         SeekMediaToolRequest,
                                         SelectToolRequest,
                                         SiteBasedSearchToolRequest,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
                                         SwitchTabToolRequest,
-#endif
                                         TranslatePageToolRequest,
                                         TypeToolRequest,
                                         WaitToolRequest>;

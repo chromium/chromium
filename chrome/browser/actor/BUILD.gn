@@ -65,6 +65,7 @@ source_set("actor") {
     "tools/scroll_tool_request.h",
     "tools/select_tool_request.h",
     "tools/site_based_search_tool_request.h",
+    "tools/switch_tab_tool_request.h",
     "tools/tab_management_tool_request.h",
     "tools/tool_controller.h",
     "tools/tool_delegate.h",
@@ -118,7 +119,6 @@ source_set("actor") {
     public += [
       "tools/load_and_extract_content_tool_request.h",
       "tools/open_known_page_tool_request.h",
-      "tools/switch_tab_tool_request.h",
       "tools/window_management_tool_request.h",
     ]
     public_deps += [
@@ -226,6 +226,9 @@ source_set("impl") {
     "tools/site_based_search_tool.cc",
     "tools/site_based_search_tool.h",
     "tools/site_based_search_tool_request.cc",
+    "tools/switch_tab_tool.cc",
+    "tools/switch_tab_tool.h",
+    "tools/switch_tab_tool_request.cc",
     "tools/tab_management_tool.cc",
     "tools/tab_management_tool.h",
     "tools/tab_management_tool_request.cc",
@@ -345,9 +348,6 @@ source_set("impl") {
       "tools/open_known_page_tool.cc",
       "tools/open_known_page_tool.h",
       "tools/open_known_page_tool_request.cc",
-      "tools/switch_tab_tool.cc",
-      "tools/switch_tab_tool.h",
-      "tools/switch_tab_tool_request.cc",
       "tools/window_management_tool.cc",
       "tools/window_management_tool.h",
       "tools/window_management_tool_request.cc",
@@ -542,6 +542,7 @@ source_set("unit_tests") {
     deps += [
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window/test:test_support",
+      "//chrome/browser/ui/tabs:tab_list_bridge",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:test_support",
       "//components/tabs:public",
@@ -595,6 +596,7 @@ source_set("browser_tests") {
     "actor_keyed_service_browsertest.h",
     "actor_util_browsertest.cc",
     "tools/password_manager/attempt_login/attempt_login_tool_browsertest.cc",
+    "tools/switch_tab_tool_browsertest.cc",
     "tools/tab_management_tool_browsertest.cc",
   ]
 
@@ -692,7 +694,6 @@ source_set("browser_tests") {
       "tools/scroll_tool_browsertest.cc",
       "tools/select_tool_browsertest.cc",
       "tools/site_based_search_tool_browsertest.cc",
-      "tools/switch_tab_tool_browsertest.cc",
       "tools/tool_agnostic_browsertest.cc",
       "tools/translate_page_tool_browsertest.cc",
       "tools/type_tool_browsertest.cc",

@@ -11,20 +11,13 @@
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
-#include "build/build_config.h"
-#include "url/gurl.h"
-
-#if !BUILDFLAG(IS_ANDROID)
 // TabMatch stores a tabs::TabHandle by value. TabHandle is an alias for the
 // nested TabInterface::Handle, so the full definition is required here.
 #include "components/tabs/public/tab_interface.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#include "url/gurl.h"
 
-class Profile;
-
-#if !BUILDFLAG(IS_ANDROID)
 class BrowserWindowInterface;
-#endif  // !BUILDFLAG(IS_ANDROID)
+class Profile;
 
 namespace base {
 class CancelableTaskTracker;
@@ -60,7 +53,6 @@ struct PageMatch {
   std::u16string title;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
 // A matching open tab. `handle` is safe to persist; resolve it with
 // tabs::TabHandle::Get() immediately before use, and null-check the result.
 struct TabMatch {
@@ -68,7 +60,6 @@ struct TabMatch {
   GURL url;
   std::u16string title;
 };
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns true if `url` is a valid navigation target for page search matches
 // under `filter`.
@@ -79,7 +70,6 @@ bool IsAllowedMatchUrl(const GURL& url,
 // page ignoring `#ref` fragments.
 bool AreUrlsEquivalentForDeduplication(const GURL& a, const GURL& b);
 
-#if !BUILDFLAG(IS_ANDROID)
 // Searches open tabs in `browser` in tab-strip order.
 // Returns all tabs with an allowed committed URL (see `IsAllowedMatchUrl`)
 // whose title or URL contains `query` (case-insensitive substring match).
@@ -104,7 +94,6 @@ std::vector<TabMatch> FindMatchingTabs(
 // a different window, silently violating the single-window guarantee above.
 tabs::TabInterface* ResolveTabInWindow(const TabMatch& match,
                                        BrowserWindowInterface* browser);
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Searches bookmarks for `profile` using BookmarkModel.
 // Returns all matching bookmarks with an allowed URL whose title or URL

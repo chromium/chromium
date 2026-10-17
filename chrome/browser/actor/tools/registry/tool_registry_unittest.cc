@@ -33,6 +33,7 @@
 #include "chrome/browser/actor/tools/scroll_to_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
+#include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
@@ -47,7 +48,6 @@
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
-#include "chrome/browser/actor/tools/switch_tab_tool_request.h"
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
 
@@ -82,7 +82,6 @@ TEST(ToolRegistryTest, ClickToolDefinition) {
   EXPECT_THAT(*definition, RequiresParam(ClickToolRequest::kDomNodeIdParam));
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 TEST(ToolRegistryTest, SwitchTabToolDefinition) {
   const std::optional<ToolDefinition> definition =
       SwitchTabToolRequest::GetToolDefinition();
@@ -93,7 +92,6 @@ TEST(ToolRegistryTest, SwitchTabToolDefinition) {
               HasParamOfType(SwitchTabToolRequest::kQueryParam, "string"));
   EXPECT_THAT(*definition, RequiresParam(SwitchTabToolRequest::kQueryParam));
 }
-#endif
 
 TEST(ToolRegistryTest, ScrollToolDefinition) {
   const std::optional<ToolDefinition> definition =
@@ -494,7 +492,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
                                     ToolId::kNavigate, &ToolDefinition::id));
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 TEST(ToolRegistryTest, GetAllToolsContainsSwitchTabTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -505,7 +502,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsSwitchTabTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kSwitchTab, &ToolDefinition::id));
 }
-#endif
 
 TEST(ToolRegistryTest, GetAllToolsContainsScrollTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);

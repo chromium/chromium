@@ -89,14 +89,14 @@ class ToolController {
           std::unique_ptr<page_content_annotations::FetchPageContextResult>,
           page_content_annotations::FetchPageContextErrorDetails> result);
   void CloseCurrentTab(ToolResponseCallback callback);
+  void SwitchTab(const base::DictValue& arguments,
+                 ToolResponseCallback callback);
 
   // TODO(crbug.com/470475787): The actor tools backing these haven't been
   // ported to Android yet (see `skip_android_unmigrated_actor_files` in
   // //chrome/browser/actor/BUILD.gn), so they're neither declared to the model
   // nor dispatched there. Drop the guard once they are.
 #if !BUILDFLAG(IS_ANDROID)
-  void SwitchTab(const base::DictValue& arguments,
-                 ToolResponseCallback callback);
   void OpenKnownPage(const base::DictValue& arguments,
                      ToolResponseCallback callback);
   void SetFullscreen(bool fullscreen, ToolResponseCallback callback);

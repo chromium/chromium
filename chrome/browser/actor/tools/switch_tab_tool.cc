@@ -151,7 +151,7 @@ ActorSurfaceHandle SwitchTabTool::GetTargetActorSurface() const {
 }
 
 BrowserWindowInterface* SwitchTabTool::GetBrowser() const {
-  return BrowserWindowInterface::FromSessionID(window_id_);
+  return FindBrowserWindow(window_id_);
 }
 
 }  // namespace actor

@@ -29,6 +29,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -62,7 +63,10 @@ class TestBrowserInstance {
  public:
   explicit TestBrowserInstance(Profile* profile)
       : profile_(profile),
-        tab_strip_model_(&tab_strip_model_delegate_, profile) {
+        tab_strip_model_(&tab_strip_model_delegate_, profile),
+        // Registers the TabListInterface that FindMatchingTabs() looks up on
+        // the window.
+        tab_list_bridge_(tab_strip_model_, mock_bwi_.GetUnownedUserDataHost()) {
     tab_strip_model_delegate_.SetBrowserWindowInterface(&mock_bwi_);
 
     ON_CALL(mock_bwi_, GetProfile()).WillByDefault(testing::Return(profile_));
@@ -108,6 +112,7 @@ class TestBrowserInstance {
   testing::NiceMock<MockBrowserWindowInterface> mock_bwi_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   TabStripModel tab_strip_model_;
+  TabListBridge tab_list_bridge_;
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 
