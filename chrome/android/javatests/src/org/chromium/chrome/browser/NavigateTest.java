@@ -770,6 +770,7 @@ public class NavigateTest {
 
     @Test
     @DisableIf.Build(hardware_is = "sprout", message = "fails on android-one: crbug.com/40439157")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // TODO(crbug.com/574520523): Re-enable.
     @MediumTest
     @Feature({"Navigation"})
     @CommandLineFlags.Add({"ip-address-space-overrides=[::1]:0=public"})
