@@ -129,15 +129,20 @@ chromium-metrics-reviews@google.com.
   <variant name=".OnSuggest" summary="on-suggest trigger"/>
 </variants>
 
+<!-- LINT.IfChange(FuseboxAttachmentButtonType) -->
+
 <variants name="FuseboxAttachmentButtonType">
   <variant name=".Camera" summary="Camera"/>
   <variant name=".Clipboard" summary="Clipboard"/>
   <variant name=".CurrentTab" summary="Current Tab button"/>
+  <variant name=".DriveFiles" summary="Drive file picker"/>
   <variant name=".Files" summary="File picker"/>
   <variant name=".Gallery" summary="Image picker"/>
   <variant name=".RecentTab" summary="Add Recent Tabs button"/>
   <variant name=".TabPicker" summary="Tab picker"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:getStringForAttachmentType) -->
 
 <!-- LINT.IfChange(FuseboxAttachmentFileType) -->
 
@@ -152,6 +157,18 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:getHistogramExtensionForMimeType) -->
+
+<!-- LINT.IfChange(FuseboxTabAttachmentSource) -->
+
+<variants name="FuseboxTabAttachmentSource">
+  <variant name="" summary="All tab sources"/>
+  <variant name=".CurrentTab" summary="Current Tab button"/>
+  <variant name=".RecentTab" summary="Add Recent Tabs button"/>
+  <variant name=".SuggestedTab" summary="Suggested tab chip"/>
+  <variant name=".TabPicker" summary="Tab picker"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:getStringForAttachmentType) -->
 
 <variants name="FuseboxTabSelectionCount">
   <variant name=".MultipleTabs" summary="Multiple tabs were selected"/>
@@ -3220,6 +3237,35 @@ Keep consistent with active providers. Doesn't need to include every provider in
     TabPicker attachment upload completes successfully.
   </summary>
   <token key="SelectionCount" variants="FuseboxTabSelectionCount"/>
+</histogram>
+
+<histogram
+    name="Omnibox.MobileFusebox.TabAttachment.StartFailureReason{FuseboxTabAttachmentSource}"
+    enum="FuseboxTabAttachStartFailureReason" expires_after="2027-09-01">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records why an attempt to attach a tab to Fusebox
+    ({FuseboxTabAttachmentSource}) was rejected before capture or upload
+    started. Each rejected tab records once, so a multi-tab picker selection may
+    record several samples.
+
+    Session unavailable: the Composebox session was not initialized. Attachment
+    limit reached: no attachment slots were left. Fresh content required, tab
+    not live: the tab needed freshly extracted content (e.g. Incognito) but its
+    renderer was not live (e.g. frozen or discarded). Cache unavailable, tab not
+    live: a background tab had neither cached page content nor a live renderer.
+    Upload rejected by native: the native controller did not accept the upload.
+
+    Not recorded for successful starts, retries after an asynchronous failure,
+    tabs that are already attached or were closed, or non-tab attachments.
+    Suggested tabs are attached automatically and only while slots remain, so
+    .SuggestedTab never records Attachment limit reached, and a rejected
+    suggestion may record again on the next suggestion update.
+  </summary>
+  <token key="FuseboxTabAttachmentSource"
+      variants="FuseboxTabAttachmentSource"/>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.TabPickerTabsAttached" units="count"

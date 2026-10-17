@@ -2349,6 +2349,27 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testReconcileSuggestedTabs_addFails_doesNotRecordButtonShown() {
+        mMediator.beginInput(mSession);
+        SuggestedTabInfo info =
+                new SuggestedTabInfo(1, "Title", new GURL("https://google.com"), 12345L);
+        when(mTab.getId()).thenReturn(1);
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+        when(mComposeboxQueryControllerBridge.addTabContextFromCache(eq(1L), anyBoolean()))
+                .thenReturn(null);
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Omnibox.MobileFusebox.AttachmentButtonShown")
+                        .build();
+
+        mSuggestedTabsSupplier.set(List.of(info));
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(0, mAttachments.size());
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     public void updateModelForRecentTabs_nonDesktop_remainsHidden() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(/* isDesktopPlatform= */ false);
         mModel.get(FuseboxProperties.PLUS_BUTTON_CLICKED).run();

@@ -265,6 +265,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxAttachmentSizeLimitCheck) -->
 
+<!-- LINT.IfChange(FuseboxTabAttachStartFailureReason) -->
+
+<enum name="FuseboxTabAttachStartFailureReason">
+  <int value="0" label="Session unavailable"/>
+  <int value="1" label="Attachment limit reached"/>
+  <int value="2" label="Fresh content required, tab not live"/>
+  <int value="3" label="Cache unavailable, tab not live"/>
+  <int value="4" label="Upload rejected by native"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:FuseboxTabAttachStartFailureReason) -->
+
 <!-- LINT.IfChange(GeolocationHeaderGetLocationOutcome) -->
 
 <enum name="GeolocationHeaderGetLocationOutcome">

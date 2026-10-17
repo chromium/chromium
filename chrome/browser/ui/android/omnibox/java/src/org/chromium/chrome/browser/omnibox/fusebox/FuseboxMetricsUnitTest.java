@@ -396,9 +396,8 @@ public class FuseboxMetricsUnitTest {
                                 false)
                         .expectBooleanRecord(
                                 "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.Files", false)
-                        .expectBooleanRecord(
-                                "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.SuggestedTab",
-                                true)
+                        .expectNoRecords(
+                                "Omnibox.MobileFusebox.AttachmentButtonUsedInSession.SuggestedTab")
                         .expectIntRecord(
                                 "Omnibox.MobileFusebox.AutocompleteRequestTypeAtAbandon",
                                 AutocompleteRequestType.AI_MODE)

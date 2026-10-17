@@ -55,6 +55,10 @@ public class FuseboxMetrics {
     /* package */ static final String TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM =
             "Omnibox.MobileFusebox.TabAttachment.EffectiveDuration";
 
+    @VisibleForTesting
+    /* package */ static final String TAB_ATTACHMENT_START_FAILURE_REASON_HISTOGRAM =
+            "Omnibox.MobileFusebox.TabAttachment.StartFailureReason";
+
     private static final String TOKEN_SEPARATOR = ".";
 
     @VisibleForTesting /* package */
@@ -164,6 +168,28 @@ public class FuseboxMetrics {
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxAttachmentSizeLimitCheck)
 
+    // LINT.IfChange(FuseboxTabAttachStartFailureReason)
+    @IntDef({
+        FuseboxTabAttachStartFailureReason.SESSION_UNAVAILABLE,
+        FuseboxTabAttachStartFailureReason.ATTACHMENT_LIMIT_REACHED,
+        FuseboxTabAttachStartFailureReason.FRESH_REQUIRED_TAB_NOT_LIVE,
+        FuseboxTabAttachStartFailureReason.CACHE_UNAVAILABLE_TAB_NOT_LIVE,
+        FuseboxTabAttachStartFailureReason.UPLOAD_REJECTED,
+        FuseboxTabAttachStartFailureReason.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    @NullMarked
+    public @interface FuseboxTabAttachStartFailureReason {
+        int SESSION_UNAVAILABLE = 0;
+        int ATTACHMENT_LIMIT_REACHED = 1;
+        int FRESH_REQUIRED_TAB_NOT_LIVE = 2;
+        int CACHE_UNAVAILABLE_TAB_NOT_LIVE = 3;
+        int UPLOAD_REJECTED = 4;
+        int COUNT = 5;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:FuseboxTabAttachStartFailureReason)
     private boolean mSessionStarted;
     private boolean mAttachmentsPopupButtonUsedInSession;
     private boolean mAccordionExpandedInSession;
@@ -291,6 +317,10 @@ public class FuseboxMetrics {
             if (!mAttachmentButtonsShownInSession[attachmentType]) {
                 continue;
             }
+            // Suggested tabs are attached automatically, so their chip is never used as a button.
+            if (attachmentType == FuseboxAttachmentButtonType.SUGGESTED_TAB) {
+                continue;
+            }
             RecordHistogram.recordBooleanHistogram(
                     "Omnibox.MobileFusebox.AttachmentButtonUsedInSession."
                             + getStringForAttachmentType(attachmentType),
@@ -391,6 +421,7 @@ public class FuseboxMetrics {
                 + getHistogramExtensionForMimeType(fileType);
     }
 
+    // LINT.IfChange(getStringForAttachmentType)
     @SuppressLint("SwitchIntDef") // COUNT entry missing
     private static String getStringForAttachmentType(
             @FuseboxAttachmentButtonType int attachmentType) {
@@ -407,6 +438,8 @@ public class FuseboxMetrics {
             default -> "";
         };
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:FuseboxAttachmentButtonType,//tools/metrics/histograms/metadata/omnibox/histograms.xml:FuseboxTabAttachmentSource)
 
     @SuppressLint("SwitchIntDef")
     private static boolean isAttachmentButtonShown(
@@ -441,6 +474,23 @@ public class FuseboxMetrics {
     private static String typeScopedHistogram(
             String baseHistogram, @FuseboxAttachmentButtonType int type) {
         return baseHistogram + TOKEN_SEPARATOR + getStringForAttachmentType(type);
+    }
+
+    /**
+     * Records why a tab attachment attempt was rejected synchronously before capture or upload
+     * started, both overall and split by the attachment source.
+     */
+    static void recordTabAttachStartFailure(
+            @FuseboxTabAttachStartFailureReason int reason,
+            @FuseboxAttachmentButtonType int buttonType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                TAB_ATTACHMENT_START_FAILURE_REASON_HISTOGRAM,
+                reason,
+                FuseboxTabAttachStartFailureReason.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                typeScopedHistogram(TAB_ATTACHMENT_START_FAILURE_REASON_HISTOGRAM, buttonType),
+                reason,
+                FuseboxTabAttachStartFailureReason.COUNT);
     }
 
     // LINT.IfChange(getHistogramExtensionForMimeType)
