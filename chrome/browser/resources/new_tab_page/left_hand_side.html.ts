@@ -14,7 +14,9 @@ export function getHtml(this: LeftHandSideElement) {
       : ''}
   <ntp-iframe id="expanded"
       allow="unbounded-element"
-      src="${this.expandedLhsUrl_}">
+      style="width: ${this.expandedWidth_}px;"
+      src="${this.expandedLhsUrl_}"
+      ?hidden="${!this.isExpandedReady_}">
   </ntp-iframe>
   <!--_html_template_end_-->`;
   // clang-format on

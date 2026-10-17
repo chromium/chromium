@@ -16,7 +16,8 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from './test_support.js';
 
-const EXPANDED_LHS_URL = 'https://www.google.com/search?nem=341';
+const EXPANDED_LHS_ORIGIN = 'https://www.google.com';
+const EXPANDED_LHS_URL = `${EXPANDED_LHS_ORIGIN}/search?nem=341`;
 
 suite('NewTabPageLeftHandSideTest', () => {
   let leftHandSide: LeftHandSideElement;
@@ -36,6 +37,10 @@ suite('NewTabPageLeftHandSideTest', () => {
     leftHandSide = document.createElement('cr-left-hand-side');
     document.body.appendChild(leftHandSide);
     await microtasksFinished();
+  }
+
+  function getExpandedIframe(): IframeElement|null {
+    return leftHandSide.shadowRoot.querySelector<IframeElement>('#expanded');
   }
 
   test('renders folded rail when hybrid is enabled', async () => {
@@ -62,12 +67,90 @@ suite('NewTabPageLeftHandSideTest', () => {
       loadTimeData.overrideValues({enableThreadsRailHybrid});
       await createLeftHandSide();
 
-      const iframe =
-          leftHandSide.shadowRoot.querySelector<IframeElement>('#expanded');
+      const iframe = getExpandedIframe();
       assertTrue(!!iframe);
       assertEquals('NTP-IFRAME', iframe.tagName);
       assertEquals(EXPANDED_LHS_URL, iframe.src);
       assertEquals('unbounded-element', iframe.allow);
+      assertEquals('261px', iframe.style.width);
+      assertTrue(iframe.hidden);
     });
+  });
+
+  test('updates expanded width and ready state on NTP_LHS_READY', async () => {
+    await createLeftHandSide();
+
+    window.dispatchEvent(new MessageEvent('message', {
+      data: {
+        type: 'NTP_LHS_READY',
+        width: 320,
+      },
+      origin: EXPANDED_LHS_ORIGIN,
+    }));
+    await microtasksFinished();
+
+    const iframe = getExpandedIframe();
+    assertTrue(!!iframe);
+    assertEquals('320px', iframe.style.width);
+    assertFalse(iframe.hidden);
+  });
+
+  test('falls back to default width on invalid or missing width', async () => {
+    await createLeftHandSide();
+
+    for (const invalidWidth of [undefined, 0, -100, '320']) {
+      window.dispatchEvent(new MessageEvent('message', {
+        data: {
+          type: 'NTP_LHS_READY',
+          width: 320,
+        },
+        origin: EXPANDED_LHS_ORIGIN,
+      }));
+      await microtasksFinished();
+      const iframe = getExpandedIframe();
+      assertTrue(!!iframe);
+      assertEquals('320px', iframe.style.width);
+
+      window.dispatchEvent(new MessageEvent('message', {
+        data: {
+          type: 'NTP_LHS_READY',
+          width: invalidWidth,
+        },
+        origin: EXPANDED_LHS_ORIGIN,
+      }));
+      await microtasksFinished();
+
+      assertEquals('261px', iframe.style.width);
+      assertFalse(iframe.hidden);
+    }
+  });
+
+  test('ignores messages from unexpected origin or invalid type', async () => {
+    await createLeftHandSide();
+
+    window.dispatchEvent(new MessageEvent('message', {
+      data: {
+        type: 'NTP_LHS_READY',
+        width: 320,
+      },
+      origin: 'https://evil.example.com',
+    }));
+    window.dispatchEvent(new MessageEvent('message', {
+      data: {
+        type: 'UNKNOWN_MESSAGE_TYPE',
+        width: 320,
+      },
+      origin: EXPANDED_LHS_ORIGIN,
+    }));
+    window.dispatchEvent(new MessageEvent('message', {
+      data: null,
+      origin: EXPANDED_LHS_ORIGIN,
+    }));
+    await microtasksFinished();
+
+    const iframe = getExpandedIframe();
+    assertTrue(!!iframe);
+    assertEquals('261px', iframe.style.width);
+    assertTrue(iframe.hidden);
   });
 });
