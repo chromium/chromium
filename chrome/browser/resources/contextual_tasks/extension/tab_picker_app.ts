@@ -114,6 +114,8 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   }
 
   override firstUpdated() {
+    this.$.tabMenu.addEventListener(
+        'keydown', this.onMenuKeydown_.bind(this), true);
     this.initializeUnboundedMenu_();
   }
 
@@ -259,7 +261,41 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       e.preventDefault();
       this.shouldOpenMenu_ = true;
       this.cancelCloseTimer_();
-      this.openTabMenu_();
+      this.openTabMenu_(/*focusFirstItem=*/ true);
+    }
+  }
+
+  protected onMenuKeydown_(e: KeyboardEvent) {
+    this.setFocusOutlineVisible_(true);
+    if (e.key === 'ArrowLeft' || e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      this.$.tabMenu.close();
+      this.$.shareTabsTrigger.focus();
+      return;
+    }
+
+    if (e.key === 'Tab' || e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      const items = Array.from(this.$.tabMenu.querySelectorAll<HTMLElement>(
+          'button.dropdown-item:not([disabled])'));
+      if (items.length === 0) {
+        return;
+      }
+
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+
+      const focused = this.shadowRoot.activeElement as HTMLElement | null;
+      const index = focused ? items.indexOf(focused) : -1;
+
+      const next = e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey);
+      const numOptions = items.length;
+      const nextIndex = index === -1 ?
+          (next ? 0 : numOptions - 1) :
+          (numOptions + index + (next ? 1 : -1)) % numOptions;
+      items[nextIndex]!.focus({preventScroll: this.isUnboundedMenuEnabled_()});
     }
   }
 
@@ -279,15 +315,6 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   protected onMenuPointerleave_() {
     this.scheduleCloseTimer_();
-  }
-
-  protected onMenuKeydown_(e: KeyboardEvent) {
-    this.setFocusOutlineVisible_(true);
-    if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      e.stopPropagation();
-      this.$.tabMenu.close();
-    }
   }
 
   protected onMenuClose_() {
@@ -323,7 +350,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.fire('tab-selected', {tab, selected: !isSelected});
   }
 
-  private async openTabMenu_() {
+  private async openTabMenu_(focusFirstItem: boolean = false) {
     const wasOpen = this.$.tabMenu.open;
     const requestId = ++this.openMenuRequestId_;
     await this.fetchTabSuggestions_();
@@ -357,6 +384,20 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
       anchorAlignmentY: AnchorAlignment.AFTER_START,
       noOffset: true,
     });
+    if (focusFirstItem) {
+      this.focusFirstTabItem_();
+      requestAnimationFrame(() => {
+        if (this.$.tabMenu.open) {
+          this.focusFirstTabItem_();
+        }
+      });
+    }
+  }
+
+  private focusFirstTabItem_() {
+    const firstItem = this.$.tabMenu.querySelector<HTMLElement>(
+        'button.dropdown-item:not([disabled])');
+    firstItem?.focus({preventScroll: this.isUnboundedMenuEnabled_()});
   }
 
   private scheduleCloseTimer_() {

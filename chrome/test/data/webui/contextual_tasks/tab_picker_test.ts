@@ -121,14 +121,24 @@ suite('TabPickerTest', () => {
     recordedBooleans = [];
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    if (!('showUnboundedElement' in HTMLElement.prototype)) {
-      (HTMLElement.prototype as unknown as
-       Record<string, unknown>)['showUnboundedElement'] = () =>
-          Promise.resolve();
-      (HTMLElement.prototype as unknown as
-       Record<string, unknown>)['hideUnboundedElement'] = () =>
-          Promise.resolve();
-    }
+    // Stub the Unbounded Element API in unit tests so opening the menu does
+    // not create an OS-level UnboundedSurfaceWindow (which can be dismissed by
+    // background window focus changes when browser_tests run in parallel),
+    // while setting visibility: visible to override the UA stylesheet rule
+    // `[unbounded]:not(:unbounded) { visibility: hidden }` so menu items remain
+    // focusable.
+    (HTMLElement.prototype as unknown as
+     Record<string, unknown>)['showUnboundedElement'] = function(
+        this: HTMLElement) {
+      this.style.visibility = 'visible';
+      return Promise.resolve();
+    };
+    (HTMLElement.prototype as unknown as
+     Record<string, unknown>)['hideUnboundedElement'] = function(
+        this: HTMLElement) {
+      this.style.visibility = '';
+      return Promise.resolve();
+    };
 
     loadTimeData.overrideValues({
       shareTabs: 'Add tabs',
@@ -330,6 +340,48 @@ suite('TabPickerTest', () => {
         new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
     await microtasksFinished();
     assertTrue(app.$.tabMenu.open);
+  });
+
+  test('Cycles through tab menu items with Tab and Shift+Tab', async () => {
+    app.$.shareTabsTrigger.focus();
+    app.$.shareTabsTrigger.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+    await microtasksFinished();
+    assertTrue(app.$.tabMenu.open);
+
+    const items =
+        app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+    assertEquals(3, items.length);
+    assertEquals(items[0], app.shadowRoot.activeElement);
+
+    // Tab forward through items and wrap around.
+    items[0]!.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+    assertTrue(app.$.tabMenu.open);
+    assertEquals(items[1], app.shadowRoot.activeElement);
+
+    items[1]!.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+    assertTrue(app.$.tabMenu.open);
+    assertEquals(items[2], app.shadowRoot.activeElement);
+
+    items[2]!.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Tab', bubbles: true}));
+    assertTrue(app.$.tabMenu.open);
+    assertEquals(items[0], app.shadowRoot.activeElement);
+
+    // Shift+Tab backward and wrap around.
+    items[0]!.dispatchEvent(new KeyboardEvent(
+        'keydown', {key: 'Tab', shiftKey: true, bubbles: true}));
+    assertTrue(app.$.tabMenu.open);
+    assertEquals(items[2], app.shadowRoot.activeElement);
+
+    // Escape closes the menu and restores focus to trigger.
+    items[2]!.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+    await microtasksFinished();
+    assertFalse(app.$.tabMenu.open);
+    assertEquals(app.$.shareTabsTrigger, app.shadowRoot.activeElement);
   });
 
   test('Selects tabs and updates trigger text and fires event', async () => {
@@ -692,6 +744,9 @@ suite('TabPickerTest', () => {
         // Focusing the trigger row without a pointer press (e.g. via Tab)
         // enables the focus outline on the trigger button.
         app.$.shareTabsTrigger.focus();
+        if (!document.hasFocus()) {
+          app.$.shareTabsTrigger.dispatchEvent(new FocusEvent('focus'));
+        }
         assertEquals(app.$.shareTabsTrigger, app.shadowRoot.activeElement);
         assertTrue(document.documentElement.classList.contains(
             'focus-outline-visible'));
@@ -743,11 +798,17 @@ suite('TabPickerTest', () => {
         // the browser focuses the button on pointerdown, and clicking clears
         // focus-outline-visible.
         app.$.shareTabsTrigger.focus();
+        if (!document.hasFocus()) {
+          app.$.shareTabsTrigger.dispatchEvent(new FocusEvent('focus'));
+        }
         assertTrue(document.documentElement.classList.contains(
             'focus-outline-visible'));
         app.$.shareTabsTrigger.blur();
         app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerdown'));
         app.$.shareTabsTrigger.focus();
+        if (!document.hasFocus()) {
+          app.$.shareTabsTrigger.dispatchEvent(new FocusEvent('focus'));
+        }
         assertFalse(document.documentElement.classList.contains(
             'focus-outline-visible'));
 

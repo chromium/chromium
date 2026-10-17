@@ -1060,7 +1060,7 @@ export class ContextualActionMenuElement extends
 
       this.updateComplete.then(() => {
         const firstTabItem = this.shadowRoot.querySelector<HTMLElement>(
-            '.share-tabs-flyout button.dropdown-item');
+            '.share-tabs-flyout button.dropdown-item:not([disabled])');
         if (firstTabItem) {
           firstTabItem.focus();
         }
@@ -1084,7 +1084,7 @@ export class ContextualActionMenuElement extends
       return;
     }
 
-    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Tab') {
       const flyout =
           this.shadowRoot.querySelector<HTMLElement>('.share-tabs-flyout');
       if (!flyout) {
@@ -1102,7 +1102,7 @@ export class ContextualActionMenuElement extends
       const focused = this.shadowRoot.activeElement as HTMLElement;
       const index = items.indexOf(focused);
 
-      const next = e.key === 'ArrowDown';
+      const next = e.key === 'ArrowDown' || (e.key === 'Tab' && !e.shiftKey);
       const numOptions = items.length;
       let nextIndex;
       if (index === -1) {
