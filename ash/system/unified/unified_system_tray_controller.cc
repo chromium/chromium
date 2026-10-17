@@ -334,6 +334,7 @@ void UnifiedSystemTrayController::TransitionToMainView(bool restore_focus) {
   auto scoped_detailed_view_controller = std::move(detailed_view_controller_);
 
   bubble_->UpdateBubbleHeight(/*is_showing_detiled_view=*/false);
+  detailed_view_ = nullptr;
   quick_settings_view_->ResetDetailedView();
   if (restore_focus) {
     quick_settings_view_->RestoreFocus();
@@ -450,7 +451,9 @@ void UnifiedSystemTrayController::ShowDetailedView(
   bubble_->UpdateBubbleHeight(/*is_showing_detiled_view=*/true);
 
   ShutDownDetailedViewController();
-  quick_settings_view_->SetDetailedView(controller->CreateView());
+  auto detailed_view = controller->CreateView();
+  detailed_view_ = detailed_view.get();
+  quick_settings_view_->SetDetailedView(std::move(detailed_view));
 
   detailed_view_controller_ = std::move(controller);
 
@@ -488,6 +491,7 @@ void UnifiedSystemTrayController::ShutDownDetailedViewController() {
 }
 
 void UnifiedSystemTrayController::PrepareBubbleDestroy() {
+  detailed_view_ = nullptr;
   ShutDownDetailedViewController();
   quick_settings_view_ = nullptr;
   unified_volume_view_ = nullptr;

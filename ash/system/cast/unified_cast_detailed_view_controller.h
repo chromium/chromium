@@ -11,7 +11,6 @@
 
 namespace ash {
 
-class CastDetailedView;
 class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
@@ -32,12 +31,8 @@ class UnifiedCastDetailedViewController : public DetailedViewController {
   std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
 
-  CastDetailedView* get_cast_detailed_view_for_testing() { return view_; }
-
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-
-  raw_ptr<CastDetailedView, DanglingUntriaged> view_ = nullptr;
 };
 
 }  // namespace ash

@@ -172,6 +172,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShutDownDetailedViewController();
   void PrepareBubbleDestroy();
 
+  views::View* get_detailed_view_for_testing() { return detailed_view_; }
+
  private:
   friend class AccessibilityFeaturePodControllerTest;
   friend class SystemTrayTestApi;
@@ -200,6 +202,9 @@ class ASH_EXPORT UnifiedSystemTrayController
 
   // Unowned.
   raw_ptr<UnifiedSystemTrayBubble> bubble_ = nullptr;
+
+  // Unowned. Owned by Views hierarchy.
+  raw_ptr<views::View> detailed_view_ = nullptr;
 
   // The controller of the current detailed view. If the main view is shown,
   // it's null. Owned.

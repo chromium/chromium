@@ -333,8 +333,9 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
   }
 
   ash::CastDetailedView* GetCastDetailedView() {
-    return GetUnifiedCastDetailedViewController()
-        ->get_cast_detailed_view_for_testing();  // IN-TEST
+    return static_cast<ash::CastDetailedView*>(
+        GetUnifiedSystemTrayController()
+            ->get_detailed_view_for_testing());  // IN-TEST
   }
 
   ash::UnifiedSystemTrayController* GetUnifiedSystemTrayController() {

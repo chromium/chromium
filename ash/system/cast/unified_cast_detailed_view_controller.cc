@@ -20,10 +20,7 @@ UnifiedCastDetailedViewController::~UnifiedCastDetailedViewController() =
     default;
 
 std::unique_ptr<views::View> UnifiedCastDetailedViewController::CreateView() {
-  DCHECK(!view_);
-  auto view = std::make_unique<CastDetailedView>(detailed_view_delegate_.get());
-  view_ = view.get();
-  return view;
+  return std::make_unique<CastDetailedView>(detailed_view_delegate_.get());
 }
 
 std::u16string UnifiedCastDetailedViewController::GetAccessibleName() const {
