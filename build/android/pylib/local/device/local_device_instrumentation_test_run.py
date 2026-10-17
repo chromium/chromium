@@ -676,6 +676,17 @@ class LocalDeviceInstrumentationTestRun(
                         check_return=True,
                         as_root=self._env.force_main_user,
                     )
+                if self._env.force_main_user:
+                    # Pushing directly to /data/media/<user> bypasses the
+                    # /storage/emulated/<user> FUSE mount, leaving stale
+                    # dentries, inode sizes, and page-cache pages in the kernel
+                    # VFS cache when tests read via /sdcard.
+                    dev.RunShellCommand(
+                        'sync && echo 3 > /proc/sys/vm/drop_caches',
+                        shell=True,
+                        check_return=True,
+                        as_root=True,
+                    )
 
             @measures.timed_func('device_setup', 'create_flag_changer')
             @trace_event.traced

@@ -421,6 +421,35 @@ class LocalDeviceGtestRunTest(unittest.TestCase):
         mock_env.parallel_devices.pMap.assert_not_called()
         device.RunShellCommand.assert_not_called()
 
+    def test_SetUp_push_test_data_drops_caches_in_force_main_user(self):
+        device = mock.MagicMock()
+        device.ResolveSpecialPath.return_value = (
+            '/data/media/10/chromium_tests_root'
+        )
+        self._obj._env.force_main_user = True
+        self._obj._env.concurrent_adb = False
+        self._obj._env.parallel_devices.pMap.side_effect = lambda fn, *args: fn(
+            device, *args
+        )
+        self._obj._test_instance.use_existing_test_data = False
+        self._obj._test_instance.deploy_mock_openxr_runtime = False
+        self._obj._test_instance.GetDataDependencies.return_value = [
+            ('/host/foo', 'foo')
+        ]
+        self._obj._delegate = mock.MagicMock()
+        self._obj._delegate.GetTestDataRoot.return_value = (
+            '/sdcard/chromium_tests_root'
+        )
+
+        self._obj.SetUp()
+
+        device.RunShellCommand.assert_any_call(
+            'sync && echo 3 > /proc/sys/vm/drop_caches',
+            shell=True,
+            check_return=True,
+            as_root=True,
+        )
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

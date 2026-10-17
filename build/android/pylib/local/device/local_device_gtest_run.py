@@ -639,6 +639,17 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                         check_return=True,
                         as_root=self._env.force_main_user,
                     )
+                if self._env.force_main_user:
+                    # Pushing directly to /data/media/<user> bypasses the
+                    # /storage/emulated/<user> FUSE mount, leaving stale
+                    # dentries, inode sizes, and page-cache pages in the kernel
+                    # VFS cache when tests read via /sdcard.
+                    dev.RunShellCommand(
+                        'sync && echo 3 > /proc/sys/vm/drop_caches',
+                        shell=True,
+                        check_return=True,
+                        as_root=True,
+                    )
 
             def bind_crash_handler(step, dev):
                 return lambda: crash_handler.RetryOnSystemCrash(step, dev)
