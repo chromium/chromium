@@ -94,7 +94,7 @@ def add_to_zip_hermetic(
     assert posixpath.normpath(zip_path) == zip_path, (
         f'Non-canonical zip_path: {zip_path} vs: {posixpath.normpath(zip_path)}'
     )
-    assert zip_path not in zip_file.namelist(), (
+    assert zip_path not in zip_file.NameToInfo, (
         'Tried to add a duplicate zip entry: ' + zip_path
     )
 
