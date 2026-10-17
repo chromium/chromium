@@ -167,6 +167,7 @@ source_set("browser_tests") {
     "error_message_view_controller_browsertest.cc",
     "modifiers_browsertest.cc",
     "order_summary_view_controller_browsertest.cc",
+    "payment_handler_header_view_ui_browsertest.cc",
     "payment_handler_missing_icon_browsertest.cc",
     "payment_handler_web_flow_view_browsertest.cc",
     "payment_handler_window_size_browsertest.cc",

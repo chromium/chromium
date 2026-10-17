@@ -2049,19 +2049,6 @@ if (!is_android) {
       ]
     }
 
-    # TODO(crbug.com/353332589): Move this browsertest into
-    # //chrome/browser/ui/views/payments:browser_tests. It is left here for now
-    # because its "!is_android || enable_vr" guard interacts with the
-    # browser_tests target's conditional structure, and moving it risks
-    # regressions unrelated to the rest of the payments modularization.
-    if (!is_android || enable_vr) {
-      sources += [ "../browser/ui/views/payments/payment_handler_header_view_ui_browsertest.cc" ]
-      deps += [
-        "//chrome/browser/ui/views/payments:test_support",
-        "//components/payments/content/icon",
-      ]
-    }
-
     if ((is_linux || is_chromeos) && !is_component_build) {
       # Set rpath to find the CDM adapter even in a non-component build.
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
