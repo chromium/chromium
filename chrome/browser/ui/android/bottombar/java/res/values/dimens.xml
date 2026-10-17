@@ -4,10 +4,28 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="bottom_bar_new_tab_background_radius">12dp</dimen>
     <dimen name="bottom_bar_new_tab_background_size">40dp</dimen>
     <dimen name="bottom_bar_button_highlight_radius">20dp</dimen>
     <dimen name="bottom_bar_button_padding_horizontal">4dp</dimen>
     <dimen name="bottom_bar_button_padding_vertical">10dp</dimen>
+    <!-- Horizontal margin between the education bubble popup and the screen edges.
+         Used programmatically via AnchoredPopupWindow#setMargin in
+         BottomBarEducationCoordinator (follow-up CL). -->
+    <dimen name="bottom_bar_education_bubble_side_margin"
+        tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="bottom_bar_education_bubble_max_width">412dp</dimen>
+    <dimen name="bottom_bar_education_bubble_max_width_landscape">600dp</dimen>
+    <dimen name="bottom_bar_education_bubble_padding_horizontal">24dp</dimen>
+    <dimen name="bottom_bar_education_bubble_padding_top">24dp</dimen>
+    <dimen name="bottom_bar_education_bubble_padding_bottom">12dp</dimen>
+    <!-- Vertical gap between the education bubble arrow tip and the top of the
+         bottom bar (or bottom toolbar). Used programmatically by the anchor
+         RectProvider in BottomBarEducationCoordinator (follow-up CL). -->
+    <dimen name="bottom_bar_education_bubble_anchor_gap"
+        tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="bottom_bar_education_title_margin_top">20dp</dimen>
+    <dimen name="bottom_bar_education_body_margin_top">12dp</dimen>
+    <dimen name="bottom_bar_education_button_bar_margin_top">16dp</dimen>
 </resources>

@@ -992,6 +992,29 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_EXPAND_TABS_ON_HOVER" desc="Title of the switch in the tab position settings page, and of the checkable context menu item shown for the vertical tabs side panel, that turns on or off expanding the collapsed vertical tabs side panel when the mouse pointer hovers over it.">
         Auto expand tabs on hover
       </message>
+      <!-- Bottom bar education. -->
+      <!-- TODO(crbug.com/567168121): Make translateable once the copy is final. -->
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TITLE_ERGONOMICS" desc="Title of the bottom bar education bubble for the ergonomics variant (tools within easy reach).">
+        Easy access to your most important tools
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TITLE_GEMINI" desc="Title of the bottom bar education bubble for the Gemini-focused variant.">
+        Easy access to Gemini and your most important tools
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TITLE_OPT_IN" desc="Title for the opt-in preview dialog">
+        Preview Chrome&apos;s new look, built for convenience
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_BODY" desc="Body of the bottom bar education bubble. The link opens Appearance settings.">
+        Chrome has a new look, built for your convenience. You can switch back anytime in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_BODY_OPT_IN" desc="Body of the bottom bar opt-in preview dialog. The link opens Appearance settings.">
+        Your essentials, right on the toolbar. You can switch back anytime in <ph name="BEGIN_LINK">&lt;link&gt;</ph>settings<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_SWITCH_BACK" desc="Button text to switch back to the old layout">
+        Switch back
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_SHOW_ME" desc="Button text to continue and show tooltips">
+        Show me
+      </message>
       <!-- Bottom bar settings. -->
       <!-- TODO(crbug.com/556961273): Make translateable once the copy is final. -->
       <message name="IDS_BOTTOM_BAR_SETTING_TITLE" desc="Title of the switch in the Appearance settings page that shows or hides the bottom toolbar (a bar at the bottom of the screen with buttons such as new tab, tab switcher and menu). [CHAR_LIMIT=32]" translateable="false">

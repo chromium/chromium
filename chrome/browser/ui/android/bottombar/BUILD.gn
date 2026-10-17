@@ -13,6 +13,7 @@ android_resources("java_resources") {
     "java/res/drawable/bottom_bar_new_tab_background.xml",
     "java/res/drawable/bottom_bar_promo_illustration.xml",
     "java/res/layout/bottom_bar_app_menu_template.xml",
+    "java/res/layout/bottom_bar_education_content.xml",
     "java/res/layout/bottom_bar_generic_template.xml",
     "java/res/layout/bottom_bar_layout.xml",
     "java/res/layout/bottom_bar_list_menu_template.xml",
@@ -21,9 +22,11 @@ android_resources("java_resources") {
   ]
   deps = [
     "//chrome/browser/ui/android/bars_common:java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
+    "//ui/android:ui_java_resources",
   ]
 }
 
@@ -63,6 +66,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainer.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarEducationUtils.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarPromoDialogCoordinator.java",
@@ -92,6 +96,7 @@ android_library("java") {
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/user_education:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
@@ -119,6 +124,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinatorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarEducationUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarPromoDialogCoordinatorUnitTest.java",
@@ -151,6 +157,7 @@ robolectric_library("junit") {
     "//chrome/browser/user_education:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/theme/android:java_resources",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",

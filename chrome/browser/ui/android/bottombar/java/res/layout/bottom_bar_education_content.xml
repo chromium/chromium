@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.components.browser_ui.widget.BoundedLinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:maxWidthPortrait="@dimen/bottom_bar_education_bubble_max_width"
+    app:maxWidthLandscape=
+        "@dimen/bottom_bar_education_bubble_max_width_landscape"
+    android:paddingHorizontal=
+        "@dimen/bottom_bar_education_bubble_padding_horizontal"
+    android:paddingTop="@dimen/bottom_bar_education_bubble_padding_top"
+    android:paddingBottom="@dimen/bottom_bar_education_bubble_padding_bottom">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/education_illustration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:scaleType="fitCenter"
+                android:src="@drawable/bottom_bar_promo_illustration"
+                android:importantForAccessibility="no"
+                android:layout_marginBottom="@dimen/bottom_bar_education_title_margin_top"
+                android:contentDescription="@null"/>
+
+            <TextView
+                android:id="@+id/education_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                android:textDirection="locale"
+                android:accessibilityHeading="true"/>
+
+            <TextView
+                android:id="@+id/education_body"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance=
+                    "@style/TextAppearance.TextMedium.Secondary"
+                android:textDirection="locale"
+                android:layout_marginTop=
+                    "@dimen/bottom_bar_education_body_margin_top"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Mirrors the modal dialog button bar: buttons share a row when they fit
+         and stack (positive on top) otherwise. Hidden when hosted in a modal
+         dialog, which provides its own buttons. -->
+    <org.chromium.components.browser_ui.widget.DualControlLayout
+        android:id="@+id/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop=
+            "@dimen/bottom_bar_education_button_bar_margin_top"
+        app:stackedMargin="@dimen/button_bar_stacked_margin"
+        app:buttonAlignment="end">
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/positive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/FilledButton"
+            android:text="@string/bottom_bar_education_show_me"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/negative_button"
+            android:accessibilityTraversalAfter="@+id/positive_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextButton"
+            android:text="@string/bottom_bar_education_switch_back"/>
+    </org.chromium.components.browser_ui.widget.DualControlLayout>
+
+</org.chromium.components.browser_ui.widget.BoundedLinearLayout>

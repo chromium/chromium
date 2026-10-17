@@ -1,0 +1,102 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.ui.bottombar;
+
+import android.content.Context;
+import android.content.res.Configuration;
+import android.text.method.LinkMovementMethod;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.annotation.StringRes;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
+
+/** Helpers for bottom bar user education views and strings. */
+@NullMarked
+final class BottomBarEducationUtils {
+    private BottomBarEducationUtils() {}
+
+    /**
+     * Inflates the content of the education bubble, including its own positive ("Show me") and
+     * negative ("Switch back") buttons.
+     */
+    // TODO(crbug.com/567168121): Refactor to use a ViewBinder and follow MVC.
+    static View inflateBubbleContent(
+            Context context,
+            boolean glicFocused,
+            Runnable onSettingsClicked,
+            Runnable onPositiveClicked,
+            Runnable onNegativeClicked) {
+        View contentView =
+                inflateContent(
+                        context,
+                        glicFocused
+                                ? R.string.bottom_bar_education_title_gemini
+                                : R.string.bottom_bar_education_title_ergonomics,
+                        R.string.bottom_bar_education_body,
+                        onSettingsClicked);
+        contentView
+                .findViewById(R.id.positive_button)
+                .setOnClickListener(v -> onPositiveClicked.run());
+        contentView
+                .findViewById(R.id.negative_button)
+                .setOnClickListener(v -> onNegativeClicked.run());
+        return contentView;
+    }
+
+    /**
+     * Inflates the content of the opt-in modal dialog. The button bar is hidden because the modal
+     * dialog provides its own buttons.
+     */
+    static View inflateDialogContent(Context context, Runnable onSettingsClicked) {
+        View contentView =
+                inflateContent(
+                        context,
+                        R.string.bottom_bar_education_title_opt_in,
+                        R.string.bottom_bar_education_body_opt_in,
+                        onSettingsClicked);
+        contentView.findViewById(R.id.button_bar).setVisibility(View.GONE);
+        return contentView;
+    }
+
+    static void updateIllustrationVisibility(View contentView, Configuration config) {
+        contentView
+                .findViewById(R.id.education_illustration)
+                .setVisibility(
+                        config.orientation == Configuration.ORIENTATION_LANDSCAPE
+                                ? View.GONE
+                                : View.VISIBLE);
+    }
+
+    private static View inflateContent(
+            Context context,
+            @StringRes int titleRes,
+            @StringRes int bodyRes,
+            Runnable onSettingsClicked) {
+        View contentView =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.bottom_bar_education_content, /* root= */ null);
+        updateIllustrationVisibility(contentView, context.getResources().getConfiguration());
+
+        TextView title = contentView.findViewById(R.id.education_title);
+        title.setText(titleRes);
+
+        TextView body = contentView.findViewById(R.id.education_body);
+        body.setText(
+                SpanApplier.applySpans(
+                        context.getString(bodyRes),
+                        new SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(context, v -> onSettingsClicked.run()))));
+        body.setMovementMethod(LinkMovementMethod.getInstance());
+        return contentView;
+    }
+}
