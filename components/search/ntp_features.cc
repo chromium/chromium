@@ -432,10 +432,6 @@ const base::FeatureParam<int> kNtpMaxSmallChips(
     &ntp_features::kNtpScaledActionChipsSmall,
     "kNtpMaxSmallChips",
     6);
-const base::FeatureParam<bool> kNtpScaledActionChipsSmallInTestMode(
-    &ntp_features::kNtpScaledActionChipsSmall,
-    "kNtpScaledActionChipsSmallInTestMode",
-    false);
 const base::FeatureParam<bool> kNtpScaledActionChipsShowFallback(
     &ntp_features::kNtpScaledActionChips,
     "kNtpScaledActionChipsShowFallback",
