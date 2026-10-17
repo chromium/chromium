@@ -14,6 +14,7 @@
 #include <tuple>
 
 #include "base/auto_reset.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -238,7 +239,7 @@ class CONTENT_EXPORT BucketContext
   // response. If it is null, the check is considered a dry-run, which warms up
   // the space cache but doesn't decrement from it.
   void CheckCanUseDiskSpace(
-      int64_t space_requested,
+      base::ByteSizeDelta space_requested,
       base::OnceCallback<void(bool)> disk_space_check_callback);
 
   // Create external objects from |objects| and store the results in

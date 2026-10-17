@@ -23,6 +23,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -438,8 +439,12 @@ void Transaction::Put(int64_t object_store_id,
   }
 
   // Increment the total transaction size by the size of this put.
-  preliminary_size_estimate_ +=
-      input_value->bits.size() + key.size_estimate() + total_blob_size;
+  base::ClampedNumeric<int64_t> size_estimate =
+      preliminary_size_estimate_.InBytes();
+  size_estimate += base::saturated_cast<int64_t>(input_value->bits.size());
+  size_estimate += base::saturated_cast<int64_t>(key.size_estimate());
+  size_estimate += base::saturated_cast<int64_t>(total_blob_size);
+  preliminary_size_estimate_ = base::ByteSizeDelta(size_estimate.RawValue());
   // Warm up the disk space cache.
   bucket_context_->CheckCanUseDiskSpace(preliminary_size_estimate_, {});
 
@@ -751,12 +756,6 @@ void Transaction::Commit(int64_t num_errors_handled) {
   }
 
   num_errors_handled_ = num_errors_handled;
-
-  // Always allow empty or delete-only transactions.
-  if (preliminary_size_estimate_ <= 0) {
-    SetCommitFlag();
-    return;
-  }
 
   bucket_context_->CheckCanUseDiskSpace(
       preliminary_size_estimate_, base::BindOnce(&Transaction::OnQuotaCheckDone,

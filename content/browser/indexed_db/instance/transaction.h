@@ -12,6 +12,7 @@
 #include <set>
 #include <tuple>
 
+#include "base/byte_size.h"
 #include "base/containers/queue.h"
 #include "base/containers/stack.h"
 #include "base/functional/callback.h"
@@ -348,7 +349,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // quota usage.
   //
   // See crbug.com/1493696 for discussion of how this should be improved.
-  int64_t preliminary_size_estimate_ = 0;
+  base::ByteSizeDelta preliminary_size_estimate_;
 
   std::set<raw_ptr<Cursor, SetExperimental>> open_cursors_;
 

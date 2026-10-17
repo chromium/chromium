@@ -507,11 +507,16 @@ uint64_t BucketContext::GetUsage(bool write_in_progress) {
                         : ReadUsageFromDisk(bucket_locator(), data_path_);
 }
 
-
 void BucketContext::CheckCanUseDiskSpace(
-    int64_t space_requested,
+    base::ByteSizeDelta space_requested_delta,
     base::OnceCallback<void(bool)> bucket_space_check_callback) {
-  if (space_requested <= GetBucketSpaceToAllot()) {
+  // Theoretically, a negative delta is possible, e.g. if a Put() replaces a
+  // larger value with a smaller one. But the current implementation never
+  // calculates a negative value. This CHECK ensures there was not some
+  // unintentional overflow in size calculation.
+  CHECK(!space_requested_delta.is_negative());
+  const int64_t space_requested = space_requested_delta.InBytes();
+  if (space_requested == 0 || space_requested <= GetBucketSpaceToAllot()) {
     if (bucket_space_check_callback) {
       bucket_space_remaining_ -= space_requested;
       std::move(bucket_space_check_callback).Run(/*allowed=*/true);
