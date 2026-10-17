@@ -105,8 +105,9 @@ void PaymentsNetworkInterfaceBase::IssueRequest(
 
   InitializeResourceRequest();
 
-  if (access_token_.empty()) {
-    StartTokenFetch(false);
+  if (access_token_.empty() ||
+      base::FeatureList::IsEnabled(features::kAutofillEnableOAuth2TokenFix)) {
+    StartTokenFetch(/*invalidate_old=*/false);
   } else {
     SetOAuth2TokenAndStartRequest();
   }
@@ -227,7 +228,7 @@ void PaymentsNetworkInterfaceBase::OnSimpleLoaderCompleteInternal(
       has_retried_authorization_ = true;
 
       InitializeResourceRequest();
-      StartTokenFetch(true);
+      StartTokenFetch(/*invalidate_old=*/true);
       return;
     }
 

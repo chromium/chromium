@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -44,6 +45,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/upload_iban_request.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace autofill::payments {
@@ -66,8 +68,14 @@ PaymentsNetworkInterface::PaymentsNetworkInterface(
 PaymentsNetworkInterface::~PaymentsNetworkInterface() = default;
 
 void PaymentsNetworkInterface::Prepare() {
-  if (access_token_.empty()) {
-    StartTokenFetch(false);
+  // Delegate token caching to `IdentityManager` rather than caching
+  // `access_token_` here. Although warming the cache has value, pre-fetching
+  // adds complexity for the minor cost of `IssueRequest()` waiting a few ms
+  // if `IdentityManager` needs a network call for a missing or stale token.
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableOAuth2TokenFix)) {
+    return;
+  } else if (access_token_.empty()) {
+    StartTokenFetch(/*invalidate_old=*/false);
   }
 }
 

@@ -1038,6 +1038,30 @@ TEST_F(PaymentsNetworkInterfaceTest, GetUploadDetailsVariationsTest) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, GetDetailsFollowedByUploadSuccess) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableOAuth2TokenFix);
+
+  StartGettingUploadDetails();
+  IssueOAuthToken();
+  ReturnResponse(
+      payments_network_interface_.get(), net::HTTP_OK,
+      "{ \"context_token\": \"some_token\", \"legal_message\": {} }");
+  EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+
+  result_ = PaymentsRpcResult::kNone;
+
+  StartUploading();
+  IssueOAuthToken();
+  ReturnResponse(payments_network_interface_.get(), net::HTTP_OK, "{}");
+  EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+}
+
+TEST_F(PaymentsNetworkInterfaceTest,
+       GetDetailsFollowedByUploadSuccess_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableOAuth2TokenFix);
+
   StartGettingUploadDetails();
   IssueOAuthToken();
   ReturnResponse(
@@ -1161,6 +1185,47 @@ TEST_F(PaymentsNetworkInterfaceTest, UploadSuccessInstrumentIdPresent) {
 
 TEST_F(PaymentsNetworkInterfaceTest,
        UploadSuccessVirtualCardEnrollmentStatePresent) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableOAuth2TokenFix);
+
+  for (CreditCard::VirtualCardEnrollmentState virtual_card_enrollment_state :
+       {CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible,
+        CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible,
+        CreditCard::VirtualCardEnrollmentState::kEnrolled}) {
+    StartUploading();
+    IssueOAuthToken();
+    switch (virtual_card_enrollment_state) {
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible:
+        ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                       "{ \"virtual_card_metadata\": { \"status\": "
+                       "\"ENROLLMENT_STATUS_UNSPECIFIED\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible:
+        ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                       "{ \"virtual_card_metadata\": { \"status\": "
+                       "\"ENROLLMENT_ELIGIBLE\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::kEnrolled:
+        ReturnResponse(
+            payments_network_interface_.get(), net::HTTP_OK,
+            "{ \"virtual_card_metadata\": { \"status\": \"ENROLLED\" } }");
+        break;
+      case CreditCard::VirtualCardEnrollmentState::kUnenrolled:
+      case CreditCard::VirtualCardEnrollmentState::kUnspecified:
+        break;
+    }
+    EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+    EXPECT_EQ(upload_card_response_details_.virtual_card_enrollment_state,
+              virtual_card_enrollment_state);
+  }
+}
+
+TEST_F(PaymentsNetworkInterfaceTest,
+       UploadSuccessVirtualCardEnrollmentStatePresent_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableOAuth2TokenFix);
+
   bool oauth_token_issued = false;
   for (CreditCard::VirtualCardEnrollmentState virtual_card_enrollment_state :
        {CreditCard::VirtualCardEnrollmentState::kUnenrolledAndNotEligible,
@@ -1322,6 +1387,52 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskMalformedResponse) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, ReauthNeeded) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableOAuth2TokenFix);
+
+  {
+    StartUnmasking(CardUnmaskOptions());
+    IssueOAuthToken();
+    ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED,
+                   "");
+    // No response yet.
+    EXPECT_EQ(result_, PaymentsRpcResult::kNone);
+    EXPECT_EQ(unmask_response_details(), nullptr);
+
+    // Second HTTP_UNAUTHORIZED causes permanent failure.
+    IssueOAuthToken();
+    ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED,
+                   "");
+    EXPECT_EQ(result_, PaymentsRpcResult::kPermanentFailure);
+    EXPECT_EQ(unmask_response_details()->real_pan, "");
+  }
+
+  result_ = PaymentsRpcResult::kNone;
+  ResetUnmaskResponseDetails();
+
+  {
+    StartUnmasking(CardUnmaskOptions());
+    IssueOAuthToken();
+    ReturnResponse(payments_network_interface_.get(), net::HTTP_UNAUTHORIZED,
+                   "");
+    // No response yet.
+    EXPECT_EQ(result_, PaymentsRpcResult::kNone);
+    EXPECT_EQ(unmask_response_details(), nullptr);
+
+    // HTTP_OK after first HTTP_UNAUTHORIZED results in success.
+    IssueOAuthToken();
+    ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
+                   "{ \"pan\": \"1234\" }");
+    EXPECT_EQ(result_, PaymentsRpcResult::kSuccess);
+    EXPECT_EQ(unmask_response_details()->real_pan, "1234");
+  }
+}
+
+TEST_F(PaymentsNetworkInterfaceTest, ReauthNeeded_FlagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnableOAuth2TokenFix);
+
   {
     StartUnmasking(CardUnmaskOptions());
     IssueOAuthToken();
