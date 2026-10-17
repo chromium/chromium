@@ -266,6 +266,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_AUTO_MINTED_TWA = "AndroidAutoMintedTWA";
     public static final String ANDROID_AUTO_PROJECTED = "AndroidAutoProjected";
     public static final String ANDROID_BEFORE_UNLOAD_SUPPORT = "AndroidBeforeUnloadSupport";
+    public static final String ANDROID_BOOKMARK_BAR_DRAG_DROP = "AndroidBookmarkBarDragDrop";
     public static final String ANDROID_BOTTOM_BAR = "AndroidBottomBar";
     public static final String ANDROID_BRICKS_NATIVE_PAGE = "AndroidBricksNativePage";
     public static final String ANDROID_CLOSE_ALL_TABS_RETAINS_PINNED_TABS =

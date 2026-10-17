@@ -5465,6 +5465,11 @@ inline constexpr char kAndroidAutoMintedTWADescription[] =
     "Android package instead of a server-minted WebAPK. This feature "
     "additionally requires WebApp Mainline module enabled.";
 
+inline constexpr char kAndroidBookmarkBarDragDropName[] =
+    "Android Bookmark Bar Drag Drop";
+inline constexpr char kAndroidBookmarkBarDragDropDescription[] =
+    "Enables the Android Bookmark Bar Drag Drop feature.";
+
 inline constexpr char kAndroidBricksNativePageName[] =
     "Android Bricks Native Page";
 inline constexpr char kAndroidBricksNativePageDescription[] =

@@ -401,6 +401,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "android-bookmark-bar-drag-drop",
+    "owners": ["nehasapre@google.com", "clank-app-team@google.com"],
+    "expiry_milestone": 175
+  },
+  {
     "name": "android-bottom-bar",
     "owners": [ "polardz@google.com", "ckitagawa@chromium.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 170
