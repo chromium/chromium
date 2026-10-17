@@ -48,8 +48,17 @@ base::FilePath GetFolderForCrashDumps() {
     return data_dir;
   }
 
-  // Crashpad will create the directory as-needed.
-  return data_dir.Append(FILE_PATH_LITERAL("Crashpad"));
+  base::FilePath crash_dir = data_dir.Append(FILE_PATH_LITERAL("Crashpad"));
+
+  // Proactively create and secure the Crashpad directory.
+  // this prevents from writing dumps into an unintended location.
+  if (!SecureCreateDirectory(crash_dir)) {
+    LOGFN(ERROR) << "Failed to securely create crashpad directory: "
+                 << crash_dir;
+    return base::FilePath();
+  }
+
+  return crash_dir;
 }
 
 void SetCommonCrashKeys(const base::CommandLine& command_line) {

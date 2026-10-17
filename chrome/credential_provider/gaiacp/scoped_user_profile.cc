@@ -154,118 +154,6 @@ HRESULT SaveProcessedProfilePictureToDisk(
   return hr;
 }
 
-HRESULT CreateDirectoryWithRestrictedAccess(const base::FilePath& path) {
-  if (base::PathExists(path))
-    return S_OK;
-
-  SECURITY_DESCRIPTOR sd;
-  if (!::InitializeSecurityDescriptor(&sd, SECURITY_DESCRIPTOR_REVISION)) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-    LOGFN(ERROR) << "Failed to initialize sd hr=" << hr;
-    return E_FAIL;
-  }
-
-  PSID everyone_sid = nullptr;
-  PSID creator_owner_sid = nullptr;
-  PSID administrators_sid = nullptr;
-  SID_IDENTIFIER_AUTHORITY everyone_sid_id = SECURITY_WORLD_SID_AUTHORITY;
-  SID_IDENTIFIER_AUTHORITY creator_owner_sid_id =
-      SECURITY_CREATOR_SID_AUTHORITY;
-  SID_IDENTIFIER_AUTHORITY administrators_sid_id = SECURITY_NT_AUTHORITY;
-  BYTE real_owner_sid[SECURITY_MAX_SID_SIZE];
-  DWORD size_owner_sid = std::size(real_owner_sid);
-
-  HRESULT hr = S_OK;
-
-  // Get SIDs for Administrators, everyone, creator owner and local system.
-  if (!::AllocateAndInitializeSid(&everyone_sid_id, 1, SECURITY_WORLD_RID, 0, 0,
-                                  0, 0, 0, 0, 0, &everyone_sid) ||
-      !::AllocateAndInitializeSid(&creator_owner_sid_id, 1,
-                                  SECURITY_CREATOR_OWNER_RID, 0, 0, 0, 0, 0, 0,
-                                  0, &creator_owner_sid) ||
-      !::AllocateAndInitializeSid(
-          &administrators_sid_id, 2, SECURITY_BUILTIN_DOMAIN_RID,
-          DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0, &administrators_sid) ||
-      !::CreateWellKnownSid(WinLocalSystemSid, nullptr, real_owner_sid,
-                            &size_owner_sid)) {
-    hr = HRESULT_FROM_WIN32(::GetLastError());
-    LOGFN(ERROR) << "Failed to get well known sids hr=" << putHR(hr);
-  } else {
-    std::vector<EXPLICIT_ACCESS> ea;
-
-    // Only apply read access to the contents of the folder and not the folder
-    // itself. If read access is given to the folder, then users will be able
-    // to rename the folder (even though they are not allowed to delete it).
-    ea.push_back({GENERIC_READ | STANDARD_RIGHTS_READ,
-                  SET_ACCESS,
-                  SUB_CONTAINERS_AND_OBJECTS_INHERIT | INHERIT_ONLY_ACE,
-                  {nullptr, NO_MULTIPLE_TRUSTEE, TRUSTEE_IS_SID,
-                   TRUSTEE_IS_WELL_KNOWN_GROUP,
-                   reinterpret_cast<wchar_t*>(everyone_sid)}});
-
-    // Allow full access for administrators and creator owners.
-    ea.push_back(
-        {GENERIC_ALL | STANDARD_RIGHTS_ALL,
-         SET_ACCESS,
-         SUB_CONTAINERS_AND_OBJECTS_INHERIT,
-         {nullptr, NO_MULTIPLE_TRUSTEE, TRUSTEE_IS_SID, TRUSTEE_IS_GROUP,
-          reinterpret_cast<wchar_t*>(administrators_sid)}});
-    ea.push_back(
-        {GENERIC_ALL | STANDARD_RIGHTS_ALL,
-         SET_ACCESS,
-         SUB_CONTAINERS_AND_OBJECTS_INHERIT,
-         {nullptr, NO_MULTIPLE_TRUSTEE, TRUSTEE_IS_SID, TRUSTEE_IS_USER,
-          reinterpret_cast<wchar_t*>(creator_owner_sid)}});
-
-    PACL acl = nullptr;
-    DWORD err = ::SetEntriesInAcl(std::size(ea), ea.data(), nullptr, &acl);
-    if (ERROR_SUCCESS != errno) {
-      hr = HRESULT_FROM_WIN32(err);
-      LOGFN(ERROR) << "Failed set sids in acl hr=" << putHR(hr);
-    } else {
-      // Add the ACL to the security descriptor.
-      if (!::SetSecurityDescriptorDacl(&sd, TRUE, acl, FALSE)) {
-        hr = HRESULT_FROM_WIN32(::GetLastError());
-        LOGFN(ERROR) << "Failed to set dacl=" << path << " hr=" << putHR(hr);
-      } else {
-        // Make SYSTEM be the owner of this folder and all its children.
-        if (!::SetSecurityDescriptorOwner(&sd, real_owner_sid, FALSE)) {
-          hr = HRESULT_FROM_WIN32(::GetLastError());
-          LOGFN(ERROR) << "Can't set owner sid hr=" << putHR(hr);
-        } else {
-          // Don't inherit ACE from parents.
-          if (!::SetSecurityDescriptorControl(&sd, SE_DACL_PROTECTED,
-                                              SE_DACL_PROTECTED)) {
-            hr = HRESULT_FROM_WIN32(::GetLastError());
-            LOGFN(ERROR) << "Failed to remove inheritance on descriptor hr="
-                         << putHR(hr);
-          } else {
-            // Finally create the directory with the correct permissions.
-            SECURITY_ATTRIBUTES sa{sizeof(SECURITY_ATTRIBUTES), &sd, FALSE};
-            if (!::CreateDirectory(path.value().c_str(), &sa)) {
-              hr = HRESULT_FROM_WIN32(::GetLastError());
-              LOGFN(ERROR) << "Failed to create profile picture directory="
-                           << path << " hr=" << putHR(hr);
-            }
-          }
-        }
-      }
-
-      if (acl)
-        ::LocalFree(acl);
-    }
-
-    if (everyone_sid)
-      ::FreeSid(everyone_sid);
-    if (creator_owner_sid)
-      ::FreeSid(creator_owner_sid);
-    if (administrators_sid)
-      ::FreeSid(administrators_sid);
-  }
-
-  return hr;
-}
-
 }  // namespace
 
 // static
@@ -523,13 +411,11 @@ HRESULT ScopedUserProfile::UpdateProfilePictures(
     return E_FAIL;
   }
 
-  if (!base::PathExists(account_picture_path)) {
-    hr = CreateDirectoryWithRestrictedAccess(account_picture_path);
-    if (FAILED(hr)) {
-      LOGFN(ERROR) << "Failed to create profile picture directory="
-                   << account_picture_path << " hr=" << putHR(hr);
-      return hr;
-    }
+  if (!SecureCreateDirectory(account_picture_path,
+                             /*grant_read_on_children=*/true)) {
+    LOGFN(ERROR) << "Failed to create profile picture directory="
+                 << account_picture_path;
+    return E_FAIL;
   }
 
   std::wstring base_picture_extension = kDefaultProfilePictureFileExtension;
@@ -589,9 +475,10 @@ HRESULT ScopedUserProfile::UpdateProfilePictures(
                  const base::FilePath& picture_path,
                  const std::vector<char>& picture_buffer) {
                 HRESULT hr = S_OK;
-                if (!base::WriteFile(picture_path,
-                                     std::string_view(picture_buffer.data(),
-                                                      picture_buffer.size()))) {
+                if (!SecureCreateFile(
+                        picture_path,
+                        std::string_view(picture_buffer.data(),
+                                         picture_buffer.size()))) {
                   LOGFN(ERROR) << "Failed to write profile picture to file="
                                << picture_path;
                   hr = HRESULT_FROM_WIN32(::GetLastError());

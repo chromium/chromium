@@ -277,13 +277,27 @@ void DeleteStartupSentinelForVersion(const std::wstring& version);
 // secured with restrictive DACLs. Returns an empty path on failure.
 base::FilePath GetDataDirectory();
 
+// Checks if the given path (or its parent directory if the path does not yet
+// exist) was redirected by a junction or symlink. This compares the intended
+// path with the final OS-resolved physical path. Returns true if the path was
+// redirected, false if it matches exactly.
+bool IsPathRedirected(const base::FilePath& path);
+
 // Creates a directory with restrictive DACLs that limit access exclusively to
 // NT AUTHORITY\SYSTEM and BUILTIN\Administrators, preventing inheritance from
-// parent folders (such as ProgramData). If the directory already exists, its
-// DACL is updated to be secure. Parent directories of `path` are created
-// as-needed. Returns false if the directory could not be created or the DACL
-// could not be applied.
-bool SecureCreateDirectory(const base::FilePath& path);
+// parent folders (such as ProgramData). When `grant_read_on_children` is true,
+// also grants Authenticated Users and All Application Packages inherit-only
+// read access to child objects. If the directory already exists, its DACL is
+// updated to be secure. Parent directories of `path` are created as-needed.
+// Returns false if the directory could not be created or the DACL could not be
+// applied.
+bool SecureCreateDirectory(const base::FilePath& path,
+                           bool grant_read_on_children = false);
+
+// Securely writes |data| to |path|. Operates by opening
+// the file handle without truncating, verifying it is not a reparse point or
+// hardlink, and then truncating and writing to the validated handle.
+bool SecureCreateFile(const base::FilePath& path, std::string_view data);
 
 // Gets a string resource from the DLL with the given id.
 std::wstring GetStringResource(UINT base_message_id);
@@ -431,6 +445,11 @@ GURL GetGcpwServiceUrl();
 // https://{dev}-xxxxx.sandbox.googleapis.com/...
 std::wstring GetDevelopmentUrl(const std::wstring& url,
                                const std::wstring& dev);
+
+// Opens a file securely, verifying it is not a reparse point or a hardlink,
+// and ensures it has an exclusive lock.
+base::win::ScopedHandle SecureOpenFile(const base::FilePath& file_path,
+                                       uint32_t open_flags);
 
 // Returns a handle to a file which is stored under DIR_COMMON_APP_DATA > |sid|
 // > |file_dir| > |file_name|. The file is opened with the provided

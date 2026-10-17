@@ -163,22 +163,12 @@ const base::i18n::LanguageSelector& GetLanguageSelector() {
   return *instance;
 }
 
-// Opens |path| with options that prevent the file from being read or written
-// via another handle. As long as the returned object is alive, it is guaranteed
-// that |path| isn't in use. It can however be deleted.
-base::File GetFileLock(const base::FilePath& path) {
-  return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                              base::File::FLAG_WIN_EXCLUSIVE_READ |
-                              base::File::FLAG_WIN_EXCLUSIVE_WRITE |
-                              base::File::FLAG_WIN_SHARE_DELETE);
-}
-
 // Deletes a specific GCP version from the disk.
 void DeleteVersionDirectory(const base::FilePath& version_path) {
   // Lock all exes and dlls for exclusive access while allowing deletes.  Mark
   // the files for deletion and release them, causing them to actually be
   // deleted.  This allows the deletion of the version path itself.
-  std::vector<base::File> locks;
+  std::vector<base::win::ScopedHandle> locks;
   const int types = base::FileEnumerator::FILES;
   base::FileEnumerator enumerator_version(version_path, false, types,
                                           FILE_PATH_LITERAL("*"));
@@ -190,14 +180,17 @@ void DeleteVersionDirectory(const base::FilePath& version_path) {
       continue;
     }
 
-    // Open the file for exclusive access while allowing deletes.
-    locks.push_back(GetFileLock(path));
-    if (!locks.back().IsValid()) {
+    base::win::ScopedHandle handle =
+        SecureOpenFile(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                 base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+    if (!handle.is_valid()) {
       HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
       LOGFN(ERROR) << "Could not lock " << path << " hr=" << putHR(hr);
       all_deletes_succeeded = false;
       continue;
     }
+    locks.push_back(std::move(handle));
 
     // Mark the file for deletion.
     bool deleted = base::DeleteFile(path);
@@ -914,7 +907,23 @@ bool IsSentinelOlderThanSetTime(const base::File::Info info) {
          kHoursToDisableGCPW;
 }
 
-bool SecureCreateDirectory(const base::FilePath& path) {
+bool IsPathRedirected(const base::FilePath& path) {
+  base::FilePath path_to_check = base::PathExists(path) ? path : path.DirName();
+  base::FilePath long_path = base::MakeLongFilePath(path_to_check);
+  if (long_path.empty()) {
+    return true;
+  }
+  base::FilePath normalized_path;
+  if (base::NormalizeFilePath(path_to_check, &normalized_path) &&
+      long_path.StripTrailingSeparators() ==
+          normalized_path.StripTrailingSeparators()) {
+    return false;
+  }
+  return true;
+}
+
+bool SecureCreateDirectory(const base::FilePath& path,
+                           bool grant_read_on_children) {
   if (path.empty()) {
     return false;
   }
@@ -922,10 +931,17 @@ bool SecureCreateDirectory(const base::FilePath& path) {
   // Create the parent directory, allowing ordinary inherited permissions.
   base::File::Error error = base::File::FILE_OK;
   if (base::FilePath parent = path.DirName();
-      !parent.empty() && parent != path &&
-      !base::CreateDirectoryAndGetError(parent, &error)) {
-    LOGFN(ERROR) << "Failed to create parent directory for " << path << "; "
-                 << base::File::ErrorToString(error);
+      !parent.empty() && parent != path) {
+    if (!base::CreateDirectoryAndGetError(parent, &error)) {
+      LOGFN(ERROR) << "Failed to create parent directory for " << path << "; "
+                   << base::File::ErrorToString(error);
+      return false;
+    }
+  }
+
+  if (IsPathRedirected(path)) {
+    LOGFN(ERROR) << "Path mismatch detected (possible reparse point, "
+                 << "redirect, or unresolvable path): " << path;
     return false;
   }
 
@@ -933,7 +949,8 @@ bool SecureCreateDirectory(const base::FilePath& path) {
   sd.set_dacl_protected(true);  // Protects from inheriting parent DACLs
 
   // Add DACL entries strictly for SYSTEM and BuiltinAdministrators with full
-  // control.
+  // control, plus optional inherit-only read access on child objects for
+  // Authenticated Users and All Application Packages (UWP shell components).
   if (!sd.SetDaclEntry(base::win::WellKnownSid::kLocalSystem,
                        base::win::SecurityAccessMode::kGrant,
                        GENERIC_ALL | STANDARD_RIGHTS_ALL,
@@ -941,7 +958,18 @@ bool SecureCreateDirectory(const base::FilePath& path) {
       !sd.SetDaclEntry(base::win::WellKnownSid::kBuiltinAdministrators,
                        base::win::SecurityAccessMode::kGrant,
                        GENERIC_ALL | STANDARD_RIGHTS_ALL,
-                       SUB_CONTAINERS_AND_OBJECTS_INHERIT)) {
+                       SUB_CONTAINERS_AND_OBJECTS_INHERIT) ||
+      (grant_read_on_children &&
+       (!sd.SetDaclEntry(
+            base::win::WellKnownSid::kAuthenticatedUser,
+            base::win::SecurityAccessMode::kGrant,
+            GENERIC_READ | STANDARD_RIGHTS_READ,
+            SUB_CONTAINERS_AND_OBJECTS_INHERIT | INHERIT_ONLY_ACE) ||
+        !sd.SetDaclEntry(
+            base::win::WellKnownSid::kAllApplicationPackages,
+            base::win::SecurityAccessMode::kGrant,
+            GENERIC_READ | STANDARD_RIGHTS_READ,
+            SUB_CONTAINERS_AND_OBJECTS_INHERIT | INHERIT_ONLY_ACE)))) {
     LOGFN(ERROR) << "Failed to set DACL entries for " << path;
     return false;
   }
@@ -1009,6 +1037,18 @@ bool SecureCreateDirectory(const base::FilePath& path) {
   return true;
 }
 
+bool SecureCreateFile(const base::FilePath& path, std::string_view data) {
+  base::win::ScopedHandle handle = SecureOpenFile(
+      path, base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
+                base::File::FLAG_WIN_EXCLUSIVE_READ |
+                base::File::FLAG_WIN_EXCLUSIVE_WRITE);
+  if (!handle.is_valid()) {
+    return false;
+  }
+  base::File file(std::move(handle));
+  return file.WriteAtCurrentPosAndCheck(base::as_byte_span(data));
+}
+
 bool WriteToStartupSentinel() {
   LOGFN(VERBOSE);
   // Always try to write to the startup sentinel file. If writing or opening
@@ -1027,24 +1067,24 @@ bool WriteToStartupSentinel() {
       GetStartupSentinelLocation(TEXT(CHROME_VERSION_STRING));
   if (!startup_sentinel_path.empty()) {
     base::FilePath startup_sentinel_directory = startup_sentinel_path.DirName();
-    base::File::Error error;
-    if (!base::CreateDirectoryAndGetError(startup_sentinel_directory, &error)) {
-      LOGFN(ERROR) << "Could not create sentinel directory='"
-                   << startup_sentinel_directory << "' error=" << error;
+
+    if (!SecureCreateDirectory(startup_sentinel_directory)) {
+      LOGFN(ERROR) << "Could not securely create sentinel directory='"
+                   << startup_sentinel_directory << "'";
       return false;
     }
-    base::File startup_sentinel(
-        startup_sentinel_path,
-        base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
 
-    // Keep writing to the sentinel file until we have reached
-    // |kMaxConsecutiveCrashCount| at which point it is assumed that GCPW
-    // is crashing continuously and should be disabled.
-    if (!startup_sentinel.IsValid()) {
-      LOGFN(ERROR) << "Could not open the sentinel path "
+    base::win::ScopedHandle handle =
+        SecureOpenFile(startup_sentinel_path,
+                       base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_APPEND);
+
+    if (!handle.is_valid()) {
+      LOGFN(ERROR) << "Could not open the sentinel path securely: "
                    << startup_sentinel_path.value();
       return false;
     }
+
+    base::File startup_sentinel(std::move(handle));
 
     if (startup_sentinel.GetLength() >= kMaxConsecutiveCrashCount) {
       LOGFN(ERROR) << "Sentinel file length indicates "
@@ -1506,40 +1546,116 @@ std::wstring GetDevelopmentUrl(const std::wstring& url,
   return url;
 }
 
+base::win::ScopedHandle SecureOpenFile(const base::FilePath& file_path,
+                                       uint32_t open_flags) {
+  // Map base::File flags to Windows API flags
+  DWORD access = 0;
+  if (open_flags & base::File::FLAG_READ) {
+    access |= GENERIC_READ;
+  }
+  if (open_flags & base::File::FLAG_WRITE) {
+    access |= GENERIC_WRITE;
+  }
+  if (open_flags & base::File::FLAG_APPEND) {
+    access |= FILE_APPEND_DATA;
+  }
+
+  // We need at least read attributes access to get file info, and we need
+  // to synchronize if we aren't using overlapped IO.
+  access |= FILE_READ_ATTRIBUTES | SYNCHRONIZE;
+
+  DWORD share = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
+  if (open_flags & base::File::FLAG_WIN_EXCLUSIVE_READ) {
+    share &= ~FILE_SHARE_READ;
+  }
+  if (open_flags & base::File::FLAG_WIN_EXCLUSIVE_WRITE) {
+    share &= ~FILE_SHARE_WRITE;
+  }
+
+  // Determine disposition based on flags, but avoid CREATE_ALWAYS and
+  // OPEN_TRUNCATED because we must verify the handle BEFORE truncating.
+  DWORD disposition = OPEN_EXISTING;
+  if (open_flags & base::File::FLAG_CREATE) {
+    disposition = CREATE_NEW;
+  } else if (open_flags & base::File::FLAG_OPEN_ALWAYS ||
+             open_flags & base::File::FLAG_CREATE_ALWAYS) {
+    disposition = OPEN_ALWAYS;
+  } else if (open_flags & base::File::FLAG_OPEN_TRUNCATED) {
+    disposition = OPEN_EXISTING;  // Will manually truncate later
+  }
+
+  // Open handle securely without following symlinks and without
+  // truncating.
+  base::win::ScopedHandle handle(::CreateFileW(
+      file_path.value().c_str(), access, share, nullptr, disposition,
+      FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OPEN_REPARSE_POINT |
+          FILE_FLAG_BACKUP_SEMANTICS,
+      nullptr));
+
+  if (!handle.is_valid()) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "Error opening file securely " << file_path
+                 << " hr=" << putHR(hr);
+    return base::win::ScopedHandle();
+  }
+
+  // Verify the handle does not point to a reparse point or hardlink.
+  BY_HANDLE_FILE_INFORMATION file_info = {};
+  if (!::GetFileInformationByHandle(handle.get(), &file_info)) {
+    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+    LOGFN(ERROR) << "GetFileInformationByHandle failed. hr=" << putHR(hr);
+    return base::win::ScopedHandle();
+  }
+
+  if ((file_info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) != 0 ||
+      file_info.nNumberOfLinks > 1) {
+    LOGFN(ERROR) << "File is a reparse point or hardlink! Aborting. "
+                 << file_path;
+    return base::win::ScopedHandle();
+  }
+
+  // Truncate manually only AFTER verifying it is safe
+  if (open_flags & base::File::FLAG_CREATE_ALWAYS ||
+      open_flags & base::File::FLAG_OPEN_TRUNCATED) {
+    if (::SetFilePointer(handle.get(), 0, nullptr, FILE_BEGIN) ==
+            INVALID_SET_FILE_POINTER ||
+        !::SetEndOfFile(handle.get())) {
+      HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+      LOGFN(ERROR) << "Failed to securely truncate file. hr=" << putHR(hr);
+      return base::win::ScopedHandle();
+    }
+  }
+
+  return handle;
+}
+
 std::unique_ptr<base::File> GetOpenedFileForUser(
     const std::wstring& sid,
     uint32_t open_flags,
     const std::wstring& file_dir,
     const std::wstring& file_name) {
-  base::FilePath experiments_dir = GetDirectoryFilePath(sid, file_dir);
-  base::File::Error error;
-  if (!base::CreateDirectoryAndGetError(experiments_dir, &error)) {
-    LOGFN(ERROR) << "Experiments data directory could not be created for "
-                 << sid << " Error: " << error;
+  base::FilePath data_dir = GetDirectoryFilePath(sid, file_dir);
+
+  if (!SecureCreateDirectory(data_dir)) {
+    LOGFN(ERROR) << "Data directory could not be securely created for " << sid;
     return nullptr;
   }
 
-  base::FilePath experiments_file_path = experiments_dir.Append(file_name);
-  std::unique_ptr<base::File> experiments_file(
-      new base::File(experiments_file_path, open_flags));
-
-  if (!experiments_file->IsValid()) {
-    LOGFN(ERROR) << "Error opening experiments file for user " << sid
-                 << " with flags " << open_flags
-                 << " Error: " << experiments_file->error_details();
+  base::FilePath file_path = data_dir.Append(file_name);
+  base::win::ScopedHandle handle = SecureOpenFile(file_path, open_flags);
+  if (!handle.is_valid()) {
     return nullptr;
   }
 
-  base::File::Error lock_error =
-      experiments_file->Lock(base::File::LockMode::kExclusive);
+  auto file = std::make_unique<base::File>(std::move(handle));
+  base::File::Error lock_error = file->Lock(base::File::LockMode::kExclusive);
   if (lock_error != base::File::FILE_OK) {
-    LOGFN(ERROR)
-        << "Failed to obtain exclusive lock on experiments file! Error: "
-        << lock_error;
+    LOGFN(ERROR) << "Failed to obtain exclusive lock on file! Error: "
+                 << lock_error;
     return nullptr;
   }
 
-  return experiments_file;
+  return file;
 }
 
 base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
