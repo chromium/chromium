@@ -382,16 +382,24 @@ void CanvasRenderingContext::RecordUKMCanvasAccessibility() {
         const Vector<AtomicString>, keyboard_event_types,
         ({event_type_names::kKeydown, event_type_names::kKeypress,
           event_type_names::kKeyup}));
+    // Include modern pointer and touch events in addition to legacy mouse
+    // events, as interactive canvas applications frequently bind to pointer
+    // or touch handlers instead of mouse handlers.
     DEFINE_STATIC_LOCAL(
-        const Vector<AtomicString>, mouse_event_types,
+        const Vector<AtomicString>, interactive_event_types,
         ({event_type_names::kClick, event_type_names::kMousedown,
           event_type_names::kMouseup, event_type_names::kMousemove,
-          event_type_names::kMouseover, event_type_names::kMouseout}));
+          event_type_names::kMouseover, event_type_names::kMouseout,
+          event_type_names::kPointerdown, event_type_names::kPointerup,
+          event_type_names::kPointermove, event_type_names::kPointercancel,
+          event_type_names::kPointerover, event_type_names::kPointerout,
+          event_type_names::kTouchstart, event_type_names::kTouchmove,
+          event_type_names::kTouchend, event_type_names::kTouchcancel}));
 
     has_keyboard_listener =
         canvas_element->HasAnyEventListeners(keyboard_event_types);
     has_mouse_listener =
-        canvas_element->HasAnyEventListeners(mouse_event_types);
+        canvas_element->HasAnyEventListeners(interactive_event_types);
   }
 
   const auto& ukm_params = host->GetUkmParameters();

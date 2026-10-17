@@ -143,6 +143,24 @@ TEST_F(HTMLCanvasAccessibilityManagerTest, HasAriaLabel) {
       HTMLCanvasAccessibilityManager::HeuristicResult::kHasAriaAttributes, 1);
 }
 
+TEST_F(HTMLCanvasAccessibilityManagerTest,
+       EmptyOrWhitespaceAriaAttributesDoNotDisqualify) {
+  base::HistogramTester histogram_tester;
+  SetUpCanvas(
+      "<body><canvas id='c' width=300 height=200 role='' aria-label='   ' "
+      "title=''></canvas></body>");
+  canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/false);
+  WaitForAccessibilityManagerUpdate();
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.Canvas.HeuristicResult",
+      HTMLCanvasAccessibilityManager::HeuristicResult::kNeedsA11ySupport, 1);
+  EXPECT_EQ(canvas_element_->GetAccessibilityManagerForTesting()
+                ->GetHeuristicResultForTesting(),
+            HTMLCanvasAccessibilityManager::HeuristicResult::kNeedsA11ySupport);
+  EXPECT_TRUE(canvas_element_->GetNeedsAccessibilitySupportHeuristic());
+}
+
 TEST_F(HTMLCanvasAccessibilityManagerTest, NeedsA11ySupport) {
   base::HistogramTester histogram_tester;
   SetUpCanvas("<body><canvas id='c' width=300 height=200></canvas></body>");

@@ -90,11 +90,19 @@ HTMLCanvasAccessibilityManager::ComputeHeuristicResult(
     return HeuristicResult::kHasFallbackContent;
   }
 
-  if (canvas_element.FastHasAttribute(html_names::kRoleAttr) ||
-      canvas_element.FastHasAttribute(html_names::kAriaLabelAttr) ||
-      canvas_element.FastHasAttribute(html_names::kAriaLabelledbyAttr) ||
-      canvas_element.FastHasAttribute(html_names::kAriaDescribedbyAttr) ||
-      canvas_element.FastHasAttribute(html_names::kTitleAttr)) {
+  // Attributes must have non-empty, non-whitespace content to count as author-
+  // provided accessibility semantics; frameworks often emit empty attributes
+  // like aria-label="" or role="".
+  auto HasNonEmptyAttribute = [&](const QualifiedName& attr) {
+    return !canvas_element.FastGetAttribute(attr)
+                .GetString()
+                .ContainsOnlyWhitespaceOrEmpty();
+  };
+  if (HasNonEmptyAttribute(html_names::kRoleAttr) ||
+      HasNonEmptyAttribute(html_names::kAriaLabelAttr) ||
+      HasNonEmptyAttribute(html_names::kAriaLabelledbyAttr) ||
+      HasNonEmptyAttribute(html_names::kAriaDescribedbyAttr) ||
+      HasNonEmptyAttribute(html_names::kTitleAttr)) {
     return HeuristicResult::kHasAriaAttributes;
   }
 
