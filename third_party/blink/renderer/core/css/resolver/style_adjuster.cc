@@ -387,6 +387,7 @@ static bool IsAtMediaUAShadowBoundary(const Element* element) {
 static bool StopPropagateTextDecorations(const ComputedStyleBuilder& builder,
                                          const Element* element) {
   return builder.IsAtomicInlineDisplayType() ||
+         IsA<HTMLCanvasElement>(element) ||
          IsAtMediaUAShadowBoundary(element) || builder.IsFloating() ||
          builder.HasOutOfFlowPosition() || IsOutermostSVGElement(element) ||
          builder.Display() == EDisplay::kRubyText;
