@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/display/display.h"
 
 namespace ui {
 class KeyEvent;
@@ -71,6 +72,7 @@ class TestCursorClient : public aura::client::CursorClient {
   int calls_to_set_cursor_;
   base::ObserverList<aura::client::CursorClientObserver>::Unchecked observers_;
   raw_ptr<aura::Window> root_window_;
+  const display::Display display_;
 };
 
 }  // namespace test

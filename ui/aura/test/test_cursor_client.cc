@@ -88,8 +88,7 @@ bool TestCursorClient::IsMouseEventsEnabled() const {
 void TestCursorClient::SetDisplay(const display::Display& display) {}
 
 const display::Display& TestCursorClient::GetDisplay() const {
-  static const display::Display display;
-  return display;
+  return display_;
 }
 
 void TestCursorClient::LockCursor() {
