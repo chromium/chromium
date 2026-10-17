@@ -187,16 +187,17 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
+  ASSERT_FALSE(response.empty());
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
   const base::DictValue* body = report.FindDict("body");
 
   ASSERT_NE(type, nullptr);
-  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*type, "crash");
 
   ASSERT_NE(url, nullptr);
-  EXPECT_EQ(main_url.spec(), *url);
+  EXPECT_EQ(*url, main_url.spec());
 
   ASSERT_NE(body, nullptr);
   EXPECT_EQ(body->FindString("reason"), nullptr);
@@ -223,6 +224,7 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
+  ASSERT_FALSE(response.empty());
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
@@ -231,13 +233,13 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   const std::string* reason = body->FindString("reason");
 
   ASSERT_NE(type, nullptr);
-  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*type, "crash");
 
   ASSERT_NE(url, nullptr);
-  EXPECT_EQ(main_url.spec(), *url);
+  EXPECT_EQ(*url, main_url.spec());
 
   ASSERT_NE(reason, nullptr);
-  EXPECT_EQ("unresponsive", *reason);
+  EXPECT_EQ(*reason, "unresponsive");
 }
 
 // Verify that when a foreground Android renderer with
@@ -272,6 +274,7 @@ IN_PROC_BROWSER_TEST_P(
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
+  ASSERT_FALSE(response.empty());
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
@@ -281,13 +284,13 @@ IN_PROC_BROWSER_TEST_P(
   const std::string* call_stack = body->FindString("stack");
 
   ASSERT_NE(type, nullptr);
-  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*type, "crash");
 
   ASSERT_NE(url, nullptr);
-  EXPECT_EQ(main_url.spec(), *url);
+  EXPECT_EQ(*url, main_url.spec());
 
   ASSERT_NE(reason, nullptr);
-  EXPECT_EQ("unresponsive", *reason);
+  EXPECT_EQ(*reason, "unresponsive");
 
   // SimulateUnresponsivePrimaryMainFrameAndWaitForExit() immediately calls
   // Shutdown(RESULT_CODE_HUNG) after requesting the JS call stack via an
@@ -319,6 +322,7 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
+  ASSERT_FALSE(response.empty());
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
@@ -327,13 +331,13 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   const std::string* reason = body->FindString("reason");
 
   ASSERT_NE(type, nullptr);
-  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*type, "crash");
 
   ASSERT_NE(url, nullptr);
-  EXPECT_EQ(main_url.spec(), *url);
+  EXPECT_EQ(*url, main_url.spec());
 
   ASSERT_NE(reason, nullptr);
-  EXPECT_EQ("oom", *reason);
+  EXPECT_EQ(*reason, "oom");
 }
 
 // Verify that a renderer killed due to a bad Mojo message on Android still
@@ -361,16 +365,17 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
+  ASSERT_FALSE(response.empty());
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
   const base::DictValue* body = report.FindDict("body");
 
   ASSERT_NE(type, nullptr);
-  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*type, "crash");
 
   ASSERT_NE(url, nullptr);
-  EXPECT_EQ(main_url.spec(), *url);
+  EXPECT_EQ(*url, main_url.spec());
 
   ASSERT_NE(body, nullptr);
   EXPECT_EQ(body->FindString("reason"), nullptr);
@@ -428,20 +433,20 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   upload_response()->WaitForRequest();
   base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
-  ASSERT_EQ(1u, response.size());
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
+  ASSERT_EQ(response.size(), 1u);
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
 
   ASSERT_NE(type, nullptr);
-  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*type, "crash");
 
   ASSERT_NE(url, nullptr);
-  EXPECT_EQ(crashed_url.spec(), *url);
+  EXPECT_EQ(*url, crashed_url.spec());
 }
 
 // Verify that an intentional browser-initiated shutdown with a normal exit code
@@ -479,20 +484,20 @@ IN_PROC_BROWSER_TEST_P(AndroidCrashReportingBrowserTest,
   upload_response()->WaitForRequest();
   base::ListValue response =
       ParseReportUpload(upload_response()->http_request()->content);
-  ASSERT_EQ(1u, response.size());
   upload_response()->Send("HTTP/1.1 200 OK\r\n");
   upload_response()->Send("\r\n");
   upload_response()->Done();
 
+  ASSERT_EQ(response.size(), 1u);
   const base::DictValue& report = response.begin()->GetDict();
   const std::string* type = report.FindString("type");
   const std::string* url = report.FindString("url");
 
   ASSERT_NE(type, nullptr);
-  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(*type, "crash");
 
   ASSERT_NE(url, nullptr);
-  EXPECT_EQ(crashed_url.spec(), *url);
+  EXPECT_EQ(*url, crashed_url.spec());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
