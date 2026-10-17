@@ -109,16 +109,16 @@ class Dims2D extends Point2D {
 
 /******** Rectangle ********/
 /**
- * An axis-aligned rectangle with inclusive top-left and exclusive bottom-right.
+ * An axis-aligned rectangle with inclusive left-top and exclusive right-bottom.
  */
 class Rectangle {
   /**
-   * @param {!PointXY} topLeft
-   * @param {!PointXY} bottomRight
+   * @param {!PointXY} leftTop
+   * @param {!PointXY} rightBottom
    */
-  constructor(topLeft, bottomRight) {
-    this.topLeft = topLeft;
-    this.bottomRight = bottomRight;
+  constructor(leftTop, rightBottom) {
+    this.leftTop = leftTop;
+    this.rightBottom = rightBottom;
   }
 
   /** @return {!Rectangle} */
@@ -127,7 +127,11 @@ class Rectangle {
   }
 
   // clang-format off
-  width() { return this.bottomRight.x - this.topLeft.x; }
-  height() { return this.bottomRight.y - this.topLeft.y; }
+  get left()   { return this.leftTop.x; }
+  get top()    { return this.leftTop.y; }
+  get right()  { return this.rightBottom.x; }
+  get bottom() { return this.rightBottom.y; }
+  get width()  { return this.right - this.left; }
+  get height() { return this.bottom - this.top; }
   // clang-format on
 }

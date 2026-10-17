@@ -24,8 +24,8 @@ class InfoBarVis {
 
   renderAndShowViewInfo(view, visOpts) {
     this.el.viewClass.textContent = view.className;
-    const wPx = view.rect.width();
-    const hPx = view.rect.height();
+    const wPx = view.rect.width;
+    const hPx = view.rect.height;
     this.el.sizePx.textContent = `${wPx}x${hPx}px`;
     const wDp = capFixed(visOpts.pxToDp(wPx), 2);
     const hDp = capFixed(visOpts.pxToDp(hPx), 2);
