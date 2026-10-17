@@ -547,7 +547,6 @@ IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest, ShowsCorrectTimesSinceRefresh) {
   // Refresh the page without reloading policies.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIPolicyURL)));
-  base::RunLoop().RunUntilIdle();  // Ensure status request has been processed.
 
   base::flat_map<std::string, std::string> status;
   ASSERT_TRUE(ReadStatusFor("User policies", &status));
