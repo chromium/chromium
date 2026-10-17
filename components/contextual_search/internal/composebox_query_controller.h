@@ -161,9 +161,8 @@ class ComposeboxQueryController
       const base::UnguessableToken& file_token,
       const std::optional<std::string>& query_text) override;
 
-  // Returns a request id to use for the viewport image upload request for the
-  // given file info, setting the viewport request id on the file info if it is
-  // different from the request id.
+  // Returns the request id to use for the viewport image upload request for the
+  // given file token.
   virtual lens::LensOverlayRequestId GetRequestIdForViewportImage(
       const base::UnguessableToken& file_token);
 
@@ -299,6 +298,12 @@ class ComposeboxQueryController
     // allowing stateless recontextualization updates to maintain sequence
     // monotonicity.
     std::optional<lens::LensOverlayRequestId> request_id_for_updates;
+
+    // Caches the latest viewport request ID generated for this context across
+    // turns, allowing recontextualization updates (including across page-only
+    // turns without a viewport screenshot) to maintain viewport sequence
+    // monotonicity when separate viewport request IDs are enabled.
+    std::optional<lens::LensOverlayRequestId> viewport_request_id_for_updates;
 
     // The headers to attach to the request. Will be set asynchronously after
     // StartFileUploadFlow() is called.
