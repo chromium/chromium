@@ -98,7 +98,7 @@ class ShapeResultTest : public FontTestBase {
                                                  num_characters)
                       .ToFloat();
     if (compact) {
-      EXPECT_TRUE(run->glyph_data_.TryMakeCompact());
+      EXPECT_TRUE(run->glyph_data_.TryMakeCompact(run->IsRtl()));
     }
     return run;
   }

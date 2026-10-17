@@ -34,6 +34,15 @@ TextRunLayoutUnit GlyphDataRange::CompactSourceAdvance() const {
   return run_->glyph_data_.CompactAdvance();
 }
 
+unsigned GlyphDataRange::CompactStartCharacterIndex() const {
+  CHECK(IsCompactSource());
+  CHECK_LE(index_, run_->glyph_data_.size());
+  CHECK_LE(size_, run_->glyph_data_.size() - index_);
+  return run_->glyph_data_.IsCompactRtl()
+             ? run_->glyph_data_.size() - index_ - size_
+             : index_;
+}
+
 base::span<const uint16_t> GlyphDataRange::CompactGlyphs() const {
   return run_->glyph_data_.CompactGlyphs(index_, size_);
 }
@@ -56,18 +65,15 @@ void GlyphDataRange::ExpandInto(base::span<HarfBuzzRunGlyphData> dest) const {
 GlyphDataRange GlyphDataRange::FindCompactGlyphDataRange(
     unsigned start_character_index,
     unsigned end_character_index) const {
-  // Identity character indices map the character range directly to glyphs.
-  const unsigned base = index_;
+  const wtf_size_t logical_begin = CompactStartCharacterIndex();
+  const wtf_size_t logical_end = logical_begin + size_;
   const wtf_size_t start =
-      start_character_index > base
-          ? std::min<wtf_size_t>(start_character_index - base, size_)
-          : 0;
+      std::clamp<wtf_size_t>(start_character_index, logical_begin, logical_end);
   const wtf_size_t end =
-      end_character_index > base
-          ? std::min<wtf_size_t>(end_character_index - base, size_)
-          : start;
-  return GlyphDataRange(run_.Get(), index_ + start,
-                        std::max(start, end) - start);
+      std::clamp<wtf_size_t>(end_character_index, start, logical_end);
+  const wtf_size_t physical_start =
+      run_->glyph_data_.IsCompactRtl() ? run_->glyph_data_.size() - end : start;
+  return GlyphDataRange(run_.Get(), physical_start, end - start);
 }
 
 GlyphDataRange GlyphDataRange::FindGlyphDataRange(
@@ -82,7 +88,7 @@ GlyphDataRange GlyphDataRange::FindGlyphDataRange(
   }
 
   if (run_->glyph_data_.IsCompact()) [[unlikely]] {
-    CHECK(!is_rtl);
+    CHECK_EQ(is_rtl, run_->glyph_data_.IsCompactRtl());
     return FindCompactGlyphDataRange(start_character_index,
                                      end_character_index);
   }

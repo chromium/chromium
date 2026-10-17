@@ -1544,7 +1544,7 @@ bool ShapeResultRun::TryComputeCompactGlyphPositions(
         .is_safe_to_break_before = is_safe_to_break_before};
   };
   if (!glyph_data_.TryMakeCompactFrom(
-          base::checked_cast<unsigned>(glyph_infos.size()),
+          base::checked_cast<unsigned>(glyph_infos.size()), IsRtl(),
           GetCompactableGlyph)) {
     return false;
   }
@@ -1960,7 +1960,7 @@ wtf_size_t ShapeResult::CopyRangeInternal(wtf_size_t run_index,
         if (RuntimeEnabledFeatures::MonospaceGlyphCompactionEnabled() &&
             back->CanUseMonospaceGlyphCompaction(back->glyph_data_.size()))
             [[unlikely]] {
-          back->glyph_data_.TryMakeCompact();
+          back->glyph_data_.TryMakeCompact(back->IsRtl());
         }
       }
       should_merge = false;

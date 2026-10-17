@@ -202,16 +202,8 @@ ShapeResult* ShapeResultView::CreateShapeResult() const {
         part_run->font_data_.Get(), part_run->HbDirection(),
         part_run->canvas_rotation_, part_run->script_, part.start_index_,
         /*num_glyphs=*/0, part.num_characters_);
-    new_run->glyph_data_.CopyFromRange(part.range_);
-    // Compact identity indices don't need adjustment.
-    if (!new_run->glyph_data_.IsCompact()) {
-      for (HarfBuzzRunGlyphData& glyph_data :
-           new_run->glyph_data_.MutableGlyphs()) {
-        CHECK_GE(glyph_data.character_index, part.offset_);
-        glyph_data.character_index -= part.offset_;
-        CHECK_LT(glyph_data.character_index, part.num_characters_);
-      }
-    }
+    new_run->glyph_data_.CopyFromRange(part.range_, part.offset_,
+                                       part.num_characters_);
 
     new_run->start_index_ += char_index_offset_;
     new_run->width_ = part.width_;

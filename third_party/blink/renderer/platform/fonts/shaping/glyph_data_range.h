@@ -105,8 +105,13 @@ class PLATFORM_EXPORT GlyphDataRange {
     HarfBuzzRunGlyphData operator[](wtf_size_t index) const {
       if (!compact_glyphs_.empty()) [[unlikely]] {
         const base::span<const uint16_t> compact_glyphs = compact_glyphs_;
-        return HarfBuzzRunGlyphData(compact_glyphs[index],
-                                    compact_index_offset_ + index,
+        CHECK_LT(index, compact_glyphs.size());
+        const unsigned physical_index = compact_index_offset_ + index;
+        CHECK_LT(physical_index, compact_num_glyphs_);
+        const unsigned character_index =
+            is_compact_rtl_ ? compact_num_glyphs_ - physical_index - 1
+                            : physical_index;
+        return HarfBuzzRunGlyphData(compact_glyphs[index], character_index,
                                     SafeToBreak::kSafe, compact_advance_);
       }
       return glyphs_[index];
@@ -119,11 +124,14 @@ class PLATFORM_EXPORT GlyphDataRange {
     base::span<const uint16_t> compact_glyphs_;
     TextRunLayoutUnit compact_advance_;
     unsigned compact_index_offset_ = 0;
+    unsigned compact_num_glyphs_ = 0;
+    bool is_compact_rtl_ = false;
   };
 
   HarfBuzzRunGlyphData GlyphAtForTest(unsigned index) const;
   bool IsCompactSource() const;
   TextRunLayoutUnit CompactSourceAdvance() const;
+  unsigned CompactStartCharacterIndex() const;
   base::span<const uint16_t> CompactGlyphs() const;
 
  private:

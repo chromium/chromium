@@ -123,7 +123,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
   wtf_size_t GlyphToCharacterIndex(wtf_size_t i) const {
     if (glyph_data_.IsCompact()) [[unlikely]] {
       DCHECK_LT(i, glyph_data_.size());
-      return start_index_ + i;
+      return start_index_ + glyph_data_.CompactCharacterIndex(i);
     }
     return start_index_ + glyph_data_[i].character_index;
   }
@@ -154,7 +154,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
         font_data_.Get(), HbDirection(), canvas_rotation_, script_,
         start_index_ + start, /*num_glyphs=*/0, number_of_characters);
 
-    run->glyph_data_.CopyFromRange(glyphs);
+    run->glyph_data_.CopyFromRange(glyphs, start, number_of_characters);
 
     if (run->glyph_data_.IsCompact()) {
       run->width_ = InlineLayoutUnit::FromRawValue(
@@ -162,9 +162,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
           number_of_glyphs);
     } else {
       InlineLayoutUnit total_advance;
-      for (HarfBuzzRunGlyphData& glyph_data :
-           run->glyph_data_.MutableGlyphs()) {
-        glyph_data.character_index -= start;
+      for (const HarfBuzzRunGlyphData& glyph_data :
+           run->glyph_data_.NonCompactGlyphs()) {
         total_advance += glyph_data.advance;
       }
       run->width_ = total_advance;
@@ -187,13 +186,16 @@ struct PLATFORM_EXPORT ShapeResultRun final
         start_index_, /*num_glyphs=*/0,
         num_characters_ + other.num_characters_);
     // Note: We populate grapheme data on demand, e.g. hit testing.
-    // The left run must end where the second identity mapping starts.
-    // TODO(crbug.com/523940241): Handle RTL compact runs.
-    if (glyph_data_.IsCompact() && !IsRtl() &&
-        num_characters_ == glyph_data_.size() &&
-        run->glyph_data_.TryCopyFromCompact(glyph_data_, other.glyph_data_)) {
-      run->width_ = width_ + other.width_;
-      return run;
+    if (glyph_data_.IsCompact() && num_characters_ == glyph_data_.size() &&
+        other.num_characters_ == other.glyph_data_.size()) {
+      const GlyphDataCollection& first =
+          IsRtl() ? other.glyph_data_ : glyph_data_;
+      const GlyphDataCollection& second =
+          IsRtl() ? glyph_data_ : other.glyph_data_;
+      if (run->glyph_data_.TryCopyFromCompact(first, second)) {
+        run->width_ = width_ + other.width_;
+        return run;
+      }
     }
     const int index_adjust = other.start_index_ - start_index_;
     if (IsRtl()) [[unlikely]] {
@@ -290,22 +292,27 @@ struct PLATFORM_EXPORT ShapeResultRun final
     DISALLOW_NEW();
 
    private:
-    // Compact run: 16-bit glyph ids with one shared advance.
+    // Compact run: 16-bit glyph ids with one shared advance and index order.
     struct CompactGlyphData final : public GarbageCollected<CompactGlyphData> {
-      CompactGlyphData(TextRunLayoutUnit shared_advance, wtf_size_t num_glyphs)
-          : advance(shared_advance), glyphs(num_glyphs) {}
       CompactGlyphData(TextRunLayoutUnit shared_advance,
-                       base::span<const uint16_t> ids)
-          : advance(shared_advance), glyphs(ids) {}
+                       wtf_size_t num_glyphs,
+                       bool rtl)
+          : advance(shared_advance), is_rtl(rtl), glyphs(num_glyphs) {}
+      CompactGlyphData(TextRunLayoutUnit shared_advance,
+                       base::span<const uint16_t> ids,
+                       bool rtl)
+          : advance(shared_advance), is_rtl(rtl), glyphs(ids) {}
       void Trace(Visitor* visitor) const { visitor->Trace(glyphs); }
 
 #if DCHECK_IS_ON()
       bool operator==(const CompactGlyphData& other) const {
-        return advance == other.advance && glyphs == other.glyphs;
+        return advance == other.advance && glyphs == other.glyphs &&
+               is_rtl == other.is_rtl;
       }
 #endif
 
       TextRunLayoutUnit advance;
+      bool is_rtl;
       HeapVector<uint16_t> glyphs;
     };
 
@@ -344,7 +351,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     }
 
-    // Compact storage implies identity indices and safe breaks.
+    // Compact storage implies forward or reverse identity indices and safe
+    // breaks.
     bool IsCompact() const { return CompactData() != nullptr; }
 
     wtf_size_t size() const {
@@ -356,6 +364,17 @@ struct PLATFORM_EXPORT ShapeResultRun final
     TextRunLayoutUnit CompactAdvance() const {
       CHECK(IsCompact());
       return CompactData()->advance;
+    }
+
+    bool IsCompactRtl() const {
+      CHECK(IsCompact());
+      return CompactData()->is_rtl;
+    }
+
+    unsigned CompactCharacterIndex(unsigned glyph_index) const {
+      CHECK(IsCompact());
+      CHECK_LT(glyph_index, size());
+      return IsCompactRtl() ? size() - glyph_index - 1 : glyph_index;
     }
 
     base::span<const uint16_t> CompactGlyphs(wtf_size_t start,
@@ -459,15 +478,23 @@ struct PLATFORM_EXPORT ShapeResultRun final
       }
     }
 
-    // The caller must adjust non-compact character indices.
-    void CopyFromRange(const GlyphDataRange& range) {
-      if (range.IsCompactSource() && !range.HasOffsets()) {
+    void CopyFromRange(const GlyphDataRange& range,
+                       unsigned character_index_offset,
+                       unsigned num_characters) {
+      if (range.IsCompactSource() && !range.HasOffsets() &&
+          range.size() >= kMinGlyphsToCompact &&
+          range.size() == num_characters &&
+          range.CompactStartCharacterIndex() == character_index_offset) {
         CopyFromCompactRange(range);
         return;
       }
       const unsigned num_glyphs = range.size();
       ResetToNonCompact(num_glyphs);
       range.ExpandInto(base::span<HarfBuzzRunGlyphData>(data_));
+      for (HarfBuzzRunGlyphData& glyph : data_) {
+        CHECK_GE(glyph.character_index, character_index_offset);
+        glyph.character_index -= character_index_offset;
+      }
 
       if (range.HasOffsets() && !range.IsEmpty()) {
         AllocateOffsets();
@@ -556,7 +583,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
     };
 
     template <typename GlyphAt>
-    bool TryMakeCompactFrom(unsigned num_glyphs, const GlyphAt& at) {
+    bool TryMakeCompactFrom(unsigned num_glyphs,
+                            bool is_rtl,
+                            const GlyphAt& at) {
       if (num_glyphs < kMinGlyphsToCompact ||
           num_glyphs > HarfBuzzRunGlyphData::kMaxGlyphs) {
         return false;
@@ -564,13 +593,16 @@ struct PLATFORM_EXPORT ShapeResultRun final
       const TextRunLayoutUnit advance = at(0).advance;
       for (unsigned i = 0; i < num_glyphs; ++i) {
         const CompactableGlyph glyph = at(i);
-        if (glyph.character_index != i || glyph.advance != advance ||
-            glyph.has_offset || !glyph.is_safe_to_break_before) {
+        const unsigned expected_character_index =
+            is_rtl ? num_glyphs - i - 1 : i;
+        if (glyph.character_index != expected_character_index ||
+            glyph.advance != advance || glyph.has_offset ||
+            !glyph.is_safe_to_break_before) {
           return false;
         }
       }
       auto* compact =
-          MakeGarbageCollected<CompactGlyphData>(advance, num_glyphs);
+          MakeGarbageCollected<CompactGlyphData>(advance, num_glyphs, is_rtl);
       const base::span<uint16_t> ids = compact->glyphs;
       for (unsigned i = 0; i < num_glyphs; ++i) {
         ids[i] = at(i).glyph;
@@ -579,14 +611,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
       return true;
     }
 
-    bool TryMakeCompact() {
+    bool TryMakeCompact(bool is_rtl) {
       if (IsCompact()) {
         return true;
       }
       if (HasNonZeroOffsets()) {
         return false;
       }
-      return TryMakeCompactFrom(data_.size(), [this](unsigned i) {
+      return TryMakeCompactFrom(data_.size(), is_rtl, [this](unsigned i) {
         const HarfBuzzRunGlyphData& glyph = data_[i];
         return CompactableGlyph{
             .glyph = glyph.glyph,
@@ -601,13 +633,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
                             const GlyphDataCollection& second) {
       if (!first.IsCompact() || !second.IsCompact() ||
           first.HasNonZeroOffsets() || second.HasNonZeroOffsets() ||
-          first.compact_->advance != second.compact_->advance) {
+          first.compact_->advance != second.compact_->advance ||
+          first.compact_->is_rtl != second.compact_->is_rtl) {
         return false;
       }
       const unsigned n1 = first.compact_->glyphs.size();
       const unsigned n2 = second.compact_->glyphs.size();
       auto* compact = MakeGarbageCollected<CompactGlyphData>(
-          first.compact_->advance, n1 + n2);
+          first.compact_->advance, n1 + n2, first.compact_->is_rtl);
       auto [first_glyphs, second_glyphs] =
           base::span<uint16_t>(compact->glyphs).split_at(n1);
       first_glyphs.copy_from(first.compact_->glyphs);
@@ -666,7 +699,8 @@ struct PLATFORM_EXPORT ShapeResultRun final
     NOINLINE HarfBuzzRunGlyphData GetCompact(wtf_size_t index) const {
       CHECK(IsCompact());
       const CompactGlyphData& compact = *CompactData();
-      return HarfBuzzRunGlyphData(compact.glyphs[index], index,
+      return HarfBuzzRunGlyphData(compact.glyphs[index],
+                                  CompactCharacterIndex(index),
                                   SafeToBreak::kSafe, compact.advance);
     }
 
@@ -682,8 +716,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
           base::span<const uint16_t>(compact.glyphs)
               .subspan(start, dest.size());
       for (unsigned i = 0; i < glyphs.size(); ++i) {
-        dest[i] = HarfBuzzRunGlyphData(glyphs[i], start + i, SafeToBreak::kSafe,
-                                       advance);
+        dest[i] =
+            HarfBuzzRunGlyphData(glyphs[i], CompactCharacterIndex(start + i),
+                                 SafeToBreak::kSafe, advance);
       }
     }
 
@@ -697,14 +732,9 @@ struct PLATFORM_EXPORT ShapeResultRun final
     }
 
     NOINLINE void CopyFromCompactRange(const GlyphDataRange& range) {
-      const unsigned num_glyphs = range.size();
-      if (num_glyphs >= kMinGlyphsToCompact) {
-        SetCompact(MakeGarbageCollected<CompactGlyphData>(
-            range.CompactSourceAdvance(), range.CompactGlyphs()));
-        return;
-      }
-      ResetToNonCompact(num_glyphs);
-      range.ExpandInto(base::span<HarfBuzzRunGlyphData>(data_));
+      SetCompact(MakeGarbageCollected<CompactGlyphData>(
+          range.CompactSourceAdvance(), range.CompactGlyphs(),
+          range.GetRun()->IsRtl()));
     }
 
     void AllocateOffsets() {
@@ -781,6 +811,10 @@ struct PLATFORM_EXPORT ShapeResultRun final
   void CheckConsistency() const {
     if (glyph_data_.IsCompact()) {
       CHECK_LE(glyph_data_.size(), num_characters_);
+      CHECK_EQ(glyph_data_.IsCompactRtl(), IsRtl());
+      if (IsRtl()) {
+        CHECK_EQ(glyph_data_.size(), num_characters_);
+      }
       return;
     }
     for (const HarfBuzzRunGlyphData& glyph : glyph_data_.NonCompactGlyphs()) {
@@ -818,8 +852,13 @@ struct PLATFORM_EXPORT ShapeResultRun final
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactHitTestingAfterMaterialization);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, CompactEmptyGlyphRangeKeepsRun);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, CompactRangesCheckSourceBounds);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactRejectsOversizedInputBeforeReading);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           CompactRejectsNonIdentityRtlClusters);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           RtlNestedCompactRangesMatchFullStorage);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactReaderMatchesGlyphAtForSubRange);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, CompactReadersDoNotMaterialize);
@@ -838,12 +877,16 @@ struct PLATFORM_EXPORT ShapeResultRun final
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactTrailingCharactersMatchFullStorage);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           RtlCompactTrailingCharactersMaterializeOnCopy);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactZeroOffsetDoesNotMaterialize);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, CompactSubRunStaysCompact);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactSmallSubRunUsesFullStorage);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
                            CompactRunsMergeWithoutMaterializing);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest,
+                           RtlCompactSubRunAndMergeStayCompact);
 
   GlyphDataCollection glyph_data_;
   Member<SimpleFontData> font_data_;
@@ -876,6 +919,8 @@ inline void GlyphDataRange::Reader::Init(const ShapeResultRun& run,
     compact_glyphs_ = glyph_data.CompactGlyphs(index, size);
     compact_advance_ = glyph_data.CompactAdvance();
     compact_index_offset_ = index;
+    compact_num_glyphs_ = glyph_data.size();
+    is_compact_rtl_ = glyph_data.IsCompactRtl();
     return;
   }
   glyphs_ =
