@@ -31,9 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.site_settings.SiteSettingsTestUtils;
@@ -61,10 +59,6 @@ import java.util.List;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-})
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
 })
 @Batch(Batch.PER_CLASS)
 public class TrustedWebActivityPreferencesUiTest {

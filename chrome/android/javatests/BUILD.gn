@@ -668,7 +668,10 @@ android_library(
     "src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TrustedWebActivityCurrentPageVerifierTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/settings:settings_in_tab_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.browsing_data") {
