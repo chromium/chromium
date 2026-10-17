@@ -47,6 +47,7 @@
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/search/ntp_user_data_logger.h"
@@ -189,6 +190,9 @@ constexpr char kAIMDisplayMode[] = "50";
 // The value for the "atvm" (AIM Threads Visibility Mode) query parameter.
 // value "3" corresponds to Threads Visibility Mode "Always Open".
 constexpr char kAIMThreadsVisibilityMode[] = "3";
+// The value for the "csui" (Conversational Search UI) query parameter.
+// value "3" enables CGI parameter color-scheme triggering (cs=0|1).
+constexpr char kAIMConversationalSearchUI[] = "3";
 // Google Search page shown in the NTP's left-hand side (LHS) panel, relative
 // to the Google base URL.
 constexpr char kLhsRelativeUrl[] = "/search?nem=341";
@@ -281,11 +285,21 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
       /*is_contextual_tasks=*/true);
   dict.Set("threadsUrl", threads_url.spec());
 
+  const auto* theme_service = ThemeServiceFactory::GetForProfile(profile);
+  const bool is_dark_mode =
+      theme_service && theme_service->BrowserUsesDarkColors();
   GURL expanded_lhs_url = google_base_url.Resolve(kLhsRelativeUrl);
   if (ntp_features::kNtpThreadsRailHybridParam.Get()) {
     expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "atvm",
                                                  kAIMThreadsVisibilityMode);
   }
+  expanded_lhs_url =
+      lens::AppendDarkModeParamToURL(expanded_lhs_url, is_dark_mode);
+  expanded_lhs_url = net::AppendQueryParameter(expanded_lhs_url, "csui",
+                                               kAIMConversationalSearchUI);
+  expanded_lhs_url = net::AppendQueryParameter(
+      expanded_lhs_url, lens::kLanguageCodeParameterKey,
+      g_browser_process->GetApplicationLocale());
   if (auto forced_host = contextual_tasks::GetForcedEmbeddedPageHost()) {
     expanded_lhs_url = forced_host->ApplyToUrl(expanded_lhs_url);
   }

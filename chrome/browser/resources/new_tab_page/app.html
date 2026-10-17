@@ -4,6 +4,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
 <div id="content">
   ${this.enableThreadsRail_ ? html`
     <cr-left-hand-side id="lhsWrapper"
+        .isDark="${this.theme_?.isDark}"
         @open-composebox="${this.onOpenComposebox_}">
     </cr-left-hand-side>` : ''}
   <div id="rhsWrapper">

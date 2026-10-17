@@ -60,11 +60,13 @@ export class LeftHandSideElement extends CrLitElement {
       enableThreadsRailHybrid_: {type: Boolean},
       expandedLhsUrl_: {type: String},
       expandedWidth_: {type: Number},
+      isDark: {type: Boolean},
       isExpanded_: {type: Boolean},
       isExpandedReady_: {type: Boolean},
     };
   }
 
+  accessor isDark: boolean|undefined = undefined;
   protected accessor enableThreadsRailHybrid_: boolean =
       loadTimeData.getBoolean('enableThreadsRailHybrid');
   protected accessor expandedLhsUrl_: string =
@@ -85,6 +87,15 @@ export class LeftHandSideElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
+  }
+
+  protected getExpandedLhsUrl_(): string {
+    if (!this.expandedLhsUrl_ || this.isDark === undefined) {
+      return this.expandedLhsUrl_;
+    }
+    const url = new URL(this.expandedLhsUrl_);
+    url.searchParams.set('cs', this.isDark ? '1' : '0');
+    return url.toString();
   }
 
   private onMessage_ = (event: MessageEvent) => {

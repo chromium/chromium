@@ -3795,6 +3795,24 @@ suite('NewTabPageAppTest', () => {
       assertEquals('lhsWrapper', leftHandSide.id);
     });
 
+    test('LHS receives isDark from theme', async () => {
+      await setThreadsRailEnabled(true);
+
+      const leftHandSide = $$(app, 'cr-left-hand-side');
+      assertTrue(!!leftHandSide);
+      assertEquals(undefined, leftHandSide.isDark);
+
+      callbackRouterRemote.setTheme(createTheme({isDark: true}));
+      await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      assertEquals(true, leftHandSide.isDark);
+
+      callbackRouterRemote.setTheme(createTheme({isDark: false}));
+      await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+      assertEquals(false, leftHandSide.isDark);
+    });
+
     test('RHS content fills the RHS height', async () => {
       await setThreadsRailEnabled(true);
 

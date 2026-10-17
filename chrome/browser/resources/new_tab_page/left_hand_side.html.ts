@@ -17,7 +17,7 @@ export function getHtml(this: LeftHandSideElement) {
   <ntp-iframe id="expanded"
       allow="unbounded-element"
       style="width: ${this.expandedWidth_}px;"
-      src="${this.expandedLhsUrl_}"
+      src="${this.getExpandedLhsUrl_()}"
       ?hidden="${!this.isExpandedReady_ || !this.isExpanded_}">
   </ntp-iframe>
   <!--_html_template_end_-->`;

@@ -97,6 +97,22 @@ suite('NewTabPageLeftHandSideTest', () => {
     });
   });
 
+  test('updates expanded LHS iframe URL when isDark changes', async () => {
+    await createLeftHandSide();
+
+    const iframe = getExpandedIframe();
+    assertTrue(!!iframe);
+    assertEquals(EXPANDED_LHS_URL, iframe.src);
+
+    leftHandSide.isDark = true;
+    await microtasksFinished();
+    assertEquals(`${EXPANDED_LHS_URL}&cs=1`, iframe.src);
+
+    leftHandSide.isDark = false;
+    await microtasksFinished();
+    assertEquals(`${EXPANDED_LHS_URL}&cs=0`, iframe.src);
+  });
+
   test('updates expanded width and ready state on NTP_LHS_READY', async () => {
     await createLeftHandSide();
 
