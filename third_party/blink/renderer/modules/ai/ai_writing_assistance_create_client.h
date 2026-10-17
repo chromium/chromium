@@ -91,26 +91,10 @@ class AIWritingAssistanceCreateClient
       return;
     }
 
-    if (pending_remote && monitor_) {
-      // Ensure that a download completion event is sent.
-      monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
-
-      // Abort may have been triggered by `OnDownloadProgressUpdate`.
-      if (!this->GetResolver()) {
-        return;
-      }
-
-      // Ensure that a download completion event is sent.
-      monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
-                                         kNormalizedDownloadProgressMax);
-
-      // Abort may have been triggered by `OnDownloadProgressUpdate`.
-      if (!this->GetResolver()) {
-        return;
-      }
-    }
-
     if (pending_remote) {
+      if (!this->CompleteDownloadProgress(monitor_)) {
+        return;
+      }
       this->GetResolver()->Resolve(MakeGarbageCollected<V8SessionObjectType>(
           this->GetScriptState(), task_runner_, std::move(pending_remote),
           options_, context_window));

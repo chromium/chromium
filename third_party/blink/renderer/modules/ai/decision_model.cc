@@ -293,7 +293,9 @@ class CreateDecisionModelClient
   // mojom::blink::AIManagerCreateDecisionModelClient:
   void OnSessionCreated(mojo::PendingRemote<mojom::blink::AIDecisionModel>
                             pending_remote) override {
-    CHECK(GetResolver());
+    if (!CompleteDownloadProgress(monitor_)) {
+      return;
+    }
     CHECK(pending_remote);
     GetResolver()->Resolve(MakeGarbageCollected<DecisionModel>(
         GetScriptState(), task_runner_, std::move(pending_remote), options_));

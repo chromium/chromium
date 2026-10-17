@@ -166,23 +166,8 @@ class LanguageDetectorCreateTask
       }
       return;
     }
-    if (monitor_) {
-      // Zero must be sent.
-      monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
-
-      // Abort may have been triggered by `OnDownloadProgressUpdate`.
-      if (!GetResolver()) {
-        return;
-      }
-
-      // Ensure that a download completion event is sent.
-      monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
-                                         kNormalizedDownloadProgressMax);
-
-      // Abort may have been triggered by `OnDownloadProgressUpdate`.
-      if (!GetResolver()) {
-        return;
-      }
+    if (!CompleteDownloadProgress(monitor_)) {
+      return;
     }
     GetResolver()->Resolve(MakeGarbageCollected<LanguageDetector>(
         GetScriptState(), maybe_model.value(), GetAbortSignal(),

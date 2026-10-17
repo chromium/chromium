@@ -194,23 +194,8 @@ void CreateTranslatorClient::OnResult(
   source_language_ = source_language->code;
   target_language_ = target_language->code;
 
-  if (monitor_) {
-    // Ensure that a download completion event is sent.
-    monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
-
-    // Abort may have been triggered by `OnDownloadProgressUpdate`.
-    if (!this->GetResolver()) {
-      return;
-    }
-
-    // Ensure that a download completion event is sent.
-    monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
-                                       kNormalizedDownloadProgressMax);
-
-    // Abort may have been triggered by `OnDownloadProgressUpdate`.
-    if (!this->GetResolver()) {
-      return;
-    }
+  if (!CompleteDownloadProgress(monitor_)) {
+    return;
   }
 
   GetResolver()->Resolve(MakeGarbageCollected<Translator>(

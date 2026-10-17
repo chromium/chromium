@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/ai_utils.h"
+#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
@@ -57,6 +59,20 @@ class AIContextObserver : public ContextLifecycleObserver {
     return resolver_;
   }
   AbortSignal* GetAbortSignal() { return abort_signal_; }
+
+  // Ensures 0 and 100% download progress events are dispatched via `monitor`
+  // (which ignores redundant updates). Returns whether `resolver_` remains
+  // valid, as progress listeners may abort creation or destroy the context.
+  bool CompleteDownloadProgress(CreateMonitor* monitor) {
+    if (monitor && resolver_) {
+      monitor->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
+    }
+    if (monitor && resolver_) {
+      monitor->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
+                                        kNormalizedDownloadProgressMax);
+    }
+    return resolver_ != nullptr;
+  }
 
   void Cleanup() {
     ResetReceiver();

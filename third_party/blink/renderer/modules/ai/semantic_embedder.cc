@@ -118,6 +118,9 @@ class CreateSemanticEmbedderClient
       return;
     }
     if (pending_remote) {
+      if (!CompleteDownloadProgress(monitor_)) {
+        return;
+      }
       GetResolver()->Resolve(MakeGarbageCollected<SemanticEmbedder>(
           GetScriptState(), task_runner_, std::move(pending_remote), options_));
     } else {

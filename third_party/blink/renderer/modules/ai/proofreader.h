@@ -85,7 +85,7 @@ class Proofreader final : public ScriptWrappable,
   }
 
   String correctionExplanationLanguage() const {
-    return options_->getCorrectionExplanationLanguageOr(g_empty_string);
+    return options_->getCorrectionExplanationLanguageOr(String());
   }
 
  private:

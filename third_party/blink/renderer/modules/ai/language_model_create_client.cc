@@ -433,27 +433,12 @@ void LanguageModelCreateClient::OnResult(
   if (!GetResolver()) {
     return;
   }
-  if (pending_remote && monitor_) {
-    // Ensure that a download completion event is sent.
-    monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
-
-    // Abort may have been triggered by `OnDownloadProgressUpdate`.
-    if (!this->GetResolver()) {
-      return;
-    }
-
-    // Ensure that a download completion event is sent.
-    monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
-                                       kNormalizedDownloadProgressMax);
-
-    // Abort may have been triggered by `OnDownloadProgressUpdate`.
-    if (!this->GetResolver()) {
-      return;
-    }
-  }
 
   CHECK(info);
   if (GetExecutionContext() && pending_remote) {
+    if (!CompleteDownloadProgress(monitor_)) {
+      return;
+    }
     info->sampling_mode = sampling_mode_;
     bool has_context =
         options_->hasInitialPrompts() && !options_->initialPrompts().empty();
