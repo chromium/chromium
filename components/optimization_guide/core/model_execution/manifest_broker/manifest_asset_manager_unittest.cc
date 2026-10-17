@@ -1077,6 +1077,152 @@ TEST_F(ManifestAssetManagerTest, UninstallModels) {
   EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
+TEST_F(ManifestAssetManagerTest, SetUseCaseRequestedFalseUninstallsUseCase) {
+  DummyAsset asset_compose = DummyAsset::For("compose");
+  DummyAsset asset_test = DummyAsset::For("test");
+  usage_tracker_.RaisePriority(asset_compose.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  usage_tracker_.RaisePriority(asset_test.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset_compose).Add(asset_test));
+  Startup();
+
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(asset_compose.ToInstallTarget()));
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(asset_test.ToInstallTarget()));
+
+  manifest_broker_state_->SetUseCaseRequested(asset_compose.use_case, false);
+
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset_compose.public_key));
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset_test.public_key));
+  EXPECT_TRUE(component_state_.IsInstalled(asset_test.ToInstallTarget()));
+}
+
+TEST_F(ManifestAssetManagerTest,
+       SetUseCaseRequestedFalsePreservesSharedAssets) {
+  std::string key = "shared_key";
+  key.resize(32, '0');
+  std::string public_key = base::HexEncode(base::as_byte_span(key));
+
+  DummyAsset asset_compose =
+      DummyAsset::For("compose").WithAssetId("asset_1").WithPublicKey(
+          public_key);
+  DummyAsset asset_test =
+      DummyAsset::For("test").WithAssetId("asset_1").WithPublicKey(public_key);
+
+  usage_tracker_.RaisePriority(asset_compose.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  usage_tracker_.RaisePriority(asset_test.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset_compose).Add(asset_test));
+  Startup();
+
+  EXPECT_TRUE(
+      component_state_.WaitForRegistration(asset_compose.ToInstallTarget()));
+
+  // Clearing compose should not uninstall asset_1 because test still uses it.
+  manifest_broker_state_->SetUseCaseRequested(asset_compose.use_case, false);
+  task_environment_.FastForwardBy(base::Seconds(2));
+  EXPECT_FALSE(
+      component_state_.WasUninstallRequested(asset_compose.public_key));
+  EXPECT_TRUE(component_state_.IsInstalled(asset_compose.ToInstallTarget()));
+
+  // Now clearing test should uninstall asset_1.
+  manifest_broker_state_->SetUseCaseRequested(asset_test.use_case, false);
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset_compose.public_key));
+}
+
+TEST_F(ManifestAssetManagerTest, SetUseCaseRequestedFalseWhileRegistering) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+
+  // Defer registration callbacks so the component stays in kRegistering state.
+  component_state_.SetDeferRegistrationCallbacks(true);
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Request uninstallation while registration is still in-flight.
+  manifest_broker_state_->SetUseCaseRequested(asset.use_case, false);
+
+  // Now let the registration callback run; it should proceed to uninstall.
+  component_state_.SetDeferRegistrationCallbacks(false);
+  component_state_.RunPendingRegistrations();
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  EXPECT_TRUE(component_state_.IsUninstalled(asset.public_key));
+}
+
+TEST_F(ManifestAssetManagerTest,
+       SetUseCaseRequestedFalseWhileRegisteringAlreadyInstalled) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  component_state_.SetInstalled(asset.ToInstallTarget());
+
+  // Defer registration callbacks so the component stays in kRegistering state.
+  component_state_.SetDeferRegistrationCallbacks(true);
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Request uninstallation while registration is still in-flight.
+  manifest_broker_state_->SetUseCaseRequested(asset.use_case, false);
+
+  // Now let the registration and OnAssetReady callbacks run; they should not
+  // crash and the component should be uninstalled.
+  component_state_.SetDeferRegistrationCallbacks(false);
+  component_state_.RunPendingRegistrations();
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  EXPECT_TRUE(component_state_.IsUninstalled(asset.public_key));
+}
+
+TEST_F(ManifestAssetManagerTest, UninstallModelsWhileRegistering) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+
+  // Defer registration callbacks so the component stays in kRegistering state.
+  component_state_.SetDeferRegistrationCallbacks(true);
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Request uninstallation of all models while registration is in-flight.
+  manifest_broker_state_->UninstallModels();
+
+  // Now let the registration callback run; it should proceed to uninstall.
+  component_state_.SetDeferRegistrationCallbacks(false);
+  component_state_.RunPendingRegistrations();
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  EXPECT_TRUE(component_state_.IsUninstalled(asset.public_key));
+}
+
+TEST_F(ManifestAssetManagerTest,
+       UninstallModelsWhileRegisteringAlreadyInstalled) {
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.RaisePriority(asset.use_case,
+                               UsageTracker::Priority::kUserBlocking);
+  MakeAssetsInstallable(DummyManifest().Add(asset));
+  component_state_.SetInstalled(asset.ToInstallTarget());
+
+  // Defer registration callbacks so the component stays in kRegistering state.
+  component_state_.SetDeferRegistrationCallbacks(true);
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
+  // Request uninstallation of all models while registration is in-flight.
+  manifest_broker_state_->UninstallModels();
+
+  // Now let the registration and OnAssetReady callbacks run; they should not
+  // crash and the component should be uninstalled.
+  component_state_.SetDeferRegistrationCallbacks(false);
+  component_state_.RunPendingRegistrations();
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
+  EXPECT_TRUE(component_state_.IsUninstalled(asset.public_key));
+}
+
 TEST_F(ManifestAssetManagerTest, AssetAvailableAfterManifestUpdate) {
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.RaisePriority(asset.use_case,

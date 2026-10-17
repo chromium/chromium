@@ -255,6 +255,53 @@ TEST_F(ManifestBrokerStateTest, UninstallModels) {
   EXPECT_TRUE(session_future2.Take());
 }
 
+TEST_F(ManifestBrokerStateTest, SetUseCaseRequested) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  fake_.Startup();
+  fake_.state().SetUseCaseRequested("test", true);
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  EXPECT_TRUE(session_future.Take());
+
+  fake_.state().SetUseCaseRequested("test", false);
+
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_.client().GetSubscriber("test").unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingUsage;
+  }));
+
+  // Requesting the use case again should re-install and restore availability.
+  fake_.state().SetUseCaseRequested("test", true);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult>
+      session_future2;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future2.GetCallback());
+  EXPECT_TRUE(session_future2.Take());
+}
+
+TEST_F(ManifestBrokerStateTest, SetUseCaseRequestedFalseBeforeManifestLoaded) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+
+  // Call SetUseCaseRequested(false) immediately on startup before the manifest
+  // has finished loading and creating ManifestAssetManager.
+  fake_.state().SetUseCaseRequested("test", false);
+
+  // Trigger initialization and verify the model is evicted once the asset
+  // manager initializes.
+  fake_.client().GetSubscriber("test");
+  EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return fake_.client().GetSubscriber("test").unavailable_reason() ==
+           mojom::ModelUnavailableReason::kPendingUsage;
+  }));
+}
+
 TEST_F(ManifestBrokerStateTest,
        CreateSessionFailedOnInsufficientDiskSpaceForCaches) {
   // Use a base model without cache files so that has_caches is false,

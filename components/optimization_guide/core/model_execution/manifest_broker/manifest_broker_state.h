@@ -120,6 +120,7 @@ class ManifestBrokerState final : public OnDeviceCapability,
   ManifestMonitor manifest_monitor_;
   ManifestValidator manifest_validator_;
   std::unique_ptr<ManifestAssetManager> asset_manager_;
+  bool is_eviction_enabled_ = false;
   mojo::ReceiverSet<ModelBrokerDebug> receivers_;
   mojo::RemoteSet<mojom::ModelBrokerDebugObserver> debug_observers_;
   base::WeakPtrFactory<ManifestBrokerState> weak_ptr_factory_{this};
