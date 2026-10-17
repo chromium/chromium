@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.bottombar;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -40,11 +41,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -59,6 +60,7 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
@@ -167,7 +169,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         View bubbleView = mCoordinator.getBubbleViewForTesting();
         View switchBackBtn = bubbleView.findViewById(R.id.negative_button);
         switchBackBtn.performClick();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         assertTrue(
                 ChromeSharedPreferences.getInstance()
@@ -212,7 +214,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         mBottomBarView.setVisibility(View.VISIBLE);
         mBottomBarView.layout(0, 0, 1080, 201);
         mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Now shown
         verify(mScrimManager).showScrim(any());
@@ -229,7 +231,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         // The bottom controls make the container visible without laying the bar out again.
         bottomAppBarContainer.setVisibility(View.VISIBLE);
         mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mScrimManager).showScrim(any());
         assertTrue(isBubbleShowing());
@@ -249,7 +251,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         mBottomBarView.setVisibility(View.VISIBLE);
         mBottomBarView.layout(0, 0, 1080, 201);
         mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mScrimManager, never()).showScrim(any());
     }
@@ -269,7 +271,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         verify(mTracker).addOnInitializedCallback(callbackCaptor.capture());
         when(mTracker.isInitialized()).thenReturn(true);
         callbackCaptor.getValue().onResult(true);
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mScrimManager).showScrim(any());
     }
@@ -386,7 +388,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         // Wait for layout changes to propagate
         mBottomBarView.layout(0, 0, 200, 200);
         mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
-        ShadowLooper.idleMainLooper();
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Should NOT trigger tracker dismissed
         verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
@@ -459,12 +461,151 @@ public class BottomBarEducationCoordinatorUnitTest {
         triggerShow();
         verify(mVisibilityManager).addObserver(mCoordinator);
 
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        if (bubbleView != null) {
+            allowTooltipsToShowInRobolectric();
+            bubbleView.findViewById(R.id.positive_button).performClick();
+            verify(mVisibilityManager, never()).removeObserver(any());
+        }
+
         mCoordinator.dismiss();
         verify(mVisibilityManager).removeObserver(mCoordinator);
     }
 
+    @Test
+    public void testTooltipChain_AllButtons() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+        assertTrue(tooltip1.getDismissOnTouchInteractionForTesting());
+
+        tooltip1.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip2);
+        assertTrue(tooltip2.getDismissOnTouchInteractionForTesting());
+        assertNotSame(tooltip1, tooltip2);
+
+        tooltip2.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip3 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip3);
+        assertTrue(tooltip3.getDismissOnTouchInteractionForTesting());
+        assertNotSame(tooltip2, tooltip3);
+
+        tooltip3.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    public void testTooltipChain_SkipsHiddenButtons() {
+        setupForShow();
+        mBottomBarView.setButtonVisibility(ActionId.NEW_TAB, false);
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+        assertTrue(tooltip1.getDismissOnTouchInteractionForTesting());
+
+        tooltip1.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip3 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip3);
+        assertTrue(tooltip3.getDismissOnTouchInteractionForTesting());
+        assertNotSame(tooltip1, tooltip3);
+
+        tooltip3.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    @Config(qualifiers = "land")
+    public void testRotationDuringTooltipsReshowsCurrentTooltip() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip1 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip1);
+        assertTrue(tooltip1.getDismissOnTouchInteractionForTesting());
+
+        tooltip1.onDismissForTesting(false);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble tooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(tooltip2);
+        assertTrue(tooltip2.getDismissOnTouchInteractionForTesting());
+
+        // Simulate a configuration change during tooltips.
+        Configuration newConfig = new Configuration(mContext.getResources().getConfiguration());
+        newConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
+        mCoordinator.onConfigurationChanged(newConfig);
+
+        assertNull(mCoordinator.getCurrentTooltipForTesting());
+
+        mBottomBarView.layout(0, 0, 1080, 2000);
+        mBottomBarView.getViewTreeObserver().dispatchOnGlobalLayout();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        TextBubble newTooltip2 = mCoordinator.getCurrentTooltipForTesting();
+        assertNotNull(newTooltip2);
+        assertNotSame(tooltip2, newTooltip2);
+        // Verify it really is the 2nd tooltip (New Tab).
+        TextView msgView =
+                newTooltip2.getTextBubbleContentViewForTesting().findViewById(R.id.message);
+        assertEquals(
+                mContext.getString(R.string.bottom_bar_education_tooltip_new_tab),
+                msgView.getText().toString());
+
+        verify(mTracker, never()).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
+    @Test
+    public void testDestroyWhileShowingTooltips() {
+        setupForShow();
+        allowTooltipsToShowInRobolectric();
+        triggerShow();
+
+        View bubbleView = mCoordinator.getBubbleViewForTesting();
+        bubbleView.findViewById(R.id.positive_button).performClick();
+
+        mCoordinator.destroy();
+
+        verify(mTracker).dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
+    }
+
     private boolean isBubbleShowing() {
         return mCoordinator.getBubbleViewForTesting() != null;
+    }
+
+    private void allowTooltipsToShowInRobolectric() {
+        TextBubble.setSkipShowCheckForTesting(true);
+        BottomBarEducationCoordinator.setSkipTooltipShowCheckForTesting(true);
     }
 
     private void setupForShow() {
@@ -479,6 +620,7 @@ public class BottomBarEducationCoordinatorUnitTest {
         mBottomBarView.setButtonVisibility(ActionId.GLIC, true);
         mBottomBarView.setButtonVisibility(ActionId.NEW_TAB, true);
         mBottomBarView.setButtonVisibility(ActionId.TAB_SWITCHER, true);
+        mBottomBarView.setNewTabBackgroundVisible(true);
 
         root.addView(mControlContainer, new FrameLayout.LayoutParams(1080, 200));
         root.addView(bottomAppBarContainer, new FrameLayout.LayoutParams(1080, 200));
@@ -511,6 +653,6 @@ public class BottomBarEducationCoordinatorUnitTest {
 
     private void triggerShow() {
         mCoordinator.maybeShow();
-        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        RobolectricUtil.runAllBackgroundAndUi();
     }
 }

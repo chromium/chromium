@@ -14,8 +14,12 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -27,9 +31,12 @@ import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.browser_ui.widget.textbubble.ArrowBubbleDrawable;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -38,6 +45,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -61,6 +69,17 @@ import java.util.function.Supplier;
 public class BottomBarEducationCoordinator
         implements BrowserControlsStateProvider.Observer, ComponentCallbacks {
 
+    static final @ActionId int[] TOOLTIP_ACTION_IDS = {
+        ActionId.GLIC, ActionId.NEW_TAB, ActionId.TAB_SWITCHER
+    };
+    private static final @StringRes int[] TOOLTIP_STRING_IDS = {
+        R.string.bottom_bar_education_tooltip_gemini,
+        R.string.bottom_bar_education_tooltip_new_tab,
+        R.string.bottom_bar_education_tooltip_tab_switcher
+    };
+
+    private static boolean sSkipTooltipShowCheckForTesting;
+
     private final Context mContext;
     private final ScrimManager mScrimManager;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -76,12 +95,16 @@ public class BottomBarEducationCoordinator
     private @Nullable Tracker mActiveTracker;
     private @State int mState = State.IDLE;
     private int mLastOrientation = Configuration.ORIENTATION_UNDEFINED;
+    private @Nullable TextBubble mCurrentTooltip;
+    private @Nullable View mCurrentHighlightView;
+    private int mTooltipStep;
 
-    @IntDef({State.IDLE, State.SHOWING_BUBBLE, State.DONE})
+    @IntDef({State.IDLE, State.SHOWING_BUBBLE, State.SHOWING_TOOLTIPS, State.DONE})
     @Retention(RetentionPolicy.SOURCE)
     @interface State {
         int IDLE = 0;
         int SHOWING_BUBBLE = 1;
+        int SHOWING_TOOLTIPS = 2;
         int DONE = 3;
     }
 
@@ -176,18 +199,25 @@ public class BottomBarEducationCoordinator
 
     /** Dismisses the education bubble and hides the scrim. */
     public void dismiss() {
-        if (mState != State.SHOWING_BUBBLE) return;
+        if (mState != State.SHOWING_BUBBLE && mState != State.SHOWING_TOOLTIPS) return;
         mState = State.DONE;
         unregisterObservers();
         removeLayoutListeners();
+
+        dismissBubblePopup();
+        if (mCurrentTooltip != null) {
+            TextBubble tooltip = mCurrentTooltip;
+            mCurrentTooltip = null;
+            tooltip.dismiss();
+        }
+        if (mCurrentHighlightView != null) {
+            ViewHighlighter.turnOffHighlight(mCurrentHighlightView);
+            mCurrentHighlightView = null;
+        }
+
         if (mActiveTracker != null) {
             mActiveTracker.dismissed(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION);
             mActiveTracker = null;
-        }
-        if (mPopupWindow != null) {
-            AnchoredPopupWindow popup = mPopupWindow;
-            mPopupWindow = null;
-            popup.dismiss();
         }
 
         hideScrim();
@@ -197,6 +227,12 @@ public class BottomBarEducationCoordinator
                     .releasePersistentShowingToken(mBrowserControlsToken);
             mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
         }
+    }
+
+    private void dismissBubblePopup() {
+        AnchoredPopupWindow p = mPopupWindow;
+        mPopupWindow = null;
+        if (p != null) p.dismiss();
     }
 
     static boolean shouldUseGeminiVariant(boolean geminiFocusedParam, @Nullable View glicButton) {
@@ -305,8 +341,10 @@ public class BottomBarEducationCoordinator
                         mActiveTracker.notifyEvent(
                                 EventConstants.ANDROID_BOTTOM_BAR_EDUCATION_USED);
                     }
-                    dismiss();
-                    // TODO(crbug.com/567168121): Start the tooltip chain (next CL).
+                    mState = State.SHOWING_TOOLTIPS;
+                    hideScrim();
+                    dismissBubblePopup();
+                    startTooltipChain();
                 };
 
         View bubbleView =
@@ -426,6 +464,87 @@ public class BottomBarEducationCoordinator
         }
     }
 
+    private void startTooltipChain() {
+        mTooltipStep = 0;
+        showCurrentTooltip();
+    }
+
+    private void showCurrentTooltip() {
+        if (mState != State.SHOWING_TOOLTIPS) return;
+
+        while (mTooltipStep < TOOLTIP_ACTION_IDS.length) {
+            int actionId = TOOLTIP_ACTION_IDS[mTooltipStep];
+            BottomBarButtonContainer container = mBottomBarView.getContainerForAction(actionId);
+            if (container != null
+                    && container.isShown()
+                    && container.hasTargetView()
+                    && container.getTargetView().isShown()) {
+                break;
+            }
+            mTooltipStep++;
+        }
+
+        if (mTooltipStep >= TOOLTIP_ACTION_IDS.length) {
+            dismiss();
+            return;
+        }
+
+        int actionId = TOOLTIP_ACTION_IDS[mTooltipStep];
+        int stringId = TOOLTIP_STRING_IDS[mTooltipStep];
+        BottomBarButtonContainer container = mBottomBarView.getContainerForAction(actionId);
+        assert container != null;
+        View anchor = container.getTargetView();
+
+        mCurrentHighlightView = anchor;
+        HighlightParams highlightParams =
+                BottomBarUtils.createButtonHighlightParams(
+                        mContext,
+                        actionId == ActionId.NEW_TAB && mBottomBarView.isNewTabBackgroundVisible());
+        ViewHighlighter.turnOnHighlight(mCurrentHighlightView, highlightParams);
+
+        View rootView = mBottomBarView.getRootView();
+        mCurrentTooltip =
+                new TextBubble.Builder(
+                                mContext,
+                                rootView,
+                                new ViewRectProvider(anchor),
+                                stringId,
+                                stringId)
+                        .build();
+        mCurrentTooltip.setDismissOnTouchInteraction(true);
+        TextBubble tooltip = mCurrentTooltip;
+        mCurrentTooltip.addOnDismissListener(
+                () -> {
+                    if (mCurrentTooltip != tooltip) return;
+
+                    if (mCurrentHighlightView != null) {
+                        ViewHighlighter.turnOffHighlight(mCurrentHighlightView);
+                        mCurrentHighlightView = null;
+                    }
+                    mCurrentTooltip = null;
+                    mTooltipStep++;
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> {
+                                if (mState == State.SHOWING_TOOLTIPS) showCurrentTooltip();
+                            });
+                });
+        mCurrentTooltip.show();
+        if (!sSkipTooltipShowCheckForTesting && !mCurrentTooltip.isShowing()) {
+            dismiss();
+        }
+    }
+
+    /**
+     * Skips the post-show isShowing() check; Robolectric measures short tooltips below the popup's
+     * minimum size.
+     */
+    static void setSkipTooltipShowCheckForTesting(boolean skip) {
+        boolean previous = sSkipTooltipShowCheckForTesting;
+        sSkipTooltipShowCheckForTesting = skip;
+        ResettersForTesting.register(() -> sSkipTooltipShowCheckForTesting = previous);
+    }
+
     /**
      * Runs {@code action} once the bottom bar is laid out and shown. Uses a one-shot {@link
      * ViewTreeObserver.OnGlobalLayoutListener} because {@link ViewTreeObserver} dispatches global
@@ -479,14 +598,26 @@ public class BottomBarEducationCoordinator
     public void onConfigurationChanged(Configuration newConfig) {
         if (newConfig.orientation == mLastOrientation) return;
         mLastOrientation = newConfig.orientation;
-        if (mState != State.SHOWING_BUBBLE || mPopupWindow == null) return;
+        recreate();
+    }
 
-        // Null the field before dismissing so onPopupDismissed() does not end the flow; the scrim,
-        // controls token and tracker session stay active while the bubble is re-anchored.
-        AnchoredPopupWindow popup = mPopupWindow;
-        mPopupWindow = null;
-        popup.dismiss();
-        waitForLayout(this::showBubble);
+    /** Re-anchors the currently shown UI after an orientation change, keeping the flow active. */
+    private void recreate() {
+        if (mState == State.SHOWING_BUBBLE) {
+            if (mPopupWindow == null) return;
+            dismissBubblePopup();
+            waitForLayout(this::showBubble);
+        } else if (mState == State.SHOWING_TOOLTIPS) {
+            if (mCurrentTooltip == null) return;
+            TextBubble tooltip = mCurrentTooltip;
+            mCurrentTooltip = null;
+            tooltip.dismiss(); // listener ignores it: mCurrentTooltip != tooltip
+            if (mCurrentHighlightView != null) {
+                ViewHighlighter.turnOffHighlight(mCurrentHighlightView);
+                mCurrentHighlightView = null;
+            }
+            waitForLayout(this::showCurrentTooltip); // same mTooltipStep -> same tooltip
+        }
     }
 
     @Override
@@ -499,5 +630,9 @@ public class BottomBarEducationCoordinator
 
     @Nullable View getBubbleViewForTesting() {
         return mPopupWindow != null ? mPopupWindow.getContentView() : null;
+    }
+
+    @Nullable TextBubble getCurrentTooltipForTesting() {
+        return mCurrentTooltip;
     }
 }

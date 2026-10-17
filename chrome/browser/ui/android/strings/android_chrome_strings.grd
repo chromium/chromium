@@ -1015,6 +1015,15 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_SHOW_ME" desc="Button text to continue and show tooltips">
         Show me
       </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TOOLTIP_GEMINI" desc="Tooltip explaining the Gemini button">
+        Ask Gemini about anything on your page
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TOOLTIP_NEW_TAB" desc="Tooltip explaining the New Tab button">
+        Open new tabs
+      </message>
+      <message translateable="false" name="IDS_BOTTOM_BAR_EDUCATION_TOOLTIP_TAB_SWITCHER" desc="Tooltip explaining the Tab Switcher button">
+        View all of your tabs
+      </message>
       <!-- Bottom bar settings. -->
       <!-- TODO(crbug.com/556961273): Make translateable once the copy is final. -->
       <message name="IDS_BOTTOM_BAR_SETTING_TITLE" desc="Title of the switch in the Appearance settings page that shows or hides the bottom toolbar (a bar at the bottom of the screen with buttons such as new tab, tab switcher and menu). [CHAR_LIMIT=32]" translateable="false">
