@@ -1069,6 +1069,11 @@ public class MultiWindowUtilsUnitTest {
                         MultiInstanceManagerApi31.PersistedInstanceType.ANY),
                 MultiWindowUtils.getInstanceCount(
                         MultiInstanceManagerApi31.PersistedInstanceType.ANY, appTaskIds));
+
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        assertTrue(MultiWindowUtils.isWithinInstanceLimit(appTaskIds));
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        assertFalse(MultiWindowUtils.isWithinInstanceLimit(appTaskIds));
     }
 
     @Test

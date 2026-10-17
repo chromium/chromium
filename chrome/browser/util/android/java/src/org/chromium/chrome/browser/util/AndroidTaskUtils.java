@@ -147,28 +147,6 @@ public class AndroidTaskUtils {
     }
 
     /**
-     * Given an AppTask retrieves the task component name.
-     * @param task The app task to use.
-     * @return Fully qualified component name name or null if we were not able to
-     * determine it.
-     */
-    public static @Nullable String getTaskComponentName(AppTask task) {
-        RecentTaskInfo info = getTaskInfoFromTask(task);
-        if (info == null) return null;
-
-        Intent baseIntent = info.baseIntent;
-        if (baseIntent == null) {
-            return null;
-        } else if (baseIntent.getComponent() != null) {
-            return baseIntent.getComponent().getClassName();
-        } else {
-            ResolveInfo resolveInfo = PackageManagerUtils.resolveActivity(baseIntent, 0);
-            if (resolveInfo == null) return null;
-            return resolveInfo.activityInfo.name;
-        }
-    }
-
-    /**
      * Get all recent tasks with component name matching any of the given names.
      *
      * @param context the Android Context
@@ -197,9 +175,9 @@ public class AndroidTaskUtils {
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
 
         for (AppTask task : manager.getAppTasks()) {
-            RecentTaskInfo info = AndroidTaskUtils.getTaskInfoFromTask(task);
+            RecentTaskInfo info = getTaskInfoFromTask(task);
             if (info == null) continue;
-            String componentName = AndroidTaskUtils.getTaskComponentName(task);
+            String componentName = getTaskComponentName(info);
 
             boolean matches = componentName != null && componentsAccepted.contains(componentName);
             if (matchTopAndBaseActivities) {
@@ -218,6 +196,25 @@ public class AndroidTaskUtils {
             }
         }
         return matchingTasks;
+    }
+
+    /**
+     * Given a RecentTaskInfo retrieves the task component name.
+     *
+     * @param info The RecentTaskInfo to use.
+     * @return Fully qualified component name or null if we were not able to determine it.
+     */
+    private static @Nullable String getTaskComponentName(RecentTaskInfo info) {
+        Intent baseIntent = info.baseIntent;
+        if (baseIntent == null) {
+            return null;
+        } else if (baseIntent.getComponent() != null) {
+            return baseIntent.getComponent().getClassName();
+        } else {
+            ResolveInfo resolveInfo = PackageManagerUtils.resolveActivity(baseIntent, 0);
+            if (resolveInfo == null) return null;
+            return resolveInfo.activityInfo.name;
+        }
     }
 
     /**

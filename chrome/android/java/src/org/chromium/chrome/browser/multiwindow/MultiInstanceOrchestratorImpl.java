@@ -171,7 +171,8 @@ import java.util.function.Supplier;
             return false;
         }
 
-        if (!MultiWindowUtils.isWithinInstanceLimit()) {
+        if (!MultiWindowUtils.isWithinInstanceLimit(
+                MultiWindowUtils.getAllAppTaskIds(sourceActivity))) {
             var multiInstanceManager = getMultiInstanceManager(sourceActivity);
             if (multiInstanceManager != null) {
                 multiInstanceManager.showInstanceCreationLimitMessage();
@@ -199,7 +200,8 @@ import java.util.function.Supplier;
         if (tabs.isEmpty()) return;
         if (sourceActivity == null) return;
 
-        if (!MultiWindowUtils.isWithinInstanceLimit()) {
+        if (!MultiWindowUtils.isWithinInstanceLimit(
+                MultiWindowUtils.getAllAppTaskIds(sourceActivity))) {
             var multiInstanceManager = getMultiInstanceManager(sourceActivity);
             if (multiInstanceManager != null) {
                 multiInstanceManager.showInstanceCreationLimitMessage();
@@ -276,6 +278,7 @@ import java.util.function.Supplier;
                             ? PersistedInstanceType.OFF_THE_RECORD
                             : PersistedInstanceType.REGULAR);
         }
+        // TODO(crbug.com/573931711): Share pre-fetched appTaskIds with moveTabsToNewWindow().
         int instanceCount = MultiWindowUtils.getInstanceCount(instanceType);
 
         Activity sourceActivity = TabUtils.getActivity(tabs.get(0));
@@ -319,7 +322,8 @@ import java.util.function.Supplier;
         Activity sourceActivity = MultiWindowUtils.getActivityById(tabGroupMetadata.sourceWindowId);
         if (sourceActivity == null) return;
 
-        if (!MultiWindowUtils.isWithinInstanceLimit()) {
+        if (!MultiWindowUtils.isWithinInstanceLimit(
+                MultiWindowUtils.getAllAppTaskIds(sourceActivity))) {
             MultiInstanceManager multiInstanceManager = getMultiInstanceManager(sourceActivity);
             if (multiInstanceManager != null) {
                 multiInstanceManager.showInstanceCreationLimitMessage();
@@ -373,6 +377,7 @@ import java.util.function.Supplier;
                             ? PersistedInstanceType.OFF_THE_RECORD
                             : PersistedInstanceType.REGULAR);
         }
+        // TODO(crbug.com/573931711): Share pre-fetched appTaskIds with moveTabGroupToNewWindow().
         int instanceCount = MultiWindowUtils.getInstanceCount(instanceType);
 
         if (instanceCount <= 1) {
@@ -501,7 +506,8 @@ import java.util.function.Supplier;
                             ? PersistedInstanceType.OFF_THE_RECORD
                             : PersistedInstanceType.REGULAR);
         }
-        int instanceCount = MultiWindowUtils.getInstanceCount(targetInstanceType);
+        Set<Integer> appTaskIds = MultiWindowUtils.getAllAppTaskIds(sourceActivity);
+        int instanceCount = MultiWindowUtils.getInstanceCount(targetInstanceType, appTaskIds);
         boolean isTargetIncognitoWindow =
                 IncognitoUtils.shouldOpenIncognitoAsWindow()
                         && ((targetInstanceType & PersistedInstanceType.OFF_THE_RECORD) != 0);
@@ -519,7 +525,7 @@ import java.util.function.Supplier;
         var multiInstanceManager =
                 (MultiInstanceManagerApi31) getMultiInstanceManager(sourceActivity);
         if (instanceCount == 0 || preferNew) {
-            if (!MultiWindowUtils.isWithinInstanceLimit()) {
+            if (!MultiWindowUtils.isWithinInstanceLimit(appTaskIds)) {
                 if (multiInstanceManager != null) {
                     multiInstanceManager.showInstanceCreationLimitMessage();
                 }

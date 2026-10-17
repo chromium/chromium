@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
@@ -2911,6 +2912,42 @@ public class MultiInstanceManagerApi31UnitTest {
                         .anyMatch(info -> info.windowId == instanceId));
 
         ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
+    public void testInitializeAndAllocInstanceId_DeduplicatesAppTaskIpcs() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(5);
+        MultiWindowUtils.setAppTaskIdsForTesting(null);
+        List<AppTask> appTasks = setupActivityManagerAppTasks(mCurrentActivity);
+
+        var manager = createTestMultiInstanceManager(mCurrentActivity);
+        MultiWindowUtils.setAppTaskIdsForTesting(null);
+        ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
+        clearInvocations(mActivityManager, appTasks.get(0));
+
+        AllocatedIdInfo idInfo =
+                manager.allocInstanceId(
+                        PASSED_ID_INVALID,
+                        TASK_ID_56,
+                        /* preferNew= */ true,
+                        /* isIncognitoIntent= */ false);
+        assertEquals(0, idInfo.instanceId);
+
+        // allocInstanceId(preferNew=true) should call getAppTasks() once in
+        // removeInvalidInstanceData() and reuse the result across
+        // finishExcessRunningActivities(), isWithinInstanceLimit(), and logNewInstanceId().
+        verify(mActivityManager, times(1)).getAppTasks();
+        verify(appTasks.get(0), times(1)).getTaskInfo();
+
+        clearInvocations(mActivityManager, appTasks.get(0));
+        manager.initialize(0, TASK_ID_56, SupportedProfileType.REGULAR);
+
+        // initialize() should fetch getAllAppTaskIds() once and share it across
+        // recordInstanceCountHistogram() and recordActivityCountHistogram().
+        verify(mActivityManager, times(1)).getAppTasks();
+        verify(appTasks.get(0), times(1)).getTaskInfo();
     }
 
     private TestActivity createActivity(int taskId) {

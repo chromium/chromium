@@ -423,7 +423,9 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         List<ActivityManager.AppTask> appTasks = activityManager.getAppTasks();
         ActivityManager.AppTask otherActivityTask = null;
         for (ActivityManager.AppTask task : appTasks) {
-            String baseActivity = MultiWindowUtils.getActivityNameFromTask(task);
+            String baseActivity =
+                    MultiWindowUtils.getActivityNameFromTask(
+                            AndroidTaskUtils.getTaskInfoFromTask(task));
 
             if (baseActivity.equals(otherWindowActivityClass.getName())) {
                 otherActivityTask = task;

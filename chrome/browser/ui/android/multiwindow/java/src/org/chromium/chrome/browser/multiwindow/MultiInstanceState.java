@@ -91,7 +91,18 @@ public class MultiInstanceState implements ApplicationStatus.TaskVisibilityListe
 
     @Override
     public void onTaskVisibilityChanged(int taskId, boolean isVisible) {
-        if (!isRelevantTaskId(taskId)) return;
+        // Tasks are only added to mActiveTasks after passing isRelevantTaskId(), and a task's
+        // baseActivity is immutable for its lifetime. Checking mActiveTasks first avoids
+        // synchronous getAppTasks()/getTaskInfo() Binder IPCs when:
+        // - an untracked task hides (deleting it from mActiveTasks would be a no-op),
+        // - an already-tracked task hides (it was already validated when shown, and if it is
+        //   hiding due to finishAndRemoveTask(), getAppTasks() may no longer report it), or
+        // - an already-tracked task reports visible again.
+        if (!isVisible) {
+            if (mActiveTasks.indexOfKey(taskId) < 0) return;
+        } else if (mActiveTasks.indexOfKey(taskId) >= 0 || !isRelevantTaskId(taskId)) {
+            return;
+        }
 
         boolean multiInstanceState = isInMultiInstanceMode();
         if (isVisible) {
