@@ -157,6 +157,40 @@ SerializeTrustTokenParametersAndConstructExpectation(
   return {std::move(trust_token_params), *base::WriteJson(parameters)};
 }
 
+std::vector<TrustTokenTestParameters> GetIssuanceTrustTokenTestParameters() {
+  return {// For issuance, there are no additional parameters to specify.
+          TrustTokenTestParameters(1, mojom::TrustTokenOperationType::kIssuance,
+                                   std::nullopt, std::nullopt)};
+}
+
+std::vector<TrustTokenTestParameters> GetRedemptionTrustTokenTestParameters() {
+  return {
+      // For redemption, there is one free parameter, refreshPolicy, with two
+      // values (and a default).
+      TrustTokenTestParameters(1, mojom::TrustTokenOperationType::kRedemption,
+                               mojom::TrustTokenRefreshPolicy::kRefresh,
+                               std::nullopt),
+      TrustTokenTestParameters(1, mojom::TrustTokenOperationType::kRedemption,
+                               mojom::TrustTokenRefreshPolicy::kUseCached,
+                               std::nullopt),
+      TrustTokenTestParameters(1, mojom::TrustTokenOperationType::kRedemption,
+                               std::nullopt, std::nullopt)};
+}
+
+std::vector<TrustTokenTestParameters> GetSigningTrustTokenTestParameters() {
+  return {
+      // Signing's inputs are issuers; "issuers" must be nonempty and must only
+      // contain secure origins.
+      TrustTokenTestParameters(
+          1, mojom::TrustTokenOperationType::kSigning, std::nullopt,
+          std::vector<std::string>{"https://issuer.example"}),
+      TrustTokenTestParameters(
+          1, mojom::TrustTokenOperationType::kSigning, std::nullopt,
+          std::vector<std::string>{"https://issuer.example",
+                                   "https://another-issuer.example"}),
+  };
+}
+
 std::string WrapKeyCommitmentsForIssuers(
     base::flat_map<url::Origin, std::string_view> issuers_and_commitments) {
   base::DictValue to_serialize;

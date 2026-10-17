@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -91,7 +92,8 @@ class TrustTokenRequestHelperTest : public ::testing::Test {
 // serialize/deserialize and are properly propagated to the network stack.
 //
 // Intended use:
-// - parameterize tests by k{Issuance, Signing, Redemption}TrustTokenParameters;
+// - parameterize tests by
+//   Get{Issuance, Signing, Redemption}TrustTokenTestParameters();
 // - in the tests, call |SerializeTrustTokenParametersAndConstructExpectation|
 // to construct (1) a string representation of the trustToken JS argument and
 // (2) a corresponding mojom::TrustTokenParams object expected to
@@ -163,44 +165,11 @@ SerializeTrustTokenParametersAndConstructExpectation(
 // These groups of parameters are defined in this utility file so that they can
 // be shared among different tests deserializing and propagating Trust Tokens
 // parameters; see above for a more detailed description of the intended use.
-const TrustTokenTestParameters kIssuanceTrustTokenTestParameters[]{
-    // For issuance, there are no additional parameters to specify.
-    TrustTokenTestParameters(1,
-                             mojom::TrustTokenOperationType::kIssuance,
-                             std::nullopt,
-                             std::nullopt)};
+std::vector<TrustTokenTestParameters> GetIssuanceTrustTokenTestParameters();
 
-const TrustTokenTestParameters kRedemptionTrustTokenTestParameters[]{
-    // For redemption, there is one free parameter, refreshPolicy, with two
-    // values (and a default).
-    TrustTokenTestParameters(1,
-                             mojom::TrustTokenOperationType::kRedemption,
-                             mojom::TrustTokenRefreshPolicy::kRefresh,
-                             std::nullopt),
-    TrustTokenTestParameters(1,
-                             mojom::TrustTokenOperationType::kRedemption,
-                             mojom::TrustTokenRefreshPolicy::kUseCached,
-                             std::nullopt),
-    TrustTokenTestParameters(1,
-                             mojom::TrustTokenOperationType::kRedemption,
-                             std::nullopt,
-                             std::nullopt)};
+std::vector<TrustTokenTestParameters> GetRedemptionTrustTokenTestParameters();
 
-const TrustTokenTestParameters kSigningTrustTokenTestParameters[]{
-    // Signing's inputs are issuers; "issuers" must be nonempty and must only
-    // contain secure origins.
-    TrustTokenTestParameters(
-        1,
-        mojom::TrustTokenOperationType::kSigning,
-        std::nullopt,
-        std::vector<std::string>{"https://issuer.example"}),
-    TrustTokenTestParameters(
-        1,
-        mojom::TrustTokenOperationType::kSigning,
-        std::nullopt,
-        std::vector<std::string>{"https://issuer.example",
-                                 "https://another-issuer.example"}),
-};
+std::vector<TrustTokenTestParameters> GetSigningTrustTokenTestParameters();
 
 // Given a well-formed key commitment record JSON and an issuer origin, returns
 // a serialized one-item dictionary mapping the commitment to the issuer.

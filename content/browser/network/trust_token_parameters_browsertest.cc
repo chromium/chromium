@@ -41,17 +41,17 @@ class TrustTokenParametersBrowsertest
 INSTANTIATE_TEST_SUITE_P(
     WithIssuanceParameters,
     TrustTokenParametersBrowsertest,
-    testing::ValuesIn(network::kIssuanceTrustTokenTestParameters));
+    testing::ValuesIn(network::GetIssuanceTrustTokenTestParameters()));
 
 INSTANTIATE_TEST_SUITE_P(
     WithRedemptionParameters,
     TrustTokenParametersBrowsertest,
-    testing::ValuesIn(network::kRedemptionTrustTokenTestParameters));
+    testing::ValuesIn(network::GetRedemptionTrustTokenTestParameters()));
 
 INSTANTIATE_TEST_SUITE_P(
     WithSigningParameters,
     TrustTokenParametersBrowsertest,
-    testing::ValuesIn(network::kSigningTrustTokenTestParameters));
+    testing::ValuesIn(network::GetSigningTrustTokenTestParameters()));
 
 IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
                        PopulatesResourceRequestViaFetch) {

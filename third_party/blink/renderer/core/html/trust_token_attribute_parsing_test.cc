@@ -35,15 +35,15 @@ using TrustTokenAttributeParsingSuccess =
 INSTANTIATE_TEST_SUITE_P(
     WithIssuanceParams,
     TrustTokenAttributeParsingSuccess,
-    ::testing::ValuesIn(network::kIssuanceTrustTokenTestParameters));
+    ::testing::ValuesIn(network::GetIssuanceTrustTokenTestParameters()));
 INSTANTIATE_TEST_SUITE_P(
     WithRedemptionParams,
     TrustTokenAttributeParsingSuccess,
-    ::testing::ValuesIn(network::kRedemptionTrustTokenTestParameters));
+    ::testing::ValuesIn(network::GetRedemptionTrustTokenTestParameters()));
 INSTANTIATE_TEST_SUITE_P(
     WithSigningParams,
     TrustTokenAttributeParsingSuccess,
-    ::testing::ValuesIn(network::kSigningTrustTokenTestParameters));
+    ::testing::ValuesIn(network::GetSigningTrustTokenTestParameters()));
 
 // Test roundtrip serializations-then-deserializations for a collection of test
 // cases covering all possible values of all enum attributes, and all
