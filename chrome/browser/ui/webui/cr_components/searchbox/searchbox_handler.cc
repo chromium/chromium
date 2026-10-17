@@ -124,6 +124,8 @@ const char* kSearchSparkIconResourceName =
     "//resources/cr_components/searchbox/icons/search_spark.svg";
 const char* kReplyRotated180IconResourceName =
     "//resources/cr_components/searchbox/icons/reply_rotated180.svg";
+const char* kDockToRightIconResourceName =
+    "//resources/cr_components/searchbox/icons/dock_to_right.svg";
 }  // namespace searchbox_internal
 
 namespace {

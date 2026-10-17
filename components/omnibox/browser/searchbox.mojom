@@ -135,6 +135,11 @@ struct AutocompleteMatch {
   mojo_base.mojom.String16 remove_button_a11y_label;
   // Whether to show the description for a contextual match.
   bool show_contextual_description;
+  // Optional path for an icon rendered in front of the description (secondary
+  // text). Empty if no icon should be shown.
+  // The icon path will be pointed to a relative url pointing to a bundled
+  // resource and is used directly in CSS to show the icon.
+  string description_icon_path;
   // ID of the group the suggestion belongs to. 0 if it does not belong to any.
   int32 suggestion_group_id;
   bool supports_deletion;

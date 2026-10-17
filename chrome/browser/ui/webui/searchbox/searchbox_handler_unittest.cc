@@ -1618,6 +1618,41 @@ TEST_F(
 }
 
 TEST_F(WebuiOmniboxHandlerTest,
+       CreateAutocompleteMatch_SidePanelDescriptionIcon) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kWebUIOmniboxAskGAboutThisPage,
+      {{"Omnibox_AskGSuggestionSidePanelDescription", "true"}});
+  auto* provider_client = static_cast<MockAutocompleteProviderClient*>(
+      handler_->autocomplete_controller()->autocomplete_provider_client());
+
+  AutocompleteMatch match;
+  match.subtypes.insert(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
+  match.description = u"Opens in side panel";
+  match.destination_url = GURL("https://example.com");
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+  auto get_description_icon_path = [&] {
+    auto mojom_match = handler_->CreateAutocompleteMatch(
+        match, bookmark_model, omnibox::GroupConfigMap(),
+        omnibox_controller_->client()->GetTemplateURLService());
+    return mojom_match.value()->description_icon_path;
+  };
+
+  // No icon when the AskG action won't open the side panel.
+  EXPECT_CALL(*provider_client, ShouldOpenCoBrowsePanel())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_EQ(get_description_icon_path(), "");
+
+  EXPECT_CALL(*provider_client, ShouldOpenCoBrowsePanel())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_EQ(get_description_icon_path(),
+            searchbox_internal::kDockToRightIconResourceName);
+}
+
+TEST_F(WebuiOmniboxHandlerTest,
        CreateAutocompleteMatch_PopulatesFuseboxAction) {
   AutocompleteMatch match;
   match.destination_url = GURL("https://example.com");

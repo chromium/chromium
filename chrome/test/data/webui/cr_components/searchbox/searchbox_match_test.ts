@@ -488,4 +488,21 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertFalse(spans[1]!.classList.contains('match'));
     assertTrue(spans[1]!.classList.contains('dim'));
   });
+
+  test('DescriptionIcon', async () => {
+    const iconStyle = () =>
+        getComputedStyle(matchEl.$.secondaryText, '::before');
+    assertEquals('none', iconStyle().content);
+
+    matchEl.match = createAutocompleteMatch({
+      suggestTemplate:
+          createSuggestTemplateInfo({secondaryText: 'Opens in side panel'}),
+      descriptionIconPath: 'dock_to_right.svg',
+    });
+    await microtasksFinished();
+    assertEquals('""', iconStyle().content);
+    assertTrue(iconStyle()
+                   .getPropertyValue('-webkit-mask-image')
+                   .includes('dock_to_right.svg'));
+  });
 });

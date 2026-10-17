@@ -444,6 +444,16 @@ void WebuiOmniboxHandler::OverrideIconPaths(
             ? searchbox_internal::kSearchSparkIconResourceName
             : searchbox_internal::kReplyRotated180IconResourceName;
   }
+
+  // Show a side panel icon in front of the "Opens in side panel" description.
+  // Description icons are new; consider moving this to its own hook (e.g.
+  // GetDescriptionIconPath()) depending on how this parameter evolves.
+  // For now we are keeping this icon override scoped to webui omnibox.
+  if (ContextualSearchProvider::HasSidePanelDescription(
+          match, autocomplete_controller()->autocomplete_provider_client())) {
+    mojom_match->description_icon_path =
+        searchbox_internal::kDockToRightIconResourceName;
+  }
   SearchboxHandler::OverrideIconPaths(match, mojom_match);
 }
 
