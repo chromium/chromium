@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
@@ -451,7 +452,7 @@ void CommandLine::AppendSwitchNative(std::string_view switch_string,
     g_duplicate_switch_handler->ResolveDuplicate(key, value,
                                                  switches_[std::string(key)]);
   } else {
-    switches_[std::string(key)] = StringType(value);
+    InsertOrAssign(switches_, key, StringType(value));
   }
 
   // Preserve existing switch prefixes in |argv_|; only append one if necessary.

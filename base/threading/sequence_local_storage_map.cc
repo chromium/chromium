@@ -59,13 +59,8 @@ SequenceLocalStorageMap::Value* SequenceLocalStorageMap::Get(int slot_id) {
 SequenceLocalStorageMap::Value* SequenceLocalStorageMap::Set(
     int slot_id,
     SequenceLocalStorageMap::ValueDestructorPair value_destructor_pair) {
-  auto it = sls_map_.find(slot_id);
-
-  if (it == sls_map_.end()) {
-    it = sls_map_.emplace(slot_id, std::move(value_destructor_pair)).first;
-  } else {
-    it->second = std::move(value_destructor_pair);
-  }
+  auto it = sls_map_.insert_or_assign(slot_id, std::move(value_destructor_pair))
+                .first;
 
   // The maximum number of entries in the map is 256. This can be adjusted, but
   // will require reviewing the choice of data structure for the map.
