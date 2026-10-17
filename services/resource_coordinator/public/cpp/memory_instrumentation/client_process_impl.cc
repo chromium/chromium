@@ -172,7 +172,12 @@ void ClientProcessImpl::RequestOSMemoryDump(
 
 #if BUILDFLAG(IS_MAC)
   // If the most recent chrome memory dump hasn't finished, wait for that to
-  // finish.
+  // finish. On Mac, `phys_footprint` (used to compute `private_footprint_kb`)
+  // counts faulted pages of anonymous shared memory. The Chrome dump faults
+  // every resident shared memory page (see
+  // ProcessMemoryDump::CountResidentBytesInSharedMemory()), so that subtracting
+  // the resident size reported by SharedMemoryTracker is accurate. That only
+  // works if phys_footprint is sampled after the Chrome dump.
   if (most_recent_chrome_memory_dump_guid_.has_value()) {
     uint64_t guid = most_recent_chrome_memory_dump_guid_.value();
     auto it = pending_chrome_callbacks_.find(guid);
