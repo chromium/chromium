@@ -15847,6 +15847,22 @@
             ]
         }
     ],
+    "SensitiveContentRedaction": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261016",
+                    "enable_features": [
+                        "SensitiveContent"
+                    ]
+                }
+            ]
+        }
+    ],
     "SensorsAllowAskBlockPermissionModel": [
         {
             "platforms": [
