@@ -426,9 +426,8 @@ ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     return EmptyPromise();
   }
 
-  ResolverWithAbortSignal<IDLDouble>* resolver =
-      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
-          script_state, composite_signal);
+  auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
+      script_state, composite_signal);
 
   task_runner_->PostTask(
       FROM_HERE, BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,

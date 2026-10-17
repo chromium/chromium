@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/modules/ai/availability.h"
 #include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
+#include "third_party/blink/renderer/modules/ai/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -524,36 +525,14 @@ DecisionModel::decide(ScriptState* script_state,
     return ScriptPromise<IDLRecord<IDLString, DecisionModelDecision>>();
   }
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<IDLRecord<IDLString, DecisionModelDecision>>>(
-      script_state);
+  using DecideResult = IDLRecord<IDLString, DecisionModelDecision>;
+  auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<DecideResult>>(
+      script_state, signal);
   auto promise = resolver->Promise();
   if (!decision_model_remote_.is_bound() ||
       !decision_model_remote_.is_connected()) {
-    resolver->RejectWithDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "The session cannot be executed because the model was deleted or the "
-        "session was destroyed.");
+    resolver->Reject(CreateSessionDestroyedException());
     return promise;
-  }
-
-  AbortSignal::AlgorithmHandle* abort_handle = nullptr;
-  if (signal) {
-    abort_handle = signal->AddAlgorithm(BindOnce(
-        [](ScriptPromiseResolver<IDLRecord<IDLString, DecisionModelDecision>>*
-               resolver,
-           AbortSignal* signal) {
-          if (!resolver) {
-            return;
-          }
-          ScriptState* script_state = resolver->GetScriptState();
-          if (!script_state || !script_state->ContextIsValid()) {
-            return;
-          }
-          ScriptState::Scope scope(script_state);
-          resolver->Reject(signal->reason(script_state));
-        },
-        WrapWeakPersistent(resolver), WrapWeakPersistent(signal)));
   }
 
   // Pass a persistent reference to `this` so the DecisionModel and its
@@ -563,17 +542,11 @@ DecisionModel::decide(ScriptState* script_state,
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           BindOnce(
               [](DecisionModel*,
-                 ScriptPromiseResolver<
-                     IDLRecord<IDLString, DecisionModelDecision>>* resolver,
-                 AbortSignal* signal,
-                 AbortSignal::AlgorithmHandle* abort_handle,
+                 ResolverWithAbortSignal<DecideResult>* resolver,
                  base::expected<mojom::blink::AIDecisionModelResultPtr,
                                 mojom::blink::AIDecisionModelDecideErrorPtr>
                      result) {
-                if (signal && abort_handle) {
-                  signal->RemoveAlgorithm(abort_handle);
-                }
-                if (signal && signal->aborted()) {
+                if (resolver->aborted()) {
                   return;
                 }
                 if (!result.has_value()) {
@@ -608,8 +581,7 @@ DecisionModel::decide(ScriptState* script_state,
                 }
                 resolver->Resolve(decisions_record);
               },
-              WrapPersistent(this), WrapPersistent(resolver),
-              WrapPersistent(signal), WrapPersistent(abort_handle)),
+              WrapPersistent(this), WrapPersistent(resolver)),
           base::unexpected(mojom::blink::AIDecisionModelDecideError::New(
               ModelStreamingResponseStatus::kErrorSessionDestroyed,
               /*quota_error_info=*/nullptr))));

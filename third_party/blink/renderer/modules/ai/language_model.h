@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/language_model_params.h"
+#include "third_party/blink/renderer/modules/ai/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -148,8 +149,7 @@ class MODULES_EXPORT LanguageModel final : public EventTarget,
   // Helper to make AILanguageModelProxy::MeasureInputUsage compatible with
   // ConvertPromptInputsToMojo callback.
   void ExecuteMeasureInputUsage(
-      ScriptPromiseResolver<IDLDouble>* resolver,
-      AbortSignal* signal,
+      ResolverWithAbortSignal<IDLDouble>* resolver,
       Vector<mojom::blink::AILanguageModelPromptPtr> prompts);
 
   // Validates common prompt input and returns true on success.

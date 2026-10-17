@@ -820,23 +820,17 @@ void LanguageModel::ExecutePrompt(
 }
 
 void LanguageModel::ExecuteMeasureInputUsage(
-    ScriptPromiseResolver<IDLDouble>* resolver,
-    AbortSignal* signal,
+    ResolverWithAbortSignal<IDLDouble>* resolver,
     Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
-  auto reject_fn = RejectOnDestruction(resolver, signal);
+  if (!language_model_remote_) {
+    resolver->Reject(CreateSessionDestroyedException());
+    return;
+  }
   language_model_remote_->MeasureInputUsage(
       std::move(prompts),
       BindOnce(
-          [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
+          [](ResolverWithAbortSignal<IDLDouble>* resolver,
              std::optional<uint32_t> usage) {
-            ExecutionContext* context = resolver->GetExecutionContext();
-            if (!context) {
-              return;
-            }
-            if (signal && signal->aborted()) {
-              resolver->Reject(signal->reason(resolver->GetScriptState()));
-              return;
-            }
             if (!usage.has_value()) {
               resolver->Reject(
                   DOMException::Create(kExceptionMessageUnableToCalculateUsage,
@@ -846,8 +840,8 @@ void LanguageModel::ExecuteMeasureInputUsage(
             }
             resolver->Resolve(static_cast<double>(usage.value()));
           },
-          WrapPersistent(resolver), WrapPersistent(signal))
-          .Then(std::move(reject_fn)));
+          WrapPersistent(resolver))
+          .Then(RejectOnDestruction(resolver)));
 }
 
 bool LanguageModel::ValidateInput(ScriptState* script_state,
@@ -992,22 +986,22 @@ ScriptPromise<IDLDouble> LanguageModel::measureContextUsage(
     return EmptyPromise();
   }
 
-  ScriptPromiseResolver<IDLDouble>* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
-  auto promise = resolver->Promise();
-
   AbortSignal* signal = options->getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->Reject(signal->reason(script_state));
-    return promise;
+  if (HandleAbortSignal(signal, script_state, exception_state)) {
+    return EmptyPromise();
   }
 
+  auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
+      script_state, signal);
+  auto promise = resolver->Promise();
+
   ConvertPromptInputsToMojo(
-      script_state, options->getSignalOr(nullptr), input, info_,
+      script_state, signal, input, info_,
       /*json_schema=*/"",
       BindOnce(&LanguageModel::ExecuteMeasureInputUsage, WrapPersistent(this),
-               WrapPersistent(resolver), WrapPersistent(signal)),
-      BindOnce(&RejectResolver, WrapPersistent(resolver)));
+               WrapPersistent(resolver)),
+      BindOnce(&ResolverWithAbortSignal<IDLDouble>::Reject<const ScriptValue&>,
+               WrapPersistent(resolver)));
 
   return promise;
 }

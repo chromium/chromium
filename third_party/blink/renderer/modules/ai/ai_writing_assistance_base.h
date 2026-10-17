@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/feedback_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/modules/ai/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
@@ -344,24 +345,15 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
       return ScriptPromise<IDLDouble>();
     }
 
-    auto* resolver =
-        MakeGarbageCollected<ScriptPromiseResolver<IDLDouble>>(script_state);
+    auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
+        script_state, composite_signal);
     auto promise = resolver->Promise();
-    auto reject_fn = RejectOnDestruction(resolver, composite_signal);
 
     remote_->MeasureUsage(
         input, options->getContextOr(g_empty_string),
         BindOnce(
-            [](ScriptPromiseResolver<IDLDouble>* resolver, AbortSignal* signal,
+            [](ResolverWithAbortSignal<IDLDouble>* resolver,
                std::optional<uint32_t> usage) {
-              ExecutionContext* context = resolver->GetExecutionContext();
-              if (!context) {
-                return;
-              }
-              if (signal && signal->aborted()) {
-                resolver->Reject(signal->reason(resolver->GetScriptState()));
-                return;
-              }
               if (!usage.has_value()) {
                 resolver->Reject(DOMException::Create(
                     kExceptionMessageUnableToCalculateUsage,
@@ -371,8 +363,8 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
               }
               resolver->Resolve(static_cast<double>(usage.value()));
             },
-            WrapPersistent(resolver), WrapPersistent(composite_signal))
-            .Then(std::move(reject_fn)));
+            WrapPersistent(resolver))
+            .Then(RejectOnDestruction(resolver)));
 
     return promise;
   }

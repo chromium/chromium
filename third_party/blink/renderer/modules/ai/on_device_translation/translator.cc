@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/modules/ai/feedback_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
 #include "third_party/blink/renderer/modules/ai/on_device_translation/create_translator_client.h"
-#include "third_party/blink/renderer/modules/ai/on_device_translation/resolver_with_abort_signal.h"
+#include "third_party/blink/renderer/modules/ai/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -310,9 +310,8 @@ ScriptPromise<IDLDouble> Translator::measureInputUsage(
     return EmptyPromise();
   }
 
-  ResolverWithAbortSignal<IDLDouble>* resolver =
-      MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
-          script_state, composite_signal);
+  auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<IDLDouble>>(
+      script_state, composite_signal);
 
   task_runner_->PostTask(
       FROM_HERE, BindOnce(&ResolverWithAbortSignal<IDLDouble>::Resolve<double>,

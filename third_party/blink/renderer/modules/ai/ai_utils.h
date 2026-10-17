@@ -181,25 +181,18 @@ class RunOnDestruction {
 };
 
 // Returns a closure that rejects `resolver` if it's destroyed before being run.
-// If `signal` is aborted on destruction, its reason is passed with rejection.
-template <typename T>
-base::OnceClosure RejectOnDestruction(ScriptPromiseResolver<T>* resolver,
-                                      AbortSignal* signal = nullptr) {
+template <typename Resolver>
+base::OnceClosure RejectOnDestruction(Resolver* resolver) {
   CHECK(resolver);
   RunOnDestruction run_on_destruction(BindOnce(
-      [](ScriptPromiseResolver<T>* resolver, AbortSignal* signal) {
+      [](Resolver* resolver) {
         // Heap termination can clear persistent handles before their owning
         // callbacks are destroyed.
-        if (!resolver) {
-          return;
-        }
-        if (signal && signal->aborted()) {
-          resolver->Reject(signal->reason(resolver->GetScriptState()));
-        } else {
+        if (resolver) {
           resolver->Reject();
         }
       },
-      WrapPersistent(resolver), WrapPersistent(signal)));
+      WrapPersistent(resolver)));
 
   return BindOnce(
       [](RunOnDestruction resolver_holder) { resolver_holder.Reset(); },
