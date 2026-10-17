@@ -214,8 +214,6 @@ const base::FeatureParam<int> kGlicMinLoadingTimeMs{
     &kGlicWebClientLoadTimes, "glic-min-loading-time-ms", 1000};
 const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
     &kGlicWebClientLoadTimes, "glic-max-loading-time-ms", 20000};
-const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs{
-    &kGlicWebClientLoadTimes, "glic-reload-max-loading-time-ms", 30000};
 
 BASE_FEATURE(kGlicContextualCueingV2AutoSubmit,
              base::FEATURE_ENABLED_BY_DEFAULT);

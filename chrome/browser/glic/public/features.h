@@ -157,7 +157,6 @@ BASE_DECLARE_FEATURE(kGlicWebClientLoadTimes);
 extern const base::FeatureParam<int> kGlicPreLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicMinLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicMaxLoadingTimeMs;
-extern const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs;
 
 BASE_DECLARE_FEATURE(kGlicContextualCueingV2AutoSubmit);
 BASE_DECLARE_FEATURE(kGlicContextualCuesHandleEdu);
