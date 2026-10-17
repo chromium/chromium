@@ -252,6 +252,10 @@ IconId PermissionRequest::GetBlockedIconForChip() const {
   return permissions::GetBlockedIconId(request_type());
 }
 
+bool PermissionRequest::ShouldKeepChipOnBubbleClose() const {
+  return false;
+}
+
 std::optional<std::u16string> PermissionRequest::GetRequestChipText(
     ChipTextType type) const {
   static base::NoDestructor<std::map<RequestType, std::vector<int>>> kMessageIds(

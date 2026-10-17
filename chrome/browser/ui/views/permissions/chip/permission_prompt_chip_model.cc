@@ -143,6 +143,13 @@ PermissionPromptChipModel::PermissionPromptChipModel(
   accessibility_chip_text_ = l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT);
 
+  // The requests are decided together, so the chip stays only if all of them
+  // allow it.
+  should_keep_chip_on_bubble_close_ =
+      std::ranges::all_of(delegate_->Requests(), [](const auto& request) {
+        return request->ShouldKeepChipOnBubbleClose();
+      });
+
   if (IsMicAndCameraRequest(delegate->Requests())) {
     content_settings_type_ = ContentSettingsType::MEDIASTREAM_CAMERA;
   } else {
@@ -158,7 +165,7 @@ void PermissionPromptChipModel::UpdateAutoCollapsePromptChipState(
   chip_theme_ = PermissionChipTheme::kLowVisibility;
 }
 
-bool PermissionPromptChipModel::IsExpandAnimationAllowed() {
+bool PermissionPromptChipModel::IsExpandAnimationAllowed() const {
   return ShouldExpand() && (ShouldBubbleStartOpen() ||
                             !delegate_->WasCurrentRequestAlreadyDisplayed());
 }

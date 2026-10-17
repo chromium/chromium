@@ -264,6 +264,9 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // Timer functionality.
   void StartCollapseTimer();
   void StartDismissTimer();
+  // Starts the dismiss timer if the chip is already collapsed, or the collapse
+  // timer otherwise.
+  void StartCollapseOrDismissTimer();
   void ResetTimers();
 
   // The location bar to which the chip is attached.

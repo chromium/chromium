@@ -139,6 +139,12 @@ permissions::IconId AmbientLoginPermissionRequest::GetBlockedIconForChip()
   return GetIconForChip();
 }
 
+bool AmbientLoginPermissionRequest::ShouldKeepChipOnBubbleClose() const {
+  // Closing the bubble only hides the credentials, so that the user can still
+  // sign in from the chip.
+  return true;
+}
+
 std::u16string AmbientLoginPermissionRequest::GetMessageTextFragment() const {
   // TODO(https://crbug.com/532206357): Ambient login uses a custom permission
   // prompt view rather than the standard "[domain] wants to <fragment>" text.

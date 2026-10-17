@@ -1828,11 +1828,11 @@ void FedCmAccountSelectionView::HandleAmbientBubbleDecision(
   }
 
   if (!selected_account_index) {
-    // The bubble was dismissed, e.g. by the user closing it or by the tab
-    // navigating away.
-    // TODO(crbug.com/567563304): Distinguish between the user explicitly
-    // closing the bubble and other dismissals so that the appropriate
-    // DismissReason (and cooldown) can be used.
+    // The request was dismissed or ignored, e.g. because the chip expired or
+    // the tab navigated away. Closing the bubble keeps the chip, and the
+    // request pending.
+    // TODO(crbug.com/567563304): Tell apart requests whose bubble the user
+    // closed so that the appropriate DismissReason (and cooldown) can be used.
     // `this` may be deleted after this call.
     std::ignore =
         NotifyDelegate([&]() { delegate_->OnDismiss(DismissReason::kOther); });

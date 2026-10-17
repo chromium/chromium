@@ -113,6 +113,7 @@ class AmbientLoginPermissionRequest : public permissions::PermissionRequest {
   // permissions::PermissionRequest:
   permissions::IconId GetIconForChip() const override;
   permissions::IconId GetBlockedIconForChip() const override;
+  bool ShouldKeepChipOnBubbleClose() const override;
   std::u16string GetMessageTextFragment() const override;
 
  private:

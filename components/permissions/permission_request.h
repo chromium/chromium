@@ -139,6 +139,12 @@ class PermissionRequest {
   // the location bar.
   virtual IconId GetBlockedIconForChip() const;
 
+  // Returns whether the request stays pending, with its chip still in the
+  // location bar, when the user closes the prompt bubble without deciding. The
+  // user can then reopen the bubble from the chip until the chip expires.
+  // Otherwise, closing the bubble dismisses the request.
+  virtual bool ShouldKeepChipOnBubbleClose() const;
+
   // Returns prompt text appropriate for displaying on the chip button in the
   // location bar.
   std::optional<std::u16string> GetRequestChipText(ChipTextType type) const;

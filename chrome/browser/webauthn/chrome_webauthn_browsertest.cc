@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -92,6 +93,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -1305,6 +1307,48 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUISingleCredential) {
 
   permission_request_manager->Accept(std::monostate());
   EXPECT_FALSE(chip_controller->IsPermissionPromptChipVisible());
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
+}
+
+// Tests that closing the ambient UI bubble keeps the request pending and the
+// chip showing, so that the bubble can be reopened from the chip.
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIClosingBubbleKeepsChip) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  permissions::PermissionRequestObserver permission_observer(web_contents);
+
+  content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
+  permission_observer.Wait();
+  ASSERT_TRUE(permission_observer.request_shown());
+
+  ChipController* chip_controller =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetLocationBarView()
+          ->GetChipController();
+  ASSERT_NE(chip_controller, nullptr);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return chip_controller->IsBubbleShowing(); }));
+
+  // Closing the bubble with its close button keeps the request pending, and
+  // the chip showing.
+  chip_controller->GetBubbleWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !chip_controller->IsBubbleShowing(); }));
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  ASSERT_FALSE(permission_request_manager->Requests().empty());
+  EXPECT_TRUE(chip_controller->IsPermissionPromptChipVisible());
+
+  // Clicking the chip reopens the bubble, which can still be accepted.
+  chip_controller->chip()->ExecuteForTesting();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return chip_controller->IsBubbleShowing(); }));
+  permission_request_manager->Accept(std::monostate());
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
