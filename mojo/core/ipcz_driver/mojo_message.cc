@@ -29,7 +29,8 @@ constexpr int kGrowthFactor = 2;
 
 bool FixGeometricBufferGrowthIsEnabled() {
   static const bool kIsEnabled =
-      base::FeatureList::IsEnabled(kMojoFixGeometricBufferGrowth);
+      base::FeatureList::IsEnabled(kMojoFixGeometricBufferGrowth) ||
+      base::FeatureList::IsEnabled(kMojoFixGeometricBufferGrowth2);
   return kIsEnabled;
 }
 

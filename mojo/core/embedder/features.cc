@@ -27,6 +27,8 @@ BASE_FEATURE(kMojoIpczMemV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMojoFixGeometricBufferGrowth, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kMojoFixGeometricBufferGrowth2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_WIN)
 // If enabled, then only handles of types Section, File, Directory and
 // DxgkSharedResource are allowed to traverse a process boundary to an untrusted
