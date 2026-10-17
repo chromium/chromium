@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_LOAD_AND_EXTRACT_CONTENT_TOOL_REQUEST_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -20,9 +21,15 @@ namespace actor {
 class LoadAndExtractContentToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "LoadAndExtractContent";
+  static constexpr std::string_view kModelFacingName =
+      "load_and_extract_content";
+  static constexpr std::string_view kUrlsParam = "urls";
 
   explicit LoadAndExtractContentToolRequest(std::vector<GURL> urls);
   ~LoadAndExtractContentToolRequest() override;
+
+  // Returns the `ToolId::kLoadAndExtractContent` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   LoadAndExtractContentToolRequest(const LoadAndExtractContentToolRequest&);
   LoadAndExtractContentToolRequest& operator=(

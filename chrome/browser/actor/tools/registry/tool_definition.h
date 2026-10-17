@@ -85,7 +85,9 @@ enum class ToolId {
   kWait = 32,
   // Executes a script tool in a document.
   kScript = 33,
-  kMaxValue = kScript,
+  // Loads a set of URLs in background tabs and extracts their page content.
+  kLoadAndExtractContent = 34,
+  kMaxValue = kLoadAndExtractContent,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer
