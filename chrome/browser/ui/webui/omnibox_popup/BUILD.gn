@@ -48,6 +48,7 @@ if (!is_android) {
       "//components/lens",
       "//components/omnibox/browser",
       "//components/omnibox/browser:mojo_bindings",
+      "//components/omnibox/browser:suggest_template_info_mojo_utils",
       "//components/omnibox/common:features",
       "//components/search_engines",
       "//content/public/browser",

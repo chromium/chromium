@@ -720,4 +720,37 @@ TEST_F(OmniboxPopupHandlerTest, SetInputStateUrlEmphasisWithController) {
   }
 }
 
+TEST_F(OmniboxPopupHandlerTest, SetInputStatePopulatesCurrentMatch) {
+  auto omnibox_controller = std::make_unique<OmniboxController>(
+      std::make_unique<TestOmniboxClient>());
+  testing::NiceMock<MockOmniboxPopupPage> local_page;
+  auto handler = std::make_unique<OmniboxPopupHandler>(
+      mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
+      local_page.BindAndGetRemote(), web_contents(), omnibox_controller.get());
+
+  omnibox_popup::mojom::OmniboxInputStatePtr captured_state;
+  EXPECT_CALL(local_page, SetInputState(testing::_))
+      .WillOnce([&](omnibox_popup::mojom::OmniboxInputStatePtr state) {
+        captured_state = std::move(state);
+      });
+
+  omnibox_controller->edit_model()->SetUserText(u"espn.com");
+  handler->SetInputState("espn.com", gfx::Range(0, 0),
+                         /*user_input_in_progress=*/true,
+                         /*full_url=*/"https://google.com/",
+                         /*is_focused=*/true,
+                         /*permanent_display_text=*/"https://google.com/",
+                         /*show_full_url=*/false, /*query_zps=*/false,
+                         /*keyword_model=*/nullptr, /*is_tab_switch=*/true);
+  local_page.FlushForTesting();
+
+  ASSERT_TRUE(captured_state);
+  ASSERT_TRUE(captured_state->current_match);
+  EXPECT_FALSE(captured_state->current_match->destination_url.is_empty());
+  ASSERT_TRUE(captured_state->current_match->suggest_template);
+  ASSERT_TRUE(captured_state->current_match->suggest_template->primary_text);
+  EXPECT_FALSE(captured_state->current_match->suggest_template->primary_text
+                   ->text.empty());
+}
+
 }  // namespace

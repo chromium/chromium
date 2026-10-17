@@ -308,8 +308,8 @@ export class OmniboxPopupSearchboxElement extends
   // deleted characters), as opposed to displaying permanent text set from C++.
   protected accessor userInputInProgress_: boolean = false;
   // Stores the last selected autocomplete match while user input is in
-  // progress. Preserved across popup closures on blur so the searchbox icon
-  // does not fall back to the default icon while editing.
+  // progress. Preserved across popup closures on blur or tab switch so the
+  // searchbox icon does not fall back to the default icon while editing.
   private lastSelectedMatch_: AutocompleteMatch|null = null;
   protected accessor fullUrl_: string = '';
   protected accessor permanentDisplayText_: string = '';
@@ -740,18 +740,6 @@ export class OmniboxPopupSearchboxElement extends
     return false;
   }
 
-  /**
-   * TODO(crbug.com/572759485): Remove revert since it is only used in tests.
-   * Clears frontend autocomplete matches and reverts C++ `OmniboxEditModel`.
-   * Kept separate from `clearAutocompleteMatches()`, which is called internally
-   * by `SearchboxMixin` when selecting suggestions or blurring the input.
-   */
-  revert() {
-    this.userInputInProgress_ = false;
-    this.lastSelectedMatch_ = null;
-    this.clearAutocompleteMatches();
-    this.popupPageHandler_.revert(this.currentSequenceNum_);
-  }
   /**
    * Determines whether the dropdown should be visible considering contextual
    * chips because the header "Ask Google about this page" is suppressed when
@@ -1292,8 +1280,8 @@ export class OmniboxPopupSearchboxElement extends
   /**
    * Returns the match to use for the searchbox input element.
    * While user input is in progress, preserves `lastSelectedMatch_` when
-   * results are cleared on blur so the icon does not fall back to the default
-   * icon.
+   * results are cleared on blur or tab switch so the icon does not fall back
+   * to the default icon.
    */
   protected computeSelectedMatchForInput_(): AutocompleteMatch|null {
     if (this.selectedMatch) {
@@ -1397,7 +1385,10 @@ export class OmniboxPopupSearchboxElement extends
     // while the user is actively typing in the same tab.
     if (state.isTabSwitch || !state.userInputInProgress) {
       this.textfieldModel_.setInitialText(text, selection);
-      this.lastSelectedMatch_ = null;
+      this.lastSelectedMatch_ =
+          (state.userInputInProgress && state.currentMatch) ?
+          state.currentMatch :
+          null;
     }
     this.updateEditHistoryState_();
 

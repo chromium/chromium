@@ -41,6 +41,10 @@ struct OmniboxInputState {
   searchbox.mojom.UrlEmphasis? url_emphasis;
   // Precomputed URL emphasis for `full_url` on unelision.
   searchbox.mojom.UrlEmphasis? unelided_url_emphasis;
+  // Current match from OmniboxEditModel::CurrentMatch(), used to restore the
+  // searchbox icon when autocomplete results are cleared (e.g. on tab switch).
+  // Only populated on tab switch when there is input in progress.
+  searchbox.mojom.AutocompleteMatch? current_match;
 };
 
 // Browser-side handler for the Omnibox Popup.

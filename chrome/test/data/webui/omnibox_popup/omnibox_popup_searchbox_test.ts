@@ -74,6 +74,7 @@ function createDefaultOmniboxInputState(overrides?: Partial<OmniboxInputState>):
     isTabSwitch: false,
     urlEmphasis: null,
     unelidedUrlEmphasis: null,
+    currentMatch: null,
     ...overrides,
   };
 }
@@ -568,32 +569,6 @@ suite('OmniboxPopupSearchboxTest', function() {
     assertFalse(searchbox.$.input === searchbox.shadowRoot.activeElement);
   });
 
-  test('HandlesRevert', async () => {
-    // Test revert is called with default sequence number (0).
-    searchbox.revert();
-    await microtasksFinished();
-
-    assertEquals(1, handler.getCallCount('revert'));
-    assertEquals(0, handler.getArgs('revert')[0]);
-
-    // Test revert is called with active sequence number (42) after receiving
-    // state.
-    handler.reset();
-    callbackRouter.setInputState(createDefaultOmniboxInputState({
-      sequenceNumber: 42,
-      text: 'hello',
-      selection: {start: 5, end: 5},
-      userInputInProgress: true,
-      isFocused: true,
-    }));
-    await microtasksFinished();
-
-    searchbox.revert();
-    await microtasksFinished();
-
-    assertEquals(1, handler.getCallCount('revert'));
-    assertEquals(42, handler.getArgs('revert')[0]);
-  });
 
   test('SubsequentSelectionChangesNotIgnoredAfterFocus', async () => {
     // Set the input state via Mojo with isFocused = true.
@@ -3568,6 +3543,52 @@ suite('OmniboxPopupSearchboxTest', function() {
            isFocused: false,
            userInputInProgress: false,
            text: 'https://example.com/',
+         }));
+         await microtasksFinished();
+         callbackRouter.setInputState(createDefaultOmniboxInputState(
+             {isFocused: true, userInputInProgress: true, text: 'e'}));
+         await microtasksFinished();
+         assertEquals(null, searchbox.$.input.selectedMatch);
+       });
+
+   test(
+       'SelectedMatchRestoredForInputOnTabSwitchWithCurrentMatch', async () => {
+         const navMatch = createSearchMatchForTesting({
+           suggestTemplate:
+               createSuggestTemplateInfo({primaryText: 'espn.com'}),
+           destinationUrl: 'https://espn.com/',
+           allowedToBeDefaultMatch: true,
+           isSearchType: false,
+         });
+
+         // Simulate restoring state from a tab switch where user input was in
+         // progress and currentMatch is provided by C++ OmniboxInputState.
+         callbackRouter.setInputState(createDefaultOmniboxInputState({
+           isFocused: true,
+           userInputInProgress: true,
+           isTabSwitch: true,
+           text: 'espn.com',
+           permanentDisplayText: 'https://google.com/',
+           fullUrl: 'https://google.com/',
+           currentMatch: navMatch,
+         }));
+         await microtasksFinished();
+
+         // Autocomplete result should be cleared on tab switch.
+         assertEquals(null, searchbox.result);
+         assertEquals(null, searchbox.selectedMatch);
+
+         // But input's selectedMatch should be restored from currentMatch for
+         // the icon since user input is in progress.
+         assertEquals(
+             'espn.com',
+             searchbox.$.input.selectedMatch?.suggestTemplate.primaryText.text);
+
+         // When reverting, selectedMatch for input is cleared.
+         callbackRouter.setInputState(createDefaultOmniboxInputState({
+           isFocused: false,
+           userInputInProgress: false,
+           text: 'https://google.com/',
          }));
          await microtasksFinished();
          callbackRouter.setInputState(createDefaultOmniboxInputState(
