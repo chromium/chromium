@@ -345,7 +345,7 @@ BASE_DECLARE_FEATURE_PARAM(bool,
 
 // Duration in minutes after closing the contextual tasks side panel before the
 // ephemeral toolbar button is automatically dismissed and its task
-// disassociated. Defaults to 1440 minutes (24 hours).
+// disassociated. Defaults to 120 minutes (2 hours).
 extern const base::FeatureParam<int>
     kContextualTasksEphemeralButtonAutoDismissTimeMinutes;
 

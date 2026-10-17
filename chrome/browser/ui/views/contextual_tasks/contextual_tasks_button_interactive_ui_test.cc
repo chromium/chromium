@@ -1632,7 +1632,7 @@ class ContextualTasksEphemeralButtonAutoDismissInteractiveTest
         ContextualTasksEphemeralButtonInteractiveTest::GetEnabledFeatures();
     enabled_features.push_back(
         {contextual_tasks::kContextualTasksEphemeralButtonAutoDismiss,
-         {{"ContextualTasksEphemeralButtonAutoDismissTimeMinutes", "1440"}}});
+         {{"ContextualTasksEphemeralButtonAutoDismissTimeMinutes", "120"}}});
     return enabled_features;
   }
 
@@ -1677,7 +1677,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       // Fast-forward the mock clock so the auto-dismiss timer fires and hides
       // the ephemeral button.
-      FastForwardBy(base::Minutes(1440)),
+      FastForwardBy(base::Minutes(120)),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
       Do([&]() {
         EXPECT_EQ(1, user_action_tester.GetActionCount(
@@ -1734,6 +1734,6 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
       // then hides the button when it expires.
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
-      FastForwardBy(base::Minutes(1440)),
+      FastForwardBy(base::Minutes(120)),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
 }

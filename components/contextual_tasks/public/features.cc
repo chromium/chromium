@@ -82,7 +82,7 @@ BASE_FEATURE(kContextualTasksEphemeralButtonContextMenu,
 
 // Automatically dismisses the ephemeral contextual tasks toolbar button and
 // disassociates its task after a configurable period of inactivity (in
-// minutes). Defaults to 1440 minutes (24 hours).
+// minutes). Defaults to 120 minutes (2 hours).
 BASE_FEATURE(kContextualTasksEphemeralButtonAutoDismiss,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -90,7 +90,7 @@ const base::FeatureParam<int>
     kContextualTasksEphemeralButtonAutoDismissTimeMinutes(
         &kContextualTasksEphemeralButtonAutoDismiss,
         "ContextualTasksEphemeralButtonAutoDismissTimeMinutes",
-        1440);
+        120);
 
 bool IsContextualTasksEphemeralButtonAutoDismissEnabled() {
   return base::FeatureList::IsEnabled(

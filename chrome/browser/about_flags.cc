@@ -4690,6 +4690,24 @@ const FeatureEntry::FeatureVariation kEphemeralBrandedEntryPointVariations[] = {
      kEphemeralBrandedEntryPointWithCircularNextToBatterySaver, nullptr}};
 
 const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonAutoDismiss1Hour[] = {
+        {"ContextualTasksEphemeralButtonAutoDismissTimeMinutes", "60"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonAutoDismiss2Hours[] = {
+        {"ContextualTasksEphemeralButtonAutoDismissTimeMinutes", "120"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonAutoDismiss24Hours[] = {
+        {"ContextualTasksEphemeralButtonAutoDismissTimeMinutes", "1440"}};
+
+const FeatureEntry::FeatureVariation
+    kContextualTasksEphemeralButtonAutoDismissVariations[] = {
+        {"(1 hour)", kContextualTasksEphemeralButtonAutoDismiss1Hour, nullptr},
+        {"(2 hours)", kContextualTasksEphemeralButtonAutoDismiss2Hours,
+         nullptr},
+        {"(24 hours)", kContextualTasksEphemeralButtonAutoDismiss24Hours,
+         nullptr}};
+
+const FeatureEntry::FeatureParam
     kContextualTasksUpdatedEntryPointsSidePanelRouting[] = {
         {"ContextualTasksContextMenuShowAskGoogle", "true"},
         {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"},
@@ -12390,8 +12408,10 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::
          kContextualTasksEphemeralButtonAutoDismissDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         contextual_tasks::kContextualTasksEphemeralButtonAutoDismiss)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_tasks::kContextualTasksEphemeralButtonAutoDismiss,
+         kContextualTasksEphemeralButtonAutoDismissVariations,
+         "ContextualTasksEphemeralButtonAutoDismiss")},
 
     {"contextual-tasks-private-api-no-animation",
      contextual_tasks::flag_descriptions::
