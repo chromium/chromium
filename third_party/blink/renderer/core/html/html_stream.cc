@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/html_stream.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -25,6 +26,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -85,8 +87,16 @@ class HTMLSink : public UnderlyingSinkBase {
 
   ScriptPromise<IDLUndefined> close(ScriptState* script_state,
                                     ExceptionState&) override {
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+    resolver->SuppressDetachCheck();
+    parser_->SetCloseCallback(BindOnce(
+        [](ScriptPromiseResolver<IDLUndefined>* resolver) {
+          resolver->Resolve();
+        },
+        WrapPersistent(resolver)));
     Parser().Finish();
-    return ToResolvedUndefinedPromise(script_state);
+    return resolver->Promise();
   }
 
   ScriptPromise<IDLUndefined> abort(ScriptState* script_state,

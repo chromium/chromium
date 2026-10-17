@@ -507,6 +507,13 @@ void HTMLDocumentParser::Detach() {
   background_script_scanner_.Reset();
   background_scanner_.reset();
   tokenizer_.Reset();
+  close_callback_.Reset();
+}
+
+void HTMLDocumentParser::SetCloseCallback(base::OnceClosure callback) {
+  CHECK(IsParsingFragment());
+  CHECK(!close_callback_);
+  close_callback_ = std::move(callback);
 }
 
 void HTMLDocumentParser::StopParsing() {
@@ -611,6 +618,10 @@ void HTMLDocumentParser::PrepareToStopParsing() {
 
   if (!IsParsingFragment()) {
     GetDocument()->OnPrepareToStopParsing();
+  }
+
+  if (close_callback_) {
+    std::move(close_callback_).Run();
   }
 
   AttemptToRunDeferredScriptsAndEnd();
