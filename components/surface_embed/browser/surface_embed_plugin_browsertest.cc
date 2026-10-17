@@ -1156,6 +1156,91 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
   EXPECT_EQ(content::Visibility::VISIBLE, parent_contents->GetVisibility());
 }
 
+// Occluding the Grandparent (G) WebContents should make the Parent (P) and the
+// Child (C) OCCLUDED rather than HIDDEN, in a G -> P -> C embedding.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, MultilevelOcclusionPropagates) {
+  NavigateToAttachHarness();
+
+  // Setup Parent (P) WebContents.
+  auto parent_contents = CreateChildWebContents();
+  NavigateChildToUrl(parent_contents.get(), kAttachHarnessUrl);
+  AttachChildToEmbedWithId(parent_contents.get(), "parent_embed");
+
+  // Setup Child (C) WebContents.
+  auto child_contents = CreateChildWebContents();
+  NavigateChildToUrl(child_contents.get(), kRedBoxUrl);
+
+  // Attach C to P.
+  SurfaceEmbedHandle* child_embedded_handle =
+      SurfaceEmbedHandle::CreateForWebContents(child_contents.get());
+  ASSERT_NE(child_embedded_handle, nullptr);
+
+  std::string attach_child_script = "createEmbed('" +
+                                    child_embedded_handle->id().ToString() +
+                                    "', 'child_embed');";
+  size_t expected_attachments = GetAttachedHostCount() + 1;
+  ASSERT_TRUE(content::ExecJs(parent_contents.get(), attach_child_script));
+  ASSERT_TRUE(WaitForHostAttachment(expected_attachments));
+  EXPECT_NE(child_contents->GetSurfaceEmbedConnector(), nullptr);
+
+  EXPECT_EQ(content::Visibility::VISIBLE, parent_contents->GetVisibility());
+  EXPECT_EQ(content::Visibility::VISIBLE, child_contents->GetVisibility());
+
+  // Occlude G. P and C should become OCCLUDED, not HIDDEN.
+  web_contents()->WasOccluded();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return parent_contents->GetVisibility() == content::Visibility::OCCLUDED;
+  }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::OCCLUDED;
+  }));
+
+  // Show G again. P and C should become VISIBLE.
+  web_contents()->WasShown();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return parent_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+
+  // Hide G. P and C should become HIDDEN.
+  web_contents()->WasHidden();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return parent_contents->GetVisibility() == content::Visibility::HIDDEN;
+  }));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::HIDDEN;
+  }));
+
+  web_contents()->WasShown();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+
+  // Hide the Child embed in P while everything is visible; renderers do not
+  // process style changes while their page is hidden or occluded.
+  ASSERT_TRUE(content::ExecJs(
+      parent_contents.get(),
+      "document.getElementById('child_embed').style.visibility = 'hidden';"));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::HIDDEN;
+  }));
+
+  // Occluding G now occludes P, but a not-rendered C must stay HIDDEN.
+  web_contents()->WasOccluded();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return parent_contents->GetVisibility() == content::Visibility::OCCLUDED;
+  }));
+  EXPECT_EQ(content::Visibility::HIDDEN, child_contents->GetVisibility());
+
+  web_contents()->WasShown();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return parent_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+  EXPECT_EQ(content::Visibility::HIDDEN, child_contents->GetVisibility());
+}
+
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        EmbedMultipleTagsCreatesMultiplePlugins) {
   constexpr size_t kMultipleEmbedCount = 2;

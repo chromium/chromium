@@ -912,10 +912,18 @@ void SurfaceEmbedConnectorImpl::UpdateChildVisibility() {
     return;
   }
 
-  bool parent_is_visible = (EmbedderVisibility() == Visibility::VISIBLE);
+  const Visibility parent_visibility = EmbedderVisibility();
+  const bool parent_is_hidden = (parent_visibility == Visibility::HIDDEN);
+  const bool parent_is_occluded = (parent_visibility == Visibility::OCCLUDED);
 
-  if (!parent_is_visible) {
+  if (parent_is_hidden) {
     child_web_contents_->WasHidden();
+    return;
+  }
+
+  if (parent_is_occluded &&
+      visibility_ != blink::mojom::FrameVisibility::kNotRendered) {
+    child_web_contents_->WasOccluded();
     return;
   }
 

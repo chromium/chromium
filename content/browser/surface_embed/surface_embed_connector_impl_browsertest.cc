@@ -337,6 +337,33 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, Detach) {
             content::Visibility::HIDDEN);
 }
 
+// An occluded embedder should make the child occluded, not hidden.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       OccludedEmbedderOccludesChild) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+
+  connector->OnVisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedInViewport);
+  EXPECT_EQ(context.child_web_contents->GetVisibility(), Visibility::VISIBLE);
+
+  context.parent_web_contents->WasOccluded();
+  EXPECT_EQ(context.child_web_contents->GetVisibility(), Visibility::OCCLUDED);
+
+  context.parent_web_contents->WasShown();
+  EXPECT_EQ(context.child_web_contents->GetVisibility(), Visibility::VISIBLE);
+
+  context.parent_web_contents->WasHidden();
+  EXPECT_EQ(context.child_web_contents->GetVisibility(), Visibility::HIDDEN);
+
+  // A not-rendered <embed> stays hidden even when the embedder is occluded.
+  context.parent_web_contents->WasShown();
+  connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+  context.parent_web_contents->WasOccluded();
+  EXPECT_EQ(context.child_web_contents->GetVisibility(), Visibility::HIDDEN);
+}
+
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, Attach) {
   MockSurfaceEmbedConnectorDelegate delegate;
   auto context = SetupConnectorTest(&delegate);
