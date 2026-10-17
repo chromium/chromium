@@ -13,8 +13,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
+#include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
@@ -705,16 +705,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
   extensions::ExtensionHostTestHelper popup_waiter(browser()->GetProfile(),
                                                    extension->id());
   popup_waiter.RestrictToType(extensions::mojom::ViewType::kExtensionPopup);
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  ExtensionsToolbarDesktop* extensions_container =
-      browser_view->toolbar()->extensions_container_for_testing();
-  extensions_container->GetToolbarViewModel()->ShowToolbarActionPopupForAPICall(
-      extension->id(), ShowPopupCallback());
+  // Use the platform-abstract ExtensionsContainer so this works with both the
+  // Views and WebUI extensions containers.
+  ExtensionsContainer::From(*browser())
+      ->ShowToolbarActionPopupForAPICall(extension->id(), ShowPopupCallback());
 
   // The extension should load the image.
   slow_img_response.WaitForRequest();
 
   // While the extension is loading, open a security UI.
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   views::UniqueWidgetPtr security_widget =
       CreateTestDialogWidget(browser_view->GetWidget());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(

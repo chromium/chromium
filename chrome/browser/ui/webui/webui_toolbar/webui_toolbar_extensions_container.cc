@@ -281,8 +281,13 @@ bool WebUIToolbarExtensionsContainer::ShowToolbarActionPopupForAPICall(
     return false;
   }
 
+  // The action may have been removed (e.g. the extension was uninstalled)
+  // while the API call was in flight, so bail out rather than dereferencing a
+  // null pointer.
   ToolbarActionViewModel* action = GetActionForId(action_id);
-  CHECK(action);
+  if (!action) {
+    return false;
+  }
   action->TriggerPopupForAPI(std::move(callback));
   return true;
 }
