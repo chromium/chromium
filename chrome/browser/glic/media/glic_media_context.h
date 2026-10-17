@@ -38,9 +38,7 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
   void OnPipPeerConnectionAdded();
   void OnPipPeerConnectionRemoved();
 
-  bool is_excluded_from_transcript_for_testing() {
-    return IsExcludedFromTranscript();
-  }
+  bool IsExcludedFromTranscript() const;
 
   DOCUMENT_USER_DATA_KEY_DECL();
 
@@ -115,8 +113,6 @@ class GlicMediaContext : public content::DocumentUserData<GlicMediaContext>,
     // The maximum transcript size that we've recorded.
     size_t max_transcript_size_ = 0u;
   };
-
-  bool IsExcludedFromTranscript() const;
 
   // Handles a non-final speech recognition result by inserting or updating a
   // temporary non-final chunk in `transcript_chunks_`.

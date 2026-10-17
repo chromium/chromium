@@ -239,9 +239,9 @@ TEST_F(GlicMediaContextTest, PeerConnectionStopsTranscription) {
 
 TEST_F(GlicMediaContextTest, PeerConnectionAddedAndRemovedResetsExclusion) {
   context()->OnPeerConnectionAdded();
-  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
   context()->OnPeerConnectionRemoved();
-  EXPECT_FALSE(context()->is_excluded_from_transcript_for_testing());
+  EXPECT_FALSE(context()->IsExcludedFromTranscript());
 }
 
 TEST_F(GlicMediaContextTest, ExclusionRemainsIfUserMediaIsActive) {
@@ -250,11 +250,11 @@ TEST_F(GlicMediaContextTest, ExclusionRemainsIfUserMediaIsActive) {
 
   // Add and remove a peer connection.
   context()->OnPeerConnectionAdded();
-  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
   context()->OnPeerConnectionRemoved();
 
   // Exclusion should remain active because of user media.
-  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
 
   stream.reset();
 }
@@ -262,13 +262,13 @@ TEST_F(GlicMediaContextTest, ExclusionRemainsIfUserMediaIsActive) {
 TEST_F(GlicMediaContextTest, ExclusionRemainsIfPeerConnectionsAreActive) {
   context()->OnPeerConnectionAdded();
   context()->OnPeerConnectionAdded();
-  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
 
   context()->OnPeerConnectionRemoved();
-  EXPECT_TRUE(context()->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(context()->IsExcludedFromTranscript());
 
   context()->OnPeerConnectionRemoved();
-  EXPECT_FALSE(context()->is_excluded_from_transcript_for_testing());
+  EXPECT_FALSE(context()->IsExcludedFromTranscript());
 }
 
 TEST_F(GlicMediaContextTest, OnResult_FinalResultWithTiming_EmptyContext) {

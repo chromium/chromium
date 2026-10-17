@@ -22,6 +22,9 @@ class SpeechRecognitionClientBrowserInterfaceFactory
   static speech::SpeechRecognitionClientBrowserInterface* GetForProfile(
       Profile* profile);
 
+  static speech::SpeechRecognitionClientBrowserInterface* GetForProfileIfExists(
+      Profile* profile);
+
   static void EnsureFactoryBuilt();
 
  private:

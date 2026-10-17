@@ -88,11 +88,11 @@ class SpeechRecognitionClientBrowserInterface
           SpeechRecognitionSmallExpertModelState state) override;
 #endif
 
- private:
-  void OnSpeechRecognitionMaskOffensiveWordsChanged();
-
   // Live Caption Event handling
   void OnLiveCaptionAvailabilityChanged();
+
+ private:
+  void OnSpeechRecognitionMaskOffensiveWordsChanged();
   void OnLiveCaptionLanguageChanged();
 
   // Notify our observers whether recognition is enabled or not, if the correct

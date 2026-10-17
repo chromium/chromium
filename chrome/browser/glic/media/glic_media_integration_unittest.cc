@@ -17,6 +17,8 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -31,6 +33,9 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/media_switches.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -47,6 +52,35 @@ namespace glic {
 // Glic media integration requires SODA which is currently not supported on
 // non-x86 Linux.
 #if !BUILDFLAG(IS_LINUX) || defined(ARCH_CPU_X86_FAMILY)
+
+namespace {
+
+class MockSpeechRecognitionBrowserObserver
+    : public media::mojom::SpeechRecognitionBrowserObserver {
+ public:
+  explicit MockSpeechRecognitionBrowserObserver(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionBrowserObserver>
+          receiver)
+      : receiver_(this, std::move(receiver)) {}
+  ~MockSpeechRecognitionBrowserObserver() override = default;
+
+  MOCK_METHOD(void, SpeechRecognitionAvailabilityChanged, (bool), (override));
+  MOCK_METHOD(void,
+              SpeechRecognitionLanguageChanged,
+              (const std::string&),
+              (override));
+  MOCK_METHOD(void,
+              SpeechRecognitionMaskOffensiveWordsChanged,
+              (bool),
+              (override));
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+ private:
+  mojo::Receiver<media::mojom::SpeechRecognitionBrowserObserver> receiver_;
+};
+
+}  // namespace
 
 class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -201,6 +235,8 @@ class GlicMediaIntegrationTest : public ChromeRenderViewHostTestHarness {
     glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
         glic::prefs::FreStatus::kCompleted);
   }
+
+  speech::MockSodaInstaller& soda_installer() { return soda_installer_; }
 
  private:
   GlicUnitTestEnvironment glic_test_env_;
@@ -360,11 +396,52 @@ TEST_F(GlicMediaIntegrationTest, NullRenderFrameHostIsOkay) {
 TEST_F(GlicMediaIntegrationTest, PeerConnectionPreventsTranscription) {
   auto* integration = GetIntegration();
 
+  EXPECT_TRUE(live_caption_controller()->IsTranscriptionAllowed(rfh()));
+
   // This should prevent the transcription from being recorded.
   integration->OnPeerConnectionAddedForTesting(rfh());
 
   auto* context = GetContext();
-  EXPECT_TRUE(context->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(context->IsExcludedFromTranscript());
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(rfh()));
+  EXPECT_FALSE(live_caption_controller()->DispatchTranscription(
+      rfh(), nullptr,
+      media::SpeechRecognitionResult("some transcript", /*is_final=*/true)));
+}
+
+TEST_F(GlicMediaIntegrationTest,
+       PeerConnectionUpdatesSpeechRecognitionAvailability) {
+  auto* integration = GetIntegration();
+  soda_installer().NotifySodaInstalledForTesting();
+  soda_installer().NotifySodaInstalledForTesting(speech::LanguageCode::kEnUs);
+
+  auto* client_browser_interface =
+      SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile());
+  ASSERT_NE(client_browser_interface, nullptr);
+
+  mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver> remote;
+  testing::StrictMock<MockSpeechRecognitionBrowserObserver> observer(
+      remote.InitWithNewPipeAndPassReceiver());
+
+  EXPECT_CALL(observer, SpeechRecognitionAvailabilityChanged(true)).Times(1);
+  client_browser_interface->BindSpeechRecognitionBrowserObserver(
+      std::move(remote), rfh()->GetGlobalId());
+  observer.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Adding a peer connection should notify the observer that speech
+  // recognition is no longer available.
+  EXPECT_CALL(observer, SpeechRecognitionAvailabilityChanged(false)).Times(1);
+  integration->OnPeerConnectionAddedForTesting(rfh());
+  observer.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  // Removing the peer connection should notify the observer that speech
+  // recognition is available again.
+  EXPECT_CALL(observer, SpeechRecognitionAvailabilityChanged(true)).Times(1);
+  integration->OnPeerConnectionRemovedForTesting(rfh());
+  observer.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
 TEST_F(GlicMediaIntegrationTest, PeerConnectionExcludesAllSubframes) {
@@ -388,15 +465,19 @@ TEST_F(GlicMediaIntegrationTest, PeerConnectionExcludesAllSubframes) {
   integration->OnPeerConnectionAddedForTesting(main_frame);
 
   // Verify both frames are excluded.
-  EXPECT_TRUE(main_context->is_excluded_from_transcript_for_testing());
-  EXPECT_TRUE(subframe_context->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(main_context->IsExcludedFromTranscript());
+  EXPECT_TRUE(subframe_context->IsExcludedFromTranscript());
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(main_frame));
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(subframe));
 
   // Remove the peer connection.
   integration->OnPeerConnectionRemovedForTesting(main_frame);
 
   // Verify both frames are no longer excluded.
-  EXPECT_FALSE(main_context->is_excluded_from_transcript_for_testing());
-  EXPECT_FALSE(subframe_context->is_excluded_from_transcript_for_testing());
+  EXPECT_FALSE(main_context->IsExcludedFromTranscript());
+  EXPECT_FALSE(subframe_context->IsExcludedFromTranscript());
+  EXPECT_TRUE(live_caption_controller()->IsTranscriptionAllowed(main_frame));
+  EXPECT_TRUE(live_caption_controller()->IsTranscriptionAllowed(subframe));
 }
 
 TEST_F(GlicMediaIntegrationTest,
@@ -415,12 +496,18 @@ TEST_F(GlicMediaIntegrationTest,
   // Add a peer connection to the pip window.
   integration->OnPeerConnectionAddedForTesting(
       pip_web_contents->GetPrimaryMainFrame());
-  EXPECT_TRUE(main_context->is_excluded_from_transcript_for_testing());
+  EXPECT_TRUE(main_context->IsExcludedFromTranscript());
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(rfh()));
+  EXPECT_FALSE(live_caption_controller()->IsTranscriptionAllowed(
+      pip_web_contents->GetPrimaryMainFrame()));
 
   // Remove the peer connection.
   integration->OnPeerConnectionRemovedForTesting(
       pip_web_contents->GetPrimaryMainFrame());
-  EXPECT_FALSE(main_context->is_excluded_from_transcript_for_testing());
+  EXPECT_FALSE(main_context->IsExcludedFromTranscript());
+  EXPECT_TRUE(live_caption_controller()->IsTranscriptionAllowed(rfh()));
+  EXPECT_TRUE(live_caption_controller()->IsTranscriptionAllowed(
+      pip_web_contents->GetPrimaryMainFrame()));
 }
 
 TEST_F(GlicMediaIntegrationTest, ExcludedOriginsStopTranscription) {

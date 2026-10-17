@@ -15,6 +15,8 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface.h"
+#include "chrome/browser/speech/speech_recognition_client_browser_interface_factory.h"
 #include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/live_caption_controller.h"
@@ -72,6 +74,15 @@ class GlicMediaPeerConnectionObserver
         }
       }
     }
+
+    // Notify speech recognition clients so active recognizers in affected
+    // frames are reset when a peer connection starts.
+    if (auto* client_browser_interface =
+            SpeechRecognitionClientBrowserInterfaceFactory::
+                GetForProfileIfExists(
+                    Profile::FromBrowserContext(wc->GetBrowserContext()))) {
+      client_browser_interface->OnLiveCaptionAvailabilityChanged();
+    }
   }
 
   void OnPeerConnectionRemoved(
@@ -105,6 +116,15 @@ class GlicMediaPeerConnectionObserver
           context->OnPeerConnectionRemoved();
         }
       }
+    }
+
+    // Re-evaluate speech recognition availability so affected frames can
+    // resume transcription once all peer connections are removed.
+    if (auto* client_browser_interface =
+            SpeechRecognitionClientBrowserInterfaceFactory::
+                GetForProfileIfExists(
+                    Profile::FromBrowserContext(wc->GetBrowserContext()))) {
+      client_browser_interface->OnLiveCaptionAvailabilityChanged();
     }
   }
 };
@@ -175,11 +195,15 @@ class CaptionListenerImpl : public captions::CaptionControllerBase::Listener {
     }
 
     auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-    if (!web_contents) {
+    if (!web_contents || integration_->IsExcludedByOrigin(web_contents)) {
       return false;
     }
 
-    return !integration_->IsExcludedByOrigin(web_contents);
+    // Disallow transcription if the document is excluded (e.g. due to active
+    // WebRTC peer connections or media capture) to avoid creating unnecessary
+    // SODA instances.
+    auto* context = glic::GlicMediaContext::GetOrCreateForCurrentDocument(rfh);
+    return context && !context->IsExcludedFromTranscript();
   }
 
   bool OnTranscription(content::RenderFrameHost* rfh,
