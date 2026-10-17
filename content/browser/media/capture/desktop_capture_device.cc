@@ -301,8 +301,6 @@ class DesktopCaptureDevice::Core : public webrtc::DesktopCapturer::Callback {
 
   base::TimeDelta GetDelayBeforeNextRefreshAttempt() const;
 
-  void SetNotificationWindowId(gfx::NativeViewId window_id);
-
   void SetMockTimeForTesting(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       const base::TickClock* tick_clock);
@@ -571,13 +569,6 @@ void DesktopCaptureDevice::Core::RequestRefreshFrame() {
   if (!capture_in_progress_) {
     CaptureFrame(/*is_refresh_frame=*/true);
   }
-}
-
-void DesktopCaptureDevice::Core::SetNotificationWindowId(
-    gfx::NativeViewId window_id) {
-  CHECK(task_runner_->BelongsToCurrentThread(), base::NotFatalUntil::M160);
-  CHECK(window_id, base::NotFatalUntil::M160);
-  desktop_capturer_->SetExcludedWindow(window_id);
 }
 
 void DesktopCaptureDevice::Core::SetMockTimeForTesting(
@@ -1511,16 +1502,6 @@ void DesktopCaptureDevice::InvalidateBuffers() {
   }
   thread_.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&Core::InvalidateBuffers, core_->GetWeakPtr()));
-}
-
-void DesktopCaptureDevice::SetNotificationWindowId(
-    gfx::NativeViewId window_id) {
-  // This may be called after the capturer has been stopped.
-  if (!core_)
-    return;
-  thread_.task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&Core::SetNotificationWindowId,
-                                core_->GetWeakPtr(), window_id));
 }
 
 DesktopCaptureDevice::DesktopCaptureDevice(

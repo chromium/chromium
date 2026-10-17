@@ -44,8 +44,6 @@ class MockVideoCaptureDevice final
       media::mojom::PhotoSettingsPtr settings,
       VideoCaptureDevice::SetPhotoOptionsCallback callback) override {}
   void TakePhoto(VideoCaptureDevice::TakePhotoCallback callback) override {}
-  void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
-                                      base::OnceClosure done_cb) override {}
   MOCK_METHOD0(MaybeSuspendDevice, void());
   MOCK_METHOD0(ResumeDevice, void());
   MOCK_METHOD4(

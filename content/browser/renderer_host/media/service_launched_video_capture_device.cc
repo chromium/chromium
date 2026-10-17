@@ -101,15 +101,6 @@ void ServiceLaunchedVideoCaptureDevice::InvalidateBuffers() {
   subscription_->InvalidateBuffers();
 }
 
-void ServiceLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
-    gfx::NativeViewId window_id,
-    base::OnceClosure done_cb) {
-  // This method should only be called for desktop capture devices.
-  // The video_capture Mojo service does not support desktop capture devices
-  // (yet) and should not be used for it.
-  NOTREACHED();
-}
-
 void ServiceLaunchedVideoCaptureDevice::OnUtilizationReport(
     media::VideoCaptureFeedback feedback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -41,9 +41,6 @@ class InProcessLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
   void RequestRefreshFrame() override;
   void InvalidateBuffers() override;
 
-  void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
-                                      base::OnceClosure done_cb) override;
-
   void OnUtilizationReport(media::VideoCaptureFeedback feedback) override;
 
  private:

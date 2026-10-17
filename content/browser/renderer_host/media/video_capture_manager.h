@@ -335,9 +335,6 @@ class CONTENT_EXPORT VideoCaptureManager
   void DoStopDevice(VideoCaptureController* controller);
   void ProcessDeviceStartRequestQueue();
 
-  void MaybePostDesktopCaptureWindowId(
-      const media::VideoCaptureSessionId& session_id);
-
   void ReleaseDevices();
   void ResumeDevices();
 
@@ -393,10 +390,6 @@ class CONTENT_EXPORT VideoCaptureManager
   // use this list if the device is not started, otherwise it will retrieve the
   // active device capture format from the VideoCaptureController associated.
   std::vector<media::VideoCaptureDeviceInfo> devices_info_cache_;
-
-  // Map used by DesktopCapture.
-  std::map<media::VideoCaptureSessionId, gfx::NativeViewId>
-      notification_window_ids_;
 
   // Closes video device capture sessions after a timeout. Idle timeout value
   // chosen based on UMA metrics. See https://crbug.com/1163105#c28

@@ -16,7 +16,6 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
-#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/java_handler_thread.h"
@@ -75,8 +74,6 @@ class CONTENT_EXPORT DesktopCaptureDevice : public media::VideoCaptureDevice {
   void RequestRefreshFrame() override;
 
   void InvalidateBuffers() override;
-  // Set the platform-dependent window id for the notification window.
-  void SetNotificationWindowId(gfx::NativeViewId window_id);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DesktopCaptureDeviceTest,

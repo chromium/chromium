@@ -19,28 +19,6 @@
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/media_buildflags.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_IOS)
-#include "content/browser/media/capture/desktop_capture_device.h"
-#endif
-
-namespace {
-
-void SetDesktopCaptureWindowIdOnDeviceThread(
-    gfx::NativeViewId window_id,
-    base::OnceClosure done_cb,
-    media::VideoCaptureDevice* device) {
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_IOS)
-  auto* desktop_device = static_cast<content::DesktopCaptureDevice*>(device);
-  desktop_device->SetNotificationWindowId(window_id);
-  VLOG(2) << "Screen capture notification window passed on device thread.";
-#endif
-  std::move(done_cb).Run();
-}
-
-}  // anonymous namespace
-
 namespace content {
 
 InProcessLaunchedVideoCaptureDevice::InProcessLaunchedVideoCaptureDevice(
@@ -112,14 +90,6 @@ void InProcessLaunchedVideoCaptureDevice::RequestRefreshFrame() {
 void InProcessLaunchedVideoCaptureDevice::InvalidateBuffers() {
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M154);
   device_.AsyncCall(&media::VideoCaptureDevice::InvalidateBuffers);
-}
-
-void InProcessLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
-    gfx::NativeViewId window_id,
-    base::OnceClosure done_cb) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M154);
-  device_.PostTaskWithThisObject(base::BindOnce(
-      &SetDesktopCaptureWindowIdOnDeviceThread, window_id, std::move(done_cb)));
 }
 
 void InProcessLaunchedVideoCaptureDevice::OnUtilizationReport(

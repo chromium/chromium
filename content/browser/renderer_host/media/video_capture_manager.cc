@@ -400,13 +400,6 @@ void VideoCaptureManager::OnDeviceLaunched(VideoCaptureController* controller) {
     display_capture_session_ids_.push_back(session_id);
   }
 
-  if (blink::IsVideoDesktopCaptureMediaType(controller->stream_type())) {
-    const media::VideoCaptureSessionId session_id =
-        device_start_request_queue_.front().session_id();
-    CHECK_NE(session_id, FakeSessionId(), base::NotFatalUntil::M158);
-    MaybePostDesktopCaptureWindowId(session_id);
-  }
-
   auto it = photo_request_queue_.begin();
   while (it != photo_request_queue_.end()) {
     VideoCaptureController* maybe_entry =
@@ -740,50 +733,10 @@ void VideoCaptureManager::SetDesktopCaptureWindowId(
   CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M158);
   VLOG(2) << "SetDesktopCaptureWindowId called for session " << session_id;
 
-  notification_window_ids_[session_id] = window_id;
-  MaybePostDesktopCaptureWindowId(session_id);
-
   if (set_desktop_capture_window_id_callback_for_testing_) {
     set_desktop_capture_window_id_callback_for_testing_.Run(session_id,
                                                             window_id);
   }
-}
-
-void VideoCaptureManager::MaybePostDesktopCaptureWindowId(
-    const media::VideoCaptureSessionId& session_id) {
-  auto session_it = sessions_.find(session_id);
-  if (session_it == sessions_.end())
-    return;
-
-  VideoCaptureController* const existing_device =
-      LookupControllerByMediaTypeAndDeviceId(session_it->second.type,
-                                             session_it->second.id);
-  if (!existing_device) {
-    DVLOG(2) << "Failed to find an existing screen capture device.";
-    return;
-  }
-
-  if (!existing_device->IsDeviceAlive()) {
-    DVLOG(2) << "Screen capture device not yet started.";
-    return;
-  }
-
-  CHECK(blink::IsVideoDesktopCaptureMediaType(existing_device->stream_type()),
-        base::NotFatalUntil::M158);
-  DesktopMediaID id = DesktopMediaID::Parse(existing_device->device_id());
-  if (id.is_null())
-    return;
-
-  auto window_id_it = notification_window_ids_.find(session_id);
-  if (window_id_it == notification_window_ids_.end()) {
-    DVLOG(2) << "Notification window id not set for screen capture.";
-    return;
-  }
-
-  existing_device->SetDesktopCaptureWindowIdAsync(
-      window_id_it->second,
-      base::DoNothingWithBoundArgs(scoped_refptr<VideoCaptureManager>(this)));
-  notification_window_ids_.erase(window_id_it);
 }
 
 void VideoCaptureManager::GetPhotoState(

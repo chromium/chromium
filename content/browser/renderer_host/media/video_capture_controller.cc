@@ -800,15 +800,6 @@ void VideoCaptureController::InvalidateBuffers() {
   launched_device_->InvalidateBuffers();
 }
 
-void VideoCaptureController::SetDesktopCaptureWindowIdAsync(
-    gfx::NativeViewId window_id,
-    base::OnceClosure done_cb) {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M152);
-  CHECK(launched_device_, base::NotFatalUntil::M152);
-  launched_device_->SetDesktopCaptureWindowIdAsync(window_id,
-                                                   std::move(done_cb));
-}
-
 VideoCaptureController::ControllerClient* VideoCaptureController::FindClient(
     const VideoCaptureControllerID& id,
     VideoCaptureControllerEventHandler* handler) {
