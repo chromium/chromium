@@ -17,7 +17,7 @@ chrome.test.runTests([
 
         // If the time was in a different unit (like seconds) this should fail.
         if (typeof creationTime === 'number' &&
-            creationTime > timeBeforeGetCreationTimeCall &&
+            creationTime >= timeBeforeGetCreationTimeCall &&
             creationTime <= timeAfterGetCreationTimeCall) {
           chrome.test.succeed();
         } else {

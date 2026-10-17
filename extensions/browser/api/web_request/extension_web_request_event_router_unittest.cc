@@ -294,7 +294,20 @@ std::unique_ptr<WebRequestInfo> CreateRequest(uint64_t request_id) {
   return request;
 }
 
-class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
+// Must be listed as a base struct before `ExtensionsTest` so
+// `ScopedFeatureList` is initialized before `BrowserTaskEnvironment` starts
+// `ThreadPool` worker threads and reset after `~ExtensionsTest()` joins them.
+struct WithPerContextEventDispatchFeature {
+  explicit WithPerContextEventDispatchFeature(bool enabled) {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kWebRequestPerContextEventDispatch, enabled);
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class WebRequestEventRouterContextDispatchTest
+    : private WithPerContextEventDispatchFeature,
+      public ExtensionsTest {
  public:
   static constexpr const char* kExtensionName = "Test Extension";
   static constexpr const char* kEventName =
@@ -302,10 +315,8 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
   static constexpr int kWorkerThreadId = 12;
   static constexpr int64_t kServiceWorkerVersionId = 7;
 
-  WebRequestEventRouterContextDispatchTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kWebRequestPerContextEventDispatch);
-  }
+  WebRequestEventRouterContextDispatchTest()
+      : WithPerContextEventDispatchFeature(true) {}
 
   void SetUp() override {
     ExtensionsTest::SetUp();
@@ -471,7 +482,6 @@ class WebRequestEventRouterContextDispatchTest : public ExtensionsTest {
     return filter;
   }
 
-  base::test::ScopedFeatureList feature_list_;
   ExtensionsAPIClient api_client_;
   raw_ptr<CapturingEventRouter> event_router_ = nullptr;
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
@@ -805,14 +815,14 @@ TEST_F(WebRequestEventRouterContextDispatchTest,
 // regular context but observes and blocks requests from both.
 // TODO(andreaorru): the level of simulation we need here in these unittests may
 // be fragile. Rewrite these as browser tests with "real" extensions.
-class WebRequestEventRouterCrossBrowserContextTest : public ExtensionsTest {
+class WebRequestEventRouterCrossBrowserContextTest
+    : private WithPerContextEventDispatchFeature,
+      public ExtensionsTest {
  public:
   static constexpr int kRenderProcessId = 1;
 
-  WebRequestEventRouterCrossBrowserContextTest() {
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kWebRequestPerContextEventDispatch);
-  }
+  WebRequestEventRouterCrossBrowserContextTest()
+      : WithPerContextEventDispatchFeature(false) {}
 
  protected:
   void SetUp() override {
@@ -904,7 +914,6 @@ class WebRequestEventRouterCrossBrowserContextTest : public ExtensionsTest {
   std::optional<int> result_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   ExtensionsAPIClient api_client_;
   scoped_refptr<const Extension> extension_;
   net::HttpRequestHeaders headers_;
