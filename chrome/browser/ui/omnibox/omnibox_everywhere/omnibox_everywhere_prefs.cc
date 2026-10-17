@@ -84,16 +84,16 @@ PrefService* ResolveLocalState(PrefService* local_state) {
 #if BUILDFLAG(IS_MAC)
 void MapMacHotkeyToken(std::u16string& token) {
   // Accelerator code returns hotkeys on Mac represented by their respective
-  // symbols (e.g. ⌘) rather than their spelled forms (e.g. Command). Map the
-  // former to the latter using standard localized strings.
+  // symbols (e.g. ⌘) rather than their spelled forms (e.g. Command). Map
+  // modifiers to include both symbol and text.
   if (token == u"⌃") {
-    token = l10n_util::GetStringUTF16(IDS_APP_CTRL_KEY);
+    token = u"⌃ " + l10n_util::GetStringUTF16(IDS_APP_CTRL_KEY);
   } else if (token == u"⌥") {
-    token = u"Option";
+    token = u"⌥ Option";
   } else if (token == u"⇧") {
-    token = l10n_util::GetStringUTF16(IDS_APP_SHIFT_KEY);
+    token = u"⇧ " + l10n_util::GetStringUTF16(IDS_APP_SHIFT_KEY);
   } else if (token == u"⌘") {
-    token = u"Cmd";
+    token = u"⌘ Cmd";
   }
 }
 #endif
