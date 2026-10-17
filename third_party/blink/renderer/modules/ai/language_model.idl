@@ -41,9 +41,9 @@ interface LanguageModel : EventTarget {
     optional LanguageModelCreateCoreOptions options = {}
   );
 
-  // **EXPERIMENTAL**: Only available in extension and experimental contexts.
+  // **DEPRECATED**: this will be removed; use samplingMode instead.
   [
-    MeasureAs=LanguageModel_Params,
+    DeprecateAs=LanguageModel_Params,
     RuntimeEnabled=AIPromptAPILegacyParams,
     CallWith=ScriptState,
     RaisesException
@@ -127,17 +127,17 @@ interface LanguageModel : EventTarget {
   ]
   readonly attribute unrestricted double inputQuota;
 
-  // **EXPERIMENTAL**: Only available in extension and experimental contexts.
+  // **DEPRECATED**: this will be removed; use samplingMode instead.
   [
     RuntimeEnabled=AIPromptAPILegacyParams,
-    MeasureAs=LanguageModel_TopK
+    DeprecateAs=LanguageModel_TopK
   ]
   readonly attribute unsigned long topK;
 
-  // **EXPERIMENTAL**: Only available in extension and experimental contexts.
+  // **DEPRECATED**: this will be removed; use samplingMode instead.
   [
     RuntimeEnabled=AIPromptAPILegacyParams,
-    MeasureAs=LanguageModel_Temperature
+    DeprecateAs=LanguageModel_Temperature
   ]
   readonly attribute float temperature;
 

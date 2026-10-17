@@ -4,7 +4,7 @@
 
 // https://github.com/webmachinelearning/prompt-api
 
-// **EXPERIMENTAL**: Only available in extension and experimental contexts.
+// **DEPRECATED**: this will be removed; use samplingMode instead.
 [
   Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
   RuntimeEnabled=AIPromptAPILegacyParams,

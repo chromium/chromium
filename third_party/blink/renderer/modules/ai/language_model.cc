@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
-#include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -546,17 +545,6 @@ ScriptPromise<LanguageModel> LanguageModel::create(
     return promise;
   }
 
-  if (options && options->hasSamplingMode() &&
-      (options->hasTemperature() || options->hasTopK()) &&
-      RuntimeEnabledFeatures::AIPromptAPILegacyParamsEnabled(
-          execution_context)) {
-    // TODO(crbug.com/502214118): Merge this check into
-    // ResolveSamplingParamsOption.
-    exception_state.ThrowTypeError(
-        kExceptionMessageSamplingModeAndParamsConflict);
-    return EmptyPromise();
-  }
-
   std::optional<mojom::blink::AILanguageModelSamplingMode> sampling_mode;
   if (options->hasSamplingMode()) {
     sampling_mode = ConvertSamplingModeToMojo(options->samplingMode());
@@ -621,17 +609,6 @@ ScriptPromise<V8Availability> LanguageModel::availability(
 
   LogCreateOptionMetrics(*options, "availability");
 
-  if (options && options->hasSamplingMode() &&
-      (options->hasTemperature() || options->hasTopK()) &&
-      RuntimeEnabledFeatures::AIPromptAPILegacyParamsEnabled(
-          execution_context)) {
-    // TODO(crbug.com/502214118): Merge this check into
-    // ResolveSamplingParamsOption.
-    exception_state.ThrowTypeError(
-        kExceptionMessageSamplingModeAndParamsConflict);
-    return EmptyPromise();
-  }
-
   auto sampling_params_or_exception =
       ResolveSamplingParamsOption(options, execution_context);
   if (!sampling_params_or_exception.has_value()) {
@@ -693,12 +670,6 @@ ScriptPromise<IDLNullable<LanguageModelParams>> LanguageModel::params(
     ThrowInvalidContextException(exception_state);
     return EmptyPromise();
   }
-
-  // Count deprecation unconditionally (since this method is gated by
-  // [RuntimeEnabled=AIPromptAPILegacyParams] in IDL).
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  Deprecation::CountDeprecation(
-      execution_context, mojom::blink::WebFeature::kLanguageModel_Params);
 
   auto* resolver = MakeGarbageCollected<
       ScriptPromiseResolver<IDLNullable<LanguageModelParams>>>(script_state);

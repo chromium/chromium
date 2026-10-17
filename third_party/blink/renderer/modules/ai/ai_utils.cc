@@ -331,7 +331,8 @@ ResolveSamplingParamsOption(const LanguageModelCreateCoreOptions* options,
         mojom::blink::WebFeature::kLanguageModel_Temperature);
   }
 
-  if (!RuntimeEnabledFeatures::AIPromptAPILegacyParamsEnabled(
+  if (options->hasSamplingMode() ||
+      !RuntimeEnabledFeatures::AIPromptAPILegacyParamsEnabled(
           execution_context)) {
     return nullptr;
   }
