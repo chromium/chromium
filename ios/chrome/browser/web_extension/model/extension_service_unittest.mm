@@ -142,9 +142,12 @@ class ExtensionServiceTest : public PlatformTest {
 };
 
 // Tests that ExtensionService is ready immediately when initialized with
-// kNotEligible.
+// kNotEligible, does not load the extension at startup, and loads the
+// extension if the pref subsequently changes to enabled.
 TEST_F(ExtensionServiceTest, TestInitializationWithNotEligible)
 API_AVAILABLE(ios(18.4)) {
+  SetOptedIn(false);
+
   auto fake_controller = std::make_unique<FakeExtensionController>();
   FakeExtensionController* raw_controller = fake_controller.get();
 
@@ -152,7 +155,21 @@ API_AVAILABLE(ios(18.4)) {
   service.Initialize(web::UniversalOptOutState::kNotEligible);
 
   EXPECT_TRUE(service.IsReady());
+  EXPECT_FALSE(service.WebExtensionsWereLoadedAtStartup());
   EXPECT_EQ(service.GetExtensionController(), raw_controller);
+  EXPECT_FALSE(raw_controller->HasPendingLoad());
+  EXPECT_FALSE(
+      raw_controller->IsBuiltInExtensionLoaded(web::BuiltInExtension::kGPC));
+
+  // Toggling the opt-out preference to enabled should trigger loading the
+  // extension.
+  SetOptedIn(true);
+  EXPECT_TRUE(raw_controller->HasPendingLoad());
+  EXPECT_EQ(raw_controller->last_loaded_extension(),
+            web::BuiltInExtension::kGPC);
+  raw_controller->CompleteLoad(/*success=*/true);
+  EXPECT_TRUE(
+      raw_controller->IsBuiltInExtensionLoaded(web::BuiltInExtension::kGPC));
 }
 
 // Tests that ExtensionService triggers extension load when initialized with

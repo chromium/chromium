@@ -85,9 +85,8 @@ bool IsGPCExtensionEnabled(ProfileIOS* profile) {
   if (!optout_service) {
     return false;
   }
-  const web::UniversalOptOutState opt_out_state =
-      GetUniversalOptOutState(profile->GetPrefs(), optout_service);
-  if (opt_out_state == web::UniversalOptOutState::kNotEligible) {
+  if (!features::IsUniversalOptOutEnabled() ||
+      !base::FeatureList::IsEnabled(features::kUniversalOptOutSettings)) {
     return false;
   }
   if (features::IsUniversalOptOutExtensionSilentEnabled()) {

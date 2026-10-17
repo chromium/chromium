@@ -60,11 +60,6 @@ void ExtensionServiceImpl::Initialize(web::UniversalOptOutState state) {
   const bool is_silent =
       universal_optout::features::IsUniversalOptOutExtensionSilentEnabled();
 
-  if (!is_silent && state == web::UniversalOptOutState::kNotEligible) {
-    is_ready_ = true;
-    return;
-  }
-
   pref_change_registrar_.Init(&pref_service_.get());
   pref_change_registrar_.Add(
       universal_optout::prefs::kUniversalOptOutEnabled,

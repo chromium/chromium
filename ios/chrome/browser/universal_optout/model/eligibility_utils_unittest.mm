@@ -219,13 +219,17 @@ TEST_F(UniversalOptOutEligibilityUtilsTest,
   EXPECT_FALSE(IsGPCExtensionEnabled(nullptr));
 }
 
-// Tests that IsGPCExtensionEnabled returns false when the profile is
-// ineligible.
+// Tests that IsGPCExtensionEnabled returns true even when the profile is
+// ineligible (as eligibility can change dynamically at runtime).
 TEST_F(UniversalOptOutEligibilityUtilsTest,
        TestGPCExtensionEnabledWhenIneligible) {
   EnableAllFeatures();
   std::unique_ptr<TestProfileIOS> profile = BuildProfile(/*eligible=*/false);
-  EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
+  if (IsGPCExtensionSupportedOS()) {
+    EXPECT_TRUE(IsGPCExtensionEnabled(profile.get()));
+  } else {
+    EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
+  }
 }
 
 // Tests that IsGPCExtensionSupportedOS returns true on supported OS versions.
