@@ -4,6 +4,8 @@
 
 package org.chromium.ui.edge_to_edge;
 
+import androidx.annotation.Px;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** Triggered when the edge-to-edge state is updated. */
@@ -16,7 +18,15 @@ public interface EdgeToEdgePadAdjuster {
      * @param inset The additional bottom inset in px to add to original view padding. Passing in an
      *     inset of 0 will reset to the original padding.
      */
-    void overrideBottomInset(int inset);
+    void overrideBottomInset(@Px int inset);
+
+    /**
+     * Override the top inset of the adjuster with additional top padding or margin.
+     *
+     * @param inset The additional top inset in px to apply. Passing in an inset of 0 will reset to
+     *     the original padding or margin.
+     */
+    void overrideTopInset(@Px int inset);
 
     /** Properly tear down the pad adjuster. */
     void destroy();

@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Function;
 import androidx.core.util.Pair;
@@ -575,6 +576,9 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             mEdgeToEdgeBottomInsets = inset;
                             updateBottomPadding();
                         }
+
+                        @Override
+                        public void overrideTopInset(@Px int inset) {}
 
                         @Override
                         public void destroy() {}

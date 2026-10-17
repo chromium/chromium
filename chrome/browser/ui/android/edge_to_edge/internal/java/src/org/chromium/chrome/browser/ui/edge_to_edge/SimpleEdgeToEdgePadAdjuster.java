@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
+import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
@@ -89,7 +90,7 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
     }
 
     @Override
-    public void overrideBottomInset(int inset) {
+    public void overrideBottomInset(@Px int inset) {
         if (mEnableClipToPadding) {
             maybeSetViewClipToPadding(inset == 0);
         }
@@ -104,6 +105,9 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
                 mViewToPad.getPaddingRight(),
                 newBottomPadding);
     }
+
+    @Override
+    public void overrideTopInset(@Px int inset) {}
 
     // Set the view clip to padding if the view is supported.
     private void maybeSetViewClipToPadding(boolean clipToPadding) {

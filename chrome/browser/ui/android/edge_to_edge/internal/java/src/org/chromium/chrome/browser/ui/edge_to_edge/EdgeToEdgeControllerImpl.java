@@ -451,9 +451,8 @@ public class EdgeToEdgeControllerImpl
     public void registerAdjuster(EdgeToEdgePadAdjuster adjuster) {
         mPadAdjusters.addObserver(adjuster);
         boolean shouldPad = shouldPadAdjusters();
-        // TODO(crbug.com/498302496): Support top pad adjusters (e.g. for top-aligned overlays and
-        // dialogs) when unifying top and bottom E2E pad adjusters.
         adjuster.overrideBottomInset(shouldPad ? mSystemInsets.bottom : 0);
+        adjuster.overrideTopInset(shouldPadTopAdjusters() ? mSystemInsets.top : 0);
     }
 
     @Override
@@ -865,13 +864,21 @@ public class EdgeToEdgeControllerImpl
         return mIsDrawingToBottomEdge;
     }
 
+    /**
+     * Returns whether {@link EdgeToEdgePadAdjuster}s should be padded with the system top inset.
+     */
+    private boolean shouldPadTopAdjusters() {
+        return EdgeToEdgeUtils.isTopEdgeToEdgeEnabled()
+                && EdgeToEdgeUtils.isEdgelessTopInsetSupported(mActivity);
+    }
+
     private void updatePadAdjusters() {
         mPadAdjustersUpdatePending = false;
         boolean shouldPad = shouldPadAdjusters();
-        // TODO(crbug.com/498302496): Update top pad adjusters with mSystemInsets.top when unified
-        // pad adjusters are added.
+        boolean shouldPadTop = shouldPadTopAdjusters();
         for (var adjuster : mPadAdjusters) {
             adjuster.overrideBottomInset(shouldPad ? mSystemInsets.bottom : 0);
+            adjuster.overrideTopInset(shouldPadTop ? mSystemInsets.top : 0);
         }
     }
 

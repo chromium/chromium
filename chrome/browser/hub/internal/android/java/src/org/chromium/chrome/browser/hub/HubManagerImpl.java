@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.FrameLayout.LayoutParams;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -44,6 +46,7 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
  * Implementation of {@link HubManager} and {@link HubController}.
@@ -78,6 +81,23 @@ public class HubManagerImpl implements HubManager, HubController {
     private final MenuButtonCoordinator mMenuButtonCoordinator;
     private final HubShowPaneHelper mHubShowPaneHelper;
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
+    private final Callback<EdgeToEdgeController> mEdgeToEdgeControllerCallback =
+            this::onEdgeToEdgeControllerChanged;
+    private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster =
+            new EdgeToEdgePadAdjuster() {
+                @Override
+                public void overrideBottomInset(@Px int inset) {}
+
+                @Override
+                public void overrideTopInset(@Px int inset) {
+                    if (mEdgeToEdgeTopInset == inset) return;
+                    mEdgeToEdgeTopInset = inset;
+                    updateContainerLayoutParams();
+                }
+
+                @Override
+                public void destroy() {}
+            };
     private final SearchActivityClient mSearchActivityClient;
     private final SettableNullableObservableSupplier<ColorBlendProgress>
             mSwipeAnimationProgressSupplier = ObservableSuppliers.createNullable();
@@ -89,9 +109,11 @@ public class HubManagerImpl implements HubManager, HubController {
     // This is effectively NonNull and final once the HubLayout is initialized.
     private @MonotonicNonNull HubLayoutController mHubLayoutController;
     private @Nullable HubCoordinator mHubCoordinator;
+    private @Nullable EdgeToEdgeController mEdgeToEdgeController;
     private boolean mHasSnackbarOverride;
     private int mStatusIndicatorHeight;
     private int mAppHeaderHeight;
+    private @Px int mEdgeToEdgeTopInset;
 
     /** See {@link HubManagerFactory#createHubManager}. */
     public HubManagerImpl(
@@ -131,6 +153,7 @@ public class HubManagerImpl implements HubManager, HubController {
         LayoutParams params =
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         mHubContainerView.setLayoutParams(params);
+        mEdgeToEdgeSupplier.addSyncObserverAndCallIfNonNull(mEdgeToEdgeControllerCallback);
 
         mPaneManager
                 .getFocusedPaneSupplier()
@@ -156,6 +179,11 @@ public class HubManagerImpl implements HubManager, HubController {
 
     @Override
     public void destroy() {
+        mEdgeToEdgeSupplier.removeObserver(mEdgeToEdgeControllerCallback);
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+            mEdgeToEdgeController = null;
+        }
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mHubVisibilitySupplier.set(false);
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChanged);
@@ -204,11 +232,24 @@ public class HubManagerImpl implements HubManager, HubController {
         updateContainerLayoutParams();
     }
 
+    private void onEdgeToEdgeControllerChanged(EdgeToEdgeController edgeToEdgeController) {
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.unregisterAdjuster(mEdgeToEdgePadAdjuster);
+        }
+        mEdgeToEdgeController = edgeToEdgeController;
+        if (mEdgeToEdgeController != null) {
+            mEdgeToEdgeController.registerAdjuster(mEdgeToEdgePadAdjuster);
+        }
+    }
+
     private void updateContainerLayoutParams() {
         LayoutParams params = (LayoutParams) mHubContainerView.getLayoutParams();
         assert params != null : "HubContainerView should always have layout params.";
         boolean isVerticalTabsOn = VerticalTabUtils.isVerticalTabsEnabled(mActivity);
-        params.topMargin = mStatusIndicatorHeight + (isVerticalTabsOn ? 0 : mAppHeaderHeight);
+        params.topMargin =
+                mStatusIndicatorHeight
+                        + mEdgeToEdgeTopInset
+                        + (isVerticalTabsOn ? 0 : mAppHeaderHeight);
         mHubContainerView.setLayoutParams(params);
         mHubContainerView.setPadding(0, isVerticalTabsOn ? mAppHeaderHeight : 0, 0, 0);
     }

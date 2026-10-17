@@ -185,6 +185,9 @@ public class SimpleEdgeToEdgeControllerUnitTest {
         }
 
         @Override
+        public void overrideTopInset(int inset) {}
+
+        @Override
         public void destroy() {}
 
         void checkInsets(int expected) {

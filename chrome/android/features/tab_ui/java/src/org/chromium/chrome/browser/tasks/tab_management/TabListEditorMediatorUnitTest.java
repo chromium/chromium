@@ -34,6 +34,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -49,11 +50,13 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.ResetHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -69,10 +72,14 @@ public final class TabListEditorMediatorUnitTest {
             TabListEditorItemSelectionId.createTabId(1);
     private static final TabListEditorItemSelectionId TAB_ID_2 =
             TabListEditorItemSelectionId.createTabId(2);
+    private static final int APP_HEADER_HEIGHT = 10;
+    private static final int TOP_INSET = 64;
+    private static final int RESET_TOP_INSET = 0;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
     @Mock private TabListCoordinator mTabListCoordinator;
     @Mock private ResetHandler mResetHandler;
@@ -83,6 +90,8 @@ public final class TabListEditorMediatorUnitTest {
 
     private final SettableNonNullObservableSupplier<Boolean> mEnableDoneButtonSupplier =
             ObservableSuppliers.createNonNull(false);
+    private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            ObservableSuppliers.createMonotonic();
     private final ItemPickerSelectionHandler mItemPickerSelectionHandler =
             new ItemPickerSelectionHandler() {
                 @Override
@@ -110,7 +119,9 @@ public final class TabListEditorMediatorUnitTest {
     @Captor
     private ArgumentCaptor<SelectionObserver<TabListEditorItemSelectionId>>
             mSelectionObserverCaptor;
+
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor private ArgumentCaptor<EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterCaptor;
 
     private Set<TabListEditorItemSelectionId> mInitialSelectedItems;
 
@@ -120,6 +131,7 @@ public final class TabListEditorMediatorUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mTabModelSupplier = ObservableSuppliers.createNonNull(mTabModel);
+        mEdgeToEdgeSupplier.set(mEdgeToEdgeController);
 
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mTabModel.getProfile()).thenReturn(mProfile);
@@ -140,7 +152,7 @@ public final class TabListEditorMediatorUnitTest {
             mMediator.destroy();
         }
         mModel = new PropertyModel.Builder(TabListEditorProperties.ALL_KEYS).build();
-        reset(mSelectionDelegate);
+        reset(mSelectionDelegate, mEdgeToEdgeController);
 
         ItemPickerSelectionHandler itemPickerSelectionHandler =
                 mode == CreationMode.ITEM_PICKER ? mItemPickerSelectionHandler : null;
@@ -157,6 +169,7 @@ public final class TabListEditorMediatorUnitTest {
                         mTabListEditorLayout,
                         TabActionState.SELECTABLE,
                         mDesktopWindowStateManager,
+                        mEdgeToEdgeSupplier,
                         mode,
                         itemPickerSelectionHandler);
         mMediator.initializeWithTabListCoordinator(mTabListCoordinator, mResetHandler);
@@ -164,6 +177,8 @@ public final class TabListEditorMediatorUnitTest {
 
         // Verify times(1) is correct because we reset the mock first.
         verify(mSelectionDelegate, times(1)).addObserver(mSelectionObserverCaptor.capture());
+        verify(mEdgeToEdgeController, times(1))
+                .registerAdjuster(mEdgeToEdgePadAdjusterCaptor.capture());
     }
 
     private void triggerSelection(Set<TabListEditorItemSelectionId> selectedItems) {
@@ -178,11 +193,34 @@ public final class TabListEditorMediatorUnitTest {
     @Test
     public void testTopMarginOnAppHeaderStateChange() {
         AppHeaderState state = mock(AppHeaderState.class);
-        when(state.getAppHeaderHeight()).thenReturn(10);
+        when(state.getAppHeaderHeight()).thenReturn(APP_HEADER_HEIGHT);
 
         mMediator.onAppHeaderStateChanged(state);
 
-        assertEquals(10, mModel.get(TabListEditorProperties.TOP_MARGIN));
+        assertEquals(APP_HEADER_HEIGHT, mModel.get(TabListEditorProperties.TOP_MARGIN));
+    }
+
+    @Test
+    public void testTopMarginOnEdgeToEdgeTopInsetChange() {
+        EdgeToEdgeController newController = mock(EdgeToEdgeController.class);
+        mEdgeToEdgeSupplier.set(newController);
+        verify(mEdgeToEdgeController).unregisterAdjuster(mEdgeToEdgePadAdjusterCaptor.getValue());
+        verify(newController).registerAdjuster(mEdgeToEdgePadAdjusterCaptor.capture());
+
+        mEdgeToEdgePadAdjusterCaptor.getValue().overrideTopInset(TOP_INSET);
+        assertEquals(TOP_INSET, mModel.get(TabListEditorProperties.TOP_MARGIN));
+
+        AppHeaderState state = mock(AppHeaderState.class);
+        when(state.getAppHeaderHeight()).thenReturn(APP_HEADER_HEIGHT);
+        mMediator.onAppHeaderStateChanged(state);
+        assertEquals(TOP_INSET + APP_HEADER_HEIGHT, mModel.get(TabListEditorProperties.TOP_MARGIN));
+
+        mEdgeToEdgePadAdjusterCaptor.getValue().overrideTopInset(RESET_TOP_INSET);
+        assertEquals(APP_HEADER_HEIGHT, mModel.get(TabListEditorProperties.TOP_MARGIN));
+
+        mMediator.destroy();
+        verify(newController).unregisterAdjuster(mEdgeToEdgePadAdjusterCaptor.getValue());
+        assertFalse(mEdgeToEdgeSupplier.hasObservers());
     }
 
     @Test

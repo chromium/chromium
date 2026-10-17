@@ -440,6 +440,7 @@ public class TabListEditorCoordinator {
                             mTabListEditorLayout,
                             mTabActionState,
                             desktopWindowStateManager,
+                            mEdgeToEdgeSupplier,
                             creationMode,
                             itemPickerSelectionHandler);
             mTabListEditorMediator.setNavigationProvider(
@@ -699,7 +700,12 @@ public class TabListEditorCoordinator {
                 PropertyModelChangeProcessor.create(
                         mModel, mTabListEditorLayout, TabListEditorLayoutBinder::bind);
 
-        if (mEdgeToEdgeSupplier != null && mLayoutType == TabListLayoutType.GROUPED) {
+        // ArchivedTabsDialogCoordinator passes mEdgeToEdgeSupplier so TabListEditorMediator can
+        // apply the top-inset margin, but registers its own bottom EdgeToEdgePadAdjuster on the
+        // close-all-tabs button container.
+        if (mEdgeToEdgeSupplier != null
+                && mLayoutType == TabListLayoutType.GROUPED
+                && mComponentId != TabComponentId.ARCHIVED_TABS_DIALOG) {
             mEdgeToEdgePadAdjuster =
                     EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
                             mTabListCoordinator.getContainerView(), mEdgeToEdgeSupplier);
