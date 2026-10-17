@@ -1126,7 +1126,6 @@ TEST_F(WebAppPolicyManagerDisableListTest, DisableSystemWebApps) {
           .Append(static_cast<int>(policy::SystemFeature::kPrintJobs))
           .Append(static_cast<int>(policy::SystemFeature::kKeyShortcuts))
           .Append(static_cast<int>(policy::SystemFeature::kRecorder)));
-  base::RunLoop().RunUntilIdle();
 
   disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_THAT(
