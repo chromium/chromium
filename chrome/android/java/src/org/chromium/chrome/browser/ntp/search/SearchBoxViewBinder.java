@@ -87,12 +87,9 @@ class SearchBoxViewBinder
                     model.get(SearchBoxProperties.SEARCH_BOX_END_PADDING),
                     view.getPaddingBottom());
         } else if (SearchBoxProperties.SEARCH_BOX_HEIGHT == propertyKey) {
-            View shadowContainer = view.findViewById(R.id.search_box_shadow_container);
-            if (shadowContainer != null) {
-                ViewGroup.LayoutParams lp = shadowContainer.getLayoutParams();
-                lp.height = model.get(SearchBoxProperties.SEARCH_BOX_HEIGHT);
-                shadowContainer.setLayoutParams(lp);
-            }
+            ViewGroup.LayoutParams lp = view.mSearchBoxView.getLayoutParams();
+            lp.height = model.get(SearchBoxProperties.SEARCH_BOX_HEIGHT);
+            view.mSearchBoxView.setLayoutParams(lp);
         } else if (SearchBoxProperties.SEARCH_BOX_HINT_TEXT == propertyKey) {
             view.mHintTextView.setHint(model.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT));
         } else if (SearchBoxProperties.SEARCH_BOX_TEXT_STYLE_RES_ID == propertyKey) {

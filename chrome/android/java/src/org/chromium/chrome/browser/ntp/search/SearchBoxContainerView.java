@@ -130,11 +130,8 @@ public class SearchBoxContainerView extends LinearLayout {
      * @param applyWhiteBackground Whether to apply a white background color to the fake search box.
      */
     void applyWhiteBackgroundAndShadow(boolean applyWhiteBackground) {
-        View searchBoxShadowContainerView = findViewById(R.id.search_box_shadow_container);
-        if (searchBoxShadowContainerView == null) return;
-
         NtpCustomizationUtils.applyWhiteBackgroundAndShadow(
-                getContext(), this, searchBoxShadowContainerView, applyWhiteBackground);
+                getContext(), this, mSearchBoxView, applyWhiteBackground);
     }
 
     /**
