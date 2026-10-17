@@ -111,7 +111,7 @@ class MockExtensionCache : public ExtensionCache {
 class ExtensionDownloaderTestHelper {
  public:
   static constexpr char kEmptyUpdateUrlData[] = "";
-  static const DownloadPingData* GetTestPingData();
+  static DownloadPingData GetTestPingData();
 
   ExtensionDownloaderTestHelper();
 

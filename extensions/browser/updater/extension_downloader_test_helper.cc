@@ -134,13 +134,11 @@ ExtensionDownloaderTestHelper::CreateDownloader() {
       &delegate_, test_shared_url_loader_factory_, GetTestVerifierFormat());
 }
 
-const DownloadPingData* ExtensionDownloaderTestHelper::GetTestPingData() {
-  static const DownloadPingData kNeverPingedData =
-      DownloadPingData(/*rollcall=*/ManifestFetchData::kNeverPinged,
-                       /*active=*/ManifestFetchData::kNeverPinged,
-                       /*enabled=*/true,
-                       /*disable_reasons=*/{});
-  return &kNeverPingedData;
+DownloadPingData ExtensionDownloaderTestHelper::GetTestPingData() {
+  return DownloadPingData(/*rollcall=*/ManifestFetchData::kNeverPinged,
+                          /*active=*/ManifestFetchData::kNeverPinged,
+                          /*enabled=*/true,
+                          /*disable_reasons=*/{});
 }
 
 ExtensionDownloaderTask CreateDownloaderTask(const ExtensionId& id,
@@ -169,7 +167,7 @@ void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
                                        const GURL& update_url) {
   AddExtensionToFetchDataForTesting(
       fetch_data, id, version, update_url,
-      *ExtensionDownloaderTestHelper::GetTestPingData());
+      ExtensionDownloaderTestHelper::GetTestPingData());
 }
 
 UpdateManifestItem::UpdateManifestItem(ExtensionId id) : id(std::move(id)) {}

@@ -4,8 +4,10 @@
 
 #include "extensions/test/logging_timer.h"
 
-#include <map>
+#include <array>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/time/tick_clock.h"
@@ -16,39 +18,43 @@ namespace {
 
 const base::TickClock* g_clock_for_testing = nullptr;
 
-// A global record of all tracked times.
+// A global record of all tracked times. It is trivially destructible so it
+// can be a global without an exit-time destructor.
 class TimeTracker {
  public:
-  TimeTracker() = default;
+  constexpr TimeTracker() = default;
 
   TimeTracker(const TimeTracker&) = delete;
   TimeTracker& operator=(const TimeTracker&) = delete;
 
-  ~TimeTracker() = default;
-
   void IncrementTime(const char* key, base::TimeDelta elapsed) {
-    auto& data = tracked_times_[key];
-    data.total_time += elapsed;
-    data.num_samples++;
+    Data* data = Find(key);
+    if (!data) {
+      CHECK_LT(num_keys_, kMaxKeys);
+      data = &tracked_times_[num_keys_++];
+      data->key = key;
+    }
+    data->total_time += elapsed;
+    data->num_samples++;
   }
 
   base::TimeDelta GetTrackedTime(const char* key) {
-    auto iter = tracked_times_.find(key);
-    return iter != tracked_times_.end() ? iter->second.total_time
-                                        : base::TimeDelta();
+    Data* data = Find(key);
+    return data ? data->total_time : base::TimeDelta();
   }
 
   void Print() {
-    for (const auto& key_value : tracked_times_) {
+    for (const Data& data : Tracked()) {
       LOG(WARNING) << "\n"
-                   << key_value.first << ":"
-                   << "\n    total: " << key_value.second.total_time
-                   << "\n    average: " << key_value.second.average_time();
+                   << data.key << ":"
+                   << "\n    total: " << data.total_time
+                   << "\n    average: " << data.average_time();
     }
   }
 
  private:
   struct Data {
+    const char* key = nullptr;
     base::TimeDelta total_time;
     size_t num_samples = 0u;
 
@@ -57,10 +63,28 @@ class TimeTracker {
     }
   };
 
-  // NOTE(devlin): If we find that these map lookups are too expensive, we
-  // could instead use a c-style array similar to RuntimeCallStats.
-  std::map<const char*, Data> tracked_times_;
+  // Far more keys than any test uses.
+  static constexpr size_t kMaxKeys = 32u;
+
+  base::span<Data> Tracked() {
+    return base::span(tracked_times_).first(num_keys_);
+  }
+
+  // Keys are compared by address, as the map that used to hold them did.
+  Data* Find(const char* key) {
+    for (Data& data : Tracked()) {
+      if (data.key == key) {
+        return &data;
+      }
+    }
+    return nullptr;
+  }
+
+  std::array<Data, kMaxKeys> tracked_times_ = {};
+  size_t num_keys_ = 0u;
 };
+
+TimeTracker g_time_tracker;
 
 base::TimeTicks GetNow() {
   return g_clock_for_testing ? g_clock_for_testing->NowTicks()
@@ -68,8 +92,7 @@ base::TimeTicks GetNow() {
 }
 
 TimeTracker& GetTimeTracker() {
-  static TimeTracker time_tracker;
-  return time_tracker;
+  return g_time_tracker;
 }
 
 }  // namespace

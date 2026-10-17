@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/extensions_client.h"
+#include "extensions/test/test_permission_message_provider.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -66,6 +67,8 @@ class TestExtensionsClient : public ExtensionsClient {
   const GURL webstore_base_url_;
   const GURL new_webstore_base_url_;
   GURL webstore_update_url_;
+
+  const TestPermissionMessageProvider permission_message_provider_;
 };
 
 }  // namespace extensions

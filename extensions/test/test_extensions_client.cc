@@ -53,8 +53,7 @@ void TestExtensionsClient::InitializeWebStoreUrls(
 
 const PermissionMessageProvider&
 TestExtensionsClient::GetPermissionMessageProvider() const {
-  static TestPermissionMessageProvider provider;
-  return provider;
+  return permission_message_provider_;
 }
 
 const std::string TestExtensionsClient::GetProductName() {
