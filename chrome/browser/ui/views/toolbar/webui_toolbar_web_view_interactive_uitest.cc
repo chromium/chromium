@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -767,4 +768,36 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
                         DeepQuery{"toolbar-app", "#location-bar", "#omnibox",
                                   "#textInput", "#input"},
                         "el => el.value.includes('chrome://version')", true));
+}
+
+class WebUIToolbarWebViewDeferStartupLayoutInteractiveTest
+    : public WebUIToolbarWebViewInteractiveTest {
+ public:
+  WebUIToolbarWebViewDeferStartupLayoutInteractiveTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kDeferLayoutDuringBrowserStartup);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for https://crbug.com/571806192: opening a new window should
+// focus the WebUI toolbar even when layout is deferred while the window is
+// invisible. On Mac, the window is activated (and initial focus is restored)
+// before it is reported as visible, so the toolbar must already be laid out by
+// then.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewDeferStartupLayoutInteractiveTest,
+                       NewWindowFocusesToolbar) {
+  ui_test_utils::BrowserCreatedObserver browser_created;
+  chrome::ExecuteCommand(browser(), IDC_NEW_WINDOW);
+  BrowserWindowInterface* const new_browser = browser_created.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
+
+  views::WebView* const toolbar_web_view =
+      BrowserView::GetBrowserViewForBrowser(new_browser)
+          ->toolbar()
+          ->GetWebUIToolbarViewForTesting()
+          ->GetWebViewForTesting();
+  EXPECT_TRUE(toolbar_web_view->HasFocus());
 }
