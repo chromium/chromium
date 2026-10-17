@@ -26,24 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<!-- LINT.IfChange(ChromeRelativePosition) -->
-
-<enum name="ChromeRelativePosition">
-  <int value="0" label="Above Left"/>
-  <int value="1" label="Center Left"/>
-  <int value="2" label="Below Left"/>
-  <int value="3" label="Above Center"/>
-  <int value="4" label="Overlap"/>
-  <int value="5" label="Below Center"/>
-  <int value="6" label="Above Right"/>
-  <int value="7" label="Center Right"/>
-  <int value="8" label="Below Right"/>
-  <int value="9" label="Chrome window on other display"/>
-  <int value="10" label="No Visible Chrome Browser"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ChromeRelativePosition) -->
-
 <!-- LINT.IfChange(CopyFromSurfaceError) -->
 
 <enum name="CopyFromSurfaceError">
@@ -57,23 +39,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/public/browser/render_widget_host_view.h:CopyFromSurfaceError) -->
-
-<!-- LINT.IfChange(DisplayPosition) -->
-
-<enum name="DisplayPosition">
-  <int value="0" label="Top Left"/>
-  <int value="1" label="Center Left"/>
-  <int value="2" label="Bottom Left"/>
-  <int value="3" label="Top Center"/>
-  <int value="4" label="Center Center"/>
-  <int value="5" label="Bottom Center"/>
-  <int value="6" label="Top Right"/>
-  <int value="7" label="Center Right"/>
-  <int value="8" label="Bottom Right"/>
-  <int value="9" label="Unknown"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:DisplayPosition) -->
 
 <!-- LINT.IfChange(GeicCloseAuthTabResult) -->
 

@@ -59,40 +59,6 @@
 namespace glic {
 namespace {
 
-class MockDelegate : public GlicMetrics::Delegate {
- public:
-  MockDelegate() = default;
-  ~MockDelegate() override = default;
-
-  // GlicMetrics::Delegate implementation
-  bool IsWindowShowing() const override { return showing; }
-  bool IsWindowAttached() const override { return attached; }
-  gfx::Size GetWindowSize() const override { return gfx::Size(); }
-  content::WebContents* GetFocusedWebContents() override {
-    return contents_.get();
-  }
-  int32_t GetNumPinnedTabs() const override { return num_pinned_tabs; }
-  std::vector<raw_ptr<content::WebContents>> GetPinnedAndSharedWebContents()
-      override {
-    return pinned_shared_tabs;
-  }
-
-  void SetFocusedWebContents(content::WebContents* contents) {
-    contents_ = contents;
-  }
-  void AddToPinnedSharedTabs(content::WebContents* contents) {
-    pinned_shared_tabs.push_back(contents);
-  }
-
-  bool showing = false;
-  bool attached = false;
-  int32_t num_pinned_tabs = 0;
-  std::vector<raw_ptr<content::WebContents>> pinned_shared_tabs;
-
- private:
-  raw_ptr<content::WebContents> contents_;
-};
-
 class MockStatusIcon : public StatusIcon {
  public:
   explicit MockStatusIcon(const std::u16string& tool_tip)
@@ -221,28 +187,21 @@ class GlicMetricsTest : public GlicMetricsTestBase {
     enabling_ = GlicEnabling::CreateForTesting(
         profile(), &profile_manager()->GetProfileAttributesStorage());
     metrics_ = std::make_unique<GlicMetrics>(profile(), enabling_.get());
-    auto delegate = std::make_unique<MockDelegate>();
-    delegate_ = delegate.get();
-    metrics_->SetDelegateForTesting(std::move(delegate));
   }
 
   void TearDown() override {
-    delegate_ = nullptr;
     metrics_.reset();
     enabling_.reset();
     GlicMetricsTestBase::TearDown();
   }
 
   GlicMetrics* metrics() { return metrics_.get(); }
-  MockDelegate* delegate() { return delegate_.get(); }
   GlicEnabling* enabling() { return enabling_.get(); }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<GlicEnabling> enabling_;
   std::unique_ptr<GlicMetrics> metrics_;
-  // Owned by `metrics_`.
-  raw_ptr<MockDelegate> delegate_ = nullptr;
 };
 
 TEST_F(GlicMetricsTest, RecordGlicProfilePreferences) {
@@ -741,51 +700,6 @@ TEST_F(GlicMetricsTest, TimeElapsedBetweenSessions) {
       1);
 }
 
-TEST_F(GlicMetricsTest, PositionOnOpenAndClose) {
-  // TODO(b/452378389): Unconventional order of metrics calls may be a problem.
-  display::Display display;
-  display.set_bounds(gfx::Rect(300, 350));
-  display.set_work_area(gfx::Rect(0, 50, 300, 300));
-  metrics()->OnGlicWindowShown(nullptr, display, gfx::Rect(50, 50, 0, 0));
-  metrics()->OnGlicWindowClose(nullptr, display, gfx::Rect(50, 150, 0, 0));
-  metrics()->OnGlicWindowShown(nullptr, display, gfx::Rect(50, 250, 0, 0));
-  metrics()->OnGlicWindowClose(nullptr, display, gfx::Rect(150, 50, 0, 0));
-  metrics()->OnGlicWindowShown(nullptr, display, gfx::Rect(150, 150, 0, 0));
-  metrics()->OnGlicWindowClose(nullptr, display, gfx::Rect(150, 250, 0, 0));
-  metrics()->OnGlicWindowShown(nullptr, display, gfx::Rect(250, 50, 0, 0));
-  metrics()->OnGlicWindowClose(nullptr, display, gfx::Rect(250, 150, 0, 0));
-  metrics()->OnGlicWindowShown(nullptr, display, gfx::Rect(250, 250, 0, 0));
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
-                                       DisplayPosition::kTopLeft, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnClose",
-                                       DisplayPosition::kCenterLeft, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
-                                       DisplayPosition::kBottomLeft, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnClose",
-                                       DisplayPosition::kTopCenter, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
-                                       DisplayPosition::kCenterCenter, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnClose",
-                                       DisplayPosition::kBottomCenter, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
-                                       DisplayPosition::kTopRight, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnClose",
-                                       DisplayPosition::kCenterRight, 1);
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
-                                       DisplayPosition::kBottomRight, 1);
-  // point is not within the work area bounds
-  metrics()->OnGlicWindowShown(nullptr, display, gfx::Rect(-50, 50, 0, 0));
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
-                                       DisplayPosition::kUnknown, 1);
-  metrics()->OnGlicWindowClose(nullptr, display, gfx::Rect(50, -50, 0, 0));
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnClose",
-                                       DisplayPosition::kUnknown, 1);
-  // no display
-  metrics()->OnGlicWindowShown(nullptr, std::nullopt, gfx::Rect(50, 50, 0, 0));
-  histogram_tester().ExpectBucketCount("Glic.PositionOnDisplay.OnOpen",
-                                       DisplayPosition::kUnknown, 2);
-}
-
 TEST_F(GlicMetricsTest, FreToFirstQueryElapsedTimeReportedOnce) {
   metrics()->OnFreAccepted();
   task_environment().FastForwardBy(base::Milliseconds(100));
@@ -816,9 +730,6 @@ class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
     enabling_ = GlicEnabling::CreateForTesting(
         profile(), &profile_manager()->GetProfileAttributesStorage());
     metrics_ = std::make_unique<GlicMetrics>(profile(), enabling_.get());
-    auto delegate = std::make_unique<MockDelegate>();
-    delegate_ = delegate.get();
-    metrics_->SetDelegateForTesting(std::move(delegate));
 
     // Revert FRE status to NotStarted to simulate new user for this experiment.
     enabling_->SetCompletedFre(prefs::FreStatus::kNotStarted);

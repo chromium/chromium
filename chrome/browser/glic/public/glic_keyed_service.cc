@@ -216,7 +216,6 @@ GlicKeyedService::GlicKeyedService(
 
   // TODO(crbug.com/450026474): Consider not constructing this metrics
   // instance for multi-instance
-  metrics_->ClearControllers();
   metrics_->RecordGlicProfilePreferences();
 
   if (base::FeatureList::IsEnabled(features::kGlicShareImage)) {
@@ -283,9 +282,7 @@ void GlicKeyedService::InitializeAfterConstruction() {
   MaybeMigrateGlicLocalStorage(profile_, client_data_storage_.get());
 }
 
-GlicKeyedService::~GlicKeyedService() {
-  metrics_->ClearControllers();
-}
+GlicKeyedService::~GlicKeyedService() = default;
 
 // static
 GlicKeyedService* GlicKeyedService::Get(content::BrowserContext* context) {

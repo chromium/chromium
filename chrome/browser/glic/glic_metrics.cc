@@ -7,10 +7,10 @@
 #include <string>
 #include <string_view>
 
-#include "base/check_deref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -19,12 +19,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/host/context/glic_sharing_utils.h"
-#include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
-#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -33,17 +30,10 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "content/public/browser/web_contents.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/base/accelerators/accelerator.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/widget/browser_conditions.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "ui/views/widget/widget.h"
-#endif
 
 namespace glic {
 
@@ -52,76 +42,6 @@ namespace {
 bool CheckFreStatus(GlicEnabling* enabling, prefs::FreStatus status) {
   return enabling->GetCompletedFre() == status;
 }
-
-class DummyDelegateImpl : public GlicMetrics::Delegate {
- public:
-  gfx::Size GetWindowSize() const override { return {}; }
-  bool IsWindowShowing() const override { return false; }
-  bool IsWindowAttached() const override { return false; }
-  content::WebContents* GetFocusedWebContents() override { return nullptr; }
-  int32_t GetNumPinnedTabs() const override { return 0; }
-  std::vector<raw_ptr<content::WebContents>> GetPinnedAndSharedWebContents()
-      override {
-    return std::vector<raw_ptr<content::WebContents>>();
-  }
-};
-
-class BaseDelegate : public GlicMetrics::Delegate {
- public:
-  explicit BaseDelegate(GlicSharingManagerInternal* sharing_manager,
-                        PrefService* pref_service)
-      : sharing_manager_(sharing_manager), pref_service_(pref_service) {}
-  content::WebContents* GetFocusedWebContents() override {
-    FocusedTabData ftd = sharing_manager_->GetFocusedTabData();
-    return ftd.is_focus() ? ftd.focus()->GetContents() : nullptr;
-  }
-  int32_t GetNumPinnedTabs() const override {
-    return sharing_manager_->GetNumPinnedTabs();
-  }
-  std::vector<raw_ptr<content::WebContents>> GetPinnedAndSharedWebContents()
-      override {
-    std::vector<raw_ptr<content::WebContents>> pinned_and_shared;
-    for (tabs::TabInterface* tab : sharing_manager_->GetPinnedTabs()) {
-      content::WebContents* web_contents = tab->GetContents();
-      if (web_contents && IsTabValidForSharing(web_contents)) {
-        pinned_and_shared.push_back(web_contents);
-      }
-    }
-    return pinned_and_shared;
-  }
-
- protected:
-  raw_ptr<GlicSharingManagerInternal> sharing_manager_;
-  raw_ptr<PrefService> pref_service_;
-};
-
-class DelegateMultiInstanceImpl : public BaseDelegate {
- public:
-  explicit DelegateMultiInstanceImpl(
-      GlicInstance* glic_instance,
-      GlicSharingManagerInternal* sharing_manager,
-      PrefService* pref_service)
-      : BaseDelegate(sharing_manager, pref_service),
-        glic_instance_(glic_instance) {}
-  gfx::Size GetWindowSize() const override {
-    return glic_instance_->GetPanelSize();
-  }
-  bool IsWindowShowing() const override {
-    return static_cast<GlicInstanceImpl*>(glic_instance_)->HasActiveEmbedder();
-  }
-  bool IsWindowAttached() const override {
-    return glic_instance_->GetPanelState()->kind ==
-           mojom::PanelStateKind::kAttached;
-  }
-
- private:
-  raw_ptr<GlicInstance> glic_instance_;
-};
-
-constexpr char kHistogramGlicPanelPresentationTimePrefix[] =
-    "Glic.PanelPresentationTime2.";
-
-constexpr static base::TimeDelta kLogSizeMetricsDelay = base::Minutes(3);
 
 std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
   switch (input_mode) {
@@ -345,7 +265,6 @@ void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
   // It's kept for now to reduce merge conflicts.
 
   base::RecordAction(base::UserMetricsAction("GlicSessionBegin"));
-  show_start_time_ = base::TimeTicks::Now();
   session_start_time_ = base::TimeTicks::Now();
   invocation_source_ = source;
   base::UmaHistogramBoolean("Glic.Session.Open.Attached", attached);
@@ -380,80 +299,10 @@ void GlicMetrics::OnGlicWindowStartedOpening(bool attached,
                                 base::Time::Now());
 }
 
-void GlicMetrics::OnGlicWindowOpenInterrupted() {
-  show_start_time_ = base::TimeTicks();
-}
-
-void GlicMetrics::OnGlicWindowOpenAndReady() {
-  if (show_start_time_.is_null()) {
-    return;
-  }
-
-  // Record the presentation time of showing the glic panel in an UMA histogram.
-  base::TimeDelta presentation_time = base::TimeTicks::Now() - show_start_time_;
-  base::UmaHistogramCustomTimes(
-      base::StrCat({kHistogramGlicPanelPresentationTimePrefix, "All"}),
-      presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
-  if (input_mode_ != mojom::WebClientMode::kUnknown) {
-    std::string_view mode_string = GetInputModeString(input_mode_);
-    base::UmaHistogramCustomTimes(
-        base::StrCat({kHistogramGlicPanelPresentationTimePrefix, mode_string}),
-        presentation_time, base::Milliseconds(1), base::Seconds(60), 50);
-  }
-
-  OnGlicWindowOpenInterrupted();
-}
-
-void GlicMetrics::OnGlicWindowShown(
-    BrowserWindowInterface* browser,
-    std::optional<display::Display> glic_display,
-    const gfx::Rect& glic_bounds) {
-  GlicMetrics::OnGlicWindowSizeTimerFired();
-  glic_window_size_timer_.Start(
-      FROM_HERE, kLogSizeMetricsDelay,
-      base::BindRepeating(&GlicMetrics::OnGlicWindowSizeTimerFired,
-                          base::Unretained(this)));
-  base::UmaHistogramEnumeration(
-      "Glic.PositionOnDisplay.OnOpen",
-      GetDisplayPositionOfPoint(glic_display, glic_bounds.CenterPoint()));
-#if !BUILDFLAG(IS_ANDROID)
-  base::UmaHistogramEnumeration(
-      "Glic.PositionOnChrome.OnOpen",
-      GetChromeRelativePositionOfPoint(browser, glic_bounds.CenterPoint()));
-#endif
-}
-
-void GlicMetrics::OnGlicWindowResize() {
-  base::RecordAction(base::UserMetricsAction("GlicPanelResized"));
-}
-
-void GlicMetrics::OnWidgetUserResizeStarted() {
-  base::RecordAction(base::UserMetricsAction("GlicPanelUserResizeStarted"));
-}
-
-void GlicMetrics::OnWidgetUserResizeEnded() {
-  base::RecordAction(base::UserMetricsAction("GlicPanelUserResizeEnded"));
-
-  gfx::Size size_on_user_resize_ended = delegate_->GetWindowSize();
-  base::UmaHistogramCounts10000("Glic.PanelWebUi.UserResizeEnded.Width",
-                                size_on_user_resize_ended.width());
-  base::UmaHistogramCounts10000("Glic.PanelWebUi.UserResizeEnded.Height",
-                                size_on_user_resize_ended.height());
-}
-
 void GlicMetrics::OnGlicWindowClose(BrowserWindowInterface* last_active_browser,
                                     std::optional<display::Display> display,
                                     const gfx::Rect& glic_bounds) {
   base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
-  base::UmaHistogramEnumeration(
-      "Glic.PositionOnDisplay.OnClose",
-      GetDisplayPositionOfPoint(display, glic_bounds.CenterPoint()));
-#if !BUILDFLAG(IS_ANDROID)
-  base::UmaHistogramEnumeration(
-      "Glic.PositionOnChrome.OnClose",
-      GetChromeRelativePositionOfPoint(last_active_browser,
-                                       glic_bounds.CenterPoint()));
-#endif
   if (session_start_time_.is_null()) {
     base::UmaHistogramEnumeration("Glic.Metrics.Error",
                                   Error::kWindowCloseWithoutWindowOpen);
@@ -467,7 +316,6 @@ void GlicMetrics::OnGlicWindowClose(BrowserWindowInterface* last_active_browser,
 
   OnInstanceClosed();
 
-  glic_window_size_timer_.Stop();
   profile_->GetPrefs()->SetTime(prefs::kGlicWindowLastDismissedTime,
                                 base::Time::Now());
 }
@@ -528,19 +376,6 @@ void GlicMetrics::OnActivateTabFromInstance(tabs::TabInterface* tab) {
     base::RecordAction(
         base::UserMetricsAction("Glic.Instance.TaskTabForegrounded"));
   }
-}
-
-void GlicMetrics::SetControllersWithInstance(
-    GlicInstance* glic_instance,
-    GlicSharingManagerInternal* sharing_manager) {
-  delegate_ = std::make_unique<DelegateMultiInstanceImpl>(
-      glic_instance, sharing_manager, profile_->GetPrefs());
-}
-void GlicMetrics::ClearControllers() {
-  delegate_ = std::make_unique<DummyDelegateImpl>();
-}
-void GlicMetrics::SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
-  delegate_ = std::move(delegate);
 }
 
 void GlicMetrics::SetWebClientMode(mojom::WebClientMode mode) {
@@ -626,19 +461,6 @@ void GlicMetrics::OnImpressionTimerFired() {
 #endif
 }
 
-void GlicMetrics::OnGlicWindowSizeTimerFired() {
-  // A 4K screen is 3840 or 4096 pixels wide and 2160 tall. Doubling this and
-  // rounding up to 10000 should give a reasonable upper bound on DIPs for
-  // both directions.
-  gfx::Size currentSize = delegate_->GetWindowSize();
-  base::UmaHistogramCounts10000("Glic.PanelWebUi.Size.Width",
-                                currentSize.width());
-  base::UmaHistogramCounts10000("Glic.PanelWebUi.Size.Height",
-                                currentSize.height());
-  base::UmaHistogramCounts10M("Glic.PanelWebUi.Size.Area",
-                              currentSize.GetArea());
-}
-
 void GlicMetrics::OnMaybeEnabledAndConsentForProfileChanged() {
   if (!recorded_startup_enablement_ && enabling_->IsAllowed()) {
     RecordStartupEnablement();
@@ -686,94 +508,6 @@ void GlicMetrics::RecordStartupEnablement() {
                               delta);
   recorded_startup_enablement_ = true;
 }
-
-DisplayPosition GlicMetrics::GetDisplayPositionOfPoint(
-    std::optional<display::Display> display,
-    const gfx::Point& glic_center_point) {
-  if (!display) {
-    return DisplayPosition::kUnknown;
-  }
-  gfx::Rect work_area_bounds = display->work_area();
-  if (!work_area_bounds.Contains(glic_center_point) ||
-      work_area_bounds.IsEmpty()) {
-    return DisplayPosition::kUnknown;
-  }
-  // Adjust glic center point to the origin of the display's work area.
-  gfx::Point glic_work_area_center_point =
-      glic_center_point - work_area_bounds.OffsetFromOrigin();
-  int x_index = std::floor(3 * glic_work_area_center_point.x() /
-                           work_area_bounds.width());
-  int y_index = std::floor(3 * glic_work_area_center_point.y() /
-                           work_area_bounds.height());
-
-  // This is unexpected to happen but just in case.
-  if (x_index < 0 || x_index > 2 || y_index < 0 || y_index > 2) {
-    return DisplayPosition::kUnknown;
-  }
-
-  const std::array<std::array<DisplayPosition, 3>, 3> position_map = {{
-      {DisplayPosition::kTopLeft, DisplayPosition::kCenterLeft,
-       DisplayPosition::kBottomLeft},
-      {DisplayPosition::kTopCenter, DisplayPosition::kCenterCenter,
-       DisplayPosition::kBottomCenter},
-      {DisplayPosition::kTopRight, DisplayPosition::kCenterRight,
-       DisplayPosition::kBottomRight},
-  }};
-  return position_map[x_index][y_index];
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-ChromeRelativePosition GlicMetrics::GetChromeRelativePositionOfPoint(
-    BrowserWindowInterface* browser,
-    const gfx::Point& glic_center_point) {
-  if (!IsBrowserVisible(browser)) {
-    return ChromeRelativePosition::kNoVisibleChromeBrowser;
-  }
-
-  // Check if the center point is on a different display
-  std::optional<display::Display> browser_display =
-      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
-          .GetWidget()
-          ->GetNearestDisplay();
-  if (browser_display &&
-      !browser_display->work_area().Contains(glic_center_point)) {
-    return ChromeRelativePosition::kChromeOnOtherDisplay;
-  }
-
-  gfx::Rect browser_bounds =
-      CHECK_DEREF(BrowserView::GetBrowserViewForBrowser(browser))
-          .GetWidget()
-          ->GetWindowBoundsInScreen();
-  int x_index;
-  if (glic_center_point.x() < browser_bounds.x()) {
-    x_index = 0;
-  } else if (glic_center_point.x() < browser_bounds.right()) {
-    x_index = 1;
-  } else {
-    x_index = 2;
-  }
-  int y_index;
-  if (glic_center_point.y() < browser_bounds.y()) {
-    y_index = 0;
-  } else if (glic_center_point.y() < browser_bounds.bottom()) {
-    y_index = 1;
-  } else {
-    y_index = 2;
-  }
-
-  const std::array<std::array<ChromeRelativePosition, 3>, 3> position_map = {{
-      {ChromeRelativePosition::kAboveLeft, ChromeRelativePosition::kCenterLeft,
-       ChromeRelativePosition::kBelowLeft},
-      {ChromeRelativePosition::kAboveCenter, ChromeRelativePosition::kOverlap,
-       ChromeRelativePosition::kBelowCenter},
-      {ChromeRelativePosition::kAboveRight,
-       ChromeRelativePosition::kCenterRight,
-       ChromeRelativePosition::kBelowRight},
-  }};
-  return position_map[x_index][y_index];
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void RecordHotkeyCleared(prefs::DefaultHotkeyScope default_scope,
                          bool is_global,
