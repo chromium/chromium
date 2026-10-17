@@ -4,13 +4,16 @@
 
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 
+#include <algorithm>
 #include <limits>
 
 #import "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #import "components/remote_cocoa/app_shim/drag_drop_client.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -25,6 +28,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/events/base_event_utils.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -40,6 +44,13 @@ namespace {
 
 NSString* const kFullKeyboardAccessChangedNotification =
     @"com.apple.KeyboardUIModeDidChange";
+
+// Histograms for the cost of ending the deferral. See
+// tools/metrics/histograms/metadata/input/histograms.xml.
+constexpr char kDeferredActivationDurationHistogram[] =
+    "InputMethod.Mac.DeferredActivation.Duration";
+constexpr char kDeferredActivationKeyDelayHistogram[] =
+    "InputMethod.Mac.DeferredActivation.KeyDelay";
 
 // Convert a |point| in |source_window|'s AppKit coordinate system (origin at
 // the bottom left of the window) to |target_window|'s content rect, with the
@@ -124,7 +135,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 }  // namespace
 
-@interface BridgedContentView ()
+@interface BridgedContentView () {
+  // When the -[NSApp updateWindows] call that ended the last deferral started
+  // and returned. Null when no key event can still have waited for it.
+  base::TimeTicks _deferredActivationStart;
+  base::TimeTicks _deferredActivationEnd;
+}
 
 // Dispatch |event| to |bridge_|'s host.
 - (void)dispatchKeyEvent:(ui::KeyEvent*)event;
@@ -184,6 +200,10 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // views::View and that client is right-to-left.
 - (BOOL)isTextRTL;
 
+// Records how long |event| waited for the activation that ended the last
+// deferral, if it arrived before that activation returned.
+- (void)recordDeferredActivationKeyDelay:(NSEvent*)event;
+
 // Menu action handlers.
 - (void)undo:(id)sender;
 - (void)redo:(id)sender;
@@ -200,6 +220,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 @synthesize bridge = _bridge;
 @synthesize drawMenuBackgroundForBlur = _drawMenuBackgroundForBlur;
 @synthesize keyDownEventForTesting = _keyDownEvent;
+@synthesize deferInputContextActivation = _deferInputContextActivation;
 
 - (instancetype)initWithBridge:(remote_cocoa::NativeWidgetNSWindowBridge*)bridge
                         bounds:(gfx::Rect)bounds {
@@ -258,6 +279,54 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     [self removeTrackingArea:_cursorTrackingArea.get()];
     _cursorTrackingArea.reset(nil);
   }
+}
+
+- (void)setDeferInputContextActivation:(BOOL)defer {
+  if (_deferInputContextActivation == defer) {
+    return;
+  }
+  _deferInputContextActivation = defer;
+  if (defer) {
+    return;
+  }
+
+  // The deferral usually ends from a compositor callback, not from an event,
+  // so AppKit would not look at -inputContext again until it
+  // runs -[NSApp updateWindows] after the next event. Call it now, so the
+  // input method is active before that event (often a key press) is handled.
+  // This is where the activation cost moves to: it is the call that blocked
+  // the main thread while the window was being shown.
+  NSWindow* window = self.window;
+  if (_bridge && window.isKeyWindow && window.firstResponder == self &&
+      [self inputContext]) {
+    TRACE_EVENT("ui", "BridgedContentView::ActivateDeferredInputContext");
+    // The activation runs inside this synchronous call, so timing the call
+    // measures what the deferral moved here from the window's show.
+    _deferredActivationStart = base::TimeTicks::Now();
+    [NSApp updateWindows];
+    _deferredActivationEnd = base::TimeTicks::Now();
+    base::UmaHistogramTimes(kDeferredActivationDurationHistogram,
+                            _deferredActivationEnd - _deferredActivationStart);
+  }
+}
+
+- (void)recordDeferredActivationKeyDelay:(NSEvent*)event {
+  if (_deferredActivationEnd.is_null()) {
+    return;
+  }
+  const base::TimeTicks keyTime =
+      ui::EventTimeStampFromSeconds(event.timestamp);
+  if (keyTime >= _deferredActivationEnd) {
+    // Keys arrive in order, so no later key waited for this activation either.
+    _deferredActivationStart = base::TimeTicks();
+    _deferredActivationEnd = base::TimeTicks();
+    return;
+  }
+  // Count only the part of the wait the activation caused: a key that arrived
+  // before the activation started waited for all of it.
+  base::UmaHistogramTimes(
+      kDeferredActivationKeyDelayHistogram,
+      _deferredActivationEnd - std::max(keyTime, _deferredActivationStart));
 }
 
 - (bool)needsUpdateWindows {
@@ -843,8 +912,13 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 }
 
 - (NSTextInputContext*)inputContext {
-  if (!_bridge)
+  // Returning nil while deferred is safe: AppKit then has no input method to
+  // activate for this view, and -interpretKeyEvents: would fall back to the
+  // key bindings path (-insertText: and -doCommandBySelector:). Keys never take
+  // that path while deferred, because -keyDown: ends the deferral first.
+  if (!_bridge || _deferInputContextActivation) {
     return nil;
+  }
   bool hasTextInputContext = false;
   _bridge->text_input_host()->HasInputContext(&hasTextInputContext);
   return hasTextInputContext ? [super inputContext] : nil;
@@ -895,6 +969,14 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 }
 
 - (void)keyDown:(NSEvent*)theEvent {
+  // The input method must see this key. Ending the deferral calls
+  // -[NSApp updateWindows] synchronously, so the input method is active
+  // before -interpretKeyEvents: below hands it the key.
+  if (_deferInputContextActivation) {
+    self.deferInputContextActivation = NO;
+  }
+  [self recordDeferredActivationKeyDelay:theEvent];
+
   BOOL hadMarkedTextAtKeyDown = [self hasMarkedText];
 
   // Convert the event into an action message, according to OSX key mappings.

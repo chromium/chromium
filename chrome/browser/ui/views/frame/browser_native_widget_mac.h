@@ -118,6 +118,12 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   void OnVerticalTabStripResizingChanged(bool is_resizing);
   void RemoveGlassBackground(
       const viz::FrameTimingDetails& frame_timing_details);
+  // Called when the window's first frame is on screen. Posts
+  // EndInputContextDeferral().
+  void OnFirstFramePresented(
+      const viz::FrameTimingDetails& frame_timing_details);
+  // Ends the input-context deferral set up in OnWidgetInitDone().
+  void EndInputContextDeferral();
 
   raw_ptr<BrowserView> browser_view_;  // Weak. Our ClientView.
   BrowserWindowTouchBarViewsDelegate* __strong touch_bar_delegate_;
@@ -137,6 +143,11 @@ class BrowserNativeWidgetMac : public views::NativeWidgetMac,
   base::CallbackListSubscription multiple_open_profiles_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
 
+  // Kept apart from `weak_ptr_factory_`, which UpdateGlassEligibility()
+  // invalidates, so a glass eligibility change does not cancel the
+  // first-frame callback that ends the input-context deferral.
+  base::WeakPtrFactory<BrowserNativeWidgetMac> input_context_weak_ptr_factory_{
+      this};
   base::WeakPtrFactory<BrowserNativeWidgetMac> weak_ptr_factory_{this};
 };
 

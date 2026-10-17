@@ -2161,6 +2161,10 @@ bool NativeWidgetNSWindowBridge::NeedsUpdateWindows() {
   return [bridged_view_ needsUpdateWindows];
 }
 
+void NativeWidgetNSWindowBridge::SetDeferInputContextActivation(bool defer) {
+  bridged_view_.deferInputContextActivation = defer;
+}
+
 void NativeWidgetNSWindowBridge::RedispatchKeyEvent(
     const std::vector<uint8_t>& native_event_data) {
   RedispatchKeyEvent(ui::EventFromData(native_event_data));

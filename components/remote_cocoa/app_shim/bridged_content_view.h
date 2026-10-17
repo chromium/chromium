@@ -57,6 +57,20 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 @property(assign, nonatomic) BOOL drawMenuBackgroundForBlur;
 @property(strong, nonatomic) NSEvent* keyDownEventForTesting;
 
+// While YES, -inputContext returns nil even if a text field has focus. AppKit
+// then skips activating the input method for this view, which with some input
+// methods (for example Japanese) blocks the main thread for tens of
+// milliseconds. Browser windows set this before they first show, so that the
+// focused location bar does not delay the first frame.
+//
+// Setting it to NO calls -[NSApp updateWindows] if this view is the first
+// responder of the key window, so that AppKit activates the input method
+// right away. A key press also sets it back to NO, so a typed key always
+// reaches the input method. Text that does not arrive as a key press (for
+// example from the Character Viewer or dictation) waits until the deferral
+// ends.
+@property(assign, nonatomic) BOOL deferInputContextActivation;
+
 // Initialize the NSView -> views::View bridge. |viewToHost| must be non-NULL.
 - (instancetype)initWithBridge:(remote_cocoa::NativeWidgetNSWindowBridge*)bridge
                         bounds:(gfx::Rect)rect;

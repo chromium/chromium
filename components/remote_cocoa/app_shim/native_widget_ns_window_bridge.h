@@ -353,6 +353,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // TextInputClient.
   bool NeedsUpdateWindows();
 
+  // Sets -[BridgedContentView deferInputContextActivation]. While deferred,
+  // AppKit does not activate the input method for the focused text field.
+  void SetDeferInputContextActivation(bool defer);
+
   // Compute the window and content size, and forward them to |host_|. This will
   // update widget and compositor size.
   void UpdateWindowGeometry();

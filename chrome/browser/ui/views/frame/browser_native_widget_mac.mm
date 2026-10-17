@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
@@ -810,6 +811,45 @@ void BrowserNativeWidgetMac::OnWidgetInitDone() {
       UpdateGlassEligibility(true);
     }
   }
+
+  // The location bar takes focus inside Widget::Show(), and with an input
+  // method such as Japanese, AppKit then activates that input method for the
+  // window, which blocks the main thread before the first frame. Hold the
+  // activation back until the first frame is on screen.
+  //
+  // This runs at widget init because the compositor exists by now and focus
+  // comes later, in Show(). Only in-process windows are deferred: the setter
+  // is not part of the remote_cocoa mojo interface, so windows hosted in an
+  // app shim keep today's behavior.
+  if (base::FeatureList::IsEnabled(
+          features::kMacDeferInputContextUntilFirstPaint)) {
+    auto* const bridge = GetInProcessNSWindowBridge();
+    auto* const compositor = GetWidget()->GetCompositor();
+    if (bridge && compositor) {
+      bridge->SetDeferInputContextActivation(true);
+      compositor->RequestSuccessfulPresentationTimeForNextFrame(
+          base::BindOnce(&BrowserNativeWidgetMac::OnFirstFramePresented,
+                         input_context_weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+}
+
+void BrowserNativeWidgetMac::OnFirstFramePresented(
+    const viz::FrameTimingDetails& frame_timing_details) {
+  // Presentation feedback can arrive inside the compositor's begin-frame
+  // handling, and ending the deferral runs the input method activation
+  // synchronously. Post it, so the activation does not hold back the frame
+  // being produced, and does not run inside the compositor's callback loop.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BrowserNativeWidgetMac::EndInputContextDeferral,
+                     input_context_weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BrowserNativeWidgetMac::EndInputContextDeferral() {
+  if (auto* const bridge = GetInProcessNSWindowBridge()) {
+    bridge->SetDeferInputContextActivation(false);
+  }
 }
 
 void BrowserNativeWidgetMac::OnWidgetThemeChanged(views::Widget* widget) {
@@ -820,6 +860,9 @@ void BrowserNativeWidgetMac::OnWidgetThemeChanged(views::Widget* widget) {
 void BrowserNativeWidgetMac::OnWindowDestroying(
     gfx::NativeWindow native_window) {
   weak_ptr_factory_.InvalidateWeakPtrs();
+  // Drop a pending end of the input-context deferral, so it does not run on a
+  // closing window.
+  input_context_weak_ptr_factory_.InvalidateWeakPtrs();
   // Clear delegates set in CreateNSWindow() to prevent objects with a reference
   // to |window| attempting to validate commands by looking for a Browser*.
   NativeWidgetMacNSWindow* ns_window =

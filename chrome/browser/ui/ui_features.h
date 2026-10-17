@@ -299,6 +299,14 @@ BASE_DECLARE_FEATURE(kMigrateManagementPageToWebUIOnMobile);
 BASE_DECLARE_FEATURE(kViewsJSAppModalDialog);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+// When enabled, a new browser window does not activate the input method for
+// its focused location bar until the window has presented its first frame.
+// Activating some input methods (for example Japanese) blocks the main thread
+// and delays the first frame.
+BASE_DECLARE_FEATURE(kMacDeferInputContextUntilFirstPaint);
+#endif
+
 // Controls whether the site-specific data dialog shows a related installed
 // applications section.
 BASE_DECLARE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection);

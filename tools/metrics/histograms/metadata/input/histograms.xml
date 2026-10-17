@@ -1091,6 +1091,47 @@ chromium-metrics-reviews@google.com.
   <summary>Time taken by the engine to handle a key event.</summary>
 </histogram>
 
+<histogram name="InputMethod.Mac.DeferredActivation.Duration" units="ms"
+    expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Mac only. Records how long the browser main thread is blocked when a new
+    browser window ends its input context deferral
+    (MacDeferInputContextUntilFirstPaint) and activates the input method for its
+    focused text field. This is the wall time of the synchronous -[NSApp
+    updateWindows] call that Chrome makes to activate the input method, which
+    with an input method such as Japanese waits on the input method process.
+    With a keyboard layout it is short.
+
+    Recorded once per browser window, when the deferral ends after the first
+    frame is presented or on the first key press, and only if the window is key
+    and its focused text field has an input context then. Not recorded when the
+    feature is disabled.
+  </summary>
+</histogram>
+
+<histogram name="InputMethod.Mac.DeferredActivation.KeyDelay" units="ms"
+    expires_after="2027-04-01">
+  <owner>mych@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Mac only. Records how long a key press in a new browser window waited for
+    the input method activation that ends the window's input context deferral
+    (MacDeferInputContextUntilFirstPaint). The delay runs from the later of the
+    key event's timestamp and the start of the activation until the activation
+    returns, so it counts only the wait the activation caused. A key that ends
+    the deferral itself waits for the whole activation.
+
+    Recorded for each key press whose timestamp is before the end of that
+    activation; keys typed after it are not recorded. Compare the count with
+    InputMethod.Mac.DeferredActivation.Duration to see how often a typist is
+    affected. Not recorded when the feature is disabled.
+  </summary>
+</histogram>
+
 <histogram name="InputMethod.Manta.Orca.CharactersInserted.{Mode}"
     units="characters" expires_after="2026-12-01">
   <owner>hdchuong@google.com</owner>

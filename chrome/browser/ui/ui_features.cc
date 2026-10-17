@@ -367,6 +367,11 @@ BASE_FEATURE(kMigrateManagementPageToWebUIOnMobile,
 BASE_FEATURE(kViewsJSAppModalDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kMacDeferInputContextUntilFirstPaint,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
