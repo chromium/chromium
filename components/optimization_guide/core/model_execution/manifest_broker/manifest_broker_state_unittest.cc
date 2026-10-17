@@ -160,7 +160,7 @@ TEST_F(ManifestBrokerStateTest, FallbackToDefaultMaxTokens) {
                       proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED, {},
                       /*max_tokens=*/0)));
   builder.Add("test_solution",
-              SolutionRecipe(name + "_recipe", "",
+              SolutionRecipe(name + "_recipe",
                              ManifestFileReference("testconfig.pb")));
   builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, "test"},
               "test_solution");

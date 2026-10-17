@@ -27,7 +27,6 @@ enum OnDeviceFeature {
 // model based capability.
 struct ModelSolutionConfig {
   mojo_base.mojom.ProtoWrapper feature_config;
-  mojo_base.mojom.ProtoWrapper text_safety_config;
   mojo_base.mojom.ProtoWrapper model_versions;
   on_device_model.mojom.Capabilities model_capabilities;
 };
@@ -41,12 +40,6 @@ interface ModelSolution {
   // process.
   CreateSession(pending_receiver<on_device_model.mojom.Session> session,
                 on_device_model.mojom.SessionParams params);
-
-  // Creates a session for the text-safety model described by the
-  // ModelSolutionConfig. The session receiver will be bound in the ODM
-  // process.
-  CreateTextSafetySession(
-      pending_receiver<on_device_model.mojom.TextSafetySession> session);
 
   // Report to the broker that model execution worked correctly.
   ReportHealthyCompletion();

@@ -16,7 +16,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
-#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-forward.h"
 
 namespace optimization_guide {
@@ -87,46 +86,6 @@ class FakeAdaptationAsset {
  private:
   base::ScopedTempDir temp_dir_;
   mojom::OnDeviceFeature feature_;
-  ModelInfo model_info_;
-};
-
-// Language model files and metadata suitable for a FakeOnDeviceModelService.
-class FakeLanguageModelAsset {
- public:
-  FakeLanguageModelAsset();
-  ~FakeLanguageModelAsset();
-
-  const ModelInfo& model_info() const { return model_info_; }
-  base::FilePath model_path() const;
-
- private:
-  base::ScopedTempDir temp_dir_;
-  ModelInfo model_info_;
-};
-
-// Safety model files and metadata suitable for a FakeOnDeviceModelService.
-class FakeSafetyModelAsset {
- public:
-  struct Content {
-    proto::TextSafetyModelMetadata metadata;
-    int64_t model_info_version = 1;
-  };
-  // Constructs a safety model with the given content.
-  explicit FakeSafetyModelAsset(Content&& content);
-
-  // Constructs a simple safety model supporting a single feature.
-  explicit FakeSafetyModelAsset(proto::FeatureTextSafetyConfiguration&& config);
-
-  ~FakeSafetyModelAsset();
-
-  const ModelInfo& model_info() const { return model_info_; }
-
-  const std::vector<base::FilePath>& AdditionalFiles() const {
-    return model_info_.additional_files;
-  }
-
- private:
-  base::ScopedTempDir temp_dir_;
   ModelInfo model_info_;
 };
 

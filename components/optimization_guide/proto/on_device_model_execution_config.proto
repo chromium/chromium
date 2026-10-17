@@ -39,7 +39,7 @@ enum OnDeviceModelCapability {
 }
 
 message OnDeviceModelExecutionFeatureConfig {
-  reserved 4;
+  reserved 4, 5;
 
   // The feature this configuration is for.
   optional ModelExecutionFeature feature = 1;
@@ -49,9 +49,6 @@ message OnDeviceModelExecutionFeatureConfig {
 
   // The config used to construct the output for on-device model execution.
   optional OnDeviceModelExecutionOutputConfig output_config = 3;
-
-  // Whether text safety can be skipped for this feature, if not configured.
-  optional bool can_skip_text_safety = 5;
 
   // Sampling parameters to use with the model.
   // These will override global defaults, but not per session configurations.

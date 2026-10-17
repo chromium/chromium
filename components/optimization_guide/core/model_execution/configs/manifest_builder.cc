@@ -72,24 +72,10 @@ proto::PostprocessedModelRecipe PostprocessedModelRecipe(
   return recipe;
 }
 
-proto::SafetyModelRecipe SafetyModelRecipe(
-    proto::FileReference weights_file,
-    proto::FileReference language_detection_model_file) {
-  proto::SafetyModelRecipe recipe;
-  *recipe.mutable_weights_file() = std::move(weights_file);
-  *recipe.mutable_language_detection_model_file() =
-      std::move(language_detection_model_file);
-  return recipe;
-}
-
 proto::SolutionRecipe SolutionRecipe(const std::string& model_recipe_id,
-                                     const std::string& safety_model_recipe_id,
                                      proto::FileReference config_file) {
   proto::SolutionRecipe recipe;
   recipe.set_model_recipe_id(model_recipe_id);
-  if (!safety_model_recipe_id.empty()) {
-    recipe.set_safety_model_recipe_id(safety_model_recipe_id);
-  }
   *recipe.mutable_config_file() = std::move(config_file);
   return recipe;
 }
@@ -121,13 +107,6 @@ ManifestBuilder& ManifestBuilder::Add(const std::string& name,
 ManifestBuilder& ManifestBuilder::Add(const std::string& name,
                                       proto::PostprocessedModelRecipe recipe) {
   (*manifest_.mutable_recipes()->mutable_postprocessed_models())[name] =
-      std::move(recipe);
-  return *this;
-}
-
-ManifestBuilder& ManifestBuilder::Add(const std::string& name,
-                                      proto::SafetyModelRecipe recipe) {
-  (*manifest_.mutable_recipes()->mutable_safety_models())[name] =
       std::move(recipe);
   return *this;
 }

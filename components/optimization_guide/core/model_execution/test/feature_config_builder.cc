@@ -15,24 +15,9 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
-#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 
 namespace optimization_guide {
-
-proto::SafetyCategoryThreshold ForbidUnsafe() {
-  proto::SafetyCategoryThreshold result;
-  result.set_output_index(0);  // FakeOnDeviceModel's "SAFETY" category.
-  result.set_threshold(0.5);
-  return result;
-}
-
-proto::SafetyCategoryThreshold RequireReasonable() {
-  proto::SafetyCategoryThreshold result;
-  result.set_output_index(1);  // FakeOnDeviceModel's "REASONABLE" category.
-  result.set_threshold(0.5);
-  return result;
-}
 
 proto::ProtoField PageUrlField() {
   return ProtoField({3, 1});
@@ -98,21 +83,6 @@ proto::OnDeviceModelExecutionFeatureConfig SimpleComposeConfig() {
   output_config.set_proto_type(proto::ComposeResponse().GetTypeName());
   *output_config.mutable_proto_field() = OutputField();
   return config;
-}
-
-proto::FeatureTextSafetyConfiguration ComposeSafetyConfig() {
-  proto::FeatureTextSafetyConfiguration config;
-  config.set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
-  return config;
-}
-
-proto::TextSafetyModelMetadata SafetyMetadata(
-    std::initializer_list<proto::FeatureTextSafetyConfiguration> configs) {
-  proto::TextSafetyModelMetadata metadata;
-  for (auto& cfg : configs) {
-    *metadata.add_feature_text_safety_configurations() = std::move(cfg);
-  }
-  return metadata;
 }
 
 proto::OnDeviceModelExecutionInputConfig TestInputConfig(

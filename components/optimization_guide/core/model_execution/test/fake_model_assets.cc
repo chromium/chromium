@@ -142,39 +142,4 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
 }
 FakeAdaptationAsset::~FakeAdaptationAsset() = default;
 
-FakeLanguageModelAsset::FakeLanguageModelAsset() {
-  CHECK(temp_dir_.CreateUniqueTempDir());
-  auto model_path = this->model_path();
-  CHECK(base::WriteFile(model_path, on_device_model::FakeLanguageModel()));
-  model_info_ = {
-      .model_file_path = model_path,
-      .version = 123,
-  };
-}
-FakeLanguageModelAsset::~FakeLanguageModelAsset() = default;
-
-base::FilePath FakeLanguageModelAsset::model_path() const {
-  return temp_dir_.GetPath().Append(kWeightsFile);
-}
-
-FakeSafetyModelAsset::FakeSafetyModelAsset(
-    proto::FeatureTextSafetyConfiguration&& config)
-    : FakeSafetyModelAsset(FakeSafetyModelAsset::Content{
-          .metadata = SafetyMetadata({std::move(config)})}) {}
-
-FakeSafetyModelAsset::FakeSafetyModelAsset(
-    FakeSafetyModelAsset::Content&& content) {
-  CHECK(temp_dir_.CreateUniqueTempDir());
-  auto data_path =
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("model.tflite"));
-  CHECK(base::WriteFile(data_path, on_device_model::FakeTsData()));
-  model_info_ = {
-      .model_file_path = data_path,
-      .version = content.model_info_version,
-      .model_metadata = AnyWrapProto(content.metadata),
-  };
-}
-
-FakeSafetyModelAsset::~FakeSafetyModelAsset() = default;
-
 }  // namespace optimization_guide

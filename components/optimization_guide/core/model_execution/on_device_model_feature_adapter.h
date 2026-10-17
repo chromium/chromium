@@ -62,8 +62,6 @@ class OnDeviceModelFeatureAdapter final
                      size_t previous_response_pos,
                      ResponseParser::ResultCallback callback) const;
 
-  bool CanSkipTextSafety() const { return config_.can_skip_text_safety(); }
-
   SamplingParamsConfig GetSamplingParamsConfig() const;
 
   SamplingParams GetDefaultSamplingParams() const;

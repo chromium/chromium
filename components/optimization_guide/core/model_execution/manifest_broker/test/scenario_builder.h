@@ -35,7 +35,6 @@ class ScenarioBuilder final {
                                 BaseModelRecipeArgs args,
                                 const FakeBaseModelAsset::Content& content,
                                 const std::string& version);
-  ScenarioBuilder& AddSafetyModel(const std::string& name);
   ScenarioBuilder& AddAdaptation(const std::string& name,
                                  const std::string& base_model);
   ScenarioBuilder& AddPostprocessedModel(
@@ -47,10 +46,6 @@ class ScenarioBuilder final {
   ScenarioBuilder& AddUnsafeSolution(const std::string& use_case,
                                      const std::string& model,
                                      proto::SolutionConfig config);
-  ScenarioBuilder& AddSafeSolution(const std::string& use_case,
-                                   const std::string& model,
-                                   const std::string& safety_model,
-                                   proto::SolutionConfig config);
   ScenarioBuilder& SetFeatureConfig(DeviceCategory category,
                                     const std::string& use_case,
                                     const proto::Any& config);

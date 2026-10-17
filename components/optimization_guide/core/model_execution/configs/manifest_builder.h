@@ -15,8 +15,6 @@
 
 namespace optimization_guide {
 
-inline constexpr std::string kNoSafetyModel = "";
-
 // Well-known use case names.
 inline constexpr char kLanguageModelUseCase[] = "language_model";
 inline constexpr char kProofreaderUseCase[] = "proofreader";
@@ -59,12 +57,7 @@ proto::PostprocessedModelRecipe PostprocessedModelRecipe(
     const std::string& base_model_id,
     const std::string& postprocessor_model_id);
 
-proto::SafetyModelRecipe SafetyModelRecipe(
-    proto::FileReference weights_file,
-    proto::FileReference language_detection_model_file);
-
 proto::SolutionRecipe SolutionRecipe(const std::string& model_recipe_id,
-                                     const std::string& safety_model_recipe_id,
                                      proto::FileReference config_file);
 
 // Declares a 'use_case' on 'device'.
@@ -88,9 +81,6 @@ class ManifestBuilder {
 
   ManifestBuilder& Add(const std::string& name,
                        proto::PostprocessedModelRecipe recipe);
-
-  ManifestBuilder& Add(const std::string& name,
-                       proto::SafetyModelRecipe recipe);
 
   ManifestBuilder& Add(const std::string& name, proto::SolutionRecipe recipe);
 

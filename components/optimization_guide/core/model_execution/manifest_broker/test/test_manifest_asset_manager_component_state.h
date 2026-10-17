@@ -134,11 +134,6 @@ class TestManifestAssetManagerComponentState final {
                        std::unique_ptr<FakeBaseModelAsset> asset);
   void UpdateModelAdaptation(const std::string& public_key,
                              std::unique_ptr<FakeAdaptationAsset> asset);
-  void UpdateSafetyModel(const std::string& public_key,
-                         std::unique_ptr<FakeSafetyModelAsset> asset);
-  void UpdateLanguageDetectionModel(
-      const std::string& public_key,
-      std::unique_ptr<FakeLanguageModelAsset> asset);
 
   // Simulate restart behavior.
   // This will clear all registrations, but not installed components.
@@ -232,8 +227,6 @@ class TestManifestAssetManagerComponentState final {
   std::vector<std::unique_ptr<ManifestComponentDirectory>> manifest_assets_;
   std::vector<std::unique_ptr<FakeBaseModelAsset>> base_model_assets_;
   std::vector<std::unique_ptr<FakeAdaptationAsset>> adaptation_assets_;
-  std::vector<std::unique_ptr<FakeSafetyModelAsset>> safety_model_assets_;
-  std::vector<std::unique_ptr<FakeLanguageModelAsset>> language_model_assets_;
 
   absl::flat_hash_map<std::string, FakeComponent> fake_components_;
   testing::NiceMock<FakeComponentUpdateService> component_update_service_;

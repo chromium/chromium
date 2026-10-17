@@ -43,10 +43,6 @@ TEST_F(ManifestTest, ManifestDeviceCategory) {
 ManifestBuilder ValidManifest() {
   return ManifestBuilder()
       .Add("valid_component", OnDemandComponent("valid_key", "1.0"))
-      .Add("valid_safety_model",
-           SafetyModelRecipe(
-               FileReference("valid_component", "valid_safety_model.bin"),
-               FileReference("valid_component", "valid_lang_model.bin")))
       .Add("valid_base",
            BaseModelRecipe(FileReference("valid_component", "valid_base.bin"),
                            GenericRecipeArgs()))
@@ -55,7 +51,7 @@ ManifestBuilder ValidManifest() {
           AdaptationRecipe("valid_base", FileReference("valid_component",
                                                        "valid_adaptation.bin")))
       .Add({DeviceCategory::kCpu, "feature"},
-           SolutionRecipe("valid_base", "valid_safety_model",
+           SolutionRecipe("valid_base",
                           FileReference(kManifestAssetName, "cpu_config.pb")));
 }
 
@@ -112,33 +108,14 @@ TEST_F(ManifestTest, InvalidWithMissingSolutionReference) {
                                   FileReference("valid_component",
                                                 "valid_adaptation.bin")))),
       base::unexpected(Manifest::ParseError::kMissingIdentifier));
-  EXPECT_EQ(
-      CreateCpuManifest(ValidManifest().Add(
-          "foo",
-          SafetyModelRecipe(
-              FileReference("missing_component", "valid_safety_model.bin"),
-              FileReference("valid_component", "valid_lang_model.bin")))),
-      base::unexpected(Manifest::ParseError::kMissingIdentifier));
-  EXPECT_EQ(
-      CreateCpuManifest(ValidManifest().Add(
-          "foo",
-          SafetyModelRecipe(
-              FileReference("valid_component", "valid_safety_model.bin"),
-              FileReference("missing_component", "valid_lang_model.bin")))),
-      base::unexpected(Manifest::ParseError::kMissingIdentifier));
   EXPECT_EQ(CreateCpuManifest(ValidManifest().Add(
                 "foo", SolutionRecipe(
-                           "missing_base", kNoSafetyModel,
+                           "missing_base",
                            FileReference(kManifestAssetName, "config.pb")))),
             base::unexpected(Manifest::ParseError::kMissingIdentifier));
   EXPECT_EQ(CreateCpuManifest(ValidManifest().Add(
                 "foo", SolutionRecipe(
-                           "valid_base", "missing_safety",
-                           FileReference(kManifestAssetName, "config.pb")))),
-            base::unexpected(Manifest::ParseError::kMissingIdentifier));
-  EXPECT_EQ(CreateCpuManifest(ValidManifest().Add(
-                "foo", SolutionRecipe(
-                           "valid_base", kNoSafetyModel,
+                           "valid_base",
                            FileReference("missing_component", "config.pb")))),
             base::unexpected(Manifest::ParseError::kMissingIdentifier));
   EXPECT_EQ(CreateCpuManifest(ValidManifest().Add(
@@ -168,7 +145,7 @@ TEST_F(ManifestTest, PostprocessorModelExcludedWhenFeatureDisabled) {
           .Add("postprocessed_model",
                PostprocessedModelRecipe("valid_base", "polisher_base"))
           .Add({DeviceCategory::kCpu, "speech_feature"},
-               SolutionRecipe("postprocessed_model", kNoSafetyModel,
+               SolutionRecipe("postprocessed_model",
                               FileReference(kManifestAssetName, "config.pb"))));
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result->GetRecipes().postprocessed_models().contains(
@@ -200,7 +177,7 @@ TEST_F(ManifestTest, PostprocessorModelIncludedWhenFeatureEnabled) {
           .Add("postprocessed_model",
                PostprocessedModelRecipe("valid_base", "polisher_base"))
           .Add({DeviceCategory::kCpu, "speech_feature"},
-               SolutionRecipe("postprocessed_model", kNoSafetyModel,
+               SolutionRecipe("postprocessed_model",
                               FileReference(kManifestAssetName, "config.pb"))));
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result->GetRecipes().postprocessed_models().contains(
@@ -228,11 +205,9 @@ TEST_F(ManifestTest, InvalidWithConflictingOnDemandComponents) {
           .Add("bar", OnDemandComponent("foo_key", "1.0"))
           // Make both used by adding dependencies.
           .Add({DeviceCategory::kCpu, "foo_feature"},
-               SolutionRecipe("valid_base", kNoSafetyModel,
-                              FileReference("foo", "config.pb")))
+               SolutionRecipe("valid_base", FileReference("foo", "config.pb")))
           .Add({DeviceCategory::kCpu, "bar_feature"},
-               SolutionRecipe("valid_base", kNoSafetyModel,
-                              FileReference("bar", "config.pb"))));
+               SolutionRecipe("valid_base", FileReference("bar", "config.pb"))));
   EXPECT_EQ(result,
             base::unexpected(Manifest::ParseError::kConflictingComponent));
 }
@@ -245,11 +220,9 @@ TEST_F(ManifestTest, ValidWithConflictingComponentForDifferentDevices) {
           .Add("bar", OnDemandComponent("foo_key", "1.0"))
           // Split the use cases between devices to avoid conflict.
           .Add({DeviceCategory::kCpu, "foo_feature"},
-               SolutionRecipe("valid_base", kNoSafetyModel,
-                              FileReference("foo", "config.pb")))
+               SolutionRecipe("valid_base", FileReference("foo", "config.pb")))
           .Add({DeviceCategory::kGpuHighTier, "bar_feature"},
-               SolutionRecipe("valid_base", kNoSafetyModel,
-                              FileReference("bar", "config.pb"))));
+               SolutionRecipe("valid_base", FileReference("bar", "config.pb"))));
   ASSERT_TRUE(result.has_value());
 }
 

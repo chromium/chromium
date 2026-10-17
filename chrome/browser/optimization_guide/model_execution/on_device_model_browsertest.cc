@@ -73,7 +73,7 @@ class OnDeviceAssets {
                 proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED, {}, 0)));
     builder.Add(
         "test_solution",
-        SolutionRecipe("base_model_recipe", "",
+        SolutionRecipe("base_model_recipe",
                        FileReference("manifest", "test_config.binarypb")),
         {
             DeviceUseCase{DeviceCategory::kCpu, "test"},

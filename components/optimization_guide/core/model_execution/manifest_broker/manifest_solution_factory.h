@@ -26,7 +26,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
-#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
@@ -35,7 +34,7 @@
 namespace optimization_guide {
 
 // Feature and parameter controlling the idle timeout before loaded on-device
-// models (base models, adaptations, and safety models) disconnect and unload.
+// models (base models and adaptations) disconnect and unload.
 // NOTE: This feature and parameter are actively used by automated benchmarks
 // and tests (e.g. Web-Workloads blink-ai, see crbug.com/562517320) via
 // `--enable-features=OnDeviceModelIdleTimeout:on_device_model_idle_timeout/10s`
@@ -92,17 +91,6 @@ class ManifestSolutionFactory {
     PostprocessedModelState& operator=(PostprocessedModelState&& other);
 
     mojo::Remote<on_device_model::mojom::OnDeviceModel> remote_;
-  };
-
-  struct SafetyModelState {
-    SafetyModelState();
-    ~SafetyModelState();
-    SafetyModelState(const SafetyModelState& other) = delete;
-    SafetyModelState& operator=(const SafetyModelState& other) = delete;
-    SafetyModelState(SafetyModelState&& other);
-    SafetyModelState& operator=(SafetyModelState&& other);
-
-    mojo::Remote<on_device_model::mojom::TextSafetyModel> remote_;
   };
 
   struct SolutionState {
@@ -186,9 +174,6 @@ class ManifestSolutionFactory {
   void LoadPostProcessor(const std::string& model_id,
                          PostprocessedModelState& state);
 
-  mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-  GetOrLoadTextSafetyModel(const std::string& model_id);
-
   // Called when a base model disconnects unexpectedly.
   void OnBaseModelDisconnect(const std::string& model_id,
                              uint32_t reason,
@@ -219,7 +204,6 @@ class ManifestSolutionFactory {
   base::flat_map<std::string, BaseModelState> base_models_;
   base::flat_map<std::string, AdaptationState> adaptations_;
   base::flat_map<std::string, PostprocessedModelState> postprocessed_models_;
-  base::flat_map<std::string, SafetyModelState> safety_models_;
   base::flat_map<std::string, SolutionState> solutions_;
 
   base::RepeatingClosure on_asset_init_;

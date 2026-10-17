@@ -261,50 +261,12 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteTestFeatureWithAdaptation) {
   EXPECT_EQ(*response.value(), expected_response);
 }
 
-TEST_F(ManifestSolutionFactoryTest, ExecuteTestFeatureWithSafety) {
-  ScenarioBuilder(fake_.component_state())
-      .AddBaseModel("model_A")
-      .AddSafetyModel("safety")
-      .AddSafeSolution(
-          "test", "model_A", "safety",
-          []() {
-            proto::SolutionConfig solution_config;
-            *solution_config.mutable_feature() = SimpleComposeConfig();
-            *solution_config.mutable_safety() = ComposeSafetyConfig();
-            return solution_config;
-          }())
-      .Finish();
-  fake_.Startup();
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
-  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
-                               SessionConfigParams{},
-                               session_future.GetCallback());
-
-  auto session = session_future.Take();
-  ASSERT_TRUE(session);
-
-  ResponseHolder response;
-  session->ExecuteModel(UserInputRequest("hello"),
-                        response.GetStreamingCallback());
-
-  EXPECT_TRUE(response.GetFinalStatus());
-  EXPECT_EQ(response.error(), std::nullopt);
-
-  std::string expected_response =
-      ("Encoder cache weight: 1016"
-       "Adapter cache weight: 1017"
-       "execute:hello max:1024"
-       "TopK: 64, Temp: 1");
-  EXPECT_EQ(*response.value(), expected_response);
-}
-
 // Stuff should still work even if we use a bunch of models at the same time,
 // as long as the backend supports it.
 TEST_F(ManifestSolutionFactoryTest, ModelContention) {
-  auto safe_config = []() {
+  auto config = []() {
     proto::SolutionConfig solution_config;
     *solution_config.mutable_feature() = SimpleComposeConfig();
-    *solution_config.mutable_safety() = ComposeSafetyConfig();
     return solution_config;
   }();
 
@@ -313,12 +275,11 @@ TEST_F(ManifestSolutionFactoryTest, ModelContention) {
       .AddBaseModel("model_B")
       .AddAdaptation("model_A1", "model_A")
       .AddAdaptation("model_A2", "model_A")
-      .AddSafetyModel("safety")
-      .AddSafeSolution("case_A", "model_A", "safety", safe_config)
-      .AddSafeSolution("case_A1", "model_A1", "safety", safe_config)
-      .AddSafeSolution("case_A2a", "model_A2", "safety", safe_config)
-      .AddSafeSolution("case_A2b", "model_A2", "safety", safe_config)
-      .AddSafeSolution("case_B", "model_B", "safety", safe_config)
+      .AddUnsafeSolution("case_A", "model_A", config)
+      .AddUnsafeSolution("case_A1", "model_A1", config)
+      .AddUnsafeSolution("case_A2a", "model_A2", config)
+      .AddUnsafeSolution("case_A2b", "model_A2", config)
+      .AddUnsafeSolution("case_B", "model_B", config)
       .Finish();
   fake_.Startup();
 
@@ -360,8 +321,7 @@ TEST_F(ManifestSolutionFactoryTest, PropagatesModelCapabilities) {
   }();
   ScenarioBuilder(fake_.component_state())
       .AddBaseModel("model_A")
-      .AddSafetyModel("safety")
-      .AddSafeSolution("case_A", "model_A", "safety", solution_config)
+      .AddUnsafeSolution("case_A", "model_A", solution_config)
       .Finish();
   fake_.Startup();
 
@@ -401,17 +361,15 @@ TEST_F(ManifestSolutionFactoryTest, IdleTimeoutOverride) {
   feature_list.InitAndEnableFeatureWithParameters(
       kOnDeviceModelIdleTimeout, {{"on_device_model_idle_timeout", "10s"}});
 
-  auto safe_config = []() {
+  auto config = []() {
     proto::SolutionConfig solution_config;
     *solution_config.mutable_feature() = SimpleComposeConfig();
-    *solution_config.mutable_safety() = ComposeSafetyConfig();
     return solution_config;
   }();
 
   ScenarioBuilder(fake_.component_state())
       .AddBaseModel("model_A")
-      .AddSafetyModel("safety")
-      .AddSafeSolution("test", "model_A", "safety", safe_config)
+      .AddUnsafeSolution("test", "model_A", config)
       .Finish();
   fake_.Startup();
 
@@ -433,8 +391,8 @@ TEST_F(ManifestSolutionFactoryTest, IdleTimeoutOverride) {
   task_environment_.FastForwardBy(base::Seconds(9));
   EXPECT_TRUE(fake_.launcher().is_service_running());
 
-  // Once the 10s idle timeout elapses, the base and safety models unload and
-  // the service shuts down (instead of waiting for the default 1m timeout).
+  // Once the 10s idle timeout elapses, the base model unloads and the service
+  // shuts down (instead of waiting for the default 1m timeout).
   task_environment_.FastForwardBy(base::Seconds(2));
   EXPECT_FALSE(fake_.launcher().is_service_running());
 }

@@ -39,12 +39,10 @@ proto::OnDeviceBaseModelMetadata MatchingMetadata(
                                          {spec.selected_performance_hint});
 }
 
-// TODO: crbug.com/442914748 - Support text safety.
 proto::OnDeviceModelExecutionFeatureConfig UnsafeFeatureConfig(
     mojom::OnDeviceFeature feature) {
   proto::OnDeviceModelExecutionFeatureConfig cfg = SimpleTestFeatureConfig();
   cfg.set_feature(ToModelExecutionFeatureProto(feature));
-  cfg.set_can_skip_text_safety(true);
   return cfg;
 }
 

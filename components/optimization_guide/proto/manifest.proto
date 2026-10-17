@@ -10,7 +10,6 @@ package optimization_guide.proto;
 import "components/optimization_guide/proto/common_types.proto";
 import "components/optimization_guide/proto/model_quality_metadata.proto";
 import "components/optimization_guide/proto/on_device_model_execution_config.proto";
-import "components/optimization_guide/proto/text_safety_model_metadata.proto";
 
 option optimize_for = LITE_RUNTIME;
 option features.field_presence = IMPLICIT;
@@ -89,22 +88,13 @@ message PostprocessedModelRecipe {
   string postprocessor_model_recipe_id = 2;
 }
 
-// A recipe for a safety model.
-message SafetyModelRecipe {
-  FileReference weights_file = 1;
-  FileReference language_detection_model_file = 2;
-}
-
 // A recipe for a ModelSolution provided by the ModelBroker.
 message SolutionRecipe {
-  reserved 4;
+  reserved 2, 4;
 
   // The identifier of a BaseModelRecipe, AdaptationRecipe, or
   // PostprocessedModelRecipe that provides the model for this use case.
   string model_recipe_id = 1;
-  // The identifier of a SafetyModelRecipe that provides the safety model for
-  // this use case.  May be empty if no safety model is required.
-  string safety_model_recipe_id = 2 [features.field_presence = EXPLICIT];
   // Which file contains a serialized SolutionConfig for this use case.
   FileReference config_file = 3;
 }
@@ -112,13 +102,12 @@ message SolutionRecipe {
 // Contents of a SolutionRecipe's config file. These messages are opaque to the
 // ModelBroker, and are provided as-is to clients.
 message SolutionConfig {
+  reserved 2;
+
   // Configuration for using the model via an OnDeviceSession object.
   // This also contains a feature_metadata field that can be used to store
   // arbitrary feature-specific data, used independently of OnDeviceSession.
   OnDeviceModelExecutionFeatureConfig feature = 1;
-  // Configuration for using the safety model via a SafetyChecker object.
-  // This is optional, and may not be set if no safety model is required.
-  FeatureTextSafetyConfiguration safety = 2;
   // Model version information, primarily for logging via MQLS.
   // This is optional, and may not be set if not needed for logging.
   OnDeviceModelVersions model_versions = 3;
@@ -130,12 +119,12 @@ message SolutionConfig {
 // The recipes are keyed by manifest-internal IDs.
 // The keys for different types of recipes should not overlap.
 message Recipes {
+  reserved 3;
+
   // Defines a set of base model recipes, keyed by identifier strings.
   map<string, BaseModelRecipe> base_models = 1;
   // Defines a set of adaptation recipes, keyed by identifier strings.
   map<string, AdaptationRecipe> adaptations = 2;
-  // Defines a set of safety model recipes, keyed by identifier strings.
-  map<string, SafetyModelRecipe> safety_models = 3;
   // Defines a set of postprocessed model recipes, keyed by identifier strings.
   map<string, PostprocessedModelRecipe> postprocessed_models = 5;
   // Defines a set of solution recipes, keyed by identifier strings.

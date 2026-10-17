@@ -14,7 +14,6 @@
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
-#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 
 namespace optimization_guide {
 
@@ -392,12 +391,9 @@ proto::SubstitutedString BuildArticleTemplate() {
 
 proto::SolutionConfig BuildSummarizeSolutionConfig() {
   proto::SolutionConfig solution_config;
-  solution_config.mutable_safety()->set_feature(
-      proto::MODEL_EXECUTION_FEATURE_SUMMARIZE);
 
   auto* config = solution_config.mutable_feature();
   config->set_feature(proto::MODEL_EXECUTION_FEATURE_SUMMARIZE);
-  config->set_can_skip_text_safety(false);
 
   auto* input_config = config->mutable_input_config();
   input_config->set_request_base_name(
@@ -453,10 +449,8 @@ proto::SolutionConfig BuildSummarizeSolutionConfig() {
 
 proto::SolutionConfig BuildAndroidSummarizeSolutionConfig() {
   proto::SolutionConfig solution_config = BuildSummarizeSolutionConfig();
-  solution_config.clear_safety();
 
   auto* config = solution_config.mutable_feature();
-  config->set_can_skip_text_safety(true);
   auto* input_config = config->mutable_input_config();
   // Replace the desktop context limits because Android sends context and
   // execution input together in each ML Kit request. Do not require a minimum

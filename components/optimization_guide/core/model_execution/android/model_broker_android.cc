@@ -21,7 +21,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
-#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "services/on_device_model/android/backend_model_impl_android.h"
 #include "services/on_device_model/android/downloader_params.mojom.h"
@@ -159,9 +158,6 @@ class SolutionImpl : public ModelBrokerImpl::Solution {
   void CreateSession(
       mojo::PendingReceiver<on_device_model::mojom::Session> pending,
       on_device_model::mojom::SessionParamsPtr params) override;
-  void CreateTextSafetySession(
-      mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> pending)
-      override;
   void ReportHealthyCompletion() override;
 
   base::WeakPtr<ModelBrokerAndroid> parent_;
@@ -192,9 +188,6 @@ mojom::ModelSolutionConfigPtr SolutionImpl::MakeConfig() const {
   config->feature_config = mojo_base::ProtoWrapper(adapter_->config());
   config->model_versions =
       mojo_base::ProtoWrapper(GetModelVersions(spec_, adaptation_version_));
-  // TODO: crbug.com/442914748 - Add safety config.
-  config->text_safety_config =
-      mojo_base::ProtoWrapper(proto::FeatureTextSafetyConfiguration());
   config->model_capabilities = AICoreModelCapabilities();
   return config;
 }
@@ -206,11 +199,6 @@ void SolutionImpl::CreateSession(
     parent_->GetOrCreateModelRemote(adapter_->config().feature())
         ->StartSession(std::move(pending), std::move(params));
   }
-}
-
-void SolutionImpl::CreateTextSafetySession(
-    mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> pending) {
-  // TODO: crbug.com/442914748 - Implement (can be a no-op initially).
 }
 
 void SolutionImpl::ReportHealthyCompletion() {
@@ -253,8 +241,7 @@ class ModelBrokerAndroid::SolutionFactory final
   // |done_callback| when all status checks complete.
   void CheckModelStatus(base::OnceClosure done_callback);
 
-  // Updates model availability for all features, e.g. for a change in a shared
-  // asset like a safety config.
+  // Updates model availability for all features.
   void UpdateSolutionProviders();
   // Updates model availability for one feature.
   void UpdateSolutionProvider(mojom::OnDeviceFeature feature);
@@ -498,12 +485,6 @@ ModelBrokerAndroid::SolutionFactory::MakeSolution(
         metadata.error() == AdaptationUnavailability::kNotSupported
             ? OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable
             : OnDeviceModelEligibilityReason::kConfigNotAvailableForFeature);
-  }
-
-  if (!adapter->CanSkipTextSafety()) {
-    // TODO: crbug.com/442914748 - Support text safety.
-    return base::unexpected(
-        OnDeviceModelEligibilityReason::kModelAdaptationNotAvailable);
   }
 
   // A base model spec is required for both adaptation and manifest solutions.

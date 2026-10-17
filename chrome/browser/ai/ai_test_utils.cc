@@ -145,8 +145,7 @@ void SetupScenario(
               BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
               kDefaultMaxTokens),
           optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
-      .AddSafetyModel("safety")
-      .AddSafeSolution(use_case, "base", "safety", std::move(solution_config));
+      .AddUnsafeSolution(use_case, "base", std::move(solution_config));
 
   if (use_case == "prompt_api") {
     PromptApiFeatureConfig prompt_api_cfg;

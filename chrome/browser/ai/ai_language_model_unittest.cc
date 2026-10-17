@@ -70,7 +70,6 @@ namespace proto = ::optimization_guide::proto;
 using ::base::test::TestFuture;
 using ::on_device_model::mojom::PerformanceClass;
 using ::optimization_guide::FieldSubstitution;
-using ::optimization_guide::ForbidUnsafe;
 using ::optimization_guide::StringValueField;
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -293,7 +292,6 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
  protected:
   proto::SolutionConfig CreateSolution() override {
     proto::OnDeviceModelExecutionFeatureConfig config;
-    config.set_can_skip_text_safety(true);
     proto::SamplingParams default_sampling_params;
     default_sampling_params.set_top_k(kTestDefaultTopK);
     default_sampling_params.set_temperature(kTestDefaultTemperature);
@@ -2661,10 +2659,9 @@ class AILanguageModelWithFeatureConfigTest : public AILanguageModelTest {
                 proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY,
                 {}, kDefaultMaxTokens),
             optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
-        .AddSafetyModel("safety")
-        .AddSafeSolution("prompt_api", "base", "safety", default_solution)
-        .AddSafeSolution("prompt_api_gemma4", "gemma4_base", "safety",
-                         default_solution)
+        .AddUnsafeSolution("prompt_api", "base", default_solution)
+        .AddUnsafeSolution("prompt_api_gemma4", "gemma4_base",
+                           default_solution)
         .SetFeatureConfig("prompt_api",
                           optimization_guide::AnyWrapProto(prompt_api_cfg))
         .Finish();

@@ -29,12 +29,11 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
-#include "services/on_device_model/public/cpp/text_safety_assets.h"
 
 namespace optimization_guide {
 
 // Feature and parameter controlling the idle timeout before loaded on-device
-// models (base models, adaptations, and safety models) disconnect and unload.
+// models (base models and adaptations) disconnect and unload.
 // NOTE: This feature and parameter are actively used by automated benchmarks
 // and tests (e.g. Web-Workloads blink-ai, see crbug.com/562517320) via
 // `--enable-features=OnDeviceModelIdleTimeout:on_device_model_idle_timeout/10s`
@@ -142,18 +141,6 @@ MakePostprocessedModelsMap(const proto::Recipes& recipes) {
       std::move(states));
 }
 
-base::flat_map<std::string, ManifestSolutionFactory::SafetyModelState>
-MakeSafetyModelsMap(const proto::Recipes& recipes) {
-  std::vector<std::pair<std::string, ManifestSolutionFactory::SafetyModelState>>
-      states;
-  states.reserve(recipes.safety_models().size());
-  for (const auto& [name, recipe] : recipes.safety_models()) {
-    states.emplace_back(name, ManifestSolutionFactory::SafetyModelState());
-  }
-  return base::flat_map<std::string, ManifestSolutionFactory::SafetyModelState>(
-      std::move(states));
-}
-
 base::flat_map<std::string, ManifestSolutionFactory::SolutionState>
 MakeSolutionsMap(const proto::Recipes& recipes) {
   std::vector<std::pair<std::string, ManifestSolutionFactory::SolutionState>>
@@ -176,13 +163,6 @@ void CloseAssetsInBackground(on_device_model::AdaptationAssets assets) {
   // Close the files on a background thread.
   base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
                              base::DoNothingWithBoundArgs(std::move(assets)));
-}
-
-void CloseAssetsInBackground(
-    on_device_model::mojom::TextSafetyModelParamsPtr params) {
-  // Close the files on a background thread.
-  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                             base::DoNothingWithBoundArgs(std::move(params)));
 }
 
 }  // namespace
@@ -231,8 +211,6 @@ class ManifestSolutionFactory::Solution : public ModelBrokerImpl::Solution {
     }
     auto config = mojom::ModelSolutionConfig::New();
     config->feature_config = mojo_base::ProtoWrapper(state().config_.feature());
-    config->text_safety_config =
-        mojo_base::ProtoWrapper(state().config_.safety());
     config->model_versions =
         mojo_base::ProtoWrapper(state().config_.model_versions());
     for (int c : state().config_.capabilities()) {
@@ -262,16 +240,6 @@ class ManifestSolutionFactory::Solution : public ModelBrokerImpl::Solution {
     }
     factory_->GetOrLoadModel(recipe().model_recipe_id())
         ->StartSession(std::move(pending), std::move(params));
-  }
-
-  void CreateTextSafetySession(
-      mojo::PendingReceiver<on_device_model::mojom::TextSafetySession> pending)
-      override {
-    if (!IsValid()) {
-      return;
-    }
-    factory_->GetOrLoadTextSafetyModel(recipe().safety_model_recipe_id())
-        ->StartSession(std::move(pending));
   }
 
   void ReportHealthyCompletion() override {
@@ -315,14 +283,6 @@ ManifestSolutionFactory::PostprocessedModelState&
 ManifestSolutionFactory::PostprocessedModelState::operator=(
     PostprocessedModelState&& other) = default;
 
-ManifestSolutionFactory::SafetyModelState::SafetyModelState() = default;
-ManifestSolutionFactory::SafetyModelState::~SafetyModelState() = default;
-ManifestSolutionFactory::SafetyModelState::SafetyModelState(
-    SafetyModelState&& other) = default;
-ManifestSolutionFactory::SafetyModelState&
-ManifestSolutionFactory::SafetyModelState::operator=(SafetyModelState&& other) =
-    default;
-
 ManifestSolutionFactory::SolutionState::SolutionState() = default;
 ManifestSolutionFactory::SolutionState::~SolutionState() = default;
 ManifestSolutionFactory::SolutionState::SolutionState(SolutionState&& other) =
@@ -350,7 +310,6 @@ ManifestSolutionFactory::ManifestSolutionFactory(
       base_models_(MakeBaseModelsMap(manifest_.GetRecipes())),
       adaptations_(MakeAdaptationsMap(manifest_.GetRecipes())),
       postprocessed_models_(MakePostprocessedModelsMap(manifest_.GetRecipes())),
-      safety_models_(MakeSafetyModelsMap(manifest_.GetRecipes())),
       solutions_(MakeSolutionsMap(manifest_.GetRecipes())),
       on_asset_init_(
           base::BarrierClosure(assets_.size(), std::move(on_init_complete))),
@@ -423,13 +382,6 @@ void ManifestSolutionFactory::UnloadAsset(const std::string& asset_id) {
        manifest_.GetRecipes().adaptations()) {
     if (recipe.weights_file().asset_id() == asset_id) {
       adaptations_.at(adaptation_id).remote_.reset();
-    }
-  }
-  for (const auto& [safety_id, recipe] :
-       manifest_.GetRecipes().safety_models()) {
-    if (recipe.weights_file().asset_id() == asset_id ||
-        recipe.language_detection_model_file().asset_id() == asset_id) {
-      safety_models_.at(safety_id).remote_.reset();
     }
   }
   for (const auto& [solution_id, recipe] : manifest_.GetRecipes().solutions()) {
@@ -789,66 +741,6 @@ ManifestSolutionFactory::GetOrLoadModel(const std::string& model_id) {
     return state.remote_;
   }
   NOTREACHED();
-}
-
-mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-ManifestSolutionFactory::GetOrLoadTextSafetyModel(const std::string& model_id) {
-  TRACE_EVENT("optimization_guide",
-              "ManifestSolutionFactory::GetOrLoadTextSafetyModel", "model_id",
-              model_id);
-  auto& state = safety_models_.at(model_id);
-  if (!state.remote_) {
-    const auto& recipe = manifest_.GetRecipes().safety_models().at(model_id);
-    on_device_model::TextSafetyLoaderParams params;
-    if (recipe.has_weights_file()) {
-      params.ts_paths.emplace();
-      // We should not get here unless the asset is available.
-      params.ts_paths->model = *ResolveFile(recipe.weights_file());
-    }
-    if (recipe.has_language_detection_model_file()) {
-      params.language_paths.emplace();
-      // We should not get here unless the asset is available.
-      params.language_paths->model =
-          *ResolveFile(recipe.language_detection_model_file());
-    }
-    service_client_->AddPendingUsage();
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&on_device_model::LoadTextSafetyParams,
-                       std::move(params)),
-        base::BindOnce(
-            [](base::WeakPtr<ManifestSolutionFactory> factory,
-               const std::string& model_id,
-               mojo::PendingReceiver<on_device_model::mojom::TextSafetyModel>
-                   model,
-               on_device_model::mojom::TextSafetyModelParamsPtr params) {
-              TRACE_EVENT(
-                  "optimization_guide",
-                  "ManifestSolutionFactory::OnTextSafetyModelParamsLoaded",
-                  "model_id", model_id);
-              if (!factory) {
-                CloseAssetsInBackground(std::move(params));
-                return;
-              }
-              if (!factory->safety_models_.at(model_id).remote_.is_bound()) {
-                // Handle the case where the model was uninstalled while loading
-                // params.
-                CloseAssetsInBackground(std::move(params));
-                factory->service_client_->RemovePendingUsage();
-                return;
-              }
-              factory->service_client_->Get()->LoadTextSafetyModel(
-                  std::move(params), std::move(model));
-              factory->service_client_->RemovePendingUsage();
-            },
-            weak_ptr_factory_.GetWeakPtr(), model_id,
-            state.remote_.BindNewPipeAndPassReceiver()));
-    // Disconnects should only happen on a service crash, and we track those
-    // elsewhere.
-    state.remote_.reset_on_disconnect();
-    state.remote_.reset_on_idle_timeout(kOnDeviceModelIdleTimeoutParam.Get());
-  }
-  return state.remote_;
 }
 
 void ManifestSolutionFactory::LoadBaseModel(const std::string& model_id,

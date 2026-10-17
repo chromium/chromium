@@ -61,7 +61,6 @@ using ::blink::mojom::AILanguageCode;
 using ::blink::mojom::AILanguageCodePtr;
 using ::on_device_model::mojom::PerformanceClass;
 using ::optimization_guide::FieldSubstitution;
-using ::optimization_guide::ForbidUnsafe;
 using ::optimization_guide::ProtoField;
 using ::optimization_guide::StringValueField;
 using ::optimization_guide::proto::SummarizeRequest;
@@ -129,33 +128,6 @@ blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptions() {
       /*output_language=*/AILanguageCode::New(""));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// This method is not used on Android as Android doesn't support text safety
-// yet. crbug.com/442914748
-optimization_guide::proto::FeatureTextSafetyConfiguration CreateSafetyConfig() {
-  optimization_guide::proto::FeatureTextSafetyConfiguration safety_config;
-  safety_config.set_feature(
-      optimization_guide::proto::MODEL_EXECUTION_FEATURE_SUMMARIZE);
-  safety_config.mutable_safety_category_thresholds()->Add(ForbidUnsafe());
-  {
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(FieldSubstitution(
-        "%s", ProtoField({SummarizeRequest::kArticleFieldNumber})));
-  }
-  {
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(FieldSubstitution(
-        "%s", ProtoField({SummarizeRequest::kContextFieldNumber})));
-  }
-  {
-    auto* check = safety_config.add_request_check();
-    check->mutable_input_template()->Add(FieldSubstitution(
-        "%s", ProtoField({SummarizeRequest::kSharedContextFieldNumber})));
-  }
-  return safety_config;
-}
-#endif
-
 class AISummarizerTest : public AITestUtils::AITestBase {
  public:
   AISummarizerTest() {
@@ -168,7 +140,6 @@ class AISummarizerTest : public AITestUtils::AITestBase {
  protected:
   proto::SolutionConfig CreateSolution() override {
     proto::OnDeviceModelExecutionFeatureConfig config;
-    config.set_can_skip_text_safety(true);
     config.set_feature(proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_SUMMARIZE);
 
@@ -190,9 +161,6 @@ class AISummarizerTest : public AITestUtils::AITestBase {
 
     proto::SolutionConfig solution_config;
     *solution_config.mutable_feature() = config;
-#if !BUILDFLAG(IS_ANDROID)
-    *solution_config.mutable_safety() = CreateSafetyConfig();
-#endif
     return solution_config;
   }
 
@@ -373,30 +341,6 @@ TEST_F(AISummarizerTest, CreateSummarizerModelNotEligible) {
   EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
 }
-
-#if BUILDFLAG(IS_ANDROID)
-// Android doesn't support text safety yet. crbug.com/442914748
-// TODO(crbug.com/571742381): Re-enable once this test can wait for its
-// safety-required config to take effect before creating a session. Currently,
-// creation can succeed using the built-in config before the adaptation loads.
-TEST_F(AISummarizerTest, DISABLED_CreateSummarizerWithTextSafetyCheck) {
-  SetSolutionConfig([&]() {
-    auto solution_config = CreateSolution();
-    solution_config.mutable_feature()->set_can_skip_text_safety(false);
-    return solution_config;
-  }());
-
-  TestCreateSummarizerClient create_summarizer_client;
-  GetAIManagerRemote()->CreateSummarizer(
-      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions(),
-      /*monitor=*/mojo::NullRemote());
-
-  CreateSummarizerResult result = create_summarizer_client.result().Take();
-  EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().error,
-            blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/571742381): Enable these tests on Android once an adaptation
@@ -911,12 +855,11 @@ class AISummarizerWithFeatureConfigTest : public AISummarizerTest {
                 proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED,
                 {}, kDefaultMaxTokens),
             optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
-        .AddSafetyModel("safety")
-        .AddSafeSolution("summarizer_api", "base", "safety", default_solution)
-        .AddSafeSolution("summarizer_small_expert_model", "small_expert_base",
-                         "safety", speed_solution)
-        .AddSafeSolution("summarizer_gemma4", "gemma4_base", "safety",
-                         default_solution)
+        .AddUnsafeSolution("summarizer_api", "base", default_solution)
+        .AddUnsafeSolution("summarizer_small_expert_model", "small_expert_base",
+                           speed_solution)
+        .AddUnsafeSolution("summarizer_gemma4", "gemma4_base",
+                           default_solution)
         .SetFeatureConfig("summarizer_api",
                           optimization_guide::AnyWrapProto(summarizer_cfg))
         .Finish();

@@ -11,15 +11,6 @@ namespace optimization_guide {
 
 proto::Manifest BuildExampleManifest() {
   return ManifestBuilder()
-      // Safety model.
-      .Add("safety_model_component",
-           OnDemandComponent("abc12345...", "2026.1.21.1028"))
-      .Add("language_detection_model_component",
-           OnDemandComponent("def67890...", "2026.1.21.1028"))
-      .Add("safety_model_recipe",
-           SafetyModelRecipe(
-               FileReference("safety_model_component", "weights.bin"),
-               FileReference("language_detection_model_component", "lang.bin")))
       // Tiny model for writer.
       .Add("writer_tiny_model_component",
            OnDemandComponent("12345...", "2026.1.21.1028"))
@@ -32,7 +23,7 @@ proto::Manifest BuildExampleManifest() {
                    {},
                    2048}))
       .Add("writer_tiny_model_solution",
-           SolutionRecipe("writer_tiny_model_recipe", kNoSafetyModel,
+           SolutionRecipe("writer_tiny_model_recipe",
                           ManifestFileReference("writer_config.pb")),
            {
                DeviceUseCase{DeviceCategory::kCpu, kWriterUseCase},
@@ -57,13 +48,13 @@ proto::Manifest BuildExampleManifest() {
                "cpu_base_model_recipe",
                FileReference("proofreader_weights_component", "weights.bin")))
       .Add(DeviceUseCase{DeviceCategory::kCpu, kLanguageModelUseCase},
-           SolutionRecipe("cpu_base_model_recipe", "safety_model_recipe",
+           SolutionRecipe("cpu_base_model_recipe",
                           ManifestFileReference("language_model_config.pb")))
       .Add(DeviceUseCase{DeviceCategory::kCpu, kProofreaderUseCase},
-           SolutionRecipe("cpu_proofreader_lora_recipe", kNoSafetyModel,
+           SolutionRecipe("cpu_proofreader_lora_recipe",
                           ManifestFileReference("proofreader_config.pb")))
       .Add(DeviceUseCase{DeviceCategory::kCpu, kSummarizerUseCase},
-           SolutionRecipe("cpu_base_model_recipe", kNoSafetyModel,
+           SolutionRecipe("cpu_base_model_recipe",
                           ManifestFileReference("summarizer_config.pb")))
       // GPU recipes
       .Add("gpu_base_model_component",
@@ -78,13 +69,13 @@ proto::Manifest BuildExampleManifest() {
                    {},
                    1024}))
       .Add(DeviceUseCase{DeviceCategory::kGpuLowTier, kLanguageModelUseCase},
-           SolutionRecipe("fast_gpu_base_model_recipe", "safety_model_recipe",
+           SolutionRecipe("fast_gpu_base_model_recipe",
                           ManifestFileReference("language_model_config.pb")))
       .Add(DeviceUseCase{DeviceCategory::kGpuLowTier, kProofreaderUseCase},
-           SolutionRecipe("fast_gpu_base_model_recipe", kNoSafetyModel,
+           SolutionRecipe("fast_gpu_base_model_recipe",
                           ManifestFileReference("proofreader_config.pb")))
       .Add(DeviceUseCase{DeviceCategory::kGpuLowTier, kSummarizerUseCase},
-           SolutionRecipe("fast_gpu_base_model_recipe", kNoSafetyModel,
+           SolutionRecipe("fast_gpu_base_model_recipe",
                           ManifestFileReference("summarizer_config.pb")))
       // Quality GPU recipes.
       .Add("quality_gpu_base_model_recipe",
@@ -97,13 +88,13 @@ proto::Manifest BuildExampleManifest() {
                    1024}))
       .Add(
           DeviceUseCase{DeviceCategory::kGpuHighTier, kLanguageModelUseCase},
-          SolutionRecipe("quality_gpu_base_model_recipe", "safety_model_recipe",
+          SolutionRecipe("quality_gpu_base_model_recipe",
                          ManifestFileReference("language_model_config.pb")))
       .Add(DeviceUseCase{DeviceCategory::kGpuHighTier, kProofreaderUseCase},
-           SolutionRecipe("quality_gpu_base_model_recipe", kNoSafetyModel,
+           SolutionRecipe("quality_gpu_base_model_recipe",
                           ManifestFileReference("proofreader_config.pb")))
       .Add(DeviceUseCase{DeviceCategory::kGpuHighTier, kSummarizerUseCase},
-           SolutionRecipe("quality_gpu_base_model_recipe", kNoSafetyModel,
+           SolutionRecipe("quality_gpu_base_model_recipe",
                           ManifestFileReference("summarizer_config.pb")))
       .Build();
 }

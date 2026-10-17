@@ -106,10 +106,6 @@ std::optional<Manifest::ParseError> ValidateReferences(
         !recipes.base_models().contains(solution.model_recipe_id())) {
       return Manifest::ParseError::kMissingIdentifier;
     }
-    if (!solution.safety_model_recipe_id().empty() &&
-        !recipes.safety_models().contains(solution.safety_model_recipe_id())) {
-      return Manifest::ParseError::kMissingIdentifier;
-    }
     if (!is_valid_asset(solution.config_file().asset_id())) {
       return Manifest::ParseError::kMissingIdentifier;
     }
@@ -142,16 +138,6 @@ std::optional<Manifest::ParseError> ValidateReferences(
     }
   }
 
-  for (const auto& [_, safety_model] : manifest.recipes().safety_models()) {
-    if (!is_valid_asset(safety_model.weights_file().asset_id())) {
-      return Manifest::ParseError::kMissingIdentifier;
-    }
-    if (!is_valid_asset(
-            safety_model.language_detection_model_file().asset_id())) {
-      return Manifest::ParseError::kMissingIdentifier;
-    }
-  }
-
   for (const auto& [category, config] : manifest.category_configs()) {
     for (const auto& [use_case, use_case_config] : config.use_cases()) {
       if (!recipes.solutions().contains(use_case_config.solution_recipe_id())) {
@@ -178,7 +164,6 @@ void DisablePostprocessedModels(proto::Recipes& recipes) {
 
 struct References {
   absl::flat_hash_set<std::string> solutions;
-  absl::flat_hash_set<std::string> safety_models;
   absl::flat_hash_set<std::string> adaptations;
   absl::flat_hash_set<std::string> postprocessed_models;
   absl::flat_hash_set<std::string> base_models;
@@ -217,9 +202,6 @@ struct References {
       } else {
         base_models.insert(solution.model_recipe_id());
       }
-      if (solution.has_safety_model_recipe_id()) {
-        safety_models.insert(solution.safety_model_recipe_id());
-      }
       assets.insert(solution.config_file().asset_id());
     }
     for (const auto& id : adaptations) {
@@ -236,12 +218,6 @@ struct References {
     for (const auto& id : base_models) {
       const proto::BaseModelRecipe& base_model = recipes.base_models().at(id);
       assets.insert(base_model.weights_file().asset_id());
-    }
-    for (const auto& id : safety_models) {
-      const proto::SafetyModelRecipe& safety_model =
-          recipes.safety_models().at(id);
-      assets.insert(safety_model.weights_file().asset_id());
-      assets.insert(safety_model.language_detection_model_file().asset_id());
     }
   }
 
@@ -262,10 +238,6 @@ struct References {
     for (const auto& id : base_models) {
       referenced.mutable_base_models()->emplace(id,
                                                 original.base_models().at(id));
-    }
-    for (const auto& id : safety_models) {
-      referenced.mutable_safety_models()->emplace(
-          id, original.safety_models().at(id));
     }
     return referenced;
   }

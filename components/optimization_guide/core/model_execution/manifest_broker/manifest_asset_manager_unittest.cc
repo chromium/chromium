@@ -113,7 +113,7 @@ class DummyManifest {
                           proto::BaseModelRecipe::PERFORMANCE_HINT_UNSPECIFIED,
                           {}, 100)));
       builder.Add(asset.asset_id + "_solution",
-                  SolutionRecipe(asset.asset_id + "_base_model", "",
+                  SolutionRecipe(asset.asset_id + "_base_model",
                                  FileReference("manifest", "config.pb")));
       builder.Add(DeviceUseCase{DeviceCategory::kGpuHighTier, asset.use_case},
                   asset.asset_id + "_solution");

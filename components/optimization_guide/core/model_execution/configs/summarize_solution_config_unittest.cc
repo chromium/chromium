@@ -20,8 +20,6 @@ TEST(SummarizeSolutionConfigTest, AndroidUsesAICoreSettings) {
             kAndroidMaxExecuteTokens);
   EXPECT_EQ(feature.output_config().max_output_tokens(),
             kAndroidMaxOutputTokens);
-  EXPECT_TRUE(feature.can_skip_text_safety());
-  EXPECT_FALSE(android.has_safety());
 }
 
 }  // namespace

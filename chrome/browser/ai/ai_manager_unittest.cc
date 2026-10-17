@@ -179,7 +179,6 @@ class AIManagerTest : public AITestUtils::AITestBase {
  protected:
   proto::SolutionConfig CreateSolution() override {
     proto::OnDeviceModelExecutionFeatureConfig config;
-    config.set_can_skip_text_safety(true);
     config.set_feature(proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_PROMPT_API);
 
@@ -214,11 +213,9 @@ class AIManagerTest : public AITestUtils::AITestBase {
                 proto::BaseModelRecipe::PERFORMANCE_HINT_HIGHEST_QUALITY, {},
                 kDefaultMaxTokens),
             optimization_guide::FakeBaseModelAsset::Content{}, "1.0.0.0")
-        .AddSafetyModel("safety")
-        .AddSafeSolution("prompt_api", "base", "safety", CreateSolution())
-        .AddSafeSolution("writing_assistance_api", "base", "safety",
-                         CreateSolution())
-        .AddSafeSolution("summarizer_api", "base", "safety", CreateSolution())
+        .AddUnsafeSolution("prompt_api", "base", CreateSolution())
+        .AddUnsafeSolution("writing_assistance_api", "base", CreateSolution())
+        .AddUnsafeSolution("summarizer_api", "base", CreateSolution())
         .SetFeatureConfig("prompt_api",
                           optimization_guide::AnyWrapProto(prompt_api_cfg))
         .SetFeatureConfig("writing_assistance_api",
