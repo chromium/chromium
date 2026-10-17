@@ -71,7 +71,7 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
   // The owner of this class.
-  const raw_ptr<HoldingSpaceTray, DanglingUntriaged> holding_space_tray_;
+  const raw_ptr<HoldingSpaceTray> holding_space_tray_;
 
   // The singleton delegate for holding space views that implements support
   // for context menu, drag-and-drop, and multiple selection.

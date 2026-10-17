@@ -114,8 +114,7 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   // views::Widget:
   bool OnNativeWidgetActivationChanged(bool active) override;
 
-  raw_ptr<DeskButtonWidgetDelegateView, DanglingUntriaged> delegate_view_ =
-      nullptr;
+  raw_ptr<DeskButtonWidgetDelegateView> delegate_view_ = nullptr;
 
   gfx::Rect target_bounds_;
 
