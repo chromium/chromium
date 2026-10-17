@@ -215,7 +215,10 @@ std::unique_ptr<ui::SimpleMenuModel> CreateContextualTasksButtonMenuModel(
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(delegate);
   menu_model->AddItemWithStringId(
       kCommandRemoveForCurrentTask,
-      IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE);
+      contextual_tasks::
+              ShouldUseCloseSidePanelForEphemeralButtonContextMenu()
+          ? IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE
+          : IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE);
   menu_model->SetElementIdentifierAt(
       0,
       ContextualTasksButton::

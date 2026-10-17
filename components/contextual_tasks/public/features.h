@@ -343,6 +343,13 @@ extern bool GetEnableRightHandContextualTasksEphemeralButton();
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kEnableCircularEphemeralButtonNextToBatterySaver);
 
+// Controls whether the ephemeral contextual tasks toolbar button context menu
+// displays "Close side panel" instead of "Hide side panel".
+extern const base::FeatureParam<bool>
+    kContextualTasksEphemeralButtonContextMenuCloseSidePanel;
+
+bool ShouldUseCloseSidePanelForEphemeralButtonContextMenu();
+
 // Duration in minutes after closing the contextual tasks side panel before the
 // ephemeral toolbar button is automatically dismissed and its task
 // disassociated. Defaults to 120 minutes (2 hours).

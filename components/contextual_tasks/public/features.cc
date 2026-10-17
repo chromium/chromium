@@ -80,6 +80,18 @@ BASE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned,
 BASE_FEATURE(kContextualTasksEphemeralButtonContextMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<bool>
+    kContextualTasksEphemeralButtonContextMenuCloseSidePanel(
+        &kContextualTasksEphemeralButtonContextMenu,
+        "ContextualTasksEphemeralButtonContextMenuCloseSidePanel",
+        false);
+
+bool ShouldUseCloseSidePanelForEphemeralButtonContextMenu() {
+  return base::FeatureList::IsEnabled(
+             kContextualTasksEphemeralButtonContextMenu) &&
+         kContextualTasksEphemeralButtonContextMenuCloseSidePanel.Get();
+}
+
 // Automatically dismisses the ephemeral contextual tasks toolbar button and
 // disassociates its task after a configurable period of inactivity (in
 // minutes). Defaults to 120 minutes (2 hours).

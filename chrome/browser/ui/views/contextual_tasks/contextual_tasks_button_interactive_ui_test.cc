@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -65,9 +66,11 @@
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_solid_color.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
@@ -1735,5 +1738,52 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
       SimulateClosingContextualTaskSidePanel(),
       WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
       FastForwardBy(base::Minutes(120)),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
+class ContextualTasksEphemeralButtonCloseSidePanelContextMenuInteractiveTest
+    : public ContextualTasksEphemeralButtonInteractiveTest {
+ public:
+  std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
+    return {
+        {contextual_tasks::kContextualTasks,
+         {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
+        {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
+         {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}},
+        {contextual_tasks::kContextualTasksHideCloseButtonInVerticalTabs, {}},
+        {contextual_tasks::kEnableContextualTasksPinButtonInToolbar, {}},
+        {contextual_tasks::kContextualTasksEphemeralButtonContextMenu,
+         {{"ContextualTasksEphemeralButtonContextMenuCloseSidePanel",
+           "true"}}}};
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonCloseSidePanelContextMenuInteractiveTest,
+    RightClickShowsCloseSidePanelAndRemovesButton) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      CreateTaskForTab(0), SimulateOpeningContextualTaskSidePanel(),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      WithView(kContextualTasksEphemeralToolbarButtonElementId,
+               [](views::View* view) {
+                 view->GetWidget()->LayoutRootViewIfNecessary();
+               }),
+      MoveMouseTo(kContextualTasksEphemeralToolbarButtonElementId),
+      ClickMouse(ui_controls::RIGHT),
+      WaitForShow(ContextualTasksButton::
+                      kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
+      CheckViewProperty(
+          ContextualTasksButton::
+              kContextualTasksEphemeralButtonRemoveForTaskMenuItem,
+          &views::MenuItemView::title,
+          l10n_util::GetStringUTF16(
+              IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_CLOSE)),
+      SelectMenuItem(ContextualTasksButton::
+                         kContextualTasksEphemeralButtonRemoveForTaskMenuItem),
       WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
 }

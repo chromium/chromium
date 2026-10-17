@@ -4725,6 +4725,20 @@ const FeatureEntry::FeatureVariation
          nullptr}};
 
 const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonContextMenuHideSidePanel[] = {
+        {"ContextualTasksEphemeralButtonContextMenuCloseSidePanel", "false"}};
+const FeatureEntry::FeatureParam
+    kContextualTasksEphemeralButtonContextMenuCloseSidePanel[] = {
+        {"ContextualTasksEphemeralButtonContextMenuCloseSidePanel", "true"}};
+
+const FeatureEntry::FeatureVariation
+    kContextualTasksEphemeralButtonContextMenuVariations[] = {
+        {"with 'Hide side panel'",
+         kContextualTasksEphemeralButtonContextMenuHideSidePanel, nullptr},
+        {"with 'Close side panel'",
+         kContextualTasksEphemeralButtonContextMenuCloseSidePanel, nullptr}};
+
+const FeatureEntry::FeatureParam
     kContextualTasksUpdatedEntryPointsSidePanelRouting[] = {
         {"ContextualTasksContextMenuShowAskGoogle", "true"},
         {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"},
@@ -12424,8 +12438,10 @@ const FeatureEntry kFeatureEntries[] = {
      contextual_tasks::flag_descriptions::
          kContextualTasksEphemeralButtonContextMenuDescription,
      kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         contextual_tasks::kContextualTasksEphemeralButtonContextMenu)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         contextual_tasks::kContextualTasksEphemeralButtonContextMenu,
+         kContextualTasksEphemeralButtonContextMenuVariations,
+         "ContextualTasksEphemeralButtonContextMenu")},
 
     {"contextual-tasks-ephemeral-button-auto-dismiss",
      contextual_tasks::flag_descriptions::
