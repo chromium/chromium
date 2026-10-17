@@ -3902,6 +3902,28 @@ const FeatureEntry::FeatureVariation
         {"with 100ms delay", kActorTypeToolObservationStartDelay100ms,
          nullptr}};
 
+const FeatureEntry::FeatureParam kActorScriptToolDelayObservation100ms[] = {
+    {"script_tool_delay_observation_ms", "100"}};
+const FeatureEntry::FeatureParam kActorScriptToolDelayObservation200ms[] = {
+    {"script_tool_delay_observation_ms", "200"}};
+const FeatureEntry::FeatureParam kActorScriptToolDelayObservation400ms[] = {
+    {"script_tool_delay_observation_ms", "400"}};
+const FeatureEntry::FeatureParam kActorScriptToolDelayObservation600ms[] = {
+    {"script_tool_delay_observation_ms", "600"}};
+const FeatureEntry::FeatureParam kActorScriptToolDelayObservation800ms[] = {
+    {"script_tool_delay_observation_ms", "800"}};
+const FeatureEntry::FeatureParam kActorScriptToolDelayObservation1000ms[] = {
+    {"script_tool_delay_observation_ms", "1000"}};
+
+const FeatureEntry::FeatureVariation
+    kActorScriptToolDelayObservationVariations[] = {
+        {"with 100ms delay", kActorScriptToolDelayObservation100ms, nullptr},
+        {"with 200ms delay", kActorScriptToolDelayObservation200ms, nullptr},
+        {"with 400ms delay", kActorScriptToolDelayObservation400ms, nullptr},
+        {"with 600ms delay", kActorScriptToolDelayObservation600ms, nullptr},
+        {"with 800ms delay", kActorScriptToolDelayObservation800ms, nullptr},
+        {"with 1000ms delay", kActorScriptToolDelayObservation1000ms, nullptr}};
+
 const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
     {"force_transient", "true"}};
 
@@ -11179,6 +11201,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kActorObservePageContentDefaultName,
      flag_descriptions::kActorObservePageContentDefaultDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(actor::kActorObservePageContentDefault)},
+    {"actor-script-tool-delay-observation",
+     flag_descriptions::kActorScriptToolDelayObservationName,
+     flag_descriptions::kActorScriptToolDelayObservationDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(actor::kActorScriptToolDelayObservation,
+                                    kActorScriptToolDelayObservationVariations,
+                                    "ActorScriptToolDelayObservation")},
     {"actor-script-tool-skip-screenshot",
      flag_descriptions::kActorScriptToolSkipScreenshotName,
      flag_descriptions::kActorScriptToolSkipScreenshotDescription, kOsDesktop,

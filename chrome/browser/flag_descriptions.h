@@ -1900,6 +1900,13 @@ inline constexpr char kActorPageStabilityDescription[] =
     "action: the minimum wait and the initial and subsequent paint timeouts. "
     "Each defaults to 1s.";
 
+inline constexpr char kActorScriptToolDelayObservationName[] =
+    "Actor script tool observation start delay";
+inline constexpr char kActorScriptToolDelayObservationDescription[] =
+    "Enables observation delay after a script tool action and controls how "
+    "long the actor waits before it starts waiting for the page to stabilize. "
+    "Defaults to 0ms when enabled.";
+
 inline constexpr char kActorScriptToolSkipScreenshotName[] =
     "Actor script tool skip screenshot";
 inline constexpr char kActorScriptToolSkipScreenshotDescription[] =

@@ -95,6 +95,16 @@
     "expiry_milestone": 160
   },
   {
+    "name": "actor-script-tool-delay-observation",
+    "owners": [
+      "yuhengh@google.com",
+      "ndestin@google.com",
+      "weiguo@google.com",
+      "//chrome/browser/actor/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "actor-script-tool-skip-page-content",
     "owners": [
       "mfoltz@chromium.org",

@@ -16496,6 +16496,7 @@ from previous Chrome versions.
   <int value="453427119" label="EcheSWADisableStunServer:enabled"/>
   <int value="453601558" label="SupportToolScreenshot:enabled"/>
   <int value="453842846" label="OmniboxRestoreInvisibleFocusOnly:enabled"/>
+  <int value="453915464" label="ActorScriptToolDelayObservation:disabled"/>
   <int value="454106312" label="UsernameFirstFlowFilling:enabled"/>
   <int value="454282924"
       label="AutofillEnableShowSaveCardSecurelyMessage:disabled"/>
@@ -17866,6 +17867,7 @@ from previous Chrome versions.
   <int value="867512869" label="mark-non-secure-as"/>
   <int value="867832137" label="NtpComposebox:enabled"/>
   <int value="868009556" label="AutofillUpstream:enabled"/>
+  <int value="868553896" label="ActorScriptToolDelayObservation:enabled"/>
   <int value="868879861" label="TpcdMetadataGrants:disabled"/>
   <int value="869531646" label="enable-session-crashed-bubble"/>
   <int value="869650347" label="SuspiciousSiteWarnings:disabled"/>
