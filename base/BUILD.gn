@@ -2750,6 +2750,26 @@ rust_static_library("run_loop") {
   ]
 }
 
+source_set("file_shim") {
+  sources = [
+    "files/file_rust_shim.cc",
+    "files/file_rust_shim.h",
+  ]
+  deps = [ "//base" ]
+}
+
+rust_static_library("file") {
+  sources = [ "files/file.rs" ]
+  crate_root = "files/file.rs"
+  cxx_bindings = [ "files/file.rs" ]
+  allow_unsafe = true
+  deps = [
+    ":file_shim",
+    "//base",
+    "//third_party/rust/anyhow/v1:lib",
+  ]
+}
+
 source_set("command_line_shim") {
   sources = [
     "command_line_rust_shim.cc",
