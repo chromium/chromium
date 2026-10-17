@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/map_util.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -101,7 +102,7 @@ class PortalRegistrar {
 
   void SetInterfaceVersionForTesting(std::string_view interface_name,
                                      uint32_t version) {
-    versions_[std::string(interface_name)] = version;
+    base::InsertOrAssign(versions_, interface_name, version);
   }
 
  private:
