@@ -21,6 +21,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/version_info/channel.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -78,10 +79,10 @@ class EnterpriseNetworkAuthService : public KeyedService,
   using AccessTokenCallback =
       base::OnceCallback<void(AccessTokenResult result)>;
 
-  EnterpriseNetworkAuthService(
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
-      enterprise::ProfileIdService* profile_id_service);
+  EnterpriseNetworkAuthService(signin::IdentityManager* identity_manager,
+                               PrefService* pref_service,
+                               enterprise::ProfileIdService* profile_id_service,
+                               version_info::Channel channel);
   EnterpriseNetworkAuthService(const EnterpriseNetworkAuthService&) = delete;
   EnterpriseNetworkAuthService& operator=(const EnterpriseNetworkAuthService&) =
       delete;
@@ -178,6 +179,7 @@ class EnterpriseNetworkAuthService : public KeyedService,
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<PrefService> pref_service_;
   const raw_ptr<enterprise::ProfileIdService> profile_id_service_;
+  const version_info::Channel channel_;
 
   // In-flight account managed status checks.
   base::IDMap<std::unique_ptr<PendingManagedStatusCheck>>

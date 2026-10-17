@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/enterprise/identifiers/profile_id_service_factory_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/common/channel_info.h"
 
 namespace {
 
@@ -20,7 +21,8 @@ std::unique_ptr<KeyedService> BuildEnterpriseNetworkAuthService(
   }
   return std::make_unique<enterprise_net::EnterpriseNetworkAuthService>(
       IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile));
+      enterprise::ProfileIdServiceFactoryIOS::GetForProfile(profile),
+      ::GetChannel());
 }
 
 }  // namespace

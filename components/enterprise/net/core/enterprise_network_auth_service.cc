@@ -113,15 +113,18 @@ EnterpriseNetworkAuthService::PendingTokenFetch::operator=(
     PendingTokenFetch&&) noexcept = default;
 EnterpriseNetworkAuthService::PendingTokenFetch::~PendingTokenFetch() = default;
 
-EnterpriseNetworkAuthService::EnterpriseNetworkAuthService() = default;
+EnterpriseNetworkAuthService::EnterpriseNetworkAuthService()
+    : channel_(version_info::Channel::UNKNOWN) {}
 
 EnterpriseNetworkAuthService::EnterpriseNetworkAuthService(
     signin::IdentityManager* identity_manager,
     PrefService* pref_service,
-    enterprise::ProfileIdService* profile_id_service)
+    enterprise::ProfileIdService* profile_id_service,
+    version_info::Channel channel)
     : identity_manager_(identity_manager),
       pref_service_(pref_service),
-      profile_id_service_(profile_id_service) {
+      profile_id_service_(profile_id_service),
+      channel_(channel) {
   CHECK(identity_manager_);
   CHECK(pref_service_);
   CHECK(profile_id_service_);
@@ -201,7 +204,7 @@ void EnterpriseNetworkAuthService::FetchAccessToken(
     return;
   }
 
-  if (!IsDestinationAllowedForScope(scope, destination_url)) {
+  if (!IsDestinationAllowedForScope(scope, destination_url, channel_)) {
     RecordResultAndRunCallback(
         std::move(callback),
         base::unexpected(TokenFetchError::kInapplicableServer));

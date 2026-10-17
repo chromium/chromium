@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/version_info/channel.h"
 #include "net/base/auth.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log.h"
@@ -108,7 +109,7 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
 
     auth_service_ = std::make_unique<EnterpriseNetworkAuthService>(
         identity_test_env_.identity_manager(), &pref_service_,
-        &profile_id_service_);
+        &profile_id_service_, version_info::Channel::UNKNOWN);
 
     auto callback = base::BindRepeating(
         [](network::TestURLLoaderFactory* factory)

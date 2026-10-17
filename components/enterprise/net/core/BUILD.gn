@@ -18,6 +18,7 @@ static_library("core") {
     "//components/enterprise/buildflags",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/version_info:channel",
   ]
 
   if (enterprise_proxy) {

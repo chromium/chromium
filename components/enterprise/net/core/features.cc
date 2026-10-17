@@ -17,6 +17,9 @@ const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam{
     &kEnableDynamicRouteFetching, "pvd_config_max_size_bytes",
     static_cast<int>(kDefaultPvdConfigMaxSizeBytes)};
 
+const base::FeatureParam<std::string> kAllowedAuthDomainsParam{
+    &kEnableDynamicRouteFetching, kAllowedAuthDomainsParamName, ""};
+
 const base::FeatureParam<int> kForcedDisguisedErrorCodeParam{
     &kEnterpriseProxyErrorHandling, kForcedDisguisedErrorCodeParamName, 0};
 

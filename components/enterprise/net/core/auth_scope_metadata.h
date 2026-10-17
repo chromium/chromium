@@ -14,6 +14,7 @@
 #include "base/memory/raw_span.h"
 #include "components/enterprise/net/core/types.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/version_info/channel.h"
 
 class GURL;
 
@@ -47,10 +48,14 @@ std::optional<signin::OAuthConsumerId> GetOAuthConsumerIdForScope(
     AuthScope scope);
 
 // Returns true if `destination_url` is allowed to receive an access token for
-// `scope`. Validates that the URL uses the HTTPS scheme and matches an allowed
-// domain for `scope`. Allowed destinations can be modified using
+// `scope` on the given `channel`. Validates that the URL uses the HTTPS scheme
+// and matches an allowed domain for `scope`, or matches a custom domain pattern
+// configured in `kAllowedAuthDomainsParam` on non-stable channels (`UNKNOWN`,
+// `CANARY`, `DEV`). Allowed destinations can also be modified using
 // ScopedExtraAllowedDomainsForTesting.
-bool IsDestinationAllowedForScope(AuthScope scope, const GURL& destination_url);
+bool IsDestinationAllowedForScope(AuthScope scope,
+                                  const GURL& destination_url,
+                                  version_info::Channel channel);
 
 // Sets additional destination domains that are allowed to receive OAuth tokens
 // for testing purposes.

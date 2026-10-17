@@ -41,39 +41,50 @@ TEST(AuthScopeMetadataTest, GetOAuthConsumerIdForScope) {
 TEST(AuthScopeMetadataTest, IsDestinationAllowedForScope) {
   EXPECT_TRUE(
       IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
-                                   GURL("https://gateway.securegateway.goog")));
+                                   GURL("https://gateway.securegateway.goog"),
+                                   version_info::Channel::STABLE));
   EXPECT_TRUE(IsDestinationAllowedForScope(
       AuthScope::kCloudSecureGateway,
-      GURL("https://sub.gateway.securegateway.goog")));
+      GURL("https://sub.gateway.securegateway.goog"),
+      version_info::Channel::STABLE));
   EXPECT_TRUE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
-                                           GURL("https://securegateway.goog")));
+                                           GURL("https://securegateway.goog"),
+                                           version_info::Channel::STABLE));
   EXPECT_TRUE(
       IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
-                                   GURL("https://securegateway.goog:443/foo")));
+                                   GURL("https://securegateway.goog:443/foo"),
+                                   version_info::Channel::STABLE));
 
   // Non-HTTPS schemes must be rejected.
   EXPECT_FALSE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
-                                            GURL("http://securegateway.goog")));
+                                            GURL("http://securegateway.goog"),
+                                            version_info::Channel::STABLE));
   EXPECT_FALSE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
-                                            GURL("ws://securegateway.goog")));
+                                            GURL("ws://securegateway.goog"),
+                                            version_info::Channel::STABLE));
 
   // Non-matching domains must be rejected.
   EXPECT_FALSE(IsDestinationAllowedForScope(
-      AuthScope::kCloudSecureGateway, GURL("https://notsecuregateway.goog")));
+      AuthScope::kCloudSecureGateway, GURL("https://notsecuregateway.goog"),
+      version_info::Channel::STABLE));
   EXPECT_FALSE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
-                                            GURL("https://example.com")));
+                                            GURL("https://example.com"),
+                                            version_info::Channel::STABLE));
 
   // Invalid URLs must be rejected.
-  EXPECT_FALSE(
-      IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway, GURL()));
+  EXPECT_FALSE(IsDestinationAllowedForScope(
+      AuthScope::kCloudSecureGateway, GURL(), version_info::Channel::STABLE));
   EXPECT_FALSE(IsDestinationAllowedForScope(AuthScope::kCloudSecureGateway,
-                                            GURL("invalid-url")));
+                                            GURL("invalid-url"),
+                                            version_info::Channel::STABLE));
 
   // Unsupported scope must be rejected.
   EXPECT_FALSE(IsDestinationAllowedForScope(
-      AuthScope::kNone, GURL("https://gateway.securegateway.goog")));
+      AuthScope::kNone, GURL("https://gateway.securegateway.goog"),
+      version_info::Channel::STABLE));
   EXPECT_FALSE(IsDestinationAllowedForScope(
-      static_cast<AuthScope>(999), GURL("https://gateway.securegateway.goog")));
+      static_cast<AuthScope>(999), GURL("https://gateway.securegateway.goog"),
+      version_info::Channel::STABLE));
 }
 
 TEST(AuthScopeMetadataTest, AuthScopeToString) {

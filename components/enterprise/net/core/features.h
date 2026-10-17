@@ -11,6 +11,8 @@
 
 #if BUILDFLAG(ENTERPRISE_PROXY)
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -25,6 +27,14 @@ BASE_DECLARE_FEATURE(kEnterpriseProxyErrorHandling);
 // Feature param for the maximum size limit (in bytes) for Provisioning Domain
 // configuration downloads. Defaults to 3 MiB.
 extern const base::FeatureParam<int> kPvdConfigMaxSizeBytesParam;
+
+inline constexpr char kAllowedAuthDomainsParamName[] = "allowed_auth_domains";
+
+// Feature param to expand the list of allowed domains for PvD and proxies for
+// all OAuth token scopes. Expects a comma-separated list of domain patterns
+// (e.g. "https://*.example.com,*.custom.org"). Only applied on local/unknown,
+// canary, and dev channels (ignored on Beta and Stable).
+extern const base::FeatureParam<std::string> kAllowedAuthDomainsParam;
 
 inline constexpr char kForcedDisguisedErrorCodeParamName[] =
     "forced_disguised_error_code";

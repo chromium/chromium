@@ -22,6 +22,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/version_info/channel.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -110,7 +111,7 @@ class ProxyProvisioningDomainManagerTest : public testing::Test {
   std::unique_ptr<EnterpriseNetworkAuthService> CreateAuthService() {
     return std::make_unique<EnterpriseNetworkAuthService>(
         identity_test_env_.identity_manager(), &pref_service_,
-        &profile_id_service_);
+        &profile_id_service_, version_info::Channel::UNKNOWN);
   }
 
   std::unique_ptr<ProxyProvisioningDomainManager> CreateManager(

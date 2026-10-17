@@ -21,6 +21,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/version_info/channel.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -174,7 +175,7 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithoutOAuth_Success) {
   base::HistogramTester histogram_tester;
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
-      &profile_id_service_);
+      &profile_id_service_, version_info::Channel::UNKNOWN);
 
   ProvisioningDomainConfig policy;
   policy.pvd_id = kTestDomain;
@@ -221,7 +222,7 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithoutOAuth_Failures) {
   base::HistogramTester histogram_tester;
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
-      &profile_id_service_);
+      &profile_id_service_, version_info::Channel::UNKNOWN);
   ProvisioningDomainConfig policy;
   policy.pvd_id = kTestDomain;
 
@@ -264,7 +265,7 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithOAuth_Success) {
   SetUpManagedPrimaryAccount();
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
-      &profile_id_service_);
+      &profile_id_service_, version_info::Channel::UNKNOWN);
 
   ProvisioningDomainConfig policy;
   policy.pvd_id = kTestDomain;
@@ -317,7 +318,7 @@ TEST_F(ProvisioningDomainFetcherTest, MapsOAuthFetchErrors) {
 
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
-      &profile_id_service_);
+      &profile_id_service_, version_info::Channel::UNKNOWN);
   SetUpManagedPrimaryAccount();
 
   // GAIA error state mappings
@@ -348,7 +349,7 @@ TEST_F(ProvisioningDomainFetcherTest, MapsOAuthFetchErrors) {
   {
     EnterpriseNetworkAuthService auth_service_for_cancel(
         identity_test_env_.identity_manager(), &pref_service_,
-        &profile_id_service_);
+        &profile_id_service_, version_info::Channel::UNKNOWN);
     ProvisioningDomainFetcher fetcher_for_cancel(
         policy, &auth_service_for_cancel, GetURLLoaderFactory());
 
@@ -374,7 +375,7 @@ TEST_F(ProvisioningDomainFetcherTest, ConcurrentFetchesQueueCallbacks) {
   SetUpManagedPrimaryAccount();
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
-      &profile_id_service_);
+      &profile_id_service_, version_info::Channel::UNKNOWN);
 
   ProvisioningDomainConfig policy;
   policy.pvd_id = kTestDomain;
@@ -416,7 +417,7 @@ TEST_F(ProvisioningDomainFetcherTest,
        DelegateGetExtraHeadersResolvesConfigHeaders) {
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
-      &profile_id_service_);
+      &profile_id_service_, version_info::Channel::UNKNOWN);
 
   ProvisioningDomainConfig policy;
   policy.pvd_id = kTestDomain;
@@ -446,7 +447,7 @@ TEST_F(ProvisioningDomainFetcherTest, FetchWithOAuth_InapplicableServer) {
   SetUpManagedPrimaryAccount();
   EnterpriseNetworkAuthService auth_service(
       identity_test_env_.identity_manager(), &pref_service_,
-      &profile_id_service_);
+      &profile_id_service_, version_info::Channel::UNKNOWN);
 
   ProvisioningDomainConfig policy;
   policy.pvd_id = "attacker.com";

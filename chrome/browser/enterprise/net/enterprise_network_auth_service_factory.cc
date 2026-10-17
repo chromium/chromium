@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/enterprise/net/core/enterprise_network_auth_service.h"
 #include "components/enterprise/net/core/features.h"
 
@@ -71,5 +72,6 @@ EnterpriseNetworkAuthServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<enterprise_net::EnterpriseNetworkAuthService>(
       IdentityManagerFactory::GetForProfile(original_profile),
       profile->GetPrefs(),
-      enterprise::ProfileIdServiceFactory::GetForProfile(profile));
+      enterprise::ProfileIdServiceFactory::GetForProfile(profile),
+      chrome::GetChannel());
 }
