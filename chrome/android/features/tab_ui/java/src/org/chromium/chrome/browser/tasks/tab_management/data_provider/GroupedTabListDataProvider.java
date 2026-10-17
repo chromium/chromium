@@ -9,10 +9,14 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.data_provider.TabListDataObserver.PayloadType;
 
 /**
  * {@link TabListDataProvider} implementation that projects a {@link TabModel} into a sequence of
@@ -40,6 +44,24 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
+                    @Override
+                    public void didAddTab(
+                            Tab tab,
+                            @TabLaunchType int type,
+                            @TabCreationState int creationState,
+                            boolean markedForSelection) {
+                        // Grouped tabs added via groupWithParent fire didMergeTabToGroup
+                        // immediately after didAddTab; only restore and reparenting add
+                        // pre-grouped tabs without it.
+                        if (tab.getTabGroupId() != null
+                                && type != TabLaunchType.FROM_RESTORE
+                                && type != TabLaunchType.FROM_REPARENTING
+                                && type != TabLaunchType.FROM_REPARENTING_BACKGROUND) {
+                            return;
+                        }
+                        syncTabOrGroup(tab);
+                    }
+
                     @Override
                     public void restoreCompleted() {
                         requestDataReset();
@@ -92,6 +114,48 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
         return tabGroupId == null || !isGroupCollapsed(model, tabGroupId);
     }
 
+    /**
+     * Syncs a newly added or restored {@code tab}. Inserting/updating the group header first lets
+     * {@link #addTabItem} place the first child of an expanded group directly after its {@link
+     * TabGroupItem} header.
+     */
+    private void syncTabOrGroup(Tab tab) {
+        syncGroupItem(tab.getTabGroupId());
+        addTabItem(tab);
+    }
+
+    /** Inserts the {@link TabGroupItem} if absent, or updates it if already present. */
+    private void syncGroupItem(@Nullable Token tabGroupId) {
+        if (tabGroupId == null) return;
+
+        TabModel model = getTabModelIfTabStateInitialized();
+        if (model == null) return;
+
+        int index = indexOfTabGroupId(tabGroupId);
+        if (index != TabList.INVALID_TAB_INDEX) {
+            updateGroupItemAt(model, index, tabGroupId, PayloadType.GROUP_MEMBERSHIP);
+            return;
+        }
+        insertItem(model, createGroupItem(model, TabModelUtils.getCurrentTab(model), tabGroupId));
+    }
+
+    private void updateGroupItemAt(
+            TabModel model, int index, Token tabGroupId, @PayloadType int payload) {
+        TabGroupItem oldItem = (TabGroupItem) mItems.get(index);
+        TabGroupItem updatedItem =
+                oldItem.withSelected(
+                        isGroupSelected(TabModelUtils.getCurrentTab(model), tabGroupId));
+        updateItemAt(index, updatedItem, payload);
+    }
+
+    private TabGroupItem createGroupItem(
+            TabModel model, @Nullable Tab selectedTab, Token tabGroupId) {
+        return new TabGroupItem(
+                tabGroupId,
+                isGroupSelected(selectedTab, tabGroupId),
+                isGroupCollapsed(model, tabGroupId));
+    }
+
     private boolean isGroupCollapsed(TabModel model, Token tabGroupId) {
         return !mSupportsGroupExpansion || model.getTabGroupCollapsed(tabGroupId);
     }
@@ -104,11 +168,10 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
                 && tabGroupId.equals(selectedTab.getTabGroupId());
     }
 
-    private TabGroupItem createGroupItem(
-            TabModel model, @Nullable Tab selectedTab, Token tabGroupId) {
-        return new TabGroupItem(
-                tabGroupId,
-                isGroupSelected(selectedTab, tabGroupId),
-                isGroupCollapsed(model, tabGroupId));
+    private int indexOfTabGroupId(Token tabGroupId) {
+        for (int i = 0; i < mItems.size(); i++) {
+            if (matchesTabGroupId(mItems.get(i), tabGroupId)) return i;
+        }
+        return TabList.INVALID_TAB_INDEX;
     }
 }

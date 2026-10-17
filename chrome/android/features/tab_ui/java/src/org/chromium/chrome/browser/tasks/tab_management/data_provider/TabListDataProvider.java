@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.data_provider;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.Token;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -348,6 +349,18 @@ public abstract class TabListDataProvider {
         notifyObservers(obs -> obs.onItemUpdated(updatedItem, payload));
     }
 
+    /**
+     * Returns whether {@code item} is a {@link TabGroupItem} matching {@code tabGroupId}.
+     *
+     * @param item The {@link TabListItem} to check.
+     * @param tabGroupId The tab group {@link Token} to match against, or null.
+     */
+    protected static boolean matchesTabGroupId(TabListItem item, @Nullable Token tabGroupId) {
+        return tabGroupId != null
+                && item instanceof TabGroupItem groupItem
+                && groupItem.getTabGroupId().equals(tabGroupId);
+    }
+
     private void updateSelection(int index, boolean isSelected) {
         TabListItem currentItem = mItems.get(index);
         if (currentItem.isSelected() == isSelected) return;
@@ -367,6 +380,13 @@ public abstract class TabListDataProvider {
         int itemIndex = 0;
         for (Tab tab : model) {
             int tabId = tab.getId();
+            Token tabGroupId = tab.getTabGroupId();
+            // A TabGroupItem is placed at the position of its first member tab in TabModel.
+            if (matchesTabGroupId(targetItem, tabGroupId)) return itemIndex;
+            // Advance past an existing group header so its child tabs land after the header.
+            if (itemIndex < mItems.size() && matchesTabGroupId(mItems.get(itemIndex), tabGroupId)) {
+                itemIndex++;
+            }
             if (matchesTabId(targetItem, tabId)) return itemIndex;
             // Advance past tabs that are already projected in mItems; filtered-out tabs are
             // skipped without incrementing itemIndex.

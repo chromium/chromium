@@ -20,7 +20,7 @@ import java.util.List;
 @NullMarked
 public interface TabListDataObserver {
     /** Types of property updates for granular viewholder payload invalidation. */
-    @IntDef({PayloadType.PIN_STATE, PayloadType.SELECTION})
+    @IntDef({PayloadType.PIN_STATE, PayloadType.SELECTION, PayloadType.GROUP_MEMBERSHIP})
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
     @interface PayloadType {
@@ -29,6 +29,9 @@ public interface TabListDataObserver {
 
         /** Updates only selection state. */
         int SELECTION = 1;
+
+        /** Updates tab group membership or member count. */
+        int GROUP_MEMBERSHIP = 2;
     }
 
     /**

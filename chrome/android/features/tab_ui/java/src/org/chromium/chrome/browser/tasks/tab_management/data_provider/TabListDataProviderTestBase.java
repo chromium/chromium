@@ -138,10 +138,14 @@ abstract class TabListDataProviderTestBase {
     }
 
     void addTab(Tab tab, int modelIndex) {
+        addTabWithLaunchType(tab, modelIndex, TabLaunchType.FROM_CHROME_UI);
+    }
+
+    void addTabWithLaunchType(Tab tab, int modelIndex, @TabLaunchType int launchType) {
         mModelTabs.add(modelIndex, tab);
         mTabModelObserver.didAddTab(
                 tab,
-                TabLaunchType.FROM_CHROME_UI,
+                launchType,
                 TabCreationState.LIVE_IN_FOREGROUND,
                 /* markedForSelection= */ false);
     }
