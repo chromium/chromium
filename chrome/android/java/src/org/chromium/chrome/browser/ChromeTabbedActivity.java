@@ -2599,7 +2599,16 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 // based on the model.
                 // Never attempt to restore incognito tabs when this activity was previously swiped
                 // away in Recents. http://crbug.com/40475851
-                boolean ignoreIncognitoFiles = !hadCipherData;
+                boolean enforceIsolation = ChromeFeatureList.sEnforceIncognitoIsolation.isEnabled();
+                boolean ignoreIncognitoFiles =
+                        !hadCipherData
+                                || (enforceIsolation
+                                        && mSupportedProfileType == SupportedProfileType.REGULAR);
+                boolean ignoreRegularFiles =
+                        isIncognitoModeForced()
+                                || (enforceIsolation
+                                        && mSupportedProfileType
+                                                == SupportedProfileType.OFF_THE_RECORD);
 
                 // If the home surface should be shown on startup, check if the active tab restored
                 // from disk is an NTP that can be reused for Start.
@@ -2617,7 +2626,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             };
                 }
                 mTabModelOrchestrator.loadState(
-                        ignoreIncognitoFiles, isIncognitoModeForced(), onStandardActiveIndexRead);
+                        ignoreIncognitoFiles, ignoreRegularFiles, onStandardActiveIndexRead);
             }
 
             getProfileProviderSupplier()

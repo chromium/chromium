@@ -166,8 +166,7 @@ public class ModelTrackingOrchestrator {
                 }
             };
 
-    private final SynchronizerManager mRegularSynchronizerManager =
-            new RegularSynchronizerManager();
+    private final @Nullable SynchronizerManager mRegularSynchronizerManager;
     private final @Nullable SynchronizerManager mIncognitoSynchronizerManager;
 
     private final Callback<@Nullable Tab> mRegularActiveTabObserver =
@@ -235,6 +234,15 @@ public class ModelTrackingOrchestrator {
         mSynchronizerFactory = synchronizerFactory;
         mSaveForwarderFactory = saveForwarderFactory;
 
+        // TODO(crbug.com/574119482): Combine RegularSynchronizerManager and
+        // IncognitoSynchronizerManager since either model can be empty now.
+        if (wasModelCreated(/* incognito= */ false)) {
+            mRegularSynchronizerManager = new RegularSynchronizerManager();
+        } else {
+            mRegularSynchronizerManager = null;
+            mRegularModelCaughtUp = true;
+        }
+
         if (hasCipherFactory) {
             mIncognitoSynchronizerManager = new IncognitoSynchronizerManager();
 
@@ -280,7 +288,7 @@ public class ModelTrackingOrchestrator {
             if (mIncognitoSynchronizerManager != null) {
                 mIncognitoSynchronizerManager.onDataLoaded(data);
             }
-        } else {
+        } else if (mRegularSynchronizerManager != null) {
             mRegularSynchronizerManager.onDataLoaded(data);
         }
     }
@@ -292,7 +300,9 @@ public class ModelTrackingOrchestrator {
      */
     public void onRestoredForModel(boolean incognito) {
         if (!incognito) {
-            mRegularSynchronizerManager.onRestoreFinished();
+            if (mRegularSynchronizerManager != null) {
+                mRegularSynchronizerManager.onRestoreFinished();
+            }
         } else if (mIncognitoSynchronizerManager != null) {
             mIncognitoSynchronizerManager.onRestoreFinished();
         }
@@ -301,7 +311,9 @@ public class ModelTrackingOrchestrator {
     /** Called when the {@link CombinedTabRestorer} has been cancelled for both models. */
     public void onRestoreCancelled() {
         if (!mIsAuthoritative) return;
-        mRegularSynchronizerManager.onRestoreCancelled();
+        if (mRegularSynchronizerManager != null) {
+            mRegularSynchronizerManager.onRestoreCancelled();
+        }
         if (mIncognitoSynchronizerManager != null) {
             mIncognitoSynchronizerManager.onRestoreCancelled();
         }
@@ -351,7 +363,7 @@ public class ModelTrackingOrchestrator {
             }
         }
 
-        mRegularSynchronizerManager.reset();
+        if (mRegularSynchronizerManager != null) mRegularSynchronizerManager.reset();
         if (mIncognitoSynchronizerManager != null) mIncognitoSynchronizerManager.reset();
     }
 
@@ -585,7 +597,7 @@ public class ModelTrackingOrchestrator {
                 mWindowTag, model.isOffTheRecord(), model.getTabStripCollection());
     }
 
-    private @Nullable TabModel getTabModel(boolean incognito) {
+    private TabModel getTabModel(boolean incognito) {
         return mTabModelSelector.getModel(incognito);
     }
 
@@ -615,9 +627,8 @@ public class ModelTrackingOrchestrator {
         mRegularWindowForwarder.savePayload();
     }
 
-    private boolean wasIncognitoModelCreated() {
-        TabModel model = getTabModel(/* incognito= */ true);
-        return model != null && model.getTabModelType() != TabModelType.EMPTY;
+    private boolean wasModelCreated(boolean incognito) {
+        return getTabModel(incognito).getTabModelType() != TabModelType.EMPTY;
     }
 
     private void cleanActiveTabTracking(boolean incognito) {
@@ -715,7 +726,7 @@ public class ModelTrackingOrchestrator {
                 // Handle the case where we already missed the
                 // IncognitoTabModelObserver#onIncognitoModelCreated() event. This is possible for
                 // incognito windows.
-                if (mIsAuthoritative && wasIncognitoModelCreated()) {
+                if (mIsAuthoritative && wasModelCreated(/* incognito= */ true)) {
                     onModelCreated();
                 }
             }
@@ -741,7 +752,7 @@ public class ModelTrackingOrchestrator {
         public void onRestoreFinished() {
             if (mState == SynchronizerState.CANCELLED) return;
             if (mState == SynchronizerState.START) {
-                if (wasIncognitoModelCreated()) {
+                if (wasModelCreated(/* incognito= */ true)) {
                     if (fullSaveAndInitTracking(/* incognito= */ true)) {
                         mState = SynchronizerState.TRACKING;
                     }

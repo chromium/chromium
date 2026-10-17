@@ -314,7 +314,10 @@ public class TabStateStore implements TabPersistentStore {
         ignoreIncognitoFiles |= !mHasCipherFactory;
         mModelTrackingManager.setLoadIncognitoTabsOnStart(!ignoreIncognitoFiles);
 
-        mRestoredTabCount = mTabCountTracker.getRestoredTabCount(/* incognito= */ false);
+        mRestoredTabCount = 0;
+        if (!ignoreRegularFiles) {
+            mRestoredTabCount += mTabCountTracker.getRestoredTabCount(/* incognito= */ false);
+        }
         if (!ignoreIncognitoFiles) {
             mRestoredTabCount += mTabCountTracker.getRestoredTabCount(/* incognito= */ true);
         }
@@ -350,6 +353,9 @@ public class TabStateStore implements TabPersistentStore {
         }
         if (ignoreRegularFiles) {
             clearStateForWindow(/* incognito= */ false);
+        }
+        if (ignoreIncognitoFiles && ignoreRegularFiles) {
+            onAllDataLoaded(0);
         }
     }
 

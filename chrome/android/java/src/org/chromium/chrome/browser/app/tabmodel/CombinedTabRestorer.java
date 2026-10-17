@@ -71,6 +71,7 @@ class CombinedTabRestorer {
                 boolean fromMerge) {}
     }
 
+    private final CombinedTabRestorerDelegate mCombinedDelegate;
     private final TabRestorerDelegate mDelegate;
     private final @Nullable TabRestorer mRegularTabRestorer;
     private final @Nullable TabRestorer mIncognitoTabRestorer;
@@ -244,6 +245,7 @@ class CombinedTabRestorer {
             boolean logRestoreDuration,
             boolean isFromRecreating,
             boolean isAuthoritative) {
+        mCombinedDelegate = delegate;
         mDelegate = new TabRestorerDelegateImpl(delegate, restoreIncognitoTabs, restoreRegularTabs);
         mRegularTabRestorer =
                 restoreRegularTabs
@@ -301,20 +303,24 @@ class CombinedTabRestorer {
     }
 
     /**
-     * Starts the restoration of the currently selected model. The other model will be started once
-     * the selected model has finished loading. These operations can be cancelled together or
-     * separately.
+     * Starts the restoration of the currently selected model (or the available model if only one
+     * exists). The other model will be started once the first model has finished loading. If
+     * neither model has tabs to restore, notifies the delegate immediately that restoration is
+     * finished. These operations can be cancelled together or separately.
      *
-     * @param isIncognitoSelected Whether the incognito tab restorer should be started.
+     * @param isIncognitoSelected Whether the incognito tab model is currently selected and should
+     *     be restored first if available.
      * @param restoreActiveTabImmediately Whether the active tab should be restored immediately. If
      *     false another tab may have already been created and activated so this should just restore
      *     the active tab as if it were any other tab.
      */
     void start(boolean isIncognitoSelected, boolean restoreActiveTabImmediately) {
-        if (isIncognitoSelected && mIncognitoTabRestorer != null) {
+        if (mIncognitoTabRestorer != null && (isIncognitoSelected || mRegularTabRestorer == null)) {
             mIncognitoTabRestorer.start(restoreActiveTabImmediately);
         } else if (mRegularTabRestorer != null) {
             mRegularTabRestorer.start(restoreActiveTabImmediately);
+        } else {
+            mCombinedDelegate.onRestoreFinished();
         }
     }
 

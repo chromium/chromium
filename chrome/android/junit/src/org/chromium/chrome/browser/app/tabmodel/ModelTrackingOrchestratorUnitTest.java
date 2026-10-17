@@ -787,4 +787,26 @@ public class ModelTrackingOrchestratorUnitTest {
         verify(mIncognitoSaveForwarder).destroy();
         verify(mRegularSaveForwarder).destroy();
     }
+
+    @Test
+    public void testEmptyRegularModel() {
+        when(mRegularTabModel.getTabModelType()).thenReturn(TabModelType.EMPTY);
+        when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        verify(mRegularTabModel, never()).addTabGroupObserver(any());
+        verify(mSynchronizerFactory, never()).build(any(), eq(mRegularTabStripCollection));
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+        mOrchestrator.onDataLoaded(mStorageLoadedData, /* incognito= */ true);
+        mOrchestrator.onRestoredForModel(/* incognito= */ true);
+
+        assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
+
+        mOrchestrator.destroy();
+        verify(mRegularSynchronizer, never()).destroy();
+        verify(mIncognitoSynchronizer).destroy();
+    }
 }

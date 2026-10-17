@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 
 import java.util.ArrayList;
@@ -66,7 +67,9 @@ public final class BackgroundTabRestorationHelper {
         TabModel model = selector.getModel(/* incognito= */ false);
         Profile profile = model.getProfile();
         if (profile != null) {
-            if (profile.isOffTheRecord()) return null;
+            if (profile.isOffTheRecord() || model.getTabModelType() == TabModelType.EMPTY) {
+                return null;
+            }
             if (profile.isNativeInitialized() || BackgroundTabPoolManager.hasPoolForTesting()) {
                 return BackgroundTabPoolManager.acquire(profile);
             }

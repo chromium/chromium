@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
@@ -342,9 +343,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         PersistentStoreCleanerFactory.getForProfile(profile)
                 .scheduleCleanUnusedData(tabContentManager);
 
-        TabModelUtils.runOnTabStateInitialized(
-                mTabModelSelector,
-                (selector) -> createArchivedTabModelInDeferredTask(tabContentManager));
+        TabModel regularModel = mTabModelSelector.getModel(/* incognito= */ false);
+        if (regularModel != null && regularModel.getTabModelType() != TabModelType.EMPTY) {
+            TabModelUtils.runOnTabStateInitialized(
+                    mTabModelSelector,
+                    (selector) -> createArchivedTabModelInDeferredTask(tabContentManager));
+        }
     }
 
     /** Returns the {@link TabContentManager} if available. */

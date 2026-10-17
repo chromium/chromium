@@ -1342,4 +1342,20 @@ public class TabStateStoreUnitTest {
         verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onShadowStoreRazed();
     }
+
+    @Test
+    public void testLoadState_IgnoreBothRegularAndIncognito() {
+        mTabStateStore.onNativeLibraryReady();
+
+        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ true);
+
+        verify(mTabStateStorageService, never()).loadAllData(eq(WINDOW_TAG), anyBoolean(), any());
+        verify(mObserver).onInitialized(0);
+
+        mTabStateStore.restoreTabs(true);
+        ShadowLooper.runUiThreadTasks();
+
+        verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator).onRestoreFinished();
+    }
 }
