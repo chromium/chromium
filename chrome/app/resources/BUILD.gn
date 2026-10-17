@@ -38,3 +38,14 @@ grit_strings("platform_locale_settings") {
   locales = locales_with_pseudolocales
   output_dir = "$root_gen_dir/chrome"
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "resources_unittest.cc" ]
+  deps = [
+    "//base",
+    "//chrome/app:branded_strings",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

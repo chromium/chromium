@@ -4341,11 +4341,11 @@ if (!is_android && !is_chromeos_device) {
 }
 
 test("chrome_app_unittests") {
-  sources = [ "../app/resources/resources_unittest.cc" ]
   deps = [
     ":test_support",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//chrome/app/resources:unit_tests",
     "//chrome/browser",
     "//chrome/child",
     "//chrome/common/profiler",
@@ -4358,6 +4358,7 @@ test("chrome_app_unittests") {
   if (is_linux || is_chromeos || is_win) {
     data_deps = [ "//chrome:packed_resources" ]
   }
+  sources = []
 }
 
 if (!is_android) {
@@ -4448,8 +4449,6 @@ if (!is_android) {
 
   # Executable to measure time to load libraries.
   test("load_library_perf_tests") {
-    sources = [ "../browser/load_library_perf_test.cc" ]
-
     # This test deliberately does not depend in chrome's test support targets.
     # This is a small test and Chrome's test support targets bring in the
     # world, causing link time to explode. Please don't add more dependencies
@@ -4458,6 +4457,7 @@ if (!is_android) {
     deps = [
       "//base",
       "//base/test:test_support_perf",
+      "//chrome/browser:load_library_perf_tests",
       "//media:media_buildflags",
       "//media/cdm:clear_key_cdm_common",
       "//testing/gtest",
@@ -4478,6 +4478,7 @@ if (!is_android) {
 
     # This target should not require the Chrome executable to run.
     assert_no_deps = [ "//chrome" ]
+    sources = []
   }
 
   # Tests autofill on captured websites

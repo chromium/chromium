@@ -5455,6 +5455,23 @@ if (!is_android) {
       ]
     }
   }
+
+  source_set("load_library_perf_tests") {
+    testonly = true
+    sources = [ "load_library_perf_test.cc" ]
+    deps = [
+      "//base",
+      "//media:media_buildflags",
+      "//media/cdm:clear_key_cdm_common",
+      "//testing/gtest",
+      "//testing/perf",
+      "//third_party/widevine/cdm:buildflags",
+      "//third_party/widevine/cdm:headers",
+    ]
+    if (enable_library_cdms) {
+      deps += [ "//media/cdm:cdm_paths" ]
+    }
+  }
 }
 
 # Tests for top-level //chrome/browser code that does not live in a
