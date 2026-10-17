@@ -6,7 +6,7 @@
 
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_urls.h"
+#include "components/performance_manager/priority/force_foreground_voter_for_urls.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
@@ -22,18 +22,16 @@ class ProfileForceForegroundPriorityListHelperDelegateImpl
 
   void SetPatterns(const base::UnguessableToken& browser_context_id,
                    const base::ListValue& patterns) override {
-    auto* voter_for_urls =
-        execution_context_priority::ForceForegroundVoterForUrls::GetFromGraph(
-            PerformanceManager::GetGraph());
+    auto* voter_for_urls = priority::ForceForegroundVoterForUrls::GetFromGraph(
+        PerformanceManager::GetGraph());
     CHECK(voter_for_urls);
     voter_for_urls->SetPatternsForProfile(browser_context_id, patterns);
   }
 
   void ClearPatterns(
       const base::UnguessableToken& browser_context_id) override {
-    auto* voter_for_urls =
-        execution_context_priority::ForceForegroundVoterForUrls::GetFromGraph(
-            PerformanceManager::GetGraph());
+    auto* voter_for_urls = priority::ForceForegroundVoterForUrls::GetFromGraph(
+        PerformanceManager::GetGraph());
     CHECK(voter_for_urls);
     voter_for_urls->ClearPatternsForProfile(browser_context_id);
   }

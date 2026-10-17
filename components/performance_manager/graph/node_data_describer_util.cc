@@ -57,7 +57,7 @@ base::Value MaybeNullStringToValue(std::string_view str) {
 }
 
 base::Value PriorityAndReasonToValue(
-    const execution_context_priority::PriorityAndReason& priority_and_reason) {
+    const priority::PriorityAndReason& priority_and_reason) {
   base::DictValue priority;
   priority.Set("priority",
                base::ProcessPriorityToString(priority_and_reason.priority()));

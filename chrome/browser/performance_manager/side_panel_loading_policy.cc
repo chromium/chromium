@@ -5,12 +5,12 @@
 #include "chrome/browser/performance_manager/public/side_panel_loading_policy.h"
 
 #include "base/functional/bind.h"
-#include "chrome/browser/performance_manager/execution_context_priority/side_panel_loading_voter.h"
+#include "chrome/browser/performance_manager/priority/side_panel_loading_voter.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/web_contents.h"
 
-namespace performance_manager::execution_context_priority {
+namespace performance_manager::priority {
 
 void MarkAsSidePanel(content::WebContents* web_contents) {
   base::WeakPtr<PageNode> page_node =
@@ -18,8 +18,7 @@ void MarkAsSidePanel(content::WebContents* web_contents) {
   CHECK(page_node);
 
   Graph* graph = PerformanceManager::GetGraph();
-  auto* voter = graph->GetRegisteredObjectAs<
-      execution_context_priority::SidePanelLoadingVoter>();
+  auto* voter = graph->GetRegisteredObjectAs<priority::SidePanelLoadingVoter>();
   // Not registered when kPMSidePanelLoadingVoter is disabled.
   if (!voter) {
     return;
@@ -28,4 +27,4 @@ void MarkAsSidePanel(content::WebContents* web_contents) {
   voter->MarkAsSidePanel(page_node.get());
 }
 
-}  // namespace performance_manager::execution_context_priority
+}  // namespace performance_manager::priority

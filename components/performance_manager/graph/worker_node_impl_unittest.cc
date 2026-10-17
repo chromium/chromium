@@ -9,7 +9,7 @@
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/priority/priority.h"
 #include "components/performance_manager/test_support/graph/mock_worker_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -14,8 +14,8 @@
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
+#include "components/performance_manager/public/priority/priority.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "components/performance_manager/test_support/graph/mock_frame_node_observer.h"
@@ -684,7 +684,7 @@ TEST_F(FrameNodeImplTest, UsesWebRTC) {
 }
 
 TEST_F(FrameNodeImplTest, Priority) {
-  using PriorityAndReason = execution_context_priority::PriorityAndReason;
+  using PriorityAndReason = priority::PriorityAndReason;
 
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();

@@ -1,0 +1,70 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/performance_manager/priority/frame_audible_voter.h"
+
+#include <utility>
+
+#include "components/performance_manager/public/graph/graph.h"
+
+namespace performance_manager {
+namespace priority {
+
+namespace {
+
+// Returns a vote with the appropriate priority depending on if the frame is
+// audible.
+Vote GetVote(bool is_audible) {
+  base::Process::Priority priority =
+      is_audible ? base::Process::Priority::kUserBlocking
+                 : base::Process::Priority::kMinValue;
+  return Vote(priority, FrameAudibleVoter::kFrameAudibleReason);
+}
+
+}  // namespace
+
+// static
+const char FrameAudibleVoter::kFrameAudibleReason[] = "Frame audible.";
+
+FrameAudibleVoter::FrameAudibleVoter() = default;
+
+FrameAudibleVoter::~FrameAudibleVoter() = default;
+
+void FrameAudibleVoter::InitializeOnGraph(Graph* graph,
+                                          VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+
+  graph->AddFrameNodeObserver(this);
+}
+
+void FrameAudibleVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemoveFrameNodeObserver(this);
+
+  voting_channel_.Reset();
+}
+
+void FrameAudibleVoter::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
+  SetVoteForFrame(frame_node);
+}
+
+void FrameAudibleVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
+  voting_channel_.SetVote(frame_node, std::nullopt);
+}
+
+void FrameAudibleVoter::OnIsAudibleChanged(const FrameNode* frame_node) {
+  SetVoteForFrame(frame_node);
+}
+
+void FrameAudibleVoter::SetVoteForFrame(const FrameNode* frame_node) {
+  const Vote vote = GetVote(frame_node->IsAudible());
+  voting_channel_.SetVote(frame_node, vote);
+}
+
+}  // namespace priority
+}  // namespace performance_manager

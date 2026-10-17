@@ -9,12 +9,12 @@ namespace content {
 class WebContents;
 }
 
-namespace performance_manager::execution_context_priority {
+namespace performance_manager::priority {
 
 // Marks `web_contents` as the main contents of a Side Panel, which will ensure
 // that it loads at high priority, even if it is not visible.
 void MarkAsSidePanel(content::WebContents* web_contents);
 
-}  // namespace performance_manager::execution_context_priority
+}  // namespace performance_manager::priority
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_SIDE_PANEL_LOADING_POLICY_H_

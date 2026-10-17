@@ -53,7 +53,7 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
 
   // The mechanism that ensure the Side Panel will load at high priority even
   // while it is still not visible requires the WebContents to be tagged.
-  performance_manager::execution_context_priority::MarkAsSidePanel(
+  performance_manager::priority::MarkAsSidePanel(
       contents_wrapper->web_contents());
 
   // For per-window side panels the scoped browser does not change. The browser

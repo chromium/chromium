@@ -12,32 +12,32 @@
 #include "components/performance_manager/decorators/page_load_tracker_decorator.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/execution_context/execution_context_registry_impl.h"
-#include "components/performance_manager/execution_context_priority/closing_page_voter.h"
-#include "components/performance_manager/execution_context_priority/extension_service_worker_voter.h"
-#include "components/performance_manager/execution_context_priority/force_foreground_voter.h"
-#include "components/performance_manager/execution_context_priority/force_foreground_voter_for_urls.h"
-#include "components/performance_manager/execution_context_priority/frame_audible_voter.h"
-#include "components/performance_manager/execution_context_priority/frame_capturing_media_stream_voter.h"
-#include "components/performance_manager/execution_context_priority/frame_visibility_voter.h"
-#include "components/performance_manager/execution_context_priority/glic_actuation_priority_voter.h"
-#include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
-#include "components/performance_manager/execution_context_priority/loading_page_voter.h"
-#include "components/performance_manager/execution_context_priority/withheld_from_view_voter.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 #include "components/performance_manager/graph/process_node_impl_describer.h"
 #include "components/performance_manager/graph/worker_node_impl_describer.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/priority/closing_page_voter.h"
+#include "components/performance_manager/priority/extension_service_worker_voter.h"
+#include "components/performance_manager/priority/force_foreground_voter.h"
+#include "components/performance_manager/priority/force_foreground_voter_for_urls.h"
+#include "components/performance_manager/priority/frame_audible_voter.h"
+#include "components/performance_manager/priority/frame_capturing_media_stream_voter.h"
+#include "components/performance_manager/priority/frame_visibility_voter.h"
+#include "components/performance_manager/priority/glic_actuation_priority_voter.h"
+#include "components/performance_manager/priority/inherit_client_priority_voter.h"
+#include "components/performance_manager/priority/loading_page_voter.h"
+#include "components/performance_manager/priority/withheld_from_view_voter.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
-#include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/priority/priority_voting_system.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/performance_manager/v8_memory/v8_context_tracker.h"
 #include "components/prefs/pref_service.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "components/performance_manager/execution_context_priority/inherit_parent_priority_voter.h"
+#include "components/performance_manager/priority/inherit_parent_priority_voter.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace performance_manager {
@@ -54,16 +54,15 @@ GraphCreatedCallback* GetAdditionalGraphCreatedCallback() {
 // Adds the ForceForegroundVoter to the graph if the corresponding feature or
 // policy is enabled.
 void AddForceForegroundVoter(
-    execution_context_priority::PriorityVotingSystem* priority_voting_system,
+    priority::PriorityVotingSystem* priority_voting_system,
     PrefService* pref_service) {
   if (user_tuning::prefs::IsForceForegroundPriorityForAllTabsEnabled(
           pref_service)) {
     // Casts a USER_BLOCKING vote for all frames and workers.
-    priority_voting_system
-        ->AddPriorityVoter<execution_context_priority::ForceForegroundVoter>();
+    priority_voting_system->AddPriorityVoter<priority::ForceForegroundVoter>();
   } else {
-    priority_voting_system->AddPriorityVoter<
-        execution_context_priority::ForceForegroundVoterForUrls>();
+    priority_voting_system
+        ->AddPriorityVoter<priority::ForceForegroundVoterForUrls>();
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -71,8 +70,7 @@ void AddForceForegroundVoter(
 // Adds the default set of execution context voters.
 void AddVoters(GraphImpl* graph, PrefService* pref_service) {
   if (auto* priority_voting_system =
-          graph->GetRegisteredObjectAs<
-              execution_context_priority::PriorityVotingSystem>()) {
+          graph->GetRegisteredObjectAs<priority::PriorityVotingSystem>()) {
     // Disabled on Android because most of the prioritization logic still lives
     // in ChildProcessLauncherHelperImpl.
     // TODO(b/400850388): Enable voters on Android.
@@ -82,43 +80,40 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
     // When a frame is visible, casts either a USER_BLOCKING or USER_VISIBLE
     // vote, depending on if the frame is important.
     if (!policy_settings.ignore_visibility) {
-      priority_voting_system
-          ->AddPriorityVoter<execution_context_priority::FrameVisibilityVoter>(
-              policy_settings.ignore_main_frame_visibility);
+      priority_voting_system->AddPriorityVoter<priority::FrameVisibilityVoter>(
+          policy_settings.ignore_main_frame_visibility);
 
       // Casts a USER_BLOCKING vote for every frame of a page that an embedder
       // is withholding from view until it is ready. Gated on the same settings
       // as FrameVisibilityVoter: an embedder that opted out of
       // visibility-driven priority has also opted out of this.
       if (base::FeatureList::IsEnabled(features::kPMWithheldFromViewVoter)) {
-        priority_voting_system->AddPriorityVoter<
-            execution_context_priority::WithheldFromViewVoter>(
-            policy_settings.ignore_main_frame_visibility);
+        priority_voting_system
+            ->AddPriorityVoter<priority::WithheldFromViewVoter>(
+                policy_settings.ignore_main_frame_visibility);
       }
     }
 
     // Casts a USER_BLOCKING vote when a frame is audible.
-    priority_voting_system
-        ->AddPriorityVoter<execution_context_priority::FrameAudibleVoter>();
+    priority_voting_system->AddPriorityVoter<priority::FrameAudibleVoter>();
 
     // Casts a USER_BLOCKING vote when a frame is capturing a media stream.
-    priority_voting_system->AddPriorityVoter<
-        execution_context_priority::FrameCapturingMediaStreamVoter>();
+    priority_voting_system
+        ->AddPriorityVoter<priority::FrameCapturingMediaStreamVoter>();
 
     // Casts a vote for each child worker with the client's priority.
-    priority_voting_system->AddPriorityVoter<
-        execution_context_priority::InheritClientPriorityVoter>();
+    priority_voting_system
+        ->AddPriorityVoter<priority::InheritClientPriorityVoter>();
 
     // Casts a USER_VISIBLE vote for each extension service worker.
     if (base::FeatureList::IsEnabled(features::kExtensionServiceWorkerVoter)) {
-      priority_voting_system->AddPriorityVoter<
-          execution_context_priority::ExtensionServiceWorkerVoter>();
+      priority_voting_system
+          ->AddPriorityVoter<priority::ExtensionServiceWorkerVoter>();
     }
 
     // Casts a USER_BLOCKING vote for all the closing pages.
     if (base::FeatureList::IsEnabled(features::kBoostClosingTabs)) {
-      priority_voting_system
-          ->AddPriorityVoter<execution_context_priority::ClosingPageVoter>();
+      priority_voting_system->AddPriorityVoter<priority::ClosingPageVoter>();
     }
 
     AddForceForegroundVoter(priority_voting_system, pref_service);
@@ -132,23 +127,22 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
         base::FeatureList::IsEnabled(features::kPMLoadingPageVoter);
     if (loading_page_voter_v1 ||
         base::FeatureList::IsEnabled(features::kPMLoadingPageVoterV2)) {
-      priority_voting_system
-          ->AddPriorityVoter<execution_context_priority::LoadingPageVoter>(
-              /*boost_only_requested_background_loads=*/!loading_page_voter_v1);
+      priority_voting_system->AddPriorityVoter<priority::LoadingPageVoter>(
+          /*boost_only_requested_background_loads=*/!loading_page_voter_v1);
     }
 
 #if BUILDFLAG(IS_MAC)
     // Casts a vote for each child frame with the parent's priority.
     if (features::kInheritParentPriority.Get()) {
-      priority_voting_system->AddPriorityVoter<
-          execution_context_priority::InheritParentPriorityVoter>();
+      priority_voting_system
+          ->AddPriorityVoter<priority::InheritParentPriorityVoter>();
     }
 #endif
 
     if (base::FeatureList::IsEnabled(features::kGlicActuationPriorityVoter)) {
       // Casts a USER_BLOCKING vote when a frame is Glic actuating.
-      priority_voting_system->AddPriorityVoter<
-          execution_context_priority::GlicActuationPriorityVoter>();
+      priority_voting_system
+          ->AddPriorityVoter<priority::GlicActuationPriorityVoter>();
     }
   }
 }

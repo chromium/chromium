@@ -38,7 +38,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/priority/priority.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -404,8 +404,8 @@ bool UnloadController::RunUnloadEventsHelper(content::WebContents* contents) {
     // its frames is boosted while beforeunload/unload handlers are running,
     // making page closing faster. This state may be reset in
     // BeforeUnloadFired() if page closing is aborted.
-    performance_manager::execution_context_priority::SetPageIsClosing(
-        contents, /*is_closing=*/true);
+    performance_manager::priority::SetPageIsClosing(contents,
+                                                    /*is_closing=*/true);
 
     // If the page has unload listeners, then we tell the renderer to fire
     // them. Once they have fired, we'll get a message back saying whether
@@ -424,8 +424,8 @@ bool UnloadController::BeforeUnloadFired(content::WebContents* contents,
 
     // Inform PerformanceManager that page close was aborted. Any priority boost
     // will be removed.
-    performance_manager::execution_context_priority::SetPageIsClosing(
-        contents, /*is_closing=*/false);
+    performance_manager::priority::SetPageIsClosing(contents,
+                                                    /*is_closing=*/false);
 
     std::optional<tab_groups::TabGroupId> group =
         browser_->tab_strip_model()->GetTabGroupForTab(
@@ -818,8 +818,8 @@ void UnloadController::ProcessPendingTabs(bool skip_beforeunload) {
         // of its frames is boosted while beforeunload/unload handlers are
         // running, making page closing faster. This state may be reset in
         // BeforeUnloadFired() if page closing is aborted.
-        performance_manager::execution_context_priority::SetPageIsClosing(
-            web_contents, /*is_closing=*/true);
+        performance_manager::priority::SetPageIsClosing(web_contents,
+                                                        /*is_closing=*/true);
 
         web_contents->DispatchBeforeUnload(false /* auto_cancel */);
       }

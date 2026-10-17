@@ -22,7 +22,7 @@ const char kPriorityReason[] = "hosted frame or worker priority";
 }  // namespace
 
 ProcessPriorityAggregator::ProcessPriorityAggregator(
-    execution_context_priority::VotingChannel voting_channel)
+    priority::VotingChannel voting_channel)
     : voting_channel_(std::move(voting_channel)) {}
 
 ProcessPriorityAggregator::~ProcessPriorityAggregator() = default;
@@ -77,9 +77,8 @@ void ProcessPriorityAggregator::OnExecutionContextAdded(
   Data& data = Data::Get(process_node);
   data.Increment(ec->GetPriorityAndReason().priority());
   // This is a nop if the priority didn't actually change.
-  voting_channel_.SetVote(
-      process_node,
-      execution_context_priority::Vote(data.GetPriority(), kPriorityReason));
+  voting_channel_.SetVote(process_node,
+                          priority::Vote(data.GetPriority(), kPriorityReason));
 }
 
 void ProcessPriorityAggregator::OnBeforeExecutionContextRemoved(
@@ -88,9 +87,8 @@ void ProcessPriorityAggregator::OnBeforeExecutionContextRemoved(
   Data& data = Data::Get(process_node);
   data.Decrement(ec->GetPriorityAndReason().priority());
   // This is a nop if the priority didn't actually change.
-  voting_channel_.SetVote(
-      process_node,
-      execution_context_priority::Vote(data.GetPriority(), kPriorityReason));
+  voting_channel_.SetVote(process_node,
+                          priority::Vote(data.GetPriority(), kPriorityReason));
 }
 
 void ProcessPriorityAggregator::OnPriorityAndReasonChanged(
@@ -108,9 +106,8 @@ void ProcessPriorityAggregator::OnPriorityAndReasonChanged(
   data.Decrement(previous_value.priority());
   data.Increment(new_value.priority());
   // This is a nop if the priority didn't actually change.
-  voting_channel_.SetVote(
-      process_node,
-      execution_context_priority::Vote(data.GetPriority(), kPriorityReason));
+  voting_channel_.SetVote(process_node,
+                          priority::Vote(data.GetPriority(), kPriorityReason));
 }
 
 }  // namespace performance_manager

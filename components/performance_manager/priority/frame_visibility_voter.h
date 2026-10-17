@@ -1,0 +1,82 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_FRAME_VISIBILITY_VOTER_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_FRAME_VISIBILITY_VOTER_H_
+
+#include <vector>
+
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
+#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/priority/priority.h"
+#include "components/performance_manager/public/priority/priority_voting_system.h"
+
+namespace performance_manager {
+namespace priority {
+
+// This voter tracks frame nodes and casts a vote for each of them, whose value
+// depends on their visibility. A visible frame will receive a
+// Process::Priority::kUserBlocking vote, while a non-visible frame will receive
+// a Process::Priority::kMinValue vote. If the kUnimportantFrame feature is
+// enabled, a lesser ProcessPriority::kUserVisible vote is cast for frames that
+// are deemed unimportant. Speculative frames that are not yet active inherit
+// the priority of the visible active frame they are replacing. Note: This
+// FrameNodeObserver can affect the initial priority of a frame and thus uses
+// `OnBeforeFrameNodeAdded`.
+class FrameVisibilityVoter : public PriorityVoter, public FrameNodeObserver {
+ public:
+  static const char kFrameVisibilityReason[];
+  static const char kSpeculativeFrameReason[];
+
+  // If `ignore_main_frame_visibility` is true, this voter will not cast votes
+  // for main frame nodes; only subframes will have their visibility considered.
+  explicit FrameVisibilityVoter(bool ignore_main_frame_visibility);
+  ~FrameVisibilityVoter() override;
+
+  FrameVisibilityVoter(const FrameVisibilityVoter&) = delete;
+  FrameVisibilityVoter& operator=(const FrameVisibilityVoter&) = delete;
+
+  // PriorityVoter:
+  void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
+  void TearDownOnGraph(Graph* graph) override;
+
+  // FrameNodeObserver:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnIsActiveChanged(const FrameNode* frame_node) override;
+  void OnFrameVisibilityChanged(const FrameNode* frame_node,
+                                FrameNode::Visibility previous_value) override;
+  void OnIsImportantChanged(const FrameNode* frame_node) override;
+
+  VoterId voter_id() const { return voting_channel_.voter_id(); }
+
+ private:
+  bool ShouldVoteForFrame(const FrameNode* frame_node) const;
+  void SetVoteForFrame(const FrameNode* frame_node);
+  void SetVoteForFrame(const FrameNode* frame_node, const PageNode* page_node);
+  void SetVoteForSpeculativeFrame(const FrameNode* speculative_frame,
+                                  const FrameNode* active_frame);
+  void UpdateVotesForSpeculativeFrames(const FrameNode* active_frame);
+  // Returns all in-flight speculative frames that are replacing `active_frame`.
+  std::vector<const FrameNode*> GetSpeculativeFramesForActiveFrame(
+      const FrameNode* active_frame) const;
+
+  VotingChannel voting_channel_;
+  const bool ignore_main_frame_visibility_;
+
+  // Tracks speculative frames that are currently in-flight. Speculative frames
+  // are inactive frames that have never been active.
+  base::flat_set<raw_ptr<const FrameNode, CtnExperimental>> speculative_frames_;
+};
+
+}  // namespace priority
+}  // namespace performance_manager
+
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_FRAME_VISIBILITY_VOTER_H_

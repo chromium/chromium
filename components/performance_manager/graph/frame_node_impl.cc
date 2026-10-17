@@ -40,7 +40,7 @@ perfetto::StaticString FrameNodeVisibilityToString(
 }
 
 perfetto::StaticString PriorityAndReasonToString(
-    const execution_context_priority::PriorityAndReason& priority_and_reason) {
+    const priority::PriorityAndReason& priority_and_reason) {
   return perfetto::StaticString(
       ProcessPriorityToString(priority_and_reason.priority()));
 }
@@ -51,7 +51,7 @@ perfetto::StaticString PriorityAndReasonToString(
 constexpr char FrameNodeImpl::kDefaultPriorityReason[] =
     "default frame priority";
 
-using PriorityAndReason = execution_context_priority::PriorityAndReason;
+using PriorityAndReason = priority::PriorityAndReason;
 
 FrameNodeImpl::FrameNodeImpl(
     ProcessNodeImpl* process_node,

@@ -1,0 +1,85 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_
+
+#include <optional>
+
+#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/worker_node.h"
+#include "components/performance_manager/public/priority/max_vote_aggregator.h"
+#include "components/performance_manager/public/priority/priority.h"
+#include "components/performance_manager/public/priority/priority_voting_system.h"
+
+namespace performance_manager {
+namespace priority {
+
+// This voter ensures the priority of a client is inherited by its children
+// workers.
+class InheritClientPriorityVoter : public PriorityVoter,
+                                   public FrameNodeObserver,
+                                   public WorkerNodeObserver,
+                                   private MaxVoteAggregator::Observer {
+ public:
+  static const char kPriorityInheritedReason[];
+
+  InheritClientPriorityVoter();
+  ~InheritClientPriorityVoter() override;
+
+  InheritClientPriorityVoter(const InheritClientPriorityVoter&) = delete;
+  InheritClientPriorityVoter& operator=(const InheritClientPriorityVoter&) =
+      delete;
+
+  // PriorityVoter:
+  void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
+  void TearDownOnGraph(Graph* graph) override;
+
+  // FrameNodeObserver:
+  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnPriorityAndReasonChanged(
+      const FrameNode* frame_node,
+      const PriorityAndReason& previous_value) override;
+
+  // WorkerNodeObserver:
+  void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
+  void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
+  void OnClientFrameAdded(const WorkerNode* worker_node,
+                          const FrameNode* client_frame_node) override;
+  void OnBeforeClientFrameRemoved(const WorkerNode* worker_node,
+                                  const FrameNode* client_frame_node) override;
+  void OnClientWorkerAdded(const WorkerNode* worker_node,
+                           const WorkerNode* client_worker_node) override;
+  void OnBeforeClientWorkerRemoved(
+      const WorkerNode* worker_node,
+      const WorkerNode* client_worker_node) override;
+  void OnPriorityAndReasonChanged(
+      const WorkerNode* worker_node,
+      const PriorityAndReason& previous_value) override;
+
+  VoterId voter_id() const { return voter_id_; }
+
+ private:
+  // MaxVoteAggregator::Observer: Casts the top vote of the clients of a child
+  // worker on that worker. Only workers are voted on in `max_vote_aggregator_`.
+  void OnWorkerTopVoteChanged(const WorkerNode* worker_node,
+                              const std::optional<Vote>& vote) override;
+
+  // Casts the aggregated votes of the clients of each child worker.
+  VotingChannel voting_channel_;
+
+  // Aggregates the votes from multiple clients of the same child worker.
+  MaxVoteAggregator max_vote_aggregator_;
+
+  VoterId voter_id_;
+
+  // Each frame or worker gets a voting channel to cast votes for its children.
+  base::flat_map<VoteContext, VotingChannel> voting_channels_;
+};
+
+}  // namespace priority
+}  // namespace performance_manager
+
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_INHERIT_CLIENT_PRIORITY_VOTER_H_

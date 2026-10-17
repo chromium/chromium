@@ -15,7 +15,7 @@ namespace performance_manager {
 constexpr char WorkerNodeImpl::kDefaultPriorityReason[] =
     "default worker priority";
 
-using PriorityAndReason = execution_context_priority::PriorityAndReason;
+using PriorityAndReason = priority::PriorityAndReason;
 
 WorkerNodeImpl::WorkerNodeImpl(const base::UnguessableToken& browser_context_id,
                                WorkerType worker_type,

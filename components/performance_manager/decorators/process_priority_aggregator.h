@@ -7,10 +7,10 @@
 
 #include "components/performance_manager/decorators/process_priority_aggregator_data.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_data_describer.h"
 #include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/public/priority/priority.h"
 
 namespace performance_manager {
 
@@ -19,7 +19,7 @@ namespace performance_manager {
 // and workers) it hosts. A process will inherit the priority of the highest
 // priority context that it hosts.
 //
-// This is part of the execution_context_priority::PriorityVotingSystem: the
+// This is part of the priority::PriorityVotingSystem: the
 // aggregated priority is cast as a vote on the process, where it is aggregated
 // with the votes cast directly on the process.
 class ProcessPriorityAggregator
@@ -29,8 +29,7 @@ class ProcessPriorityAggregator
  public:
   using Data = ProcessPriorityAggregatorData;
 
-  explicit ProcessPriorityAggregator(
-      execution_context_priority::VotingChannel voting_channel);
+  explicit ProcessPriorityAggregator(priority::VotingChannel voting_channel);
 
   ProcessPriorityAggregator(const ProcessPriorityAggregator&) = delete;
   ProcessPriorityAggregator& operator=(const ProcessPriorityAggregator&) =
@@ -57,12 +56,11 @@ class ProcessPriorityAggregator
       const execution_context::ExecutionContext* ec) override;
   void OnPriorityAndReasonChanged(
       const execution_context::ExecutionContext* ec,
-      const execution_context_priority::PriorityAndReason& previous_value)
-      override;
+      const priority::PriorityAndReason& previous_value) override;
 
  private:
   // Casts the aggregated priority of each process.
-  execution_context_priority::VotingChannel voting_channel_;
+  priority::VotingChannel voting_channel_;
 };
 
 }  // namespace performance_manager

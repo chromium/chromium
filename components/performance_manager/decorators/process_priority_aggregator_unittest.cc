@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "components/performance_manager/execution_context_priority/priority_setter.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
-#include "components/performance_manager/public/execution_context_priority/max_vote_aggregator.h"
+#include "components/performance_manager/priority/priority_setter.h"
+#include "components/performance_manager/public/priority/max_vote_aggregator.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +18,7 @@ namespace performance_manager {
 
 namespace {
 
-using PriorityAndReason = execution_context_priority::PriorityAndReason;
+using PriorityAndReason = priority::PriorityAndReason;
 
 static const char* kReason = FrameNodeImpl::kDefaultPriorityReason;
 
@@ -60,9 +60,8 @@ class ProcessPriorityAggregatorTest : public GraphTestHarness {
 
   // The aggregated priority is cast as a vote on the process, which the
   // PrioritySetter applies.
-  execution_context_priority::MaxVoteAggregator max_vote_aggregator_;
-  execution_context_priority::PrioritySetter priority_setter_{
-      &max_vote_aggregator_};
+  priority::MaxVoteAggregator max_vote_aggregator_;
+  priority::PrioritySetter priority_setter_{&max_vote_aggregator_};
   std::unique_ptr<ProcessPriorityAggregator> ppa_;
 };
 

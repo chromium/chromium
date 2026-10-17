@@ -1,0 +1,54 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_FRAME_AUDIBLE_VOTER_H_
+#define COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_FRAME_AUDIBLE_VOTER_H_
+
+#include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/priority/priority.h"
+#include "components/performance_manager/public/priority/priority_voting_system.h"
+
+namespace performance_manager {
+namespace priority {
+
+// This voter casts a ProcessPriority::USER_BLOCKING vote to all audible frames,
+// and a ProcessPriority::LOWEST vote to non-audible frames.
+// Note: This FrameNodeObserver can affect the initial priority of a frame and
+// thus uses `OnBeforeFrameNodeAdded`.
+class FrameAudibleVoter : public PriorityVoter, public FrameNodeObserver {
+ public:
+  static const char kFrameAudibleReason[];
+
+  FrameAudibleVoter();
+  ~FrameAudibleVoter() override;
+
+  FrameAudibleVoter(const FrameAudibleVoter&) = delete;
+  FrameAudibleVoter& operator=(const FrameAudibleVoter&) = delete;
+
+  // PriorityVoter:
+  void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
+  void TearDownOnGraph(Graph* graph) override;
+
+  // FrameNodeObserver:
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
+  void OnIsAudibleChanged(const FrameNode* frame_node) override;
+
+  VoterId voter_id() const { return voting_channel_.voter_id(); }
+
+ private:
+  void SetVoteForFrame(const FrameNode* frame_node);
+
+  VotingChannel voting_channel_;
+};
+
+}  // namespace priority
+}  // namespace performance_manager
+
+#endif  // COMPONENTS_PERFORMANCE_MANAGER_PRIORITY_FRAME_AUDIBLE_VOTER_H_

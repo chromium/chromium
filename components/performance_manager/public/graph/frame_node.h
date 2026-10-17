@@ -13,10 +13,10 @@
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/graph/node_set_view.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
+#include "components/performance_manager/public/priority/priority.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
 #include "components/performance_manager/public/viewport_intersection.h"
 #include "content/public/browser/browsing_instance_id.h"
@@ -35,7 +35,7 @@ class ProcessNode;
 class RenderFrameHostProxy;
 class WorkerNode;
 
-using execution_context_priority::PriorityAndReason;
+using priority::PriorityAndReason;
 
 // Frame nodes form a tree structure, each FrameNode at most has one parent
 // that is a FrameNode. Conceptually, a FrameNode corresponds to a

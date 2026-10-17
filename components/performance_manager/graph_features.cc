@@ -21,9 +21,9 @@
 #include "components/performance_manager/graph/worker_node_impl_describer.h"
 #include "components/performance_manager/public/decorators/site_data_recorder.h"
 #include "components/performance_manager/public/decorators/tab_page_decorator.h"
-#include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/metrics_collector.h"
+#include "components/performance_manager/public/priority/priority_voting_system.h"
 #include "components/performance_manager/resource_attribution/query_scheduler.h"
 #include "components/performance_manager/scenarios/input_scenario_observer.h"
 #include "components/performance_manager/scenarios/loading_scenario_observer.h"
@@ -62,7 +62,7 @@ void GraphFeatures::ConfigureGraph(Graph* graph) const {
   if (flags_.priority_tracking) {
     // The PriorityVotingSystem depends on FrameVisibilityDecorator and
     // ImportantFrameDecorator and so must be installed after.
-    Install<execution_context_priority::PriorityVotingSystem>(graph);
+    Install<priority::PriorityVotingSystem>(graph);
   }
   if (flags_.process_hosted_content_types_aggregator) {
     Install<ProcessHostedContentTypesAggregator>(graph);

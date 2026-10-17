@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/priority/priority.h"
 
 namespace performance_manager {
 
@@ -45,7 +45,7 @@ base::Value TimeSinceEpochToValue(base::TimeTicks time_ticks);
 base::Value MaybeNullStringToValue(std::string_view str);
 
 base::Value PriorityAndReasonToValue(
-    const execution_context_priority::PriorityAndReason& priority_and_reason);
+    const priority::PriorityAndReason& priority_and_reason);
 
 // Returns `node`'s description as described by its primary data describer as
 // a formatted string.

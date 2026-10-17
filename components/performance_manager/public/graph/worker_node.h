@@ -11,9 +11,9 @@
 #include "base/observer_list_types.h"
 #include "base/types/token_type.h"
 #include "base/unguessable_token.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/graph/node_set_view.h"
+#include "components/performance_manager/public/priority/priority.h"
 #include "components/performance_manager/public/resource_attribution/worker_context.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -29,7 +29,7 @@ class WorkerNodeObserver;
 class FrameNode;
 class ProcessNode;
 
-using execution_context_priority::PriorityAndReason;
+using priority::PriorityAndReason;
 
 // Represents a running instance of a WorkerGlobalScope.
 // See https://developer.mozilla.org/en-US/docs/Web/API/WorkerGlobalScope.

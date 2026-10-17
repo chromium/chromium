@@ -6,8 +6,8 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_EXECUTION_CONTEXT_EXECUTION_CONTEXT_H_
 
 #include "base/observer_list_types.h"
-#include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/graph/node_state.h"
+#include "components/performance_manager/public/priority/priority.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -19,7 +19,7 @@ class Graph;
 class ProcessNode;
 class WorkerNode;
 
-using execution_context_priority::PriorityAndReason;
+using priority::PriorityAndReason;
 
 namespace execution_context {
 
