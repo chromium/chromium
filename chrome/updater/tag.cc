@@ -51,23 +51,6 @@
 namespace updater::tagging {
 namespace {
 
-// These constants are conceptually cross-platform, but only currently used
-// on Mac.
-#if BUILDFLAG(IS_MAC)
-// Maximum length for the string representation of a tag that can be written
-// into a binary. This is the amount of space that must be reserved in a binary
-// for dynamic tagging, in a file format where tags can only be patched in place
-// rather than inserted, immediately after the magic signature and size bytes.
-// Because binary tag format includes an explicit tag size, no null terminator
-// is included in this count.
-constexpr size_t kMaxTagStringBytes = 8192;
-
-// Maximum length for the binary representation of a tag, including its magic
-// signature and length bytes.
-constexpr size_t kMaxBinaryTagBytes =
-    kMaxTagStringBytes + 2 + kTagMagicUtf8.size();
-#endif  // BUILDFLAG(IS_MAC)
-
 // Character that is disallowed from appearing in the tag.
 constexpr char kDisallowedCharInTag = '/';
 
@@ -882,6 +865,12 @@ bool BinaryWriteTag(const base::FilePath& in_file,
 
   // Validate the tag string, if any.
   if (!tag_string.empty()) {
+    if (tag_string.size() > kMaxTagStringBytes) {
+      LOG(ERROR) << __func__
+                 << ": Tag string is too long: " << tag_string.size() << " > "
+                 << kMaxTagStringBytes;
+      return false;
+    }
     tagging::TagArgs tag_args;
     const tagging::ErrorCode error = tagging::Parse(tag_string, {}, tag_args);
     if (error != tagging::ErrorCode::kSuccess) {
@@ -894,13 +883,9 @@ bool BinaryWriteTag(const base::FilePath& in_file,
   std::vector<uint8_t> tag_contents = tagging::GetTagFromTagString(tag_string);
 
   if (padded_length > 0) {
-    size_t new_size = 0;
-    if (base::CheckAdd(tag_contents.size(), padded_length)
-            .AssignIfValid(&new_size)) {
-      tag_contents.resize(new_size);
-    } else {
-      LOG(ERROR) << __func__ << "Failed to pad the tag contents.";
-      return false;
+    size_t padded_size = static_cast<size_t>(padded_length);
+    if (tag_contents.size() < padded_size) {
+      tag_contents.resize(padded_size);
     }
   }
 

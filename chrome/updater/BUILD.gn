@@ -1027,7 +1027,12 @@ if (is_win || is_mac || is_linux) {
       "test/data/tagged_msi/GUH-size-greater-than-max.msi",
       "test/data/tagged_msi/GUH-special-value.msi",
       "test/data/tagged_msi/GUH-untagged.msi",
-      "test/data/tagged_pkg/sample.pkg",
+      "test/data/tagged_pkg/sample_no_notarization_trailer_brand_tagged.pkg",
+      "test/data/tagged_pkg/sample_no_notarization_trailer_empty_tag.pkg",
+      "test/data/tagged_pkg/sample_no_notarization_trailer_untagged.pkg",
+      "test/data/tagged_pkg/sample_with_notarization_trailer_brand_tagged.pkg",
+      "test/data/tagged_pkg/sample_with_notarization_trailer_empty_tag.pkg",
+      "test/data/tagged_pkg/sample_with_notarization_trailer_untagged.pkg",
     ]
 
     data_deps = [

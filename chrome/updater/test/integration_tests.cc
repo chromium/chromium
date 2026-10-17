@@ -4788,7 +4788,8 @@ TEST_F(IntegrationTestKSAdminFourApps, XCPathMismatchUser) {
 
 TEST_F(IntegrationTestKSAdminFourApps, KSAdminRegisterWithTaggedPkg) {
   base::FilePath tagged_pkg_path =
-      test::GetTestFilePath("tagged_pkg").AppendASCII("sample.pkg");
+      test::GetTestFilePath("tagged_pkg")
+          .AppendASCII("sample_no_notarization_trailer_brand_tagged.pkg");
 
   // Define a temp file path for the brand file, but do not populate it, so
   // "ifneeded" mode will decide a brand file is needed.
@@ -4796,7 +4797,8 @@ TEST_F(IntegrationTestKSAdminFourApps, KSAdminRegisterWithTaggedPkg) {
   ASSERT_TRUE(brand_file.Create());
   ASSERT_TRUE(base::DeleteFile(brand_file.path()));
   // `--brand-value` flag is a fallback; thus, the "WRONG" brand code should
-  // be ignored in favor of the "GGLZ" brand tagged onto `sample.pkg`.
+  // be ignored in favor of the "GGLZ" brand tagged onto
+  // `sample_no_notarization_trailer_brand_tagged.pkg`.
   ASSERT_NO_FATAL_FAILURE(ExpectKSAdminRegister(
       UpdaterScope::kUser, kUserAppID, tagged_pkg_path, brand_file.path(),
       "KSBrandID", "WRONG", "ifneeded"));

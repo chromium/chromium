@@ -18,7 +18,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
@@ -404,41 +403,25 @@ class PkgBinary : public BinaryInterface {
 
     if (const auto* valid = std::get_if<ValidTag>(&result)) {
       tag_ = GetTagFromTagString(valid->data);
-      tag_offset_ = xar_payload_end_ + valid->offset;
-      old_tag_size_ = trailer_start_offset_ - xar_payload_end_;
-    } else if (const auto* invalid = std::get_if<InvalidTag>(&result)) {
-      tag_offset_ = xar_payload_end_ + invalid->offset;
-      old_tag_size_ = kTagMagicUtf8.size() + 2;
-    } else if (std::get_if<NoTagFound>(&result)) {
-      tag_offset_ = xar_payload_end_ + 0;
-      old_tag_size_ = 0;
     }
-
-    CHECK(!tag_offset_ ||
-          (trailer_start_offset_ - *tag_offset_) >= old_tag_size_)
-        << "Tag found where it doesn't fit; bug in PkgBinary::ctor";
   }
 
   std::optional<std::vector<uint8_t>> tag() const override { return tag_; }
 
   std::optional<std::vector<uint8_t>> SetTag(
       base::span<const uint8_t> tag) override {
-    // TODO(crbug.com/554180061): Investigate whether the propagated
-    // pre-existing behavior to pad the excess tag data with zeroes is correct.
-    // The better solution may be to shrink the tag data to the smaller of the
-    // two values.
-    size_t tag_data_size = std::max(tag.size(), old_tag_size_);
     size_t trailer_size = contents_.size() - trailer_start_offset_;
-    size_t final_size = xar_payload_end_ + tag_data_size + trailer_size;
+    size_t final_size = 0;
+    if (!base::CheckAdd(xar_payload_end_, tag.size(), trailer_size)
+             .AssignIfValid(&final_size)) {
+      return std::nullopt;
+    }
 
     std::vector<uint8_t> new_contents;
     new_contents.reserve(final_size);
 
     new_contents.append_range(base::span(contents_).first(xar_payload_end_));
     new_contents.append_range(tag);
-    if (tag.size() < tag_data_size) {
-      new_contents.insert(new_contents.end(), tag_data_size - tag.size(), 0);
-    }
     new_contents.append_range(
         base::span(contents_).subspan(trailer_start_offset_));
 
@@ -450,8 +433,6 @@ class PkgBinary : public BinaryInterface {
   size_t xar_payload_end_ = 0;
   size_t trailer_start_offset_ = 0;
   std::optional<std::vector<uint8_t>> tag_;
-  std::optional<size_t> tag_offset_;
-  size_t old_tag_size_ = 0;
 };
 
 std::unique_ptr<BinaryInterface> CreatePkgBinary(

@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include <iostream>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
@@ -16,18 +17,17 @@
 namespace updater {
 namespace tools {
 
-// If set:
-// * For EXEs, a superfluous certificate will be written into the binary. A tag
-//   string can be optionally passed as the value for this argument, in which
-//   case the tag string will be validated and set with the appropriate magic
-//   signature within the certificate.
-// * For MSIs and PKGs, the tag string is a required argument, and will be
-//   validated and et with the appropriate magic signature within the file.
+// If set, a tag space will be written into the binary. A tag string can be
+// optionally passed as the value for this argument, in which case the tag
+// string will be validated and set with the appropriate magic signature within
+// the binary. If omitted, an empty tag will be injected.
 constexpr char kSetTagSwitch[] = "set-tag";
 
-// For EXEs, a superfluous certificate tag will be padded with zeros to at least
-// this number of bytes. The default is 8206 bytes if this parameter is not set.
-// For MSIs, this parameter is ignored.
+// Sets the minimum size (in bytes) to which the injected tag space is padded
+// (padded with zeros if the tag data is smaller; not truncated if larger). If
+// not set, it defaults to tagging::kDefaultBinaryTagBytes. If set to 0, the tag
+// space is shrunk to the minimum length required to hold the specified tag
+// string.
 constexpr char kPaddedLength[] = "padded-length";
 
 // If set, this flag causes the current tag, if any, to be written to stdout.
@@ -41,15 +41,14 @@ struct CommandLineArguments {
   // Whether to print the current tag string.
   bool get_tag_string = false;
 
-  // Whether to set a superfluous certificate within the EXE.
+  // Whether to write a tag within the binary.
   bool set_superfluous_cert = false;
 
   // If set, the tag string will be validated and set within the binary.
   std::string tag_string;
 
-  // Contains the minimum length of the padding sequence of zeros at the end
-  // of the tag for EXEs.
-  int padded_length = 8206;
+  // Minimum size in bytes to which the injected tag space is padded.
+  std::optional<int> padded_length;
 
   // Specifies the input file (which may be the same as the output file).
   base::FilePath in_filename;
@@ -60,7 +59,7 @@ struct CommandLineArguments {
 
 void PrintUsageAndExit(const base::CommandLine* cmdline) {
   std::cerr << "Usage: " << cmdline->GetProgram().AsUTF8Unsafe()
-            << " [--get-tag|set-tag=TAG] [--padded-length=PADDED_LENGTH]"
+            << " [--get-tag|set-tag[=TAG]] [--padded-length=PADDED_LENGTH]"
             << " [--out=OUT] binary.[exe|msi|pkg]" << std::endl;
   exit(255);
 }
@@ -126,8 +125,10 @@ int TagMain(int argc, char** argv) {
   }
 
   if (args.set_superfluous_cert) {
+    const int padded_length =
+        args.padded_length.value_or(tagging::kDefaultBinaryTagBytes);
     if (!tagging::BinaryWriteTag(
-            args.in_filename, args.tag_string, args.padded_length,
+            args.in_filename, args.tag_string, padded_length,
             args.out_filename.empty() ? args.in_filename : args.out_filename)) {
       std::cout << "Could not write tag, see log for details" << std::endl;
       exit(1);

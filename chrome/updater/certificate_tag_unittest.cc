@@ -11,6 +11,8 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -18,7 +20,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "chrome/updater/certificate_tag_internal.h"
+#include "chrome/updater/tag.h"
 #include "chrome/updater/test/unit_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,6 +67,81 @@ TEST(CertificateTag, RoundTrip) {
   // the binary, i.e. the old tag should have been erased first.
   EXPECT_EQ(sizeof(kTag), sizeof(kTag2));
   EXPECT_EQ(updated_exe->size(), updated_again_exe->size());
+}
+
+// Tag string written by `CertificateTagAreaSizeTest`.
+constexpr char kAreaSizeTestTagString[] = "brand=QAQA";
+
+// Size of the tag data (`kTagHeaderBytes` + tag string) for
+// `kAreaSizeTestTagString`, i.e. the minimum size of the tag area.
+constexpr size_t kAreaSizeTestTagDataBytes =
+    kTagHeaderBytes + std::string_view(kAreaSizeTestTagString).size();
+static_assert(kAreaSizeTestTagDataBytes == 24);
+
+struct CertificateTagAreaSizeTestCase {
+  // Optional subdirectory of the test data directory containing `file_name`.
+  const std::string subdir;
+  const std::string file_name;
+  std::unique_ptr<BinaryInterface> (*create_binary)(
+      base::span<const uint8_t> contents);
+  const int padded_length;
+  const size_t expected_tag_area_bytes;
+};
+
+class CertificateTagAreaSizeTest
+    : public ::testing::TestWithParam<CertificateTagAreaSizeTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    CertificateTagAreaSizeTestCases,
+    CertificateTagAreaSizeTest,
+    ::testing::ValuesIn(std::vector<CertificateTagAreaSizeTestCase>{
+        // Default padding: the total tag area is `kDefaultBinaryTagBytes`.
+        {"", "signed.exe", &CreatePEBinary, kDefaultBinaryTagBytes,
+         kDefaultBinaryTagBytes},
+        {"tagged_msi", "GUH-untagged.msi", &CreateMSIBinary,
+         kDefaultBinaryTagBytes, kDefaultBinaryTagBytes},
+
+        // A padded length of 0 shrinks the tag area to fit the tag data.
+        {"", "signed.exe", &CreatePEBinary, 0, kAreaSizeTestTagDataBytes},
+        {"tagged_msi", "GUH-untagged.msi", &CreateMSIBinary, 0,
+         kAreaSizeTestTagDataBytes},
+
+        // A padded length larger than the tag data but less than
+        // `kDefaultBinaryTagBytes` pads the tag area to exactly that length.
+        {"", "signed.exe", &CreatePEBinary, 100, 100},
+        {"tagged_msi", "GUH-untagged.msi", &CreateMSIBinary, 100, 100},
+
+        // A padded length smaller than the tag data does not truncate it.
+        {"", "signed.exe", &CreatePEBinary, 10, kAreaSizeTestTagDataBytes},
+        {"tagged_msi", "GUH-untagged.msi", &CreateMSIBinary, 10,
+         kAreaSizeTestTagDataBytes},
+    }));
+
+TEST_P(CertificateTagAreaSizeTest, TestCases) {
+  base::FilePath in_file =
+      GetParam().subdir.empty()
+          ? test::GetTestFilePath(GetParam().file_name.c_str())
+          : test::GetTestFilePath(GetParam().subdir.c_str())
+                .AppendASCII(GetParam().file_name);
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath out_file =
+      temp_dir.GetPath().AppendASCII(GetParam().file_name);
+
+  ASSERT_TRUE(BinaryWriteTag(in_file, kAreaSizeTestTagString,
+                             GetParam().padded_length, out_file));
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(out_file, &contents));
+  std::unique_ptr<BinaryInterface> bin =
+      GetParam().create_binary(base::as_byte_span(contents));
+  ASSERT_TRUE(bin);
+
+  std::optional<std::vector<uint8_t>> tag = bin->tag();
+  ASSERT_TRUE(tag);
+  EXPECT_EQ(tag->size(), GetParam().expected_tag_area_bytes);
+  EXPECT_EQ(ReadTag(*tag), kAreaSizeTestTagString);
 }
 
 namespace internal {
@@ -568,7 +647,7 @@ INSTANTIATE_TEST_SUITE_P(
                                            'O', 'm', 'a', 'h', 'a', '\0', '\n',
                                            'b', 'r', 'a', 'n', 'd', '=',  'Q',
                                            'A', 'Q', 'A', '\0'};
-           new_tag.resize(8206);
+           new_tag.resize(kDefaultBinaryTagBytes);
            return new_tag;
          }()},
     }));

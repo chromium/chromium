@@ -317,8 +317,32 @@ ErrorCode Parse(std::string_view tag,
 std::string BinaryReadTagString(const base::FilePath& file);
 std::optional<tagging::TagArgs> BinaryReadTag(const base::FilePath& file);
 
+// Maximum length for the string representation of a tag that can be written
+// into a binary. This is the amount of space that must be reserved in a binary
+// for dynamic tagging, in a file format where tags can only be patched in place
+// rather than inserted, immediately after the magic signature and size bytes.
+// Because binary tag format includes an explicit tag size, no null terminator
+// is included in this count.
+inline constexpr size_t kMaxTagStringBytes = 8192;
+
 inline constexpr auto kTagMagicUtf8 = std::to_array<uint8_t>(
     {'G', 'a', 'c', 't', '2', '.', '0', 'O', 'm', 'a', 'h', 'a'});
+
+// Length of the binary tag header: the magic signature followed by the 2-byte
+// big-endian tag string length.
+inline constexpr size_t kTagHeaderBytes = kTagMagicUtf8.size() + 2;
+
+// Maximum length for the binary representation of a tag, including its magic
+// signature and length bytes.
+inline constexpr size_t kMaxBinaryTagBytes =
+    kTagHeaderBytes + kMaxTagStringBytes;
+
+// Default length for the binary representation of a tag, including its magic
+// signature and length bytes. Used as the default padded size of the tag space
+// when writing a tag into a binary.
+inline constexpr size_t kDefaultBinaryTagBytes = kMaxBinaryTagBytes;
+static_assert(kDefaultBinaryTagBytes == 8206,
+              "Default binary tag size is not 8206 as expected");
 
 // Returns the tag data from the last Omaha 4 binary tag found inside `buffer`,
 // excluding the signature and length bytes. If no tag is found, returns an
@@ -347,8 +371,13 @@ ReadTagResult ReadTagAndOffset(base::span<const uint8_t> buffer);
 // prefixing it with the signature and length.
 std::vector<uint8_t> GetTagFromTagString(const std::string& tag_string);
 
-// Tags `file` with `tag_string` and writes the result to `file` by default, or
-// to `out_file` if `out_file` is provided.
+// Tags `in_file` with `tag_string` and writes the result to `in_file` by
+// default, or to `out_file` if `out_file` is provided. `padded_length` is the
+// minimum size in bytes to which the injected tag space is padded (padded with
+// zeros if the tag data is smaller; not truncated if larger).
+//
+// If `padded_length` <= 0, then the tag space is shrunk to exactly fit the
+// magic signature, size, and tag string.
 bool BinaryWriteTag(const base::FilePath& in_file,
                     const std::string& tag_string,
                     int padded_length,

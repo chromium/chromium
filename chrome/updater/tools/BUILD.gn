@@ -34,7 +34,7 @@ copy("tag") {
     suffix = ""
   }
   sources = [ get_label_info(tag_tool, "root_out_dir") + "/tag_exe" + suffix ]
-  outputs = [ "$root_build_dir/tag.exe" ]
+  outputs = [ "$root_build_dir/tag$suffix" ]
   deps = [ tag_tool ]
 }
 
