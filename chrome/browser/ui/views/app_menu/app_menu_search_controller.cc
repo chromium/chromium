@@ -11,10 +11,12 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_bar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -107,9 +109,17 @@ AppMenuSearchController::SearchResults&
 AppMenuSearchController::SearchResults::operator=(SearchResults&&) = default;
 AppMenuSearchController::SearchResults::~SearchResults() = default;
 
-AppMenuSearchController::AppMenuSearchController(actions::ActionItem* menu_root)
-    : menu_root_(menu_root) {
+AppMenuSearchController::AppMenuSearchController(
+    actions::ActionItem* menu_root,
+    AppMenuSearchBarView* search_bar,
+    Delegate* delegate)
+    : menu_root_(menu_root), search_bar_(search_bar), delegate_(delegate) {
   CHECK(menu_root_);
+  CHECK(search_bar_);
+  CHECK(delegate_);
+  query_changed_subscription_ =
+      search_bar_->AddTextChangedCallback(base::BindRepeating(
+          &AppMenuSearchController::OnQueryChanged, base::Unretained(this)));
 }
 
 AppMenuSearchController::~AppMenuSearchController() = default;
@@ -129,14 +139,13 @@ void AppMenuSearchController::InitializeSearchIndex() {
   fuzzy_finder_ = std::make_unique<FuzzyFinder>(std::move(raw_items));
 }
 
-actions::ActionItem* AppMenuSearchController::Search(
+std::unique_ptr<actions::ActionItem> AppMenuSearchController::Search(
     std::u16string_view query) {
   CHECK(fuzzy_finder_);
 
   const std::u16string_view trimmed_query =
       base::TrimWhitespace(query, base::TRIM_ALL);
   if (!FuzzyFinder::HasMinQueryLength(trimmed_query)) {
-    search_results_root_.reset();
     return nullptr;
   }
 
@@ -144,6 +153,24 @@ actions::ActionItem* AppMenuSearchController::Search(
       fuzzy_finder_->FuzzyFind(trimmed_query, kMaxGlobalCandidates);
 
   return BuildSearchResultsTree(ProcessSearchResults(matches));
+}
+
+void AppMenuSearchController::OnQueryChanged() {
+  std::unique_ptr<actions::ActionItem> results = Search(search_bar_->GetText());
+  if (!results && !search_results_) {
+    // The query is too short to search, and the normal menu is already shown.
+    return;
+  }
+
+  if (results) {
+    delegate_->ShowSearchResults(results.get());
+  } else {
+    delegate_->RestoreMenu();
+  }
+  search_results_ = std::move(results);
+  search_bar_->SetLeadingIcon(search_results_
+                                  ? AppMenuSearchBarView::LeadingIcon::kBack
+                                  : AppMenuSearchBarView::LeadingIcon::kSearch);
 }
 
 void AppMenuSearchController::FlattenHierarchyRecursive(
@@ -276,25 +303,26 @@ AppMenuSearchController::ProcessSearchResults(
   return results;
 }
 
-actions::ActionItem* AppMenuSearchController::BuildSearchResultsTree(
-    SearchResults results) {
-  search_results_root_ = actions::ActionItem::Builder().Build();
+std::unique_ptr<actions::ActionItem>
+AppMenuSearchController::BuildSearchResultsTree(SearchResults results) const {
+  std::unique_ptr<actions::ActionItem> root =
+      actions::ActionItem::Builder().Build();
 
   if (results.empty()) {
-    search_results_root_->AddChild(
+    root->AddChild(
         actions::ActionItem::Builder()
             .SetText(l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS))
             .SetEnabled(false)
             .Build());
-    return search_results_root_.get();
+    return root;
   }
 
-  auto append_section = [this](std::optional<std::u16string_view> title,
-                               const std::vector<SearchResults::Item>& items) {
+  auto append_section = [&root](std::optional<std::u16string_view> title,
+                                const std::vector<SearchResults::Item>& items) {
     if (items.empty()) {
       return;
     }
-    actions::ActionItem* container = search_results_root_.get();
+    actions::ActionItem* container = root.get();
     if (title.has_value()) {
       auto section = actions::ActionItem::Builder()
                          .SetText(std::u16string(*title))
@@ -303,7 +331,7 @@ actions::ActionItem* AppMenuSearchController::BuildSearchResultsTree(
                            AppMenuActionItem::DisplayType::kSection);
       section->AddChild(
           AppMenuActionItem::CreateHeader(std::u16string(*title)));
-      container = search_results_root_->AddChild(std::move(section));
+      container = root->AddChild(std::move(section));
     }
     for (const auto& item : items) {
       auto indirect_item =
@@ -337,5 +365,5 @@ actions::ActionItem* AppMenuSearchController::BuildSearchResultsTree(
       l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_RECENT_TABS_HEADER),
       results.recent_tabs);
 
-  return search_results_root_.get();
+  return root;
 }

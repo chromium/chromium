@@ -10,7 +10,6 @@
 #include <set>
 #include <utility>
 
-#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
@@ -19,6 +18,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_metrics.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_drag_and_drop_delegate.h"
+#include "chrome/browser/ui/views/app_menu/app_menu_search_controller.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/command_id_constants.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -27,7 +27,6 @@
 
 class ActionAppMenuManager;
 class AppMenuSearchBarView;
-class AppMenuSearchController;
 class BrowserWindowInterface;
 
 namespace actions {
@@ -48,7 +47,8 @@ class Widget;
 
 // Coordinator class for the Block Style ChroMenu.
 class ActionAppMenu : public views::MenuDelegate,
-                      public AppMenuDragAndDropDelegate::Host {
+                      public AppMenuDragAndDropDelegate::Host,
+                      public AppMenuSearchController::Delegate {
  public:
   ActionAppMenu(BrowserWindowInterface* browser_window_interface,
                 base::RepeatingClosure on_menu_closed_callback);
@@ -97,6 +97,10 @@ class ActionAppMenu : public views::MenuDelegate,
   int GetDragOperations(views::MenuItemView* sender) override;
   bool ShouldCloseOnDragDropCompleted() override;
 
+  // AppMenuSearchController::Delegate:
+  void ShowSearchResults(actions::ActionItem* results) override;
+  void RestoreMenu() override;
+
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
   AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
   AppMenuSearchController* search_controller_for_testing() {
@@ -120,10 +124,6 @@ class ActionAppMenu : public views::MenuDelegate,
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);
 
   void ClearItemsBelowSearchBar();
-
-  // Shows the search results for the search bar's text, or the normal menu
-  // when the text is too short to search.
-  void OnSearchQueryChanged();
 
   // Recursively populates the menu item with the `base_action_item`'s
   // children, starting from the child at `starting_index`.
@@ -188,11 +188,9 @@ class ActionAppMenu : public views::MenuDelegate,
 
   // Runs the searches for search_bar_. Created along with the search bar.
   std::unique_ptr<AppMenuSearchController> search_controller_;
-  base::CallbackListSubscription search_text_changed_subscription_;
 
   // The states associated with the populated app menu.
   bool has_notification_header_ = false;
-  bool is_showing_search_results_ = false;
   size_t section_header_count_ = 0;
 
   struct ActionExecutionParams {

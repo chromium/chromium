@@ -11,10 +11,12 @@
 #include <string_view>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
 #include "ui/base/models/image_model.h"
 
+class AppMenuSearchBarView;
 class FuzzyFinder;
 struct FuzzySearchResult;
 
@@ -26,10 +28,27 @@ class BaseAction;
 // Controller class responsible for managing the search lifecycle in the
 // ChroMenu. Handles extracting searchable items from the app menu hierarchy,
 // querying FuzzyFinder, and constructing an ephemeral ActionItem results tree
-// for the UI to render.
+// for the UI to render. It searches whenever the search bar's query changes,
+// owns the results tree, and has its `Delegate` show the results or the normal
+// menu.
 class AppMenuSearchController {
  public:
-  explicit AppMenuSearchController(actions::ActionItem* menu_root);
+  // Implemented by the app menu that shows the search results.
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    // Shows `results` in place of the rows below the search bar.
+    virtual void ShowSearchResults(actions::ActionItem* results) = 0;
+
+    // Restores the normal menu rows below the search bar.
+    virtual void RestoreMenu() = 0;
+  };
+
+  // `search_bar` and `delegate` must outlive this controller.
+  AppMenuSearchController(actions::ActionItem* menu_root,
+                          AppMenuSearchBarView* search_bar,
+                          Delegate* delegate);
   AppMenuSearchController(const AppMenuSearchController&) = delete;
   AppMenuSearchController& operator=(const AppMenuSearchController&) = delete;
   ~AppMenuSearchController();
@@ -38,12 +57,11 @@ class AppMenuSearchController {
   // Must only be called once during the lifetime of this controller.
   void InitializeSearchIndex();
 
-  // Runs query against the search index and returns the root of the ephemeral
-  // ActionItem results tree for the caller to render. Returns null when query
-  // is below the minimum length threshold, meaning the normal app menu should
-  // be shown instead. InitializeSearchIndex() must be called before calling
-  // this.
-  actions::ActionItem* Search(std::u16string_view query);
+  // Runs query against the search index and returns a new ephemeral ActionItem
+  // results tree for the caller to render. Returns null when query is below the
+  // minimum length threshold.
+  // InitializeSearchIndex() must be called before calling this.
+  std::unique_ptr<actions::ActionItem> Search(std::u16string_view query);
 
   // Accessors for testing.
   bool is_search_index_initialized_for_testing() const {
@@ -96,6 +114,10 @@ class AppMenuSearchController {
     }
   };
 
+  // Searches for the search bar's query and has `delegate_` show the results.
+  // When the query becomes too short to search, has it show the normal menu.
+  void OnQueryChanged();
+
   // Recursively traverses action and its children to extract searchable leaf
   // items into search_items_, tracking contextual text and category types.
   void FlattenHierarchyRecursive(actions::BaseAction* action,
@@ -116,19 +138,28 @@ class AppMenuSearchController {
   // Transforms categorized search results into an ephemeral ActionItem tree
   // organized by sections (Actions, Bookmarks, Recent Tabs, Tab Groups)
   // wrapping matched items in IndirectActionItems, and returns its root.
-  actions::ActionItem* BuildSearchResultsTree(SearchResults results);
+  std::unique_ptr<actions::ActionItem> BuildSearchResultsTree(
+      SearchResults results) const;
 
   // The root ActionItem of the app menu.
   raw_ptr<actions::ActionItem> menu_root_;
 
-  // The root ActionItem of the search results tree.
-  std::unique_ptr<actions::ActionItem> search_results_root_;
+  // The search bar whose query is searched.
+  raw_ptr<AppMenuSearchBarView> search_bar_;
+
+  // Shows the search results or the normal menu rows.
+  raw_ptr<Delegate> delegate_;
 
   // Flattened list of searchable items extracted from the app menu hierarchy.
   std::vector<std::unique_ptr<AppMenuSearchItem>> search_items_;
 
   // Fuzzy search engine.
   std::unique_ptr<FuzzyFinder> fuzzy_finder_;
+
+  // The search results shown below the search bar.
+  std::unique_ptr<actions::ActionItem> search_results_;
+
+  base::CallbackListSubscription query_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_APP_MENU_SEARCH_CONTROLLER_H_
