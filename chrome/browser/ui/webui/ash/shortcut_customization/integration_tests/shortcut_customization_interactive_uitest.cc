@@ -13,11 +13,13 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/test/event_generator.h"
@@ -236,11 +238,13 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
 
           Shell::Get()->keyboard_capability()->SetKeyboardInfoForTesting(
               fake_keyboard, std::move(keyboard_info));
-          // Calling RunUntilIdle() here is necessary before setting the
-          // keyboard devices to prevent the callback from evdev thread to
-          // overwrite whatever we sethere below. See
+          // Wait for the startup scan before setting the keyboard devices so
+          // the callback from the evdev thread does not overwrite them. See
           // `InputDeviceFactoryEvdevProxy::OnStartupScanComplete()`.
-          base::RunLoop().RunUntilIdle();
+          ASSERT_TRUE(base::test::RunUntil([] {
+            return ui::DeviceDataManager::GetInstance()
+                ->AreDeviceListsComplete();
+          }));
           ui::DeviceDataManagerTestApi().SetKeyboardDevices(
               fake_keyboard_devices_);
           ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
