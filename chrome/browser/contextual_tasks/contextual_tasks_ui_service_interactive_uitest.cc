@@ -336,9 +336,17 @@ IN_PROC_BROWSER_TEST_P(
       }));
 }
 
+// TODO(crbug.com/565530878): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SidePanelNavigation_TextFragmentCitation_HighlightsActiveTab \
+  DISABLED_SidePanelNavigation_TextFragmentCitation_HighlightsActiveTab
+#else
+#define MAYBE_SidePanelNavigation_TextFragmentCitation_HighlightsActiveTab \
+  SidePanelNavigation_TextFragmentCitation_HighlightsActiveTab
+#endif
 IN_PROC_BROWSER_TEST_P(
     ContextualTasksUiServiceSidePanelNavigationInteractiveUiTest,
-    SidePanelNavigation_TextFragmentCitation_HighlightsActiveTab) {
+    MAYBE_SidePanelNavigation_TextFragmentCitation_HighlightsActiveTab) {
   base::HistogramTester histogram_tester;
   // Disable side panel animations to make test deterministic.
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
