@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics_types.h"
@@ -89,6 +90,14 @@ TEST_F(EventDispatcherTest, NoEventsToDispatch) {
   TestFuture<ActionResultPtr> success;
   dispatcher_->OnPostTool(tr, success.GetCallback());
   EXPECT_TRUE(IsOk(*success.Get()));
+}
+
+TEST_F(EventDispatcherTest, CloseTabHasNoUiEvents) {
+  EXPECT_CALL(*mock_state_manager_, OnUiEvent(_, _)).Times(0);
+  CloseTabToolRequest close_tab_tr(ActorSurfaceHandle::FromRawValue(1));
+  TestFuture<ActionResultPtr> close_tab_result;
+  dispatcher_->OnPreTool(close_tab_tr, close_tab_result.GetCallback());
+  EXPECT_TRUE(IsOk(*close_tab_result.Get()));
 }
 
 TEST_F(EventDispatcherTest, SingleMouseMove_Point) {

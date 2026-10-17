@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/change_password/change_password_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
+#include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
 #include "components/actor/core/actor_features.h"
@@ -742,6 +743,19 @@ TEST_F(ActorProtoConversionTest, GetClientToolForRequest) {
   HistoryForwardToolRequest forward_req(ActorSurfaceHandle::CreateForTesting());
   EXPECT_EQ(GetClientToolForRequest(forward_req),
             ClientTool(RuleMetadata::CAPABILITY_FORWARD));
+
+  CreateTabToolRequest create_tab_req(
+      /*window_id=*/1, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  EXPECT_EQ(GetClientToolForRequest(create_tab_req),
+            ClientTool(RuleMetadata::CAPABILITY_CREATE_TAB));
+
+  ActivateTabToolRequest activate_tab_req(ActorSurfaceHandle::FromRawValue(1));
+  EXPECT_EQ(GetClientToolForRequest(activate_tab_req),
+            ClientTool(RuleMetadata::CAPABILITY_ACTIVATE_TAB));
+
+  CloseTabToolRequest close_tab_req(ActorSurfaceHandle::FromRawValue(1));
+  EXPECT_EQ(GetClientToolForRequest(close_tab_req),
+            ClientTool(RuleMetadata::CAPABILITY_CLOSE_TAB));
 }
 
 TEST_F(ActorProtoConversionTest, GetClientToolForRequest_NoCapability) {

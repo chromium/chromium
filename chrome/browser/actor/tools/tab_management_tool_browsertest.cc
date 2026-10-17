@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -11,19 +12,20 @@
 #include "chrome/browser/actor/tools/tools_test_util.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
 
 using base::test::TestFuture;
 
@@ -37,10 +39,44 @@ class ActorTabManagementToolBrowserTest : public ActorToolsTest {
   ~ActorTabManagementToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/517619366): Decouple test from Glic eligibility criteria.
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Actor requires Android S+ to run";
+    }
+#endif
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
+
+  BrowserWindowInterface* browser_window() {
+    return active_tab()->GetBrowserWindowInterface();
+  }
+
+  TabListInterface* tab_list() {
+    return TabListInterface::From(browser_window());
+  }
+
+#if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowInterface* CreateIncognitoBrowserWindow() {
+    Profile* incognito_profile =
+        GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    TestFuture<BrowserWindowInterface*> future;
+    CreateBrowserWindow(BrowserWindowCreateParams(*incognito_profile,
+                                                  /*from_user_gesture=*/true),
+                        future.GetCallback());
+    BrowserWindowInterface* incognito_browser = future.Get();
+    CHECK(incognito_browser);
+    TabListInterface* incognito_tab_list =
+        TabListInterface::From(incognito_browser);
+    if (incognito_tab_list->GetTabCount() == 0) {
+      incognito_tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+    }
+    return incognito_browser;
+  }
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
@@ -50,17 +86,17 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
-  const int initial_tab_count = browser()->tab_strip_model()->count();
+  const int initial_tab_count = tab_list()->GetTabCount();
 
-  std::unique_ptr<ToolRequest> action =
-      MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
+  std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+      browser_window()->GetSessionID(), /*foreground=*/true);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(initial_tab_count + 1, tab_list()->GetTabCount());
   EXPECT_EQ(GURL("about:blank"),
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+            tab_list()->GetActiveTab()->GetContents()->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
@@ -70,30 +106,27 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
-  const int initial_tab_count = browser()->tab_strip_model()->count();
+  const int initial_tab_count = tab_list()->GetTabCount();
 
-  std::unique_ptr<ToolRequest> action =
-      MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/false);
+  std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+      browser_window()->GetSessionID(), /*foreground=*/false);
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
-  EXPECT_EQ(start_tab_url,
-            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
+  EXPECT_EQ(initial_tab_count + 1, tab_list()->GetTabCount());
+  EXPECT_EQ(start_tab_url, tab_list()->GetActiveTab()->GetContents()->GetURL());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Ensure CreateTab fails when targeting a window that belongs to a different
 // profile and that no tab is added to the task.
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
                        CreateTabRejectsOtherProfileWindow) {
-  Profile* incognito_profile =
-      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
-      BrowserWindowCreateParams(incognito_profile, /*from_user_gesture=*/true));
-  chrome::NewTab(incognito_browser, NewTabTypes::kNoUserAction);
-  const int incognito_tab_count =
-      incognito_browser->GetTabStripModel()->count();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowserWindow();
+  TabListInterface* incognito_tab_list =
+      TabListInterface::From(incognito_browser);
+  const int incognito_tab_count = incognito_tab_list->GetTabCount();
 
   std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
       incognito_browser->GetSessionID(), /*foreground=*/true);
@@ -101,8 +134,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kActionTargetCrossProfile);
 
-  EXPECT_EQ(incognito_tab_count,
-            incognito_browser->GetTabStripModel()->count());
+  EXPECT_EQ(incognito_tab_count, incognito_tab_list->GetTabCount());
   EXPECT_TRUE(actor_task().GetTabs().empty());
 
   incognito_browser->GetWindow()->Close();
@@ -113,15 +145,11 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
 // an actor surface that doesn't exist fails without closing anything.
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
                        CloseTabRejectsOtherProfileTab) {
-  Profile* incognito_profile =
-      GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  BrowserWindowInterface* incognito_browser = CreateBrowserWindow(
-      BrowserWindowCreateParams(incognito_profile, /*from_user_gesture=*/true));
-  chrome::NewTab(incognito_browser, NewTabTypes::kNoUserAction);
-  tabs::TabInterface* incognito_tab =
-      incognito_browser->GetActiveTabInterface();
-  const int incognito_tab_count =
-      incognito_browser->GetTabStripModel()->count();
+  BrowserWindowInterface* incognito_browser = CreateIncognitoBrowserWindow();
+  TabListInterface* incognito_tab_list =
+      TabListInterface::From(incognito_browser);
+  tabs::TabInterface* incognito_tab = incognito_tab_list->GetActiveTab();
+  const int incognito_tab_count = incognito_tab_list->GetTabCount();
 
   // The incognito profile has no ActorKeyedService, so its tab has no actor
   // surface to target.
@@ -133,11 +161,11 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
 
-  EXPECT_EQ(incognito_tab_count,
-            incognito_browser->GetTabStripModel()->count());
+  EXPECT_EQ(incognito_tab_count, incognito_tab_list->GetTabCount());
 
   incognito_browser->GetWindow()->Close();
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that the history tool correctly adds the acted on tab to the task's set
 // of tabs.
@@ -147,8 +175,8 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
 
   // Create a new tab, ensure it's added to the set of acted on tabs.
   {
-    std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/false);
+    std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+        browser_window()->GetSessionID(), /*foreground=*/false);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
@@ -162,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
 
   // Create a second tab, ensure it too is added to the set of acted on tabs.
   {
-    std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
+    std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+        browser_window()->GetSessionID(), /*foreground=*/true);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
@@ -185,19 +213,17 @@ IN_PROC_BROWSER_TEST_F(
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
-  std::unique_ptr<ToolRequest> action =
-      MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
+  std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+      browser_window()->GetSessionID(), /*foreground=*/true);
   ActResultFuture act_result;
   actor_task().Act(ToRequestList(action), act_result.GetCallback());
   ExpectOkResult(act_result);
 
-  ActorKeyedService* actor_keyed_service =
-      ActorKeyedService::Get(browser()->GetProfile());
+  ActorKeyedService* actor_keyed_service = ActorKeyedService::Get(GetProfile());
 
   TestFuture<ActorKeyedService::TabObservationResult> future;
   actor_keyed_service->RequestTabObservation(
-      *tabs::TabInterface::GetFromContents(web_contents()), actor_task().id(),
-      std::nullopt, future.GetCallback());
+      *active_tab(), actor_task().id(), std::nullopt, future.GetCallback());
 
   const ActorKeyedService::TabObservationResult& observation_result =
       future.Get();
@@ -212,23 +238,23 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, ActivateTab) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   // Create a second tab in the foreground.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), start_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  TabStripModel* tsm = browser()->tab_strip_model();
-  ASSERT_EQ(tsm->count(), 2);
-  ASSERT_EQ(tsm->GetTabAtIndex(1), tsm->GetActiveTab());
+  tabs::TabInterface* second_tab =
+      tab_list()->OpenTab(start_tab_url, /*index=*/-1, /*foreground=*/true);
+  ASSERT_TRUE(second_tab);
+  ASSERT_TRUE(content::WaitForLoadStop(second_tab->GetContents()));
+  ASSERT_EQ(tab_list()->GetTabCount(), 2);
+  ASSERT_EQ(tab_list()->GetTab(1), tab_list()->GetActiveTab());
 
   // Use a TabManagementTool to activate the first tab again, which should
   // bring it to the foreground.
   std::unique_ptr<ToolRequest> action =
-      MakeActivateTabRequest(tsm->GetTabAtIndex(0)->GetHandle());
+      MakeActivateTabRequest(tab_list()->GetTab(0)->GetHandle());
   ActResultFuture act_result;
   actor_task().Act(ToRequestList(action), act_result.GetCallback());
   ExpectOkResult(act_result);
 
-  ASSERT_EQ(tsm->count(), 2);
-  ASSERT_EQ(tsm->GetTabAtIndex(0), tsm->GetActiveTab());
+  ASSERT_EQ(tab_list()->GetTabCount(), 2);
+  ASSERT_EQ(tab_list()->GetTab(0), tab_list()->GetActiveTab());
 }
 
 IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, CloseTab) {
@@ -238,22 +264,22 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest, CloseTab) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
   // Create a second tab in the foreground.
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), start_tab_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  TabStripModel* tsm = browser()->tab_strip_model();
-  ASSERT_EQ(tsm->count(), 2);
-  ASSERT_EQ(tsm->GetTabAtIndex(1), tsm->GetActiveTab());
+  tabs::TabInterface* second_tab =
+      tab_list()->OpenTab(start_tab_url, /*index=*/-1, /*foreground=*/true);
+  ASSERT_TRUE(second_tab);
+  ASSERT_TRUE(content::WaitForLoadStop(second_tab->GetContents()));
+  ASSERT_EQ(tab_list()->GetTabCount(), 2);
+  ASSERT_EQ(tab_list()->GetTab(1), tab_list()->GetActiveTab());
 
   // Use a TabManagementTool to close the inactive tab.
   std::unique_ptr<ToolRequest> action =
-      MakeCloseTabRequest(tsm->GetTabAtIndex(0)->GetHandle());
+      MakeCloseTabRequest(tab_list()->GetTab(0)->GetHandle());
   ActResultFuture act_result;
   actor_task().Act(ToRequestList(action), act_result.GetCallback());
   ExpectOkResult(act_result);
 
-  ASSERT_EQ(tsm->count(), 1);
-  ASSERT_EQ(tsm->GetTabAtIndex(0), tsm->GetActiveTab());
+  ASSERT_EQ(tab_list()->GetTabCount(), 1);
+  ASSERT_EQ(tab_list()->GetTab(0), tab_list()->GetActiveTab());
 }
 
 // Ensures that if a tab is closed, it's properly removed from the list of tabs
@@ -262,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
                        CloseTabRemovesFromActorTask) {
   // Create a new tab, ensure it's added to the set of acted on tabs.
   {
-    std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/false);
+    std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+        browser_window()->GetSessionID(), /*foreground=*/false);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
@@ -277,8 +303,8 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
 
   // Create a second tab, ensure it too is added to the set of acted on tabs.
   {
-    std::unique_ptr<ToolRequest> action =
-        MakeCreateTabRequest(browser()->GetSessionID(), /*foreground=*/true);
+    std::unique_ptr<ToolRequest> action = MakeCreateTabRequest(
+        browser_window()->GetSessionID(), /*foreground=*/true);
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
