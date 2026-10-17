@@ -66,6 +66,14 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   // ::markItemForRemoval().
   void RemoveItems();
 
+  // Queries `HistoryService` for the cached page title associated with `url` in
+  // `profile`, invoking `callback` with the UTF-8 page title (or an empty
+  // string if unavailable).
+  static void GetPageTitleForUrl(
+      Profile* profile,
+      const GURL& url,
+      base::OnceCallback<void(const std::string&)> callback);
+
   // BrowsingHistoryDriver implementation.
   void OnQueryComplete(
       const std::vector<history::BrowsingHistoryService::HistoryEntry>& results,

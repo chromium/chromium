@@ -10,6 +10,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/web_history_service_factory.h"
@@ -281,11 +282,54 @@ Profile* BrowsingHistoryBridge::GetProfile() {
   return profile_;
 }
 
+// static
+void BrowsingHistoryBridge::GetPageTitleForUrl(
+    Profile* profile,
+    const GURL& url,
+    base::OnceCallback<void(const std::string&)> callback) {
+  if (!profile || !url.is_valid()) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(profile,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  if (!history_service) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+  auto tracker = std::make_unique<base::CancelableTaskTracker>();
+  auto* tracker_ptr = tracker.get();
+  history_service->QueryURL(
+      url,
+      base::BindOnce(
+          [](std::unique_ptr<base::CancelableTaskTracker> /*tracker*/,
+             base::OnceCallback<void(const std::string&)> callback,
+             history::QueryURLResult result) {
+            std::move(callback).Run(result.success
+                                        ? base::UTF16ToUTF8(result.row.title())
+                                        : std::string());
+          },
+          std::move(tracker), std::move(callback)),
+      tracker_ptr);
+}
+
 static int64_t JNI_BrowsingHistoryBridge_Init(JNIEnv* env,
                                               const JavaRef<jobject>& obj,
                                               Profile* profile) {
   BrowsingHistoryBridge* bridge = new BrowsingHistoryBridge(env, obj, profile);
   return reinterpret_cast<intptr_t>(bridge);
+}
+
+static void JNI_BrowsingHistoryBridge_GetPageTitleForUrl(
+    JNIEnv* env,
+    Profile* profile,
+    const GURL& url,
+    const JavaRef<jobject>& j_callback) {
+  BrowsingHistoryBridge::GetPageTitleForUrl(
+      profile, url,
+      base::BindOnce(&base::android::RunStringCallbackAndroid,
+                     base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 static void JNI_BrowsingHistoryBridge_AddPageToHistoryForTesting(

@@ -5,16 +5,19 @@
 package org.chromium.chrome.browser.settings.startup;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -32,7 +35,9 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A radio button group preference for selecting the session startup behavior ({@link
@@ -46,6 +51,9 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
     private static final int MENU_ID_EDIT = 1;
     private static final int MENU_ID_REMOVE = 2;
 
+    private final Map<String, @Nullable Drawable> mFaviconCache = new HashMap<>();
+    private final Map<String, String> mTitleCache = new HashMap<>();
+
     private @Nullable RadioButtonWithDescription mNewTabPref;
     private @Nullable RadioButtonWithDescription mLastPref;
     private @Nullable RadioButtonWithDescription mUrlsPref;
@@ -55,6 +63,8 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
     private List<String> mStartupUrls = new ArrayList<>();
     private @Nullable OnStartupTypeChangeListener mOnStartupTypeChangeListener;
     private @Nullable StartupPageItemActionListener mItemActionListener;
+    private @Nullable FaviconLoader mFaviconLoader;
+    private @Nullable TitleLoader mTitleLoader;
 
     /** Constructs a new {@link RadioButtonGroupOnStartupPreference}. */
     public RadioButtonGroupOnStartupPreference(Context context, AttributeSet attrs) {
@@ -113,11 +123,15 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
             @SessionStartupPref int startupType,
             List<String> startupUrls,
             OnStartupTypeChangeListener listener,
-            StartupPageItemActionListener itemActionListener) {
+            StartupPageItemActionListener itemActionListener,
+            FaviconLoader faviconLoader,
+            TitleLoader titleLoader) {
         mStartupType = startupType;
         mStartupUrls = new ArrayList<>(startupUrls);
         mOnStartupTypeChangeListener = listener;
         mItemActionListener = itemActionListener;
+        mFaviconLoader = faviconLoader;
+        mTitleLoader = titleLoader;
         updateCheckedState();
         updateStartupPagesList();
     }
@@ -128,6 +142,9 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
     }
 
     /* package */ void setStartupUrls(List<String> startupUrls) {
+        if (mStartupUrls.equals(startupUrls)) {
+            return;
+        }
         mStartupUrls = new ArrayList<>(startupUrls);
         updateStartupPagesList();
     }
@@ -149,6 +166,10 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
         if (mStartupPagesContainer == null) {
             return;
         }
+        // Evict removed URLs while preserving cached metadata for remaining rows.
+        mTitleCache.keySet().retainAll(mStartupUrls);
+        mFaviconCache.keySet().retainAll(mStartupUrls);
+
         mStartupPagesContainer.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(getContext());
         for (int i = 0; i < mStartupUrls.size(); i++) {
@@ -161,21 +182,56 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
                             R.layout.startup_page_item,
                             mStartupPagesContainer,
                             /* attachToRoot= */ false);
+            ImageView faviconView = itemView.findViewById(R.id.startup_page_favicon);
             TextView titleView = itemView.findViewById(R.id.startup_page_title);
             TextView urlView = itemView.findViewById(R.id.startup_page_url);
             ListMenuButton moreButton = itemView.findViewById(R.id.startup_page_more_button);
 
-            // Display formatted origin (scheme, subdomain, and domain) for title fallback until
-            // full metadata loading lands, and formatted full URL for the URL subtext.
-            // TODO(crbug.com/571991045): Load page title and favicon via HistoryService and
-            // FaviconHelper.
+            // Display formatted full URL subtext and resolve cached or async website title (falling
+            // back to formatted origin).
             String formattedDomain = UrlFormatter.formatUrlForSecurityDisplay(url);
             String displayDomain = !TextUtils.isEmpty(formattedDomain) ? formattedDomain : url;
-            titleView.setText(displayDomain);
 
             String formattedUrl = UrlFormatter.formatUrlForDisplayOmitUsernamePassword(url);
             urlView.setText(!TextUtils.isEmpty(formattedUrl) ? formattedUrl : url);
             moreButton.setContentDescriptionContext(displayDomain);
+
+            // Cache empty title responses as well so unvisited URLs do not re-query HistoryService
+            // on subsequent list refreshes.
+            if (mTitleCache.containsKey(url)) {
+                String cachedTitle = mTitleCache.get(url);
+                titleView.setText(!TextUtils.isEmpty(cachedTitle) ? cachedTitle : displayDomain);
+            } else {
+                titleView.setText(displayDomain);
+                if (mTitleLoader != null) {
+                    mTitleLoader.loadTitle(
+                            url,
+                            title -> {
+                                mTitleCache.put(url, title);
+                                if (!TextUtils.isEmpty(title)) {
+                                    titleView.setText(title);
+                                }
+                            });
+                }
+            }
+
+            // Cache null favicon responses as well so URLs without favicons do not re-query
+            // FaviconHelper on subsequent list refreshes.
+            if (mFaviconCache.containsKey(url)) {
+                Drawable cachedFavicon = mFaviconCache.get(url);
+                if (cachedFavicon != null) {
+                    faviconView.setImageDrawable(cachedFavicon);
+                }
+            } else if (mFaviconLoader != null) {
+                mFaviconLoader.loadFavicon(
+                        url,
+                        drawable -> {
+                            mFaviconCache.put(url, drawable);
+                            if (drawable != null) {
+                                faviconView.setImageDrawable(drawable);
+                            }
+                        });
+            }
 
             // Populate per-item overflow menu with Edit and Remove actions.
             ModelList modelList = new ModelList();
@@ -239,5 +295,13 @@ public class RadioButtonGroupOnStartupPreference extends ContainedRadioButtonGro
         void onEditStartupPage(int index, String url);
 
         void onRemoveStartupPage(int index, String url);
+    }
+
+    /* package */ interface FaviconLoader {
+        void loadFavicon(String url, Callback<@Nullable Drawable> callback);
+    }
+
+    /* package */ interface TitleLoader {
+        void loadTitle(String url, Callback<String> callback);
     }
 }

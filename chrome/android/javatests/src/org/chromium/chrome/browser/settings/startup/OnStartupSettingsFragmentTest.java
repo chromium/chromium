@@ -13,7 +13,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -129,8 +133,8 @@ public class OnStartupSettingsFragmentTest {
         RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
         LinearLayout container = pref.getStartupPagesContainerForTesting();
 
-        // Verify formatted display origin, full URL with scheme and path, and menu content
-        // description.
+        // Verify fallback display origin when unvisited, full URL with scheme and path, and menu
+        // content description.
         assertNotNull(container);
         assertEquals(3, container.getChildCount());
         View firstItem = container.getChildAt(0);
@@ -146,7 +150,9 @@ public class OnStartupSettingsFragmentTest {
                         .contains("https://www.espn.com"));
 
         View secondItem = container.getChildAt(1);
+        TextView secondTitle = secondItem.findViewById(R.id.startup_page_title);
         TextView secondUrl = secondItem.findViewById(R.id.startup_page_url);
+        assertEquals("https://www.wikipedia.org", secondTitle.getText().toString());
         assertEquals("https://www.wikipedia.org", secondUrl.getText().toString());
 
         View thirdItem = container.getChildAt(2);
@@ -154,6 +160,60 @@ public class OnStartupSettingsFragmentTest {
         TextView thirdUrl = thirdItem.findViewById(R.id.startup_page_url);
         assertEquals("https://docs.google.com", thirdTitle.getText().toString());
         assertEquals("https://docs.google.com/document/u/0/", thirdUrl.getText().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testStartupPagesList_displaysWebsiteTitlesAndFavicons() {
+        // Setup preference in URLS mode with custom title and favicon loaders.
+        Drawable espnFavicon = new ColorDrawable(Color.RED);
+        setRestoreOnStartupPref(SessionStartupPref.URLS);
+        RadioButtonGroupOnStartupPreference pref = launchAndGetRadioGroupPreference();
+
+        // Act.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        pref.initialize(
+                                SessionStartupPref.URLS,
+                                List.of(URL_ESPN, URL_WIKIPEDIA),
+                                startupType -> {},
+                                new RadioButtonGroupOnStartupPreference
+                                        .StartupPageItemActionListener() {
+                                    @Override
+                                    public void onEditStartupPage(int index, String url) {}
+
+                                    @Override
+                                    public void onRemoveStartupPage(int index, String url) {}
+                                },
+                                (url, callback) -> {
+                                    if (URL_ESPN.equals(url)) {
+                                        callback.onResult(espnFavicon);
+                                    }
+                                },
+                                (url, callback) -> {
+                                    callback.onResult(
+                                            URL_ESPN.equals(url)
+                                                    ? "ESPN - Serving Sports Fans"
+                                                    : "");
+                                }));
+        LinearLayout container = pref.getStartupPagesContainerForTesting();
+
+        // Verify resolved website title and favicon on first row and origin fallback on second row.
+        assertNotNull(container);
+        assertEquals(2, container.getChildCount());
+        View firstItem = container.getChildAt(0);
+        ImageView firstFavicon = firstItem.findViewById(R.id.startup_page_favicon);
+        TextView firstTitle = firstItem.findViewById(R.id.startup_page_title);
+        TextView firstUrl = firstItem.findViewById(R.id.startup_page_url);
+        assertEquals(espnFavicon, firstFavicon.getDrawable());
+        assertEquals("ESPN - Serving Sports Fans", firstTitle.getText().toString());
+        assertEquals("https://www.espn.com", firstUrl.getText().toString());
+
+        View secondItem = container.getChildAt(1);
+        TextView secondTitle = secondItem.findViewById(R.id.startup_page_title);
+        TextView secondUrl = secondItem.findViewById(R.id.startup_page_url);
+        assertEquals("https://www.wikipedia.org", secondTitle.getText().toString());
+        assertEquals("https://www.wikipedia.org", secondUrl.getText().toString());
     }
 
     @Test

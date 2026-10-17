@@ -189,6 +189,18 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     }
 
     /**
+     * Queries the native {@code HistoryService} for the cached page title associated with {@code
+     * url}, invoking {@code callback} with the title string or an empty string if unavailable.
+     *
+     * @param profile The {@link Profile} whose history database to query.
+     * @param url The {@link GURL} to look up.
+     * @param callback Callback invoked asynchronously with the resolved page title.
+     */
+    public static void getPageTitleForUrl(Profile profile, GURL url, Callback<String> callback) {
+        BrowsingHistoryBridgeJni.get().getPageTitleForUrl(profile, url, callback);
+    }
+
+    /**
      * Writes a page visit with an explicit timestamp directly to the native {@code HistoryService}
      * for tests (such as WebUI history render tests) that query C++ {@code HistoryService} and
      * require deterministic timestamps.
@@ -244,6 +256,11 @@ public class BrowsingHistoryBridge implements HistoryProvider {
 
         @JniType("std::vector<history::BrowsingHistoryService::ClientGroup>")
         List<ClientGroup> getAllClients(long nativeBrowsingHistoryBridge);
+
+        void getPageTitleForUrl(
+                @JniType("Profile*") Profile profile,
+                @JniType("GURL") GURL url,
+                Callback<String> callback);
 
         void addPageToHistoryForTesting( // IN-TEST
                 @JniType("Profile*") Profile profile,
