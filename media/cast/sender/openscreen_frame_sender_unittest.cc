@@ -94,6 +94,10 @@ class OpenscreenFrameSenderTest : public TestWithCastEnvironment,
 
   OpenscreenFrameSender& video_sender() { return *video_sender_; }
 
+  MockSender& mock_video_sender() {
+    return *static_cast<MockSender*>(video_sender_->sender_.get());
+  }
+
  private:
   OpenscreenTestSenders openscreen_test_senders_;
   std::unique_ptr<OpenscreenFrameSender> audio_sender_;
@@ -371,6 +375,55 @@ TEST_F(OpenscreenFrameSenderTest, ClampsLargePlayoutDelay) {
   // It should be clamped to std::numeric_limits<uint16_t>::max() (65535ms).
   EXPECT_EQ(base::Milliseconds(std::numeric_limits<uint16_t>::max()),
             sender.GetTargetPlayoutDelay());
+}
+
+TEST_F(OpenscreenFrameSenderTest, RejectedFrameDoesNotCorruptState) {
+  constexpr RtpTimeTicks kFrame0Rtp{900};
+  auto frame0 = std::make_unique<SenderEncodedFrame>();
+  frame0->is_key_frame = true;
+  frame0->frame_id = openscreen::cast::FrameId::first();
+  frame0->referenced_frame_id = frame0->frame_id;
+  frame0->reference_time = base::TimeTicks::Now();
+  frame0->rtp_timestamp = kFrame0Rtp;
+  frame0->data = base::HeapArray<uint8_t>::WithSize(10);
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(std::move(frame0)));
+
+  // Simulate Open Screen rejecting Frame 1 due to MAX_DURATION_IN_FLIGHT.
+  EXPECT_CALL(mock_video_sender(), EnqueueFrame(testing::_))
+      .WillOnce(testing::Return(openscreen::cast::Sender::EnqueueFrameResult::
+                                    MAX_DURATION_IN_FLIGHT));
+
+  constexpr RtpTimeTicks kRejectedFrame1Rtp{9900};
+  auto frame1 = std::make_unique<SenderEncodedFrame>();
+  frame1->is_key_frame = false;
+  frame1->frame_id = openscreen::cast::FrameId::first() + 1;
+  frame1->referenced_frame_id = openscreen::cast::FrameId::first();
+  frame1->reference_time = base::TimeTicks::Now() + base::Milliseconds(100);
+  frame1->rtp_timestamp = kRejectedFrame1Rtp;
+  frame1->data = base::HeapArray<uint8_t>::WithSize(10);
+  EXPECT_EQ(CastStreamingFrameDropReason::kInFlightDurationTooHighAfterEncoding,
+            video_sender().EnqueueFrame(std::move(frame1)));
+
+  // ShouldDropNextFrame must query GetInFlightMediaDuration using the last
+  // successfully enqueued frame's RTP timestamp (kFrame0Rtp), not the rejected
+  // frame's RTP timestamp (kRejectedFrame1Rtp).
+  EXPECT_CALL(mock_video_sender(), GetInFlightMediaDuration(kFrame0Rtp))
+      .WillOnce(testing::Return(std::chrono::milliseconds(0)));
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().ShouldDropNextFrame(base::Milliseconds(33)));
+
+  // A subsequent dependent frame referencing the rejected Frame 1 must be
+  // dropped with kInvalidReferencedFrameId.
+  auto frame2 = std::make_unique<SenderEncodedFrame>();
+  frame2->is_key_frame = false;
+  frame2->frame_id = openscreen::cast::FrameId::first() + 2;
+  frame2->referenced_frame_id = openscreen::cast::FrameId::first() + 1;
+  frame2->reference_time = base::TimeTicks::Now() + base::Milliseconds(133);
+  frame2->rtp_timestamp = RtpTimeTicks{12900};
+  frame2->data = base::HeapArray<uint8_t>::WithSize(10);
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            video_sender().EnqueueFrame(std::move(frame2)));
 }
 
 }  // namespace media::cast

@@ -207,17 +207,6 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
 
   CHECK_GE(encoded_frame->frame_id, last_enqueued_frame_id_)
       << "enqueued frames out of order.";
-  last_enqueued_frame_id_ = encoded_frame->frame_id;
-  last_send_time_ = cast_environment_->NowTicks();
-
-  if (!is_audio_ && encoded_frame->is_key_frame) {
-    VLOG_WITH_SSRC(1) << "Sending encoded key frame, id="
-                      << encoded_frame->frame_id;
-  }
-
-  RecordLatestFrameTimestamps(encoded_frame->frame_id,
-                              encoded_frame->reference_time,
-                              encoded_frame->rtp_timestamp);
 
   if (!is_audio_) {
     // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
@@ -227,7 +216,6 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
 
   if (send_target_playout_delay_) {
     encoded_frame->new_playout_delay = target_playout_delay_;
-    send_target_playout_delay_ = false;
   }
 
   static const perfetto::StaticString name =
@@ -264,6 +252,18 @@ CastStreamingFrameDropReason OpenscreenFrameSender::EnqueueFrame(
         .frame_id = encoded_frame->frame_id,
         .openscreen_frame_id = openscreen_frame_id,
     };
+    last_enqueued_frame_id_ = encoded_frame->frame_id;
+    last_send_time_ = cast_environment_->NowTicks();
+    send_target_playout_delay_ = false;
+
+    if (!is_audio_ && encoded_frame->is_key_frame) {
+      VLOG_WITH_SSRC(1) << "Sending encoded key frame, id="
+                        << encoded_frame->frame_id;
+    }
+
+    RecordLatestFrameTimestamps(encoded_frame->frame_id,
+                                encoded_frame->reference_time,
+                                encoded_frame->rtp_timestamp);
   }
   return ToFrameDropReason(result);
 }

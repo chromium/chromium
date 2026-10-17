@@ -589,4 +589,40 @@ TEST_F(VideoSenderTest, DoesNotRecordEncoderUtilizationWithoutFrames) {
       0);
 }
 
+TEST_F(VideoSenderTest,
+       DoesNotDropFrameAfterStaticScreenGapWithFrameInEncoder) {
+  CreateSender(EncoderType::kMock);
+
+  VideoEncoder::FrameEncodedCallback first_callback;
+  EXPECT_CALL(mock_encoder(), GenerateKeyFrame());
+  EXPECT_CALL(mock_encoder(), SetBitRate(5000000));
+  EXPECT_CALL(mock_encoder(), EncodeVideoFrame(_, _, _))
+      .WillOnce([&first_callback](
+                    scoped_refptr<media::VideoFrame> video_frame,
+                    base::TimeTicks reference_time,
+                    VideoEncoder::FrameEncodedCallback frame_encoded_callback) {
+        first_callback = std::move(frame_encoded_callback);
+        return true;
+      })
+      .WillOnce([](scoped_refptr<media::VideoFrame> video_frame,
+                   base::TimeTicks reference_time,
+                   VideoEncoder::FrameEncodedCallback frame_encoded_callback) {
+        return true;
+      });
+
+  // Insert first frame into the encoder; keep it in the encoder while a static
+  // screen gap elapses.
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  EXPECT_EQ(video_sender().GetFramesInserted(), 1);
+  EXPECT_EQ(video_sender().GetFramesDropped(), 0);
+
+  // Advance clock by 2 seconds (simulating a static screen gap exceeding the
+  // 1-second max in-flight duration). The next frame must not treat the 2s idle
+  // capture gap as encoder backlog duration and must not be dropped.
+  AdvanceClock(base::Seconds(2));
+  video_sender().InsertRawVideoFrame(GetNewVideoFrame(), NowTicks());
+  EXPECT_EQ(video_sender().GetFramesInserted(), 2);
+  EXPECT_EQ(video_sender().GetFramesDropped(), 0);
+}
+
 }  // namespace media::cast

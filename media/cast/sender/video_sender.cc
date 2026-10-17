@@ -244,11 +244,16 @@ void VideoSender::InsertRawVideoFrame(
   // the next frame.  If there are no frames in the encoder, compute a guess
   // based on the configured max frame rate.  Any error introduced by this
   // guess will be eliminated when |duration_in_encoder_| is updated in
-  // OnEncodedVideoFrame().
+  // OnEncodedVideoFrame().  Cap the duration at the inverse of the max frame
+  // rate so that idle gaps during static screen capture do not inflate the
+  // estimated in-flight media duration and cause spurious frame drops.
+  const base::TimeDelta max_frame_duration =
+      base::Seconds(1.0 / frame_sender_->MaxFrameRate());
   const base::TimeDelta duration_added_by_next_frame =
       frames_in_encoder_ > 0
-          ? reference_time - last_enqueued_frame_reference_time_
-          : base::Seconds(1.0 / frame_sender_->MaxFrameRate());
+          ? std::min(reference_time - last_enqueued_frame_reference_time_,
+                     max_frame_duration)
+          : max_frame_duration;
 
   number_of_frames_inserted_++;
   const CastStreamingFrameDropReason reason =
@@ -402,8 +407,13 @@ void VideoSender::OnEncodedVideoFrame(
   CHECK_GE(frames_in_encoder_, 0);
 
   // Update |duration_in_encoder_| so that |frame_sender_| doesn't regard the
-  // encoder as really slow.
-  duration_in_encoder_ = last_enqueued_frame_reference_time_ - reference_time;
+  // encoder as really slow, capping per-frame duration so static screen gaps
+  // between queued frames do not inflate the encoder backlog.
+  const base::TimeDelta max_backlog_duration =
+      frames_in_encoder_ * base::Seconds(1.0 / frame_sender_->MaxFrameRate());
+  duration_in_encoder_ =
+      std::min(last_enqueued_frame_reference_time_ - reference_time,
+               max_backlog_duration);
 
   TRACE_EVENT_END("cast.stream", GetTracingTrack(video_frame.get()),
                   "encoder_utilization", last_reported_encoder_utilization_,
