@@ -663,9 +663,20 @@ std::unique_ptr<ToolRequest> MakePerformSearchRequest(TabInterface& tab,
 }
 std::unique_ptr<ToolRequest> MakeSiteBasedSearchRequest(
     TabInterface& tab,
-    std::string_view query) {
+    std::string_view query,
+    std::optional<std::string> document_identifier) {
+  std::string doc_id;
+  if (document_identifier.has_value()) {
+    doc_id = *document_identifier;
+  } else if (tab.GetContents() && tab.GetContents()->GetPrimaryMainFrame()) {
+    doc_id = optimization_guide::DocumentIdentifierUserData::
+                 GetOrCreateForCurrentDocument(
+                     tab.GetContents()->GetPrimaryMainFrame())
+                     ->serialized_token();
+  }
   return std::make_unique<SiteBasedSearchToolRequest>(
-      ActorSurfaceHandle::From(tab.GetHandle()), std::string(query));
+      ActorSurfaceHandle::From(tab.GetHandle()), std::string(query),
+      std::move(doc_id));
 }
 std::unique_ptr<ToolRequest> MakeTypeRequest(content::RenderFrameHost& rfh,
                                              int content_node_id,

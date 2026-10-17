@@ -234,8 +234,10 @@ std::unique_ptr<ToolRequest> MakeNavigateRequest(tabs::TabInterface& tab,
                                                  std::string_view target_url);
 std::unique_ptr<ToolRequest> MakePerformSearchRequest(tabs::TabInterface& tab,
                                                       std::string_view query);
-std::unique_ptr<ToolRequest> MakeSiteBasedSearchRequest(tabs::TabInterface& tab,
-                                                        std::string_view query);
+std::unique_ptr<ToolRequest> MakeSiteBasedSearchRequest(
+    tabs::TabInterface& tab,
+    std::string_view query,
+    std::optional<std::string> document_identifier = std::nullopt);
 std::unique_ptr<ToolRequest> MakeTypeRequest(content::RenderFrameHost& rfh,
                                              int content_node_id,
                                              std::string_view text,

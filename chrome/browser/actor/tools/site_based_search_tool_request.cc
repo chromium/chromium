@@ -22,9 +22,11 @@
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -32,8 +34,11 @@ namespace actor {
 
 SiteBasedSearchToolRequest::SiteBasedSearchToolRequest(
     ActorSurfaceHandle actor_surface_handle,
-    std::string query)
-    : TabToolRequest(actor_surface_handle), query_(std::move(query)) {}
+    std::string query,
+    std::string document_identifier)
+    : TabToolRequest(actor_surface_handle),
+      query_(std::move(query)),
+      document_identifier_(std::move(document_identifier)) {}
 
 SiteBasedSearchToolRequest::~SiteBasedSearchToolRequest() = default;
 
@@ -61,6 +66,28 @@ ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
             MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
                        /*requires_page_stabilization=*/false,
                        "Search query is empty.")};
+  }
+
+  if (document_identifier_.empty()) {
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
+                       /*requires_page_stabilization=*/false,
+                       "Document identifier is empty.")};
+  }
+
+  content::RenderFrameHost* main_frame =
+      tab->GetContents()->GetPrimaryMainFrame();
+  CHECK(main_frame);
+
+  const std::string current_doc_id =
+      optimization_guide::DocumentIdentifierUserData::
+          GetOrCreateForCurrentDocument(main_frame)
+              ->serialized_token();
+  if (current_doc_id != document_identifier_) {
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "Document identifier does not match the current page.")};
   }
 
   TemplateURLService* template_url_service =
@@ -109,7 +136,7 @@ ToolRequest::CreateToolResult SiteBasedSearchToolRequest::CreateTool(
 
   return {std::make_unique<SiteBasedSearchTool>(
               task_id, tool_delegate, GetActorSurfaceHandle().GetTabHandle(),
-              query_),
+              query_, document_identifier_),
           MakeOkResult()};
 }
 

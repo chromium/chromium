@@ -29,7 +29,8 @@ class SiteBasedSearchTool : public Tool {
   SiteBasedSearchTool(TaskId task_id,
                       ToolDelegate& tool_delegate,
                       tabs::TabHandle tab_handle,
-                      std::string query);
+                      std::string query,
+                      std::string document_identifier);
   ~SiteBasedSearchTool() override;
 
   // Tool:
@@ -48,6 +49,7 @@ class SiteBasedSearchTool : public Tool {
  private:
   tabs::TabHandle tab_handle_;
   std::string query_;
+  std::string document_identifier_;
   std::optional<DomNode> resolved_dom_node_;
 };
 

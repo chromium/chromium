@@ -69,15 +69,18 @@ std::optional<DomNode> FindSearchInputNode(
 SiteBasedSearchTool::SiteBasedSearchTool(TaskId task_id,
                                          ToolDelegate& tool_delegate,
                                          tabs::TabHandle tab_handle,
-                                         std::string query)
+                                         std::string query,
+                                         std::string document_identifier)
     : Tool(task_id, tool_delegate),
       tab_handle_(tab_handle),
-      query_(std::move(query)) {}
+      query_(std::move(query)),
+      document_identifier_(std::move(document_identifier)) {}
 
 SiteBasedSearchTool::~SiteBasedSearchTool() = default;
 
 void SiteBasedSearchTool::Validate(ToolCallback callback) {
   CHECK(!query_.empty());
+  CHECK(!document_identifier_.empty());
 
   tabs::TabInterface* tab = tab_handle_.Get();
   if (!tab || !tab->GetContents()) {
@@ -112,12 +115,17 @@ void SiteBasedSearchTool::Validate(ToolCallback callback) {
     return;
   }
 
-  // TODO(b/555814845): SiteBasedSearchToolRequest will also need to provide
-  // a document_identifier as a param, and we'll need to ensure these two match
-  // before acting on the page to guarantee we're searching the page the model
-  // was looking at.
   const std::string& main_doc_id =
       apc->main_frame_data().document_identifier().serialized_token();
+  if (main_doc_id != document_identifier_) {
+    PostResponseTask(
+        std::move(callback),
+        MakeResult(mojom::ActionResultCode::kFrameWentAway,
+                   /*requires_page_stabilization=*/false,
+                   "Document identifier does not match the current page."));
+    return;
+  }
+
   resolved_dom_node_ = FindSearchInputNode(apc->root_node(), main_doc_id);
 
   if (!resolved_dom_node_.has_value()) {

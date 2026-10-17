@@ -172,8 +172,8 @@ TEST_F(ToolRequestTest, SubclassSurfaceConstructorsStoreTarget) {
                                            /*distance=*/10));
   expect_targets_surface(
       SelectToolRequest(actor_surface_handle_, target, "value"));
-  expect_targets_surface(
-      SiteBasedSearchToolRequest(actor_surface_handle_, "query"));
+  expect_targets_surface(SiteBasedSearchToolRequest(actor_surface_handle_,
+                                                    "query", "document_id"));
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   expect_targets_surface(ActivateTabToolRequest(actor_surface_handle_));
   expect_targets_surface(CloseTabToolRequest(actor_surface_handle_));

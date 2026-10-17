@@ -73,6 +73,47 @@ IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
+                       FailsWhenDocumentIdentifierEmpty) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("example.com", kStartUrlPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  std::unique_ptr<ToolRequest> action = MakeSiteBasedSearchRequest(
+      *active_tab(), "search terms", /*document_identifier=*/"");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
+                       FailsWhenDocumentIdentifierMismatch) {
+  const GURL url_start =
+      embedded_https_test_server().GetURL("example.com", kStartUrlPath);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_TRUE(template_url_service);
+
+  TemplateURLData data;
+  data.SetURL(embedded_https_test_server()
+                  .GetURL("example.com", kSearchUrlPath)
+                  .spec());
+  data.SetShortName(u"SiteSearch");
+  data.SetKeyword(TemplateURL::GenerateKeyword(url_start));
+  TemplateURL* site_turl =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(site_turl);
+
+  std::unique_ptr<ToolRequest> action = MakeSiteBasedSearchRequest(
+      *active_tab(), "search terms",
+      /*document_identifier=*/"mismatched_document_token");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFrameWentAway);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorSiteBasedSearchToolBrowserTest,
                        FailsWhenNoSearchAvailable) {
   const GURL url_start =
       embedded_https_test_server().GetURL("example.com", kStartUrlPath);
