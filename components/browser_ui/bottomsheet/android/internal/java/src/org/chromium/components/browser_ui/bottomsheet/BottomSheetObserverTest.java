@@ -28,6 +28,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
@@ -209,6 +210,7 @@ public class BottomSheetObserverTest {
                     mObserver = new TestSheetObserver();
                     mBottomSheetController.addObserver(mObserver);
                 });
+        CriteriaHelper.pollUiThread(() -> mBottomSheetController.getContainerHeight() > 0);
     }
 
     @After

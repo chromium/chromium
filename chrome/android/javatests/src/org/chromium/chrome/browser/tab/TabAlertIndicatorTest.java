@@ -434,6 +434,9 @@ public class TabAlertIndicatorTest {
             enterPictureInPicture();
             waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
             watcher.assertExpected();
+
+            exitPictureInPicture();
+            waitForMediaState(mTab, MediaState.NONE);
         }
     }
 
