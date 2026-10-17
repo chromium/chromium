@@ -746,11 +746,11 @@ public class NtpCustomizationConfigManager {
         int backgroundColor =
                 NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(
                         context, mNtpBackgroundData);
+        NtpThemeColorInfo ntpThemeColorInfo =
+                NtpThemeColorUtils.getNtpThemeColorInfoFromNtpBackgroundData(mNtpBackgroundData);
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onBackgroundColorChanged(
-                    assumeNonNull(
-                            NtpThemeColorUtils.getNtpThemeColorInfoFromNtpBackgroundData(
-                                    mNtpBackgroundData)),
+                    assumeNonNull(ntpThemeColorInfo),
                     backgroundColor,
                     fromInitialization,
                     oldType,
