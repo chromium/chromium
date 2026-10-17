@@ -179,7 +179,7 @@ class ASH_EXPORT AccessibilityEventRewriter
 
   // Used to rewrite events in special cases such as function keys for ChromeVox
   // taylored behavior.
-  const raw_ptr<ui::EventRewriterAsh, DanglingUntriaged> event_rewriter_ash_;
+  const raw_ptr<ui::EventRewriterAsh> event_rewriter_ash_;
 
   // Suspends key handling for Switch Access during key assignment in web ui.
   bool suspend_switch_access_key_handling_ = false;

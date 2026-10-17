@@ -79,9 +79,6 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   }
 
  private:
-  // The |EventRewriter|s managed by this controller.
-  std::vector<std::unique_ptr<ui::EventRewriter>> rewriters_;
-
   // Owned by |rewriters_|.
   raw_ptr<AccessibilityEventRewriter> accessibility_event_rewriter_ = nullptr;
   raw_ptr<DisableTouchpadEventRewriter> disable_touchpad_event_rewriter_ =
@@ -95,6 +92,9 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   raw_ptr<ui::EventRewriterAsh> event_rewriter_ash_ = nullptr;
   raw_ptr<ui::EventRewriterAsh::Delegate> event_rewriter_ash_delegate_ =
       nullptr;
+
+  // The |EventRewriter|s managed by this controller.
+  std::vector<std::unique_ptr<ui::EventRewriter>> rewriters_;
 };
 
 }  // namespace ash

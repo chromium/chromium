@@ -80,6 +80,21 @@ EventRewriterControllerImpl::~EventRewriterControllerImpl() {
       event_source->RemoveEventRewriter(rewriter.get());
     }
   }
+
+  accessibility_event_rewriter_ = nullptr;
+  disable_touchpad_event_rewriter_ = nullptr;
+  filter_keys_event_rewriter_ = nullptr;
+  peripheral_customization_event_rewriter_ = nullptr;
+  prerewritten_event_forwarder_ = nullptr;
+  keyboard_driven_event_rewriter_ = nullptr;
+  event_rewriter_ash_ = nullptr;
+  event_rewriter_ash_delegate_ = nullptr;
+
+  // explicit clearing due to rewriters_ dependent in reverse order, causing
+  // dangling pointers.
+  for (auto& rewriter : rewriters_) {
+    rewriter.reset();
+  }
 }
 
 void EventRewriterControllerImpl::Initialize(
