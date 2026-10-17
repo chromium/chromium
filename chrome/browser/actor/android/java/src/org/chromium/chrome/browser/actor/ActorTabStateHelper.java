@@ -223,11 +223,10 @@ public class ActorTabStateHelper {
 
         Token tabGroupId = sourceTab.getTabGroupId();
         if (tabGroupId != null) {
-            List<Tab> relatedTabs = model.getRelatedTabList(sourceTab.getId());
-            int indexInGroup = relatedTabs.indexOf(sourceTab);
-            model.mergeListOfTabsToGroup(
+            int indexInGroup = model.getIndexOfTabInGroup(sourceTab);
+            model.mergeListOfTabsToExistingGroup(
                     Collections.singletonList(destinationTab),
-                    sourceTab,
+                    tabGroupId,
                     indexInGroup + 1,
                     TabGroupMergeNotificationType.DONT_NOTIFY);
         }

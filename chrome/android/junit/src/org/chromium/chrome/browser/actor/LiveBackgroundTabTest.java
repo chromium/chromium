@@ -297,15 +297,14 @@ public class LiveBackgroundTabTest {
         when(mTabModel.getTabById(PLACEHOLDER_TAB_ID)).thenReturn(mPlaceholderTab);
         when(mTabModel.indexOf(mPlaceholderTab)).thenReturn(1);
         when(mPlaceholderTab.getTabGroupId()).thenReturn(groupId);
-        when(mTabModel.getRelatedTabList(PLACEHOLDER_TAB_ID))
-                .thenReturn(Collections.singletonList(mPlaceholderTab));
+        when(mTabModel.getIndexOfTabInGroup(mPlaceholderTab)).thenReturn(0);
 
         mLiveBackgroundTab.attachToForeground(mTabModel, mWindowAndroid, mTabDelegateFactory);
 
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(mTab)),
-                        eq(mPlaceholderTab),
+                        eq(groupId),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
     }

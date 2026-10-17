@@ -372,7 +372,7 @@ public class ActorTabStateHelperTest {
         setupPlaceholderCreationMocks(false);
         Token groupId = Token.createRandom();
         when(mTab.getTabGroupId()).thenReturn(groupId);
-        when(mTabModel.getRelatedTabList(TAB_ID)).thenReturn(Collections.singletonList(mTab));
+        when(mTabModel.getIndexOfTabInGroup(mTab)).thenReturn(0);
 
         TabState testTabState = new TabState();
         TabStateExtractor.setTabStateForTesting(TAB_ID, testTabState);
@@ -381,9 +381,9 @@ public class ActorTabStateHelperTest {
 
         verify(mTabCreator).createFrozenTab(eq(testTabState), anyInt(), eq(1));
         verify(mTabModel)
-                .mergeListOfTabsToGroup(
+                .mergeListOfTabsToExistingGroup(
                         eq(Collections.singletonList(mPlaceholderTab)),
-                        eq(mTab),
+                        eq(groupId),
                         eq(1),
                         eq(TabGroupMergeNotificationType.DONT_NOTIFY));
     }
