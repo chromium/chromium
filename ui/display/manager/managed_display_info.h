@@ -17,6 +17,7 @@
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/drm_formats_and_modifiers.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"

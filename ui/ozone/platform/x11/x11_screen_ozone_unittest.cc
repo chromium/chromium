@@ -13,6 +13,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/platform/x11/x11_event_source.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"

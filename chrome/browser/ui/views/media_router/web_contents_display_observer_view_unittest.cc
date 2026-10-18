@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media_router {

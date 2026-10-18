@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/display_color_spaces.h"
 
 namespace display {
 

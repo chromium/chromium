@@ -13,6 +13,7 @@
 #include "build/buildflag.h"
 #include "ui/display/display.h"
 #include "ui/display/display_observer.h"
+#include "ui/gfx/display_color_spaces.h"
 
 namespace display {
 

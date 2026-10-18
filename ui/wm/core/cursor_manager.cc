@@ -15,6 +15,7 @@
 #include "ui/base/cursor/cursor_size.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/wm/core/cursor_util.h"
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
