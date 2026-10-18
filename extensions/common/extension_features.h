@@ -369,11 +369,6 @@ BASE_DECLARE_FEATURE(kUseSha256ForExtensionHashes);
 // page is never web accessible.
 BASE_DECLARE_FEATURE(kRestrictGeneratedPathsInWebAccessibleResources);
 
-// When enabled, extension URL loader factories bound to a child process
-// require `request_initiator` to be present and hosted by that process, and
-// report a bad message otherwise. Feature flag for crbug.com/512142568.
-BASE_DECLARE_FEATURE(kValidateExtensionResourceRequestInitiator);
-
 }  // namespace extensions_features
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_FEATURES_H_

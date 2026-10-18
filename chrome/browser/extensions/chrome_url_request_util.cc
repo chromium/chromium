@@ -296,11 +296,11 @@ bool AllowCrossRendererResourceLoad(
       !chrome_manifest_urls::GetDevToolsPage(extension).is_empty()) {
     // Allow the load only if it actually comes from the browser process or
     // from a renderer hosting the DevTools front-end. `request_initiator` is
-    // renderer-supplied, so cross-check it against the browser-trusted
-    // `child_id` that the factory was bound to.
-    // TODO(crbug.com/512142568): Remove the HostsOrigin() check once
-    // kValidateExtensionResourceRequestInitiator is removed, since
-    // ExtensionURLLoaderFactory then validates the initiator centrally.
+    // renderer-supplied and not validated on this path, so cross-check it
+    // against the browser-trusted `child_id` that the factory was bound to.
+    // TODO(crbug.com/512142568): Validate request_initiator centrally in
+    // ExtensionURLLoader (e.g. require HostsOrigin when render_process_id is
+    // non-null) rather than checking individual call sites.
     const bool is_devtools_scheme =
         request.request_initiator &&
         request.request_initiator->scheme() == content::kChromeDevToolsScheme;

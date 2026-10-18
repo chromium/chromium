@@ -124,9 +124,6 @@ bool AllowCrossRendererResourceLoad(
       // Pass the opaque initiator rather than `extension->origin()`:
       // HostsOrigin() checks an opaque origin's precursor, and sandboxed
       // processes may only host opaque origins.
-      // TODO(crbug.com/512142568): Remove the HostsOrigin() check once
-      // kValidateExtensionResourceRequestInitiator is removed, since
-      // ExtensionURLLoaderFactory then validates the initiator centrally.
       // TODO(crbug.com/379869738): Remove GetUnsafeValue.
       if (child_id.is_null() ||
           content::ChildProcessSecurityPolicy::GetInstance()->HostsOrigin(

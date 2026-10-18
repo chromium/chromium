@@ -50,7 +50,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
-#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -1114,33 +1113,9 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     DCHECK_EQ(kExtensionScheme, request.url.GetScheme());
-    if (!IsRequestInitiatorValid(request)) {
-      mojo::ReportBadMessage(
-          "ExtensionURLLoaderFactory: request_initiator not hosted by process");
-      mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-          ->OnComplete(
-              network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT));
-      return;
-    }
     ExtensionURLLoader::CreateAndStart(
         std::move(loader), std::move(client), request, is_web_view_request_,
         render_process_id_, browser_context_, initiator_origin_);
-  }
-
-  // Returns whether `request.request_initiator` can be trusted. It's supplied
-  // by the renderer, so factories bound to a child process require it to be
-  // present and hosted by that process. Mirrors
-  // CorsURLLoaderFactory::IsValidRequest().
-  bool IsRequestInitiatorValid(const network::ResourceRequest& request) const {
-    if (render_process_id_.is_null() ||
-        !base::FeatureList::IsEnabled(
-            extensions_features::kValidateExtensionResourceRequestInitiator)) {
-      return true;
-    }
-    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
-    return request.request_initiator &&
-           content::ChildProcessSecurityPolicy::GetInstance()->HostsOrigin(
-               render_process_id_.GetUnsafeValue(), *request.request_initiator);
   }
 
   void OnBrowserContextDestroyed() {

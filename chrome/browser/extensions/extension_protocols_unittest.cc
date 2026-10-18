@@ -61,7 +61,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
-#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -860,19 +859,12 @@ TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
   scoped_refptr<const Extension> extension = CreateTestExtension("foo", false);
   AddExtension(extension, false, false);
 
-  // Requests come from a renderer hosting `web_origin`, so the initiator passes
-  // ExtensionURLLoaderFactory's request_initiator validation.
-  const url::Origin web_origin =
-      url::Origin::Create(GURL("http://example.com"));
-  content::WebContentsTester::For(contents_.get())
-      ->NavigateAndCommit(web_origin.GetURL());
-
   // Non-web-accessible subresource requests specifying kDocument destination
   // from a non-extension process should be blocked.
   {
     auto get_result = RequestOrLoadFromSubresourceFactory(
         extension->GetResourceURL("test.dat"),
-        network::mojom::RequestDestination::kDocument, web_origin);
+        network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
   }
 
@@ -880,7 +872,7 @@ TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
   {
     auto get_result = RequestOrLoadFromSubresourceFactory(
         extension->GetResourceURL("test.dat"),
-        network::mojom::RequestDestination::kVideo, web_origin);
+        network::mojom::RequestDestination::kVideo);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
   }
 
@@ -888,7 +880,17 @@ TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
   {
     auto get_result = RequestOrLoadFromSubresourceFactory(
         extension->GetResourceURL("test.dat"),
-        network::mojom::RequestDestination::kEmpty, web_origin);
+        network::mojom::RequestDestination::kEmpty);
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
+  }
+
+  // Non-web-accessible subresource requests with custom web initiator should
+  // also be blocked.
+  url::Origin web_origin = url::Origin::Create(GURL("http://example.com"));
+  {
+    auto get_result = RequestOrLoadFromSubresourceFactory(
+        extension->GetResourceURL("test.dat"),
+        network::mojom::RequestDestination::kDocument, web_origin);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
   }
 
@@ -899,14 +901,14 @@ TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
   {
     auto get_result = RequestOrLoadFromSubresourceFactory(
         extension_with_war->GetResourceURL("test.dat"),
-        network::mojom::RequestDestination::kEmpty, web_origin);
+        network::mojom::RequestDestination::kEmpty);
     EXPECT_EQ(net::OK, get_result.result());
   }
 
   {
     auto get_result = RequestOrLoadFromSubresourceFactory(
         extension_with_war->GetResourceURL("test.dat"),
-        network::mojom::RequestDestination::kDocument, web_origin);
+        network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::OK, get_result.result());
   }
 
@@ -915,7 +917,7 @@ TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
   {
     auto get_result = RequestOrLoadFromSubresourceFactory(
         extension_with_war->GetResourceURL("background.js"),
-        network::mojom::RequestDestination::kDocument, web_origin);
+        network::mojom::RequestDestination::kDocument);
     EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, get_result.result());
   }
 
@@ -935,11 +937,6 @@ TEST_F(ExtensionProtocolsTest, SubresourceRequestsDocumentDestination) {
 // resources should only apply to processes that actually host a DevTools page.
 TEST_F(ExtensionProtocolsTest,
        DevToolsExtensionResourcesBlockedForWebRenderer) {
-  // Disable the central initiator validation to exercise the DevTools check in
-  // AllowCrossRendererResourceLoad() on its own.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      extensions_features::kValidateExtensionResourceRequestInitiator);
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("DevTools Extension")
           .SetManifestVersion(3)
@@ -1019,11 +1016,6 @@ TEST_F(ExtensionProtocolsTest,
 // precursor is the extension's origin. The allowed renderer path (a sandboxed
 // extension page) is covered by SandboxedPagesTest.WebAccessibleResourcesTest.
 TEST_F(ExtensionProtocolsTest, OpaqueInitiatorPrecursorBlockedForWebRenderer) {
-  // Disable the central initiator validation to exercise the opaque-precursor
-  // check in AllowCrossRendererResourceLoad() on its own.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      extensions_features::kValidateExtensionResourceRequestInitiator);
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("Test Extension")
           .SetManifestVersion(3)
@@ -1054,89 +1046,6 @@ TEST_F(ExtensionProtocolsTest, OpaqueInitiatorPrecursorBlockedForWebRenderer) {
         extension->origin().DeriveNewOpaqueOrigin();
     browser_request.destination = network::mojom::RequestDestination::kImage;
     EXPECT_EQ(net::OK, RequestOrLoad(std::move(browser_request)).result());
-  }
-}
-
-// ExtensionURLLoaderFactory must reject a renderer-supplied `request_initiator`
-// that the requesting process doesn't host, e.g. a web renderer claiming an
-// origin listed in a web-accessible resource's `matches`.
-TEST_F(ExtensionProtocolsTest, RequestInitiatorNotHostedByProcessIsRejected) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("Test Extension")
-          .SetManifestVersion(3)
-          .SetManifestKey(
-              "web_accessible_resources",
-              base::ListValue().Append(
-                  base::DictValue()
-                      .Set("resources", base::ListValue().Append("test.dat"))
-                      .Set("matches", base::ListValue().Append(
-                                          "https://allowed.example/*"))))
-          .SetPath(GetTestPath("response_headers"))
-          .Build();
-  AddExtension(extension, /*incognito_enabled=*/false,
-               /*notifications_disabled=*/false);
-
-  content::WebContentsTester::For(contents_.get())
-      ->NavigateAndCommit(GURL("http://example.com/"));
-
-  const GURL target = extension->GetResourceURL("test.dat");
-  const url::Origin allowed_origin =
-      url::Origin::Create(GURL("https://allowed.example"));
-  const struct {
-    std::string_view description;
-    std::optional<url::Origin> initiator;
-  } cases[] = {
-      {"no initiator", std::nullopt},
-      {"WAR matches origin", allowed_origin},
-      {"extension origin", extension->origin()},
-      {"devtools origin", url::Origin::Create(GURL("devtools://devtools"))},
-      {"opaque extension precursor",
-       extension->origin().DeriveNewOpaqueOrigin()},
-  };
-
-  for (const auto& test_case : cases) {
-    SCOPED_TRACE(test_case.description);
-    mojo::test::BadMessageObserver bad_message_observer;
-    network::ResourceRequest request;
-    request.method = "GET";
-    request.url = target;
-    request.request_initiator = test_case.initiator;
-    request.destination = network::mojom::RequestDestination::kImage;
-    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
-              RequestOrLoadFromSubresourceFactory(std::move(request)).result());
-    // The bad message is reported synchronously before the request completes.
-    EXPECT_TRUE(bad_message_observer.got_bad_message());
-  }
-
-  // A renderer that actually hosts the WAR `matches` origin is allowed.
-  std::unique_ptr<content::WebContents> allowed_contents =
-      CreateTestWebContents();
-  content::WebContentsTester::For(allowed_contents.get())
-      ->NavigateAndCommit(allowed_origin.GetURL());
-  {
-    mojo::test::BadMessageObserver bad_message_observer;
-    network::ResourceRequest request;
-    request.method = "GET";
-    request.url = target;
-    request.request_initiator = allowed_origin;
-    request.destination = network::mojom::RequestDestination::kImage;
-    EXPECT_EQ(net::OK, RequestOrLoadFromSubresourceFactory(
-                           std::move(request), allowed_contents.get())
-                           .result());
-    EXPECT_FALSE(bad_message_observer.got_bad_message());
-  }
-
-  // Browser-process factories (null child id) skip the validation, even with
-  // no initiator. kScript is allowed for browser-process requests.
-  {
-    mojo::test::BadMessageObserver bad_message_observer;
-    network::ResourceRequest request;
-    request.method = "GET";
-    request.url = target;
-    request.request_initiator = std::nullopt;
-    request.destination = network::mojom::RequestDestination::kScript;
-    EXPECT_EQ(net::OK, RequestOrLoad(std::move(request)).result());
-    EXPECT_FALSE(bad_message_observer.got_bad_message());
   }
 }
 
