@@ -1115,6 +1115,7 @@
 <translation id="1842681835432895345">मिरर मोड में इस डिसप्ले को शामिल न करें</translation>
 <translation id="184273675144259287">अपने Linux ऐप्लिकेशन और फ़ाइलों को पिछले बैकअप से बदलें</translation>
 <translation id="1843048149176045210">डाउनलोड करने का लिंक कॉपी करें</translation>
+<translation id="1845498360590376126">होम पेज, 'नया टैब' पेज है</translation>
 <translation id="1845727111305721124">आवाज़ चलाने की अनुमति है</translation>
 <translation id="1846100293138248204">मेमोरी में सेव करें</translation>
 <translation id="1846308012215045257"><ph name="PLUGIN_NAME" /> को चलाने के लिए कंट्रोल दबाए रखते हुए क्लिक करें</translation>
@@ -3387,6 +3388,7 @@
 <translation id="3553442438687311630">Microsoft का पुष्टि करने वाला मॉड्यूल</translation>
 <translation id="3554493885489666172">आपके डिवाइस को <ph name="PROFILE_NAME" /> मैनेज करता है. एडमिन इस डिवाइस पर मौजूद किसी भी प्रोफ़ाइल का डेटा ऐक्सेस कर सकते हैं.</translation>
 <translation id="3555812735919707620">एक्सटेंशन निकालें</translation>
+<translation id="3556409966119759596">'नया टैब' पेज पर फ़ुटर दिखाएं</translation>
 <translation id="3557101512409028104">Family Link की मदद से वेबसाइट पाबंदियां और किसी डिवाइस के इस्तेमाल की समय सीमा सेट करें</translation>
 <translation id="3558579881215044733"><ph name="WINDOW_TITLE" /> - Gemini आपके टास्क पर काम कर रहा है...</translation>
 <translation id="3559079791149580653"><ph name="DEVICE_NAME" /> पर, स्क्रीन कास्ट करना बंद करें</translation>
@@ -5090,6 +5092,7 @@
 <translation id="4841475798258477260">इस डिवाइस को किसी खास मोबाइल नेटवर्क से ही कनेक्ट किया जा सकता है. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4842976633412754305">यह पृष्‍ठ अप्रमाणीकृत स्रोतों से स्‍क्रिप्‍ट लोड करने का प्रयास कर रहा है.</translation>
 <translation id="484462545196658690">ऑटो</translation>
+<translation id="4844967571080002061">'नया टैब' पेज के बैकग्राउंड के बारे में ज़्यादा जानें</translation>
 <translation id="4846273627924459555">“<ph name="SEARCH_TERMS" />” के बारे में पूछें</translation>
 <translation id="4846628405149428620">चुनें कि यह साइट बदलावों को कहां सेव करेगी</translation>
 <translation id="4846680374085650406">आप इस सेटिंग के लिए व्यवस्थापक की अनुशंसा का अनुसरण कर रहे हैं.</translation>
@@ -5899,6 +5902,7 @@
 <translation id="5463856536939868464">मेन्यू में बुकमार्क छुपे हुए हैं</translation>
 <translation id="5466374726908360271">“<ph name="SEARCH_TERMS" />” को चिपकाएं और खोजें</translation>
 <translation id="5466721587278161554">आपके टैब ग्रुप, बुकमार्क बार और ऐप्लिकेशन मेन्यू में सेव किए जाते हैं. साथ ही, सिंक करने की सुविधा चालू होने पर ये आपके साइन इन किए हुए सभी डिवाइसों में अपने-आप अपडेट हो जाते हैं</translation>
+<translation id="5466743034850405734">'नया टैब' पेज खोलें</translation>
 <translation id="5467207440419968613"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> को ब्लॉक किया गया है</translation>
 <translation id="5468173180030470402">फ़ाइल शेयर को ढूंढा जा रहा है</translation>
 <translation id="5468330507528805311">टेदरिंग का स्टेटस:</translation>
@@ -6558,6 +6562,7 @@
 <translation id="5979421442488174909"><ph name="LANGUAGE" /> में &amp;अनुवाद करें</translation>
 <translation id="5979469435153841984">पेज बुकमार्क करने के लिए, पता बार में मौजूद तारे के निशान पर क्‍लिक करें.</translation>
 <translation id="5982578203375898585">प्रोसेस पूरी होने के बाद डाउनलोड में दिखाएं</translation>
+<translation id="5982657619592274533">'नया टैब' पेज पर फ़ुटर छिपाएं</translation>
 <translation id="5983716913605894570">जनरेट हो रही है...</translation>
 <translation id="5984222099446776634">हाल ही में देखे गए</translation>
 <translation id="598426658342593742">टैब को किनारे पर ले जाएं</translation>

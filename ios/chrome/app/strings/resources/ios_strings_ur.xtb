@@ -623,6 +623,7 @@
 <translation id="2870560284913253234">سائٹ</translation>
 <translation id="2876369937070532032">‏آپ کو سیکیورٹی کا خطرہ لاحق ہونے پر، Google کو آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs بھیجتا ہے</translation>
 <translation id="2883151425485251736">ان موضوعات کو دیکھیں اور ان میں ترمیم کریں جنہیں آپ نے اپنے اکاؤنٹ سے چھپایا ہے۔</translation>
+<translation id="2884437560239137197">توجہ درکار ہے</translation>
 <translation id="288655811176831528">ٹیب بند کریں</translation>
 <translation id="2888631381369839306">قیمت کی ٹریکنگ کی اطلاعات آن ہیں</translation>
 <translation id="2893168226686371498">ڈیفالٹ براؤزر</translation>
@@ -1667,6 +1668,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6227958838185907047">‫<ph name="NAME" /> <ph name="EMAIL" /> کے بطور سائن ان کریں</translation>
 <translation id="6231782223312638214">تجویز کردہ</translation>
 <translation id="6232329973559504466">پوشیدگی تلاش</translation>
+<translation id="6233463157595806945">ان پٹ درکار ہے</translation>
 <translation id="6234310016144827337">اپنا کنکشن چیک کر کے دوبارہ کوشش کریں</translation>
 <translation id="6236952928980352967">وارننگ بحال کریں</translation>
 <translation id="623755660902014047">Reading Mode</translation>
@@ -1697,6 +1699,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6307792728709337290">‏اپنے کارڈ کو اپنے Google اکاؤنٹ میں محفوظ کریں تاکہ اسے اس خریداری اور Chrome پر کی جانے والی مستقبل کی خریداریوں کے لیے آٹو فل کیا جا سکے۔</translation>
 <translation id="6316141353357700666">ظاہر ہونے والی فہرست میں سے وہ پاس ورڈ منتخب کریں جسے آپ استعمال کرنا چاہتے ہیں۔</translation>
 <translation id="6321526113093607004">بُک مارکس میں شامل کریں</translation>
+<translation id="6322064144568952786">ٹاسک ناکام ہو گیا</translation>
 <translation id="6324054713176642683">تھیمز، رنگوں میں سے انتخاب کریں یا اپنی تصویر اپ لوڈ کریں۔</translation>
 <translation id="6327249202318869726">‏آپ کے اکاؤنٹ کیلئے Gemini کو آف کر دیا گیا ہے۔ مزید معلومات کیلئے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="6331836477476466332">آپ کیلئے ایک زیادہ محفوظ اور زیادہ طاقتور براؤزر</translation>
@@ -2013,6 +2016,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7241135764990439166">پوشیدگی وضع دستیاب نہیں ہے</translation>
 <translation id="7245288034498365666">منظم ہو جائیں اور وقت بچائیں</translation>
 <translation id="7253951228444156601">پاسورڈز چیک ہو رہے ہیں…</translation>
+<translation id="725583671816239562">ٹاسک ہو گیا</translation>
 <translation id="7261217796641151584">گروپ کا اشتراک کریں</translation>
 <translation id="7266578100016339897">اس سے آپ کو منظم رہنے میں مدد ملتی ہے۔ آپ کسی بھی وقت ترتیبات میں اسے تبدیل کر سکتے ہیں۔</translation>
 <translation id="7270491814777319521">‏‫<ph name="BEGIN_LINK" />Google کی شرائط<ph name="END_LINK" /> اور <ph name="BEGIN_LINK" />Gemini ایپس کی رازداری کا نوٹس<ph name="END_LINK" /> لاگو ہوتے ہیں۔ ‫Gemini ایک AI ہے اور اس سے غلطیاں ہو سکتی ہیں، بشمول لوگوں کے بارے میں۔</translation>
