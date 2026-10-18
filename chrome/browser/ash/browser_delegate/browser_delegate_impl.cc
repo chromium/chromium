@@ -42,10 +42,12 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_info.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/aura/window.h"
 #include "ui/base/base_window.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -443,6 +445,13 @@ bool BrowserDelegateImpl::IsOnTaskState(OnTaskState state) const {
                  ->is_locked_for_on_task() &&
              IsLockedFullscreen();
   }
+}
+
+void BrowserDelegateImpl::SetImmersiveAllowedWhileTrustedPinned(bool allowed) {
+  GetNativeWindow()->SetProperty(chromeos::kUseImmersiveInTrustedPinned,
+                                 allowed);
+  BrowserView::GetBrowserViewForBrowser(&browser_.get())
+      ->FullscreenStateChanged();
 }
 
 void BrowserDelegateImpl::EnterLockedFullscreen() {

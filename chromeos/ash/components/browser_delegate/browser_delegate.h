@@ -260,6 +260,21 @@ class BrowserDelegate {
   // Returns true if the browser is in the specified `state`.
   virtual bool IsOnTaskState(OnTaskState state) const = 0;
 
+  // Sets whether this window may use the immersive frame (toolbar and tab
+  // strip hidden, revealed from the top edge) while it is trusted-pinned.
+  // OnTask disables this while paused so that students cannot reveal the tab
+  // strip and switch tabs. False by default.
+  //
+  // The value is stored on the window and only has an effect while the window
+  // is trusted-pinned. If the window is pinned now, the frame is updated
+  // immediately. Otherwise the value applies the next time the window is
+  // pinned. `true` allows immersive mode but does not force it (e.g. it is
+  // never used in kiosk sessions).
+  //
+  // TODO(crbug.com/438540029): Remove once LockedStateController derives this
+  // from its OnTask state.
+  virtual void SetImmersiveAllowedWhileTrustedPinned(bool allowed) = 0;
+
   // Activates the web contents at the specified tab strip index.
   virtual void ActivateWebContentsAt(size_t index) = 0;
 

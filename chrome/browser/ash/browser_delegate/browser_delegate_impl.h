@@ -73,6 +73,7 @@ class BrowserDelegateImpl : public BrowserDelegate {
   void ResetLocationBar() override;
   void SetOnTaskState(OnTaskState state) override;
   bool IsOnTaskState(OnTaskState state) const override;
+  void SetImmersiveAllowedWhileTrustedPinned(bool allowed) override;
   void ActivateWebContentsAt(size_t index) override;
   void SetContentsBackgroundVisible(bool visible) override;
   void EnterLockedFullscreen() override;

@@ -50,6 +50,7 @@ static_library("impl") {
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ui/base",
     "//components/sessions",
     "//components/sessions:session_id",
     "//third_party/blink/public/mojom:mojom_platform",

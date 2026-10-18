@@ -21,6 +21,7 @@ specific_include_rules = {
     "+chrome/browser/ui/tabs/tab_enums.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
     "+chrome/browser/ui/unload_controller.h",
+    "+chrome/browser/ui/views/frame/browser_view.h",
     "+chrome/test/base/ui_test_utils.h",
   ],
   "on_task_locked_session_navigation_throttle_interactive_ui_test\\.cc": [

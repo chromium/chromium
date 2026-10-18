@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/immersive/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/boca/boca_metrics_util.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
@@ -36,7 +35,6 @@
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/system_web_apps/system_web_app_type.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_thread.h"
@@ -215,10 +213,7 @@ void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
   // Immersive mode is disabled when in pause mode to ensure users cannot switch
   // tabs. We keep the window property always set to restore the window to its
   // previously intended state.
-  browser_->GetNativeWindow()->SetProperty(
-      chromeos::kUseImmersiveInTrustedPinned, !paused);
-  BrowserView::GetBrowserViewForBrowser(&browser_->GetBrowser())
-      ->FullscreenStateChanged();
+  browser_->SetImmersiveAllowedWhileTrustedPinned(!paused);
 }
 
 void LockedSessionWindowTracker::set_can_start_navigation_throttle(
