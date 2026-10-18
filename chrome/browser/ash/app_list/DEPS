@@ -16,14 +16,12 @@ include_rules = [
   "+chrome/browser/ash/file_suggest",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/login",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/extensions/extension_browsertest.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_service_test_base.h",
   "+chrome/browser/extensions/extension_ui_util.h",
   "+chrome/browser/extensions/extension_util.h",
-  "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/extensions/menu_manager_factory.h",
   "+chrome/browser/platform_util.h",
@@ -35,7 +33,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_paths.h",
-  "+chrome/common/extensions",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:

@@ -17,7 +17,6 @@ include_rules = [
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/login",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/settings",
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",

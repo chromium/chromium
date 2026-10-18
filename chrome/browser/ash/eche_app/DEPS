@@ -1,6 +1,4 @@
 include_rules = [
-  "+ui/message_center/message_center.h",
-
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
@@ -14,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/phonehub",
   "+chrome/browser/ash/secure_channel",
   "+chrome/browser/profiles",
-  "+chrome/common/channel_info.h",
 ]
 
 specific_include_rules = {
