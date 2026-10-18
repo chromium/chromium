@@ -1,0 +1,64 @@
+Input.dispatchMouseEvent keeps OOPIF wheel deltas and scroll distances in CSS pixels with embedded CSS zoom and parent pinch.
+PASS: isolated iframe Target attached
+PASS: CSS zoom 1 page scale 1: actual embedded zoom and page scale
+PASS: CSS zoom 1 page scale 1 forward: expected events completed
+PASS: CSS zoom 1 page scale 1 forward: wheel deltas in child CSS pixels
+PASS: CSS zoom 1 page scale 1 forward: scroll distance in child CSS pixels
+PASS: CSS zoom 1 page scale 1 reverse: expected events completed
+PASS: CSS zoom 1 page scale 1 reverse: wheel deltas in child CSS pixels
+PASS: CSS zoom 1 page scale 1 reverse: scroll distance in child CSS pixels
+PASS: CSS zoom 1 page scale 1 fractional: expected events completed
+PASS: CSS zoom 1 page scale 1 fractional: wheel deltas in child CSS pixels
+PASS: CSS zoom 1 page scale 1 fractional: cancelled wheel leaves offset unchanged
+PASS: CSS zoom 1 page scale 1.2: actual embedded zoom and page scale
+PASS: CSS zoom 1 page scale 1.2 forward: expected events completed
+PASS: CSS zoom 1 page scale 1.2 forward: wheel deltas in child CSS pixels
+PASS: CSS zoom 1 page scale 1.2 forward: scroll distance in child CSS pixels
+PASS: CSS zoom 1 page scale 1.2 reverse: expected events completed
+PASS: CSS zoom 1 page scale 1.2 reverse: wheel deltas in child CSS pixels
+PASS: CSS zoom 1 page scale 1.2 reverse: scroll distance in child CSS pixels
+PASS: CSS zoom 1 page scale 1.2 fractional: expected events completed
+PASS: CSS zoom 1 page scale 1.2 fractional: wheel deltas in child CSS pixels
+PASS: CSS zoom 1 page scale 1.2 fractional: cancelled wheel leaves offset unchanged
+PASS: CSS zoom 1.2 page scale 1: actual embedded zoom and page scale
+PASS: CSS zoom 1.2 page scale 1 forward: expected events completed
+PASS: CSS zoom 1.2 page scale 1 forward: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1 forward: scroll distance in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1 reverse: expected events completed
+PASS: CSS zoom 1.2 page scale 1 reverse: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1 reverse: scroll distance in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1 fractional: expected events completed
+PASS: CSS zoom 1.2 page scale 1 fractional: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1 fractional: cancelled wheel leaves offset unchanged
+PASS: CSS zoom 1.2 page scale 1.2: actual embedded zoom and page scale
+PASS: CSS zoom 1.2 page scale 1.2 forward: expected events completed
+PASS: CSS zoom 1.2 page scale 1.2 forward: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1.2 forward: scroll distance in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1.2 reverse: expected events completed
+PASS: CSS zoom 1.2 page scale 1.2 reverse: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1.2 reverse: scroll distance in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1.2 fractional: expected events completed
+PASS: CSS zoom 1.2 page scale 1.2 fractional: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.2 page scale 1.2 fractional: cancelled wheel leaves offset unchanged
+PASS: CSS zoom 1.5 page scale 1: actual embedded zoom and page scale
+PASS: CSS zoom 1.5 page scale 1 forward: expected events completed
+PASS: CSS zoom 1.5 page scale 1 forward: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1 forward: scroll distance in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1 reverse: expected events completed
+PASS: CSS zoom 1.5 page scale 1 reverse: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1 reverse: scroll distance in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1 fractional: expected events completed
+PASS: CSS zoom 1.5 page scale 1 fractional: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1 fractional: cancelled wheel leaves offset unchanged
+PASS: CSS zoom 1.5 page scale 1.2: actual embedded zoom and page scale
+PASS: CSS zoom 1.5 page scale 1.2 forward: expected events completed
+PASS: CSS zoom 1.5 page scale 1.2 forward: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1.2 forward: scroll distance in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1.2 reverse: expected events completed
+PASS: CSS zoom 1.5 page scale 1.2 reverse: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1.2 reverse: scroll distance in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1.2 fractional: expected events completed
+PASS: CSS zoom 1.5 page scale 1.2 fractional: wheel deltas in child CSS pixels
+PASS: CSS zoom 1.5 page scale 1.2 fractional: cancelled wheel leaves offset unchanged
+PASS: restored page scale and embedded CSS zoom
+

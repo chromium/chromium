@@ -1,0 +1,21 @@
+Input.dispatchMouseEvent rejects wheel deltas outside the scaled float range and delivers representable large deltas.
+PASS: scale 1: protocol success
+PASS: scale 1: actual page scale
+PASS: scale 1 deltaX 1e+308: rejected with InvalidParams
+PASS: scale 1 deltaX 1e+308: no wheel delivered
+PASS: scale 1 deltaY 1e+308: rejected with InvalidParams
+PASS: scale 1 deltaY 1e+308: no wheel delivered
+PASS: scale 2: protocol success
+PASS: scale 2: actual page scale
+PASS: scale 2 deltaX 2e+38: rejected with InvalidParams
+PASS: scale 2 deltaX 2e+38: no wheel delivered
+PASS: scale 2 deltaY 2e+38: rejected with InvalidParams
+PASS: scale 2 deltaY 2e+38: no wheel delivered
+PASS: scale 1.2: protocol success
+PASS: scale 1.2: actual page scale
+PASS: representable large wheel: protocol success
+PASS: representable large wheel: exactly one canceled target event
+PASS: representable large wheel: CSS deltas within relative float tolerance
+PASS: representable large wheel: canceled event leaves offset unchanged
+PASS: restored page scale
+

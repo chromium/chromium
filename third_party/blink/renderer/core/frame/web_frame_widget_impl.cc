@@ -5344,6 +5344,10 @@ float WebFrameWidgetImpl::GetCompositingScaleFactor() {
   return compositing_scale_factor_;
 }
 
+float WebFrameWidgetImpl::GetExternalPageScaleFactor() const {
+  return ForTopMostMainFrame() ? 1.0f : page_scale_factor_in_mainframe_;
+}
+
 const cc::LayerTreeDebugState* WebFrameWidgetImpl::GetLayerTreeDebugState() {
   if (!View()->does_composite()) {
     return nullptr;

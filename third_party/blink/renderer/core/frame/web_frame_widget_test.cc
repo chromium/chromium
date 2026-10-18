@@ -30,6 +30,8 @@
 #include "third_party/blink/renderer/core/dom/events/add_event_listener_options_resolved.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
+#include "third_party/blink/renderer/core/events/wheel_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -649,6 +651,115 @@ TEST_F(WebFrameWidgetImplRemoteFrameSimTest,
   visual_properties.is_pinch_gesture_active = false;
   LocalFrameRootWidget()->ApplyVisualProperties(visual_properties);
   EXPECT_FALSE(layer_tree_host->is_external_pinch_gesture_active_for_testing());
+}
+
+class WebFrameWidgetWheelPageScaleTest
+    : public WebFrameWidgetImplRemoteFrameSimTest,
+      public testing::WithParamInterface<bool> {};
+
+TEST_P(WebFrameWidgetWheelPageScaleTest, PixelDeltasWithExternalPageScale) {
+  ScopedWheelEventDeltaExternalPageScaleForTest feature(GetParam());
+  LocalDOMWindow& window = *LocalFrameRoot().GetFrame()->DomWindow();
+  for (float css_zoom : {1.0f, 1.5f}) {
+    for (float page_scale : {1.2f, 2.0f}) {
+      VisualProperties properties;
+      properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+      properties.css_zoom_factor = css_zoom;
+      properties.page_scale_factor = page_scale;
+      LocalFrameRootWidget()->ApplyVisualProperties(properties);
+      ASSERT_NEAR(css_zoom, window.devicePixelRatio(), 1.0e-6);
+
+      for (int modifiers :
+           {WebInputEvent::kNoModifiers, WebInputEvent::kFromDebugger}) {
+        for (auto units : {ui::ScrollGranularity::kScrollByPixel,
+                           ui::ScrollGranularity::kScrollByPrecisePixel}) {
+          SCOPED_TRACE(testing::Message()
+                       << "css zoom=" << css_zoom << " page scale="
+                       << page_scale << " modifiers=" << modifiers
+                       << " units=" << static_cast<int>(units));
+          WebMouseWheelEvent native_event(
+              WebInputEvent::Type::kMouseWheel, modifiers,
+              WebInputEvent::GetStaticTimeStampForTests());
+          native_event.delta_x = -55 * css_zoom * page_scale;
+          native_event.delta_y = 70 * css_zoom * page_scale;
+          native_event.delta_units = units;
+          native_event.wheel_ticks_x = -1;
+          native_event.wheel_ticks_y = 1;
+          native_event.SetPositionInWidget(27, 33);
+          WheelEvent* event = WheelEvent::Create(native_event, window);
+
+          const float remaining_scale = GetParam() ? 1.0f : page_scale;
+          EXPECT_NEAR(55 * remaining_scale, event->deltaX(), 1.0e-4);
+          EXPECT_NEAR(-70 * remaining_scale, event->deltaY(), 1.0e-4);
+          EXPECT_EQ(WheelEvent::kDomDeltaPixel, event->deltaMode());
+          // DOM normalization must not change the event forwarded to plugins
+          // or the browser-side event that generates gesture scrolling.
+          EXPECT_FLOAT_EQ(native_event.delta_x, event->NativeEvent().delta_x);
+          EXPECT_FLOAT_EQ(native_event.delta_y, event->NativeEvent().delta_y);
+          EXPECT_FLOAT_EQ(native_event.wheel_ticks_x,
+                          event->NativeEvent().wheel_ticks_x);
+          EXPECT_FLOAT_EQ(native_event.wheel_ticks_y,
+                          event->NativeEvent().wheel_ticks_y);
+          EXPECT_EQ(native_event.PositionInWidget(),
+                    event->NativeEvent().PositionInWidget());
+          EXPECT_EQ(modifiers, event->NativeEvent().GetModifiers());
+        }
+      }
+    }
+  }
+}
+
+TEST_P(WebFrameWidgetWheelPageScaleTest, PageDeltasKeepExistingNormalization) {
+  ScopedWheelEventDeltaExternalPageScaleForTest feature(GetParam());
+  VisualProperties properties;
+  properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
+  properties.css_zoom_factor = 1.5f;
+  properties.page_scale_factor = 1.2f;
+  LocalFrameRootWidget()->ApplyVisualProperties(properties);
+  LocalDOMWindow& window = *LocalFrameRoot().GetFrame()->DomWindow();
+
+  for (int modifiers :
+       {WebInputEvent::kNoModifiers, WebInputEvent::kFromDebugger}) {
+    WebMouseWheelEvent native_event(
+        WebInputEvent::Type::kMouseWheel, modifiers,
+        WebInputEvent::GetStaticTimeStampForTests());
+    native_event.delta_x = -1;
+    native_event.delta_y = 1;
+    native_event.delta_units = ui::ScrollGranularity::kScrollByPage;
+    WheelEvent* event = WheelEvent::Create(native_event, window);
+    EXPECT_DOUBLE_EQ(1 / window.devicePixelRatio(), event->deltaX());
+    EXPECT_DOUBLE_EQ(-1 / window.devicePixelRatio(), event->deltaY());
+    EXPECT_EQ(WheelEvent::kDomDeltaPage, event->deltaMode());
+    EXPECT_FLOAT_EQ(-1, event->NativeEvent().delta_x);
+    EXPECT_FLOAT_EQ(1, event->NativeEvent().delta_y);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         WebFrameWidgetWheelPageScaleTest,
+                         testing::Bool());
+
+TEST_F(WebFrameWidgetSimTest, WheelDeltasDoNotApplyTopLevelPageScaleTwice) {
+  ScopedWheelEventDeltaExternalPageScaleForTest feature(true);
+  WebView().SetPageScaleFactor(2.0f);
+  for (int modifiers :
+       {WebInputEvent::kNoModifiers, WebInputEvent::kFromDebugger}) {
+    WebMouseWheelEvent native_event(
+        WebInputEvent::Type::kMouseWheel, modifiers,
+        WebInputEvent::GetStaticTimeStampForTests());
+    native_event.delta_x = -110;
+    native_event.delta_y = 140;
+    native_event.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
+    WebMouseWheelEvent transformed = TransformWebMouseWheelEvent(
+        MainFrame().GetFrame()->View(), native_event);
+    ASSERT_FLOAT_EQ(2, transformed.FrameScale());
+    WheelEvent* event = WheelEvent::Create(transformed, Window());
+    EXPECT_DOUBLE_EQ(55, event->deltaX());
+    EXPECT_DOUBLE_EQ(-70, event->deltaY());
+    EXPECT_FLOAT_EQ(native_event.delta_x, event->NativeEvent().delta_x);
+    EXPECT_FLOAT_EQ(native_event.delta_y, event->NativeEvent().delta_y);
+    EXPECT_FLOAT_EQ(2, event->NativeEvent().FrameScale());
+  }
 }
 
 // Since std::unique_ptr<InputHandlerProxy::DidOverscrollParams> isn't copyable

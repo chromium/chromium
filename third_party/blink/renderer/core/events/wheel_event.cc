@@ -23,15 +23,18 @@
 
 #include "third_party/blink/renderer/core/events/wheel_event.h"
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_wheel_event_init.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -112,7 +115,21 @@ WheelEvent::WheelEvent(const WebMouseWheelEvent& event, LocalDOMWindow& window)
       delta_z_(0),
       delta_mode_(ConvertDeltaMode(event)),
       native_event_(event),
-      is_momentum_(event.momentum_phase != WebMouseWheelEvent::kPhaseNone) {}
+      is_momentum_(event.momentum_phase != WebMouseWheelEvent::kPhaseNone) {
+  if (RuntimeEnabledFeatures::WheelEventDeltaExternalPageScaleEnabled() &&
+      delta_mode_ == kDomDeltaPixel && window.GetFrame()) {
+    if (auto* widget = window.GetFrame()->GetWidgetForLocalRoot()) {
+      // Child widgets receive ancestor pinch zoom as an external scale. Their
+      // input-event transform removes only the local visual viewport scale.
+      // Normalize DOM pixel deltas while retaining the original native event
+      // for plugins and the original browser-side deltas used for scrolling.
+      const float external_scale = widget->GetExternalPageScaleFactor();
+      DCHECK_GT(external_scale, 0.0f);
+      delta_x_ /= external_scale;
+      delta_y_ /= external_scale;
+    }
+  }
+}
 
 WheelEvent::WheelEvent(const WebMouseWheelEvent& event,
                        const gfx::Vector2dF& delta_in_pixels,

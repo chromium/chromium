@@ -1,0 +1,43 @@
+Input.dispatchMouseEvent keeps wheel deltas and scrolling in CSS pixels at fractional page scales.
+PASS: scale 1: actual page scale
+PASS: scale 1 forward: expected events completed
+PASS: scale 1 forward: wheel deltas in CSS pixels
+PASS: scale 1 forward: scroll distance in CSS pixels
+PASS: scale 1 reverse: expected events completed
+PASS: scale 1 reverse: wheel deltas in CSS pixels
+PASS: scale 1 reverse: scroll distance in CSS pixels
+PASS: scale 1 fractional: expected events completed
+PASS: scale 1 fractional: wheel deltas in CSS pixels
+PASS: scale 1 fractional: cancelled wheel leaves scroll offset unchanged
+PASS: scale 1.2: actual page scale
+PASS: scale 1.2 forward: expected events completed
+PASS: scale 1.2 forward: wheel deltas in CSS pixels
+PASS: scale 1.2 forward: scroll distance in CSS pixels
+PASS: scale 1.2 reverse: expected events completed
+PASS: scale 1.2 reverse: wheel deltas in CSS pixels
+PASS: scale 1.2 reverse: scroll distance in CSS pixels
+PASS: scale 1.2 fractional: expected events completed
+PASS: scale 1.2 fractional: wheel deltas in CSS pixels
+PASS: scale 1.2 fractional: cancelled wheel leaves scroll offset unchanged
+PASS: scale 1.5: actual page scale
+PASS: scale 1.5 forward: expected events completed
+PASS: scale 1.5 forward: wheel deltas in CSS pixels
+PASS: scale 1.5 forward: scroll distance in CSS pixels
+PASS: scale 1.5 reverse: expected events completed
+PASS: scale 1.5 reverse: wheel deltas in CSS pixels
+PASS: scale 1.5 reverse: scroll distance in CSS pixels
+PASS: scale 1.5 fractional: expected events completed
+PASS: scale 1.5 fractional: wheel deltas in CSS pixels
+PASS: scale 1.5 fractional: cancelled wheel leaves scroll offset unchanged
+PASS: scale 1.7: actual page scale
+PASS: scale 1.7 forward: expected events completed
+PASS: scale 1.7 forward: wheel deltas in CSS pixels
+PASS: scale 1.7 forward: scroll distance in CSS pixels
+PASS: scale 1.7 reverse: expected events completed
+PASS: scale 1.7 reverse: wheel deltas in CSS pixels
+PASS: scale 1.7 reverse: scroll distance in CSS pixels
+PASS: scale 1.7 fractional: expected events completed
+PASS: scale 1.7 fractional: wheel deltas in CSS pixels
+PASS: scale 1.7 fractional: cancelled wheel leaves scroll offset unchanged
+PASS: restored page scale
+

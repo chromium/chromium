@@ -317,6 +317,11 @@ class PLATFORM_EXPORT FrameWidget {
   // this widget, taking into account its transform to main frame space.
   virtual float GetCompositingScaleFactor() = 0;
 
+  // Returns inherited pinch zoom, which scales scrolling in child widgets but
+  // is not part of their local visual viewport. Returns 1 for the top-level
+  // widget, whose pinch zoom is already included in input-event transforms.
+  virtual float GetExternalPageScaleFactor() const = 0;
+
   // Get and set the configuration for the debugging overlay managed by the
   // underlying LayerTreeHost. This may return null if the widget does not
   // composite.

@@ -7821,6 +7821,12 @@
       depends_on: ["WebXR"],
       status: "stable",
     },
+    // Normalize DOM wheel pixel deltas for inherited pinch zoom in child
+    // widgets without changing the native event used for scrolling.
+    {
+      name: "WheelEventDeltaExternalPageScale",
+      status: "stable",
+    },
     // Expose the momentum field in mouse wheel events that indicates whether an
     // event is synthesized by the platform to simulate scroll inertia after the
     // user has ended the physical scroll interaction.

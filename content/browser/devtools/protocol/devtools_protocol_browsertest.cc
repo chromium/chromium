@@ -390,6 +390,16 @@ class SyntheticMouseEventTest : public DevToolsProtocolTest {
     SendCommand("Input.dispatchMouseEvent", std::move(params), wait);
   }
 
+  const base::DictValue* SendWheelEvent(double delta_x, double delta_y) {
+    base::DictValue params;
+    params.Set("type", "mouseWheel");
+    params.Set("x", 15);
+    params.Set("y", 15);
+    params.Set("deltaX", delta_x);
+    params.Set("deltaY", delta_y);
+    return SendCommandSync("Input.dispatchMouseEvent", std::move(params));
+  }
+
   void InitMouseDownLog() {
     ASSERT_TRUE(
         content::ExecJs(shell()->web_contents(),
@@ -400,6 +410,31 @@ class SyntheticMouseEventTest : public DevToolsProtocolTest {
   std::string GetMouseDownLog() {
     return content::EvalJs(shell()->web_contents(), "window.logs.join(';')")
         .ExtractString();
+  }
+
+  void InitScrollableWheelLog() {
+    ASSERT_TRUE(content::ExecJs(
+        shell()->web_contents(),
+        "document.documentElement.style.overflow = 'hidden';"
+        "document.body.style.margin = '0';"
+        "document.body.innerHTML = '<div id=wheelScroller "
+        "style=\"width:100px;height:100px;overflow:scroll\">' +"
+        "'<div style=\"width:500px;height:500px\"></div></div>';"
+        "wheelDeltas = [];"
+        "wheelEventPromise = new Promise(resolve => "
+        "window.addEventListener('wheel', e => {"
+        "wheelDeltas = [e.deltaX, e.deltaY];"
+        "resolve();"
+        "}, {once: true, passive: false}));"
+        "scrollEndPromise = new Promise(resolve => "
+        "wheelScroller.addEventListener('scrollend', resolve, {once: true}));"
+        "void 0;"));
+    // Wait until the compositor knows that the wheel listener is blocking.
+    MainThreadFrameObserver observer(shell()
+                                         ->web_contents()
+                                         ->GetRenderWidgetHostView()
+                                         ->GetRenderWidgetHost());
+    observer.Wait();
   }
 
  private:
@@ -536,6 +571,39 @@ IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventCoordinatesWithZoom) {
     SendMouseEvent("mousePressed", 15, 15, "left", true);
   }
   ASSERT_EQ("mousedown,15,15", GetMouseDownLog());
+}
+
+// Inspector Protocol zoom helpers only change renderer-side zoom. This test
+// exercises the browser zoom read by InputHandler::ScaleFactor().
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest,
+                       WheelEventDeltasWithBrowserZoom) {
+#if BUILDFLAG(IS_ANDROID)
+  GTEST_SKIP() << "Browser zoom is not supported on Android.";
+#endif
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/devtools/zoom.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+  SendCommandSync("Page.enable");
+
+  HostZoomMap* host_zoom_map =
+      HostZoomMap::GetForWebContents(shell()->web_contents());
+  host_zoom_map->SetZoomLevelForHost(test_url.GetHost(),
+                                     blink::ZoomFactorToZoomLevel(2.5));
+  WaitForNotification("Page.frameResized", true);
+  InitScrollableWheelLog();
+
+  ASSERT_TRUE(SendWheelEvent(6, 10));
+  EvalJsResult result = content::EvalJs(
+      shell()->web_contents(),
+      "Promise.all([wheelEventPromise, scrollEndPromise]).then(() => "
+      "[...wheelDeltas, wheelScroller.scrollLeft, wheelScroller.scrollTop])");
+  const base::ListValue& values = result.ExtractList();
+  ASSERT_EQ(4u, values.size());
+  EXPECT_NEAR(6, values[0].GetDouble(), 1.0e-4);   // deltaX
+  EXPECT_NEAR(10, values[1].GetDouble(), 1.0e-4);  // deltaY
+  EXPECT_NEAR(6, values[2].GetDouble(), 0.5);      // scrollLeft
+  EXPECT_NEAR(10, values[3].GetDouble(), 0.5);     // scrollTop
 }
 
 namespace {
