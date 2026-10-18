@@ -5,8 +5,10 @@
 #include "components/history/core/browser/journeys/journeys_backend_util.h"
 
 #include <optional>
+#include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -14,11 +16,13 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/journeys/journey.h"
 #include "components/history/core/browser/journeys/journey_row.h"
+#include "components/history/core/browser/journeys/journeys_database.h"
 #include "components/history/core/browser/journeys/journeys_test_utils.h"
 #include "components/history/core/test/test_history_database.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/statement.h"
+#include "sql/test/scoped_error_expecter.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -36,6 +40,37 @@ using ::testing::Optional;
 
 constexpr char kResolutionResultHistogram[] =
     "History.SyncedJourneys.Resolution.Result";
+
+using LookupStatus = JourneyHistoryEntryLookup::Status;
+
+// Matches a lookup with status `kMissingVisit` or `kMissingUrl`. The URL row
+// fields aren't set for these, so only the entry and status are checked.
+testing::Matcher<const JourneyHistoryEntryLookup&> MatchesMissingLookup(
+    const std::string& journey_id,
+    base::Time visit_time,
+    LookupStatus status) {
+  CHECK_NE(status, LookupStatus::kFound);
+  return AllOf(
+      Field("journey_id", &JourneyHistoryEntryLookup::journey_id, journey_id),
+      Field("visit_time", &JourneyHistoryEntryLookup::visit_time, visit_time),
+      Field("status", &JourneyHistoryEntryLookup::status, status));
+}
+
+// Matches a lookup with status `kFound`, checking every field.
+testing::Matcher<const JourneyHistoryEntryLookup&> MatchesFoundLookup(
+    const std::string& journey_id,
+    base::Time visit_time,
+    const GURL& url,
+    const std::u16string& title,
+    bool is_foreign) {
+  return AllOf(
+      Field("journey_id", &JourneyHistoryEntryLookup::journey_id, journey_id),
+      Field("visit_time", &JourneyHistoryEntryLookup::visit_time, visit_time),
+      Field("status", &JourneyHistoryEntryLookup::status, LookupStatus::kFound),
+      Field("url", &JourneyHistoryEntryLookup::url, url),
+      Field("title", &JourneyHistoryEntryLookup::title, title),
+      Field("is_foreign", &JourneyHistoryEntryLookup::is_foreign, is_foreign));
+}
 
 }  // namespace
 
@@ -537,6 +572,161 @@ TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_SetsIsForeign) {
        JourneyVisit(GURL("http://www.example.com/foreign"), u"Foreign", t2,
                     /*is_foreign=*/true)});
   EXPECT_THAT(StoreJourneyAndResolveVisits(row), Optional(expected_journey));
+}
+
+// The JourneysDatabase lookup tests live here rather than in
+// journeys_database_unittest.cc because the lookups join with the `visits` and
+// `urls` tables, which only a full HistoryDatabase has.
+
+// Covers the lookup statuses and the journey ID ordering that resolution relies
+// on.
+TEST_F(JourneysBackendUtilTest,
+       LookUpAllJourneyHistoryEntries_ReportsStatusesInJourneyIdOrder) {
+  URLID page_id = AddTestURL(GURL("http://www.example.com/page"), u"Page");
+  URLID source_id =
+      AddTestURL(GURL("http://www.example.com/source"), u"Source");
+  URLID dest_id =
+      AddTestURL(GURL("http://www.example.com/dest"), u"Destination");
+  URLID invalid_id =
+      AddTestURL(GURL("http://www.example.com/invalid"), u"Invalid");
+  ASSERT_NE(page_id, 0);
+  ASSERT_NE(source_id, 0);
+  ASSERT_NE(dest_id, 0);
+  ASSERT_NE(invalid_id, 0);
+  ASSERT_NO_FATAL_FAILURE(SetInvalidUrl(invalid_id));
+
+  const base::Time foreign_time = TimeFromMicros(1000);
+  const base::Time redirect_time = TimeFromMicros(2000);
+  const base::Time invalid_url_time = TimeFromMicros(3000);
+  const base::Time unknown_time = TimeFromMicros(4000);
+  const base::Time orphaned_time = TimeFromMicros(5000);
+  ASSERT_NE(AddTestVisit(page_id, foreign_time, ui::PAGE_TRANSITION_LINK,
+                         /*originator_cache_guid=*/"remote_device_guid"),
+            0);
+  // A redirect chain shares one timestamp; the chain end has the larger ID,
+  // and the visit with the largest ID wins.
+  VisitID source_visit_id =
+      AddTestVisit(source_id, redirect_time,
+                   ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                             ui::PAGE_TRANSITION_CHAIN_START));
+  VisitID dest_visit_id = AddTestVisit(
+      dest_id, redirect_time,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_CLIENT_REDIRECT |
+                                ui::PAGE_TRANSITION_CHAIN_END));
+  ASSERT_NE(source_visit_id, 0);
+  ASSERT_GT(dest_visit_id, source_visit_id);
+  ASSERT_NE(AddTestVisit(invalid_id, invalid_url_time), 0);
+  // Visit referencing non-existent URLID 999.
+  ASSERT_NE(AddTestVisit(999, orphaned_time), 0);
+
+  // Added in reverse journey ID order, and journey_b is newer, so neither
+  // insertion nor creation time order matches the expected journey ID order.
+  ASSERT_TRUE(db_.AddOrUpdateJourneys(
+      {CreateJourneyRow("journey_b", "B", TimeFromMicros(9000),
+                        {redirect_time, foreign_time}),
+       CreateJourneyRow("journey_a", "A", TimeFromMicros(8000),
+                        {orphaned_time, unknown_time, invalid_url_time})}));
+
+  EXPECT_THAT(
+      db_.LookUpAllJourneyHistoryEntries(),
+      Optional(ElementsAre(
+          MatchesMissingLookup("journey_a", invalid_url_time,
+                               LookupStatus::kMissingUrl),
+          MatchesMissingLookup("journey_a", unknown_time,
+                               LookupStatus::kMissingVisit),
+          MatchesMissingLookup("journey_a", orphaned_time,
+                               LookupStatus::kMissingUrl),
+          MatchesFoundLookup("journey_b", foreign_time,
+                             GURL("http://www.example.com/page"), u"Page",
+                             /*is_foreign=*/true),
+          MatchesFoundLookup("journey_b", redirect_time,
+                             GURL("http://www.example.com/dest"),
+                             u"Destination", /*is_foreign=*/false))));
+}
+
+TEST_F(JourneysBackendUtilTest,
+       LookUpJourneyHistoryEntries_ReturnsOnlyThatJourneyInVisitOrder) {
+  URLID url_id = AddTestURL(GURL("http://www.example.com/page"), u"Page");
+  ASSERT_NE(url_id, 0);
+  const base::Time visit_time_1 = TimeFromMicros(1000);
+  const base::Time visit_time_2 = TimeFromMicros(2000);
+  ASSERT_NE(AddTestVisit(url_id, visit_time_1), 0);
+
+  ASSERT_TRUE(db_.AddOrUpdateJourneys(
+      {CreateJourneyRow("journey_a", "A", TimeFromMicros(9000),
+                        {visit_time_2, visit_time_1}),
+       CreateJourneyRow("journey_b", "B", TimeFromMicros(8000),
+                        {visit_time_1})}));
+
+  // Only the requested journey's entries, ordered by visit time.
+  EXPECT_THAT(
+      db_.LookUpJourneyHistoryEntries("journey_a"),
+      Optional(ElementsAre(
+          MatchesFoundLookup("journey_a", visit_time_1,
+                             GURL("http://www.example.com/page"), u"Page",
+                             /*is_foreign=*/false),
+          MatchesMissingLookup("journey_a", visit_time_2,
+                               LookupStatus::kMissingVisit))));
+  EXPECT_THAT(db_.LookUpJourneyHistoryEntries("unknown"), Optional(IsEmpty()));
+}
+
+TEST_F(JourneysBackendUtilTest,
+       LookUpAllJourneyHistoryEntries_NoJourneysReturnsEmpty) {
+  EXPECT_THAT(db_.LookUpAllJourneyHistoryEntries(), Optional(IsEmpty()));
+}
+
+// A lookup statement that fails while stepping returns std::nullopt instead of
+// the rows read so far. This is the only test of that partial-read path, so
+// keep each part of the setup:
+// - The first row reads fine and the second fails, so rows have already been
+//   read when the statement fails.
+// - The failure comes from `urls.title`, replaced with a generated column that
+//   evaluates abs(INT64_MIN), an integer overflow error, for one URL only. It
+//   is evaluated per row, so it fails in Step() rather than when preparing the
+//   statement.
+// - The column is VIRTUAL because ALTER TABLE can't add STORED generated
+//   columns.
+// If an ALTER TABLE below fails, check that Chromium's SQLite build still
+// supports generated columns (no SQLITE_OMIT_GENERATED_COLUMNS in
+// //third_party/sqlite/sqlite_common_configuration_flags.gni).
+TEST_F(JourneysBackendUtilTest,
+       LookUpJourneyHistoryEntries_ReadErrorReturnsNullopt) {
+  URLID good_id = AddTestURL(GURL("http://www.example.com/good"), u"Good");
+  URLID failing_id =
+      AddTestURL(GURL("http://www.example.com/failing"), u"Failing");
+  ASSERT_NE(good_id, 0);
+  ASSERT_NE(failing_id, 0);
+  const base::Time good_time = TimeFromMicros(1000);
+  const base::Time failing_time = TimeFromMicros(2000);
+  ASSERT_NE(AddTestVisit(good_id, good_time), 0);
+  ASSERT_NE(AddTestVisit(failing_id, failing_time), 0);
+  ASSERT_TRUE(db_.AddOrUpdateJourneys(
+      {CreateJourneyRow("journey_a", "A", TimeFromMicros(9000),
+                        {good_time, failing_time}),
+       CreateJourneyRow("journey_good", "Good", TimeFromMicros(8000),
+                        {good_time})}));
+
+  sql::Database& sql_db = db_.GetDBForTesting();
+  ASSERT_TRUE(
+      sql_db.Execute("ALTER TABLE urls RENAME COLUMN title TO stored_title"));
+  ASSERT_TRUE(sql_db.Execute(
+      "ALTER TABLE urls ADD COLUMN title GENERATED ALWAYS AS "
+      "(CASE WHEN stored_title = 'Failing' "
+      "THEN abs(-9223372036854775807 - 1) ELSE stored_title END) VIRTUAL"));
+  // The journey itself is still readable, and so are the lookups that don't
+  // hit the failing URL, so the statement prepares fine.
+  ASSERT_TRUE(db_.GetJourney("journey_a").has_value());
+  ASSERT_THAT(
+      db_.LookUpJourneyHistoryEntries("journey_good"),
+      Optional(ElementsAre(MatchesFoundLookup(
+          "journey_good", good_time, GURL("http://www.example.com/good"),
+          u"Good", /*is_foreign=*/false))));
+
+  sql::test::ScopedErrorExpecter expecter;
+  expecter.ExpectError(sql::SqliteResultCode::kError);
+  EXPECT_EQ(db_.LookUpJourneyHistoryEntries("journey_a"), std::nullopt);
+  EXPECT_EQ(db_.LookUpAllJourneyHistoryEntries(), std::nullopt);
+  EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
 TEST_F(JourneysBackendUtilTest, GetUnresolvableJourneysCountForFishfood) {

@@ -246,7 +246,87 @@ bool InsertCollections(sql::Database& db, const JourneyRow& journey) {
   return true;
 }
 
+// The SELECT and FROM clauses shared by the statements in
+// `JourneysDatabase::LookUp*JourneyHistoryEntries()`. The selected columns
+// must stay in the order of `LookupColumn`, which
+// `ParseJourneyHistoryEntryLookup()` uses to read them.
+#define JOURNEY_HISTORY_ENTRY_LOOKUP_SELECT_FROM                            \
+  "SELECT entry.journey_id, entry.visit_timestamp_micros, visit.id, "       \
+  "visit.originator_cache_guid, url_row.id, url_row.url, url_row.title "    \
+  "FROM journey_history_entries AS entry "                                  \
+  "LEFT JOIN visits AS visit ON visit.id = "                                \
+  "(SELECT id FROM visits WHERE visit_time = entry.visit_timestamp_micros " \
+  "ORDER BY id DESC LIMIT 1) "                                              \
+  "LEFT JOIN urls AS url_row ON url_row.id = visit.url "
+
+// Column indices in `JOURNEY_HISTORY_ENTRY_LOOKUP_SELECT_FROM`.
+enum LookupColumn {
+  kJourneyIdColumn = 0,
+  kVisitTimeColumn = 1,
+  kVisitIdColumn = 2,
+  kOriginatorCacheGuidColumn = 3,
+  kUrlIdColumn = 4,
+  kUrlColumn = 5,
+  kTitleColumn = 6,
+};
+
+// Parses a row selected by `kLookUpForJourneySql` or `kLookUpForAllJourneysSql`
+// in `JourneysDatabase::LookUp*JourneyHistoryEntries()`.
+JourneyHistoryEntryLookup ParseJourneyHistoryEntryLookup(sql::Statement& s) {
+  using Status = JourneyHistoryEntryLookup::Status;
+  JourneyHistoryEntryLookup lookup;
+  lookup.journey_id = s.ColumnString(kJourneyIdColumn);
+  lookup.visit_time = s.ColumnTime(kVisitTimeColumn);
+  // `visit.id` and `url_row.id` are never NULL in a matched row, so NULL means
+  // that the LEFT JOIN found no row.
+  if (s.GetColumnType(kVisitIdColumn) == sql::ColumnType::kNull) {
+    lookup.status = Status::kMissingVisit;
+    return lookup;
+  }
+  lookup.is_foreign = !s.ColumnStringView(kOriginatorCacheGuidColumn).empty();
+  if (s.GetColumnType(kUrlIdColumn) == sql::ColumnType::kNull) {
+    lookup.status = Status::kMissingUrl;
+    return lookup;
+  }
+  // Like URLDatabase::FillURLRow(), treat a URL row with an invalid URL as
+  // missing.
+  GURL url(s.ColumnStringView(kUrlColumn));
+  if (!url.is_valid()) {
+    lookup.status = Status::kMissingUrl;
+    return lookup;
+  }
+  lookup.status = Status::kFound;
+  lookup.url = std::move(url);
+  lookup.title = s.ColumnString16(kTitleColumn);
+  return lookup;
+}
+
+// Returns std::nullopt if the statement fails, rather than the rows read up to
+// the failure, so that callers never resolve a journey from a partial list.
+std::optional<std::vector<JourneyHistoryEntryLookup>>
+ReadJourneyHistoryEntryLookups(sql::Statement& s_lookups) {
+  std::vector<JourneyHistoryEntryLookup> lookups;
+  while (s_lookups.Step()) {
+    lookups.push_back(ParseJourneyHistoryEntryLookup(s_lookups));
+  }
+  if (!s_lookups.Succeeded()) {
+    return std::nullopt;
+  }
+  return lookups;
+}
+
 }  // namespace
+
+JourneyHistoryEntryLookup::JourneyHistoryEntryLookup() = default;
+JourneyHistoryEntryLookup::~JourneyHistoryEntryLookup() = default;
+JourneyHistoryEntryLookup::JourneyHistoryEntryLookup(
+    const JourneyHistoryEntryLookup&) = default;
+JourneyHistoryEntryLookup& JourneyHistoryEntryLookup::operator=(
+    const JourneyHistoryEntryLookup&) = default;
+JourneyHistoryEntryLookup::JourneyHistoryEntryLookup(
+    JourneyHistoryEntryLookup&&) noexcept = default;
+JourneyHistoryEntryLookup& JourneyHistoryEntryLookup::operator=(
+    JourneyHistoryEntryLookup&&) noexcept = default;
 
 JourneysDatabase::JourneysDatabase() = default;
 
@@ -576,5 +656,40 @@ bool JourneysDatabase::DeleteChildRows(const std::string& journey_id) {
   return deleted_history_entries && deleted_continuation_queries &&
          deleted_collections && deleted_collection_items;
 }
+
+// Both lookup statements join journey history entries with `visits` and
+// `urls`. The correlated subquery picks the visit with the largest ID for the
+// entry's timestamp, like VisitDatabase::GetLastRowForVisitByVisitTime(), and
+// uses the index on `visits.visit_time` (see
+// `VisitDatabase::InitVisitTable()`). LEFT JOINs keep entries whose visit or
+// URL is missing, so that callers can tell which lookup failed. Both `ORDER
+// BY`s follow the primary key of `journey_history_entries`, so SQLite needs no
+// separate sort step.
+//
+// The statements share the SELECT and FROM clauses defined with
+// `LookupColumn` near the top of this file.
+std::optional<std::vector<JourneyHistoryEntryLookup>>
+JourneysDatabase::LookUpJourneyHistoryEntries(const std::string& journey_id) {
+  static constexpr char kLookUpForJourneySql[] =
+      JOURNEY_HISTORY_ENTRY_LOOKUP_SELECT_FROM
+      "WHERE entry.journey_id = ? "
+      "ORDER BY entry.visit_timestamp_micros";
+  sql::Statement s_lookups(
+      GetDB().GetCachedStatement(SQL_FROM_HERE, kLookUpForJourneySql));
+  s_lookups.BindString(0, journey_id);
+  return ReadJourneyHistoryEntryLookups(s_lookups);
+}
+
+std::optional<std::vector<JourneyHistoryEntryLookup>>
+JourneysDatabase::LookUpAllJourneyHistoryEntries() {
+  static constexpr char kLookUpForAllJourneysSql[] =
+      JOURNEY_HISTORY_ENTRY_LOOKUP_SELECT_FROM
+      "ORDER BY entry.journey_id, entry.visit_timestamp_micros";
+  sql::Statement s_lookups(
+      GetDB().GetCachedStatement(SQL_FROM_HERE, kLookUpForAllJourneysSql));
+  return ReadJourneyHistoryEntryLookups(s_lookups);
+}
+
+#undef JOURNEY_HISTORY_ENTRY_LOOKUP_SELECT_FROM
 
 }  // namespace history::journeys

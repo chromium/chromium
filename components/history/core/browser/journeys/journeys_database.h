@@ -9,13 +9,50 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
 #include "components/history/core/browser/journeys/journey_row.h"
+#include "url/gurl.h"
 
 namespace sql {
 class Database;
 }  // namespace sql
 
 namespace history::journeys {
+
+// The result of looking up one journey history entry in the `visits` and
+// `urls` tables.
+struct JourneyHistoryEntryLookup {
+  JourneyHistoryEntryLookup();
+  ~JourneyHistoryEntryLookup();
+  JourneyHistoryEntryLookup(const JourneyHistoryEntryLookup&);
+  JourneyHistoryEntryLookup& operator=(const JourneyHistoryEntryLookup&);
+  JourneyHistoryEntryLookup(JourneyHistoryEntryLookup&&) noexcept;
+  JourneyHistoryEntryLookup& operator=(JourneyHistoryEntryLookup&&) noexcept;
+
+  enum class Status {
+    // The visit and its URL row were found.
+    kFound,
+    // No visit with `visit_time` exists in the `visits` table.
+    kMissingVisit,
+    // The visit exists, but its URL row is missing from the `urls` table or
+    // holds an invalid URL.
+    kMissingUrl,
+  };
+
+  // The entry, from `journey_history_entries`.
+  std::string journey_id;
+  base::Time visit_time;
+
+  Status status = Status::kMissingVisit;
+
+  // From the visit row. Only meaningful if `status` isn't `kMissingVisit`.
+  // True when the visit originated on another device and arrived via sync.
+  bool is_foreign = false;
+
+  // From the URL row. Only set if `status` is `kFound`.
+  GURL url;
+  std::u16string title;
+};
 
 // Manages the SQLite database tables for storing journey data.
 //
@@ -64,6 +101,23 @@ class JourneysDatabase {
   // tables listed above.
   // Returns true on success.
   bool DeleteAllJourneys();
+
+  // Looks up the history entries of the journey identified by `journey_id` in
+  // the `visits` and `urls` tables using a single query. If several visits
+  // share an entry's timestamp (e.g. a redirect chain), the one with the
+  // largest ID is used, which is the end of the chain. The result is ordered by
+  // `visit_time`. Returns std::nullopt on error.
+  //
+  // Requires the `visits` and `urls` tables to exist in the same database,
+  // which is the case when mixed into `HistoryDatabase`.
+  std::optional<std::vector<JourneyHistoryEntryLookup>>
+  LookUpJourneyHistoryEntries(const std::string& journey_id);
+
+  // Same as `LookUpJourneyHistoryEntries()`, but for all journeys at once. The
+  // result is ordered by `journey_id`, then `visit_time`. Returns std::nullopt
+  // on error.
+  std::optional<std::vector<JourneyHistoryEntryLookup>>
+  LookUpAllJourneyHistoryEntries();
 
  protected:
   // Creates any missing tables and indices; existing ones are left untouched.
