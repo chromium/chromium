@@ -97,6 +97,11 @@ namespace content {
 
 RenderProcessImpl::RenderProcessImpl()
     : RenderProcess(GetThreadPoolInitParams()) {
+  // Do not apply V8 flag overrides if disallowed.
+  const bool disallow_v8_feature_flag_overrides =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisallowV8FeatureFlagOverrides);
+
 #if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Some official builds ship with DCHECKs compiled in. Failing DCHECKs then
   // are either fatal or simply log the error, based on a feature flag.
@@ -104,7 +109,8 @@ RenderProcessImpl::RenderProcessImpl()
   // the Chrome base logging implementation.
   v8::V8::SetDcheckErrorHandler(&V8DcheckCallbackHandler);
 
-  if (!base::FeatureList::IsEnabled(base::kDCheckIsFatalFeature)) {
+  if (!base::FeatureList::IsEnabled(base::kDCheckIsFatalFeature) &&
+      !disallow_v8_feature_flag_overrides) {
     // These V8 flags default on in this build configuration. This triggers
     // additional verification and code generation, which both slows down V8,
     // and can lead to fatal CHECKs. Turn these flags down to get something
@@ -118,10 +124,6 @@ RenderProcessImpl::RenderProcessImpl()
   }
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
-  // Do not apply V8 flag overrides if disallowed.
-  const bool disallow_v8_feature_flag_overrides =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisallowV8FeatureFlagOverrides);
   if (!disallow_v8_feature_flag_overrides) {
     if (base::SysInfo::IsLowEndDevice()) {
       std::string_view optimize_flag("--optimize-for-size");
