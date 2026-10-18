@@ -648,6 +648,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2102495993840063010">Aplicacions per a Android</translation>
 <translation id="2103210856015238101">Les targetes de fidelització que es poden emplenar amb un toc s'han obert a alçada completa.</translation>
 <translation id="2104739941682874393">L'emplenament automàtic millorat entén millor els formularis i pot emplenar-los automàticament més de pressa</translation>
+<translation id="2105237910269166838">Pregunta sobre aquesta pàgina</translation>
 <translation id="2107021941795971877">Suports d'impressió</translation>
 <translation id="2108755909498034140">Reinicia l'ordinador</translation>
 <translation id="2109845311767915560">Grup de pestanyes compartit</translation>
@@ -1055,6 +1056,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2734797989819862638">No copiïs</translation>
 <translation id="2738771556149464852">No després</translation>
 <translation id="2740531572673183784">D'acord</translation>
+<translation id="2750602117850059078">{COUNT,plural, =0{Cap}=1{1 habilitat}other{# habilitats}}</translation>
 <translation id="2757727729385895652">S'estan penjant <ph name="COUNT" /> fitxers a Google Drive</translation>
 <translation id="2759299890026163685">Assegura't de tenir una connexió a Internet estable abans de tornar-ho a provar</translation>
 <translation id="2759825833388495838">emplenar la teva contrasenya a <ph name="APP_NAME" /></translation>
@@ -3628,6 +3630,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="7083258188081898530">Safata 9</translation>
 <translation id="70846382339153529">Text d'OpenDocument</translation>
 <translation id="7086090958708083563">Pujada sol·licitada per l'usuari</translation>
+<translation id="7089745480771070611">S'obre al tauler lateral</translation>
 <translation id="7090698782953528257">Ajuda'm a fer un gràfic d'una funció per visualitzar l'equació matemàtica i veure la forma de la corba</translation>
 <translation id="7092087596499105699">L'administrador ha configurat el connector de passarel·la segura per protegir l'accés a les aplicacions web privades de la teva organització. És possible que utilitzi dades del teu perfil de treball per verificar l'accés.</translation>
 <translation id="7095139009144195559"><ph name="MANAGE_SITE_SETTINGS_FOCUSED_FRIENDLY_MATCH_TEXT" />, prem Tab i després Retorn per gestionar els permisos i les dades emmagatzemades als llocs web des de la configuració de Chrome</translation>
@@ -4012,6 +4015,7 @@ Detalls addicionals:
 <translation id="7696107855583699585">Edita el número de viatger conegut</translation>
 <translation id="7698864304447945242">Vols actualitzar Serveis de Google Play per a RA?</translation>
 <translation id="7699509138503320152">Reescriu el meu correu electrònic perquè sigui més persuasiu</translation>
+<translation id="7700664778039213995">{COUNT,plural, =0{Cap}=1{1 habilitat (sincronitzada)}other{# habilitats (sincronitzades)}}</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7704050614460855821"><ph name="BEGIN_LINK" />Continua per accedir a <ph name="SITE" /> (no segur)<ph name="END_LINK" /></translation>
 <translation id="7705085181312584869">Ajuda'm a escriure</translation>

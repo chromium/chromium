@@ -665,6 +665,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2126374524350484896">PDFaren egilea:</translation>
 <translation id="2127090458081644412">Gorde da pasahitza gailuan</translation>
 <translation id="2127747486437921899">Etzana</translation>
+<translation id="2129163794581571479">Gemini-ren adimen pertsonalizatuarekin. Baliteke eskaerak, orrien izenak eta URLak berrikustea, betetze automatiko hobetua hobetzeko. <ph name="BEGIN_LINK" />Kudeatu ezarpenak<ph name="END_LINK" /></translation>
 <translation id="2130448033692577677">Baliteke zehaztu dituzun txantiloiak ez aplikatzea, DnsOverHttpsMode gidalerroa ez delako ezarri.</translation>
 <translation id="2130699163006053678">A3x7</translation>
 <translation id="2131006834960167560">Ordainketen betetze automatikoa gaitzeko beheko panela altuera osoan ireki da.</translation>
@@ -1571,6 +1572,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3655670868607891010">Hau maiz agertzen bazaizu, saiatu honekin: <ph name="HELP_LINK" />.</translation>
 <translation id="3658742229777143148">Zuzenketa</translation>
 <translation id="3659521826520353662">Administratzaileak definitutako zein webgune bisitatzen diren eta noiz: <ph name="ALLOWLISTED_WEBSITES" /></translation>
+<translation id="3663760610864720538">Gemini-ren adimen pertsonalizatuarekin. <ph name="BEGIN_LINK" />Kudeatu ezarpenak<ph name="END_LINK" /></translation>
 <translation id="3664479564786885722">Bilatu erosteko aukera gehiago produktu hau saltzen duten beste denda batzuetan.</translation>
 <translation id="3664782872746246217">Gako-hitzak:</translation>
 <translation id="3670030362669914947">Zenbakia</translation>
@@ -1591,6 +1593,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3693516565203081475">Aukeratu ordainketa-metodoa</translation>
 <translation id="3698353241727597930"><ph name="FILES" /> enpresak kudeatutako <ph name="CLOUD_STORAGE" /> bidez gordetzeko konfiguratu ditu ezarpenak administratzaileak. Fitxategi horiek ezabatzen dituzunean, baliteke gainbegiratzea, ikuskatzea eta atxikitzea.</translation>
 <translation id="3698629142018988477">Webgune bat sortzeko botoia: aktiba ezazu Google Sites-en webgune bat bizkor sortzeko</translation>
+<translation id="3698708128812719147">Sakatu Ktrl birritan sareko edozein tokitan informazio gehiago aurkitzeko eta automatikoki betetzeko</translation>
 <translation id="3700094625653511150">Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="3700966190175650601">Zure hatz-marka erabiltzen ari zara pasahitzak betetzeko</translation>
 <translation id="3701427423622901115">Berrezarri dira balio lehenetsiak.</translation>
@@ -1894,6 +1897,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4185037616931963178">Eguneratu zuzenketa-zenbakia modu seguruan</translation>
 <translation id="4186035307311647330">Utzi prezioaren jarraipena egiteari</translation>
 <translation id="4191334393248735295">Luzera</translation>
+<translation id="4192770747482479191">Sakatu ⌘ birritan sareko edozein tokitan informazio gehiago aurkitzeko eta automatikoki betetzeko</translation>
 <translation id="4195459680867822611">Chrome-ri buruzko aholkuak ikusteko botoia: aktiba ezazu Chrome-ren eginbideei buruzko informazioa lortzeko</translation>
 <translation id="4195643157523330669">Ireki fitxa berri batean</translation>
 <translation id="4196861286325780578">&amp;Berregin mugitzea</translation>
@@ -2842,6 +2846,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="573974402615125334">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko, sinkronizatu historia eta fitxak</translation>
 <translation id="5740911612628596808">C9 gutun-azala</translation>
 <translation id="574392208103952083">Ertaina</translation>
+<translation id="5744350700955456407">Orain, betetze automatiko hobetuak informazioa aurkitu eta bete dezake (adibidez, eskaera-zenbakiak eta hegaldien berrespen-kodeak) Gmail, Argazkiak eta antzeko aplikazioetan</translation>
 <translation id="5745586894920491759">Chrome-k hodeian prozesatzen ditu orrien izenak eta URLak</translation>
 <translation id="5745733273847572235">Kokapena eska dezake</translation>
 <translation id="5750869797196646528">Eskuen jarraipena</translation>

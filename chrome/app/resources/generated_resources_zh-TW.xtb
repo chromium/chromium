@@ -2145,6 +2145,7 @@
 <translation id="2636266464805306348">視窗標題</translation>
 <translation id="2637313651144986786">搜尋分頁...</translation>
 <translation id="2637400434494156704">PIN 碼不正確。你還可以再試 1 次。</translation>
+<translation id="2637852492915204064">關閉分頁搜尋</translation>
 <translation id="263796568413910992">問問 <ph name="SEARCH_ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="2640299212685523844">使用 GTK</translation>
 <translation id="264083724974021997">連線至你的手機 - 對話方塊</translation>
@@ -3413,6 +3414,7 @@
 <translation id="3582057310199111521">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3582299299336701326">將亮螢幕調暗，並將暗螢幕調亮。按下搜尋鍵 + Ctrl + H 鍵即可開啟或關閉色彩反轉功能。</translation>
 <translation id="3584169441612580296">讀取及變更你電腦中的相片、音樂及其他媒體</translation>
+<translation id="358562596990359723">關閉分頁搜尋</translation>
 <translation id="3586741240886978899">你在這個網站上使用過</translation>
 <translation id="3586806079541226322">無法開啟這個檔案</translation>
 <translation id="3586931643579894722">隱藏詳細資訊</translation>
@@ -4418,7 +4420,7 @@
 <translation id="4325515113816851466">你登出後，系統就不會套用家長的選擇</translation>
 <translation id="4326146840124313313">Chrome 最強大的安全防護功能可進一步協助你防範危險的網站、下載內容和擴充功能</translation>
 <translation id="4327380114687339519">擴充功能選單</translation>
-<translation id="4328160087116165267">分享系統音訊</translation>
+<translation id="4328160087116165267">分享時包含系統音訊</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻譯<ph name="LANGUAGE" /></translation>
 <translation id="4330963457501417204">將游標懸停在收合的分頁上，即可自動展開</translation>

@@ -1643,7 +1643,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2252017960592955005">Protección de visualización (beta)</translation>
 <translation id="2253318212986772520">No se pudo recuperar el PPD de <ph name="PRINTER_NAME" />.</translation>
 <translation id="2253797136365098595">Más información sobre las búsquedas en el historial</translation>
-<translation id="2253927598983295051">Elege qué quieres compartir con <ph name="APP_NAME" /></translation>
+<translation id="2253927598983295051">Elige qué quieres compartir con <ph name="APP_NAME" /></translation>
 <translation id="2255317897038918278">Impresión de fecha de Microsoft</translation>
 <translation id="2256049182613019001">Cerrar el modo de lectura (<ph name="SHORTCUT" />)</translation>
 <translation id="2256115617011615191">Reiniciar ahora</translation>
@@ -2145,6 +2145,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2636266464805306348">Títulos de las ventanas</translation>
 <translation id="2637313651144986786">Buscar pestañas…</translation>
 <translation id="2637400434494156704">El PIN es incorrecto. Te queda un intento.</translation>
+<translation id="2637852492915204064">Cerrar la Búsqueda de pestañas</translation>
 <translation id="263796568413910992">Pregúntale a <ph name="SEARCH_ENGINE_NAME" /> o escribe una URL</translation>
 <translation id="2640299212685523844">Usar GTK</translation>
 <translation id="264083724974021997">Conéctate a tu teléfono: diálogo</translation>
@@ -3416,6 +3417,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3582057310199111521">Se ingresó en un sitio engañoso y se encontró en una violación de la seguridad de los datos</translation>
 <translation id="3582299299336701326">Oscurece las pantallas claras y aclara las oscuras. Presiona Búsqueda + Ctrl + H para activar y desactivar la inversión de colores.</translation>
 <translation id="3584169441612580296">Leer y cambiar fotos, música y otro contenido multimedia desde tu computadora</translation>
+<translation id="358562596990359723">Cerrar la búsqueda de pestañas</translation>
 <translation id="3586741240886978899">La usaste en este sitio</translation>
 <translation id="3586806079541226322">No se puede abrir este archivo.</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>

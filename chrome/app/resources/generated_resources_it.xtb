@@ -1529,7 +1529,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2165177462441582039">Scegli la durata dell'evidenziazione di ogni elemento</translation>
 <translation id="2166369534954157698">Pranzo d'acqua fa volti sghembi</translation>
 <translation id="2168036794078614559">Segnalazione inviata</translation>
-<translation id="2168735174585029637">Dai alle tue schede un nuovo aspetto trasparente</translation>
+<translation id="2168735174585029637">Rinnova le tue schede con un look trasparente</translation>
 <translation id="2169062631698640254">Accedi comunque</translation>
 <translation id="217120844667431680">Fai di più con AI Mode</translation>
 <translation id="2173302385160625112">Controlla la connessione a internet</translation>
@@ -2144,6 +2144,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2636266464805306348">Titoli finestre</translation>
 <translation id="2637313651144986786">Cerca tra le schede…</translation>
 <translation id="2637400434494156704">PIN errato. Hai ancora a disposizione un tentativo.</translation>
+<translation id="2637852492915204064">Chiudi ricerca di schede</translation>
 <translation id="263796568413910992">Chiedi a <ph name="SEARCH_ENGINE_NAME" /> o digita un URL</translation>
 <translation id="2640299212685523844">Usa GTK</translation>
 <translation id="264083724974021997">Collegati al telefono - Finestra di dialogo</translation>
@@ -2778,7 +2779,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3094521107841754472">Il prezzo è cambiato da <ph name="PREVIOUS_PRICE" /> a <ph name="CURRENT_PRICE" />.</translation>
 <translation id="3095871294753148861">Preferiti, password e altri dati di navigazione sono sincronizzati con l'account principale.</translation>
 <translation id="3097674000822532270">Le app e le impostazioni verranno sincronizzate su tutti i dispositivi ChromeOS Flex su cui hai eseguito l'accesso con il tuo Account Google. Per gestire i dati del browser salvati nel tuo Account Google, vai alle <ph name="LINK_BEGIN" />impostazioni di Chrome<ph name="LINK_END" />.</translation>
-<translation id="3099754485438181407">Prova il nuovo stile nelle impostazioni. Puoi sempre tornare all'aspetto classico.</translation>
+<translation id="3099754485438181407">Prova il nuovo stile nelle impostazioni. Puoi sempre tornare allo stile classico.</translation>
 <translation id="3101126716313987672">Attenuare la luce</translation>
 <translation id="3101709781009526431">Data e ora</translation>
 <translation id="3102309003841389927">Controlla l'aggiornamento del logo</translation>
@@ -3415,6 +3416,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
 <translation id="3582299299336701326">Scurisci gli schermi chiari e schiarisci quelli scuri. Premi il tasto per la ricerca + Ctrl + H per attivare e disattivare l'inversione dei colori.</translation>
 <translation id="3584169441612580296">Lettura e modifica di foto, musica e altri contenuti multimediali del computer</translation>
+<translation id="358562596990359723">Chiudi ricerca di schede</translation>
 <translation id="3586741240886978899">Utilizzato su questo sito</translation>
 <translation id="3586806079541226322">Impossibile aprire questo file</translation>
 <translation id="3586931643579894722">Nascondi dettagli</translation>
@@ -10873,7 +10875,7 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="978146274692397928">La larghezza della punteggiatura iniziale è piena</translation>
 <translation id="978978324795544535">Tocca due volte un elemento, tieni premuto al secondo tocco, quindi trascina l'elemento per spostarlo</translation>
 <translation id="981121421437150478">Offline</translation>
-<translation id="981383875218593510">Imposta questa opzione su Moderno per provare il nuovo aspetto trasparente per le schede.</translation>
+<translation id="981383875218593510">Imposta questa opzione su Moderno per provare il nuovo look trasparente delle tue schede.</translation>
 <translation id="982083952953998237">Aggiungi vincoli</translation>
 <translation id="98235653036850093">Ciao <ph name="PROFILE_NAME" /></translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>

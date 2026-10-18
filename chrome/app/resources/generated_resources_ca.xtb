@@ -269,6 +269,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1177863135347784049">Personalitzat</translation>
 <translation id="1178093605842850860">Amb permís per llegir i canviar aquest lloc web</translation>
 <translation id="1178357842179817577">Et protegeix d'extensions, baixades i llocs web perillosos</translation>
+<translation id="1178447762281437907"><ph name="BEGIN_BOLD" />Les pestanyes es comparteixen per oferir-te respostes més rellevants<ph name="END_BOLD" />. Google utilitza el contingut i l'URL de la pestanya oberta quan inicies un xat nou. Pots canviar aquesta opció de configuració en qualsevol moment.</translation>
 <translation id="1178581264944972037">Posa en pausa</translation>
 <translation id="117916940443676133">La clau de seguretat no està protegida amb un PIN. Per gestionar les dades d'inici de sessió, primer crea un PIN.</translation>
 <translation id="1179400851034021914">L'IBAN no és vàlid</translation>
@@ -702,6 +703,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1535753739390684432">Escolta un text concret en veu alta. Primer, selecciona la icona Escolta la selecció, a la part inferior de la pantalla. A continuació, marca el text.</translation>
 <translation id="1536754031901697553">S'està desconnectant...</translation>
 <translation id="1536883206862903762">Les extensions es desactivaran i la configuració es restablirà als valors predeterminats segurs. Les pestanyes, els fitxers i les galetes es conservaran. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="1537010827607452877"><ph name="BEGIN_BOLD_1" />Les pestanyes es comparteixen per oferir-te respostes més rellevants<ph name="END_BOLD_1" />. Google utilitza el contingut i l'URL de la pestanya oberta quan inicies un xat nou. Pots canviar aquesta opció de configuració en qualsevol moment. <ph name="BEGIN_BOLD_2" />Mantenim la privadesa i la seguretat de les dades de la teva organització<ph name="END_BOLD_2" />. No s'utilitzaran per millorar els models d'IA generativa.</translation>
 <translation id="1537254971476575106">Lupa de pantalla completa</translation>
 <translation id="1538808328818992871">Ha de tenir com a mínim <ph name="MIN_LENGTH" /> caràcters</translation>
 <translation id="1539248305642687917">No permetis que els llocs web anul·lin l'entrada del teclat</translation>
@@ -1897,6 +1899,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2457246892030921239"><ph name="APP_NAME" /> vol copiar fitxers desats a <ph name="VOLUME_NAME" />.</translation>
 <translation id="2457842160081795172">Actualment al canal <ph name="CHANNEL_NAME" /></translation>
 <translation id="2458379781610688953">Actualitza el compte, <ph name="EMAIL" /></translation>
+<translation id="2458545895994128057">Les pestanyes es comparteixen per oferir-te respostes més rellevants. Google utilitza el contingut i l'URL de la pestanya oberta quan inicies un xat nou. Pots canviar aquesta opció de configuració en qualsevol moment. Mantenim la privadesa i la seguretat de les dades de la teva organització. No s'utilitzaran per millorar els models d'IA generativa.</translation>
 <translation id="2459703812219683497">S'ha detectat un codi d'activació</translation>
 <translation id="2459706890611560967">Reprèn l'emissió de la pestanya a <ph name="DEVICE_NAME" /></translation>
 <translation id="245979889539926662">Comparteix una captura de pantalla</translation>
@@ -2142,6 +2145,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2636266464805306348">Títols de les finestres</translation>
 <translation id="2637313651144986786">Cerca pestanyes</translation>
 <translation id="2637400434494156704">El PIN no és correcte. Et queda un intent.</translation>
+<translation id="2637852492915204064">Tanca la cerca de pestanyes</translation>
 <translation id="263796568413910992">Pregunta a <ph name="SEARCH_ENGINE_NAME" /> o escriu un URL</translation>
 <translation id="2640299212685523844">Utilitza GTK</translation>
 <translation id="264083724974021997">Connecta't al telèfon - Quadre de diàleg</translation>
@@ -3411,6 +3415,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3582057310199111521">S'ha introduït en un lloc web enganyós i s'ha trobat en una violació de les dades</translation>
 <translation id="3582299299336701326">Enfosqueix les pantalles clares i il·lumina'n les fosques. Prem Cerca+Ctrl+H per activar i desactivar la inversió de colors.</translation>
 <translation id="3584169441612580296">Accedeix a fotos, a música i a altres fitxers multimèdia de l'ordinador i modifica'ls</translation>
+<translation id="358562596990359723">Tanca la cerca de pestanyes</translation>
 <translation id="3586741240886978899">L'has utilitzat en aquest lloc web</translation>
 <translation id="3586806079541226322">No es pot obrir aquest fitxer</translation>
 <translation id="3586931643579894722">Oculta els detalls</translation>
@@ -6203,6 +6208,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5724723163580775373">Enfocament gran</translation>
 <translation id="5725112283692663422">Envia suggeriments sobre Crea un tema amb IA</translation>
 <translation id="5727728807527375859">Les extensions, les aplicacions i els temes poden malmetre el vostre equip. Segur que voleu continuar?</translation>
+<translation id="5727872803091928075">Les pestanyes es comparteixen per oferir-te respostes més rellevants. Google utilitza el contingut i l'URL de la pestanya oberta quan inicies un xat nou. Pots canviar aquesta opció de configuració en qualsevol moment.</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
 <translation id="5729712731028706266">&amp;Lector</translation>
 <translation id="5731247495086897348">En&amp;ganxa i ves-hi</translation>
@@ -7344,6 +7350,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="661266467055912436">Millora la seguretat per a tu i per a tots els usuaris del web.</translation>
 <translation id="6613231539539868591">Dades conservades</translation>
 <translation id="6613267708691765962">S'està cercant programari maliciós...</translation>
+<translation id="6614219106064338118">Inicia un xat</translation>
 <translation id="6615455863669487791">Mostra-m'ho</translation>
 <translation id="6616000047939888167">Ofereix el Traductor de Google per als llocs web i els PDF en altres idiomes</translation>
 <translation id="6618013221808317456">No permetis que els llocs web utilitzin l'optimització de JavaScript</translation>
@@ -9728,6 +9735,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8410133743809404768">Pots fer cerques a la barra d'adreces utilitzant "@history", així com des de la pàgina Historial</translation>
 <translation id="8411043186249152291">pantalla completa</translation>
 <translation id="8412136526970428322">Permisos concedits: <ph name="PERMISSION" /> i <ph name="COUNT" /> més</translation>
+<translation id="8413685856004704642">S'hi apliquen les <ph name="BEGIN_LINK1" />condicions de Google<ph name="END_LINK1" /> i l’<ph name="BEGIN_LINK2" />avís de privadesa de les aplicacions de Gemini<ph name="END_LINK2" />.</translation>
 <translation id="8413795581997394485">Protegeix contra llocs web, baixades i extensions que se sap que són perillosos. Quan visites un lloc web, Chrome envia una part ofuscada de l'URL a Google mitjançant un servidor de privadesa que amaga la teva adreça IP. Si un lloc web fa res sospitós, també s'envien URL complets i fragments de contingut de la pàgina.</translation>
 <translation id="8414396119627470038">Inicia la sessió a <ph name="SITE_ETLD_PLUS_ONE" /> amb <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8415120635186642416">Cerca informació sobre qualsevol cosa</translation>

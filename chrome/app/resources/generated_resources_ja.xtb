@@ -2144,6 +2144,7 @@
 <translation id="2636266464805306348">ウィンドウのタイトル</translation>
 <translation id="2637313651144986786">タブを検索...</translation>
 <translation id="2637400434494156704">PIN が正しくありません。あと 1 回試行できます。</translation>
+<translation id="2637852492915204064">タブ検索を閉じる</translation>
 <translation id="263796568413910992"><ph name="SEARCH_ENGINE_NAME" /> で調べる、または URL を入力</translation>
 <translation id="2640299212685523844">GTK を使用</translation>
 <translation id="264083724974021997">電話に接続 - ダイアログ</translation>
@@ -3413,6 +3414,7 @@
 <translation id="3582057310199111521">不正なサイトで入力、データ侵害で漏洩</translation>
 <translation id="3582299299336701326">明るい画面が暗くなり、暗い画面が明るくなります。色反転のオンとオフを切り替えるには、検索+Ctrl+H キーを押します。</translation>
 <translation id="3584169441612580296">パソコンからの写真、音楽、その他のメディアの読み取りと変更</translation>
+<translation id="358562596990359723">タブ検索を閉じる</translation>
 <translation id="3586741240886978899">過去にこのサイトで使用</translation>
 <translation id="3586806079541226322">このファイルを開けません</translation>
 <translation id="3586931643579894722">詳細を非表示</translation>

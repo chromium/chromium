@@ -213,6 +213,7 @@
 <translation id="1600571977391127696">És possible que alguns continguts no siguin adequats per a tothom.</translation>
 <translation id="1601560923496285236">Aplica</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adreça}other{# adreces}}</translation>
+<translation id="160477039162785330">{count,plural, =1{Completa 1 tasca per pujar de nivell}other{Completa {count} tasques per pujar de nivell}}</translation>
 <translation id="1605405588277479165">Desactivada (opció no recomanada)</translation>
 <translation id="1605658421715042784">Copia la imatge</translation>
 <translation id="1606899876897213121">Tanca el resum de l'activitat recent</translation>
@@ -922,6 +923,7 @@
 <translation id="3914173277599553213">Obligatori</translation>
 <translation id="3914640181019354363">Detecta adreces</translation>
 <translation id="391904960191284041">Ressenyes de productes</translation>
+<translation id="3920165976616657606">S'ha completat l'acció "Explora Navegació segura millorada".</translation>
 <translation id="3921585859122905677">Posició de la barra d'adreces</translation>
 <translation id="3922185497376658606">Precarrega les pàgines web</translation>
 <translation id="3926703470020109118">Baixada cancel·lada</translation>

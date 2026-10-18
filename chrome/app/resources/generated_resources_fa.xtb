@@ -2050,7 +2050,7 @@
 <translation id="2547602044908040111">‏اگر کنشگر، روزنامه‌نگار، چهره همگانی، دست‌اندرکار انتخابات، یا فرد دیگری با نقشی منحصربه‌فرد و پرخطر هستید، ممکن است به <ph name="BEGIN_LINK" />برنامه محافظت پیشرفته<ph name="END_LINK" /> Google علاقه‌مند باشید.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> مجاز شده است</translation>
 <translation id="2548545707296594436">بازنشانی حافظه پنهان نمایه سیم‌کارت داخلی</translation>
-<translation id="2549985041256363841">شروع ضبط</translation>
+<translation id="2549985041256363841">شروع کردن ضبط</translation>
 <translation id="2550212893339833758">حافظه جابه‌جاشده</translation>
 <translation id="2550596535588364872">به <ph name="EXTENSION_NAME" /> اجازه می‌دهید <ph name="FILE_NAME" /> را باز کند؟</translation>
 <translation id="2552230905527343195">نمی‌توان زبانه فعلی را اضافه کرد</translation>
@@ -2157,6 +2157,7 @@
 <translation id="2636266464805306348">عنوان‌های پنجره</translation>
 <translation id="2637313651144986786">جستجوی زبانه‌ها…</translation>
 <translation id="2637400434494156704">پین اشتباه است. یک بار دیگر می‌توانید امتحان کنید.</translation>
+<translation id="2637852492915204064">بستن «جستجوی زبانه‌ها»</translation>
 <translation id="263796568413910992">از <ph name="SEARCH_ENGINE_NAME" /> بپرسید یا نشانی وبی تایپ کنید</translation>
 <translation id="2640299212685523844">‏استفاده از GTK</translation>
 <translation id="264083724974021997">اتصال به تلفن - کادر گفتگو</translation>
@@ -3428,6 +3429,7 @@
 <translation id="3582057310199111521">در سایت فریب‌دهنده وارد و در نقض داده پیدا شد</translation>
 <translation id="3582299299336701326">‏صفحه‌های روشن تیره می‌شوند و صفحه‌های تیره روشن می‌شوند. برای روشن و خاموش کردن وارونگی رنگ، کلیدهای «جستجو + مهار + H» را فشار دهید.</translation>
 <translation id="3584169441612580296">خواندن و تغییر عکس‌ها، موسیقی، و رسانه‌های دیگر از رایانه‌تان</translation>
+<translation id="358562596990359723">بستن «جستجوی زبانه‌ها»</translation>
 <translation id="3586741240886978899">در این سایت استفاده کرده‌اید</translation>
 <translation id="3586806079541226322">این فایل باز نمی‌شود</translation>
 <translation id="3586931643579894722">عدم نمایش جزئیات</translation>
@@ -3613,7 +3615,7 @@
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> چاپگر از سرور چاپ پیدا شد</translation>
 <translation id="3712143870407382523">پنجره‌ای برای این سمت انتخاب کنید</translation>
 <translation id="3712897371525859903">ذخیره صفحه &amp;بعنوان...</translation>
-<translation id="3712966523643024813">ویژگی‌های جدید</translation>
+<translation id="3712966523643024813">تازه‌ها</translation>
 <translation id="371300529209814631">عقب/جلو</translation>
 <translation id="371302509916403935">زیرخط</translation>
 <translation id="3713047097299026954">این کلید امنیتی هیچ داده ورود به سیستمی ندارد</translation>
