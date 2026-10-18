@@ -9,6 +9,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/protocol/autofill.h"
@@ -241,7 +242,16 @@ void AutofillHandler::ContinueTrigger(
                            /*blocked_fields=*/{});
   }
 
-  callback->sendSuccess();
+  // `FillOrPreviewForm()` has sent the values to the renderers over the same
+  // `mojom::AutofillAgent` pipes that form extraction uses. Hence, once form
+  // extraction has finished in all frames, the values have been applied to the
+  // fields. Only respond then, so that clients can read the filled values as
+  // soon as the command returns. Whether form extraction succeeded doesn't
+  // matter for that.
+  autofill_driver->GetAutofillManager().TriggerFormExtractionInAllFrames(
+      base::BindOnce([](std::unique_ptr<TriggerCallback> callback,
+                        bool) { callback->sendSuccess(); },
+                     std::move(callback)));
 }
 
 void AutofillHandler::SetAddresses(

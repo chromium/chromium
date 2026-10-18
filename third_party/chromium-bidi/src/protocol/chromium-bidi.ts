@@ -16,6 +16,7 @@
  */
 
 import type * as Cdp from './cdp.js';
+import type * as WebDriverBidiAutofill from './generated/webdriver-bidi-autofill.js';
 import type * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import type * as WebDriverBidiSpeculation from './generated/webdriver-bidi-nav-speculation.ts';
 import type * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
@@ -143,6 +144,7 @@ export type Command = (
   | ExternalSpecCommand<WebDriverBidiBluetooth.BluetoothCommand>
   | ExternalSpecCommand<WebDriverBidiUAClientHints.UserAgentClientHintsCommand>
   | ExternalSpecCommand<WebDriverBidiDigitalCredentials.DigitalCredentials.SetVirtualWalletBehavior>
+  | ExternalSpecCommand<WebDriverBidiAutofill.AutofillCommand>
 ) & {'goog:channel'?: GoogChannel};
 
 export type CommandResponse =

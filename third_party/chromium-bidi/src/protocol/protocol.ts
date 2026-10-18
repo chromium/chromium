@@ -22,5 +22,6 @@ export * from './generated/webdriver-bidi-permissions.js';
 export * from './generated/webdriver-bidi-bluetooth.js';
 export * from './generated/webdriver-bidi-nav-speculation.js';
 export * from './generated/webdriver-bidi-digital-credentials.js';
+export * from './generated/webdriver-bidi-autofill.js';
 // Alias is required, as `UAClientHints` spec defines `Emulation` namespace.
 export * as UAClientHints from './generated/webdriver-bidi-ua-client-hints.js';

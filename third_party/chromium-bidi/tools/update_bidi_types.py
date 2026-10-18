@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -77,6 +78,30 @@ SPECS = [
         "ts_file": "src/protocol/generated/webdriver-bidi-digital-credentials.ts",
         "zod_file": "src/protocol-parser/generated/webdriver-bidi-digital-credentials.ts",
     },
+    {
+        "name": "autofill-event",
+        "repo": "https://github.com/WICG/autofill-event.git",
+        "doc": "index.bs",
+        "cddl_name": "autofill-event.cddl",
+        "ts_file": "src/protocol/generated/webdriver-bidi-autofill.ts",
+        "zod_file": "src/protocol-parser/generated/webdriver-bidi-autofill.ts",
+    },
+]
+
+# Namespaces of the core WebDriver BiDi specification which can be referenced by
+# extension specifications, e.g. `browsingContext.BrowsingContext` or
+# `script.SharedReference`.
+CORE_NAMESPACES = [
+    "Browser",
+    "BrowsingContext",
+    "Emulation",
+    "Input",
+    "Log",
+    "Network",
+    "Script",
+    "Session",
+    "Storage",
+    "WebExtension",
 ]
 
 
@@ -178,18 +203,33 @@ def run_cddlconv_and_write(cddl_path: Path, output_path: Path, format_type: str 
 
     # Post-process imports for extension modules
     if not output_path.name.endswith("webdriver-bidi.ts"):
+        # Core namespaces referenced, but not defined, by the extension module.
+        imports = [
+            namespace
+            for namespace in CORE_NAMESPACES
+            if re.search(rf"\b{namespace}\.\w", content)
+            and f"export namespace {namespace} " not in content
+        ]
         if format_type == "zod":
             if "EmptyResultSchema" in content:
+                imports.append("EmptyResultSchema")
+            if imports:
                 content = content.replace(
                     "import * as z from 'zod';",
-                    "import * as z from 'zod';\nimport {EmptyResultSchema} from './webdriver-bidi.js';",
+                    "import * as z from 'zod';\nimport {"
+                    + ", ".join(sorted(imports))
+                    + "} from './webdriver-bidi.js';",
                 )
         else:
             if "EmptyResult" in content:
+                imports.append("EmptyResult")
+            if imports:
                 content = content.replace(
                     header,
                     header
-                    + "import type {EmptyResult} from './webdriver-bidi.js';\n\n",
+                    + "import type {"
+                    + ", ".join(sorted(imports))
+                    + "} from './webdriver-bidi.js';\n\n",
                 )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)

@@ -4,6 +4,7 @@
 
 #include "base/check_deref.h"
 #include "base/containers/to_vector.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -766,6 +767,40 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerAddressAutofill) {
                   : "US",
               country.ExtractString());
   }
+}
+
+// Tests that `Autofill.trigger` only responds once the renderer has applied the
+// fill, so that clients can read the filled values as soon as it returns. The
+// renderer reports the filled form to the browser while applying the fill, so
+// the browser must have received that report when the command responds.
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest,
+                       TriggerRespondsAfterFillIsApplied) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(
+      "chrome/test/data/autofill");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(
+      embedded_test_server()->GetURL("/autofill_creditcard_form.html"));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  Attach();
+
+  EXPECT_TRUE(main_autofill_manager().WaitForFormsSeen(1));
+
+  base::DictValue params;
+  params.Set("fieldId", GetBackendNodeIdByIdAttribute("CREDIT_CARD_NUMBER"));
+  params.Set("card", GetTestCreditCard());
+
+  testing::NiceMock<MockAutofillManagerObserver> observer;
+  base::ScopedObservation<AutofillManager, AutofillManager::Observer>
+      observation(&observer);
+  observation.Observe(&main_autofill_manager());
+  EXPECT_CALL(observer, OnBeforeDidAutofillForm(_, _))
+      .Times(testing::AtLeast(1));
+
+  SendCommandSync("Autofill.trigger", std::move(params));
+  ASSERT_TRUE(result());
+  testing::Mock::VerifyAndClearExpectations(&observer);
+
+  EXPECT_EQ(GetFilledOutForm(""), GetTestCreditCard());
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerWithInvalidFieldId) {

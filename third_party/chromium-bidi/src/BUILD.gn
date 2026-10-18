@@ -113,6 +113,7 @@ ts_library("protocol") {
     "protocol/ErrorResponse.ts",
     "protocol/cdp.ts",
     "protocol/chromium-bidi.ts",
+    "protocol/generated/webdriver-bidi-autofill.ts",
     "protocol/generated/webdriver-bidi-bluetooth.ts",
     "protocol/generated/webdriver-bidi-digital-credentials.ts",
     "protocol/generated/webdriver-bidi-nav-speculation.ts",
@@ -128,6 +129,7 @@ ts_library("protocol") {
 ts_library("protocol_parser") {
   runs_in = "node"
   sources = [
+    "protocol-parser/generated/webdriver-bidi-autofill.ts",
     "protocol-parser/generated/webdriver-bidi-bluetooth.ts",
     "protocol-parser/generated/webdriver-bidi-digital-credentials.ts",
     "protocol-parser/generated/webdriver-bidi-nav-speculation.ts",
@@ -249,6 +251,7 @@ ts_library("bidi_mapper") {
     "bidiMapper/CommandProcessor.ts",
     "bidiMapper/MapperOptions.ts",
     "bidiMapper/OutgoingMessage.ts",
+    "bidiMapper/modules/autofill/AutofillProcessor.ts",
     "bidiMapper/modules/bluetooth/BluetoothProcessor.ts",
     "bidiMapper/modules/browser/BrowserProcessor.ts",
     "bidiMapper/modules/browser/ContextConfig.ts",
@@ -340,6 +343,7 @@ ts_library("unit_tests") {
   testonly = true
   runs_in = "node"
   sources = [
+    "bidiMapper/modules/autofill/AutofillProcessor.test.ts",
     "bidiMapper/modules/browser/BrowserProcessot.test.ts",
     "bidiMapper/modules/browser/ContextConfigStorage.test.ts",
     "bidiMapper/modules/context/BrowsingContextStorage.test.ts",

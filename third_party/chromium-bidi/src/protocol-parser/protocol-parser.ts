@@ -24,6 +24,7 @@ import {z, type ZodType} from 'zod';
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
+import * as WebDriverBidiAutofill from './generated/webdriver-bidi-autofill.js';
 import * as WebDriverBidiBluetooth from './generated/webdriver-bidi-bluetooth.js';
 import * as WebDriverBidiPermissions from './generated/webdriver-bidi-permissions.js';
 import * as WebDriverBidiUAClientHints from './generated/webdriver-bidi-ua-client-hints.js';
@@ -752,6 +753,20 @@ export namespace DigitalCredentials {
         .SetVirtualWalletBehaviorParametersSchema,
     ) as Protocol.DigitalCredentials.SetVirtualWalletBehaviorParameters;
   }
+}
+
+/** @see https://wicg.github.io/autofill-event/#webdriver-bidi-module */
+export namespace Autofill {
+  // keep-sorted start block=yes
+  export function parseTriggerParams(
+    params: unknown,
+  ): Protocol.Autofill.TriggerParameters {
+    return parseObject(
+      params,
+      WebDriverBidiAutofill.Autofill.TriggerParametersSchema,
+    ) as Protocol.Autofill.TriggerParameters;
+  }
+  // keep-sorted end
 }
 
 /** @see https://w3c.github.io/webdriver-bidi/#module-webExtension */
