@@ -283,6 +283,14 @@ public interface BottomSheetController {
     boolean hasBottomInset();
 
     /**
+     * @return The edge-to-edge bottom inset in pixels, or 0 if the sheet has a non-zero bottom
+     *     margin or is covered by the keyboard.
+     */
+    default @Px int getEdgeToEdgeBottomInset() {
+        return 0;
+    }
+
+    /**
      * Get the current background color for the bottom sheet. If the sheet does not have a solid
      * background color, this will return null.
      */

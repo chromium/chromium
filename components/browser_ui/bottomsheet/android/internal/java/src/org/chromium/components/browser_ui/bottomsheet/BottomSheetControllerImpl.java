@@ -917,6 +917,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     @Override
+    public @Px int getEdgeToEdgeBottomInset() {
+        return mBottomSheet != null ? mBottomSheet.getEdgeToEdgeBottomInset() : 0;
+    }
+
+    @Override
     public @Nullable Integer getSheetBackgroundColor() {
         if (mBottomSheet == null) {
             return null;

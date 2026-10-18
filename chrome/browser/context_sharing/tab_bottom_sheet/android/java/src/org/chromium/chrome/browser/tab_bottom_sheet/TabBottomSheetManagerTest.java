@@ -204,6 +204,7 @@ public class TabBottomSheetManagerTest {
                                     mActivity,
                                     mWindowAndroid,
                                     mockBottomSheetController,
+                                    /* canCoverBottomControlsSupplier= */ () -> true,
                                     mockLayoutStateProviderSupplier,
                                     mockTouchEventProvider,
                                     ObservableSuppliers.createNonNull(false));
@@ -244,6 +245,7 @@ public class TabBottomSheetManagerTest {
                                     mActivity,
                                     mWindowAndroid,
                                     mockBottomSheetController,
+                                    /* canCoverBottomControlsSupplier= */ () -> true,
                                     mockLayoutStateProviderSupplier,
                                     mockTouchEventProvider,
                                     omniboxFocusSupplier);

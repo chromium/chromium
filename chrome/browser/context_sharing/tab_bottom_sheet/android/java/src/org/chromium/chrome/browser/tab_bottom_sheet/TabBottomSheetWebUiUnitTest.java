@@ -13,6 +13,7 @@ import static org.mockito.ArgumentCaptor.captor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -66,6 +67,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -81,6 +84,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
@@ -97,6 +102,7 @@ public class TabBottomSheetWebUiUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private BottomSheetController mBottomSheetController;
     @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
@@ -153,6 +159,7 @@ public class TabBottomSheetWebUiUnitTest {
                 context,
                 containerView,
                 mWindowAndroid,
+                mBottomSheetController,
                 mContextMenuPopulatorFactory,
                 mSelectionDropdownMenuDelegate,
                 Color.WHITE,
@@ -176,6 +183,7 @@ public class TabBottomSheetWebUiUnitTest {
                         context,
                         containerView,
                         mWindowAndroid,
+                        mBottomSheetController,
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
@@ -202,6 +210,7 @@ public class TabBottomSheetWebUiUnitTest {
                         context,
                         containerView,
                         mWindowAndroid,
+                        mBottomSheetController,
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
@@ -462,6 +471,7 @@ public class TabBottomSheetWebUiUnitTest {
                         context,
                         containerView,
                         mWindowAndroid,
+                        mBottomSheetController,
                         mContextMenuPopulatorFactory,
                         mSelectionDropdownMenuDelegate,
                         Color.WHITE,
@@ -1001,6 +1011,66 @@ public class TabBottomSheetWebUiUnitTest {
     }
 
     @Test
+    @EnableFeatures({
+        ChromeFeatureList.TAB_BOTTOM_SHEET,
+        ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE
+    })
+    public void testSetWebContents_UpdatesBottomSafeAreaInsetAndObservesChanges() {
+        when(mDisplayAndroid.getDipScale()).thenReturn(2.0f);
+        InsetObserver mockInsetObserver = mock(InsetObserver.class);
+        when(mWindowAndroid.getInsetObserver()).thenReturn(mockInsetObserver);
+        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(48);
+
+        int topMarginPx =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.context_sharing.R.dimen
+                                        .tab_bottom_sheet_web_ui_top_margin);
+        int expectedTopDip = (int) Math.ceil(topMarginPx / 2.0f);
+
+        mWebUi.setWebContents(mWebContents, /* requestFocus= */ false);
+
+        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 24)));
+
+        ArgumentCaptor<WindowInsetObserver> insetObserverCaptor =
+                ArgumentCaptor.forClass(WindowInsetObserver.class);
+        ArgumentCaptor<BottomSheetObserver> bottomSheetObserverCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mockInsetObserver).addObserver(insetObserverCaptor.capture());
+        verify(mBottomSheetController).addObserver(bottomSheetObserverCaptor.capture());
+
+        // When keyboard is showing, BottomSheetController#getEdgeToEdgeBottomInset returns 0.
+        clearInvocations(mWebContents);
+        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(0);
+        insetObserverCaptor.getValue().onKeyboardInsetChanged(300);
+        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 0)));
+
+        // When window insets change, bottom safe area inset is updated from BottomSheetController.
+        clearInvocations(mWebContents);
+        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(60);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 30)));
+
+        // When bottom sheet container bottom margin changes, safe area inset is updated.
+        clearInvocations(mWebContents);
+        when(mBottomSheetController.getEdgeToEdgeBottomInset()).thenReturn(0);
+        bottomSheetObserverCaptor.getValue().onContainerBottomMarginChanged(100);
+        verify(mWebContents).setDisplayCutoutSafeArea(eq(new Rect(0, expectedTopDip, 0, 0)));
+
+        // When WebContents is destroyed, inset changes are ignored.
+        clearInvocations(mWebContents);
+        when(mWebContents.isDestroyed()).thenReturn(true);
+        insetObserverCaptor.getValue().onInsetChanged();
+        verify(mWebContents, never()).setDisplayCutoutSafeArea(any());
+
+        // Destroy unregisters both observers.
+        mWebUi.destroy();
+        verify(mockInsetObserver).removeObserver(insetObserverCaptor.getValue());
+        verify(mBottomSheetController).removeObserver(bottomSheetObserverCaptor.getValue());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET)
     @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
     public void testSetWebContents_DoesNotUpdateSafeAreaInsetsWhenEdgeToEdgeDisabled() {
@@ -1084,6 +1154,7 @@ public class TabBottomSheetWebUiUnitTest {
                 Context context,
                 View containerView,
                 WindowAndroid windowAndroid,
+                @Nullable BottomSheetController bottomSheetController,
                 ContextMenuPopulatorFactory contextMenuPopulatorFactory,
                 SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
                 int backgroundColor,
@@ -1097,6 +1168,7 @@ public class TabBottomSheetWebUiUnitTest {
                     context,
                     containerView,
                     windowAndroid,
+                    bottomSheetController,
                     contextMenuPopulatorFactory,
                     selectionDropdownMenuDelegate,
                     backgroundColor,
@@ -1107,6 +1179,35 @@ public class TabBottomSheetWebUiUnitTest {
                     readLaterOpener,
                     mock(CoBrowseComponentProvider.class));
             mContentView = contentView;
+        }
+
+        TestTabBottomSheetWebUi(
+                Context context,
+                View containerView,
+                WindowAndroid windowAndroid,
+                ContextMenuPopulatorFactory contextMenuPopulatorFactory,
+                SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
+                int backgroundColor,
+                int placeholderElemColor,
+                @TabBottomSheetClientType int clientType,
+                @CoBrowseContainerType int containerType,
+                @Nullable BiConsumer<GURL, String> ephemeralTabOpener,
+                @Nullable BiConsumer<GURL, String> readLaterOpener,
+                ContentView contentView) {
+            this(
+                    context,
+                    containerView,
+                    windowAndroid,
+                    /* bottomSheetController= */ null,
+                    contextMenuPopulatorFactory,
+                    selectionDropdownMenuDelegate,
+                    backgroundColor,
+                    placeholderElemColor,
+                    clientType,
+                    containerType,
+                    ephemeralTabOpener,
+                    readLaterOpener,
+                    contentView);
         }
 
         @Override

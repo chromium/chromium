@@ -818,7 +818,8 @@ class BottomSheetMediator implements TouchHandler {
             @Px int e2eBottomInset) {
         // The browser controls offset is added here so that the sheet's toolbar behaves like the
         // browser controls do.
-        int bottomInsetAdjustment = (mTargetState == SheetState.HIDDEN) ? 0 : e2eBottomInset;
+        float bottomInsetAdjustment =
+                currentOffsetPx <= 0 ? 0f : Math.min(currentOffsetPx, e2eBottomInset);
         float translationY =
                 (containerHeight - currentOffsetPx) + browserControlsOffset - bottomInsetAdjustment;
         return Math.max(0f, translationY);
@@ -851,7 +852,11 @@ class BottomSheetMediator implements TouchHandler {
             boolean isLargeFormFactorUiEnabled,
             boolean isFullHeightResizeContent,
             @Px int viewportBottomInset) {
-        return (isFullHeightResizeContent || isLargeFormFactorUiEnabled) ? 0 : viewportBottomInset;
+        return (isFullHeightResizeContent
+                        || isLargeFormFactorUiEnabled
+                        || (mSheetContent != null && mSheetContent.coversBottomControls()))
+                ? 0
+                : viewportBottomInset;
     }
 
     int calculateTargetBackgroundHeight(boolean isLargeFormFactorUiEnabled, float fullHeightPx) {

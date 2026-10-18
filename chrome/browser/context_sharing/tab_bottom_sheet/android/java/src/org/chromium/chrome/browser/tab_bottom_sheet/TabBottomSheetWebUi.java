@@ -35,6 +35,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.thinwebview.ThinWebView;
@@ -53,6 +56,8 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.base.WindowAndroid.KeyboardShortcutsDelegate;
+import org.chromium.ui.insets.InsetObserver;
+import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.url.GURL;
@@ -66,6 +71,7 @@ public class TabBottomSheetWebUi {
 
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
+    private final @Nullable BottomSheetController mBottomSheetController;
     private final ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     private final SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
     private final WebViewResizingHelper mWebViewResizingHelper;
@@ -104,10 +110,37 @@ public class TabBottomSheetWebUi {
             };
     private boolean mIsObservingActivityState;
 
+    private final WindowInsetObserver mWindowInsetObserver =
+            new WindowInsetObserver() {
+                @Override
+                public void onInsetChanged() {
+                    updateSafeAreaInsets();
+                }
+
+                @Override
+                public void onKeyboardInsetChanged(int inset) {
+                    updateSafeAreaInsets();
+                }
+            };
+    private final BottomSheetObserver mBottomSheetObserver =
+            new BottomSheetObserver() {
+                @Override
+                public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                    updateSafeAreaInsets();
+                }
+
+                @Override
+                public void onContainerBottomMarginChanged(@Px int bottomMargin) {
+                    updateSafeAreaInsets();
+                }
+            };
+    private boolean mIsObservingInsets;
+
     TabBottomSheetWebUi(
             Context context,
             View containerView,
             WindowAndroid windowAndroid,
+            @Nullable BottomSheetController bottomSheetController,
             ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
             @ColorInt int backgroundColor,
@@ -119,6 +152,7 @@ public class TabBottomSheetWebUi {
             @Nullable CoBrowseComponentProvider componentProvider) {
         mContext = context;
         mWindowAndroid = windowAndroid;
+        mBottomSheetController = bottomSheetController;
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mSelectionDropdownMenuDelegate =
                 new SelectionDropdownMenuDelegateWrapper(selectionDropdownMenuDelegate);
@@ -156,6 +190,7 @@ public class TabBottomSheetWebUi {
                 mWindowAndroid.removeActivityStateObserver(mActivityStateObserver);
                 mIsObservingActivityState = false;
             }
+            unregisterSafeAreaObservers();
             destroyThinWebView();
             return;
         }
@@ -165,6 +200,7 @@ public class TabBottomSheetWebUi {
             mWindowAndroid.addActivityStateObserver(mActivityStateObserver);
             mIsObservingActivityState = true;
         }
+        registerSafeAreaObservers();
 
         mWebContents.getEventForwarder().setCurrentTouchOffsetX(0.0f);
         mWebContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
@@ -341,10 +377,12 @@ public class TabBottomSheetWebUi {
         }
     }
 
+    // TODO(crbug.com/574638400): Move WebContents safe-area inset updates to WebViewResizingHelper.
     void updateSafeAreaInsets() {
         if (!isEdgeToEdgeEnabled()
                 || mContainerType == CoBrowseContainerType.SIDE_PANEL
-                || mWebContents == null) {
+                || mWebContents == null
+                || mWebContents.isDestroyed()) {
             return;
         }
 
@@ -354,9 +392,43 @@ public class TabBottomSheetWebUi {
                         .getDimensionPixelSize(R.dimen.tab_bottom_sheet_web_ui_top_margin);
         float dipScale = mWindowAndroid.getDisplay().getDipScale();
         int topInsetDip = (int) Math.ceil(topMarginPx / dipScale);
+        int bottomInsetDip = (int) Math.ceil(getBottomSafeAreaInsetPx() / dipScale);
 
-        Rect safeArea = new Rect(0, topInsetDip, 0, 0);
+        Rect safeArea = new Rect(0, topInsetDip, 0, bottomInsetDip);
         mWebContents.setDisplayCutoutSafeArea(safeArea);
+    }
+
+    private @Px int getBottomSafeAreaInsetPx() {
+        if (mBottomSheetController == null) return 0;
+        return mBottomSheetController.getEdgeToEdgeBottomInset();
+    }
+
+    private void registerSafeAreaObservers() {
+        if (mIsObservingInsets
+                || !isEdgeToEdgeEnabled()
+                || mContainerType == CoBrowseContainerType.SIDE_PANEL) {
+            return;
+        }
+        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+        if (insetObserver != null) {
+            insetObserver.addObserver(mWindowInsetObserver);
+        }
+        if (mBottomSheetController != null) {
+            mBottomSheetController.addObserver(mBottomSheetObserver);
+        }
+        mIsObservingInsets = true;
+    }
+
+    private void unregisterSafeAreaObservers() {
+        if (!mIsObservingInsets) return;
+        InsetObserver insetObserver = mWindowAndroid.getInsetObserver();
+        if (insetObserver != null) {
+            insetObserver.removeObserver(mWindowInsetObserver);
+        }
+        if (mBottomSheetController != null) {
+            mBottomSheetController.removeObserver(mBottomSheetObserver);
+        }
+        mIsObservingInsets = false;
     }
 
     @Nullable WebContents getWebContents() {

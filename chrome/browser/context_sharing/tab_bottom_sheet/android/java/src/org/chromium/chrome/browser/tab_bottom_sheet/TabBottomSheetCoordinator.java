@@ -48,6 +48,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.function.BooleanSupplier;
+
 /** Coordinator for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetCoordinator {
@@ -76,6 +78,7 @@ public class TabBottomSheetCoordinator {
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
+    private final BooleanSupplier mCanCoverBottomControlsSupplier;
     private final TouchEventProvider mTouchEventProvider;
     private final PropertyModel mModel;
     private final CoBrowseViews mCoBrowseViews;
@@ -108,6 +111,8 @@ public class TabBottomSheetCoordinator {
      * @param context The context to use for creating views.
      * @param windowAndroid The {@link WindowAndroid} associated with the window.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
+     * @param canCoverBottomControlsSupplier Supplier indicating whether the bottom sheet can cover
+     *     the bottom browser controls.
      * @param touchEventProvider The {@link TouchEventProvider} used to observe touch events on the
      *     tab behind the bottom sheet.
      * @param coBrowseViews The views to be displayed within the bottom sheet. These should be
@@ -122,6 +127,7 @@ public class TabBottomSheetCoordinator {
             Context context,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
+            BooleanSupplier canCoverBottomControlsSupplier,
             TouchEventProvider touchEventProvider,
             CoBrowseViews coBrowseViews,
             SheetEventsCallback sheetEventsCallback,
@@ -129,6 +135,7 @@ public class TabBottomSheetCoordinator {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
+        mCanCoverBottomControlsSupplier = canCoverBottomControlsSupplier;
         mTouchEventProvider = touchEventProvider;
         mCoBrowseViews = coBrowseViews;
         mSheetEventsCallback = sheetEventsCallback;
@@ -237,6 +244,9 @@ public class TabBottomSheetCoordinator {
                                 .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total),
                         R.id.peek_view_container,
                         mOnBackPressed);
+        if (mSheetContent != null) {
+            mSheetContent.setCanCoverBottomControlsSupplier(mCanCoverBottomControlsSupplier);
+        }
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);

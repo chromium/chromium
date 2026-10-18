@@ -141,6 +141,7 @@ public class TabBottomSheetCoordinatorUnitTest {
     private TabBottomSheetCoordinator mCoordinator;
     private PropertyModel mCoordinatorModel;
     private WebViewResizingHelper mWebViewResizingHelper;
+    private boolean mCanCoverBottomControls = true;
 
     @Before
     public void setUp() {
@@ -201,6 +202,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                         mContext,
                         mWindowAndroid,
                         mMockBottomSheetController,
+                        () -> mCanCoverBottomControls,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
                         mMockSheetEventsCallback,
@@ -1158,6 +1160,14 @@ public class TabBottomSheetCoordinatorUnitTest {
     })
     public void testTopMarginRemovedWhenEdgeToEdgeEnabled() {
         simulateShowSuccessAndGetObserver();
+        assertNotNull(mCoordinator.getSheetContentForTesting());
+        assertTrue(mCoordinator.getSheetContentForTesting().coversBottomControls());
+
+        // When canCoverBottomControlsSupplier returns false (e.g. another bottom control layer
+        // like the tab group toolbar is visible), coversBottomControls() returns false so the
+        // sheet does not block those controls.
+        mCanCoverBottomControls = false;
+        assertFalse(mCoordinator.getSheetContentForTesting().coversBottomControls());
 
         View webUiContainer = mView.findViewById(R.id.web_ui_container);
         assertEquals(
@@ -1169,6 +1179,8 @@ public class TabBottomSheetCoordinatorUnitTest {
     @DisableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET_EDGE_TO_EDGE)
     public void testTopMarginPreservedWhenEdgeToEdgeDisabled() {
         simulateShowSuccessAndGetObserver();
+        assertNotNull(mCoordinator.getSheetContentForTesting());
+        assertFalse(mCoordinator.getSheetContentForTesting().coversBottomControls());
 
         int topMarginPx =
                 mContext.getResources()
@@ -1431,6 +1443,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                         mContext,
                         mWindowAndroid,
                         mMockBottomSheetController,
+                        () -> mCanCoverBottomControls,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
                         mMockSheetEventsCallback,
@@ -1479,6 +1492,7 @@ public class TabBottomSheetCoordinatorUnitTest {
                         mContext,
                         mWindowAndroid,
                         mMockBottomSheetController,
+                        () -> mCanCoverBottomControls,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
                         mMockSheetEventsCallback,

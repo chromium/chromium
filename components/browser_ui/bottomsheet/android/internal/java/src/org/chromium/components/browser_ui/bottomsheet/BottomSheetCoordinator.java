@@ -365,7 +365,8 @@ class BottomSheetCoordinator
         updateContentContainerHeight();
     }
 
-    private @Px int getEdgeToEdgeBottomInset() {
+    @Px
+    int getEdgeToEdgeBottomInset() {
         if (mBottomMargin != 0) return 0;
         assert mEdgeToEdgeBottomInsetSupplier.get() != null;
         @Px
@@ -1289,6 +1290,9 @@ class BottomSheetCoordinator
         if (content.showHandlebar()) {
             mContentDesiredHeight += getHandlebarHeight();
         }
+        if (content.coversBottomControls()) {
+            mContentDesiredHeight = Math.max(0, mContentDesiredHeight - getEdgeToEdgeBottomInset());
+        }
     }
 
     private int getHandlebarHeight() {
@@ -1492,6 +1496,11 @@ class BottomSheetCoordinator
         return (int) getSheetHeightForState(getTargetOrCurrentState());
     }
 
+    private boolean coversBottomControls() {
+        BottomSheetContent content = getCurrentSheetContent();
+        return content != null && content.coversBottomControls();
+    }
+
     private void updateViewport(@Px int e2eBottomInset) {
         assert mWindow != null;
 
@@ -1507,8 +1516,10 @@ class BottomSheetCoordinator
 
     private void updateViewportFromDisplayFrame(View decorView, @Px int e2eBottomInset) {
         decorView.getWindowVisibleDisplayFrame(mVisibleViewportRect);
-        mVisibleViewportRect.bottom =
-                Math.min(mVisibleViewportRect.bottom, decorView.getBottom() - e2eBottomInset);
+        if (!coversBottomControls()) {
+            mVisibleViewportRect.bottom =
+                    Math.min(mVisibleViewportRect.bottom, decorView.getBottom() - e2eBottomInset);
+        }
         mVisibleViewportRect.bottom = Math.max(mVisibleViewportRect.bottom, 0);
     }
 
@@ -1519,7 +1530,11 @@ class BottomSheetCoordinator
         Insets combinedInsets =
                 insets.getInsets(
                         WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.systemBars());
-        @Px int bottomInset = Math.max(combinedInsets.bottom, e2eBottomInset);
+        @Px
+        int bottomInset =
+                coversBottomControls()
+                        ? insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                        : Math.max(combinedInsets.bottom, e2eBottomInset);
         bottomInset = Math.min(bottomInset, decorHeight);
 
         mVisibleViewportRect.set(

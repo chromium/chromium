@@ -1065,8 +1065,30 @@ public class BottomSheetMediatorUnitTest {
                         /* e2eBottomInset= */ 48),
                 0.0f);
 
-        // When target state is HIDDEN, e2eBottomInset is not subtracted from translationY.
+        // Even when target state is HIDDEN, bottomInsetAdjustment remains e2eBottomInset while
+        // currentOffsetPx >= e2eBottomInset so the sheet does not jump at the start of hide.
         mMediator.setTargetSheetState(SheetState.HIDDEN);
+        assertEquals(
+                552f,
+                mMediator.calculateSheetTranslationY(
+                        /* containerHeight= */ 1000,
+                        /* currentOffsetPx= */ 400f,
+                        /* browserControlsOffset= */ 0f,
+                        /* e2eBottomInset= */ 48),
+                0.0f);
+        // When 0 < currentOffsetPx < e2eBottomInset, bottomInsetAdjustment scales smoothly with
+        // fractional currentOffsetPx without integer truncation jitter:
+        // translationY = (1000 - 20.5) + 0 - 20.5 = 959.
+        assertEquals(
+                959f,
+                mMediator.calculateSheetTranslationY(
+                        /* containerHeight= */ 1000,
+                        /* currentOffsetPx= */ 20.5f,
+                        /* browserControlsOffset= */ 0f,
+                        /* e2eBottomInset= */ 48),
+                0.0f);
+
+        // When currentOffsetPx <= 0, bottomInsetAdjustment is 0 so the sheet is fully hidden.
         assertEquals(
                 1000f,
                 mMediator.calculateSheetTranslationY(
@@ -1162,6 +1184,15 @@ public class BottomSheetMediatorUnitTest {
                 mMediator.calculateContentBottomPadding(
                         /* isLargeFormFactorUiEnabled= */ false,
                         /* isFullHeightResizeContent= */ true,
+                        /* viewportBottomInset= */ 48));
+
+        when(mContent.coversBottomControls()).thenReturn(true);
+        mMediator.setSheetContent(mContent);
+        assertEquals(
+                0,
+                mMediator.calculateContentBottomPadding(
+                        /* isLargeFormFactorUiEnabled= */ false,
+                        /* isFullHeightResizeContent= */ false,
                         /* viewportBottomInset= */ 48));
 
         mMediator.updateVisibleBackgroundHeight(

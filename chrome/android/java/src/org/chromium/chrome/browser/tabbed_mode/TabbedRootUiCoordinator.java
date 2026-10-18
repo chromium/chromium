@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils.BookmarkBarSettingChangeOrigin;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateImpl;
@@ -326,6 +327,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
+import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -2181,11 +2183,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private void initializeTabBottomSheetManagers() {
         if (TabBottomSheetUtils.isTabBottomSheetEnabled()) {
+            BooleanSupplier canCoverBottomControlsSupplier =
+                    () ->
+                            !mBottomControlsStacker.hasVisibleLayersOtherThan(
+                                    Set.of(LayerType.BOTTOM_CHIN, LayerType.BOTTOM_SHEET));
             mTabBottomSheetManager =
                     new TabBottomSheetManagerImpl(
                             mActivity,
                             mWindowAndroid,
                             assertNonNull(getBottomSheetController()),
+                            canCoverBottomControlsSupplier,
                             mLayoutStateProviderOneShotSupplier,
                             SupplierUtils.asNonNull(mCompositorViewHolderSupplier).get(),
                             getOmniboxFocusStateSupplier());

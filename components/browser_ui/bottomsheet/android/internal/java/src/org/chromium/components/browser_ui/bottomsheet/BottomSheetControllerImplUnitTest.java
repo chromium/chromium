@@ -972,6 +972,18 @@ public class BottomSheetControllerImplUnitTest {
     }
 
     @Test
+    public void testGetEdgeToEdgeBottomInset_Uninitialized() {
+        assertEquals(0, mController.getEdgeToEdgeBottomInset());
+    }
+
+    @Test
+    public void testGetEdgeToEdgeBottomInset_Initialized() {
+        mController.runSheetInitializerForTesting();
+        doReturn(48).when(mBottomSheet).getEdgeToEdgeBottomInset();
+        assertEquals(48, mController.getEdgeToEdgeBottomInset());
+    }
+
+    @Test
     @EnableFeatures({
         BottomSheetFeatureMap.BOTTOM_SHEET_TYPES,
         BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN

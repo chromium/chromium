@@ -215,6 +215,7 @@ public class CoBrowseViewFactory {
                 mActivity,
                 containerView,
                 mWindowAndroid,
+                BottomSheetControllerProvider.from(mWindowAndroid),
                 mContextMenuPopulatorFactory,
                 mSelectionDropdownMenuDelegate,
                 backgroundColor,

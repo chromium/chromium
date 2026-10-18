@@ -27,6 +27,7 @@ import static org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.view.InputDevice;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -2956,5 +2957,109 @@ public class BottomSheetCoordinatorUnitTest {
         float expectedTranslationY = SHEET_CONTAINER_HEIGHT - currentOffset;
         assertEquals(
                 expectedTranslationY, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testWrapContent_CoversBottomControls_EdgeToEdgeBottomInset() {
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), 124);
+                    }
+                };
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.WRAP_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        when(mSheetContent.coversBottomControls()).thenReturn(true);
+        when(mSheetContent.getContentView()).thenReturn(contentView);
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        // Content view measured 124px (which includes 24px e2eBottomInset), so desired offset above
+        // the bottom inset is 100px, and translationY = 200 - 100 - 24 = 76f (leaving 124px visible
+        // on screen, matching the 124px contentView with 0 bottom padding).
+        assertEquals(100f, mBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(76f, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+        View mobileContentContainer =
+                mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
+        assertEquals(0, mobileContentContainer.getPaddingBottom());
+    }
+
+    @Test
+    public void
+            testUpdateViewport_CoversBottomControls_ExcludesSystemBarAndEdgeToEdgeBottomInset() {
+        verify(mInsetObserver)
+                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+
+        View decorView = mActivity.getWindow().getDecorView();
+        Rect defaultDisplayFrame = new Rect();
+        decorView.getWindowVisibleDisplayFrame(defaultDisplayFrame);
+        decorView.layout(0, 0, SHEET_CONTAINER_WIDTH, defaultDisplayFrame.bottom);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, defaultDisplayFrame.bottom);
+        mBottomSheet.setSheetContainerForTesting(mSheetContainer);
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DEFAULT);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        // 1. Display-frame fallback (insets == null): e2eBottomInset is subtracted when
+        // coversBottomControls() is false, and preserved when coversBottomControls() is true.
+        doReturn(null).when(mInsetObserver).getLastRawWindowInsets();
+        when(mSheetContent.coversBottomControls()).thenReturn(false);
+        mBottomSheet.showContent(mSheetContent);
+        listener.onStart(null, null);
+        assertEquals(
+                defaultDisplayFrame.bottom - 24,
+                mBottomSheet.getVisibleViewportRectForTesting().bottom);
+
+        when(mSheetContent.coversBottomControls()).thenReturn(true);
+        listener.onStart(null, null);
+        assertEquals(
+                defaultDisplayFrame.bottom, mBottomSheet.getVisibleViewportRectForTesting().bottom);
+
+        // 2. WindowInsets path: systemBars bottom inset (48) and e2eBottomInset (24) are excluded
+        // from bottomInset when coversBottomControls() is true, while top inset (30) is preserved.
+        decorView.layout(0, 0, SHEET_CONTAINER_WIDTH, 800);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, 800);
+        mBottomSheet.setSheetContainerForTesting(mSheetContainer);
+        mBottomSheet.setSheetOffsetFromBottom(800f, BottomSheetController.StateChangeReason.NONE);
+
+        WindowInsetsCompat windowInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 30, 0, 48))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 0))
+                        .build();
+        doReturn(windowInsets).when(mInsetObserver).getLastRawWindowInsets();
+        listener.onStart(null, null);
+
+        assertEquals(30, mBottomSheet.getVisibleViewportRectForTesting().top);
+        assertEquals(800, mBottomSheet.getVisibleViewportRectForTesting().bottom);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
+        assertEquals(770, contentContainer.getLayoutParams().height);
+
+        // 3. When IME is visible, IME bottom inset (300) still reduces the viewport bottom.
+        WindowInsetsCompat imeInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 30, 0, 48))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 300))
+                        .build();
+        doReturn(imeInsets).when(mInsetObserver).getLastRawWindowInsets();
+        listener.onStart(null, null);
+
+        assertEquals(500, mBottomSheet.getVisibleViewportRectForTesting().bottom);
+        assertEquals(470, contentContainer.getLayoutParams().height);
     }
 }
