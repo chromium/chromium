@@ -66,6 +66,12 @@ class MockContentAnalysisInfoBase : public ContentAnalysisInfoBase {
               (),
               (const, override));
   MOCK_METHOD(std::string, GetContentAreaAccountEmail, (), (const, override));
+  MOCK_METHOD(
+      std::optional<
+          ::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>,
+      extension_initiator,
+      (),
+      (const, override));
 };
 
 // Mock implementation of BinaryUploadService to verify that upload requests

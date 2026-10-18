@@ -163,6 +163,10 @@ if (!is_android && enterprise_cloud_content_analysis) {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_tabstrip",
       "//third_party/fuzztest",
+
+      # For extensions::DownloadedByExtension in
+      # content_analysis_info_browsertest.cc.
+      "//chrome/browser/extensions",
     ]
   }
 }

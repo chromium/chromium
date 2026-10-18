@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONTENT_ANALYSIS_INFO_BASE_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CONTENT_ANALYSIS_INFO_BASE_H_
 
+#include <optional>
 #include <string>
 
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 class GURL;
 
@@ -56,6 +58,11 @@ class ContentAnalysisInfoBase {
 
   // Method to compute and get the content area user email.
   virtual std::string GetContentAreaAccountEmail() const = 0;
+
+  // Returns info about the extension that initiated the action, if known.
+  virtual std::optional<
+      ::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+  extension_initiator() const = 0;
 };
 
 }  // namespace enterprise_connectors

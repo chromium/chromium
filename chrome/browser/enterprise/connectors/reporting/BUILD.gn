@@ -14,6 +14,7 @@ source_set("reporting") {
     sources += [
       "browser_crash_event_router.h",
       "crash_reporting_context.h",
+      "event_initiator_utils.h",
       "realtime_reporting_client.h",
       "realtime_reporting_client_factory.h",
       "reporting_event_router_factory.h",
@@ -22,7 +23,6 @@ source_set("reporting") {
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
-      "event_initiator_utils.h",
       "extension_install_event_router.h",
       "extension_telemetry_event_router.h",
       "extension_telemetry_event_router_factory.h",
@@ -63,6 +63,7 @@ source_set("impl") {
     sources += [
       "browser_crash_event_router.cc",
       "crash_reporting_context.cc",
+      "event_initiator_utils.cc",
       "realtime_reporting_client.cc",
       "realtime_reporting_client_factory.cc",
       "reporting_event_router_factory.cc",
@@ -71,7 +72,6 @@ source_set("impl") {
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
-      "event_initiator_utils.cc",
       "extension_install_event_router.cc",
       "extension_telemetry_event_router.cc",
       "extension_telemetry_event_router_factory.cc",
@@ -110,10 +110,12 @@ source_set("impl") {
 
   if (enterprise_cloud_content_analysis) {
     deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
+  }
 
-    if (enable_extensions_core) {
-      deps += [ "//chrome/browser/extensions" ]
-    }
+  if (enable_extensions_core) {
+    # For extensions::DownloadedByExtension in event_initiator_utils.cc and the
+    # extension event routers.
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 

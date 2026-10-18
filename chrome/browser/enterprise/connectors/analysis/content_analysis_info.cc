@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
+#include "chrome/browser/enterprise/connectors/reporting/event_initiator_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/download/public/common/download_item.h"
@@ -71,13 +72,17 @@ std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
   return GetDefaultActiveUser(identity_manager(), tab_url());
 }
 
+std::optional<::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+ContentAnalysisInfo::extension_initiator() const {
+  return std::nullopt;
+}
+
 // static
 std::string ContentAreaUserProvider::GetUser(Profile* profile,
                                              content::WebContents* web_contents,
                                              const GURL& tab_url) {
-  return ContentAreaUserProvider(
-             IdentityManagerFactory::GetForProfile(profile),
-             web_contents, tab_url)
+  return ContentAreaUserProvider(IdentityManagerFactory::GetForProfile(profile),
+                                 web_contents, tab_url)
       .GetContentAreaAccountEmail();
 }
 
@@ -183,6 +188,7 @@ DownloadContentAreaUserProvider::DownloadContentAreaUserProvider(
       web_contents_.get(), enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
       std::make_optional(
           content::DownloadItemUtils::GetRenderFrameHostId(&download_item)));
+  extension_initiator_ = GetExtensionInitiatorInfo(&download_item);
 }
 
 DownloadContentAreaUserProvider::~DownloadContentAreaUserProvider() = default;
@@ -238,6 +244,11 @@ DownloadContentAreaUserProvider::referrer_chain() const {
 google::protobuf::RepeatedPtrField<std::string>
 DownloadContentAreaUserProvider::frame_url_chain() const {
   return frame_url_chain_;
+}
+
+std::optional<::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+DownloadContentAreaUserProvider::extension_initiator() const {
+  return extension_initiator_;
 }
 
 }  // namespace enterprise_connectors

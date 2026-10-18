@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -110,6 +111,20 @@ enterprise_connectors::EventResult GetEventResult(
 }
 
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+
+// Copies `extension_initiator` onto `event` when present and the feature is
+// enabled. Leaves `event.initiator` unset otherwise so consumers can tell
+// "unknown" from "empty".
+void MaybeSetExtensionInitiator(
+    chrome::cros::reporting::proto::Event& event,
+    const std::optional<ReportingEventRouter::ExtensionInitiatorInfo>&
+        extension_initiator) {
+  if (!extension_initiator ||
+      !base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution)) {
+    return;
+  }
+  *event.mutable_initiator()->mutable_chrome_extension() = *extension_initiator;
+}
 
 }  // namespace
 
@@ -339,7 +354,8 @@ void ReportingEventRouter::OnUnscannedFileEvent(
     const std::string& content_transfer_method,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
-    EventResult event_result) {
+    EventResult event_result,
+    const std::optional<ExtensionInitiatorInfo>& extension_initiator) {
   if (!IsEventEnabled(kKeyUnscannedFileEvent)) {
     return;
   }
@@ -362,6 +378,7 @@ void ReportingEventRouter::OnUnscannedFileEvent(
         content_transfer_method, reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), content_size, referrer_chain,
         event_result);
+    MaybeSetExtensionInitiator(event, extension_initiator);
 
     auto send_event_cb =
         base::BindOnce(&ReportingEventRouter::SendEventOnGotHash,
@@ -393,7 +410,8 @@ void ReportingEventRouter::OnSensitiveDataEvent(
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
     const FrameUrlChain& frame_url_chain,
-    EventResult event_result) {
+    EventResult event_result,
+    const std::optional<ExtensionInitiatorInfo>& extension_initiator) {
   SensitiveDataEvent event;
   event.url = url;
   event.tab_url = tab_url;
@@ -413,6 +431,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
   event.referrer_chain = referrer_chain;
   event.frame_url_chain = frame_url_chain;
   event.event_result = event_result;
+  event.extension_initiator = extension_initiator;
   OnSensitiveDataEvent(event);
 }
 
@@ -444,6 +463,7 @@ void ReportingEventRouter::OnSensitiveDataEvent(
         reporting_client_->GetProfileUserName(), event.user_justification,
         event.content_size, event.result, event.referrer_chain,
         event.frame_url_chain, event.event_result);
+    MaybeSetExtensionInitiator(proto_event, event.extension_initiator);
 
     auto send_event_cb =
         base::BindOnce(&ReportingEventRouter::SendEventOnGotHash,
@@ -469,12 +489,13 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
     const FrameUrlChain& frame_url_chain,
-    EventResult event_result) {
+    EventResult event_result,
+    const std::optional<ExtensionInitiatorInfo>& extension_initiator) {
   OnDangerousDownloadEvent(
       url, tab_url, /*source=*/"", /*destination=*/"", file_name, sha256_or_cb,
       DangerTypeToThreatType(danger_type), mime_type, trigger, scan_id,
       /*content_transfer_method*/ "", content_size, referrer_chain,
-      frame_url_chain, event_result);
+      frame_url_chain, event_result, extension_initiator);
 }
 
 void ReportingEventRouter::OnDangerousDownloadEvent(
@@ -492,7 +513,8 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
     const FrameUrlChain& frame_url_chain,
-    EventResult event_result) {
+    EventResult event_result,
+    const std::optional<ExtensionInitiatorInfo>& extension_initiator) {
   if (!IsEventEnabled(kKeyDangerousDownloadEvent)) {
     return;
   }
@@ -515,6 +537,7 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
         content_transfer_method, reporting_client_->GetProfileIdentifier(),
         reporting_client_->GetProfileUserName(), content_size, referrer_chain,
         frame_url_chain, event_result);
+    MaybeSetExtensionInitiator(event, extension_initiator);
 
     auto send_event_cb = base::BindOnce(
         &ReportingEventRouter::SendEventOnGotHash,
@@ -545,14 +568,15 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
     const FrameUrlChain& frame_url_chain,
-    EventResult event_result) {
+    EventResult event_result,
+    const std::optional<ExtensionInitiatorInfo>& extension_initiator) {
   if (result.tag() == kMalwareTag) {
     DCHECK_EQ(1, result.triggered_rules().size());
     OnDangerousDownloadEvent(
         url, tab_url, source, destination, file_name, sha256_or_cb,
         MalwareRuleToThreatType(result.triggered_rules(0).rule_name()),
         mime_type, trigger, scan_id, content_transfer_method, content_size,
-        referrer_chain, frame_url_chain, event_result);
+        referrer_chain, frame_url_chain, event_result, extension_initiator);
   } else if (result.tag() == kDlpTag) {
     SensitiveDataEvent event;
     event.url = url;
@@ -572,6 +596,7 @@ void ReportingEventRouter::OnAnalysisConnectorResult(
     event.referrer_chain = referrer_chain;
     event.frame_url_chain = frame_url_chain;
     event.event_result = event_result;
+    event.extension_initiator = extension_initiator;
     OnSensitiveDataEvent(event);
   }
 }

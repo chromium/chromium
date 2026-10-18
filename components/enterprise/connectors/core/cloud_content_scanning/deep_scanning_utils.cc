@@ -200,7 +200,8 @@ void MaybeReportDeepScanningVerdict(
         GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
         source, destination, file_name, sha256_or_cb, mime_type, trigger,
         response.request_token(), unscanned_reason, content_transfer_method,
-        content_size, content_analysis_info->referrer_chain(), event_result);
+        content_size, content_analysis_info->referrer_chain(), event_result,
+        content_analysis_info->extension_initiator());
   }
 
   if (result != ScanRequestUploadResult::kSuccess) {
@@ -221,7 +222,8 @@ void MaybeReportDeepScanningVerdict(
           source, destination, file_name, sha256_or_cb, mime_type, trigger,
           response.request_token(), std::move(unscanned_reason),
           content_transfer_method, content_size,
-          content_analysis_info->referrer_chain(), event_result);
+          content_analysis_info->referrer_chain(), event_result,
+          content_analysis_info->extension_initiator());
     } else if (response_result.triggered_rules_size() > 0) {
       reporting_event_router->OnAnalysisConnectorResult(
           GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
@@ -229,7 +231,8 @@ void MaybeReportDeepScanningVerdict(
           response.request_token(), content_transfer_method, source_email,
           content_analysis_info->GetContentAreaAccountEmail(), response_result,
           content_size, content_analysis_info->referrer_chain(),
-          content_analysis_info->frame_url_chain(), event_result);
+          content_analysis_info->frame_url_chain(), event_result,
+          content_analysis_info->extension_initiator());
     }
   }
 }
@@ -266,7 +269,8 @@ void ReportAnalysisConnectorWarningBypass(
         /*source_email=*/"",
         content_analysis_info->GetContentAreaAccountEmail(), user_justification,
         result, content_size, content_analysis_info->referrer_chain(),
-        content_analysis_info->frame_url_chain(), EventResult::BYPASSED);
+        content_analysis_info->frame_url_chain(), EventResult::BYPASSED,
+        content_analysis_info->extension_initiator());
   }
 }
 

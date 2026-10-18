@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_EVENT_ROUTER_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_REPORTING_EVENT_ROUTER_H_
 
+#include <optional>
+
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -14,6 +16,7 @@
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/data_controls/core/browser/clipboard_context.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -33,6 +36,8 @@ class ReportingEventRouter : public KeyedService {
   using FrameUrlChain = google::protobuf::RepeatedPtrField<std::string>;
   using RegisterOnGotHashCallback =
       base::RepeatingCallback<void(OnGotHashCallback)>;
+  using ExtensionInitiatorInfo =
+      ::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo;
 
   explicit ReportingEventRouter(RealtimeReportingClientBase* reporting_client);
 
@@ -104,6 +109,10 @@ class ReportingEventRouter : public KeyedService {
                                     std::string hash);
 
   // Notifies listeners that deep scanning failed, for the given |reason|.
+  // - `extension_initiator` is the extension that started the download, if
+  //   known.
+  // TODO(crbug.com/574544337): Remove the default value for
+  // `extension_initiator` once all callers pass it explicitly.
   void OnUnscannedFileEvent(const GURL& url,
                             const GURL& tab_url,
                             const std::string& source,
@@ -117,7 +126,9 @@ class ReportingEventRouter : public KeyedService {
                             const std::string& content_transfer_method,
                             const int64_t content_size,
                             const ReferrerChain& referrer_chain,
-                            EventResult event_result);
+                            EventResult event_result,
+                            const std::optional<ExtensionInitiatorInfo>&
+                                extension_initiator = std::nullopt);
 
   struct SensitiveDataEvent {
     SensitiveDataEvent();
@@ -143,11 +154,14 @@ class ReportingEventRouter : public KeyedService {
     ReferrerChain referrer_chain;
     FrameUrlChain frame_url_chain;
     EventResult event_result;
+    std::optional<ExtensionInitiatorInfo> extension_initiator;
   };
 
   // Notifies listeners that the analysis connector detected a violation.
   virtual void OnSensitiveDataEvent(const SensitiveDataEvent& event);
 
+  // TODO(crbug.com/574544337): Remove the default value for
+  // `extension_initiator` once all callers pass it explicitly.
   void OnSensitiveDataEvent(const GURL& url,
                             const GURL& tab_url,
                             const std::string& source,
@@ -165,13 +179,19 @@ class ReportingEventRouter : public KeyedService {
                             const int64_t content_size,
                             const ReferrerChain& referrer_chain,
                             const FrameUrlChain& frame_url_chain,
-                            EventResult event_result);
+                            EventResult event_result,
+                            const std::optional<ExtensionInitiatorInfo>&
+                                extension_initiator = std::nullopt);
 
   // Notifies listeners that safe browsing detected a dangerous download
   // - |url| is the download URL
   // - |file_name| is the path on disk
   // - |download_digest_sha256| is the hex-encoded SHA256
   // - |threat_type| is the danger type of the download.
+  // - |extension_initiator| is the extension that started the download, if
+  //   known.
+  // TODO(crbug.com/574544337): Remove the default value for
+  // `extension_initiator` once all callers pass it explicitly.
   void OnDangerousDownloadEvent(const GURL& url,
                                 const GURL& tab_url,
                                 const std::string& file_name,
@@ -183,13 +203,19 @@ class ReportingEventRouter : public KeyedService {
                                 const int64_t content_size,
                                 const ReferrerChain& referrer_chain,
                                 const FrameUrlChain& frame_url_chain,
-                                EventResult event_result);
+                                EventResult event_result,
+                                const std::optional<ExtensionInitiatorInfo>&
+                                    extension_initiator = std::nullopt);
 
   // Notifies listeners that deep scanning detected a dangerous download.
   //
   // `DangerousDownloadEvent` maps to `Malware transfer event` on the server
   // side, which means the event can be triggered from download, upload or file
   // transfer (CrOS only).
+  // - `extension_initiator` is the extension that started the download, if
+  //   known.
+  // TODO(crbug.com/574544337): Remove the default value for
+  // `extension_initiator` once all callers pass it explicitly.
   void OnDangerousDownloadEvent(const GURL& url,
                                 const GURL& tab_url,
                                 const std::string& source,
@@ -204,9 +230,15 @@ class ReportingEventRouter : public KeyedService {
                                 const int64_t content_size,
                                 const ReferrerChain& referrer_chain,
                                 const FrameUrlChain& frame_url_chain,
-                                EventResult event_result);
+                                EventResult event_result,
+                                const std::optional<ExtensionInitiatorInfo>&
+                                    extension_initiator = std::nullopt);
 
   // Notifies listeners that the analysis connector detected a violation.
+  // - `extension_initiator` is the extension that started the action, if
+  //   known.
+  // TODO(crbug.com/574544337): Remove the default value for
+  // `extension_initiator` once all callers pass it explicitly.
   void OnAnalysisConnectorResult(const GURL& url,
                                  const GURL& tab_url,
                                  const std::string& source,
@@ -223,7 +255,9 @@ class ReportingEventRouter : public KeyedService {
                                  const int64_t content_size,
                                  const ReferrerChain& referrer_chain,
                                  const FrameUrlChain& frame_url_chain,
-                                 EventResult event_result);
+                                 EventResult event_result,
+                                 const std::optional<ExtensionInitiatorInfo>&
+                                     extension_initiator = std::nullopt);
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
   // Converts `source` into a `CopiedTextSource`. `CopiedTextSource::context` is
   // always populated, but `CopiedTextSource::url` may be left empty depending

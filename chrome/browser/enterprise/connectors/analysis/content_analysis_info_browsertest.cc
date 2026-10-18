@@ -6,8 +6,10 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/enterprise/connectors/test/active_user_test_mixin.h"
+#include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -17,11 +19,13 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -540,6 +544,55 @@ IN_PROC_BROWSER_TEST_F(DownloadContentAreaUserProviderTest, FrameUrlChain) {
   auto frame_url_chain = provider.frame_url_chain();
   ASSERT_EQ(1u, frame_url_chain.size());
   EXPECT_EQ(iframe_url.spec(), frame_url_chain[0]);
+}
+
+// Enables extension-initiator reporting. The feature must be overridden in the
+// fixture constructor, before the browser process initializes FeatureList.
+class DownloadContentAreaUserProviderInitiatorTest
+    : public InProcessBrowserTest {
+ public:
+  DownloadContentAreaUserProviderInitiatorTest() {
+    feature_list_.InitAndEnableFeature(kEnterpriseExtensionActorAttribution);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DownloadContentAreaUserProviderInitiatorTest,
+                       ExtensionInitiator) {
+  constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+  constexpr char kExtensionName[] = "Test Extension";
+
+  GURL empty_url;
+  std::vector<GURL> empty_url_chain;
+  testing::NiceMock<download::MockDownloadItem> mock_download_item;
+  ON_CALL(mock_download_item, GetURL())
+      .WillByDefault(testing::ReturnRef(empty_url));
+  ON_CALL(mock_download_item, GetTabUrl())
+      .WillByDefault(testing::ReturnRef(empty_url));
+  ON_CALL(mock_download_item, GetUrlChain())
+      .WillByDefault(testing::ReturnRef(empty_url_chain));
+  content::DownloadItemUtils::AttachInfo(
+      &mock_download_item, browser()->GetProfile(),
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::GlobalRenderFrameHostId());
+
+  // Not initiated by an extension.
+  EXPECT_FALSE(DownloadContentAreaUserProvider(mock_download_item)
+                   .extension_initiator()
+                   .has_value());
+
+  // Marks the item as initiated via the chrome.downloads API.
+  // `DownloadedByExtension` attaches itself to the item as user data.
+  new extensions::DownloadedByExtension(&mock_download_item, kExtensionId,
+                                        kExtensionName);
+
+  auto initiator =
+      DownloadContentAreaUserProvider(mock_download_item).extension_initiator();
+  ASSERT_TRUE(initiator.has_value());
+  EXPECT_EQ(kExtensionId, initiator->id());
+  EXPECT_EQ(kExtensionName, initiator->name());
 }
 
 }  // namespace enterprise_connectors

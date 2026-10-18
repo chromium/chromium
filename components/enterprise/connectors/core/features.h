@@ -65,6 +65,11 @@ BASE_DECLARE_FEATURE(kEnableAuditOnlyNetworkRequestConnector);
 // Controls whether copy to clipboard is enabled for content analysis.
 BASE_DECLARE_FEATURE(kContentAnalysisClipboardCopy);
 
+// Controls whether enterprise security events carry `Event.initiator`
+// identifying the Chrome extension that actuated the reported action (extension
+// actor attribution). See crbug.com/554183135.
+BASE_DECLARE_FEATURE(kEnterpriseExtensionActorAttribution);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

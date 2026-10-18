@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_INFO_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_INFO_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,6 +39,10 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
   // `tab_url()` and `identity_manager()`. Only returns a value for Workspace
   // sites.
   std::string GetContentAreaAccountEmail() const override;
+
+  // Defaults to `std::nullopt`.
+  std::optional<::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+  extension_initiator() const override;
 };
 
 // Simple implementation of `ContentAnalysisInfo` meant to obtain the value
@@ -97,6 +103,8 @@ class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
   referrer_chain() const override;
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const override;
+  std::optional<::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+  extension_initiator() const override;
 
  private:
   // ContentAnalysisInfo:
@@ -113,6 +121,8 @@ class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
       referrer_chain_;
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain_;
+  std::optional<::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+      extension_initiator_;
   base::WeakPtr<content::WebContents> web_contents_;
 };
 

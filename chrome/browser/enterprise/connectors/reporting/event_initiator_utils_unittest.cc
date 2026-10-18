@@ -8,8 +8,10 @@
 #include <optional>
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/test/browser_task_environment.h"
@@ -37,6 +39,11 @@ constexpr char kExtensionVersion[] = "1.2.3";
 
 class EventInitiatorUtilsTest : public testing::Test {
  public:
+  EventInitiatorUtilsTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kEnterpriseExtensionActorAttribution);
+  }
+
   // Creates an extension without registering it in `profile_`.
   scoped_refptr<const extensions::Extension> CreateExtension(
       ManifestLocation location,
@@ -78,7 +85,17 @@ class EventInitiatorUtilsTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(EventInitiatorUtilsTest, FeatureDisabledReturnsNullopt) {
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(kEnterpriseExtensionActorAttribution);
+  InstallExtension(ManifestLocation::kInternal,
+                   extensions::Extension::FROM_WEBSTORE);
+  auto item = CreateDownloadByExtension(kExtensionId);
+  EXPECT_FALSE(GetExtensionInitiatorInfo(item.get()).has_value());
+}
 
 TEST_F(EventInitiatorUtilsTest, NullDownloadReturnsNullopt) {
   EXPECT_FALSE(GetExtensionInitiatorInfo(/*download=*/nullptr).has_value());

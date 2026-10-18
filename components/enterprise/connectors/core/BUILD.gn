@@ -59,6 +59,7 @@ source_set("core") {
     "//components/enterprise/buildflags",
     "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
   ]
 
   deps = [

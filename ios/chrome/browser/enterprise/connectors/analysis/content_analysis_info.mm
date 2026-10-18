@@ -96,6 +96,12 @@ ContentAnalysisInfo::frame_url_chain() const {
   return {};
 }
 
+std::optional<::safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo>
+ContentAnalysisInfo::extension_initiator() const {
+  // Chrome on iOS does not support extensions.
+  return std::nullopt;
+}
+
 std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
   return GetActiveContentAreaUser(identity_manager(), tab_url());
 }

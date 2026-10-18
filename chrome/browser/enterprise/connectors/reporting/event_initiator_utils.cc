@@ -7,16 +7,22 @@
 #include <optional>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "components/download/public/common/download_item.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
+#include "extensions/buildflags/buildflags.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
+#endif
 
 namespace enterprise_connectors {
 
@@ -24,6 +30,8 @@ namespace {
 
 using ExtensionInfo =
     safe_browsing::ExtensionTelemetryReportRequest::ExtensionInfo;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 using extensions::mojom::ManifestLocation;
 
 // TODO(crbug.com/567524561): This mapper duplicates the private
@@ -60,6 +68,7 @@ ExtensionInfo::InstallLocation ToInstallLocation(ManifestLocation location) {
   }
   NOTREACHED();
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 }  // namespace
 
@@ -68,9 +77,12 @@ std::optional<ExtensionInfo> GetExtensionInitiatorInfo(
   // ExtensionRegistry is UI-thread only.
   CHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!download) {
+  if (!base::FeatureList::IsEnabled(kEnterpriseExtensionActorAttribution) ||
+      !download) {
     return std::nullopt;
   }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // TODO(crbug.com/570065942): Only downloads started via the
   // `chrome.downloads` API are attributed, since `DownloadedByExtension` is
@@ -116,11 +128,13 @@ std::optional<ExtensionInfo> GetExtensionInitiatorInfo(
 
   // Provenance lets consumers tell a Web Store extension apart from a
   // sideloaded one that declares the same ID.
-  extension_info.set_install_location(
-      ToInstallLocation(extension->location()));
+  extension_info.set_install_location(ToInstallLocation(extension->location()));
   extension_info.set_is_from_store(extension->from_webstore());
 
   return extension_info;
+#else
+  return std::nullopt;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 
 }  // namespace enterprise_connectors
