@@ -31,6 +31,7 @@
 #import "components/sync/service/sync_service.h"
 #import "components/universal_optout/features.h"
 #import "components/universal_optout/prefs.h"
+#import "components/universal_optout/universal_optout_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
@@ -64,6 +65,7 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
+#import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/extension_service.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
 #import "ios/chrome/browser/web_extension/model/extension_service_observer_bridge.h"
@@ -115,8 +117,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 const char kGoogleServicesSettingsURL[] = "settings://open_google_services";
 const char kSyncSettingsURL[] = "settings://open_sync";
 
-bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
-  return universal_optout::GetUniversalOptOutState(prefs, nullptr) !=
+bool ShouldShowUniversalOptOutSettings(
+    PrefService* prefs,
+    universal_optout::UniversalOptOutService* universal_opt_out_service) {
+  return universal_optout::GetUniversalOptOutState(prefs,
+                                                   universal_opt_out_service) !=
          web::UniversalOptOutState::kNotEligible;
 }
 
@@ -216,7 +221,11 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     // Register to observe any changes on pref-backed values displayed by the
     // screen.
-    if (ShouldShowUniversalOptOutSettings(prefService)) {
+    universal_optout::UniversalOptOutService* universalOptOutService =
+        universal_optout::UniversalOptOutServiceFactory::GetForProfile(
+            _profile);
+    if (ShouldShowUniversalOptOutSettings(prefService,
+                                          universalOptOutService)) {
       _prefObserverBridge->ObserveChangesForPreference(
           universal_optout::prefs::kUniversalOptOutEnabled,
           &_prefChangeRegistrar);
@@ -353,15 +362,18 @@ bool ShouldShowUniversalOptOutSettings(PrefService* prefs) {
         toSectionWithIdentifier:SectionIdentifierPasswordLeakCheck];
   }
 
-  if (ShouldShowUniversalOptOutSettings(_profile->GetPrefs())) {
+  universal_optout::UniversalOptOutService* universalOptOutService =
+      universal_optout::UniversalOptOutServiceFactory::GetForProfile(_profile);
+  const bool showUniversalOptOut = ShouldShowUniversalOptOutSettings(
+      _profile->GetPrefs(), universalOptOutService);
+  if (showUniversalOptOut) {
     [model addSectionWithIdentifier:SectionIdentifierSiteRequests];
     [model addItem:[self universalOptOutDetailItem]
         toSectionWithIdentifier:SectionIdentifierSiteRequests];
   }
 
-  base::UmaHistogramBoolean(
-      "Privacy.UniversalOptOut.SettingsVisibility",
-      ShouldShowUniversalOptOutSettings(_profile->GetPrefs()));
+  base::UmaHistogramBoolean("Privacy.UniversalOptOut.SettingsVisibility",
+                            showUniversalOptOut);
 
   [model addSectionWithIdentifier:SectionIdentifierWebServices];
   [model addSectionWithIdentifier:SectionIdentifierIncognitoAuth];
