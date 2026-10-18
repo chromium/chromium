@@ -108,6 +108,13 @@
 # This is for things like tests that will never be supported on a particular
 # platform/configuration.
 
+# Pixel 10 and Pixel 11 C2 hardware encoder HAL enforces a minimum 720p VBR
+# bitrate floor of 2.2 Mbps for AVC Baseline and 2.0 Mbps for HEVC.
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Skip ]
+crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_1500000 [ Skip ]
+crbug.com/558993697 [ android android-pixel-11-pro-xl ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Skip ]
+crbug.com/558993697 [ android android-pixel-11-pro-xl ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_1500000 [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -259,14 +266,6 @@ crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_EncodeColorSpace_avc1.
 crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_Encode_hw_decoder_avc1.42001E_prefer-hardware [ RetryOnFailure ]
 crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_FrameSizeChange_avc1.42001E_hw_decoder [ RetryOnFailure ]
 crbug.com/563435062 [ android android-pixel-6 ] WebCodecs_MixedSourceEncoding_* [ RetryOnFailure ]
-
-# Pixel 10
-crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Failure ]
-crbug.com/447317875 [ android mobile android-pixel-10 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_1500000 [ Failure ]
-
-# Pixel 11 Pro XL
-crbug.com/558993697 [ android android-pixel-11-pro-xl ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_1500000 [ Failure ]
-crbug.com/558993697 [ android android-pixel-11-pro-xl ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_1500000 [ Failure ]
 
 # Snapdragon X Elite
 crbug.com/452841787 [ win11 qualcomm-0x36334330 ] WebCodecs_FrameSizeChange_av01.0.04M.08_* [ Failure ]
