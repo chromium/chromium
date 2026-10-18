@@ -45,7 +45,8 @@ export const SiteSettingsMixinLit = dedupingMixin(
           if (url.length === 0) {
             return url;
           }
-          return url.includes('://') ? url : 'http://' + url;
+          return /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(url) ? url :
+                                                             'http://' + url;
         }
 
         /**
@@ -75,26 +76,22 @@ export const SiteSettingsMixinLit = dedupingMixin(
           if (originOrPattern.length === 0) {
             return null;
           }
-          // TODO(finnur): Hmm, it would probably be better to ensure scheme on
-          // the JS/C++ boundary.
-          // TODO(dschuyler): I agree. This filtering should be done in one go,
-          // rather that during the sort. The URL generation should be wrapped
-          // in a try/catch as well.
-          originOrPattern = originOrPattern.replace('*://', '');
-          originOrPattern = originOrPattern.replace('[*.]', '');
-          return new URL(this.ensureUrlHasScheme(originOrPattern));
+          // Strip wildcard schemes and subdomain wildcards from content setting
+          // patterns before ensuring a concrete scheme for the URL constructor.
+          originOrPattern = originOrPattern.replace(/^\*:\/\/|\[\*\.\]/g, '');
+          try {
+            return new URL(this.ensureUrlHasScheme(originOrPattern));
+          } catch {
+            return null;
+          }
         }
 
         /**
          * @return a user-friendly name for the origin.
          */
         originRepresentation(origin: string): string {
-          try {
-            const url = this.toUrl(origin);
-            return url ? (url.host || url.origin) : '';
-          } catch (error) {
-            return '';
-          }
+          const url = this.toUrl(origin);
+          return url ? (url.host || url.origin) : '';
         }
 
         /**
@@ -107,8 +104,6 @@ export const SiteSettingsMixinLit = dedupingMixin(
           const origin = exception.origin;
           const embeddingOrigin = exception.embeddingOrigin;
 
-          // TODO(patricialor): |exception.source| should be one of the values
-          // defined in |SiteSettingSource|.
           let enforcement = null;
           if (exception.source === SiteSettingSource.EXTENSION ||
               exception.source === SiteSettingSource.HOSTED_APP ||

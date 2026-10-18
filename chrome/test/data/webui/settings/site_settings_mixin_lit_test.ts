@@ -67,18 +67,32 @@ suite('SiteSettingsMixinLit', function() {
 
   test('ToUrl', function() {
     assertNull(testElement.toUrl(''));
+    assertNull(testElement.toUrl('http://'));
+    assertNull(testElement.toUrl('http://[invalid]'));
 
     const url1 = testElement.toUrl('https://example.com:8080');
     assertTrue(!!url1);
     assertEquals('https://example.com:8080/', url1.href);
 
-    const url2 = testElement.toUrl('*://[*.]example.com');
+    const url2 = testElement.toUrl('*://example.com');
     assertTrue(!!url2);
     assertEquals('http://example.com/', url2.href);
 
-    const url3 = testElement.toUrl('chrome-extension://id');
+    const url3 = testElement.toUrl('[*.]example.com');
     assertTrue(!!url3);
-    assertEquals('chrome-extension://id/', url3.href);
+    assertEquals('http://example.com/', url3.href);
+
+    const url4 = testElement.toUrl('https://[*.]example.com');
+    assertTrue(!!url4);
+    assertEquals('https://example.com/', url4.href);
+
+    const url5 = testElement.toUrl('chrome-extension://id');
+    assertTrue(!!url5);
+    assertEquals('chrome-extension://id/', url5.href);
+
+    const url6 = testElement.toUrl('example.com?redirect=https://foo.com');
+    assertTrue(!!url6);
+    assertEquals('http://example.com/?redirect=https://foo.com', url6.href);
   });
 
   test('OriginRepresentation', function() {
@@ -94,50 +108,35 @@ suite('SiteSettingsMixinLit', function() {
   });
 
   test('ExpandSiteException', function() {
-    const prefException = testElement.expandSiteException(
-        createRawSiteException('https://example.com', {
-          type: ContentSettingsTypes.GEOLOCATION,
-          setting: ContentSetting.ALLOW,
-          source: SiteSettingSource.PREFERENCE,
-        }));
-    assertEquals(ContentSettingsTypes.GEOLOCATION, prefException.category);
-    assertEquals('https://example.com', prefException.origin);
-    assertNull(prefException.enforcement);
-    assertEquals(
-        chrome.settingsPrivate.ControlledBy.PRIMARY_USER,
-        prefException.controlledBy);
+    for (const source of Object.values(SiteSettingSource)) {
+      const exception = testElement.expandSiteException(
+          createRawSiteException('https://example.com', {
+            type: ContentSettingsTypes.GEOLOCATION,
+            setting: ContentSetting.ALLOW,
+            source,
+          }));
+      assertEquals(ContentSettingsTypes.GEOLOCATION, exception.category);
+      assertEquals('https://example.com', exception.origin);
 
-    const extensionException = testElement.expandSiteException(
-        createRawSiteException('https://example.com', {
-          source: SiteSettingSource.EXTENSION,
-        }));
-    assertEquals(
-        chrome.settingsPrivate.Enforcement.ENFORCED,
-        extensionException.enforcement);
-    assertEquals(
-        chrome.settingsPrivate.ControlledBy.EXTENSION,
-        extensionException.controlledBy);
-
-    const hostedAppException = testElement.expandSiteException(
-        createRawSiteException('https://example.com', {
-          source: SiteSettingSource.HOSTED_APP,
-        }));
-    assertEquals(
-        chrome.settingsPrivate.Enforcement.ENFORCED,
-        hostedAppException.enforcement);
-    assertEquals(
-        chrome.settingsPrivate.ControlledBy.EXTENSION,
-        hostedAppException.controlledBy);
-
-    const policyException = testElement.expandSiteException(
-        createRawSiteException('https://example.com', {
-          source: SiteSettingSource.POLICY,
-        }));
-    assertEquals(
-        chrome.settingsPrivate.Enforcement.ENFORCED,
-        policyException.enforcement);
-    assertEquals(
-        chrome.settingsPrivate.ControlledBy.USER_POLICY,
-        policyException.controlledBy);
+      if (source === SiteSettingSource.EXTENSION ||
+          source === SiteSettingSource.HOSTED_APP) {
+        assertEquals(
+            chrome.settingsPrivate.Enforcement.ENFORCED, exception.enforcement);
+        assertEquals(
+            chrome.settingsPrivate.ControlledBy.EXTENSION,
+            exception.controlledBy);
+      } else if (source === SiteSettingSource.POLICY) {
+        assertEquals(
+            chrome.settingsPrivate.Enforcement.ENFORCED, exception.enforcement);
+        assertEquals(
+            chrome.settingsPrivate.ControlledBy.USER_POLICY,
+            exception.controlledBy);
+      } else {
+        assertNull(exception.enforcement);
+        assertEquals(
+            chrome.settingsPrivate.ControlledBy.PRIMARY_USER,
+            exception.controlledBy);
+      }
+    }
   });
 });
