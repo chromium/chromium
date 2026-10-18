@@ -888,7 +888,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="4532845899244822526">Scegli cartella</translation>
 <translation id="4535755320005483982">Gruppo di schede <ph name="GROUP_TITLE" /> condiviso</translation>
 <translation id="4537137366307982887">Attivazione delle notifiche di suggerimenti aperta a schermo intero</translation>
-<translation id="4537987892902330164">L'accesso come <ph name="NAME_OR_EMAIL" /> è stato mantenuto.</translation>
+<translation id="4537987892902330164">Hai mantenuto l'accesso come <ph name="NAME_OR_EMAIL" />.</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> scheda}other{<ph name="TAB_COUNT_MANY" /> schede, <ph name="TAB_COUNT_INCOGNITO" /> in incognito}}</translation>
 <translation id="4558311620361989323">Scorciatoie delle pagine web</translation>
 <translation id="4572422548854449519">Accedi all'account gestito</translation>

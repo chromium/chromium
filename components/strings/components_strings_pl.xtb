@@ -2227,7 +2227,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4731638775147756694">Aplikacja została zablokowana przez administratora</translation>
 <translation id="4732860731866514038">Pobieram pakiet językowy dla języka <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="4733082559415072992"><ph name="URL" /> chce używać lokalizacji Twojego urządzenia</translation>
-<translation id="473414950835101501">Korzystać z kamer</translation>
+<translation id="473414950835101501">Korzystanie z kamer</translation>
 <translation id="4736089601076994090">Wygasa: <ph name="EXPIRATION_DATE" /></translation>
 <translation id="4736825316280949806">Uruchom ponownie Chromium</translation>
 <translation id="4736934858538408121">Karta wirtualna</translation>
@@ -2366,7 +2366,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4936573216809994970">Przesyłanie plików do usługi <ph name="CLOUD_PROVIDER" /> rozpocznie się za godzinę</translation>
 <translation id="4939748144644852809">Przeniesiono w prawo</translation>
 <translation id="4941627891654116707">Rozmiar czcionki</translation>
-<translation id="4943620199112228840">Korzystać z mikrofonów</translation>
+<translation id="4943620199112228840">Korzystanie z mikrofonów</translation>
 <translation id="4943872375798546930">Brak wyników</translation>
 <translation id="494701040141924538">OK, zamknij powiadomienie</translation>
 <translation id="4951038790614970523">Tekst wycięty lub skopiowany do schowka jest wysyłany do analizy w Google Cloud albo usługach zewnętrznych. Na przykład może zostać przeskanowany pod kątem danych wrażliwych, a także być przechowywany zgodnie z zasadami firmy i widoczny dla administratora.</translation>

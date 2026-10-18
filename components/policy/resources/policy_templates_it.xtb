@@ -1180,9 +1180,9 @@ ChromeOS M184 sarà l'ultima versione di ChromeOS a supportare le app di Chrome.
 
 <ph name="PRODUCT_NAME" /> ha un'impostazione "Avvia <ph name="PRODUCT_NAME" /> con <ph name="MS_WIN_NAME" />" che lo registra per l'avvio quando l'utente accede, in modo che il browser sia pronto immediatamente. Agli utenti potrebbero anche essere mostrati prompt che suggeriscono di modificare questa impostazione.
 
-Se la policy viene impostata su Attivata, <ph name="PRODUCT_NAME" /> si avvia e apre una finestra del browser quando l'utente accede. Gli utenti non possono modificare l'impostazione e non vengono visualizzati prompt per modificarla.
+Se la policy viene impostata su Attivata, <ph name="PRODUCT_NAME" /> si avvia e apre una finestra del browser quando l'utente accede. Gli utenti non possono modificare l'impostazione e non ricevono prompt per farlo.
 
-Se la policy viene impostata su Disattivata, <ph name="PRODUCT_NAME" /> non si avvia quando l'utente accede. Gli utenti non possono modificare l'impostazione e non vengono visualizzati prompt per modificarla.
+Se la policy viene impostata su Disattivata, <ph name="PRODUCT_NAME" /> non si avvia quando l'utente accede. Gli utenti non possono modificare l'impostazione e non ricevono prompt per farlo.
 
 Se la policy non viene configurata, gli utenti possono modificare l'impostazione.
 

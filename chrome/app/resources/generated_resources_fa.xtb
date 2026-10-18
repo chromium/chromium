@@ -2039,7 +2039,7 @@
 <translation id="2547602044908040111">‏اگر کنشگر، روزنامه‌نگار، چهره همگانی، دست‌اندرکار انتخابات، یا فرد دیگری با نقشی منحصربه‌فرد و پرخطر هستید، ممکن است به <ph name="BEGIN_LINK" />برنامه محافظت پیشرفته<ph name="END_LINK" /> Google علاقه‌مند باشید.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> مجاز شده است</translation>
 <translation id="2548545707296594436">بازنشانی حافظه پنهان نمایه سیم‌کارت داخلی</translation>
-<translation id="2549985041256363841">شروع ضبط</translation>
+<translation id="2549985041256363841">شروع کردن ضبط</translation>
 <translation id="2550212893339833758">حافظه جابه‌جاشده</translation>
 <translation id="2550596535588364872">به <ph name="EXTENSION_NAME" /> اجازه می‌دهید <ph name="FILE_NAME" /> را باز کند؟</translation>
 <translation id="2552230905527343195">نمی‌توان زبانه فعلی را اضافه کرد</translation>
@@ -3594,7 +3594,7 @@
 <translation id="3711945201266135623"><ph name="NUM_PRINTERS" /> چاپگر از سرور چاپ پیدا شد</translation>
 <translation id="3712143870407382523">پنجره‌ای برای این سمت انتخاب کنید</translation>
 <translation id="3712897371525859903">ذخیره صفحه &amp;بعنوان...</translation>
-<translation id="3712966523643024813">ویژگی‌های جدید</translation>
+<translation id="3712966523643024813">تازه‌ها</translation>
 <translation id="371300529209814631">عقب/جلو</translation>
 <translation id="371302509916403935">زیرخط</translation>
 <translation id="3713047097299026954">این کلید امنیتی هیچ داده ورود به سیستمی ندارد</translation>
@@ -6085,7 +6085,7 @@
 <translation id="5623282979409330487">این سایت به حسگرهای حرکتی دسترسی دارد.</translation>
 <translation id="5623842676595125836">گزارش</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
-<translation id="5624959475330585145">قبل‌از استفاده از اتصال‌های ناامن سؤال شود</translation>
+<translation id="5624959475330585145">پرسیدن پیش از استفاده کردن از اتصال‌های ناامن</translation>
 <translation id="5625225435499354052">‏ویرایش در Google Pay</translation>
 <translation id="5627832140542566187">جهت نمایشگر</translation>
 <translation id="5628434207686266338">تنظیم گذرواژه دستگاه</translation>
@@ -6454,7 +6454,7 @@
 <translation id="5922493635960054020">دسترسی به بهینه‌ساز جاوا اسکریپت در سایت‌هایی که اخیراً از آن‌ها بازدید شده است مسدود می‌شود. به «مرور ایمن» نیاز دارد</translation>
 <translation id="5922854266885514646">‏روی «سفارشی‌سازی Chrome» کلیک کنید</translation>
 <translation id="5924047253200400718">دریافت راهنمایی<ph name="SCANNING_STATUS" /></translation>
-<translation id="5924438086390153180">‏پیش‌از کپی یا منتقل کردن فایل‌های Microsoft به Google Drive سؤال شود</translation>
+<translation id="5924438086390153180">‏پرسیدن پیش از کپی یا منتقل کردن فایل‌های Microsoft به Google Drive</translation>
 <translation id="5925057331573749968">ورود سریع‌تر به سیستم با رمزینه پاسخ‌سریع</translation>
 <translation id="5926936390113611560">باز کردن همه نمایه‌ها</translation>
 <translation id="592880897588170157">‏بارگیری فایل‌های PDF به‌جای باز کردن خودکار آن‌ها در Chrome</translation>

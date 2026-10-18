@@ -10789,7 +10789,7 @@ A definição desta política não garante que algoritmos específicos sejam neg
 
 Esta política existe para permitir que operadores de servidores que querem oferecer suporte a clientes com e sem requisitos de compliance façam a diferenciação entre esses clientes e usem apenas determinados algoritmos não padrão com maior força criptográfica para aqueles que os preferem explicitamente.
 
-Definir a política como "<ph name="CNSA2_NAME" />" configura o <ph name="PRODUCT_NAME" /> para preferir métodos de troca de chaves necessários para conformidade com a versão 2.0 do Commercial National Security Algorithm Suite (CNSA 2.0), um conjunto de algoritmos criptográficos promulgado pela Agência de Segurança Nacional dos EUA.
+Definir a política como "<ph name="CNSA2_NAME" />" configura o <ph name="PRODUCT_NAME" /> para preferir métodos de troca de chaves necessários para compliance com a versão 2.0 do Commercial National Security Algorithm Suite (CNSA 2.0), um conjunto de algoritmos criptográficos promulgado pela Agência de Segurança Nacional dos EUA.
 
 Se a política não for definida ou for definida como "<ph name="DEFAULT_NAME" />", o <ph name="PRODUCT_NAME" /> usará os métodos de troca de chaves padrão.
 
