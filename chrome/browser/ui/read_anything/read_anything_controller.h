@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/common/read_anything/read_anything.mojom.h"
@@ -44,6 +43,7 @@ struct NativeWebKeyboardEvent;
 
 class ReadAnythingController;
 class ReadAnythingSidePanelController;
+class SidePanelRegistry;
 
 #if BUILDFLAG(ENABLE_PDF)
 class GURL;
@@ -286,7 +286,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   SidePanelUI* GetSidePanelUI();
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
-  raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
 
   ReadAnythingContentsWrapper web_ui_wrapper_;

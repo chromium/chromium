@@ -35,7 +35,8 @@ class ReadAnythingUIUntrustedConfig
 // ReadAnythingUntrustedUI
 //
 //  A WebUI that holds distilled page contents for the Read Anything feature.
-//  This class has the same lifetime as the Side Panel view.
+//  ReadAnythingController owns its WebContents and lends it to the side panel
+//  or the immersive overlay.
 //
 class ReadAnythingUntrustedUI
     : public UntrustedTopChromeWebUIController,
