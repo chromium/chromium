@@ -212,6 +212,11 @@ BASE_DECLARE_FEATURE(kLensSendQuerySubmissionTime);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSendUrlsInComposeboxes);
 
+// Enables sending Google Drive / Docs tab URLs as unresolved URLs from the
+// Query Contextualizer in composeboxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensSendDriveTabUrlsInComposeboxes);
+
 // Enables skipping unresolved urls and Lens files, and only sending AAI for
 // modality chips in composebox queries.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -1115,6 +1120,11 @@ extern bool IsLensSendRawFileMediaTypesEnabled();
 // Enables sending URLs from the Query Contextualizer in composeboxes.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSendUrlsInComposeboxesEnabled();
+
+// Enables sending Google Drive / Docs tab URLs as unresolved URLs from the
+// Query Contextualizer in composeboxes.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensSendDriveTabUrlsInComposeboxesEnabled();
 
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOnlySendAaiForModalityChipsEnabled();

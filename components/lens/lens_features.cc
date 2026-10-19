@@ -144,6 +144,9 @@ BASE_FEATURE(kLensSendUrlsInComposeboxes,
 #endif
 );
 
+BASE_FEATURE(kLensSendDriveTabUrlsInComposeboxes,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLensOnlySendAaiForModalityChips,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -1299,6 +1302,10 @@ bool IsLensSendRawFileMediaTypesEnabled() {
 
 bool IsLensSendUrlsInComposeboxesEnabled() {
   return base::FeatureList::IsEnabled(kLensSendUrlsInComposeboxes);
+}
+
+bool IsLensSendDriveTabUrlsInComposeboxesEnabled() {
+  return base::FeatureList::IsEnabled(kLensSendDriveTabUrlsInComposeboxes);
 }
 
 bool IsLensOnlySendAaiForModalityChipsEnabled() {

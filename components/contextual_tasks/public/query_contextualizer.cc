@@ -21,6 +21,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/utils.h"
 #include "components/lens/lens_features.h"
+#include "components/url_deduplication/docs_url_strip_handler.h"
 #include "components/url_deduplication/url_deduplication_helper.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/skia_util.h"
@@ -247,6 +248,15 @@ std::vector<std::string> QueryContextualizer::ExtractUrlsFromQuery(
   return extracted_urls;
 }
 
+// static
+bool QueryContextualizer::IsDriveUrl(const GURL& url) {
+  if (!url.is_valid()) {
+    return false;
+  }
+  url_deduplication::DocsURLStripHandler handler;
+  return handler.StripExtraParams(url).is_valid();
+}
+
 void QueryContextualizer::Contextualize(ContextualizeParams params) {
   DCHECK(!params.complete_callback.is_null() ||
          !params.on_uploads_started_callback.is_null());
@@ -259,7 +269,8 @@ void QueryContextualizer::Contextualize(ContextualizeParams params) {
   if (params.task_id.has_value() || !params.tabs_to_recontextualize.empty() ||
       !params.auto_suggested_chip_tabs.empty() ||
       !params.tabs_for_contextual_searchbox_first_turn.empty() ||
-      params.enable_smart_tab_selection) {
+      params.enable_smart_tab_selection ||
+      lens::features::IsLensSendDriveTabUrlsInComposeboxesEnabled()) {
     auto* handle = delegate_->GetOrCreateSessionHandleForQueryContextualizer();
     if (handle) {
       session_handle = handle->AsWeakPtr();
@@ -372,6 +383,7 @@ void QueryContextualizer::OnContextRetrieved(
   }
 
   // Extract URLs from the query text and start upload flows for them.
+  base::flat_set<GURL> uploaded_urls_in_turn;
   if (lens::features::IsLensSendUrlsInComposeboxesEnabled()) {
     std::vector<std::string> extracted_urls =
         ExtractUrlsFromQuery(params.query_text);
@@ -393,11 +405,33 @@ void QueryContextualizer::OnContextRetrieved(
 
     if (session_handle) {
       for (const std::string& url : extracted_urls) {
+        uploaded_urls_in_turn.insert(GURL(url));
         auto context_token = session_handle->CreateContextToken();
         if (upload_tracker) {
           upload_tracker->AddToken(context_token);
         }
         session_handle->StartUrlContextUploadFlow(context_token, url);
+      }
+    }
+  }
+
+  // If any manually added tabs in the current turn are Drive URLs, start URL
+  // upload flows for them as well.
+  if (lens::features::IsLensSendDriveTabUrlsInComposeboxesEnabled() &&
+      session_handle) {
+    for (const auto& file_info :
+         session_handle->GetUploadedContextFileInfos()) {
+      if (file_info.tab_url.has_value() && !file_info.is_superceded &&
+          IsDriveUrl(*file_info.tab_url) &&
+          uploaded_urls_in_turn.insert(*file_info.tab_url).second) {
+        auto context_token = session_handle->CreateContextToken();
+        if (upload_tracker) {
+          upload_tracker->AddToken(context_token);
+        }
+        // TODO(crbug.com/573807269): Set has_chrome_tab_data = true on URL
+        // uploads derived from Chrome tabs.
+        session_handle->StartUrlContextUploadFlow(context_token,
+                                                  file_info.tab_url->spec());
       }
     }
   }
@@ -541,6 +575,8 @@ void QueryContextualizer::OnTabContextualizationFetched(
     return;
   }
 
+  GURL tab_url =
+      page_content_data->page_url.value_or(delegate_->GetTabUrl(tab_update.id));
   auto context_token = session_handle->CreateContextToken();
   if (maybe_context_id.has_value()) {
     page_content_data->context_id = maybe_context_id.value();
@@ -551,6 +587,18 @@ void QueryContextualizer::OnTabContextualizationFetched(
   session_handle->StartTabContextUploadFlow(
       context_token, std::move(page_content_data),
       delegate_->GetTabViewportEncodingOptionsForQueryContextualizer());
+
+  if (lens::features::IsLensSendDriveTabUrlsInComposeboxesEnabled() &&
+      IsDriveUrl(tab_url)) {
+    auto url_context_token = session_handle->CreateContextToken();
+    if (upload_tracker) {
+      upload_tracker->AddToken(url_context_token);
+    }
+    // TODO(crbug.com/573807269): Set has_chrome_tab_data = true on URL uploads
+    // derived from Chrome tabs.
+    session_handle->StartUrlContextUploadFlow(url_context_token,
+                                              tab_url.spec());
+  }
 
   FinishTabProcessing(on_processed_callback, tab_update.id, barrier_closure);
 }

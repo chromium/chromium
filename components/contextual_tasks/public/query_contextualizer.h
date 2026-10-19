@@ -179,6 +179,9 @@ class QueryContextualizer {
   static std::vector<std::string> ExtractUrlsFromQuery(
       const std::string& query_text);
 
+  // Returns true if `url` is a Google Drive / Docs document URL.
+  static bool IsDriveUrl(const GURL& url);
+
  private:
   void OnRelevantTabsFetched(
       ContextualizeParams params,

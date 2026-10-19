@@ -60,6 +60,7 @@
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -4859,4 +4860,217 @@ IN_PROC_BROWSER_TEST_F(
   // enabled.
   histogram_tester.ExpectTotalCount(
       "ContextualSearch.SmartTabSharing.OptOutMidThread", 0);
+}
+
+class ContextualTasksComposeboxHandlerDriveUrlTest
+    : public ContextualTasksComposeboxHandlerTest {
+ public:
+  ContextualTasksComposeboxHandlerDriveUrlTest() {
+    drive_url_feature_list_.InitAndEnableFeature(
+        lens::features::kLensSendDriveTabUrlsInComposeboxes);
+  }
+  ~ContextualTasksComposeboxHandlerDriveUrlTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList drive_url_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerDriveUrlTest,
+                       SubmitQuery_UploadsDriveTabUrlAsUnresolvedUrl) {
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
+  ASSERT_NE(active_tab, nullptr);
+  int32_t active_tab_id = active_tab->GetHandle().raw_value();
+  SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents());
+  const GURL kDriveUrl("https://docs.google.com/document/d/1234567890/edit");
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+
+  contextual_tasks::ContextualTask task(task_id);
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+  EXPECT_CALL(*mock_contextual_tasks_service_ptr_,
+              GetContextForTask(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid&,
+              const std::set<contextual_tasks::ContextualTaskContextSource>&,
+              std::unique_ptr<contextual_tasks::ContextDecorationParams>,
+              base::OnceCallback<void(
+                  std::unique_ptr<contextual_tasks::ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // Add a delayed (implicit) tab context for the active tab.
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  std::optional<base::UnguessableToken> active_token_opt;
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    active_token_opt = result.value();
+  });
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
+  ASSERT_TRUE(active_token_opt.has_value());
+
+  EXPECT_CALL(*mock_tab_controller_, GetPageContext(testing::_))
+      .WillOnce([session_id, kDriveUrl](
+                    MockTabContextualizationController::GetPageContextCallback
+                        page_context_callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->tab_session_id = session_id;
+        data->page_url = kDriveUrl;
+        data->page_title = "Drive Doc";
+        data->is_page_context_eligible = true;
+        std::move(page_context_callback).Run(std::move(data));
+      });
+
+  bool saw_tab_upload = false;
+  bool saw_url_upload = false;
+  EXPECT_CALL(*mock_controller_,
+              StartFileUploadFlow(testing::_, testing::_, testing::_))
+      .Times(2)
+      .WillRepeatedly(
+          [this, kDriveUrl, &saw_tab_upload, &saw_url_upload](
+              const base::UnguessableToken& file_token,
+              std::unique_ptr<lens::ContextualInputData> data,
+              std::optional<lens::ImageEncodingOptions> image_options) {
+            ASSERT_NE(data, nullptr);
+            if (data->tab_session_id.has_value()) {
+              saw_tab_upload = true;
+              EXPECT_EQ(data->page_url, kDriveUrl);
+              EXPECT_TRUE(data->is_implicit_upload);
+            } else {
+              saw_url_upload = true;
+              EXPECT_EQ(data->parsed_url, kDriveUrl.spec());
+            }
+            PostUploadStatusChanged(
+                file_token, lens::MimeType::kUnknown,
+                contextual_search::ContextUploadStatus::kUploadSuccessful);
+          });
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  base::RunLoop run_loop;
+  EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  handler_->CreateAndSendQueryMessage("Summarize doc",
+                                      /*is_voice_search=*/false);
+  run_loop.Run();
+
+  EXPECT_TRUE(saw_tab_upload);
+  EXPECT_TRUE(saw_url_upload);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerDriveUrlTest,
+    SubmitQuery_UploadsManuallyAddedDriveTabUrlAsUnresolvedUrl) {
+  tabs::TabInterface* active_tab = browser()->GetActiveTabInterface();
+  ASSERT_NE(active_tab, nullptr);
+  int32_t active_tab_id = active_tab->GetHandle().raw_value();
+  SessionID session_id = sessions::SessionTabHelper::IdForTab(web_contents());
+  const GURL kDriveUrl("https://docs.google.com/document/d/1234567890/edit");
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(
+          testing::ReturnRefOfCopy(std::optional<base::Uuid>(task_id)));
+
+  contextual_tasks::ContextualTask task(task_id);
+  auto context =
+      std::make_unique<contextual_tasks::ContextualTaskContext>(task);
+  EXPECT_CALL(*mock_contextual_tasks_service_ptr_,
+              GetContextForTask(testing::_, testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid&,
+              const std::set<contextual_tasks::ContextualTaskContextSource>&,
+              std::unique_ptr<contextual_tasks::ContextDecorationParams>,
+              base::OnceCallback<void(
+                  std::unique_ptr<contextual_tasks::ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  EXPECT_CALL(*mock_tab_controller_, GetPageContext(testing::_))
+      .WillOnce([session_id, kDriveUrl](
+                    MockTabContextualizationController::GetPageContextCallback
+                        page_context_callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->tab_session_id = session_id;
+        data->page_url = kDriveUrl;
+        data->page_title = "Drive Doc";
+        data->is_page_context_eligible = true;
+        std::move(page_context_callback).Run(std::move(data));
+      });
+
+  base::UnguessableToken tab_token;
+  EXPECT_CALL(*mock_controller_,
+              StartFileUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([this, kDriveUrl, &tab_token](
+                    const base::UnguessableToken& file_token,
+                    std::unique_ptr<lens::ContextualInputData> data,
+                    std::optional<lens::ImageEncodingOptions> image_options) {
+        ASSERT_NE(data, nullptr);
+        EXPECT_TRUE(data->tab_session_id.has_value());
+        EXPECT_EQ(data->page_url, kDriveUrl);
+        tab_token = file_token;
+        PostUploadStatusChanged(
+            file_token, lens::MimeType::kUnknown,
+            contextual_search::ContextUploadStatus::kUploadSuccessful);
+      });
+
+  base::MockCallback<ContextualTasksComposeboxHandler::AddTabContextCallback>
+      callback;
+  std::optional<base::UnguessableToken> token_opt;
+  base::RunLoop add_tab_loop;
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+    add_tab_loop.Quit();
+  });
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/false,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
+  add_tab_loop.Run();
+  ASSERT_TRUE(token_opt.has_value());
+
+  contextual_search::FileInfo uploaded_tab_info;
+  uploaded_tab_info.file_token = *token_opt;
+  uploaded_tab_info.tab_session_id = session_id;
+  uploaded_tab_info.tab_url = kDriveUrl;
+  uploaded_tab_info.request_id = lens::LensOverlayRequestId();
+  uploaded_tab_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  ON_CALL(*mock_controller_, GetFileInfo(*token_opt))
+      .WillByDefault(testing::Return(&uploaded_tab_info));
+
+  bool saw_url_upload = false;
+  EXPECT_CALL(*mock_controller_,
+              StartFileUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([this, kDriveUrl, &saw_url_upload](
+                    const base::UnguessableToken& file_token,
+                    std::unique_ptr<lens::ContextualInputData> data,
+                    std::optional<lens::ImageEncodingOptions> image_options) {
+        ASSERT_NE(data, nullptr);
+        EXPECT_FALSE(data->tab_session_id.has_value());
+        EXPECT_EQ(data->parsed_url, kDriveUrl.spec());
+        saw_url_upload = true;
+        PostUploadStatusChanged(
+            file_token, lens::MimeType::kUnknown,
+            contextual_search::ContextUploadStatus::kUploadSuccessful);
+      });
+
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+  base::RunLoop submit_loop;
+  EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_))
+      .WillOnce(base::test::RunClosure(submit_loop.QuitClosure()));
+
+  handler_->CreateAndSendQueryMessage("Summarize manual doc",
+                                      /*is_voice_search=*/false);
+  submit_loop.Run();
+
+  EXPECT_TRUE(saw_url_upload);
 }
