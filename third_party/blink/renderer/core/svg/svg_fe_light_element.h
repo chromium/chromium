@@ -107,13 +107,10 @@ class SVGFELightElement : public SVGElement {
 template <>
 struct DowncastTraits<SVGFELightElement> {
   static bool AllowFrom(const Node& node) {
-    auto* svg_element = DynamicTo<SVGElement>(node);
-    return svg_element && AllowFrom(*svg_element);
-  }
-  static bool AllowFrom(const SVGElement& svg_element) {
-    return svg_element.HasTagName(svg_names::kFEDistantLightTag) ||
-           svg_element.HasTagName(svg_names::kFEPointLightTag) ||
-           svg_element.HasTagName(svg_names::kFESpotLightTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kSVGFEDistantLightElement ||
+           type == ElementType::kSVGFEPointLightElement ||
+           type == ElementType::kSVGFESpotLightElement;
   }
 };
 

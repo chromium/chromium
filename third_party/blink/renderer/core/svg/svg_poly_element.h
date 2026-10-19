@@ -58,12 +58,9 @@ class SVGPolyElement : public SVGGeometryElement {
 template <>
 struct DowncastTraits<SVGPolyElement> {
   static bool AllowFrom(const Node& node) {
-    auto* svg_element = DynamicTo<SVGElement>(node);
-    return svg_element && AllowFrom(*svg_element);
-  }
-  static bool AllowFrom(const SVGElement& svg_element) {
-    return svg_element.HasTagName(svg_names::kPolygonTag) ||
-           svg_element.HasTagName(svg_names::kPolylineTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kSVGPolygonElement ||
+           type == ElementType::kSVGPolylineElement;
   }
 };
 

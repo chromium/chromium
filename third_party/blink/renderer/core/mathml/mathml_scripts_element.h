@@ -38,17 +38,9 @@ class CORE_EXPORT MathMLScriptsElement : public MathMLElement {
 template <>
 struct DowncastTraits<MathMLScriptsElement> {
   static bool AllowFrom(const Node& node) {
-    auto* mathml_element = DynamicTo<MathMLElement>(node);
-    return mathml_element && AllowFrom(*mathml_element);
-  }
-  static bool AllowFrom(const MathMLElement& mathml_element) {
-    return mathml_element.HasTagName(mathml_names::kMunderTag) ||
-           mathml_element.HasTagName(mathml_names::kMoverTag) ||
-           mathml_element.HasTagName(mathml_names::kMunderoverTag) ||
-           mathml_element.HasTagName(mathml_names::kMsubTag) ||
-           mathml_element.HasTagName(mathml_names::kMsupTag) ||
-           mathml_element.HasTagName(mathml_names::kMsubsupTag) ||
-           mathml_element.HasTagName(mathml_names::kMmultiscriptsTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kMathMLScriptsElement ||
+           type == ElementType::kMathMLUnderOverElement;
   }
 };
 

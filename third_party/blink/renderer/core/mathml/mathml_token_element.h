@@ -45,15 +45,9 @@ class CORE_EXPORT MathMLTokenElement : public MathMLElement {
 template <>
 struct DowncastTraits<MathMLTokenElement> {
   static bool AllowFrom(const Node& node) {
-    auto* mathml_element = DynamicTo<MathMLElement>(node);
-    return mathml_element && AllowFrom(*mathml_element);
-  }
-  static bool AllowFrom(const MathMLElement& mathml_element) {
-    return mathml_element.HasTagName(mathml_names::kMiTag) ||
-           mathml_element.HasTagName(mathml_names::kMoTag) ||
-           mathml_element.HasTagName(mathml_names::kMnTag) ||
-           mathml_element.HasTagName(mathml_names::kMtextTag) ||
-           mathml_element.HasTagName(mathml_names::kMsTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kMathMLTokenElement ||
+           type == ElementType::kMathMLOperatorElement;
   }
 };
 

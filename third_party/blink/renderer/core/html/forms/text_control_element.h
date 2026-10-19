@@ -474,8 +474,9 @@ DEFINE_TEXT_CONTROL_CASTS(const TextControlElement, const Node);
 template <>
 struct DowncastTraits<TextControlElement> {
   static bool AllowFrom(const Node& node) {
-    return node.HasTagName(html_names::kInputTag) ||
-           node.HasTagName(html_names::kTextareaTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kHTMLInputElement ||
+           type == ElementType::kHTMLTextAreaElement;
   }
 };
 

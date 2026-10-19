@@ -74,11 +74,12 @@ class SVGComponentTransferFunctionElement : public SVGElement {
 
 template <>
 struct DowncastTraits<SVGComponentTransferFunctionElement> {
-  static bool AllowFrom(const SVGElement& svg_element) {
-    return svg_element.HasTagName(svg_names::kFEFuncATag) ||
-           svg_element.HasTagName(svg_names::kFEFuncBTag) ||
-           svg_element.HasTagName(svg_names::kFEFuncGTag) ||
-           svg_element.HasTagName(svg_names::kFEFuncRTag);
+  static bool AllowFrom(const Node& node) {
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kSVGFEFuncAElement ||
+           type == ElementType::kSVGFEFuncBElement ||
+           type == ElementType::kSVGFEFuncGElement ||
+           type == ElementType::kSVGFEFuncRElement;
   }
 };
 

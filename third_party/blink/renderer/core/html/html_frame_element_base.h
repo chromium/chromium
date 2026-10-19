@@ -94,12 +94,9 @@ class CORE_EXPORT HTMLFrameElementBase : public HTMLFrameOwnerElement {
 template <>
 struct DowncastTraits<HTMLFrameElementBase> {
   static bool AllowFrom(const Node& node) {
-    auto* html_element = DynamicTo<HTMLElement>(node);
-    return html_element && AllowFrom(*html_element);
-  }
-  static bool AllowFrom(const HTMLElement& html_element) {
-    return html_element.HasTagName(html_names::kFrameTag) ||
-           html_element.HasTagName(html_names::kIFrameTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kHTMLFrameElement ||
+           type == ElementType::kHTMLIFrameElement;
   }
 };
 

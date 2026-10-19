@@ -165,14 +165,10 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLAnchorElementBase {
 
 template <>
 struct DowncastTraits<HTMLAnchorElementBase> {
-  static bool AllowFrom(const Element& element) {
-    return element.HasTagName(html_names::kATag) ||
-           element.HasTagName(html_names::kAreaTag);
-  }
-
   static bool AllowFrom(const Node& node) {
-    return node.IsHTMLElement() &&
-           IsA<HTMLAnchorElementBase>(UnsafeTo<HTMLElement>(node));
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kHTMLAnchorElement ||
+           type == ElementType::kHTMLAreaElement;
   }
 };
 

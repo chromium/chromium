@@ -335,14 +335,11 @@ class CORE_EXPORT SVGSMILElement : public SVGElement {
 template <>
 struct DowncastTraits<SVGSMILElement> {
   static bool AllowFrom(const Node& node) {
-    auto* svg_element = DynamicTo<SVGElement>(node);
-    return svg_element && AllowFrom(*svg_element);
-  }
-  static bool AllowFrom(const SVGElement& svg_element) {
-    return svg_element.HasTagName(svg_names::kSetTag) ||
-           svg_element.HasTagName(svg_names::kAnimateTag) ||
-           svg_element.HasTagName(svg_names::kAnimateMotionTag) ||
-           svg_element.HasTagName(svg_names::kAnimateTransformTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kSVGSetElement ||
+           type == ElementType::kSVGAnimateElement ||
+           type == ElementType::kSVGAnimateMotionElement ||
+           type == ElementType::kSVGAnimateTransformElement;
   }
 };
 

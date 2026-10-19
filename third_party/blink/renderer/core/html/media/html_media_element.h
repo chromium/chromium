@@ -1130,12 +1130,9 @@ class CORE_EXPORT HTMLMediaElement
 template <>
 struct DowncastTraits<HTMLMediaElement> {
   static bool AllowFrom(const Node& node) {
-    auto* html_element = DynamicTo<HTMLElement>(node);
-    return html_element && AllowFrom(*html_element);
-  }
-  static bool AllowFrom(const HTMLElement& html_element) {
-    return html_element.HasTagName(html_names::kAudioTag) ||
-           html_element.HasTagName(html_names::kVideoTag);
+    const ElementType type = node.GetElementType();
+    return type == ElementType::kHTMLAudioElement ||
+           type == ElementType::kHTMLVideoElement;
   }
 };
 
