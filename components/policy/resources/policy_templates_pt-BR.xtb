@@ -3878,8 +3878,6 @@ Se a política <ph name="NTPCARDSVISIBLE" /> for desativada, o card do Outlook n
       Se a política for definida como "Desativada", os dispositivos registrados não comunicarão as informações da sessão de quiosque.</translation>
 <translation id="3303770131697159224">Configuração padrão da permissão de gerenciamento de janelas</translation>
 <translation id="3303911765031636277">Política de configuração para o conector OnFileAttached do Chrome Enterprise</translation>
-<translation id="3305586786770047829">Quando esta política for definida como 0 ou deixada sem definição, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> será aplicada apenas no escopo do usuário para os afiliados.
-Se for definida como 1, a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> será aplicada no escopo do usuário, mesmo que ele não seja afiliado.</translation>
 <translation id="3307744348419745296">Não permitir que as configurações de rede Wi-Fi sejam sincronizadas entre dispositivos <ph name="PRODUCT_OS_NAME" /> e um smartphone Android conectado</translation>
 <translation id="3308724602356134956">Se você definir a política, o <ph name="PRODUCT_OS_NAME" /> fará o download e usará a imagem de plano de fundo que você definiu para a área de trabalho e a tela de login do usuário, e ela não poderá ser modificada. Especifique o URL no qual o <ph name="PRODUCT_OS_NAME" /> poderá fazer o download da imagem de plano de fundo e de um hash criptográfico para verificar a integridade. O hash deve estar em formato JPEG e ter no máximo 16 MB e o URL precisa ser acessível sem autenticação.
 
@@ -6812,19 +6810,6 @@ Esta política é uma solução temporária para permitir que o conteúdo da Web
 <translation id="5120168808610189805">Ativar a importação da página inicial na primeira execução</translation>
 <translation id="5124321040285474825">Configurações dos recursos de IA generativa no preenchimento automático</translation>
 <translation id="5124368997194894978">Ativar inicialização em CA (corrente alternada)</translation>
-<translation id="5124652340668722849">Configura uma lista de domínios de provisionamento (PvDs) que o <ph name="PRODUCT_NAME" /> vai usar para buscar configurações de proxy de maneira dinâmica.
-
-Esta política permite especificar uma lista de nomes de domínio ou URIs de recursos que representam domínios de provisionamento, conforme definido na RFC 8801 ("Discovering Provisioning Domain Names and Data"). Para cada PvD, o navegador resolve a configuração JSON correspondente fazendo uma solicitação HTTPS para o caminho do endpoint conhecido: "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
-
-Cada entrada na lista especifica:
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: o identificador do domínio de provisionamento (um nome de domínio).
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: a configuração de autenticação opcional. Se não for configurada ou for definida como "none", a autenticação não será realizada. Quando definido como "profile_bearer_token", o navegador recupera um token de acesso OAuth2 com o escopo fornecido para a conta principal conectada e o anexa no cabeçalho "Authorization" como um token "Bearer".
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: uma lista opcional de cabeçalhos HTTP personalizados para incluir ao consultar o endpoint do PvD. É possível injetar valores dinâmicos, como "profile_id" (que representa um identificador estável e exclusivo do perfil do navegador no dispositivo, permitindo a segmentação de configuração por perfil) ou "accept_language" (que representa os idiomas preferenciais do navegador).
-
-As configurações buscadas são analisadas conforme o esquema RFC 8801. Somente as regras de roteamento e os proxies relacionados à configuração de proxy do payload JSON do PvD são aplicados. Se a política não for definida, nenhum domínio de provisionamento será consultado ou usado para buscar configurações de proxy.</translation>
 <translation id="5130213897914754028">Evitar que os sites usem o SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Sempre oferecer tradução</translation>
 <translation id="513314432051760916">Uma política para controlar se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para medição de anúncio pode ser desativada para os usuários.
@@ -10957,7 +10942,6 @@ esse recurso será desativado. Se definida como padrão ou deixada sem definiç�
 <translation id="7491720878670299691">Frequência da pesquisa por dados de rede e da verificação de eventos. O mínimo permitido é de um minuto.
 
       Se deixada sem definição, a frequência padrão de um minuto será aplicada.</translation>
-<translation id="7496284563199466390">Controla quais usuários gerenciados podem definir a política <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       A política de permissões de captura de tela controla o acesso ao método getDisplayMedia() de acordo com a especificação apresentada em https://www.w3.org/TR/screen-capture/#feature-policy-integration (link em inglês). No entanto, se essa política for desativada, o requisito não será aplicado e o getDisplayMedia() receberá permissão de contextos que seriam proibidos em outra situação. A política corporativa é temporária e será removida após a versão 100 do <ph name="PRODUCT_NAME" />. O objetivo dela é desbloquear usuários corporativos que têm um aplicativo que não está em conformidade com a especificação, mas precisa de mais tempo para ser corrigido.
 

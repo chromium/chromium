@@ -1178,6 +1178,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5715150588940290235">Delete saved security codes?</translation>
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5728072125198221967">Linked Google services</translation>
+<translation id="5733447028358645932">Who browsed</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pinned audible Incognito tab</translation>
 <translation id="5744751019568455640">Here are the voices that you can pick for reading out your web pages. If you like this voice and want me to keep using it, just tap the voice name.</translation>
 <translation id="574845902699630049">Share as <ph name="OWNER_FULL_NAME" /></translation>
@@ -2031,6 +2032,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8863714995118816041">Permissions allowed again for <ph name="SITE_NAME" /></translation>
 <translation id="8864055848767439877">Sharing <ph name="TAB_NAME" /> to <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
+<translation id="886968456388055613">Filter by who browsed</translation>
 <translation id="8872506776304248286">Open in app</translation>
 <translation id="8880275451109933094">Two-page view</translation>
 <translation id="8890668505403261809">Search your Incognito tabs</translation>

@@ -118,6 +118,7 @@
 <translation id="1195558154361252544">तपाईंले अनुमति दिएका साइटबाहेक अन्य सबै साइटका सूचनाहरूलाई स्वतः रोक लगाइएको छ</translation>
 <translation id="1197088940767939838">सुन्तला रङ्ग</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> ले ट्याब “<ph name="WEBSITE_TITLE" />” हटाउनुभयो</translation>
+<translation id="119944043368869598">सबै सफा गर्नुहोस्</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1201895884277373915">यस साइटबाट थप</translation>
 <translation id="1204184165594298176">{0,plural, =1{फाइल कपी गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल कपी गर्न रोक लगाइएको छ}}</translation>
@@ -4834,7 +4835,6 @@
 <translation id="9168814207360376865">साइटहरूलाई तपाईंले भुक्तानी विधिहरू सुरक्षित गर्नुभए नभएको कुरा जाँच गर्न दिन्छ</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> लाई होम स्क्रिनमा हाल्नुहोस्‌</translation>
 <translation id="9170848237812810038">&amp;पूर्वस्थितिमा फर्काउनुहोस्</translation>
-<translation id="9170906125144697215">एपहरू अदलबदल नगरिकनै Pix मार्फत भुक्तानी गर्नुहोस्</translation>
 <translation id="9171296965991013597">एप छोड्ने हो?</translation>
 <translation id="9173282814238175921">एउटा कागजात/नयाँ पाना</translation>
 <translation id="9173995187295789444">ब्लुटुथ यन्त्रहरू छन् कि भनी जाँच गर्दै...</translation>

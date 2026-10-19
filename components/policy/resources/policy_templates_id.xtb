@@ -3885,8 +3885,6 @@ Jika <ph name="NTPCARDSVISIBLE" /> disetel ke nonaktif, Kartu Outlook tidak akan
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan informasi sesi kios.</translation>
 <translation id="3303770131697159224">Setelan izin Pengelolaan Jendela Default</translation>
 <translation id="3303911765031636277">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileAttached</translation>
-<translation id="3305586786770047829">Jika kebijakan ini disetel ke 0 atau tidak disetel, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> hanya akan diterapkan pada cakupan pengguna untuk pengguna terafiliasi.
-Jika kebijakan ini disetel ke 1, kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> akan diterapkan pada cakupan pengguna, meskipun pengguna tersebut tidak terafiliasi.</translation>
 <translation id="3307744348419745296">Jangan izinkan konfigurasi jaringan Wi-Fi disinkronkan di seluruh perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung</translation>
 <translation id="3308724602356134956">Jika Anda menetapkan kebijakan, <ph name="PRODUCT_OS_NAME" />
 
@@ -6826,19 +6824,6 @@ Kebijakan ini adalah penangguhan sementara agar pengguna memiliki waktu untuk me
 <translation id="5120168808610189805">Aktifkan impor halaman beranda saat browser pertama kali dijalankan</translation>
 <translation id="5124321040285474825">Setelan untuk fitur AI generatif di Isi Otomatis</translation>
 <translation id="5124368997194894978">Aktifkan booting pada tegangan AC (arus bolak-balik)</translation>
-<translation id="5124652340668722849">Mengonfigurasi daftar Domain Penyediaan (PvD) yang akan digunakan <ph name="PRODUCT_NAME" /> untuk mengambil konfigurasi proxy secara dinamis.
-
-Kebijakan ini memungkinkan penentuan daftar nama domain atau URI aset yang mewakili Domain Penyediaan sebagaimana ditentukan dalam RFC 8801 ("Discovering Provisioning Domain Names and Data"). Untuk setiap PvD, browser me-resolve konfigurasi JSON yang sesuai dengan membuat permintaan HTTPS ke jalur endpoint yang sudah dikenal: "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
-
-Setiap entri dalam daftar ini menentukan:
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: Pengidentifikasi Domain Penyediaan (nama domain).
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: Konfigurasi autentikasi opsional. Jika tidak dikonfigurasi atau disetel ke "none", tidak ada autentikasi yang dilakukan. Jika disetel ke "profile_bearer_token", browser akan mengambil token akses OAuth2 dengan cakupan yang diberikan untuk akun utama yang login dan melampirkannya di header "Authorization" sebagai token "Bearer".
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: Daftar opsional header HTTP kustom yang akan disertakan saat membuat kueri endpoint PvD. Nilai dinamis dapat dimasukkan, seperti "profile_id" (yang mewakili ID unik dan stabil dari profil browser di perangkat, yang memungkinkan penargetan konfigurasi per profil) atau "accept_language" (yang mewakili bahasa pilihan browser).
-
-Konfigurasi yang diambil diuraikan sesuai dengan skema RFC 8801. Hanya aturan pemilihan rute dan proxy terkait dengan konfigurasi proxy dari payload JSON PvD yang diterapkan. Jika kebijakan ini tidak disetel, tidak ada Domain Penyediaan yang akan dibuat kueri atau digunakan untuk mengambil konfigurasi proxy.</translation>
 <translation id="5130213897914754028">Cegah situs menggunakan SharedArrayBuffer</translation>
 <translation id="5130935469849337738">Selalu tawarkan terjemahan</translation>
 <translation id="513314432051760916">Kebijakan untuk mengontrol apakah setelan Pengukuran iklan <ph name="PRIVACY_SANDBOX_NAME" /> dapat dinonaktifkan untuk pengguna Anda.
@@ -10989,7 +10974,6 @@ baca lisan akan diaktifkan.</translation>
 <translation id="7491720878670299691">Interval pada saat data jaringan disurvei dan diperiksa untuk mencari aktivitas. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 1 menit akan berlaku.</translation>
-<translation id="7496284563199466390">Mengontrol pengguna terkelola mana yang dapat menetapkan kebijakan <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       Kebijakan izin perekaman layar mendapat akses ke getDisplayMedia(), sesuai spesifikasi berikut: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Namun, jika kebijakan ini disetel ke Nonaktif, persyaratan ini tidak akan diterapkan dan getDisplayMedia() akan diizinkan dari konteks yang seharusnya dilarang. Kebijakan Perusahaan ini bersifat sementara dan akan dihapus setelah <ph name="PRODUCT_NAME" /> versi 100. Kebijakan ini dimaksudkan untuk berhenti memblokir Pengguna versi bisnis yang aplikasinya tidak sesuai spesifikasi, tetapi perlu waktu untuk diperbaiki.
 

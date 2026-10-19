@@ -1483,6 +1483,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2140788884185208305">Stav batérie</translation>
 <translation id="2142328300403846845">Otvoriť odkaz ako</translation>
 <translation id="2142582065325732898">Ak chcete zobraziť nedávne karty Chromu, zapnite <ph name="LINK1_BEGIN" />synchronizáciu Chromu<ph name="LINK1_END" />. <ph name="LINK2_BEGIN" />Ďalšie informácie<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Neoznačená skupina kariet</translation>
 <translation id="2143089736086572103">Viditeľné pre niektoré kontakty</translation>
 <translation id="2143765403545170146">Vždy zobrazovať panel s nástrojmi na celú obrazovku</translation>
 <translation id="2143778271340628265">Ručná konfigurácia servera proxy</translation>
@@ -1538,7 +1539,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2177950615300672361">Karta inkognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Vyberte heslo</translation>
 <translation id="2178614541317717477">Ohrozenie zabezpečenia CA</translation>
 <translation id="2180082148774168439">Otvorte tento web v samostatnom okne v počítači</translation>
 <translation id="2180620921879609685">Blokovať obsah na akejkoľvek stránke</translation>
@@ -2479,6 +2479,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2878889940310164513">Pridať mobilnú sieť…</translation>
 <translation id="288042212351694283">Prístup k vašim zariadeniam so štandardom Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Keď kliknete na rozšírenie</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Neoznačená karta}few{Neoznačené karty}many{Unfocused tabs}other{Neoznačené karty}}</translation>
 <translation id="2882301808122022326">Odpoveď služby Omaha</translation>
 <translation id="2884070497102362193">Otestujte svoju batériu, procesor, pamäť, pripojenie a viac</translation>
 <translation id="2885129935310217435">Existuje tlačidlo s rovnakým názvom. Vyberte iné.</translation>
@@ -8059,6 +8060,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7148426638542880639">Weby nemusia fungovať podľa vašich očakávaní. Túto možnosť vyberte, ak nechcete v zariadení uchovávať informácie o navštívených weboch.</translation>
 <translation id="7149893636342594995">Posledných 24 hodín</translation>
 <translation id="7152478047064750137">Toto rozšírenie nevyžaduje žiadne špeciálne povolenia</translation>
+<translation id="7152923486458597248">Označiť skupinu</translation>
 <translation id="7153101072880472645">Zapnutie alebo vypnutie vysokého kontrastu</translation>
 <translation id="715396040729904728">Spúšťač + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Zmeniť úvodnú stránku na: <ph name="START_PAGE" /></translation>

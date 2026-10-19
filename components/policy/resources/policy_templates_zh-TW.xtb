@@ -3628,7 +3628,6 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
       如果將這項政策設為停用，已註冊的裝置不會回報資訊站工作階段相關資訊。</translation>
 <translation id="3303770131697159224">預設視窗管理權限設定</translation>
 <translation id="3303911765031636277">OnFileAttached Chrome Enterprise Connector 的配置政策</translation>
-<translation id="3305586786770047829">如果將這項政策設為 0 或未設定，系統只會在關聯使用者的使用者範圍套用 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策。如果將這項政策設為 1，就算使用者受其他網域管理，系統仍會在使用者範圍套用 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策。</translation>
 <translation id="3307744348419745296">不允許 Wi-Fi 網路設定在 <ph name="PRODUCT_OS_NAME" /> 裝置和已連結的 Android 手機間保持同步</translation>
 <translation id="3308724602356134956">如果設定這項政策，<ph name="PRODUCT_OS_NAME" />會下載並使用你為使用者的桌面和登入畫面背景所設定的桌面圖片，且使用者無法變更這項設定。請指定 <ph name="PRODUCT_OS_NAME" />可從中下載桌面圖片的網址，以及用於驗證下載內容完整性的加密編譯雜湊值 (請指定無須驗證即可存取的網址，且圖片必須為 JPEG 格式，檔案大小上限為 16 MB)。
 
@@ -6425,19 +6424,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="5120168808610189805">允許在第一次執行時匯入首頁</translation>
 <translation id="5124321040285474825">「自動填入」生成式 AI 功能的設定</translation>
 <translation id="5124368997194894978">啟用「連接 AC (交流電) 電源時啟動」功能</translation>
-<translation id="5124652340668722849">設定 <ph name="PRODUCT_NAME" /> 將用來動態擷取 Proxy 設定的佈建網域 (PvD) 清單。
-
-你可以透過這項政策指定網域名稱或資源 URI 清單，代表 RFC 8801 (「Discovering Provisioning Domain Names and Data」) 中定義的佈建網域。瀏覽器會為每個 PvD 解析對應的 JSON 設定，方法是向下列知名端點路徑發出 HTTPS 要求：「https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd」。
-
-清單中的每個項目都會指定：
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />：佈建網域的 ID (網域名稱)。
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />：選用的驗證設定。如果未設定或設為「none」，系統就不會執行驗證。如果設為「profile_bearer_token」，瀏覽器會擷取已登入主要帳戶的 OAuth2 存取權杖 (使用提供的範圍)，並以「Bearer」(不記名) 權杖的形式附加至「Authorization」標頭。
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />：查詢 PvD 端點時要加入的自訂 HTTP 標頭清單 (選用)。你可以插入動態值，例如「profile_id」(代表裝置上瀏覽器設定檔的穩定專屬 ID，可針對個別設定檔設定指定目標) 或「accept_language」(代表瀏覽器的偏好語言)。
-
-系統會依據 RFC 8801 結構定義剖析擷取的設定。系統只會套用 PvD JSON 酬載中的 Proxy 設定相關轉送規則和 Proxy。如果未設定這項政策，系統不會查詢或使用任何佈建網域來擷取 Proxy 設定。</translation>
 <translation id="5130213897914754028">禁止網站使用 SharedArrayBuffers</translation>
 <translation id="5130935469849337738">一律提供翻譯</translation>
 <translation id="513314432051760916">這項政策控管能否停用使用者的 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告評估設定。
@@ -10261,7 +10247,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 <translation id="7491720878670299691">系統針對事件輪詢和檢查網路資料的頻率。下限值是 1 分鐘。
 
       如果未設定，系統會套用 1 分鐘的預設頻率。</translation>
-<translation id="7496284563199466390">控管哪些受管理使用者可以設定 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策。</translation>
 <translation id="7498595166686106721">
       螢幕擷取權限政策會依據以下網址所列規格，限制 getDisplayMedia() 的存取權：https://www.w3.org/TR/screen-capture/#feature-policy-integration。不過，如果停用這項政策，系統就不會強制執行相關規範，而會允許透過禁止的結構定義呼叫 getDisplayMedia()。這項 Enterprise 政策僅是暫時性措施，預計將於 <ph name="PRODUCT_NAME" /> 第 100 版之後移除。若 Enterprise 使用者的應用程式不符合規格要求，但需要時間進行修正，本政策即可用於解除封鎖這類使用者。
 

@@ -1549,7 +1549,6 @@
 <translation id="2175927920773552910">QR কোড</translation>
 <translation id="2177950615300672361">ছদ্মবেশী ট্যাব: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">পাসওয়ার্ড বেছে নিন</translation>
 <translation id="2178614541317717477">CA আপোস</translation>
 <translation id="2180082148774168439">আপনার কম্পিউটারের ডেডিকেটেড উইন্ডোতে এই সাইট অ্যাক্সেস করুন</translation>
 <translation id="2180620921879609685">যেকোনও পৃষ্ঠার কন্টেন্ট ব্লক করতে পারে</translation>
@@ -5150,6 +5149,7 @@
 <translation id="4877276003880815204">এলিমেন্টগুলি দেখুন</translation>
 <translation id="4878634973244289103">মতামত পাঠানো যায়নি। পরে আবার চেষ্টা করুন।</translation>
 <translation id="4878718769565915065">এই নিরাপত্তা কীয়ের জন্য একটি আঙুলের ছাপ যোগ করা যায়নি</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}one{আরও #টি}other{আরও #টি}}</translation>
 <translation id="4879491255372875719">অটোমেটিক (ডিফল্ট)</translation>
 <translation id="4880827082731008257">সার্চের ইতিহাস</translation>
 <translation id="4881685975363383806">পরের বার আমাকে মনে করানোর দরকার নেই</translation>
@@ -5635,6 +5635,7 @@
 <translation id="5247051749037287028">প্রদর্শিত নাম (ঐচ্ছিক)</translation>
 <translation id="5247243947166567755"><ph name="BOOKMARK_TITLE" /> বেছে নিন</translation>
 <translation id="524751727772074981">Chrome-এ Gemini দিয়ে যেখানে আছেন সেখান থেকেই প্রশ্ন করুন</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{এটি বন্ধ হয়ে গেলে আরও ১টি ইনফোবার দেখা যাবে}one{এটি বন্ধ করা হলে আরও #টি ইনফোবার দেখা যাবে}other{এটি বন্ধ করা হলে আরও #টি ইনফোবার দেখা যাবে}}</translation>
 <translation id="5248934139541843042">অর্গানাইজার দেখুন</translation>
 <translation id="5249624017678798539">ব্রাউজারটি ডাউনলোড সম্পূর্ণ হওয়ার আগে ক্র্যাশ করেছে৷</translation>
 <translation id="5249818097095743806">আপনার নিরাপত্তা কী ব্যবহার করুন</translation>
@@ -5942,6 +5943,7 @@
 <translation id="5493792505296048976">স্ক্রিন চালু</translation>
 <translation id="5494016731375030300">সম্প্রতি বন্ধ করা ট্যাবগুলি</translation>
 <translation id="5494362494988149300">&amp;সম্পন্ন হলে খুলুন</translation>
+<translation id="5494439739088303974">পৃষ্ঠার যেকোনও টেক্সট বা ছবি সম্পর্কে জিজ্ঞাসা করতে Google Lens ব্যবহার করুন</translation>
 <translation id="5494879038325093596">আপনার Google অ্যাকাউন্টের মাধ্যমে এটি সব ডিভাইসে পেতে, নিজের পরিচয় যাচাই করুন</translation>
 <translation id="5494920125229734069">সকল বেছে নিন</translation>
 <translation id="5495466433285976480">আপনি যখন পরবর্তীতে রিস্টার্ট করবেন তখন এটি সমস্ত স্থানীয় ব্যবহারকারী, ফাইল, ডেটা, এবং অন্যান্য সেটিংস সরিয়ে ফেলবে৷ সকল ব্যবহারকারীকে আবার সাইন-ইন করতে হবে৷</translation>

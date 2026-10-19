@@ -118,6 +118,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1195558154361252544">Obavijesti su automatski blokirane za sve web-lokacije osim za one koje dopustite</translation>
 <translation id="1197088940767939838">Narančasta</translation>
 <translation id="1198412233443148072">Korisnik <ph name="MEMBER_FIRST_NAME" /> uklonio je karticu <ph name="WEBSITE_TITLE" /></translation>
+<translation id="119944043368869598">Očisti sve</translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1201895884277373915">Više s ove web-lokacije</translation>
 <translation id="1204184165594298176">{0,plural, =1{Blokirano je kopiranje datoteke}one{Blokirano je kopiranje <ph name="FILE_COUNT" /> datoteke}few{Blokirano je kopiranje <ph name="FILE_COUNT" /> datoteke}other{Blokirano je kopiranje <ph name="FILE_COUNT" /> datoteka}}</translation>
@@ -4837,7 +4838,6 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9168814207360376865">Dopusti web-lokacijama da provjere imate li spremljene načine plaćanja</translation>
 <translation id="9169931577761441333">Dodajte <ph name="APP_NAME" /> na početni zaslon</translation>
 <translation id="9170848237812810038">&amp;Poništi</translation>
-<translation id="9170906125144697215">Plaćanje putem Pixa bez promjene aplikacije</translation>
 <translation id="9171296965991013597">Napustiti aplikaciju?</translation>
 <translation id="9173282814238175921">Jedan dokument/novi list</translation>
 <translation id="9173995187295789444">Traženje Bluetooth uređaja...</translation>

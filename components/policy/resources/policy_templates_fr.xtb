@@ -3714,8 +3714,6 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche 
       Si cette règle est désactivée, les appareils enregistrés ne communiquent pas ces informations.</translation>
 <translation id="3303770131697159224">Paramètre d'autorisation par défaut de la gestion des fenêtres</translation>
 <translation id="3303911765031636277">Règle de configuration du connecteur Chrome Enterprise OnFileAttached</translation>
-<translation id="3305586786770047829">Si cette règle est définie sur 0 ou n'est pas configurée, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ne s'applique qu'au niveau de l'utilisateur à condition qu'il soit affilié.
-Si cette règle est définie sur 1, la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> s'applique au niveau de l'utilisateur, même si celui-ci n'est pas affilié.</translation>
 <translation id="3307744348419745296">Ne pas autoriser la synchronisation des configurations de réseau Wi-Fi entre les appareils <ph name="PRODUCT_OS_NAME" /> et un téléphone Android connecté</translation>
 <translation id="3308724602356134956">Si vous configurez cette règle, <ph name="PRODUCT_OS_NAME" /> télécharge et utilise l'image de fond d'écran que vous avez définie pour l'arrière-plan de l'écran de connexion et le bureau des utilisateurs (lesquels ne peuvent pas modifier la configuration). Spécifiez l'URL (accessible sans authentification) à laquelle <ph name="PRODUCT_OS_NAME" /> peut télécharger l'image de fond d'écran (16 Mo maximum et au format JPEG), ainsi qu'un hachage cryptographique pour vérifier l'intégrité de l'image.
 
@@ -6571,19 +6569,6 @@ Cette règle est proposée pour une durée limitée afin de laisser le temps de 
 <translation id="5120168808610189805">Activer l'importation de la page d'accueil à la première exécution</translation>
 <translation id="5124321040285474825">Paramètres des fonctionnalités d'IA générative dans la Saisie automatique</translation>
 <translation id="5124368997194894978">Activer le démarrage au branchement de l'alimentation CA (courant alternatif)</translation>
-<translation id="5124652340668722849">Configure une liste de domaines de provisionnement (PvD) que <ph name="PRODUCT_NAME" /> utilisera pour récupérer dynamiquement les configurations de proxy.
-
-Cette règle permet de spécifier une liste de noms de domaine ou d'URI de ressources représentant des domaines de provisionnement, comme défini dans le document RFC 8801 ("Discovering Provisioning Domain Names and Data"). Pour chaque PvD, le navigateur résout la configuration JSON correspondante en envoyant une requête HTTPS au chemin d'accès du point de terminaison connu : "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
-
-Chaque entrée de la liste spécifie :
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" /> : l'identifiant du domaine de provisionnement (un nom de domaine).
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" /> : la configuration d'authentification facultative. Si elle n'est pas configurée ou est définie sur "none", aucune authentification n'est effectuée. Lorsque cette valeur est définie sur "profile_bearer_token", le navigateur récupère un jeton d'accès OAuth2 avec le niveau d'accès fourni pour le compte principal connecté et l'ajoute à l'en-tête "Authorization" en tant que jeton "Bearer".
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" /> : une liste facultative d'en-têtes HTTP personnalisés à inclure lors de l'interrogation du point de terminaison PvD. Des valeurs dynamiques peuvent être injectées, comme "profile_id" (qui représente un identifiant unique et stable du profil du navigateur sur l'appareil, permettant un ciblage par configuration de profil) ou "accept_language" (qui représente les langues préférées du navigateur).
-
-Les configurations récupérées sont analysées conformément au schéma du document RFC 8801. Seuls les règles de routage liées à la configuration du proxy et les proxys issus de la charge utile JSON du PvD sont appliqués. Si cette règle n'est pas configurée, aucun domaine de provisionnement ne sera interrogé ni utilisé pour récupérer les configurations de proxy.</translation>
 <translation id="5130213897914754028">Empêcher les sites d'utiliser SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Toujours proposer une traduction</translation>
 <translation id="513314432051760916">Règle permettant de décider si le paramètre de mesure des annonces de <ph name="PRIVACY_SANDBOX_NAME" /> peut être désactivé pour vos utilisateurs.
@@ -10515,7 +10500,6 @@ Notez que cette règle ne gère pas l'intégration globale de <ph name="GOOGLE_G
 <translation id="7491720878670299691">Fréquence à laquelle les données du réseau sont interrogées pour vérifier la présence d'événements. La valeur minimale autorisée est de 1 minute.
 
       Si cette règle n'est pas configurée, la fréquence par défaut (1 minute) est appliquée.</translation>
-<translation id="7496284563199466390">Contrôle les utilisateurs gérés autorisés à définir la règle <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       La règle display-capture permissions-policy restreint l'accès à getDisplayMedia(), conformément à cette spécification : https://www.w3.org/TR/screen-capture/#feature-policy-integration. Mais, si cette règle est désactivée, cette exigence n'est pas appliquée, et getDisplayMedia() est autorisé depuis des contextes qui seraient autrement interdits. Cette règle d'entreprise est temporaire et sera normalement supprimée après la version 100 de <ph name="PRODUCT_NAME" />. Elle permet de débloquer les utilisateurs de la version Enterprise dont l'application ne respecte pas les spécifications, mais qui a besoin de temps pour être résolue.
 

@@ -118,6 +118,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1195558154361252544">Pranešimai automatiškai blokuojami visose svetainėse, išskyrus svetaines, kuriose leidote rodyti</translation>
 <translation id="1197088940767939838">Oranžinė</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> pašalino skirtuką „<ph name="WEBSITE_TITLE" />“</translation>
+<translation id="119944043368869598">Valyti viską</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1201895884277373915">Daugiau iš šios svetainės</translation>
 <translation id="1204184165594298176">{0,plural, =1{Failas užblokuotas, kad nebūtų galima kopijuoti}one{<ph name="FILE_COUNT" /> failas užblokuotas, kad nebūtų galima kopijuoti}few{<ph name="FILE_COUNT" /> failai užblokuoti, kad nebūtų galima kopijuoti}many{<ph name="FILE_COUNT" /> failo užblokuota, kad nebūtų galima kopijuoti}other{<ph name="FILE_COUNT" /> failų užblokuota, kad nebūtų galima kopijuoti}}</translation>
@@ -4839,7 +4840,6 @@ Papildoma išsami informacija:
 <translation id="9168814207360376865">Leisti svetainėms tikrinti, ar esate išsaugoję mokėjimo metodus</translation>
 <translation id="9169931577761441333">Pridėkite „<ph name="APP_NAME" />“ prie pagrindinio ekrano</translation>
 <translation id="9170848237812810038">&amp;Atšaukti</translation>
-<translation id="9170906125144697215">Mokėkite naudodami „Pix“ neperjungę programų</translation>
 <translation id="9171296965991013597">Išeiti iš programos?</translation>
 <translation id="9173282814238175921">Vienas dokumentas / naujas lapas</translation>
 <translation id="9173995187295789444">Nuskaitoma ieškant „Bluetooth“ įrenginių...</translation>

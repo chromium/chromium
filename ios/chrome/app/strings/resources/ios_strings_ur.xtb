@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">پاس ورڈز کا اشتراک کریں</translation>
 <translation id="1554043146674176775">‏‫AI وضع آف کریں</translation>
 <translation id="1554477036522844996">نئی ونڈو</translation>
+<translation id="1557806604681757705">آپ کا کمپیوٹر</translation>
 <translation id="1558391695376153246">پوشیدگی ٹیبز بند کریں</translation>
 <translation id="1560153516220021659">ثانوی ٹول بار کا بٹن سکیڑا گیا</translation>
 <translation id="1562601408588733317">‏‫Gemini کے ساتھ معلومات تلاش کرنے اور پُر کرنے کا نظم کریں</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">محفوظ کردہ پاس ورڈز اور پاس کیز</translation>
 <translation id="3143515551205905069">مطابقت پذیری منسوخ کریں</translation>
 <translation id="3144126448740580210">ہوگیا</translation>
+<translation id="3147048678293362228">رابطہ کی معلومات کا نظم کریں…</translation>
 <translation id="3147521114983561406">پاس کیز آپ کے پاس ورڈ مینیجر میں محفوظ ہو جاتی ہیں۔ وہ پوشیدگی اور ریگولر ٹیبز میں قابل رسائی ہیں۔</translation>
 <translation id="3148052723910099040">ریگولر ٹیب کا گرڈ</translation>
 <translation id="3148237711805373460">مجھے وہاں لے جائیں</translation>
@@ -1400,7 +1402,6 @@
 <translation id="5371112366564891538">ٹیکسٹ کا سائز بڑھائیں</translation>
 <translation id="5376135254804080693">سبھی غیر منتخب کریں</translation>
 <translation id="537853552771686272">ان عنوانات اور سائٹس کا نظم کریں جن میں آپ کی دلچسپی ہے</translation>
-<translation id="5385892579392932755">آپ کا لیپ ٹاپ</translation>
 <translation id="5390458669633674385">{count,plural, =1{‫{count} کو بند کیا گیا}other{‫{count} کو بند کیا گیا}}</translation>
 <translation id="5394975111793637642">اپنے کارڈ کے لیے پروڈکٹ کے جائزے چھپائیں</translation>
 <translation id="5414763847370083940">کسی بھی سائٹ پر قیمت کم ہونے کی صورت میں آپ کو ایک الرٹ حاصل ہو گا۔</translation>
@@ -1871,6 +1872,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6775952316617222141">‏‫Chrome میں Gemini کے ساتھ لائیو جائیں</translation>
 <translation id="6779455296366983087">آپ کا براؤزنگ ڈیٹا حذف کر دیا جائے گا</translation>
+<translation id="6782311720357312958">‏‫Google سے پوچھیں</translation>
 <translation id="6782531425936234573">ڈیٹا برآمد کریں</translation>
 <translation id="6789665473250283877">‫<ph name="TOOL_NAME" /> ہٹائیں</translation>
 <translation id="6791425686608802741">"نئے گروپ میں ٹیب شامل کریں" پر تھپتھپائیں</translation>

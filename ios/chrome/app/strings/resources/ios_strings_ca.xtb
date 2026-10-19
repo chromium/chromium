@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Comparteix contrasenyes</translation>
 <translation id="1554043146674176775">Desactiva el mode IA</translation>
 <translation id="1554477036522844996">Finestra nova</translation>
+<translation id="1557806604681757705">del teu ordinador</translation>
 <translation id="1558391695376153246">Tanca pestanyes d'incògnit</translation>
 <translation id="1560153516220021659">Botó replegat de la barra d'eines secundària</translation>
 <translation id="1562601408588733317">Gestiona la cerca i l'emplenament d'informació amb Gemini</translation>
@@ -1400,7 +1401,6 @@
 <translation id="5371112366564891538">Augmenta la mida del text</translation>
 <translation id="5376135254804080693">Desselecciona-ho tot</translation>
 <translation id="537853552771686272">Gestiona els temes i els llocs web que t'interessen</translation>
-<translation id="5385892579392932755">el teu portàtil</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} de tancada}other{{count} de tancades}}</translation>
 <translation id="5394975111793637642">Amaga la targeta de Ressenyes de productes per a tu</translation>
 <translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>

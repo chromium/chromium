@@ -1538,7 +1538,6 @@
 <translation id="2175927920773552910">二维码</translation>
 <translation id="2177950615300672361">无痕模式标签页：<ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">选择密码</translation>
 <translation id="2178614541317717477">CA 泄漏</translation>
 <translation id="2180082148774168439">在计算机上的专用窗口中访问此网站</translation>
 <translation id="2180620921879609685">屏蔽所有页面上的内容</translation>
@@ -4414,7 +4413,7 @@
 <translation id="4325515113816851466">退出账号后，家长选择的设置将不再适用</translation>
 <translation id="4326146840124313313">Chrome 强大的安全防护功能有助于保护您免受危险的网站、下载内容和扩展程序的侵害</translation>
 <translation id="4327380114687339519">扩展程序菜单</translation>
-<translation id="4328160087116165267">带系统音频分享</translation>
+<translation id="4328160087116165267">同时分享系统音频</translation>
 <translation id="4330191372652740264">冰水</translation>
 <translation id="4330387663455830245">一律不翻译<ph name="LANGUAGE" />内容</translation>
 <translation id="4330963457501417204">将光标悬停在已收起的标签页上即可展开标签页</translation>
@@ -8538,7 +8537,7 @@
 <translation id="7513438205469584978">根据您的 <ph name="BEGIN_LINK_GOOGLE_ACTIVITY" />Google 活动记录<ph name="END_LINK_GOOGLE_ACTIVITY" />为您推荐</translation>
 <translation id="7514365320538308">下载</translation>
 <translation id="7514417110442087199">添加分配关系</translation>
-<translation id="7515139121338932179">若要共享窗口，请使用系统的窗口选择器</translation>
+<translation id="7515139121338932179">如要共享窗口，请使用系统的窗口选择器</translation>
 <translation id="751523031290522286">“<ph name="APP_NAME" />”已被管理员禁用。请让管理员授权您使用此应用。</translation>
 <translation id="7515839311973675282">此应用将安装在您的设备上</translation>
 <translation id="7515998400212163428">Android</translation>
@@ -9076,7 +9075,7 @@
 <translation id="7933518760693751884">如需保存某个页面以供日后阅读，请点击“书签”图标</translation>
 <translation id="7933634003144813719">管理共享的文件夹</translation>
 <translation id="7935072572536724392">自动更改密码失败</translation>
-<translation id="7936195481975600746">若要共享屏幕，请使用系统的屏幕选择器</translation>
+<translation id="7936195481975600746">如要共享屏幕，请使用系统的屏幕选择器</translation>
 <translation id="7937809006412909895">收集诊断数据</translation>
 <translation id="7938881824185772026">Google 实验室</translation>
 <translation id="793923212791838">您的设备无法用于此网站</translation>

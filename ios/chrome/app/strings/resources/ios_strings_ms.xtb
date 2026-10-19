@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Kongsi kata laluan</translation>
 <translation id="1554043146674176775">Matikan AI Mode</translation>
 <translation id="1554477036522844996">Tetingkap Baharu</translation>
+<translation id="1557806604681757705">komputer anda</translation>
 <translation id="1558391695376153246">Tutup tab Inkognito</translation>
 <translation id="1560153516220021659">Butang bar alat kedua dikuncupkan</translation>
 <translation id="1562601408588733317">Urus pencarian dan pengisian maklumat dengan Gemini</translation>
@@ -240,6 +241,7 @@
 <translation id="1668001730617725852">Buka dalam Kumpulan Tab Baharu</translation>
 <translation id="1670861525135254448">Simpan kenderaan</translation>
 <translation id="1671568970992212376">Simpan foto dalam Google Photos anda dan akses foto tersebut pada bila-bila masa.</translation>
+<translation id="1671824312818944549">Nota: Tetapan ini berfungsi dengan lebih baik dengan iOS 27 atau versi yang lebih baharu.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kepada <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1676102443145105381">Lukis, serlahkan atau ketik apa-apa sahaja pada skrin anda untuk membuat carian</translation>
 <translation id="1678855624321223424">Berdasarkan dasar organisasi anda, fail ini mungkin mengandungi maklumat sensitif</translation>
@@ -356,6 +358,7 @@
 <translation id="2012723204723845092">Selamat kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat kata laluan, mula-mula anda mesti menetapkan kod laluan pada peranti anda.</translation>
 <translation id="201759455285471444">Kembangkan kumpulan tab.</translation>
+<translation id="2022431790688770637">Urus cadangan Gemini</translation>
 <translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buka grid tab</translation>
 <translation id="2044681667265133332">Akaun <ph name="USER_EMAIL" /> diurus oleh <ph name="HOSTED_DOMAIN" />, yang boleh melihat sesetengah maklumat. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -1401,7 +1404,6 @@
 <translation id="5371112366564891538">Besarkan saiz teks</translation>
 <translation id="5376135254804080693">Nyahpilih Semua</translation>
 <translation id="537853552771686272">Urus topik dan laman yang anda minati</translation>
-<translation id="5385892579392932755">komputer riba anda</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} ditutup}other{{count} ditutup}}</translation>
 <translation id="5394975111793637642">Sembunyikan kad ulasan produk untuk anda</translation>
 <translation id="5414763847370083940">Anda akan menerima makluman jika harga turun pada mana-mana laman.</translation>

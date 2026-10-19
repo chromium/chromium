@@ -1548,7 +1548,6 @@
 <translation id="2175927920773552910">Κωδικός QR</translation>
 <translation id="2177950615300672361">Καρτέλα ανώνυμης περιήγησης: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Επιλογή κωδικού πρόσβασης</translation>
 <translation id="2178614541317717477">Παραβίαση αρχής έκδοσης πιστοποιητικών</translation>
 <translation id="2180082148774168439">Αποκτήστε πρόσβαση σε αυτόν τον ιστότοπο σε ένα αποκλειστικό παράθυρο στον υπολογιστή σας</translation>
 <translation id="2180620921879609685">Αποκλεισμός περιεχομένου σε οποιαδήποτε σελίδα</translation>
@@ -1605,6 +1604,7 @@
 <translation id="2220572644011485463">PIN ή κωδικός πρόσβασης</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Πηγή μέσων χωρίς όνομα</translation>
+<translation id="2223747115628460234">Επιστροφή στις ανοικτές καρτέλες</translation>
 <translation id="2224337661447660594">Χωρίς σύνδεση στο διαδίκτυο</translation>
 <translation id="2224444042887712269">Αυτή η ρύθμιση ανήκει στον χρήστη <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Επεξεργασία ονόματος φακέλου</translation>
@@ -1733,6 +1733,7 @@
 <translation id="2318143611928805047">Μέγεθος χαρτιού</translation>
 <translation id="2319459402137712349">Επιλέξτε ένα πεδίο κειμένου για να ανοίξετε το πληκτρολόγιο. Μπορείτε επίσης να επιλέξετε το εικονίδιο Πληκτρολόγιο στο κάτω μέρος της οθόνης σας.</translation>
 <translation id="2319993584768066746">Φωτογραφίες οθόνης σύνδεσης</translation>
+<translation id="2322015964223112232">Επιστροφή στις ανοικτές καρτέλες</translation>
 <translation id="2322193970951063277">Κεφαλίδες και υποσέλιδα</translation>
 <translation id="2322622365472107569">Ώρα λήξης <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Αποθηκευμένα δίκτυα Wi-Fi</translation>
@@ -5596,6 +5597,7 @@
 <translation id="5214639857958972833">Δημιουργήθηκε ο σελιδοδείκτης <ph name="BOOKMARK_TITLE" />.</translation>
 <translation id="5215450412607891876">Ενεργοποίηση εκτεταμένων ενημερώσεων ασφάλειας</translation>
 <translation id="5216674789212441076">Μεταφράζει αυτόματα τους ζωντανούς υπότιτλους. Οι υπότιτλοι αποστέλλονται στην Google για μετάφραση.</translation>
+<translation id="5217925057416367138">Γίνεται αναπαραγωγή τώρα</translation>
 <translation id="5220011581825921581">αναζήτηση + πάνω βέλος</translation>
 <translation id="5221516927483787768">Δεν είναι δυνατή η μετάδοση <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Αποκλεισμός μη ασφαλούς λήψης</translation>

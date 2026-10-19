@@ -3701,8 +3701,6 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
       如果此政策已停用，已注册的设备将不会报告自助服务终端会话信息。</translation>
 <translation id="3303770131697159224">默认窗口管理权限设置</translation>
 <translation id="3303911765031636277">OnFileAttached Chrome 企业版连接器的配置政策</translation>
-<translation id="3305586786770047829">如果此政策设为 0 或未经设置，<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策将仅在关联用户的用户级范围内应用。
-如果此政策设为 1，<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策将在用户级范围内应用，即使相应用户不是关联用户也是如此。</translation>
 <translation id="3307744348419745296">不允许在 <ph name="PRODUCT_OS_NAME" /> 设备和已连接的 Android 手机之间同步 Wi-Fi 网络配置</translation>
 <translation id="3308724602356134956">如果您设置了此政策，<ph name="PRODUCT_OS_NAME" />会下载并使用您为用户桌面和登录屏幕背景设置的壁纸图片，但用户无法更改它。请指定可供 <ph name="PRODUCT_OS_NAME" />从中下载相应壁纸图片的网址（无需进行身份验证即可访问），以及一个用于验证该图片是否完整的加密哈希值（采用 JPEG 格式，文件大小不超过 16 MB）。
 
@@ -6519,17 +6517,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="5120168808610189805">允许在首次运行时导入主页</translation>
 <translation id="5124321040285474825">生成式 AI 自动填充功能的设置</translation>
 <translation id="5124368997194894978">启用“接通 AC（交流电）时启动”</translation>
-<translation id="5124652340668722849">配置预配域 (PvD) 列表，供 <ph name="PRODUCT_NAME" /> 用于动态提取代理配置。
-
-此政策允许指定域名或资源 URI 的列表，这些域名或资源 URI 代表 RFC 8801（“发现预配域名和数据”）中所定义的预配域。对于每个 PvD，浏览器都会向“.well-known”端点路径“https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd”发送 HTTPS 请求，以解析相应的 JSON 配置。
-
-列表中的每个条目均指定：
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />：预配域的标识符（域名）。
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />：可选的身份验证配置。如果未配置或设置为“none”，则不执行身份验证。如果设置为“profile_bearer_token”，浏览器会为已登录的主账号获取具有指定作用域的 OAuth2 访问令牌，并将其作为“Bearer”令牌附加到“Authorization”标头中。* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />：查询 PvD 端点时要包含的可选自定义 HTTP 标头列表。可以注入动态值，例如“profile_id”（代表设备上浏览器个人资料的稳定唯一标识符，支持针对个人资料进行定向配置）或“accept_language”（代表浏览器的首选语言）。
-
-系统会根据 RFC 8801 架构解析提取的配置。系统仅应用 PvD JSON 载荷中与代理配置相关的路由规则和代理。如果未设置此政策，系统将不会查询任何预配域，也不会使用它们来提取代理配置。</translation>
 <translation id="5130213897914754028">阻止网站使用 SharedArrayBuffers</translation>
 <translation id="5130935469849337738">一律提供翻译</translation>
 <translation id="513314432051760916">此政策用于控制是否可为您的用户停用 <ph name="PRIVACY_SANDBOX_NAME" /> 广告效果衡量设置。
@@ -10433,7 +10420,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 <translation id="7491720878670299691">轮询网络数据并检查是否发生事件的时间间隔。所允许的最低时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（1 分钟）。</translation>
-<translation id="7496284563199466390">控制哪些受管理的用户可以设置 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 政策。</translation>
 <translation id="7498595166686106721">
       显示面截取权限政策会根据以下网址所链接到的规范限制对 getDisplayMedia() 的调用：https://www.w3.org/TR/screen-capture/#feature-policy-integration。但是，如果此政策已停用，系统便不会强制执行这项要求，而是会允许从那些未被此政策列入许可名单的上下文中调用 getDisplayMedia()。这项企业政策只是暂时性政策，预计将于 <ph name="PRODUCT_NAME" /> 100 版之后移除。此政策旨在解除对所用应用不符合规范但需要时间进行修正的企业用户的限制。
 

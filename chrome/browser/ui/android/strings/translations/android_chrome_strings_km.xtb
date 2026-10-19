@@ -970,6 +970,7 @@
 <translation id="480990236307250886">បើកទំព័រដើម</translation>
 <translation id="4812684235631257312">ឧបករណ៍ចែករំលែកបណ្តាញ</translation>
 <translation id="4816492930507672669">សមនឹងទំព័រ</translation>
+<translation id="4819558594335204796">បើក​ទំព័រដើម</translation>
 <translation id="4822710610088666676">បានបិទ និងរក្សាទុកក្រុមផ្ទាំង <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="4835385943915508971">Chrome មិន​អាច​ចូល​ប្រើ​ធនធាន​ដែល​បាន​ស្នើ​នេះ​ទេ​។​</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{ស្ដារ​ក្រុមផ្ទាំងដែលមាន <ph name="TAB_COUNT_ONE" /> ផ្ទាំង, ពណ៌<ph name="COLOR_NAME" />, ជា​ក្រុម​ផ្ទាំង​ផ្ទៃខាងក្រោយ​ថ្មី។}other{ស្ដារ​ក្រុមផ្ទាំង​ដែលមាន <ph name="TAB_COUNT_MANY" /> ផ្ទាំង, ពណ៌<ph name="COLOR_NAME" /> ជា​ក្រុម​ផ្ទាំង​ផ្ទៃខាងក្រោយ​ថ្មី។}}</translation>
@@ -1311,6 +1312,7 @@
 <translation id="6246073558347462570">វិនដូ​បរិបទ​លោតឡើង</translation>
 <translation id="6247557882553405851">កម្មវិធីគ្រប់គ្រង​ពាក្យសម្ងាត់ Google</translation>
 <translation id="6248988683584659830">ការកំណត់ការស្វែងរក</translation>
+<translation id="6250046936554288508">ផ្លូវ​កាត់មុខងារ AI</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, ផ្ទាំងឯកជន​ដែលបាន​ខ្ទាស់ និងបាន​ជ្រើសរើស​ច្រើន</translation>
 <translation id="6251449557817521191">មើល​ប្រវត្តិ Chrome របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6254139308321626268">អ្នក​កំពុងមើល​ឯកសារ PDF</translation>

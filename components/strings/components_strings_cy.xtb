@@ -118,6 +118,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1195558154361252544">Mae hysbysiadau'n cael eu rhwystro'n awtomatig ar gyfer pob gwefan ac eithrio'r rhai rydych yn eu caniatáu</translation>
 <translation id="1197088940767939838">Oren</translation>
 <translation id="1198412233443148072">Mae <ph name="MEMBER_FIRST_NAME" /> wedi tynnu'r tab “<ph name="WEBSITE_TITLE" />”</translation>
+<translation id="119944043368869598">Clirio popeth</translation>
 <translation id="1201402288615127009">Nesaf</translation>
 <translation id="1201895884277373915">Rhagor o'r wefan hon</translation>
 <translation id="1204184165594298176">{0,plural, =1{Ffeil wedi'i rhwystro rhag cael ei chopïo}zero{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu copïo}two{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu copïo}few{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu copïo}many{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu copïo}other{<ph name="FILE_COUNT" /> ffeil wedi'u rhwystro rhag cael eu copïo}}</translation>
@@ -4836,7 +4837,6 @@ Manylion ychwanegol:
 <translation id="9168814207360376865">Caniatáu i wefannau wirio a oes gennych ddulliau talu sydd wedi'u cadw</translation>
 <translation id="9169931577761441333">Ychwanegu <ph name="APP_NAME" /> at y sgrîn hafan</translation>
 <translation id="9170848237812810038">&amp;Dadwneud</translation>
-<translation id="9170906125144697215">Talu gyda Pix heb newid apiau</translation>
 <translation id="9171296965991013597">Gadael yr ap?</translation>
 <translation id="9173282814238175921">Dogfen sengl/Dalen newydd</translation>
 <translation id="9173995187295789444">Wrthi'n sganio am ddyfeisiau Bluetooth...</translation>

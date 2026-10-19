@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Share passwords</translation>
 <translation id="1554043146674176775">Turn off AI Mode</translation>
 <translation id="1554477036522844996">New window</translation>
+<translation id="1557806604681757705">your computer</translation>
 <translation id="1558391695376153246">Close Incognito tabs</translation>
 <translation id="1560153516220021659">Collapsed secondary toolbar button</translation>
 <translation id="1562601408588733317">Manage finding and filling info with Gemini</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">Saved passwords and passkeys</translation>
 <translation id="3143515551205905069">Cancel sync</translation>
 <translation id="3144126448740580210">DONE</translation>
+<translation id="3147048678293362228">Manage contact info…</translation>
 <translation id="3147521114983561406">Passkeys get saved to your password manager. They're accessible in Incognito and regular tabs.</translation>
 <translation id="3148052723910099040">Regular tab grid</translation>
 <translation id="3148237711805373460">Take me there</translation>
@@ -1400,7 +1402,6 @@
 <translation id="5371112366564891538">Increase text size</translation>
 <translation id="5376135254804080693">Deselect all</translation>
 <translation id="537853552771686272">Manage the topics and sites that you're interested in</translation>
-<translation id="5385892579392932755">your laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} closed}other{{count} closed}}</translation>
 <translation id="5394975111793637642">Hide product reviews for you card</translation>
 <translation id="5414763847370083940">You'll get an alert if the price drops on any site.</translation>
@@ -1871,6 +1872,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6770452996697898492">[BOOKED]</translation>
 <translation id="6775952316617222141">Go Live with Gemini in Chrome</translation>
 <translation id="6779455296366983087">Your browsing data will be deleted</translation>
+<translation id="6782311720357312958">Ask Google</translation>
 <translation id="6782531425936234573">Export data</translation>
 <translation id="6789665473250283877">Remove <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Tap 'Add tab to new group'</translation>
@@ -2178,6 +2180,7 @@ You can restart at any time.</translation>
 <translation id="7758789811447313947">Violet theme</translation>
 <translation id="7759809451544302770">Optional</translation>
 <translation id="7765158879357617694">Move</translation>
+<translation id="7767651976342854115">Data use setting encountered an error.</translation>
 <translation id="7768507955883790804">Sites automatically follow this setting when you visit them</translation>
 <translation id="7772032839648071052">Confirm passphrase</translation>
 <translation id="7772948288262733182">Welcome back</translation>

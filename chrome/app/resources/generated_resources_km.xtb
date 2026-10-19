@@ -1549,7 +1549,6 @@
 <translation id="2175927920773552910">កូដ QR</translation>
 <translation id="2177950615300672361">ផ្ទាំងអនាមិក៖ <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">ជ្រើសរើស​ពាក្យសម្ងាត់</translation>
 <translation id="2178614541317717477">CA សម្រួល</translation>
 <translation id="2180082148774168439">ចូលប្រើ​គេហទំព័រនេះ​នៅក្នុង​វិនដូ​ដាច់ដោយឡែក​នៅលើ​កុំព្យូទ័រ​របស់អ្នក</translation>
 <translation id="2180620921879609685">ទប់ស្កាត់​ខ្លឹមសារ​នៅលើទំព័រ​ណាមួយ</translation>
@@ -5147,6 +5146,7 @@
 <translation id="4877276003880815204">ត្រួតពិនិត្យ​ធាតុ</translation>
 <translation id="4878634973244289103">មិនអាចផ្ញើមតិកែលម្អបានទេ។ សូមព្យាយាមម្ដងទៀតនៅពេលក្រោយ។</translation>
 <translation id="4878718769565915065">ការបញ្ចូល​ស្នាមម្រាមដៃ​ទៅក្នុងសោសុវត្ថិភាពនេះមិនបានសម្រេចទេ</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">ស្វ័យប្រវត្តិ (លំនាំដើម)</translation>
 <translation id="4880827082731008257">ប្រវត្តិស្វែងរក</translation>
 <translation id="4881685975363383806">កុំរំលឹកខ្ញុំ​លើកក្រោយ</translation>
@@ -5632,6 +5632,7 @@
 <translation id="5247051749037287028">ឈ្មោះ​បង្ហាញ​ (ជាជម្រើស)</translation>
 <translation id="5247243947166567755">ជ្រើសរើស <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">សួរអ្វីក៏បានពីកន្លែងដែលអ្នកនៅដោយប្រើ Gemini ក្នុង Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{របារព័ត៌មាន 1 ទៀត​នឹងបង្ហាញ នៅពេល​បិទរបារព័ត៌មាននេះ}other{របារព័ត៌មាន # ទៀត​នឹងបង្ហាញ នៅពេល​បិទរបារព័ត៌មាននេះ}}</translation>
 <translation id="5248934139541843042">មើលអ្នក​រៀបចំ</translation>
 <translation id="5249624017678798539">កម្មវិធីរុករកបានគាំង មុនពេលការទាញយកបានបញ្ចប់។</translation>
 <translation id="5249818097095743806">ប្រើ​សោសុវត្ថិភាព​របស់អ្នក</translation>
@@ -5938,6 +5939,7 @@
 <translation id="5493792505296048976">បើកអេក្រង់</translation>
 <translation id="5494016731375030300">ផ្ទាំង​ដែល​បាន​បិទ​ថ្មីៗ</translation>
 <translation id="5494362494988149300">បើកនៅពេលបញ្ចប់</translation>
+<translation id="5494439739088303974">ប្រើ Google Lens ដើម្បី​សួរអំពី​អក្សរ ឬ​រូបភាព​នៅលើ​ទំព័រ</translation>
 <translation id="5494879038325093596">ផ្ទៀងផ្ទាត់ថាជាអ្នក ដើម្បីទទួលបានវានៅលើឧបករណ៍ទាំងអស់ដោយប្រើគណនី Google របស់អ្នក</translation>
 <translation id="5494920125229734069">ជ្រើសរើសទាំងអស់</translation>
 <translation id="5495466433285976480">វានឹងដកអ្នកប្រើមូលដ្ឋាន ឯកសារ ទិន្នន័យ និងការកំណត់ផ្សេងទៀតទាំងអស់ចេញ បន្ទាប់ពីការចាប់ផ្តើមឡើងវិញរបស់អ្នកលើកក្រោយ។ អ្នកប្រើទាំងអស់នឹងត្រូវចូលម្តងទៀត។</translation>

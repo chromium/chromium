@@ -1483,6 +1483,7 @@
 <translation id="2140788884185208305">Մարտկոցի լիցքը</translation>
 <translation id="2142328300403846845">Բացել հղումը որպես</translation>
 <translation id="2142582065325732898">Միացրեք <ph name="LINK1_BEGIN" />Chrome Sync-ը<ph name="LINK1_END" />՝ Chrome-ի վերջին բացված ներդիրները դիտելու համար։ <ph name="LINK2_BEGIN" />Իմանալ ավելին<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Ներդիրների խմբի ընտրությունը չեղարկվել է</translation>
 <translation id="2143089736086572103">Տեսանելի է որոշ կոնտակտների</translation>
 <translation id="2143765403545170146">Գործիքագոտին միշտ ցուցադրել լիաէկրան ռեժիմում</translation>
 <translation id="2143778271340628265">Պրոքսի-սերվերի ձեռքով կազմաձևում</translation>
@@ -1538,7 +1539,6 @@
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="2177950615300672361">Ինկոգնիտո ներդիր` <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Ընտրեք գաղտնաբառ</translation>
 <translation id="2178614541317717477">Բացահայտված հավաստագրման կենտրոն</translation>
 <translation id="2180082148774168439">Բացեք այս կայքը ձեր համակարգչի առանձին պատուհանում</translation>
 <translation id="2180620921879609685">Արգելափակել բոլոր էջերի բովանդակությունը</translation>
@@ -2477,6 +2477,7 @@
 <translation id="2878889940310164513">Ավելացնել բջջային ցանց...</translation>
 <translation id="288042212351694283">Universal 2nd Factor սարքերն օգտագործելու իրավունք</translation>
 <translation id="2881076733170862447">Երբ դուք սեղմում եք ընդլայնման վրա</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Չընտրված ներդիր}one{Չընտրված ներդիր}other{Չընտրված ներդիրներ}}</translation>
 <translation id="2882301808122022326">Omaha-ի պատասխանը</translation>
 <translation id="2884070497102362193">Ստուգեք ձեր մարտկոցը, պրոցեսորը, հիշողությունը, կապը և այլն</translation>
 <translation id="2885129935310217435">Նույն անվանմամբ կոճակ արդեն կա։ Ընտրեք այլ անվանում։</translation>
@@ -8050,6 +8051,7 @@
 <translation id="7148426638542880639">Հնարավոր է՝ կայքերը չաշխատեն պատշաճ կերպով։ Ընտրեք այս տարբերակը, եթե չեք ուզում սարքում թողնել տեղեկություններ ձեր այցելած կայքերի մասին։</translation>
 <translation id="7149893636342594995">Վերջին 24 ժամվա</translation>
 <translation id="7152478047064750137">Այս ընդլայնումը հատուկ թույլտվություն չի պահանջում</translation>
+<translation id="7152923486458597248">Ընտրել խումբը</translation>
 <translation id="7153101072880472645">Միացնել/անջատել բարձր կոնտրաստը</translation>
 <translation id="715396040729904728">գործարկիչ + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Դարձնել <ph name="START_PAGE" />-ը սկզբնական էջը</translation>

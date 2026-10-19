@@ -118,6 +118,7 @@
 <translation id="1195558154361252544">Известията се блокират автоматично за всички сайтове освен за онези, за които ги разрешите</translation>
 <translation id="1197088940767939838">оранжево</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> премахна раздела „<ph name="WEBSITE_TITLE" />“</translation>
+<translation id="119944043368869598">Изчистване на всички</translation>
 <translation id="1201402288615127009">Напред</translation>
 <translation id="1201895884277373915">Още от този сайт</translation>
 <translation id="1204184165594298176">{0,plural, =1{Копирането на файла е блокирано}other{Копирането на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
@@ -4837,7 +4838,6 @@
 <translation id="9168814207360376865">Разрешаване на сайтовете да проверяват дали имате запазени начини на плащане</translation>
 <translation id="9169931577761441333">Добавяне на <ph name="APP_NAME" /> към началния екран</translation>
 <translation id="9170848237812810038">&amp;Отмяна</translation>
-<translation id="9170906125144697215">Плащане посредством Pix без превключване между приложенията</translation>
 <translation id="9171296965991013597">Искате ли да затворите приложението?</translation>
 <translation id="9173282814238175921">Един документ/нов лист</translation>
 <translation id="9173995187295789444">Сканира се за устройства с Bluetooth...</translation>

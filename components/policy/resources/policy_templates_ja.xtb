@@ -3577,8 +3577,6 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
       このポリシーを無効に設定すると、登録済みのデバイスはキオスク セッション情報を報告しません。</translation>
 <translation id="3303770131697159224">ウィンドウの管理に関する権限のデフォルトの設定</translation>
 <translation id="3303911765031636277">OnFileAttached Chrome Enterprise コネクタの設定ポリシー</translation>
-<translation id="3305586786770047829">このポリシーを 0 に設定するか未設定のままにした場合、<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ポリシーは関連付けられたユーザーのユーザー スコープでのみ適用されます。
-このポリシーを 1 に設定した場合、関連付けられていないユーザーであっても、<ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ポリシーが該当のユーザー スコープで適用されます。</translation>
 <translation id="3307744348419745296">Wi-Fi ネットワーク設定を <ph name="PRODUCT_OS_NAME" /> デバイスと接続された Android スマートフォンとの間で同期できないようにする</translation>
 <translation id="3308724602356134956">このポリシーを設定した場合、ユーザーのデスクトップと
 
@@ -6354,19 +6352,6 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 <translation id="5120168808610189805">初回実行時のホームページのインポートを有効にする</translation>
 <translation id="5124321040285474825">自動入力での生成 AI 機能の設定</translation>
 <translation id="5124368997194894978">AC（交流電流）電源接続時の起動を有効にします</translation>
-<translation id="5124652340668722849"><ph name="PRODUCT_NAME" /> がプロキシ構成を動的に取得するために使用するプロビジョニング ドメイン（PvD）のリストを設定します。
-
-このポリシーでは、RFC 8801（「プロビジョニング ドメイン名とデータの検出」）で定義されているプロビジョニング ドメインを表すドメイン名またはリソース URI のリストを指定できます。ブラウザは、各 PvD について、既知のエンドポイント パス「https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd」に HTTPS リクエストを送信して、対応する JSON 構成を解決します。
-
-リストの各エントリでは、以下を指定します。
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: プロビジョニング ドメインの識別子（ドメイン名）。
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: オプションの認証構成。未構成または「なし」に設定した場合、認証は行われません。「profile_bearer_token」に設定した場合、ブラウザはログインしているメイン アカウントの指定されたスコープで OAuth2 アクセス トークンを取得し、「Authorization」ヘッダーに「Bearer」トークンとして付加します。
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: PvD エンドポイントをクエリする際に含めるカスタム HTTP ヘッダーのオプションのリスト。「profile_id」（デバイス上のブラウザ プロファイルの安定した一意の ID を表し、プロファイルごとの構成のターゲティングを可能にする）や「accept_language」（ブラウザの優先言語を表す）などの動的な値を挿入できます。
-
-取得した構成は、RFC 8801 スキーマに従って解析されます。PvD の JSON ペイロードのプロキシ構成関連のルーティング ルールとプロキシのみが適用されます。このポリシーを未設定のままにした場合、プロビジョニング ドメインはクエリされず、プロキシ構成の取得にも使用されません。</translation>
 <translation id="5130213897914754028">サイトに SharedArrayBuffers の使用を許可しない</translation>
 <translation id="5130935469849337738">常に翻訳を表示する</translation>
 <translation id="513314432051760916">このポリシーでは、ユーザーが <ph name="PRIVACY_SANDBOX_NAME" /> の広告測定設定をオフにできるかどうかを制御します。
@@ -10132,7 +10117,6 @@ Kyber の提供には下位互換性があります。既存の TLS サーバー
 <translation id="7491720878670299691">ネットワーク データをポーリングしてイベントの有無を確認する間隔です。指定できる最小値は 1 分です。
 
       設定しない場合は、デフォルトの 1 分が適用されます。</translation>
-<translation id="7496284563199466390"><ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> ポリシーを設定できる管理対象ユーザーを制御する。</translation>
 <translation id="7498595166686106721">
       ディスプレイ キャプチャ許可ポリシーでは、仕様（https://www.w3.org/TR/screen-capture/#feature-policy-integration）に沿って、getDisplayMedia(), へのアクセスをゲートします。ただし、このポリシーを無効に設定した場合、この要件は適用されず、本来禁止されているコンテキストからの getDisplayMedia() の呼び出しが許可されます。このエンタープライズ ポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> バージョン 100 以降で削除される予定です。仕様を満たしていないため修正する時間が必要なアプリケーションを使用しているエンタープライズ ユーザーのブロックを解除することを目的としています。
 

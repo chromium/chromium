@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">ميزة مشاركة كلمات المرور</translation>
 <translation id="1554043146674176775">‏إيقاف "وضع AI"</translation>
 <translation id="1554477036522844996">نافذة جديدة</translation>
+<translation id="1557806604681757705">جهاز الكمبيوتر</translation>
 <translation id="1558391695376153246">إغلاق علامات تبويب التصفح المتخفي</translation>
 <translation id="1560153516220021659">زر شريط الأدوات الثانوي المُصغَّر</translation>
 <translation id="1562601408588733317">‏يمكنك إدارة ملء المعلومات والعثور عليها باستخدام Gemini</translation>
@@ -696,6 +697,7 @@
 <translation id="3140825265190223781">كلمات المرور ومفاتيح المرور المحفوظة</translation>
 <translation id="3143515551205905069">إلغاء المزامنة</translation>
 <translation id="3144126448740580210">تم</translation>
+<translation id="3147048678293362228">إدارة معلومات الاتصال…</translation>
 <translation id="3147521114983561406">يتم حفظ مفاتيح المرور في "مدير كلمات المرور". ويمكن الوصول إليها في علامات التبويب في "وضع التصفّح المتخفي" وعلامات التبويب العادية.</translation>
 <translation id="3148052723910099040">شبكة علامات التبويب العادية</translation>
 <translation id="3148237711805373460">الانتقال إلى الإعدادات</translation>
@@ -1399,7 +1401,6 @@
 <translation id="5371112366564891538">زيادة حجم النص</translation>
 <translation id="5376135254804080693">إلغاء اختيار الكل</translation>
 <translation id="537853552771686272">إدارة المواضيع والمواقع الإلكترونية التي تهمّك</translation>
-<translation id="5385892579392932755">الكمبيوتر المحمول</translation>
 <translation id="5390458669633674385">{count,plural, =1{وتم إغلاق علامة تبويب واحدة ({count})}zero{وتم إغلاق {count} علامة تبويب}two{وتم إغلاق علامتَي تبويب ({count})}few{وتم إغلاق {count} علامات تبويب}many{وتم إغلاق {count} علامة تبويب}other{وتم إغلاق {count} علامة تبويب}}</translation>
 <translation id="5394975111793637642">إخفاء بطاقة "مراجعات المنتج المخصّصة لك"</translation>
 <translation id="5414763847370083940">ستتلقَّى تنبيهًا في حال انخفاض السعر على أي موقع إلكتروني.</translation>
@@ -1866,6 +1867,7 @@
 <translation id="6770452996697898492">[محجوز]</translation>
 <translation id="6775952316617222141">‏بدء محادثة "Live مع Gemini" في Chrome</translation>
 <translation id="6779455296366983087">سيتم حذف بيانات التصفُّح</translation>
+<translation id="6782311720357312958">‏اسأل Google</translation>
 <translation id="6782531425936234573">تصدير البيانات</translation>
 <translation id="6789665473250283877">إزالة "<ph name="TOOL_NAME" />"</translation>
 <translation id="6791425686608802741">النقر على "إضافة علامة تبويب إلى المجموعة الجديدة"</translation>
@@ -2172,6 +2174,7 @@
 <translation id="7758789811447313947">مظهر باللون البنفسجي</translation>
 <translation id="7759809451544302770">اختياري</translation>
 <translation id="7765158879357617694">نقل</translation>
+<translation id="7767651976342854115">حدث خطأ أثناء تحميل إعدادات استخدام البيانات.</translation>
 <translation id="7768507955883790804">ستتبع المواقع الإلكترونية هذا الإعداد تلقائيًا عند زيارتك لها.</translation>
 <translation id="7772032839648071052">تأكيد عبارة المرور</translation>
 <translation id="7772948288262733182">مرحبًا بك من جديد</translation>

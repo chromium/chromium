@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Partilhe palavras-passe</translation>
 <translation id="1554043146674176775">Desativar Modo IA</translation>
 <translation id="1554477036522844996">Nova janela</translation>
+<translation id="1557806604681757705">seu computador</translation>
 <translation id="1558391695376153246">Fechar sep. de nav. anónima</translation>
 <translation id="1560153516220021659">Botão da barra de ferramentas secundária reduzido</translation>
 <translation id="1562601408588733317">Faça a gestão da localização e do preenchimento de informações com o Gemini</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">Palavras-passe e chaves de acesso guardadas</translation>
 <translation id="3143515551205905069">Cancelar sincronização</translation>
 <translation id="3144126448740580210">CONCLUÍDO</translation>
+<translation id="3147048678293362228">Gerir informações de contacto…</translation>
 <translation id="3147521114983561406">As chaves de acesso são guardadas no seu gestor de palavras-passe. Estão acessíveis nos separadores de navegação anónima e normais.</translation>
 <translation id="3148052723910099040">Grelha de separadores normais</translation>
 <translation id="3148237711805373460">Aceder</translation>
@@ -1400,7 +1402,6 @@
 <translation id="5371112366564891538">Aumentar tamanho do texto</translation>
 <translation id="5376135254804080693">Desmarcar tudo</translation>
 <translation id="537853552771686272">Faça a gestão dos tópicos e sites que lhe interessam</translation>
-<translation id="5385892579392932755">seu portátil</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fechado}other{{count} fechados}}</translation>
 <translation id="5394975111793637642">Ocultar críticas sobre produtos no seu cartão</translation>
 <translation id="5414763847370083940">Vai receber um alerta se o preço descer nalgum site.</translation>
@@ -1871,6 +1872,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6770452996697898492">[RESERVADO]</translation>
 <translation id="6775952316617222141">Usar Live com o Gemini no Chrome</translation>
 <translation id="6779455296366983087">Os seus dados de navegação vão ser eliminados</translation>
+<translation id="6782311720357312958">Pergunte ao Google</translation>
 <translation id="6782531425936234573">Exportar dados</translation>
 <translation id="6789665473250283877">Remover <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Toque em "Adicionar separador a novo grupo"</translation>

@@ -3774,8 +3774,6 @@ Microsoft Outlook 카드에는 추가 관리자 구성이 필요합니다. Chrom
       정책을 사용 중지하면 등록된 기기에서 키오스크 세션 정보를 보고하지 않습니다.</translation>
 <translation id="3303770131697159224">기본 창 관리 권한 설정</translation>
 <translation id="3303911765031636277">OnFileAttached Chrome Enterprise Connector 설정 정책</translation>
-<translation id="3305586786770047829">정책을 0으로 설정하거나 설정하지 않은 상태로 두면 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 연결된 사용자의 사용자 범위에만 적용됩니다.
-정책을 1로 설정하면 사용자가 연결되지 않았더라도 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책이 사용자 범위에서 적용됩니다.</translation>
 <translation id="3307744348419745296"><ph name="PRODUCT_OS_NAME" /> 기기 및 연결된 Android 휴대전화 전체에서 Wi-Fi 네트워크 구성의 동기화 허용 안함</translation>
 <translation id="3308724602356134956">정책을 설정하면 <ph name="PRODUCT_OS_NAME" />에서는 사용자 데스크톱 및 로그인 화면 배경으로 설정한 배경화면 이미지를 다운로드해서 사용하며 사용자가 변경할 수 없습니다. <ph name="PRODUCT_OS_NAME" />에서 배경화면 이미지를 다운로드할 수 있는 URL(인증 없이 액세스 가능)과 무결성을 확인할 암호화 해시(파일 크기가 최대 16MB인 JPEG 형식)를 지정합니다.
 
@@ -6686,19 +6684,6 @@ https://chromeenterprise.google/policies/url-patterns/ 페이지를 참고하세
 <translation id="5120168808610189805">처음 실행 시 홈페이지 가져오기 사용 설정</translation>
 <translation id="5124321040285474825">자동 완성의 생성형 AI 기능 설정</translation>
 <translation id="5124368997194894978">AC(교류 전원)로 부팅 사용</translation>
-<translation id="5124652340668722849"><ph name="PRODUCT_NAME" />에서 프록시 구성을 동적으로 가져오는 데 사용할 프로비저닝 도메인(PvD) 목록을 구성합니다.
-
-이 정책을 사용하면 RFC 8801('프로비저닝 도메인 이름 및 데이터 검색')에 정의된 대로 프로비저닝 도메인을 나타내는 도메인 이름 또는 리소스 URI 목록을 지정할 수 있습니다. 각 PvD에 대해 브라우저는 잘 알려진 엔드포인트 경로("https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd")에 HTTPS 요청을 전송하여 해당 JSON 구성을 확인합니다.
-
-목록의 각 항목은 다음을 지정합니다.
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: 프로비저닝 도메인의 식별자(도메인 이름)입니다.
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: 선택적 인증 구성입니다. 구성되지 않았거나 '없음'으로 설정된 경우 인증이 수행되지 않습니다. 'profile_bearer_token'으로 설정하면 브라우저가 로그인된 기본 계정에 제공된 범위로 OAuth2 액세스 토큰을 가져와 'Authorization' 헤더에 'Bearer' 토큰으로 연결합니다.
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: PvD 엔드포인트를 쿼리할 때 포함할 선택적 커스텀 HTTP 헤더 목록입니다. 'profile_id'(프로필별 구성 타겟팅을 사용 설정하는 기기의 브라우저 프로필에 대한 안정적인 고유 식별자를 나타냄) 또는 'accept_language'(브라우저의 기본 언어를 나타냄)와 같은 동적 값을 삽입할 수 있습니다.
-
-가져온 구성은 RFC 8801 스키마에 따라 파싱됩니다. PvD의 JSON 페이로드에 있는 프록시 구성 관련 라우팅 규칙 및 프록시만 적용됩니다. 이 정책을 설정하지 않으면 프로비저닝 도메인이 쿼리되거나 프록시 구성을 가져오는 데 사용되지 않습니다.</translation>
 <translation id="5130213897914754028">사이트에서 SharedArrayBuffers를 사용하지 못하도록 차단</translation>
 <translation id="5130935469849337738">항상 번역</translation>
 <translation id="513314432051760916">사용자가 <ph name="PRIVACY_SANDBOX_NAME" /> 광고 측정 설정을 사용 중지할 수 있는지 제어하는 정책입니다.
@@ -10718,7 +10703,6 @@ Kyber 제공 서비스는 이전 버전과 호환됩니다. 기존 TLS 서버 �
 <translation id="7491720878670299691">이벤트와 관련하여 네트워크 데이터가 수집 및 확인되는 속도입니다. 허용되는 최솟값은 1분입니다.
 
       정책을 설정하지 않으면 기본값 1분이 적용됩니다.</translation>
-<translation id="7496284563199466390">관리 사용자가 <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> 정책을 설정할 수 있는지 제어합니다.</translation>
 <translation id="7498595166686106721">
       디스플레이 캡처 권한 정책은 다음에 따라 getDisplayMedia()에 대한 액세스를 제어합니다. https://www.w3.org/TR/screen-capture/#feature-policy-integration. 하지만 정책이 사용 중지된 경우 이 요구사항은 적용되지 않으며, 다른 상황에서는 금지되었을 컨텍스트에서도 getDisplayMedia()가 허용됩니다. 이 기업 정책은 일시적이며 <ph name="PRODUCT_NAME" /> 버전 100 이후 삭제됩니다. 애플리케이션이 사양을 따르지 않지만 수정하는 데 시간이 필요한 기업 사용자를 차단 해제하는 것이 목적입니다.
 

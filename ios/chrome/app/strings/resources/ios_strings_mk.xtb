@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Споделувајте лозинки</translation>
 <translation id="1554043146674176775">Исклучи AI Mode</translation>
 <translation id="1554477036522844996">Нов прозорец</translation>
+<translation id="1557806604681757705">вашиот компјутер</translation>
 <translation id="1558391695376153246">Затвори картички „Инкогнито“</translation>
 <translation id="1560153516220021659">Копче за собран секундарен алатник</translation>
 <translation id="1562601408588733317">Управувајте со наоѓањето и пополнувањето податоци со Gemini</translation>
@@ -1400,7 +1401,6 @@
 <translation id="5371112366564891538">Зголеми го текстот</translation>
 <translation id="5376135254804080693">Отштиклирај ги сите</translation>
 <translation id="537853552771686272">Управувајте со темите и сајтовите што ве интересираат</translation>
-<translation id="5385892579392932755">вашиот лаптоп</translation>
 <translation id="5390458669633674385">{count,plural, =1{Затворени: {count}}one{Затворени: {count}}other{Затворени: {count}}}</translation>
 <translation id="5394975111793637642">Скриј ја картичката „Рецензии на производот за вас“</translation>
 <translation id="5414763847370083940">Ќе добиете известување ако цената се намали на кој било сајт.</translation>

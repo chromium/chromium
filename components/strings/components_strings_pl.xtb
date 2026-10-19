@@ -118,6 +118,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1195558154361252544">Powiadomienia są automatycznie blokowane w przypadku wszystkich stron, chyba że na nie zezwolisz</translation>
 <translation id="1197088940767939838">Pomarańczowy</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> usunął(-ęła) kartę „<ph name="WEBSITE_TITLE" />”</translation>
+<translation id="119944043368869598">Wyczyść wszystko</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1201895884277373915">Więcej z tej witryny</translation>
 <translation id="1204184165594298176">{0,plural, =1{Kopiowanie pliku zostało zablokowane}few{Kopiowanie <ph name="FILE_COUNT" /> plików zostało zablokowane}many{Kopiowanie <ph name="FILE_COUNT" /> plików zostało zablokowane}other{Kopiowanie <ph name="FILE_COUNT" /> pliku zostało zablokowane}}</translation>
@@ -4836,7 +4837,6 @@ Dodatkowe informacje:
 <translation id="9168814207360376865">Zezwalaj stronom internetowym na sprawdzanie, czy masz zapisane formy płatności</translation>
 <translation id="9169931577761441333">Dodaj aplikację <ph name="APP_NAME" /> do ekranu głównego</translation>
 <translation id="9170848237812810038">&amp;Cofnij</translation>
-<translation id="9170906125144697215">Płać przez Pix bez przełączania aplikacji</translation>
 <translation id="9171296965991013597">Zamknąć aplikację?</translation>
 <translation id="9173282814238175921">Pojedynczy dokument / Nowy arkusz</translation>
 <translation id="9173995187295789444">Skanuję w poszukiwaniu urządzeń Bluetooth…</translation>

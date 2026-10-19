@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">पासवर्ड शेयर करें</translation>
 <translation id="1554043146674176775">एआई मोड बंद करें</translation>
 <translation id="1554477036522844996">नई विंडो</translation>
+<translation id="1557806604681757705">अपने कंप्यूटर</translation>
 <translation id="1558391695376153246">गुप्त टैब बंद करें</translation>
 <translation id="1560153516220021659">सेकंडरी टूलबार बटन को छोटा किया गया</translation>
 <translation id="1562601408588733317">Gemini की मदद से जानकारी खोजने और भरने की सुविधा को मैनेज करें</translation>
@@ -1401,7 +1402,6 @@
 <translation id="5371112366564891538">टेक्स्ट का साइज़ बढ़ाएं</translation>
 <translation id="5376135254804080693">सभी से चुने हुए का निशान हटाएं</translation>
 <translation id="537853552771686272">अपनी पसंद के विषयों और साइटों को मैनेज करें</translation>
-<translation id="5385892579392932755">लैपटॉप</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} टैब बंद कर दिया गया है}one{{count} टैब बंद कर दिया गया है}other{{count} टैब बंद कर दिए गए हैं}}</translation>
 <translation id="5394975111793637642">'आपके लिए प्रॉडक्ट की समीक्षाएं' कार्ड को छिपाएं</translation>
 <translation id="5414763847370083940">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर आपको सूचना मिलेगी.</translation>

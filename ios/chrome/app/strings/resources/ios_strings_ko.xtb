@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">비밀번호 공유</translation>
 <translation id="1554043146674176775">AI 모드 사용 중지</translation>
 <translation id="1554477036522844996">새 창</translation>
+<translation id="1557806604681757705">컴퓨터</translation>
 <translation id="1558391695376153246">시크릿 탭 닫기</translation>
 <translation id="1560153516220021659">접힌 보조 툴바 버튼</translation>
 <translation id="1562601408588733317">Gemini로 정보 찾기 및 자동 입력 관리</translation>
@@ -1400,7 +1401,6 @@
 <translation id="5371112366564891538">텍스트 크기 확대</translation>
 <translation id="5376135254804080693">모두 선택 해제</translation>
 <translation id="537853552771686272">관심 있는 주제 및 사이트 관리</translation>
-<translation id="5385892579392932755">내 노트북</translation>
 <translation id="5390458669633674385">{count,plural, =1{닫힌 탭 {count}개}other{닫힌 탭 {count}개}}</translation>
 <translation id="5394975111793637642">추천 제품 리뷰 카드 숨기기</translation>
 <translation id="5414763847370083940">가격이 인하된 사이트가 있으면 알림이 전송됩니다</translation>

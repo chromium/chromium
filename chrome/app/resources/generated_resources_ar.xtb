@@ -1486,6 +1486,7 @@
 <translation id="2140788884185208305">حالة البطارية</translation>
 <translation id="2142328300403846845">فتح الرابط كـ</translation>
 <translation id="2142582065325732898">‏عليك تفعيل ميزة <ph name="LINK1_BEGIN" />مزامنة Chrome<ph name="LINK1_END" /> لعرض علامات التبويب الأخيرة في Chrome. <ph name="LINK2_BEGIN" />مزيد من المعلومات<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">تم إلغاء التركيز على مجموعة علامات التبويب</translation>
 <translation id="2143089736086572103">الجهاز مرئي لبعض جهات الاتصال</translation>
 <translation id="2143765403545170146">عرض شريط الأدوات في وضع ملء الشاشة دائمًا</translation>
 <translation id="2143778271340628265">إعداد الخادم الوكيل يدويًّا</translation>
@@ -1541,7 +1542,6 @@
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
 <translation id="2177950615300672361">علامة تبويب التصفح المتخفي: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">‫Microsoft 365</translation>
-<translation id="2178545675770638239">اختيار كلمة مرور</translation>
 <translation id="2178614541317717477">‏اختراق المرجع المصدق (CA)</translation>
 <translation id="2180082148774168439">بإمكانك فتح هذا الموقع الإلكتروني في نافذة مخصّصة على جهاز الكمبيوتر</translation>
 <translation id="2180620921879609685">حظر المحتوى على أي صفحة</translation>
@@ -1598,6 +1598,7 @@
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" /> و<ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">مصدر وسائط بلا اسم</translation>
+<translation id="2223747115628460234">الرجوع إلى علامات التبويب المفتوحة</translation>
 <translation id="2224337661447660594">لا يتوفّر اتصال بالإنترنت</translation>
 <translation id="2224444042887712269">ينتمي هذا الإعداد إلى <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">تعديل اسم المجلد</translation>
@@ -1723,6 +1724,7 @@
 <translation id="2318143611928805047">حجم الورق</translation>
 <translation id="2319459402137712349">اختَر حقلاً نصيًا لفتح لوحة المفاتيح. ويمكنك أيضًا النقر على رمز لوحة المفاتيح في أسفل الشاشة.</translation>
 <translation id="2319993584768066746">الصور في شاشة تسجيل الدخول</translation>
+<translation id="2322015964223112232">الرجوع إلى علامات التبويب المفتوحة</translation>
 <translation id="2322193970951063277">الرؤوس والتذييلات</translation>
 <translation id="2322622365472107569">وقت الانتهاء: <ph name="TIME" /></translation>
 <translation id="2323018538045954000">‏شبكات Wi-Fi المحفوظة</translation>
@@ -2481,6 +2483,7 @@
 <translation id="2878889940310164513">إضافة شبكة جوّال...</translation>
 <translation id="288042212351694283">الوصول إلى أجهزة العامل الثاني العالمي</translation>
 <translation id="2881076733170862447">عند النقر على "الإضافة"</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{تم إلغاء التركيز على علامة التبويب}zero{تم إلغاء التركيز على علامات التبويب}two{تم إلغاء التركيز على علامتَي التبويب}few{تم إلغاء التركيز على علامات التبويب}many{تم إلغاء التركيز على علامات التبويب}other{تم إلغاء التركيز على علامات التبويب}}</translation>
 <translation id="2882301808122022326">‏ردّ Omaha</translation>
 <translation id="2884070497102362193">‏اختبار أداء البطارية ووحدة المعالجة المركزية (CPU) والذاكرة والاتصال بالشبكة وغير ذلك</translation>
 <translation id="2885129935310217435">يتوفّر زر يحمل الاسم نفسه. يُرجى اختيار اسم آخر.</translation>
@@ -5581,6 +5584,7 @@
 <translation id="5214639857958972833">تم إنشاء إشارة مرجعية بعنوان "<ph name="BOOKMARK_TITLE" />".</translation>
 <translation id="5215450412607891876">تفعيل تحديثات الأمان الممتدة</translation>
 <translation id="5216674789212441076">‏تتم تلقائيًا ترجمة مقاطع الشرح عند استخدام ميزة "النسخ النصي التلقائي". ويتم إرسال مقاطع الشرح إلى Google لترجمتها.</translation>
+<translation id="5217925057416367138">يتم التشغيل حاليًا</translation>
 <translation id="5220011581825921581">مفتاح البحث + السهم المتّجه للأعلى</translation>
 <translation id="5221516927483787768">تعذَّر بث محتوى <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">تم حظر عملية تنزيل غير آمنة.</translation>
@@ -8061,6 +8065,7 @@
 <translation id="7148426638542880639">قد لا تعمل المواقع الإلكترونية على النحو المتوقَّع. حدِّد هذا الخيار إذا كنت لا تريد حفظ المعلومات الخاصة بالمواقع الإلكترونية التي تزورها على جهازك.</translation>
 <translation id="7149893636342594995">آخر 24 ساعة</translation>
 <translation id="7152478047064750137">لا تتطلب هذه الإضافة أذونات خاصة</translation>
+<translation id="7152923486458597248">التركيز على المجموعة</translation>
 <translation id="7153101072880472645">تفعيل/إيقاف وضع "التباين العالي"</translation>
 <translation id="715396040729904728">‏مشغّل التطبيقات + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">تغيير الصفحة الرئيسية إلى: <ph name="START_PAGE" /></translation>

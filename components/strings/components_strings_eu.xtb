@@ -118,6 +118,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1195558154361252544">Webgune guztien jakinarazpenak automatikoki blokeatzen dira, zuk baimentzen dituzunenak izan ezik</translation>
 <translation id="1197088940767939838">Laranja</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> erabiltzaileak "<ph name="WEBSITE_TITLE" />" fitxa kendu du</translation>
+<translation id="119944043368869598">Garbitu guztiak</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1201895884277373915">Webgune honetako gehiago</translation>
 <translation id="1204184165594298176">{0,plural, =1{Fitxategia ezin da kopiatu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira kopiatu}}</translation>
@@ -4830,7 +4831,6 @@ Xehetasun gehiago:
 <translation id="9168814207360376865">Baimendu webguneei gordetako ordainketa-metodorik duzun egiaztatzea</translation>
 <translation id="9169931577761441333">Gehitu <ph name="APP_NAME" /> orri nagusian</translation>
 <translation id="9170848237812810038">&amp;Desegin</translation>
-<translation id="9170906125144697215">Ordaindu Pix-ekin aplikazioz aldatu gabe</translation>
 <translation id="9171296965991013597">Aplikaziotik irten nahi duzu?</translation>
 <translation id="9173282814238175921">Dokumentu bakarra / Orri berria</translation>
 <translation id="9173995187295789444">Bluetooth bidezko gailuak bilatzen…</translation>

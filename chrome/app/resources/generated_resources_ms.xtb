@@ -1549,7 +1549,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2175927920773552910">Kod QR</translation>
 <translation id="2177950615300672361">Tab Inkognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Pilih Kata Laluan</translation>
 <translation id="2178614541317717477">Tolak ansur CA</translation>
 <translation id="2180082148774168439">Akses laman ini dalam tetingkap khusus pada komputer anda</translation>
 <translation id="2180620921879609685">Sekat kandungan pada mana-mana halaman</translation>
@@ -5150,6 +5149,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4877276003880815204">Periksa Unsur</translation>
 <translation id="4878634973244289103">Tidak dapat menghantar maklum balas. Sila cuba lagi kemudian.</translation>
 <translation id="4878718769565915065">Gagal menambahkan cap jari pada kunci keselamatan ini</translation>
+<translation id="4878870099449579538">{COUNT,plural, =1{+1}other{+#}}</translation>
 <translation id="4879491255372875719">Automatik (lalai)</translation>
 <translation id="4880827082731008257">Sejarah carian</translation>
 <translation id="4881685975363383806">Jangan ingatkan saya lain kali</translation>
@@ -5635,6 +5635,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5247051749037287028">Nama paparan (pilihan)</translation>
 <translation id="5247243947166567755">Pilih <ph name="BOOKMARK_TITLE" /></translation>
 <translation id="524751727772074981">Tanya apa-apa sahaja, di tempat anda berada, dengan Gemini dalam Chrome</translation>
+<translation id="5248708731547043632">{COUNT,plural, =1{1 lagi bar maklumat akan dipaparkan apabila bar maklumat ini ditutup}other{# lagi bar maklumat akan dipaparkan apabila bar maklumat ini ditutup}}</translation>
 <translation id="5248934139541843042">Lihat pengelola</translation>
 <translation id="5249624017678798539">Penyemak imbas telah ranap sebelum muat turun selesai.</translation>
 <translation id="5249818097095743806">Gunakan kunci keselamatan anda</translation>
@@ -5942,6 +5943,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5493792505296048976">skrin dihidupkan</translation>
 <translation id="5494016731375030300">Tab yang Ditutup Baru-baru Ini</translation>
 <translation id="5494362494988149300">Buka Apabila &amp;Selesai</translation>
+<translation id="5494439739088303974">Gunakan Google Lens untuk bertanya tentang sebarang teks atau imej pada halaman</translation>
 <translation id="5494879038325093596">Sahkan identiti anda untuk mendapatkan kata laluan pada semua peranti dengan Google Account anda</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
 <translation id="5495466433285976480">Tindakan ini akan mengalih keluar semua pengguna, fail dan data setempat serta tetapan lain selepas mula semula anda yang seterusnya. Semua pengguna perlu log masuk sekali lagi.</translation>

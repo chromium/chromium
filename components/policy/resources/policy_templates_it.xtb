@@ -3795,8 +3795,6 @@ Se la policy <ph name="NTPCARDSVISIBLE" /> è disattivata, la scheda di Outlook 
       Se la policy viene impostata su Disattivata, i dispositivi registrati non segnalano informazioni relative alla sessione kiosk.</translation>
 <translation id="3303770131697159224">Impostazione predefinita dell'autorizzazione per la gestione delle finestre</translation>
 <translation id="3303911765031636277">Policy di configurazione per il connettore OnFileAttached di Chrome Enterprise</translation>
-<translation id="3305586786770047829">Quando questa policy viene impostata su 0 o non viene configurata, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata solo all'ambito utente per gli utenti affiliati.
-Quando questa policy viene impostata su 1, la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> verrà applicata all'ambito utente, anche se l'utente non è affiliato.</translation>
 <translation id="3307744348419745296">Non consentire la sincronizzazione delle configurazioni di reti Wi-Fi tra i dispositivi <ph name="PRODUCT_OS_NAME" /> e un telefono Android connesso</translation>
 <translation id="3308724602356134956">Se imposti la policy, <ph name="PRODUCT_OS_NAME" />
 
@@ -6669,19 +6667,6 @@ Questa policy è una sospensione temporanea per consentire la migrazione dei con
 <translation id="5120168808610189805">Abilita l'importazione della home page alla prima esecuzione</translation>
 <translation id="5124321040285474825">Impostazioni per le funzionalità di AI generativa nella Compilazione automatica</translation>
 <translation id="5124368997194894978">Attiva avvio tramite CA (corrente alternata)</translation>
-<translation id="5124652340668722849">Configura un elenco di domini di provisioning (PvD) che <ph name="PRODUCT_NAME" /> utilizzerà per recuperare dinamicamente le configurazioni del proxy.
-
-Questa policy consente di specificare un elenco di nomi di dominio o URI di risorse che rappresentano i domini di provisioning come definiti in RFC 8801 ("Discovering Provisioning Domain Names and Data"). Per ogni PvD, il browser risolve la configurazione JSON corrispondente inviando una richiesta HTTPS al percorso dell'endpoint noto: "https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd".
-
-Ogni voce dell'elenco specifica:
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: l'identificatore del dominio di provisioning (un nome di dominio).
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: la configurazione di autenticazione facoltativa. In assenza di configurazione o se questa è impostata su "none", non viene eseguita alcuna autenticazione. Se impostato su "profile_bearer_token", il browser recupera un token di accesso OAuth2 con l'ambito fornito per l'account principale con cui è stato eseguito l'accesso e lo allega nell'intestazione "Authorization" come token "Bearer".
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: un elenco facoltativo di intestazioni HTTP personalizzate da includere durante l'esecuzione di query sull'endpoint PvD. È possibile inserire valori dinamici, ad esempio "profile_id" (che rappresenta un identificatore univoco e stabile del profilo del browser sul dispositivo, consentendo il targeting della configurazione per profilo) o "accept_language" (che rappresenta le lingue preferite del browser).
-
-Le configurazioni recuperate vengono analizzate in base allo schema RFC 8801. Vengono applicati solo i proxy e le regole di routing correlate alla configurazione del proxy dal payload JSON del PvD. Se questa policy non viene configurata, non verrà eseguita alcuna query sui domini di provisioning e questi non verranno utilizzati per recuperare le configurazioni del proxy.</translation>
 <translation id="5130213897914754028">Impedisci ai siti di utilizzare la policy SharedArrayBuffers</translation>
 <translation id="5130935469849337738">Offri sempre la traduzione</translation>
 <translation id="513314432051760916">Una policy per stabilire se l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla misurazione degli annunci può essere disattivata per i tuoi utenti.
@@ -10689,7 +10674,6 @@ Tieni presente che questa policy non controlla l'integrazione generale di <ph na
 <translation id="7491720878670299691">La velocità di interrogazione e controllo della rete per eventi. Il valore minimo consentito è 1 minuto.
 
       Se la policy non viene impostata, viene applicata la velocità predefinita di 1 minuto.</translation>
-<translation id="7496284563199466390">Controlla quali utenti gestiti possono impostare la policy <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" />.</translation>
 <translation id="7498595166686106721">
       La policy relativa alle autorizzazioni display-capture consente di dare o meno l'accesso a getDisplayMedia(), in base a questa specifica: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Se questa policy viene impostata su Disattivata, questo requisito non viene applicato e l'accesso a getDisplayMedia() è consentito da contesti che altrimenti sarebbero vietati. Questa policy aziendale è temporanea ed è destinata a essere rimossa dopo la versione 100 di <ph name="PRODUCT_NAME" />. Ha lo scopo di sbloccare gli utenti aziendali la cui applicazione non è conforme alla specifica, ma che richiede tempo per essere sistemata.
 

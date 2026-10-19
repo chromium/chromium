@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Нууц үг хуваалцаарай</translation>
 <translation id="1554043146674176775">ХОУ-ы горимыг унтраах</translation>
 <translation id="1554477036522844996">Шинэ цонх</translation>
+<translation id="1557806604681757705">таны компьютер</translation>
 <translation id="1558391695376153246">Нууцлалтай табуудыг хаах</translation>
 <translation id="1560153516220021659">Хураасан хоёрдогч хэрэгслийн мөрийн товч</translation>
 <translation id="1562601408588733317">Gemini-р мэдээлэл олж, бөглөхийг удирдах</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">Хадгалсан нууц үг, нэвтрэх түлхүүр</translation>
 <translation id="3143515551205905069">Синкийг цуцлах</translation>
 <translation id="3144126448740580210">ДУУССАН</translation>
+<translation id="3147048678293362228">Холбоо барих мэдээллийг удирдах…</translation>
 <translation id="3147521114983561406">Нэвтрэх түлхүүрүүдийг таны нууц үгний менежерт хадгалдаг. Тэдгээрт Нууцлалтай болон энгийн табууд дотроос хандах боломжтой.</translation>
 <translation id="3148052723910099040">Энгийн табын хүснэгт</translation>
 <translation id="3148237711805373460">Намайг тийшээ аваач</translation>
@@ -1400,7 +1402,6 @@
 <translation id="5371112366564891538">Текстийн хэмжээг томруулах</translation>
 <translation id="5376135254804080693">Бүх сонголтыг цуцлах</translation>
 <translation id="537853552771686272">Сонирхдог сэдэв, сайтуудаа удирдана уу</translation>
-<translation id="5385892579392932755">таны зөөврийн компьютер</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} табыг хаасан}other{{count} табыг хаасан}}</translation>
 <translation id="5394975111793637642">Танд зориулсан бүтээгдэхүүний шүүмжийн картыг нуух</translation>
 <translation id="5414763847370083940">Аль нэг сайтад үнэ буурсан тохиолдолд та сэрэмжлүүлэг авна.</translation>
@@ -1871,6 +1872,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6770452996697898492">[ЗАХИАЛСАН]</translation>
 <translation id="6775952316617222141">Chrome дахь Live with Gemini-г эхлүүлэх</translation>
 <translation id="6779455296366983087">Таны интернэтээр үзсэн өгөгдлийг устгана</translation>
+<translation id="6782311720357312958">Google-с асуух</translation>
 <translation id="6782531425936234573">Өгөгдөл экспортлох</translation>
 <translation id="6789665473250283877"><ph name="TOOL_NAME" />-г хасах</translation>
 <translation id="6791425686608802741">"Шинэ бүлэгт таб нэмэх" дээр товшино уу</translation>

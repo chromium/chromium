@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Делитесь паролями</translation>
 <translation id="1554043146674176775">Отключить режим ИИ</translation>
 <translation id="1554477036522844996">Новое окно</translation>
+<translation id="1557806604681757705">вашего компьютера</translation>
 <translation id="1558391695376153246">Закрыть вкладки инкогнито</translation>
 <translation id="1560153516220021659">Кнопка свернутой дополнительной панели инструментов</translation>
 <translation id="1562601408588733317">Управляйте поиском и Заполнением с Gemini</translation>
@@ -1401,7 +1402,6 @@
 <translation id="5371112366564891538">Увеличить размер шрифта</translation>
 <translation id="5376135254804080693">Отменить выбор</translation>
 <translation id="537853552771686272">Управляйте темами и сайтами, которые вам интересны</translation>
-<translation id="5385892579392932755">вашего ноутбука</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} вкладка закрыта}one{{count} вкладка закрыта}few{{count} вкладки закрыты}many{{count} вкладок закрыты}other{{count} вкладки закрыто}}</translation>
 <translation id="5394975111793637642">Скрыть карточку "Отзывы о товарах для вас"</translation>
 <translation id="5414763847370083940">Если на одном из сайтов появится скидка, вы получите оповещение.</translation>

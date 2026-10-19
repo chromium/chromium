@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Կիսվեք գաղտնաբառերով</translation>
 <translation id="1554043146674176775">Անջատել ԱԲ ռեժիմը</translation>
 <translation id="1554477036522844996">Նոր պատուհան</translation>
+<translation id="1557806604681757705">ձեր համակարգչից</translation>
 <translation id="1558391695376153246">Փակել ինկոգնիտո ներդիրները</translation>
 <translation id="1560153516220021659">Ծալված երկրորդական գործիքագոտու կոճակ</translation>
 <translation id="1562601408588733317">Կառավարեք տեղեկությունների որոնումը և լրացումը Gemini-ի օգնությամբ</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">Պահված գաղտնաբառեր և մուտքի բանալիներ</translation>
 <translation id="3143515551205905069">Չեղարկել համաժամացումը</translation>
 <translation id="3144126448740580210">ՊԱՏՐԱՍՏ Է</translation>
+<translation id="3147048678293362228">Կառավարել կոնտակտային տվյալները…</translation>
 <translation id="3147521114983561406">Մուտքի բանալիները պահվում են ձեր գաղտնաբառերի կառավարչում։ Դրանք հասանելի են ինկոգնիտո և սովորական ներդիրներում։</translation>
 <translation id="3148052723910099040">Սովորական ներդիրների ցանց</translation>
 <translation id="3148237711805373460">Անցնել</translation>
@@ -1400,7 +1402,6 @@
 <translation id="5371112366564891538">Մեծացնել տեքստի չափսը</translation>
 <translation id="5376135254804080693">Չեղարկել բոլոր ընտրությունները</translation>
 <translation id="537853552771686272">Կառավարեք ձեզ հետաքրքրող թեմաներն ու կայքերը</translation>
-<translation id="5385892579392932755">ձեր նոթբուքում</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count}-ը փակված է}one{{count}-ը փակված է}other{{count}-ը փակված է}}</translation>
 <translation id="5394975111793637642">Թաքցնել ապրանքի կարծիքները ձեր քարտի համար</translation>
 <translation id="5414763847370083940">Դուք ծանուցում կստանաք, երբ որևէ կայքում գնիջեցում լինի։</translation>
@@ -1871,6 +1872,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6770452996697898492">[ԱՄՐԱԳՐՎԱԾ Է]</translation>
 <translation id="6775952316617222141">Զրուցել Gemini-ի հետ Chrome-ում Live գործառույթի միջոցով</translation>
 <translation id="6779455296366983087">Այցելությունների պատմությունը կջնջվի</translation>
+<translation id="6782311720357312958">Հարցնել Google-ին</translation>
 <translation id="6782531425936234573">Արտահանել տվյալները</translation>
 <translation id="6789665473250283877">Հեռացնել <ph name="TOOL_NAME" /> գործիքը</translation>
 <translation id="6791425686608802741">Հպեք «Ավելացնել ներդիրը նոր խմբում» քարտին</translation>

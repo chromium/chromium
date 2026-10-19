@@ -353,6 +353,7 @@
 <translation id="4251615635259297716">এই অ্যাকাউন্টে আপনার Chrome ডেটা লিঙ্ক করবেন?</translation>
 <translation id="4252262470181310206">Chrome-এর সাহায্যে যেকোনও সময় ও জায়গায় Google Drive ও YouTube-এর মতো আপনার পছন্দের অ্যাপে নির্বিঘ্নে কাজ করুন।</translation>
 <translation id="4266456958461406346">আরও <ph name="THREE_DOTS_ICON" /> মেনুটি খুলুন</translation>
+<translation id="4275788652681621337">সাইড প্যানেল বন্ধ করুন</translation>
 <translation id="4280647692742956593">যেকোনও জায়গা থেকে নতুন ট্যাব গ্রুপ খুলতে বা তৈরি করতে, আপনার ফোনে Chrome ডাউনলোড করুন।</translation>
 <translation id="4281844954008187215">পরিষেবার শর্তাদি</translation>
 <translation id="430327780270213103">Chrome টুলবারে অ্যাক্সেস সংক্রান্ত অনুরোধ দেখাতে এক্সটেনশনকে অনুমতি দিন</translation>
@@ -461,6 +462,7 @@
 <translation id="5386244825306882791">আপনি Chrome শুরু করলে বা Omnibox থেকে সার্চ করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
 <translation id="5394833366792865639">একটি Chrome ট্যাব শেয়ার করুন</translation>
 <translation id="5402307365844630024">Chrome Beta-তে Gemini টগল করুন</translation>
+<translation id="5414664742659847155">অন্যান্য অ্যাপ থেকে Chrome আলাদা করুন</translation>
 <translation id="541844421954567481"><ph name="DEVICE_TYPE" />-এ Chrome অ্যাপের সাহায্যে যেকোনও সময় ও জায়গায় আপনার পাসওয়ার্ড, ট্যাব সহ আরও অনেক কিছু অ্যাক্সেস করুন</translation>
 <translation id="5430073640787465221">আপনার পছন্দের ফাইল ক্ষতিকর অথবা ভুল৷\n\nGoogle Chrome আপনার সেটিংস পুনরুদ্ধার করতে পারছে না৷</translation>
 <translation id="5465210843490471889"><ph name="START_GLIC_STYLING" />Gemini<ph name="END_GLIC_STYLING" />-র সাথে ব্যবহার করার জন্য Chrome প্রোফাইল বেছে নিন</translation>
@@ -674,6 +676,7 @@
 <translation id="7306401458628386911">ইনস্ট্যান্ট ব্রাউজ করা শুরু করুন: Windows চালু হলেই Chrome এখন চালু হতে পারবে।</translation>
 <translation id="7308322188646931570">ফাইল ডাউনলোড করতে Chrome-এর স্টোরেজের অ্যাক্সেস প্রয়োজন</translation>
 <translation id="7352651011704765696">কিছু সমস্যা হয়েছে</translation>
+<translation id="7371412052245999753">আপনার কম্পিউটারে অন্যান্য অ্যাপ্লিকেশন থেকে Chrome-এর মেমরি সুরক্ষিত রাখে।</translation>
 <translation id="73786666777299047">Chrome ওয়েব স্টোর খুলুন</translation>
 <translation id="7386878009611068389">তোমার অভিভাবকের পছন্দ মেনে অনলাইনে আরও নিরাপদ থাকতে, <ph name="USER_EMAIL_ADDRESS" /> হিসেবে আগে থেকেই সাইন-ইন করে আছো এমন Chrome প্রোফাইলে পরিবর্তন করো</translation>
 <translation id="7398801000654795464">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসাবে Chrome-এ প্রবেশ করেছেন৷ আবার সাইন-ইন করতে একই অ্যাকাউন্ট ব্যবহার করুন৷</translation>

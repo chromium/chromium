@@ -1178,6 +1178,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5715150588940290235">Chcete odstrániť uložené bezpečnostné kódy?</translation>
 <translation id="572328651809341494">Nedávne karty</translation>
 <translation id="5728072125198221967">Prepojené služby Googlu</translation>
+<translation id="5733447028358645932">Kto prehliadal</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, pripnutá karta inkognito so zvukom</translation>
 <translation id="5744751019568455640">Toto sú hlasy, ktoré si môžete vybrať na čítanie webových stránok. Ak sa vám tento hlas páči a chcete ho používať, klepnite na jeho názov.</translation>
 <translation id="574845902699630049">Zdieľať ako <ph name="OWNER_FULL_NAME" /></translation>
@@ -2031,6 +2032,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8863714995118816041">Povolenia pre <ph name="SITE_NAME" /> boli znova udelené</translation>
 <translation id="8864055848767439877">Karta <ph name="TAB_NAME" /> sa zdieľa s aplikáciou <ph name="APP_NAME" /></translation>
 <translation id="8865415417596392024">Údaje Chromu vo vašom účte</translation>
+<translation id="886968456388055613">Filtrovať podľa toho, kto prehliadal</translation>
 <translation id="8872506776304248286">Otvoriť v aplikácii</translation>
 <translation id="8880275451109933094">Zobrazenie dvoch strán</translation>
 <translation id="8890668505403261809">Vyhľadajte karty inkognito</translation>

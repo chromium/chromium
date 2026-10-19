@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Partagez vos mots de passe</translation>
 <translation id="1554043146674176775">Désactiver le Mode IA</translation>
 <translation id="1554477036522844996">Nouvelle fenêtre</translation>
+<translation id="1557806604681757705">votre ordinateur</translation>
 <translation id="1558391695376153246">Fermer onglets nav. privée</translation>
 <translation id="1560153516220021659">Bouton de la barre d'outils secondaire réduit</translation>
 <translation id="1562601408588733317">Gérez la recherche et la saisie d'informations avec Gemini</translation>
@@ -1400,7 +1401,6 @@
 <translation id="5371112366564891538">Augmenter la taille du texte</translation>
 <translation id="5376135254804080693">Tout désélectionner</translation>
 <translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
-<translation id="5385892579392932755">votre ordinateur portable</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} fermé}one{{count} fermé}other{{count} fermés}}</translation>
 <translation id="5394975111793637642">Masquer la carte "Avis sur les produits pour vous"</translation>
 <translation id="5414763847370083940">Vous recevrez une alerte si le prix baisse sur un site.</translation>

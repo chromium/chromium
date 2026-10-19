@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Делите лозинке</translation>
 <translation id="1554043146674176775">Искључи AI режим</translation>
 <translation id="1554477036522844996">Нови прозор</translation>
+<translation id="1557806604681757705">рачунара</translation>
 <translation id="1558391695376153246">Затвори картице без архив.</translation>
 <translation id="1560153516220021659">Скупљено дугме секундарне траке с алаткама</translation>
 <translation id="1562601408588733317">Управљајте проналажењем и попуњавањем информација помоћу Gemini-ја</translation>
@@ -1400,7 +1401,6 @@
 <translation id="5371112366564891538">Повећајте величину текста</translation>
 <translation id="5376135254804080693">Опозови све</translation>
 <translation id="537853552771686272">Управљајте темама и сајтовима који вас интересују</translation>
-<translation id="5385892579392932755">лаптопа</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} затворена}one{{count} затворена}few{{count} затворене}other{{count} затворених}}</translation>
 <translation id="5394975111793637642">Сакријте картицу Рецензије производа за вас</translation>
 <translation id="5414763847370083940">Добићете обавештење ако се цена снизи на било ком сајту.</translation>

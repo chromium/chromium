@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Zdieľanie hesiel</translation>
 <translation id="1554043146674176775">Vypnúť režim AI</translation>
 <translation id="1554477036522844996">Nové okno</translation>
+<translation id="1557806604681757705">váš počítač</translation>
 <translation id="1558391695376153246">Zavrieť karty inkognito</translation>
 <translation id="1560153516220021659">Zbalené sekundárne tlačidlo panela s nástrojmi</translation>
 <translation id="1562601408588733317">Spravujte vyhľadávanie a dopĺňanie informácií pomocou Gemini</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">Uložené heslá a prístupové kľúče</translation>
 <translation id="3143515551205905069">Zrušiť synchronizáciu</translation>
 <translation id="3144126448740580210">OK</translation>
+<translation id="3147048678293362228">Spravovať kontaktné údaje…</translation>
 <translation id="3147521114983561406">Prístupové kľúče sa ukladajú do vášho správcu hesiel. Sú prístupné na kartách inkognito aj bežných kartách.</translation>
 <translation id="3148052723910099040">Mriežka bežných kariet</translation>
 <translation id="3148237711805373460">Prejsť tam</translation>
@@ -1400,7 +1402,6 @@
 <translation id="5371112366564891538">Zväčšiť veľkosť písma textu</translation>
 <translation id="5376135254804080693">Zrušiť výber všetkého</translation>
 <translation id="537853552771686272">Spravujte témy a weby, ktoré vás zaujímajú</translation>
-<translation id="5385892579392932755">váš laptop</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} zatvorená}few{{count} zatvorené}many{{count} closed}other{{count} zatvorených}}</translation>
 <translation id="5394975111793637642">Skryť kartu Recenzie výrobkov pre vás</translation>
 <translation id="5414763847370083940">Ak cena na niektorom webe klesne, dostanete upozornenie.</translation>
@@ -1871,6 +1872,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6770452996697898492">[REZERVOVANÉ]</translation>
 <translation id="6775952316617222141">Začať používať funkciu Live s Gemini v Chrome</translation>
 <translation id="6779455296366983087">Dáta prehliadania budú odstránené</translation>
+<translation id="6782311720357312958">Opýtať sa Googlu</translation>
 <translation id="6782531425936234573">Exportovať údaje</translation>
 <translation id="6789665473250283877">Odstrániť <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Klepnite na Pridať kartu do novej skupiny</translation>

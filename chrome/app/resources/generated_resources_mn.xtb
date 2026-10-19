@@ -1492,6 +1492,7 @@
 <translation id="2140788884185208305">Батарейн барилт</translation>
 <translation id="2142328300403846845">Холбоосыг нээх</translation>
 <translation id="2142582065325732898">Chrome-н саяхны табуудыг үзэхийн тулд <ph name="LINK1_BEGIN" />Chrome Синк<ph name="LINK1_END" />-ийг асаана уу. <ph name="LINK2_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Табын бүлгийн сонголтыг болиулсан</translation>
 <translation id="2143089736086572103">Зарим харилцагчид харагдана</translation>
 <translation id="2143765403545170146">Самбарыг үргэлж бүтэн дэлгэцэд харуулах</translation>
 <translation id="2143778271340628265">Прокси-гийн гар тохиргоо</translation>
@@ -1547,7 +1548,6 @@
 <translation id="2175927920773552910">QR код</translation>
 <translation id="2177950615300672361">Нууцлалтай цонх: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Нууц үг сонгоно уу</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2180082148774168439">Компьютер дээрээ зориулалтын цонхонд энэ сайтад хандаарай</translation>
 <translation id="2180620921879609685">Аливаа хуудсан дээрх контентыг блоклох</translation>
@@ -2491,6 +2491,7 @@
 <translation id="2878889940310164513">Үүрэн холбооны сүлжээ нэмэх...</translation>
 <translation id="288042212351694283">Universal 2nd Factor төхөөрөмжүүдэд хандах</translation>
 <translation id="2881076733170862447">Та өргөтгөл гэснийг товших үед</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Табын сонголтыг болиулсан}other{Табуудын сонголтыг болиулсан}}</translation>
 <translation id="2882301808122022326">Omaha-н хариулт</translation>
 <translation id="2884070497102362193">Батарей, төв процессорын нэгж, санах ой, холболт болон бусад зүйлээ туршина уу</translation>
 <translation id="2885129935310217435">Ижил нэртэй товчлуур байна. Өөр нэгийг сонгоно уу.</translation>
@@ -8067,6 +8068,7 @@
 <translation id="7148426638542880639">Сайтууд таны бодсоны дагуу ажиллахгүй байж магадгүй. Хэрэв та зочилсон сайтуудынхаа талаарх мэдээллийг төхөөрөмждөө үлдээхийг хүсэхгүй байвал энэ сонголтыг сонгоно уу.</translation>
 <translation id="7149893636342594995">Сүүлийн 24 цаг</translation>
 <translation id="7152478047064750137">Энэ өргөтгөл ямар нэгэн тусгай зөвшөөрөл шаарддаггүй</translation>
+<translation id="7152923486458597248">Бүлэг сонгох</translation>
 <translation id="7153101072880472645">Өндөр ялгарлыг асаах/унтраах</translation>
 <translation id="715396040729904728">эхлүүлэгч + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Өөрийн эхлэх хуудсыг :<ph name="START_PAGE" /> болгож өөрчлөх</translation>

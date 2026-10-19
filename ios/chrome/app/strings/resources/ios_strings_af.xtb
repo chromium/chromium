@@ -198,6 +198,7 @@
 <translation id="1547610699249301703">Deel wagwoorde</translation>
 <translation id="1554043146674176775">Skakel KI-modus af</translation>
 <translation id="1554477036522844996">Nuwe venster</translation>
+<translation id="1557806604681757705">jou rekenaar</translation>
 <translation id="1558391695376153246">Maak Incognito-oortjies toe</translation>
 <translation id="1560153516220021659">Ingevoude sekondêrenutsbalkknoppie</translation>
 <translation id="1562601408588733317">Bestuur die vind en invul van inligting met Gemini</translation>
@@ -697,6 +698,7 @@
 <translation id="3140825265190223781">Gestoorde wagwoorde en toegangsleutels</translation>
 <translation id="3143515551205905069">Kanselleer sinkronisering</translation>
 <translation id="3144126448740580210">KLAAR</translation>
+<translation id="3147048678293362228">Bestuur kontakinligting …</translation>
 <translation id="3147521114983561406">Toegangsleutels word in jou wagwoordbestuurder gestoor. Jy kan in Incognito- en gewone oortjies toegang tot hulle kry.</translation>
 <translation id="3148052723910099040">Gewone Oortjierooster</translation>
 <translation id="3148237711805373460">Neem my daarheen</translation>
@@ -1400,7 +1402,6 @@
 <translation id="5371112366564891538">Vergroot teks</translation>
 <translation id="5376135254804080693">Ontkies alles</translation>
 <translation id="537853552771686272">Bestuur die onderwerpe en werwe waarin jy belangstel</translation>
-<translation id="5385892579392932755">jou skootrekenaar</translation>
 <translation id="5390458669633674385">{count,plural, =1{{count} is toegemaak}other{{count} is toegemaak}}</translation>
 <translation id="5394975111793637642">Versteek produkresensies vir jou kaart</translation>
 <translation id="5414763847370083940">Jy sal ’n opletberig kry as die prys op enige werf daal.</translation>
@@ -1871,6 +1872,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6770452996697898492">[BESPREEK]</translation>
 <translation id="6775952316617222141">Go Live met Gemini in Chrome</translation>
 <translation id="6779455296366983087">Jou blaaierdata sal uitgevee word</translation>
+<translation id="6782311720357312958">Vra vir Google</translation>
 <translation id="6782531425936234573">Voer data uit</translation>
 <translation id="6789665473250283877">Verwyder <ph name="TOOL_NAME" /></translation>
 <translation id="6791425686608802741">Tik op “Voeg oortjie by nuwe groep”</translation>

@@ -1493,6 +1493,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2140788884185208305">Batterygesondheid</translation>
 <translation id="2142328300403846845">Maak skakel oop as</translation>
 <translation id="2142582065325732898">Skakel <ph name="LINK1_BEGIN" />Chrome-sinkronisering<ph name="LINK1_END" /> aan om onlangse Chrome-oortjies te bekyk. <ph name="LINK2_BEGIN" />Kom meer te wete<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Ongefokusde oortjiegroep</translation>
 <translation id="2143089736086572103">Sigbaar vir sommige kontakte</translation>
 <translation id="2143765403545170146">Wys nutsbalk altyd in volskerm</translation>
 <translation id="2143778271340628265">Handmatige instaanbedieneropstelling</translation>
@@ -1548,7 +1549,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Incognito-oortjie: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Kies wagwoord</translation>
 <translation id="2178614541317717477">CA-kompromie</translation>
 <translation id="2180082148774168439">Kry toegang tot hierdie werf in ’n toegewyde venster op jou rekenaar</translation>
 <translation id="2180620921879609685">Blokkeer inhoud op enige bladsy</translation>
@@ -2492,6 +2492,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2878889940310164513">Voeg sellulêr by …</translation>
 <translation id="288042212351694283">Toegang tot jou Universele 2de Faktor-toestelle</translation>
 <translation id="2881076733170862447">Wanneer jy die uitbreiding klik</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Ongefokusde oortjie}other{Ongefokusde oortjies}}</translation>
 <translation id="2882301808122022326">Omaha-antwoord</translation>
 <translation id="2884070497102362193">Toets jou battery, CPU, geheue, konnektiwiteit en meer</translation>
 <translation id="2885129935310217435">Daar is ’n knoppie met dieselfde naam. Kies asseblief ’n ander een.</translation>
@@ -8070,6 +8071,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7148426638542880639">Werwe sal dalk nie werk soos jy sou verwag nie. Kies hierdie opsie as jy nie inligting op jou toestel wil agterlaat oor werwe wat jy besoek nie.</translation>
 <translation id="7149893636342594995">Afgelope 24 uur</translation>
 <translation id="7152478047064750137">Hierdie uitbreiding vereis geen spesiale toestemmings nie</translation>
+<translation id="7152923486458597248">Fokus op groep</translation>
 <translation id="7153101072880472645">Hoë kontras aan/af</translation>
 <translation id="715396040729904728">lanseerder + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Verander jou beginblad na: <ph name="START_PAGE" /></translation>

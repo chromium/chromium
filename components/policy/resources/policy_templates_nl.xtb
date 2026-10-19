@@ -3714,8 +3714,6 @@ Als <ph name="NTPCARDSVISIBLE" /> niet wordt toegepast, wordt de kaart Outlook n
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten geen informatie over kiosksessies.</translation>
 <translation id="3303770131697159224">Standaardinstelling voor het recht voor vensterbeheer</translation>
 <translation id="3303911765031636277">Configuratiebeleid voor de Chrome Enterprise-connector OnFileAttached</translation>
-<translation id="3305586786770047829">Als je dit beleid instelt op 0 of niet instelt, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> alleen toegepast op gebruikersniveau voor aangesloten gebruikers.
-Als je dit beleid instelt op 1, wordt het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> toegepast op gebruikersniveau, ook als die gebruiker niet is aangesloten.</translation>
 <translation id="3307744348419745296">Niet toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een gekoppelde Android-telefoon</translation>
 <translation id="3308724602356134956">Als je het beleid instelt, downloadt en gebruikt <ph name="PRODUCT_OS_NAME" /> de door jou ingestelde achtergrondafbeelding voor de achtergrond van het bureaublad van de gebruiker en het inlogscherm. Gebruikers kunnen de afbeelding niet wijzigen. Specificeer de URL (die toegankelijk moet zijn zonder verificatie) waar <ph name="PRODUCT_OS_NAME" /> de achtergrondafbeelding kan downloaden, evenals een cryptografische hash (in jpeg-indeling met een bestandsgrootte van maximaal 16 MB) om de integriteit daarvan te verifiëren.
 
@@ -6544,19 +6542,6 @@ Als je dit beleid niet instelt, wordt het virtuele toetsenbord getoond op basis 
 <translation id="5120168808610189805">Import van homepage bij eerste uitvoering aanzetten</translation>
 <translation id="5124321040285474825">Instellingen voor generatieve AI-functies in Automatisch invullen</translation>
 <translation id="5124368997194894978">Opstarten bij netstroom (wisselstroom) aanzetten</translation>
-<translation id="5124652340668722849">Hiermee wordt een lijst met Provisioning Domains (PvD's) ingesteld die <ph name="PRODUCT_NAME" /> gebruikt om proxyconfiguraties dynamisch op te halen.
-
-Met dit beleid kun je een lijst met domeinnamen of resource-URI's instellen die inrichtingsdomeinen vertegenwoordigen, zoals gedefinieerd in RFC 8801 ('Discovering Provisioning Domain Names and Data'). Voor elke PvD lost de browser de bijbehorende json-configuratie op door een HTTPS-verzoek te doen naar het bekende eindpuntpad: https://[<ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />]/.well-known/pvd.
-
-Elk item in de lijst geeft het volgende aan:
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_PVD_ID" />: De ID van het inrichtingsdomein (een domeinnaam).
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_AUTH_CONFIG" />: De optionele verificatieconfiguratie. Als je dit beleid niet instelt of instelt op none, wordt er geen verificatie uitgevoerd. Als het is ingesteld op profile_bearer_token, haalt de browser een OAuth2-toegangstoken op met het ingevoerde bereik voor het ingelogde primaire account en voegt deze toe aan de kop Autorisatie als een Bearer-token.
-
-* <ph name="PROXY_PROVISIONING_DOMAINS_EXTRA_HEADERS" />: Een optionele lijst met aangepaste HTTP-headers die moeten worden opgenomen bij het uitvoeren van query's voor het PvD-eindpunt. Er kunnen dynamische waarden worden ingevoegd, zoals profile_id (een stabiele, unieke ID van het browserprofiel op het apparaat, waarmee targeting per profiel mogelijk is) of accept_language (de voorkeurstalen van de browser).
-
-De opgehaalde configuraties worden geparseerd volgens het RFC 8801-schema. Alleen routeringsregels en proxy's die zijn gerelateerd aan de proxyconfiguratie uit de JSON-payload van de PvD worden toegepast. Als je dit beleid niet instelt, worden er geen inrichtingsdomeinen opgevraagd of gebruikt om proxyconfiguraties op te halen.</translation>
 <translation id="5130213897914754028">Voorkomen dat sites SharedArrayBuffers gebruiken</translation>
 <translation id="5130935469849337738">Altijd een vertaling aanbieden</translation>
 <translation id="513314432051760916">Beleid om te bepalen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet voor je gebruikers.
@@ -10475,7 +10460,6 @@ Dit beleid beheert niet de algemene integratie van <ph name="GOOGLE_GEMINI_PRODU
 <translation id="7491720878670299691">Snelheid waarmee netwerkgegevens worden opgevraagd en gecheckt op gebeurtenissen. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 1 minuut van toepassing.</translation>
-<translation id="7496284563199466390">Hiermee wordt bepaald welke beheerde gebruikers het beleid <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME" /> kunnen instellen.</translation>
 <translation id="7498595166686106721">
       Het rechtenbeleid voor schermopname geeft toegang tot getDisplayMedia(), volgens deze specificatie: https://www.w3.org/TR/screen-capture/#feature-policy-integration. Maar als dit beleid niet wordt toegepast, wordt deze vereiste niet afgedwongen en wordt getDisplayMedia() toegestaan vanuit contexten die anders verboden zouden zijn. Dit zakelijke beleid is tijdelijk. Het is de bedoeling het te verwijderen na <ph name="PRODUCT_NAME" /> versie 100. Het is bedoeld om de blokkering van zakelijke gebruikers op te heffen wiens app niet aan de specificaties voldoet, maar tijd nodig heeft om te worden hersteld.
 

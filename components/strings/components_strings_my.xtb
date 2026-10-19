@@ -118,6 +118,7 @@
 <translation id="1195558154361252544">သင်ခွင့်ပြုထားသည့် ဝဘ်ဆိုက်များအတွက်မှလွဲ၍ အကြောင်းကြားချက်များကို အလိုအလျောက် ပိတ်ထားသည်</translation>
 <translation id="1197088940767939838">လိမ္မော်ရောင်</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> က “<ph name="WEBSITE_TITLE" />” တဘ်ကို ဖယ်ရှားလိုက်သည်</translation>
+<translation id="119944043368869598">အားလုံးထုတ်ပစ်ရန်</translation>
 <translation id="1201402288615127009">ရှေ့သို့</translation>
 <translation id="1201895884277373915">ဤဆိုဒ်မှ ပိုမို</translation>
 <translation id="1204184165594298176">{0,plural, =1{ဖိုင်ကို မိတ္တူကူးခွင့် ပိတ်ထားသည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်ကို မိတ္တူကူးခွင့် ပိတ်ထားသည်}}</translation>
@@ -4837,7 +4838,6 @@
 <translation id="9168814207360376865">သင့်တွင် သိမ်းထားသော ငွေပေးချေနည်းလမ်းများရှိမရှိ စစ်ဆေးရန် ဝဘ်ဆိုက်များကို ခွင့်ပြုပါ</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ကို ပင်မစာမျက်နှာသို့ ထည့်ရန်</translation>
 <translation id="9170848237812810038">&amp;တစ်ဆင့်နောက်ပြန်ရန်</translation>
-<translation id="9170906125144697215">အက်ပ်များမပြောင်းဘဲ Pix ဖြင့် ပေးချေပါ</translation>
 <translation id="9171296965991013597">အက်ပ်မှ ထွက်လိုပါသလား။</translation>
 <translation id="9173282814238175921">စာရွက်စာတမ်းတစ်ခုတည်း/စာမျက်နှာ အသစ်</translation>
 <translation id="9173995187295789444">ဘလူးတုသ် စက်များ ရှာနေသည်…</translation>

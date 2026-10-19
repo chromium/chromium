@@ -1483,6 +1483,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2140788884185208305">Condição da bateria</translation>
 <translation id="2142328300403846845">Abrir link como</translation>
 <translation id="2142582065325732898">Ative a <ph name="LINK1_BEGIN" />Sincronização do Chrome<ph name="LINK1_END" /> para ver separadores recentes do Chrome. <ph name="LINK2_BEGIN" />Saiba mais<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Grupo de separadores não focado</translation>
 <translation id="2143089736086572103">Visível para alguns contactos</translation>
 <translation id="2143765403545170146">Mostrar sempre a barra de ferramentas no modo de ecrã inteiro</translation>
 <translation id="2143778271340628265">Configuração manual do proxy</translation>
@@ -1538,7 +1539,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2177950615300672361">Separador de navegação anónima: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Selecione a palavra-passe</translation>
 <translation id="2178614541317717477">AC comprometida</translation>
 <translation id="2180082148774168439">Aceda a este site numa janela dedicada no seu computador</translation>
 <translation id="2180620921879609685">Bloquear conteúdos em qualquer página</translation>
@@ -2481,6 +2481,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2878889940310164513">Adicionar rede móvel…</translation>
 <translation id="288042212351694283">Aceder aos seus dispositivos Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Quando clica na extensão</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Separador não focado}other{Separadores não focados}}</translation>
 <translation id="2882301808122022326">Resposta de Omaha</translation>
 <translation id="2884070497102362193">Teste a bateria, a CPU, a memória, a conetividade e muito mais</translation>
 <translation id="2885129935310217435">Existe um botão com o mesmo nome. Escolha outro.</translation>
@@ -8062,6 +8063,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7148426638542880639">Os sites podem não funcionar como esperado. Escolha esta opção se não quiser deixar informações no seu dispositivo sobre os sites que visita.</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="7152478047064750137">Esta extensão não requer autorizações especiais.</translation>
+<translation id="7152923486458597248">Focar no grupo</translation>
 <translation id="7153101072880472645">Ativar/desativar alto contraste</translation>
 <translation id="715396040729904728">Launcher + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Alterar a página de início para: <ph name="START_PAGE" /></translation>

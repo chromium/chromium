@@ -118,6 +118,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1195558154361252544">Las notificaciones se bloquean automáticamente en todos los sitios, excepto en los que las permites</translation>
 <translation id="1197088940767939838">Naranja</translation>
 <translation id="1198412233443148072"><ph name="MEMBER_FIRST_NAME" /> quitó la pestaña "<ph name="WEBSITE_TITLE" />"</translation>
+<translation id="119944043368869598">Borrar todo</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1201895884277373915">Más sobre este sitio</translation>
 <translation id="1204184165594298176">{0,plural, =1{No se permite copiar el archivo}other{No se permite copiar <ph name="FILE_COUNT" /> archivos}}</translation>
@@ -4839,7 +4840,6 @@ Detalles adicionales:
 <translation id="9168814207360376865">Permitir que los sitios comprueben si tienes formas de pago guardadas</translation>
 <translation id="9169931577761441333">Agrega <ph name="APP_NAME" /> a la pantalla principal</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
-<translation id="9170906125144697215">Paga con Pix sin cambiar de app</translation>
 <translation id="9171296965991013597">¿Deseas salir de la app?</translation>
 <translation id="9173282814238175921">Documento único/hoja nueva</translation>
 <translation id="9173995187295789444">Buscando dispositivos Bluetooth…</translation>

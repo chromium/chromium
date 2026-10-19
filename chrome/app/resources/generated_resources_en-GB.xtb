@@ -1493,6 +1493,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2140788884185208305">Battery health</translation>
 <translation id="2142328300403846845">Open Link as</translation>
 <translation id="2142582065325732898">Turn on <ph name="LINK1_BEGIN" />Chrome Sync<ph name="LINK1_END" /> to view recent Chrome tabs. <ph name="LINK2_BEGIN" />Learn more<ph name="LINK2_END" /></translation>
+<translation id="2142826581348795579">Unfocused tab group</translation>
 <translation id="2143089736086572103">Visible to some contacts</translation>
 <translation id="2143765403545170146">Always Show Toolbar in Full Screen</translation>
 <translation id="2143778271340628265">Manual proxy configuration</translation>
@@ -1548,7 +1549,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2177950615300672361">Incognito Tab: <ph name="TAB_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
-<translation id="2178545675770638239">Select password</translation>
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2180082148774168439">Access this site in a dedicated window on your computer</translation>
 <translation id="2180620921879609685">Block content on any page</translation>
@@ -1605,6 +1605,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2221261048068091179"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /></translation>
 <translation id="222201875806112242">Unnamed media source</translation>
+<translation id="2223747115628460234">Go back to open tabs</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2224444042887712269">This setting belongs to <ph name="OWNER_EMAIL" />.</translation>
 <translation id="2224551243087462610">Edit folder name</translation>
@@ -1733,6 +1734,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2318143611928805047">Paper size</translation>
 <translation id="2319459402137712349">Select a text field to open the keyboard. You can also select the keyboard icon at the bottom of your screen.</translation>
 <translation id="2319993584768066746">Sign-in screen photos</translation>
+<translation id="2322015964223112232">Go back to open tabs</translation>
 <translation id="2322193970951063277">Headers and footers</translation>
 <translation id="2322622365472107569">End time <ph name="TIME" /></translation>
 <translation id="2323018538045954000">Saved Wi-Fi networks</translation>
@@ -2492,6 +2494,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2878889940310164513">Add mobile…</translation>
 <translation id="288042212351694283">Access your Universal 2nd Factor devices</translation>
 <translation id="2881076733170862447">When You Click the Extension</translation>
+<translation id="2881174510090437224">{NUM_TABS,plural, =1{Unfocused tab}other{Unfocused tabs}}</translation>
 <translation id="2882301808122022326">Omaha response</translation>
 <translation id="2884070497102362193">Test your battery, CPU, memory, connectivity and more</translation>
 <translation id="2885129935310217435">There is a button with the same name. Please choose another one.</translation>
@@ -5596,6 +5599,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' bookmark created.</translation>
 <translation id="5215450412607891876">Turn on extended security updates</translation>
 <translation id="5216674789212441076">Automatically translates Live Captions. Captions are sent to Google for translation.</translation>
+<translation id="5217925057416367138">Currently playing</translation>
 <translation id="5220011581825921581">search + up arrow</translation>
 <translation id="5221516927483787768">Unable to cast <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
@@ -8070,6 +8074,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7148426638542880639">Sites may not work as you would expect. Choose this option if you don't want to leave information on your device about sites that you visit.</translation>
 <translation id="7149893636342594995">Last 24 hours</translation>
 <translation id="7152478047064750137">This extension requires no special permissions</translation>
+<translation id="7152923486458597248">Focus on group</translation>
 <translation id="7153101072880472645">High contrast on/off</translation>
 <translation id="715396040729904728">launcher + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="7154130902455071009">Change your start page to: <ph name="START_PAGE" /></translation>
