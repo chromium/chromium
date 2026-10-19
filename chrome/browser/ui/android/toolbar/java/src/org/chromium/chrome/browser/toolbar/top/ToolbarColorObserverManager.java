@@ -19,6 +19,7 @@ import org.chromium.ui.util.ColorUtils;
 class ToolbarColorObserverManager implements ToolbarColorObserver {
     private @Nullable ToolbarColorObserver mToolbarColorObserver;
     private @ColorInt int mToolbarColor;
+    private boolean mHasToolbarColor;
 
     /**
      * Set Toolbar Color Observer for the toolbar color changes.
@@ -27,13 +28,16 @@ class ToolbarColorObserverManager implements ToolbarColorObserver {
      */
     void setToolbarColorObserver(ToolbarColorObserver toolbarColorObserver) {
         mToolbarColorObserver = toolbarColorObserver;
-        notifyToolbarColorChanged();
+        if (mHasToolbarColor) {
+            notifyToolbarColorChanged();
+        }
     }
 
     // TopToolbarCoordinator.ToolbarColorObserver implementation.
     @Override
     public void onToolbarColorChanged(@ColorInt int color) {
         mToolbarColor = color;
+        mHasToolbarColor = true;
         notifyToolbarColorChanged();
     }
 
