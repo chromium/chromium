@@ -5,19 +5,14 @@
 #import "ios/chrome/common/credential_provider/ASPasskeyCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/ASPasswordCredentialIdentity+credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/archivable_credential_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
 
-constexpr int64_t kJan1st2024 = 1704085200;
-
 using ASPasskeyCredentialIdentity_CredentialTest = PlatformTest;
 using ASPasswordCredentialIdentity_CredentialTest = PlatformTest;
-
-NSData* StringToData(std::string str) {
-  return [NSData dataWithBytes:str.data() length:str.length()];
-}
 
 // Tests that ASPasswordCredentialIdentity can be created from Credential.
 TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
@@ -46,33 +41,15 @@ TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
 
 // Tests that ASPasskeyCredentialIdentity can be created from Credential.
 TEST_F(ASPasskeyCredentialIdentity_CredentialTest, create) {
-  ArchivableCredential* credential =
-      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                               gaia:nil
-                                   recordIdentifier:@"recordIdentifier"
-                                             syncId:StringToData("syncId")
-                                           username:@"username"
-                                    userDisplayName:@"userDisplayName"
-                                             userId:StringToData("userId")
-                                       credentialId:StringToData("credentialId")
-                                               rpId:@"rpId"
-                                         privateKey:StringToData("privateKey")
-                                          encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024
-                                             hidden:NO
-                                         hiddenTime:kJan1st2024
-                                       editedByUser:NO];
+  ArchivableCredential* credential = TestPasskeyCredential();
   ASPasskeyCredentialIdentity* credentialIdentity =
       [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
 
   EXPECT_NSEQ(credential.username, credentialIdentity.userName);
-  EXPECT_NSEQ([@"userId" dataUsingEncoding:NSUTF8StringEncoding],
-              credentialIdentity.userHandle);
+  EXPECT_NSEQ(credential.userId, credentialIdentity.userHandle);
   EXPECT_NSEQ(credential.recordIdentifier, credentialIdentity.recordIdentifier);
   EXPECT_NSEQ(credential.rpId, credentialIdentity.relyingPartyIdentifier);
-  EXPECT_NSEQ([@"credentialId" dataUsingEncoding:NSUTF8StringEncoding],
-              credentialIdentity.credentialID);
+  EXPECT_NSEQ(credential.credentialId, credentialIdentity.credentialID);
 }
 
 }  // namespace

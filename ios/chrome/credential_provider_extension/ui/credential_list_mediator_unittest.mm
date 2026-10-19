@@ -5,6 +5,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/archivable_credential_test_util.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/mock_credential_store.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_mediator+Testing.h"
@@ -20,50 +21,18 @@ namespace {
 using base::test::ios::kWaitForFileOperationTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
 
-constexpr int64_t kJan1st2024 = 1704085200;
-
-NSData* StringToData(std::string str) {
-  return [NSData dataWithBytes:str.data() length:str.length()];
-}
-
-ArchivableCredential* TestPasskeyCredential(BOOL hidden = NO) {
-  return [[ArchivableCredential alloc]
-       initWithFavicon:@"favicon1"
-                  gaia:nil
-      recordIdentifier:@"recordIdentifier1"
-                syncId:StringToData("syncId1")
-              username:@"username1"
-       userDisplayName:@"userDisplayName1"
-                userId:StringToData("userId1")
-          credentialId:StringToData("credentialId1")
-                  rpId:@"rpId1"
-            privateKey:StringToData("privateKey1")
-             encrypted:StringToData("encrypted1")
-          creationTime:kJan1st2024
-          lastUsedTime:kJan1st2024
-                hidden:hidden
-            hiddenTime:kJan1st2024
-          editedByUser:NO];
-}
-
 ArchivableCredential* TestPasskeyCredential2() {
-  return [[ArchivableCredential alloc]
-       initWithFavicon:@"favicon2"
-                  gaia:nil
-      recordIdentifier:@"recordIdentifier2"
-                syncId:StringToData("syncId2")
-              username:@"username2"
-       userDisplayName:@"userDisplayName2"
-                userId:StringToData("userId2")
-          credentialId:StringToData("credentialId2")
-                  rpId:@"rpId2"
-            privateKey:StringToData("privateKey2")
-             encrypted:StringToData("encrypted2")
-          creationTime:kJan1st2024 + 1
-          lastUsedTime:kJan1st2024 + 1
-                hidden:NO
-            hiddenTime:kJan1st2024 + 1
-          editedByUser:NO];
+  return TestPasskeyCredential(TestPasskeyCredentialOverrides{
+      .favicon = @"favicon2",
+      .record_identifier = @"recordIdentifier2",
+      .sync_id = TestDataFromString("syncId2"),
+      .username = @"username2",
+      .user_display_name = @"userDisplayName2",
+      .user_id = TestDataFromString("userId2"),
+      .credential_id = TestDataFromString("credentialId2"),
+      .rp_id = @"rpId2",
+      .encrypted = TestDataFromString("encrypted2"),
+  });
 }
 
 ArchivableCredential* TestPasswordCredential() {
@@ -311,7 +280,8 @@ TEST_F(CredentialListMediatorTest, FetchAllCredentialsPasskeysOnly) {
 // Tests that fetching all credentials filters out hidden passkeys.
 TEST_F(CredentialListMediatorTest, FetchAllCredentialsWithHiddenPasskeys) {
   ArchivableCredential* passkey_credential = TestPasskeyCredential();
-  ArchivableCredential* hidden_passkey = TestPasskeyCredential(/*hidden=*/YES);
+  ArchivableCredential* hidden_passkey =
+      TestPasskeyCredential(TestPasskeyCredentialOverrides{.hidden = YES});
 
   NSMutableArray<id<Credential>>* credentials = [NSMutableArray array];
   [credentials addObject:passkey_credential];

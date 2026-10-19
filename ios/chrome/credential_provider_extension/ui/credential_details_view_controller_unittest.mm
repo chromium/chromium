@@ -5,51 +5,13 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller.h"
 
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/archivable_credential_test_util.h"
 #import "ios/chrome/credential_provider_extension/generated_localized_strings.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller+Testing.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
 namespace {
-
-// Time in seconds that represent January 1st 2024.
-constexpr int64_t kJan1st2024 = 1704085200;
-
-// Converts the given `seconds` to milliseconds.
-int64_t SecondsToMilliseconds(int64_t seconds) {
-  return seconds * 1000;
-}
-
-// Converts the given `seconds` to microseconds.
-int64_t SecondsToMicroseconds(int64_t seconds) {
-  return seconds * 1000000;
-}
-
-// Creates a data object from the given `str`.
-NSData* StringToData(std::string str) {
-  return [NSData dataWithBytes:str.data() length:str.length()];
-}
-
-// Creates a test passkey.
-ArchivableCredential* TestPasskeyCredential() {
-  return [[ArchivableCredential alloc]
-       initWithFavicon:@"favicon"
-                  gaia:nil
-      recordIdentifier:@"recordIdentifier"
-                syncId:StringToData("syncId")
-              username:@"username"
-       userDisplayName:@"userDisplayName"
-                userId:StringToData("userId")
-          credentialId:StringToData("credentialId")
-                  rpId:@"rpId"
-            privateKey:StringToData("privateKey")
-             encrypted:StringToData("encrypted")
-          creationTime:SecondsToMilliseconds(kJan1st2024)
-          lastUsedTime:SecondsToMicroseconds(kJan1st2024)
-                hidden:NO
-            hiddenTime:SecondsToMilliseconds(kJan1st2024)
-          editedByUser:NO];
-}
 
 // Checks that de text and detail text of the given `cell` are as expected.
 void CheckCell(UITableViewCell* cell,
@@ -120,7 +82,8 @@ TEST_F(CredentialDetailsViewControllerTest, TestPasskeyPresentation) {
       GetTableViewCell(0, 3), CredentialProviderDetailsShowCreationDateString(),
       [CredentialProviderDetailsCreationDateString()
           stringByReplacingOccurrencesOfString:@"$1"
-                                    withString:FormatTimestamp(kJan1st2024)]);
+                                    withString:FormatTimestamp(
+                                                   kDefaultLastUsedTime)]);
 }
 
 // Tests that converting the passkey creation time to a formatted date gives the
@@ -130,5 +93,5 @@ TEST_F(CredentialDetailsViewControllerTest,
   id<Credential> credential = TestPasskeyCredential();
   EXPECT_NSEQ([controller()
                   formattedDateForPasskeyCreationDate:credential.creationDate],
-              FormatTimestamp(kJan1st2024));
+              FormatTimestamp(kDefaultLastUsedTime));
 }

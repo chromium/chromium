@@ -32,6 +32,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
+#import "ios/chrome/common/credential_provider/archivable_credential_test_util.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/multi_store_credential_store.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
@@ -147,33 +148,19 @@ constexpr NSInteger kUnsupportedAlgorithm = 0;
 constexpr size_t kWindowSize = 500;
 
 NSString* const kTestUserDefaultsKey = @"UserDefaultsCredentialStoreTestKey";
-NSString* const kTestRPId = @"example.com";
 NSString* const kTestServiceIdentifier = @"https://example.com";
-NSString* const kTestUsername = @"user";
 NSString* const kTestNewUsername = @"newUser";
 NSString* const kTestPassword = @"password123";
-NSString* const kTestRecordIdentifier = @"recordIdentifier";
 NSString* const kTestPasswordRecordIdentifier = @"passwordRecordIdentifier";
-NSString* const kTestFavicon = @"favicon";
-NSString* const kTestUserDisplayName = @"userDisplayName";
-NSString* const kTestGaia = @"gaia123";
 NSString* const kTestFallbackGaia = @"fallbackGaia456";
 NSString* const kTestEmail = @"user@example.com";
 NSString* const kTestManagedUserId = @"managedUser123";
 NSString* const kBrowserAssistedLoginHistogram =
     @"PasswordManager.BrowserAssistedLogin.Type";
 
-constexpr std::string_view kTestUserId = "userId";
-constexpr std::string_view kTestCredentialId = "credentialId";
-constexpr std::string_view kTestSyncId = "syncId";
-constexpr std::string_view kTestPrivateKey = "privateKey";
 constexpr std::string_view kTestSignature = "sig";
 constexpr std::string_view kTestClientDataHash = "hash";
 constexpr std::string_view kTestAuthenticatorData = "auth";
-
-NSData* StringToData(std::string_view str) {
-  return [NSData dataWithBytes:str.data() length:str.size()];
-}
 
 NSURL* TestStorageFileURL() {
   return [[NSURL fileURLWithPath:NSTemporaryDirectory()]
@@ -186,58 +173,38 @@ webauthn::SharedKey GetTestTrustedVaultKey() {
                               1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4, 1, 2, 3, 4};
 }
 
-// Creates a passkey `ArchivableCredential` with static test fields.
-ArchivableCredential* TestPasskeyCredential(BOOL edited_by_user = NO) {
-  return [[ArchivableCredential alloc]
-       initWithFavicon:kTestFavicon
-                  gaia:kTestGaia
-      recordIdentifier:kTestRecordIdentifier
-                syncId:StringToData(kTestSyncId)
-              username:kTestUsername
-       userDisplayName:kTestUserDisplayName
-                userId:StringToData(kTestUserId)
-          credentialId:StringToData(kTestCredentialId)
-                  rpId:kTestRPId
-            privateKey:StringToData(kTestPrivateKey)
-             encrypted:nil
-          creationTime:0
-          lastUsedTime:0
-                hidden:NO
-            hiddenTime:0
-          editedByUser:edited_by_user];
-}
-
 // Creates a passkey `ArchivableCredential` with valid encrypted secrets using
 // `GetTestTrustedVaultKey()` so assertion signing succeeds.
 ArchivableCredential* TestEncryptedPasskeyCredential() {
-  std::vector<uint8_t> user_id(kTestUserId.begin(), kTestUserId.end());
+  std::vector<uint8_t> user_id(kDefaultUserId.begin(), kDefaultUserId.end());
   webauthn::PasskeyModel::UserEntity user_entity(
-      user_id, SysNSStringToUTF8(kTestUsername),
-      SysNSStringToUTF8(kTestUserDisplayName));
+      user_id, SysNSStringToUTF8(kDefaultUsername),
+      SysNSStringToUTF8(kDefaultUserDisplayName));
   auto generated_passkey =
       webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
-          SysNSStringToUTF8(kTestRPId), user_entity, GetTestTrustedVaultKey(),
+          SysNSStringToUTF8(kDefaultRpId), user_entity,
+          GetTestTrustedVaultKey(),
           /*trusted_vault_key_version=*/0,
           /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
-  return [[ArchivableCredential alloc] initWithFavicon:kTestFavicon
-                                                  gaia:kTestGaia
+  return [[ArchivableCredential alloc] initWithFavicon:kDefaultFavicon
+                                                  gaia:kDefaultGaia
                                                passkey:generated_passkey.first];
 }
 
 // Creates a password `ArchivableCredential` with static test fields and a
 // recent `lastUsedTime`.
-ArchivableCredential* TestPasswordCredential(NSString* gaia = kTestGaia) {
+ArchivableCredential* TestPasswordCredential(NSString* gaia = kDefaultGaia) {
   int64_t recent_time = Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
   return [[ArchivableCredential alloc]
-               initWithFavicon:kTestFavicon
+               initWithFavicon:kDefaultFavicon
                           gaia:gaia
                       password:kTestPassword
                           rank:1
               recordIdentifier:kTestPasswordRecordIdentifier
              serviceIdentifier:kTestServiceIdentifier
-                   serviceName:kTestRPId
-      registryControlledDomain:kTestRPId
-                      username:kTestUsername
+                   serviceName:kDefaultRpId
+      registryControlledDomain:kDefaultRpId
+                      username:kDefaultUsername
                           note:nil
                   lastUsedTime:recent_time];
 }
@@ -259,7 +226,7 @@ ASPasskeyCredentialRequest* CreatePasskeyRequest(
       [[ASPasskeyCredentialIdentity alloc] cr_initWithCredential:credential];
   return [ASPasskeyCredentialRequest
       requestWithCredentialIdentity:identity
-                     clientDataHash:StringToData(kTestClientDataHash)
+                     clientDataHash:TestDataFromString(kTestClientDataHash)
          userVerificationPreference:uv_preference
                 supportedAlgorithms:algorithms];
 }
@@ -270,7 +237,7 @@ void ConfigureEligiblePasskeyCreationDefaults(
     BOOL automatic_passkey_upgrade_enabled = YES,
     BOOL multi_profile_enabled = NO) {
   NSUserDefaults* user_defaults = GetGroupUserDefaults();
-  [user_defaults setObject:kTestGaia
+  [user_defaults setObject:kDefaultGaia
                     forKey:AppGroupUserDefaultsCredentialProviderUserID()];
   [user_defaults setObject:kTestEmail
                     forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
@@ -538,9 +505,10 @@ TEST_F(CredentialProviderViewControllerTest, MarksUnknownCredentialHidden) {
   EXPECT_EQ(credential_store_.credentials[0].hiddenTime, 0);
 
   [controller_
-      reportUnknownPublicKeyCredentialForRelyingParty:kTestRPId
-                                         credentialID:StringToData(
-                                                          kTestCredentialId)];
+      reportUnknownPublicKeyCredentialForRelyingParty:kDefaultRpId
+                                         credentialID:
+                                             TestDataFromString(
+                                                 kDefaultCredentialId)];
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_TRUE(credential_store_.credentials[0].hidden);
   EXPECT_EQ(credential_store_.credentials[0].hiddenTime,
@@ -551,18 +519,19 @@ TEST_F(CredentialProviderViewControllerTest, MarksUnknownCredentialHidden) {
 // previously edited by the user.
 TEST_F(CredentialProviderViewControllerTest,
        IgnoresUsernameUpdateForCredentialEditedByUser) {
-  CreateStoreWithCredentials(
-      @[ TestPasskeyCredential(/*edited_by_user=*/YES) ]);
+  CreateStoreWithCredentials(@[ TestPasskeyCredential(
+      TestPasskeyCredentialOverrides{.edited_by_user = YES}) ]);
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username, kTestUsername);
+  EXPECT_NSEQ(credential_store_.credentials[0].username, kDefaultUsername);
 
   [controller_
-      reportPublicKeyCredentialUpdateForRelyingParty:kTestRPId
-                                          userHandle:StringToData(kTestUserId)
+      reportPublicKeyCredentialUpdateForRelyingParty:kDefaultRpId
+                                          userHandle:TestDataFromString(
+                                                         kDefaultUserId)
                                              newName:kTestNewUsername];
   ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username, kTestUsername);
+  EXPECT_NSEQ(credential_store_.credentials[0].username, kDefaultUsername);
 }
 
 // Test that reporting a username update modifies the credential's `username`
@@ -571,11 +540,12 @@ TEST_F(CredentialProviderViewControllerTest, UpdatesCredentialUsername) {
   CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username, kTestUsername);
+  EXPECT_NSEQ(credential_store_.credentials[0].username, kDefaultUsername);
 
   [controller_
-      reportPublicKeyCredentialUpdateForRelyingParty:kTestRPId
-                                          userHandle:StringToData(kTestUserId)
+      reportPublicKeyCredentialUpdateForRelyingParty:kDefaultRpId
+                                          userHandle:TestDataFromString(
+                                                         kDefaultUserId)
                                              newName:kTestNewUsername];
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_NSEQ(credential_store_.credentials[0].username, kTestNewUsername);
@@ -591,9 +561,9 @@ TEST_F(CredentialProviderViewControllerTest,
   EXPECT_FALSE(credential_store_.credentials[0].hidden);
 
   [controller_
-      reportAllAcceptedPublicKeyCredentialsForRelyingParty:kTestRPId
-                                                userHandle:StringToData(
-                                                               kTestUserId)
+      reportAllAcceptedPublicKeyCredentialsForRelyingParty:kDefaultRpId
+                                                userHandle:TestDataFromString(
+                                                               kDefaultUserId)
                                      acceptedCredentialIDs:@[]];
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_TRUE(credential_store_.credentials[0].hidden);
@@ -611,19 +581,20 @@ TEST_F(CredentialProviderViewControllerTest, HiddenCredentialRestored) {
 
   // Mark the credential as unknown, it should be hidden.
   [controller_
-      reportUnknownPublicKeyCredentialForRelyingParty:kTestRPId
-                                         credentialID:StringToData(
-                                                          kTestCredentialId)];
+      reportUnknownPublicKeyCredentialForRelyingParty:kDefaultRpId
+                                         credentialID:
+                                             TestDataFromString(
+                                                 kDefaultCredentialId)];
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_TRUE(credential_store_.credentials[0].hidden);
 
   // After restoring, it shouldn't be hidden anymore.
   [controller_
-      reportAllAcceptedPublicKeyCredentialsForRelyingParty:kTestRPId
-                                                userHandle:StringToData(
-                                                               kTestUserId)
+      reportAllAcceptedPublicKeyCredentialsForRelyingParty:kDefaultRpId
+                                                userHandle:TestDataFromString(
+                                                               kDefaultUserId)
                                      acceptedCredentialIDs:@[
-                                       StringToData(kTestCredentialId)
+                                       TestDataFromString(kDefaultCredentialId)
                                      ]];
   ASSERT_EQ(credential_store_.credentials.count, 1u);
   EXPECT_FALSE(credential_store_.credentials[0].hidden);
@@ -640,12 +611,12 @@ TEST_F(CredentialProviderViewControllerTest,
   EXPECT_EQ([user_defaults integerForKey:key], 0);
 
   ASPasskeyAssertionCredential* credential = [ASPasskeyAssertionCredential
-      credentialWithUserHandle:StringToData(kTestUserId)
-                  relyingParty:kTestRPId
-                     signature:StringToData(kTestSignature)
-                clientDataHash:StringToData(kTestClientDataHash)
-             authenticatorData:StringToData(kTestAuthenticatorData)
-                  credentialID:StringToData(kTestCredentialId)];
+      credentialWithUserHandle:TestDataFromString(kDefaultUserId)
+                  relyingParty:kDefaultRpId
+                     signature:TestDataFromString(kTestSignature)
+                clientDataHash:TestDataFromString(kTestClientDataHash)
+             authenticatorData:TestDataFromString(kTestAuthenticatorData)
+                  credentialID:TestDataFromString(kDefaultCredentialId)];
   [controller_ userSelectedPasskey:credential];
 
   EXPECT_EQ([user_defaults integerForKey:key], 1);
@@ -675,7 +646,7 @@ TEST_F(CredentialProviderViewControllerTest,
 TEST_F(CredentialProviderViewControllerTest,
        UserSelectedPasswordCompletesRequest) {
   ASPasswordCredential* credential =
-      [ASPasswordCredential credentialWithUser:kTestUsername
+      [ASPasswordCredential credentialWithUser:kDefaultUsername
                                       password:kTestPassword];
   [controller_ userSelectedPassword:credential];
 
@@ -699,7 +670,7 @@ TEST_F(CredentialProviderViewControllerTest,
   ASSERT_TRUE(completed_assertion_future_.Wait());
   ASPasskeyAssertionCredential* assertion = completed_assertion_future_.Get();
   ASSERT_TRUE(assertion);
-  EXPECT_NSEQ(assertion.relyingParty, kTestRPId);
+  EXPECT_NSEQ(assertion.relyingParty, kDefaultRpId);
   EXPECT_NSEQ(assertion.credentialID, passkey.credentialId);
 }
 
@@ -817,15 +788,15 @@ TEST_F(CredentialProviderViewControllerTest,
 
   ASCredentialServiceIdentifier* identifier =
       [[ASCredentialServiceIdentifier alloc]
-          initWithIdentifier:kTestRPId
+          initWithIdentifier:kDefaultRpId
                         type:ASCredentialServiceIdentifierTypeDomain];
   id mock_params = OCMClassMock([ASPasskeyCredentialRequestParameters class]);
   OCMStub([mock_params clientDataHash])
-      .andReturn(StringToData(kTestClientDataHash));
+      .andReturn(TestDataFromString(kTestClientDataHash));
   OCMStub([mock_params userVerificationPreference])
       .andReturn(
           ASAuthorizationPublicKeyCredentialUserVerificationPreferenceDiscouraged);
-  OCMStub([mock_params relyingPartyIdentifier]).andReturn(kTestRPId);
+  OCMStub([mock_params relyingPartyIdentifier]).andReturn(kDefaultRpId);
   OCMStub([mock_params allowedCredentials]).andReturn(@[]);
 
   [controller_ prepareCredentialListForServiceIdentifiers:@[ identifier ]
@@ -976,7 +947,7 @@ TEST_F(CredentialProviderViewControllerTest,
   ASSERT_TRUE(completed_password_future_.Wait());
   ASPasswordCredential* completed = completed_password_future_.Get();
   ASSERT_TRUE(completed);
-  EXPECT_NSEQ(completed.user, kTestUsername);
+  EXPECT_NSEQ(completed.user, kDefaultUsername);
   EXPECT_NSEQ(completed.password, kTestPassword);
   EXPECT_EQ(
       [GetGroupUserDefaults()
@@ -1161,7 +1132,7 @@ TEST_F(CredentialProviderViewControllerTest,
   ASSERT_TRUE(completed_password_future_.Wait());
   ASPasswordCredential* completed = completed_password_future_.Get();
   ASSERT_TRUE(completed);
-  EXPECT_NSEQ(completed.user, kTestUsername);
+  EXPECT_NSEQ(completed.user, kDefaultUsername);
   EXPECT_NSEQ(completed.password, kTestPassword);
 }
 
@@ -1607,7 +1578,7 @@ TEST_F(
     PrepareInterfaceForExtensionConfigurationWithBootstrappedPasskeysStartsConsent) {
   AttachControllerToWindow();
   [GetGroupUserDefaults()
-      setObject:kTestGaia
+      setObject:kDefaultGaia
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
   CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
 
@@ -1626,7 +1597,7 @@ TEST_F(
     PrepareInterfaceForExtensionConfigurationDismissesBootstrappingUIAndCompletes) {
   AttachControllerToWindow();
   [GetGroupUserDefaults()
-      setObject:kTestGaia
+      setObject:kDefaultGaia
          forKey:AppGroupUserDefaultsCredentialProviderUserID()];
   [GetGroupUserDefaults()
       setObject:kTestEmail

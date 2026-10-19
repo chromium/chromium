@@ -198,6 +198,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:mock_credential_store",
     "//ios/chrome/common/credential_provider:net_util",
+    "//ios/chrome/common/credential_provider:test_support",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",

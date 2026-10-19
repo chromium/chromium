@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
+#import "ios/chrome/common/credential_provider/archivable_credential_test_util.h"
 #import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
@@ -18,12 +19,6 @@ namespace {
 
 using base::test::ios::kWaitForFileOperationTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-
-constexpr int64_t kJan1st2024 = 1704085200;
-
-NSData* StringToData(std::string str) {
-  return [NSData dataWithBytes:str.data() length:str.length()];
-}
 
 ArchivableCredential* TestPasswordCredential() {
   return [[ArchivableCredential alloc] initWithFavicon:nil
@@ -37,26 +32,6 @@ ArchivableCredential* TestPasswordCredential() {
                                               username:@"username_value"
                                                   note:@"note"
                                           lastUsedTime:0];
-}
-
-ArchivableCredential* TestPasskeyCredential() {
-  return
-      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
-                                               gaia:nil
-                                   recordIdentifier:@"recordIdentifier"
-                                             syncId:StringToData("syncId")
-                                           username:@"username"
-                                    userDisplayName:@"userDisplayName"
-                                             userId:StringToData("userId")
-                                       credentialId:StringToData("credentialId")
-                                               rpId:@"rpId"
-                                         privateKey:StringToData("privateKey")
-                                          encrypted:StringToData("encrypted")
-                                       creationTime:kJan1st2024
-                                       lastUsedTime:kJan1st2024
-                                             hidden:NO
-                                         hiddenTime:kJan1st2024
-                                       editedByUser:NO];
 }
 
 }  // namespace

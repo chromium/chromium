@@ -129,6 +129,7 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/webauthn/model",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
+      "//ios/chrome/common/credential_provider:test_support",
       "//ios/chrome/common/credential_provider:ui",
       "//ios/chrome/test:test_support",
       "//ios/web/public/test",
