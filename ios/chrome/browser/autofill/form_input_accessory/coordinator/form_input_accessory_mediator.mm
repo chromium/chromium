@@ -296,17 +296,9 @@ bool IsStateless() {
         _webStateObserverBridge =
             std::make_unique<web::WebStateObserverBridge>(self);
         webState->AddObserver(_webStateObserverBridge.get());
-
-        autofill::AutofillClientIOS* client =
-            autofill::AutofillClientIOS::FromWebState(webState);
-        consumer.atMemoryButtonHidden =
-            !autofill::IsAutofillAtMemorySearchUIEnabled(client);
-      } else {
-        consumer.atMemoryButtonHidden = YES;
       }
-    } else {
-      consumer.atMemoryButtonHidden = YES;
     }
+    [self updateAtMemoryButtonVisibility];
     _formNavigationHandler = [[FormInputAccessoryViewHandler alloc] init];
     _formNavigationHandler.webState = _webState;
 
@@ -688,6 +680,7 @@ bool IsStateless() {
     return;
   }
   [self reset];
+  [self updateAtMemoryButtonVisibility];
 }
 
 - (void)webStateDestroyed:(web::WebState*)webState {
@@ -792,17 +785,24 @@ bool IsStateless() {
       self.provider = tabHelper->GetAccessoryViewProvider();
     }
     _formNavigationHandler.webState = webState;
-
-    autofill::AutofillClientIOS* client =
-        autofill::AutofillClientIOS::FromWebState(webState);
-    self.consumer.atMemoryButtonHidden =
-        !autofill::IsAutofillAtMemorySearchUIEnabled(client);
   } else {
     self.webState = nullptr;
     self.provider = nil;
-    self.consumer.atMemoryButtonHidden = YES;
     self.consumer.contentEditable = NO;
   }
+  [self updateAtMemoryButtonVisibility];
+}
+
+// Updates the consumer's AtMemory button visibility for `_webState`.
+- (void)updateAtMemoryButtonVisibility {
+  if (!_webState) {
+    self.consumer.atMemoryButtonHidden = YES;
+    return;
+  }
+  autofill::AutofillClientIOS* client =
+      autofill::AutofillClientIOS::FromWebState(_webState);
+  self.consumer.atMemoryButtonHidden =
+      !autofill::IsAutofillAtMemorySearchUIEnabled(client);
 }
 
 // Resets the current provider, the consumer view and the navigation handler. As
@@ -827,6 +827,8 @@ bool IsStateless() {
                           webState:(web::WebState*)webState {
   DCHECK_EQ(webState, self.webState);
   DCHECK(_hasLastSeenParams);
+
+  [self updateAtMemoryButtonVisibility];
 
   _optionalUpdateScheduler->RestartCooldownTimer();
   _optionalUpdateScheduler->CancelOptionalUpdate();

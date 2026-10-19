@@ -890,6 +890,36 @@ TEST_F(FormInputAccessoryMediatorTest,
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
+// Tests that focusing a form field updates `atMemoryButtonHidden` on the active
+// `WebState` when Gemini consent changes without switching tabs.
+TEST_F(FormInputAccessoryMediatorTest,
+       FormActivityUpdatesAtMemoryButtonVisibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {autofill::features::kAutofillAtMemory,
+       autofill::features::debug::kAtMemorySkipEnablementChecks},
+      {});
+
+  autofill::TestAutofillClientIOS autofill_client(
+      web_state_list_.GetActiveWebState(), nil);
+  autofill_client.GetPrefs()->registry()->RegisterBooleanPref(
+      prefs::kIOSBwgConsent, false);
+
+  FormActivityParams focus_params =
+      CreateFormActivityParams(FormActivityParams::FieldType::kText);
+
+  OCMExpect([consumer_ setAtMemoryButtonHidden:YES]);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        focus_params);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  gemini::UpdateUserConsentPrefs(true, autofill_client.GetPrefs());
+  OCMExpect([consumer_ setAtMemoryButtonHidden:NO]);
+  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
+                                                        focus_params);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
 // Tests that lastFocusedFieldGlobalId returns nullopt when no field is focused.
 TEST_F(FormInputAccessoryMediatorTest,
        LastFocusedFieldGlobalIdEmptyWhenNoFieldFocused) {

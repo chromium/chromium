@@ -938,4 +938,19 @@ TEST_F(ChromeAutofillClientIOSTest,
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
+// Tests that `GetAtMemoryManager` creates an `AtMemoryManager` when AtMemory
+// Search UI is enabled and returns `nullptr` when disabled.
+TEST_F(ChromeAutofillClientIOSTest, GetAtMemoryManager) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAtMemory};
+
+  EXPECT_EQ(client().GetAtMemoryManager(), nullptr);
+
+  gemini::UpdateUserConsentPrefs(true, profile()->GetPrefs());
+  AtMemoryManager* manager = client().GetAtMemoryManager();
+  EXPECT_EQ(client().GetAtMemoryManager(), manager);
+
+  gemini::UpdateUserConsentPrefs(false, profile()->GetPrefs());
+  EXPECT_EQ(client().GetAtMemoryManager(), nullptr);
+}
+
 }  // namespace autofill
