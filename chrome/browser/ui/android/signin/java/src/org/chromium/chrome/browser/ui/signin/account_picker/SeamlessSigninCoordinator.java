@@ -136,6 +136,8 @@ public class SeamlessSigninCoordinator implements SigninBottomSheetUiCoordinator
                             mUseDialog
                                     ? PresentationMode.MODAL_DIALOG
                                     : PresentationMode.BOTTOM_SHEET);
+            // TODO(b/553341908): Show the new management notice when ANDROID_NEW_MANAGEMENT_NOTICE
+            // is enabled.
             PropertyModelChangeProcessor.create(
                     mAccountPickerBottomSheetMediator.getModel(),
                     mView,

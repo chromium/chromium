@@ -85,6 +85,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -131,6 +132,16 @@ import java.util.concurrent.atomic.AtomicReference;
 public class AccountPickerBottomSheetTest {
 
     private static final String DOMAIN1 = "Domain1";
+
+    // Views of the new management notice, defined by the enterprise_signals_disclaimer module.
+    private static final @IdRes int DISCLAIMER_TITLE_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id.disclaimer_title;
+    private static final @IdRes int DISCLAIMER_ACCEPT_BUTTON_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
+                    .disclaimer_accept_button;
+    private static final @IdRes int DISCLAIMER_CANCEL_BUTTON_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
+                    .disclaimer_cancel_button;
 
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
@@ -1355,6 +1366,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testSignInDefaultAccountOnCollapsedSheet() {
         mIsAccountManaged = true;
         var accountConsistencyHistogram =
@@ -1388,6 +1400,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testSignInDefaultAccountOnCollapsedSheet_GeneralError() {
         mIsAccountManaged = true;
         var accountConsistencyHistogram =
@@ -1462,6 +1475,7 @@ public class AccountPickerBottomSheetTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/562983248")
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testSigninWithAddedAccount_removeAccountAfterManagementNotice() {
         mIsAccountManaged = true;
         buildAndShowCollapsedThenExpandedBottomSheet();
@@ -1477,6 +1491,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testBackButtonOnManagementNoticeReturnsToCollapsedSheet() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -1501,6 +1516,7 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testCancelButtonOnManagementNoticeReturnsToCollapsedSheet() {
         var accountConsistencyHistogram =
                 HistogramWatcher.newBuilder()
@@ -1521,6 +1537,113 @@ public class AccountPickerBottomSheetTest {
 
         waitForBottomSheetView(withId(R.id.account_picker_state_collapsed));
         accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_acceptStartsSignin() {
+        mIsAccountManaged = true;
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_ACCEPTED)
+                        .build();
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        checkNewManagementNoticeIsDisplayed(bottomSheetView);
+
+        onView(withId(DISCLAIMER_ACCEPT_BUTTON_ID)).perform(click());
+
+        waitForBottomSheetView(withId(R.id.account_picker_signin_spinner_view));
+        assertSignInProceeded(bottomSheetView);
+        verify(mSigninManagerMock).setUserAcceptedAccountManagement(true);
+        verify(mSigninManagerMock).signin(eq(TestAccounts.ACCOUNT1), eq(mSigninAccessPoint), any());
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_cancelReturnsToCollapsedSheet() {
+        mIsAccountManaged = true;
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN)
+                        .build();
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        checkNewManagementNoticeIsDisplayed(bottomSheetView);
+
+        onView(withId(DISCLAIMER_CANCEL_BUTTON_ID)).perform(click());
+
+        waitForBottomSheetView(withId(R.id.account_picker_state_collapsed));
+        verify(mSigninManagerMock, never()).setUserAcceptedAccountManagement(true);
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_backPressReturnsToCollapsedSheet() {
+        mIsAccountManaged = true;
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN)
+                        .build();
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        checkNewManagementNoticeIsDisplayed(bottomSheetView);
+
+        Espresso.pressBack();
+
+        waitForBottomSheetView(withId(R.id.account_picker_state_collapsed));
+        verify(mSigninManagerMock, never()).setUserAcceptedAccountManagement(true);
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_removeSelectedAccountThenAccept() {
+        mIsAccountManaged = true;
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        checkNewManagementNoticeIsDisplayed(bottomSheetView);
+
+        // Remove the selected account while the disclaimer is shown. Another account remains on
+        // the device, so the sheet doesn't switch to the zero-account state.
+        mAccountManagerTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        onView(withId(DISCLAIMER_ACCEPT_BUTTON_ID)).perform(click());
+
+        waitForBottomSheetView(withId(R.id.account_picker_general_error_title));
+        verify(mSigninManagerMock, never()).setUserAcceptedAccountManagement(true);
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+    }
+
+    private void checkNewManagementNoticeIsDisplayed(View bottomSheetView) {
+        waitForBottomSheetView(withId(DISCLAIMER_TITLE_ID));
+        onView(withId(DISCLAIMER_ACCEPT_BUTTON_ID)).check(matches(isDisplayed()));
+        onView(withId(DISCLAIMER_CANCEL_BUTTON_ID)).check(matches(isDisplayed()));
+        // The legacy notice is detached from the view hierarchy.
+        onView(withId(R.id.account_picker_confirm_management_description)).check(doesNotExist());
     }
 
     @Test

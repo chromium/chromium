@@ -45,6 +45,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.function.IntSupplier;
 
 /**
  * This class is the AccountPickerBottomsheet view for the web sign-in flow.
@@ -84,6 +85,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
      * The title id for each screen of the bottom sheet's view flipper, the position of each id
      * corresponds to the value of {@link ViewState}. It is used to set focus on title when the view
      * flipper moves to a new screen.
+     *
+     * <p>When a management notice is hosted, its own title is used for {@link
+     * ViewState#CONFIRM_MANAGEMENT} instead, see {@link #setManagementNoticeView}.
      */
     private static final @IdRes int[] sTitleIds =
             new int[] {
@@ -112,8 +116,21 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final View mSelectedAccountView;
     private final ButtonCompat mBottomSheetDismissButton;
     private final Space mDismissButtonGoneMarginSpace;
+
+    /**
+     * The legacy confirm management screen. Held as a field because it is detached from {@link
+     * #mViewFlipper} when the new management notice takes its place, see {@link
+     * #setManagementNoticeView}.
+     *
+     * <p>TODO(b/553341908): Remove the legacy screen once the new management notice is launched.
+     */
+    private final View mLegacyConfirmManagementView;
+
     private final ButtonCompat mConfirmManagementCancelButton;
     private @Nullable @ViewState Integer mCurrentViewState;
+    private @Nullable View mManagementNoticeView;
+    private @Nullable View mManagementNoticeTitleView;
+    private @Nullable IntSupplier mManagementNoticeScrollOffsetSupplier;
 
     /**
      * @param activity The activity that hosts this view. Used for inflating views.
@@ -166,9 +183,9 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_dismiss_button_gone_margin_space);
 
+        mLegacyConfirmManagementView = mViewFlipper.getChildAt(ViewState.CONFIRM_MANAGEMENT);
         mConfirmManagementCancelButton =
-                setUpConfirmManagementButtonBar(
-                        mViewFlipper.getChildAt(ViewState.CONFIRM_MANAGEMENT), presentationMode);
+                setUpConfirmManagementButtonBar(mLegacyConfirmManagementView, presentationMode);
 
         setUpContinueButton(
                 mViewFlipper.getChildAt(ViewState.NO_ACCOUNTS),
@@ -268,7 +285,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
             ViewState.COLLAPSED_ACCOUNT_LIST,
             ViewState.SIGNIN_GENERAL_ERROR,
             ViewState.SIGNIN_AUTH_ERROR,
-            ViewState.CONFIRM_MANAGEMENT,
         };
         for (int viewState : viewStates) {
             ButtonCompat continueButton =
@@ -278,6 +294,13 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                                     .findViewById(R.id.account_picker_continue_as_button));
             continueButton.setOnClickListener(listener);
         }
+        // The legacy confirm management screen may be detached from the view flipper, see
+        // mLegacyConfirmManagementView.
+        ButtonCompat confirmManagementContinueButton =
+                assertNonNull(
+                        mLegacyConfirmManagementView.findViewById(
+                                R.id.account_picker_continue_as_button));
+        confirmManagementContinueButton.setOnClickListener(listener);
     }
 
     /** The button to dismiss the account picker. */
@@ -314,8 +337,31 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
             mViewFlipper.getChildAt(mCurrentViewState).setVisibility(View.INVISIBLE);
         }
         mCurrentViewState = state;
-        View titleView = mViewFlipper.getChildAt(state).findViewById(sTitleIds[state]);
+        View titleView =
+                state == ViewState.CONFIRM_MANAGEMENT && mManagementNoticeTitleView != null
+                        ? mManagementNoticeTitleView
+                        : mViewFlipper.getChildAt(state).findViewById(sTitleIds[state]);
         titleView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+    }
+
+    /**
+     * Replaces the {@link ViewState#CONFIRM_MANAGEMENT} screen with the given management notice.
+     * The notice owns its scrolling and spacing, so it is hosted as-is, without the padding applied
+     * to the other screens.
+     *
+     * @param view The root view of the management notice.
+     * @param titleView The title of the management notice, which receives accessibility focus when
+     *     the screen is displayed.
+     * @param scrollOffsetSupplier Supplies the vertical scroll offset of the management notice,
+     *     reported to the bottom sheet while the screen is displayed.
+     */
+    void setManagementNoticeView(View view, View titleView, IntSupplier scrollOffsetSupplier) {
+        // Detaches either the legacy confirm management screen or a previously hosted notice.
+        mViewFlipper.removeViewAt(ViewState.CONFIRM_MANAGEMENT);
+        mViewFlipper.addView(view, ViewState.CONFIRM_MANAGEMENT);
+        mManagementNoticeView = view;
+        mManagementNoticeTitleView = titleView;
+        mManagementNoticeScrollOffsetSupplier = scrollOffsetSupplier;
     }
 
     /**
@@ -334,8 +380,11 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     void updateSelectedDomain(String domain) {
+        // The legacy confirm management screen may be detached from the view flipper, see
+        // mLegacyConfirmManagementView.
         TextViewWithLeading confirmManagementDescription =
-                mViewFlipper.findViewById(R.id.account_picker_confirm_management_description);
+                mLegacyConfirmManagementView.findViewById(
+                        R.id.account_picker_confirm_management_description);
         confirmManagementDescription.setText(
                 mActivity.getString(R.string.managed_signin_with_user_policy_subtitle, domain));
     }
@@ -385,6 +434,12 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     public int getVerticalScrollOffset() {
         int offset = 0;
         View displayedView = mViewFlipper.getCurrentView();
+        // Root of the new management notice view is not a scroll view so the scroll offset must be
+        // passed in a supplier.
+        if (displayedView == mManagementNoticeView
+                && mManagementNoticeScrollOffsetSupplier != null) {
+            return mManagementNoticeScrollOffsetSupplier.getAsInt();
+        }
         if (displayedView instanceof ScrollView scrollView) {
             offset += scrollView.getScrollY();
         }

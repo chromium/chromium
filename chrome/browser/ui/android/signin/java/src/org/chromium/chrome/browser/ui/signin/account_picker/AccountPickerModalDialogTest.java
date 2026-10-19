@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.PositionAssertions.isCompletelyLeftOf;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -17,11 +19,13 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
+import androidx.annotation.IdRes;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
@@ -69,6 +73,15 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @Batch(Batch.PER_CLASS)
 public class AccountPickerModalDialogTest {
+    // Views of the new management notice, defined by the enterprise_signals_disclaimer module.
+    private static final @IdRes int DISCLAIMER_TITLE_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id.disclaimer_title;
+    private static final @IdRes int DISCLAIMER_ACCEPT_BUTTON_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
+                    .disclaimer_accept_button;
+    private static final @IdRes int DISCLAIMER_CANCEL_BUTTON_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
+                    .disclaimer_cancel_button;
 
     @Rule
     public final AutoResetCtaTransitTestRule mActivityTestRule =
@@ -279,6 +292,7 @@ public class AccountPickerModalDialogTest {
 
     @Test
     @MediumTest
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testDialog_showsConfirmManagementForManagedAccount() {
         when(mSigninManagerMock.extractDomainName(any())).thenReturn("managed.com");
         doCallback(/* index= */ 1, (Callback<Boolean> callback) -> callback.onResult(true))
@@ -316,5 +330,46 @@ public class AccountPickerModalDialogTest {
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testDialog_showsNewManagementNoticeForManagedAccount() {
+        doCallback(/* index= */ 1, (Callback<Boolean> callback) -> callback.onResult(true))
+                .when(mSigninManagerMock)
+                .isAccountManaged(any(), any());
+        buildAndShowDialog();
+
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
+                .inRoot(isDialog())
+                .perform(click());
+
+        onView(withId(DISCLAIMER_TITLE_ID)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(DISCLAIMER_ACCEPT_BUTTON_ID))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // The legacy notice is detached from the view hierarchy.
+        onView(withId(R.id.account_picker_confirm_management_title))
+                .inRoot(isDialog())
+                .check(doesNotExist());
+        // Cancel button is displayed side-by-side with the accept button.
+        onView(withId(DISCLAIMER_CANCEL_BUTTON_ID))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .check(isCompletelyLeftOf(withId(DISCLAIMER_ACCEPT_BUTTON_ID)));
+
+        // Tapping cancel returns to the collapsed account picker
+        onView(withId(DISCLAIMER_CANCEL_BUTTON_ID)).inRoot(isDialog()).perform(click());
+        onView(
+                        allOf(
+                                withText(TestAccounts.ACCOUNT1.getFullName()),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
     }
 }

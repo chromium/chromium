@@ -110,6 +110,11 @@ class EnterpriseSignalsDisclaimerView extends FrameLayout {
         container.setLayoutParams(params);
     }
 
+    /** Returns the title view. */
+    TextView getTitleView() {
+        return mTitleView;
+    }
+
     /** Returns the scroll Y offset. */
     public int getScrollViewScrollY() {
         return mScrollView.getScrollY();

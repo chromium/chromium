@@ -16,10 +16,12 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -30,11 +32,17 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the account picker bottom sheet or modal dialog. */
 @NullMarked
-public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiCoordinator {
+public class AccountPickerBottomSheetCoordinator
+        implements SigninBottomSheetUiCoordinator, AccountPickerBottomSheetMediator.Delegate {
+    private final Activity mActivity;
+    private final IdentityManager mIdentityManager;
     private final AccountPickerBottomSheetView mView;
     private final AccountPickerPresenter mPresenter;
     private final AccountPickerBottomSheetMediator mAccountPickerBottomSheetMediator;
     private final AccountPickerCoordinator mAccountPickerCoordinator;
+    private final @EnterpriseSignalsDisclaimerCoordinator.PresentationMode int
+            mManagementNoticePresentationMode;
+    private @Nullable EnterpriseSignalsDisclaimerCoordinator mManagementNoticeCoordinator;
 
     /**
      * Constructs the AccountPickerBottomSheetCoordinator and shows the bottom sheet or modal dialog
@@ -56,6 +64,8 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
             @SigninAccessPoint int signinAccessPoint,
             @Nullable CoreAccountId selectedAccountId) {
         Activity activity = assumeNonNull(windowAndroid.getActivity().get());
+        mActivity = activity;
+        mIdentityManager = identityManager;
         var dismissalLogger = new AccountPickerDismissalLogger(signinAccessPoint, isWebSignin);
         SigninMetricsUtils.logAccountConsistencyPromoAction(
                 AccountConsistencyPromoAction.SHOWN, signinAccessPoint);
@@ -73,9 +83,14 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
                         launchMode,
                         isWebSignin,
                         signinAccessPoint,
-                        selectedAccountId);
+                        selectedAccountId,
+                        /* delegate= */ this);
 
         boolean showAsDialog = SigninUtils.shouldShowAccountPickerDialog(activity);
+        mManagementNoticePresentationMode =
+                showAsDialog
+                        ? EnterpriseSignalsDisclaimerCoordinator.PresentationMode.MODAL_DIALOG
+                        : EnterpriseSignalsDisclaimerCoordinator.PresentationMode.BOTTOM_SHEET;
 
         mPresenter =
                 showAsDialog
@@ -117,9 +132,33 @@ public class AccountPickerBottomSheetCoordinator implements SigninBottomSheetUiC
     /** Releases the resources used by AccountPickerBottomSheetCoordinator. */
     @MainThread
     private void destroy() {
+        destroyManagementNoticeCoordinator();
         mAccountPickerCoordinator.destroy();
         mAccountPickerBottomSheetMediator.destroy();
         mPresenter.destroy();
+    }
+
+    /** Implements {@link AccountPickerBottomSheetMediator.Delegate}. */
+    @Override
+    public void setUpManagementNoticeForAccount(CoreAccountInfo account) {
+        destroyManagementNoticeCoordinator();
+        mManagementNoticeCoordinator =
+                new EnterpriseSignalsDisclaimerCoordinator(
+                        mActivity,
+                        mIdentityManager,
+                        account,
+                        mManagementNoticePresentationMode,
+                        mAccountPickerBottomSheetMediator);
+        mView.setManagementNoticeView(
+                mManagementNoticeCoordinator.getView(),
+                mManagementNoticeCoordinator.getTitleView(),
+                mManagementNoticeCoordinator::getVerticalScrollOffset);
+    }
+
+    private void destroyManagementNoticeCoordinator() {
+        if (mManagementNoticeCoordinator == null) return;
+        mManagementNoticeCoordinator.destroy();
+        mManagementNoticeCoordinator = null;
     }
 
     /** Implements {@link SigninBottomSheetUiCoordinator}. */

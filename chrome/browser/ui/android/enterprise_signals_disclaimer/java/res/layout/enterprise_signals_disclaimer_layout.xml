@@ -64,6 +64,7 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dp"
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 android:padding="16dp"
                 app:backgroundColor="@macro/default_card_bg_color">
@@ -106,6 +107,7 @@ found in the LICENSE file.
                 android:id="@+id/device_info_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:baselineAligned="false"
                 android:orientation="horizontal"
                 android:padding="16dp"
                 app:backgroundColor="@macro/default_card_bg_color">

@@ -92,8 +92,16 @@ public class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStat
         return mView;
     }
 
+    /**
+     * Returns the title view of the disclaimer. Embedders can use it to move accessibility focus to
+     * the disclaimer when it's shown.
+     */
+    public View getTitleView() {
+        return mView.getTitleView();
+    }
+
     /** Returns the vertical scroll offset of the disclaimer content. */
-    int getVerticalScrollOffset() {
+    public int getVerticalScrollOffset() {
         return mView.getScrollViewScrollY();
     }
 
