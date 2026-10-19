@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -34,6 +35,7 @@
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
@@ -918,6 +920,64 @@ TEST_F(ComposeboxInputStateManagerTest,
   EXPECT_NE([state.uiConfig iconForTool:ComposeboxMode::kImageGeneration], nil);
   EXPECT_NE([state.uiConfig iconForModel:ComposeboxModelOption::kThinking],
             nil);
+}
+
+// Tests that an unsupported server-side `ModelMode` is ignored in the UI state,
+// does not overwrite `kRegular`'s UI config, falls back to the first supported
+// allowed model when selecting the default model, and records the unsupported
+// model histogram.
+TEST_F(ComposeboxInputStateManagerTest,
+       ComputeUIInputState_UnsupportedServerModelIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kComposeboxAdditionalAdvancedTools);
+  base::HistogramTester histogram_tester;
+
+  omnibox::SearchboxConfig config;
+
+  omnibox::ModelConfig* regular_config = config.add_model_configs();
+  regular_config->set_model(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  regular_config->set_menu_label("Regular Label");
+  regular_config->set_hint_text("Regular Hint");
+
+  // Add an unsupported model after `MODEL_MODE_GEMINI_REGULAR`.
+  const omnibox::ModelMode kUnsupportedModel =
+      static_cast<omnibox::ModelMode>(9999);
+  omnibox::ModelConfig* unsupported_config = config.add_model_configs();
+  unsupported_config->set_model(kUnsupportedModel);
+  unsupported_config->set_menu_label("Unsupported Label");
+  unsupported_config->set_hint_text("Unsupported Hint");
+
+  // Put the unsupported model first in `allowed_models` so `GetDefaultModel()`
+  // returns `kUnsupportedModel`, followed by `MODEL_MODE_GEMINI_REGULAR`.
+  config.mutable_rule_set()->add_allowed_models(kUnsupportedModel);
+  config.mutable_rule_set()->add_allowed_models(
+      omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+
+  EXPECT_CALL(*mock_aim_service_, GetSearchboxConfig())
+      .WillRepeatedly(testing::Return(&config));
+  if (aim_eligibility_callback_) {
+    aim_eligibility_callback_.Run();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Omnibox.MobileFusebox.UnsupportedModelMode",
+      static_cast<int>(kUnsupportedModel), 1);
+
+  mode_holder_.mode = ComposeboxMode::kAIM;
+
+  ComposeboxUIInputState* state = [manager_ computeUIInputStateWithFavicon:nil
+                                                       attachedWebStateIDs:{}];
+  ASSERT_NE(state, nil);
+  EXPECT_EQ(state.allowedModels.size(), 1u);
+  EXPECT_TRUE([state isModelAvailable:ComposeboxModelOption::kRegular]);
+  EXPECT_EQ(state.activeModel, ComposeboxModelOption::kRegular);
+
+  // Verify `kRegular` UI config was not overwritten by the unsupported model.
+  ComposeboxUIConfig* ui_config = state.uiConfig;
+  EXPECT_NSEQ([ui_config menuLabelForModel:ComposeboxModelOption::kRegular],
+              @"Regular Label");
+  EXPECT_NSEQ([ui_config hintTextForModel:ComposeboxModelOption::kRegular],
+              @"Regular Hint");
 }
 
 // Tests that `computeUIInputStateWithFavicon:attachedWebStateIDs:` disables

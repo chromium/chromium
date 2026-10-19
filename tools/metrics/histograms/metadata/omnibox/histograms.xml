@@ -3354,6 +3354,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.UnsupportedModelMode"
+    enum="OmniboxModelMode" expires_after="2027-04-14">
+  <owner>christianxu@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Recorded for each unsupported or unknown omnibox::ModelMode entry received
+    in the Composebox searchbox configuration on iOS. Emitted when parsing the
+    server-driven input state.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration"
     units="ms" expires_after="2027-01-14">
   <owner>niharm@google.com</owner>
