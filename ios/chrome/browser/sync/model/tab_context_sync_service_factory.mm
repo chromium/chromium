@@ -9,7 +9,6 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
-#import "base/no_destructor.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
@@ -23,28 +22,13 @@
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-sync_tab_context::TabContextSyncService*
-TabContextSyncServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<sync_tab_context::TabContextSyncService>(
-          profile, /*create=*/true);
-}
-
-// static
-TabContextSyncServiceFactory* TabContextSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<TabContextSyncServiceFactory> instance;
-  return instance.get();
-}
-
-TabContextSyncServiceFactory::TabContextSyncServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("TabContextSyncService",
-                                    TestingCreation::kNoServiceForTests) {
+TabContextSyncServiceFactory::TabContextSyncServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "TabContextSyncService",
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-TabContextSyncServiceFactory::~TabContextSyncServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 TabContextSyncServiceFactory::BuildServiceInstanceFor(

@@ -17,29 +17,14 @@
 #import "ios/chrome/browser/sync/model/prefs/cross_device_pref_tracker/ios_chrome_cross_device_pref_provider.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
-// static
-sync_preferences::CrossDevicePrefTracker*
-CrossDevicePrefTrackerFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<sync_preferences::CrossDevicePrefTracker>(
-          profile, /*create=*/true);
-}
-
-// static
-CrossDevicePrefTrackerFactory* CrossDevicePrefTrackerFactory::GetInstance() {
-  static base::NoDestructor<CrossDevicePrefTrackerFactory> instance;
-  return instance.get();
-}
-
-CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory()
-    : ProfileKeyedServiceFactoryIOS("CrossDevicePrefTracker",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+CrossDevicePrefTrackerFactory::CrossDevicePrefTrackerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "CrossDevicePrefTracker",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
-
-CrossDevicePrefTrackerFactory::~CrossDevicePrefTrackerFactory() = default;
 
 std::unique_ptr<KeyedService>
 CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(

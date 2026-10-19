@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/no_destructor.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -22,27 +21,14 @@
 #include "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 
-// static
-syncer::UserEventService* IOSUserEventServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<syncer::UserEventService>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSUserEventServiceFactory* IOSUserEventServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSUserEventServiceFactory> instance;
-  return instance.get();
-}
-
-IOSUserEventServiceFactory::IOSUserEventServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("UserEventService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+IOSUserEventServiceFactory::IOSUserEventServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "UserEventService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
-
-IOSUserEventServiceFactory::~IOSUserEventServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 IOSUserEventServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

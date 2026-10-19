@@ -7,24 +7,11 @@
 #include "components/sync/model/data_type_store_service_impl.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-DataTypeStoreServiceFactory* DataTypeStoreServiceFactory::GetInstance() {
-  static base::NoDestructor<DataTypeStoreServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-syncer::DataTypeStoreService* DataTypeStoreServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<syncer::DataTypeStoreService>(
-      profile, /*create=*/true);
-}
-
-DataTypeStoreServiceFactory::DataTypeStoreServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("DataTypeStoreService",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-DataTypeStoreServiceFactory::~DataTypeStoreServiceFactory() = default;
+DataTypeStoreServiceFactory::DataTypeStoreServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "DataTypeStoreService",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 DataTypeStoreServiceFactory::BuildServiceInstanceFor(

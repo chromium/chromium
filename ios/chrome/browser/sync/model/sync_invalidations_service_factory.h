@@ -7,27 +7,17 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/sync/invalidations/sync_invalidations_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-namespace syncer {
-class SyncInvalidationsService;
-}  // namespace syncer
-
-class SyncInvalidationsServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class SyncInvalidationsServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SyncInvalidationsServiceFactory,
+          syncer::SyncInvalidationsService> {
  public:
-  // Returned value may be nullptr in case if sync invalidations are disabled or
-  // not supported.
-  static syncer::SyncInvalidationsService* GetForProfile(ProfileIOS* profile);
-  static SyncInvalidationsServiceFactory* GetInstance();
+  explicit SyncInvalidationsServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SyncInvalidationsServiceFactory>;
-
-  SyncInvalidationsServiceFactory();
-  ~SyncInvalidationsServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

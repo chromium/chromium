@@ -7,32 +7,17 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/sync_tab_context/tab_context_sync_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
-
-namespace sync_tab_context {
-class TabContextSyncService;
-}  // namespace sync_tab_context
-
-class TabContextSyncServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class TabContextSyncServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          TabContextSyncServiceFactory,
+          sync_tab_context::TabContextSyncService> {
  public:
-  static sync_tab_context::TabContextSyncService* GetForProfile(
-      ProfileIOS* profile);
-  static TabContextSyncServiceFactory* GetInstance();
-
-  TabContextSyncServiceFactory(const TabContextSyncServiceFactory&) = delete;
-  TabContextSyncServiceFactory& operator=(const TabContextSyncServiceFactory&) =
-      delete;
+  explicit TabContextSyncServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<TabContextSyncServiceFactory>;
-
-  TabContextSyncServiceFactory();
-  ~TabContextSyncServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

@@ -5,29 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SYNC_MODEL_DATA_TYPE_STORE_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
 #include "components/sync/model/data_type_store_service.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace syncer {
-class DataTypeStoreService;
-}  // namespace syncer
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all DataTypeStoreService and associates them with
 // ProfileIOS.
-class DataTypeStoreServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class DataTypeStoreServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<DataTypeStoreServiceFactory,
+                                                syncer::DataTypeStoreService> {
  public:
-  static syncer::DataTypeStoreService* GetForProfile(ProfileIOS* profile);
-  static DataTypeStoreServiceFactory* GetInstance();
+  explicit DataTypeStoreServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<DataTypeStoreServiceFactory>;
-
-  DataTypeStoreServiceFactory();
-  ~DataTypeStoreServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

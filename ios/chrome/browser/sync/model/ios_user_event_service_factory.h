@@ -7,28 +7,17 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "components/sync_user_events/user_event_service.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace syncer {
-class UserEventService;
-}  // namespace syncer
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that associates UserEventServices to ProfileIOS.
-class IOSUserEventServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSUserEventServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<IOSUserEventServiceFactory,
+                                                syncer::UserEventService> {
  public:
-  static syncer::UserEventService* GetForProfile(ProfileIOS* profile);
-  static IOSUserEventServiceFactory* GetInstance();
+  explicit IOSUserEventServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSUserEventServiceFactory>;
-
-  IOSUserEventServiceFactory();
-  ~IOSUserEventServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

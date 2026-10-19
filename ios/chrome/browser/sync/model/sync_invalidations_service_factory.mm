@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/sync/model/sync_invalidations_service_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/sync/invalidations/sync_invalidations_service_impl.h"
@@ -12,28 +11,12 @@
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-syncer::SyncInvalidationsService*
-SyncInvalidationsServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<syncer::SyncInvalidationsService>(
-          profile, /*create=*/true);
-}
-
-// static
-SyncInvalidationsServiceFactory*
-SyncInvalidationsServiceFactory::GetInstance() {
-  static base::NoDestructor<SyncInvalidationsServiceFactory> instance;
-  return instance.get();
-}
-
-SyncInvalidationsServiceFactory::SyncInvalidationsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SyncInvalidationsService") {
+SyncInvalidationsServiceFactory::SyncInvalidationsServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "SyncInvalidationsService") {
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
 }
-
-SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
