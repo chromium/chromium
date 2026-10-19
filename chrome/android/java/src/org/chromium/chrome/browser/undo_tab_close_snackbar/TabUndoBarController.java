@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -19,7 +20,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -78,7 +81,7 @@ public class TabUndoBarController extends UndoBarController {
                     @Override
                     public void tabClosureUndone(Tab tab) {
                         if (disableUndo(false)) return;
-                        dropFromQueue(List.of(tab.getId()));
+                        onTabsResolvedExternally(List.of(tab.getId()), /* undone= */ true);
                         Token groupId = tab.getTabGroupId();
                         if (groupId != null) {
                             onTabGroupRestored(groupId);
@@ -88,13 +91,15 @@ public class TabUndoBarController extends UndoBarController {
                     @Override
                     public void tabClosureCommitted(Tab tab) {
                         if (disableUndo(false)) return;
-                        dropFromQueue(List.of(tab.getId()));
+                        onTabsResolvedExternally(List.of(tab.getId()), /* undone= */ false);
                     }
 
                     @Override
                     public void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {
                         if (disableUndo(false)) return;
-                        dropFromQueue(TabModelUtils.getTabIds(tabs));
+                        // A set keeps the per-snapshot membership checks O(1) for bulk closures.
+                        Set<@TabId Integer> tabIds = new HashSet<>(TabModelUtils.getTabIds(tabs));
+                        onTabsResolvedExternally(tabIds, /* undone= */ false);
                     }
 
                     @Override
