@@ -39,6 +39,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_win.h"
+#include "chrome/browser/os_crypt/test_support.h"
 #include "chrome/browser/win/isolated_browser/isolated_browser_test_support.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -512,6 +513,27 @@ TEST_F(IsolatedBrowserSupportLaunchTest, RunIsolatedChromeLaunchUnisolated) {
   int exit_code;
   ASSERT_TRUE(child_or_error->WaitForExit(&exit_code));
   ASSERT_EQ(exit_code, 0);
+}
+
+TEST_F(IsolatedBrowserSupportLaunchTest, LaunchFailure) {
+  // Configure `FakeInstallDetails` so that `install_static::GetElevatorClsid()`
+  // and `install_static::GetElevatorIid()` inside
+  // `IsolatedBrowserProcess::Launch()` resolve to the test elevation service
+  // registered by `IsolatedBrowserTestEnvironment`.
+  install_static::ScopedInstallDetails install_details(
+      std::make_unique<os_crypt::FakeInstallDetails>());
+
+  // Passing a non-existent executable causes `CoCreateInstance`,
+  // `CreateJobObjectW`, and `AssignProcessToJobObject` to succeed in
+  // `IsolatedBrowserProcess::Launch()`, and then causes `RunIsolatedChrome` to
+  // fail inside the elevation service IPC call. Verify that `Launch()` returns
+  // the service error and that destroying the scoped job handle on the failure
+  // return path does not terminate the calling process.
+  base::CommandLine cmd(
+      base::FilePath(FILE_PATH_LITERAL("invalid_process_name.exe")));
+  EXPECT_THAT(chrome::IsolatedBrowserProcess::Launch(cmd),
+              base::test::ErrorIs(
+                  elevation_service::Elevator::kErrorCouldNotLaunchBrowser));
 }
 
 TEST_F(IsolatedBrowserSupportLaunchTest, CheckIsolatedCommandline) {

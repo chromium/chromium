@@ -60,6 +60,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/os_crypt",
+    "//chrome/browser/os_crypt:test_support",
     "//chrome/chrome_elf:constants",
     "//chrome/common:constants",
     "//chrome/elevation_service:public_headers",
