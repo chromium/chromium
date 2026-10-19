@@ -27,17 +27,13 @@ class MockPasswordCredentialFiller final : public PasswordCredentialFiller {
                base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void, UpdateTriggerSubmission, (bool), (override));
-  MOCK_METHOD(bool, ShouldTriggerSubmission, (), (const override));
+  MOCK_METHOD(bool, ShouldTriggerSubmission, (), (const, override));
   MOCK_METHOD(SubmissionReadinessState,
               GetSubmissionReadinessState,
               (),
-              (const override));
-  MOCK_METHOD(base::WeakPtr<password_manager::PasswordManagerDriver>,
-              GetDriver,
-              (),
-              (const override));
-  MOCK_METHOD(GURL, GetFrameUrl, (), (const override));
-  MOCK_METHOD(url::Origin, GetFrameOrigin, (), (const override));
+              (const, override));
+  MOCK_METHOD(GURL, GetFrameUrl, (), (const, override));
+  MOCK_METHOD(url::Origin, GetFrameOrigin, (), (const, override));
 
   base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() override;
 

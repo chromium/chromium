@@ -36,7 +36,7 @@ class MockLeakDetectionRequestFactory : public LeakDetectionRequestFactory {
   MOCK_METHOD(std::unique_ptr<LeakDetectionRequestInterface>,
               CreateNetworkRequest,
               (),
-              (const override));
+              (const, override));
 };
 
 }  // namespace password_manager
