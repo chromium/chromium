@@ -9,10 +9,8 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_feature_list.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -142,14 +140,14 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     waitable_event.Wait();
   }
 
-  void RunDenormalProcessTest(WorkerThread* thread, bool expect_denormals) {
+  void RunDenormalProcessTest(WorkerThread* thread) {
     base::WaitableEvent waitable_event;
     PostCrossThreadTask(
         *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
         CrossThreadBindOnce(
             &AudioWorkletGlobalScopeTest::RunDenormalProcessTestOnWorkletThread,
             CrossThreadUnretained(this), CrossThreadUnretained(thread),
-            expect_denormals, CrossThreadUnretained(&waitable_event)));
+            CrossThreadUnretained(&waitable_event)));
     waitable_event.Wait();
   }
 
@@ -490,7 +488,6 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
   }
 
   void RunDenormalProcessTestOnWorkletThread(WorkerThread* thread,
-                                             bool expect_denormals,
                                              base::WaitableEvent* wait_event) {
     EXPECT_TRUE(thread->IsCurrentThread());
 
@@ -551,12 +548,12 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     DenormalDisabler scoped_disabler;
 
     // processor->Process() internally instantiates DenormalEnabler, which
-    // disables FTZ/DAZ during V8 execution if enabled.
+    // disables FTZ/DAZ during V8 execution.
     processor->Process(input_buses, output_buses, param_data_map);
 
-    // Verify that the JS execution was affected by the outer
-    // DenormalDisabler only if the feature is disabled.
-    EXPECT_EQ(output_channel->Span()[0], expect_denormals ? 1.0f : 0.0f);
+    // Verify that the JS execution was not affected by the outer
+    // DenormalDisabler.
+    EXPECT_EQ(output_channel->Span()[0], 1.0f);
 
     wait_event->Signal();
   }
@@ -957,26 +954,10 @@ TEST_F(AudioWorkletGlobalScopeTest, BufferProcessing) {
   thread->WaitForShutdownForTesting();
 }
 
-TEST_F(AudioWorkletGlobalScopeTest, DenormalProcessing_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      blink::features::kAudioWorkletJSDenormalEnabler);
-
+TEST_F(AudioWorkletGlobalScopeTest, DenormalProcessing) {
   std::unique_ptr<OfflineAudioWorkletThread> thread =
       CreateAudioWorkletThread();
-  RunDenormalProcessTest(thread.get(), /*expect_denormals=*/true);
-  thread->Terminate();
-  thread->WaitForShutdownForTesting();
-}
-
-TEST_F(AudioWorkletGlobalScopeTest, DenormalProcessing_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      blink::features::kAudioWorkletJSDenormalEnabler);
-
-  std::unique_ptr<OfflineAudioWorkletThread> thread =
-      CreateAudioWorkletThread();
-  RunDenormalProcessTest(thread.get(), /*expect_denormals=*/false);
+  RunDenormalProcessTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
 }

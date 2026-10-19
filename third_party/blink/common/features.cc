@@ -46,13 +46,6 @@ BASE_FEATURE(kAIPageContentIncludePopupWindows,
 BASE_FEATURE(kAIPageContentMissingSubframesFailSilently,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-// Controls whether JavaScript execution inside AudioWorkletProcessor::Process()
-// runs under strict IEEE-754 floating-point semantics (disabling FTZ/DAZ).
-// Enabled by default as a remote kill-switch.
-BASE_FEATURE(kAudioWorkletJSDenormalEnabler,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, then use desktop page webprefs for Android devices that have
 // large displays, specifically tablets and desktops.

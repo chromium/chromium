@@ -58,7 +58,6 @@ class CORE_EXPORT WorkerBackingThread final {
   std::unique_ptr<blink::NonMainThread> backing_thread_;
   raw_ptr<v8::Isolate, UnprotectedInRelease | DanglingUntriaged> isolate_ =
       nullptr;
-  const bool is_denormal_disabled_thread_;
 };
 
 }  // namespace blink
