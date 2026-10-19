@@ -47,6 +47,11 @@ TabWebContentsDestroyer::TabWebContentsDestroyer(
     }
   }
   web_contents_->SetDelegate(this);
+  // The tab is closed: stop delivering input to it, and cancel any in-flight
+  // touch sequence now, while all of its views are still alive and attached,
+  // instead of leaving it to be flushed during final teardown.
+  ignore_input_events_.emplace(
+      web_contents_->IgnoreInputEvents(/*audit_callback=*/std::nullopt));
   // Cancel any pre-existing in-flight navigations before ClosePage() cancels
   // NavigationRequests.
   web_contents_->Stop();
@@ -70,6 +75,9 @@ TabWebContentsDestroyer::~TabWebContentsDestroyer() {
                                     /*reset_state=*/true);
     }
     web_contents_->SetDelegate(nullptr);
+    // Release input suppression while `web_contents_` is still alive, so its
+    // release-time gesture reset runs against live views.
+    ignore_input_events_.reset();
     web_contents_.reset();
   }
 }

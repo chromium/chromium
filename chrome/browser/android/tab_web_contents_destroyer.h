@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_TAB_WEB_CONTENTS_DESTROYER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -13,6 +14,7 @@
 #include "base/process/kill.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/window_container_type.mojom-forward.h"
@@ -32,7 +34,6 @@ class RenderFrameHost;
 class SessionStorageNamespaceHandle;
 class SiteInstance;
 class StoragePartitionConfig;
-class WebContents;
 struct OpenURLParams;
 }  // namespace content
 
@@ -100,6 +101,13 @@ class TabWebContentsDestroyer : public content::WebContentsDelegate,
   void Destroy();
 
   std::unique_ptr<content::WebContents> web_contents_;
+  // Suppresses input to the closing tab for the rest of its lifetime. On
+  // Android, acquiring this also resets gesture detection, so that an in-flight
+  // touch sequence is cancelled when the tab is closed rather than lingering
+  // until the WebContents is finally destroyed. Must be released before
+  // `web_contents_`.
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      ignore_input_events_;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::WeakPtrFactory<TabWebContentsDestroyer> weak_ptr_factory_{this};
 };
