@@ -16,6 +16,7 @@ rust_static_library("test_rust_api_from_cpp") {
     ":lifetime_bound_rs_api",
     ":self_contained_target_rs_api",
     ":target_depending_on_another_rs_api",
+    ":test_browsing_instance_id_rs_api",
     ":test_extra_rust_sources_mod_rs_api",
     ":test_std_types_rs_api",
     ":test_time_delta_rs_api",
@@ -129,4 +130,18 @@ rust_api_from_cpp("test_std_types_rs_api") {
 
 source_set("test_std_types") {
   sources = [ "test_std_types.h" ]
+}
+
+rust_api_from_cpp("test_browsing_instance_id_rs_api") {
+  bindings_target = ":test_browsing_instance_id"
+  public_headers = [ "test_browsing_instance_id.h" ]
+
+  # Crubit can only instantiate class templates (e.g. `base::IdType32<...>`)
+  # that come from headers covered by Crubit-enabled bindings.
+  bindings_deps = [ "//base:base_rs_api" ]
+}
+
+source_set("test_browsing_instance_id") {
+  sources = [ "test_browsing_instance_id.h" ]
+  public_deps = [ "//base" ]
 }

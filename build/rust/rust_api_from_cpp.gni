@@ -29,11 +29,14 @@ _globally_enabled_crubit_features = [
   # opt-in (to enable incremental migration of other Crubit clients).
   "layout_compat_optional",
 
+  # `template_instantiation` makes Crubit generate bindings for class template
+  # specializations (e.g. `base::IdType64<FooTag>`) used by the C++ headers.
+  "template_instantiation",
+
   # Other features to consider enabling by default:
   # TODO(crbug.com/40226863): Consider enabling `forward_declare`.
   # TODO(crbug.com/40226863): Consider enabling `layout_compat_string`.
   # TODO(crbug.com/40226863): Consider enabling `layout_compat_tuple`.
-  # TODO(crbug.com/40226863): Consider enabling `template_instantiation`.
 ]
 
 # Template to generate and build Rust bindings for a set of C++ headers using
