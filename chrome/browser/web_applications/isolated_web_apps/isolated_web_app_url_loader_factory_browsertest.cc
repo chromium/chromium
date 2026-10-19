@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
@@ -15,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
@@ -526,6 +529,178 @@ INSTANTIATE_TEST_SUITE_P(
         IsolatedWebAppURLLoaderFactoryCSPBrowserTest::ParamType>& info) {
       return info.param ? "meta_tag" : "header";
     });
+
+class IsolatedWebAppURLLoaderFactoryConnectionAllowlistBrowserTest
+    : public IsolatedWebAppURLLoaderFactoryBrowserTest {
+ protected:
+  GURL GetAllowedUrl() {
+    return embedded_https_test_server().GetURL("allowed.example.com",
+                                               "/echoheader?Origin");
+  }
+
+  GURL GetDisallowedUrl() {
+    return embedded_https_test_server().GetURL("disallowed.example.com",
+                                               "/echoheader?Origin");
+  }
+
+  std::string GetConnectionAllowlistHeaderValue() {
+    return base::StringPrintf("(\"%s/*\")",
+                              embedded_https_test_server()
+                                  .GetOrigin("allowed.example.com")
+                                  .Serialize()
+                                  .c_str());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      network::features::kConnectionAllowlists};
+};
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppURLLoaderFactoryConnectionAllowlistBrowserTest,
+    DedicatedWorkerEnforcesConnectionAllowlist) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", "<html></html>")
+          .AddResource(
+              "/worker.js", R"js(
+                self.onmessage = async (event) => {
+                  try {
+                    const response = await fetch(event.data);
+                    self.postMessage(response.ok ? 'allowed' : 'blocked');
+                  } catch (e) {
+                    self.postMessage('blocked');
+                  }
+                };
+              )js",
+              {{"Content-Type", "text/javascript"},
+               {"Connection-Allowlist", GetConnectionAllowlistHeaderValue()}})
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto [iwa_frame, url_info] = InstallAndOpenApp(app.get());
+
+  constexpr std::string_view kRunWorkerFetchScript = R"js(
+    new Promise((resolve) => {
+      window.policy ??= trustedTypes.createPolicy('default', {
+        createScriptURL: (u) => u,
+      });
+      const worker = new Worker(window.policy.createScriptURL('/worker.js'));
+      worker.onmessage = (event) => resolve(event.data);
+      worker.postMessage($1);
+    })
+  )js";
+
+  EXPECT_EQ("allowed",
+            content::EvalJs(iwa_frame, content::JsReplace(kRunWorkerFetchScript,
+                                                          GetAllowedUrl())));
+  EXPECT_EQ("blocked",
+            content::EvalJs(iwa_frame, content::JsReplace(kRunWorkerFetchScript,
+                                                          GetDisallowedUrl())));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppURLLoaderFactoryConnectionAllowlistBrowserTest,
+    SharedWorkerEnforcesConnectionAllowlist) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", "<html></html>")
+          .AddResource(
+              "/shared_worker.js", R"js(
+                self.onconnect = (connectEvent) => {
+                  const port = connectEvent.ports[0];
+                  port.onmessage = async (event) => {
+                    try {
+                      const response = await fetch(event.data);
+                      port.postMessage(response.ok ? 'allowed' : 'blocked');
+                    } catch (e) {
+                      port.postMessage('blocked');
+                    }
+                  };
+                  port.start();
+                };
+              )js",
+              {{"Content-Type", "text/javascript"},
+               {"Connection-Allowlist", GetConnectionAllowlistHeaderValue()}})
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto [iwa_frame, url_info] = InstallAndOpenApp(app.get());
+
+  constexpr std::string_view kRunSharedWorkerFetchScript = R"js(
+    new Promise((resolve) => {
+      window.policy ??= trustedTypes.createPolicy('default', {
+        createScriptURL: (u) => u,
+      });
+      const worker = new SharedWorker(
+          window.policy.createScriptURL('/shared_worker.js'));
+      worker.port.onmessage = (event) => resolve(event.data);
+      worker.port.start();
+      worker.port.postMessage($1);
+    })
+  )js";
+
+  EXPECT_EQ(
+      "allowed",
+      content::EvalJs(iwa_frame, content::JsReplace(kRunSharedWorkerFetchScript,
+                                                    GetAllowedUrl())));
+  EXPECT_EQ(
+      "blocked",
+      content::EvalJs(iwa_frame, content::JsReplace(kRunSharedWorkerFetchScript,
+                                                    GetDisallowedUrl())));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    IsolatedWebAppURLLoaderFactoryConnectionAllowlistBrowserTest,
+    ServiceWorkerEnforcesConnectionAllowlist) {
+  std::unique_ptr<ScopedBundledIsolatedWebApp> app =
+      IsolatedWebAppBuilder(ManifestBuilder())
+          .AddHtml("/", "<html></html>")
+          .AddResource(
+              "/service_worker.js", R"js(
+                self.addEventListener('activate', (event) => {
+                  event.waitUntil(clients.claim());
+                });
+                self.addEventListener('message', async (event) => {
+                  try {
+                    const response = await fetch(event.data);
+                    event.source.postMessage(
+                        response.ok ? 'allowed' : 'blocked');
+                  } catch (e) {
+                    event.source.postMessage('blocked');
+                  }
+                });
+              )js",
+              {{"Content-Type", "text/javascript"},
+               {"Connection-Allowlist", GetConnectionAllowlistHeaderValue()}})
+          .BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto [iwa_frame, url_info] = InstallAndOpenApp(app.get());
+
+  ASSERT_TRUE(content::ExecJs(iwa_frame, R"js(
+    (async () => {
+      window.policy ??= trustedTypes.createPolicy('default', {
+        createScriptURL: (u) => u,
+      });
+      await navigator.serviceWorker.register(
+          window.policy.createScriptURL('/service_worker.js'), { scope: '/' });
+      await navigator.serviceWorker.ready;
+    })();
+  )js"));
+
+  constexpr std::string_view kRunServiceWorkerFetchScript = R"js(
+    new Promise(async (resolve) => {
+      const registration = await navigator.serviceWorker.ready;
+      navigator.serviceWorker.addEventListener(
+          'message', (event) => resolve(event.data), { once: true });
+      registration.active.postMessage($1);
+    })
+  )js";
+
+  EXPECT_EQ("allowed",
+            content::EvalJs(iwa_frame,
+                            content::JsReplace(kRunServiceWorkerFetchScript,
+                                               GetAllowedUrl())));
+  EXPECT_EQ("blocked",
+            content::EvalJs(iwa_frame,
+                            content::JsReplace(kRunServiceWorkerFetchScript,
+                                               GetDisallowedUrl())));
+}
 
 }  // namespace
 }  // namespace web_app
