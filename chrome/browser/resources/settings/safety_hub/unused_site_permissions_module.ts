@@ -450,9 +450,6 @@ export class SettingsSafetyHubUnusedSitePermissionsModuleElement extends
     }
   }
 
-  // TODO(crbug.com/40267370): Move common functionality between
-  // unused_site_permissions_module.ts and notification_permissions_module.ts to
-  // a util class.
   protected onBulkUndoButtonFocus_(e: Event) {
     this.showUndoTooltip_(e);
   }

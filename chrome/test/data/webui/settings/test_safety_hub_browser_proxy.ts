@@ -4,7 +4,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {CardInfo, EntryPointInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
+import type {CardInfo, EntryPointInfo, SafetyHubBrowserProxy, UnusedSitePermissions} from 'chrome://settings/lazy_load.js';
 import {CardState} from 'chrome://settings/lazy_load.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
@@ -29,7 +29,6 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
   };
 
   private unusedSitePermissions_: UnusedSitePermissions[] = [];
-  private reviewNotificationList_: NotificationPermission[] = [];
   private numberOfExtensionsThatNeedReview_: number = 0;
   private passwordCardData_: CardInfo = this.dummyCardInfo;
   private safeBrowsingCardData_: CardInfo = this.dummyCardInfo;
@@ -44,12 +43,6 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
       'getNumberOfExtensionsThatNeedReview',
       'undoAcknowledgeRevokedUnusedSitePermissionsList',
       'undoAllowPermissionsAgainForUnusedSite',
-      'getNotificationPermissionReview',
-      'blockNotificationPermissionForOrigins',
-      'allowNotificationPermissionForOrigins',
-      'ignoreNotificationPermissionForOrigins',
-      'undoIgnoreNotificationPermissionForOrigins',
-      'resetNotificationPermissionForOrigins',
       'getPasswordCardData',
       'getSafeBrowsingCardData',
       'getVersionCardData',
@@ -88,36 +81,6 @@ export class TestSafetyHubBrowserProxy extends TestBrowserProxy implements
                                              UnusedSitePermissions) {
     this.methodCalled(
         'undoAllowPermissionsAgainForUnusedSite', [unusedSitePermissions]);
-  }
-
-  getNotificationPermissionReview(): Promise<NotificationPermission[]> {
-    this.methodCalled('getNotificationPermissionReview');
-    return Promise.resolve(this.reviewNotificationList_.slice());
-  }
-
-  setNotificationPermissionReview(reviewNotificationList:
-                                      NotificationPermission[]) {
-    this.reviewNotificationList_ = reviewNotificationList;
-  }
-
-  blockNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('blockNotificationPermissionForOrigins', origins);
-  }
-
-  allowNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('allowNotificationPermissionForOrigins', origins);
-  }
-
-  ignoreNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('ignoreNotificationPermissionForOrigins', origins);
-  }
-
-  undoIgnoreNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('undoIgnoreNotificationPermissionForOrigins', origins);
-  }
-
-  resetNotificationPermissionForOrigins(origins: string[]): void {
-    this.methodCalled('resetNotificationPermissionForOrigins', origins);
   }
 
   setNumberOfExtensionsThatNeedReview(numberExtensions: number) {

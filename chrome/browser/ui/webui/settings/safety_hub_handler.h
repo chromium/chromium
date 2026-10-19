@@ -132,10 +132,6 @@ class SafetyHubHandler : public settings::SettingsPageUIHandler,
   // Sends the list of unused site permissions to review to the WebUI.
   void SendUnusedSitePermissionsReviewList();
 
-  // Returns the list of notification permissions that needs to be reviewed.
-  // TODO(https://crbug.com/496616827): Remove once WebUI calls are cleaned up.
-  void HandleGetNotificationPermissionReviewList(const base::ListValue& args);
-
   // Handles dismissing the active menu notification for Safety Hub.
   void HandleDismissActiveMenuNotification(const base::ListValue& args);
 

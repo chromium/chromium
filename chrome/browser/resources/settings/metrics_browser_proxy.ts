@@ -70,33 +70,6 @@ export enum SafetyHubCardState {
 // )
 
 /**
- * Contains all safety check notifications module interactions.
- *
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- *
- * Must be kept in sync with the SafetyCheckNotificationsModuleInteractions enum
- * in histograms/enums.xml
- */
-// LINT.IfChange(SafetyCheckNotificationsModuleInteractions)
-export enum SafetyCheckNotificationsModuleInteractions {
-  BLOCK = 0,
-  BLOCK_ALL = 1,
-  IGNORE = 2,
-  MINIMIZE = 3,
-  RESET = 4,
-  UNDO_BLOCK = 5,
-  UNDO_IGNORE = 6,
-  UNDO_RESET = 7,
-  OPEN_REVIEW_UI = 8,
-  UNDO_BLOCK_ALL = 9,
-  GO_TO_SETTINGS = 10,
-  // COUNT should be updated whenever new entries are added.
-  COUNT = 11,
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/settings/enums.xml:SafetyCheckNotificationsModuleInteractions)
-
-/**
  * Contains all safety check unused site permissions module interactions.
  *
  * These values are persisted to logs. Entries should not be renumbered and
@@ -640,20 +613,6 @@ export interface MetricsBrowserProxy {
 
   /**
    * Helper function that calls recordHistogram for the
-   * Settings.SafetyHub.NotificationPermissionsModule.Interactions histogram
-   */
-  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions): void;
-
-  /**
-   * Helper function that calls recordHistogram for
-   * Settings.SafetyHub.NotificationPermissionsModule.ListCount histogram
-   */
-  recordSafetyHubNotificationPermissionsModuleListCountHistogram(
-      suggestions: number): void;
-
-  /**
-   * Helper function that calls recordHistogram for the
    * Settings.SafetyHub.UnusedSitePermissionsModule.Interactions histogram
    */
   recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(
@@ -894,24 +853,6 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
     chrome.send('metricsHandler:recordBooleanHistogram', [
       'Settings.SafetyHub.HasDashboardShowAnyWarning',
       visible,
-    ]);
-  }
-
-  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyHub.NotificationPermissionsModule.Interactions',
-      interaction,
-      SafetyCheckNotificationsModuleInteractions.COUNT,
-    ]);
-  }
-
-  recordSafetyHubNotificationPermissionsModuleListCountHistogram(
-      suggestions: number) {
-    chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyHub.NotificationPermissionsModule.ListCount',
-      Math.min(suggestions, SAFETY_HUB_SUGGESTIONS_MAX_VALUE),
-      SAFETY_HUB_SUGGESTIONS_MAX_VALUE + 1,
     ]);
   }
 

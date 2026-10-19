@@ -87,16 +87,16 @@ suite('SafetyHubModule', function() {
 
   test('ItemButton', async function() {
     await assignAndShowTestData();
-    testElement.buttonIcon = 'cr20:block';
+    testElement.buttonIcon = 'settings20:undo';
     testElement.buttonAriaLabelId =
-        'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
+        'safetyHubUnusedSitePermissionsAllowAgainAriaLabel';
     await microtasksFinished();
 
     // User clicks the button of the 2nd item in the list.
     const item = getEntries()[1]!;
     const button = item.querySelector('cr-icon-button');
     assertTrue(!!button);
-    assertEquals('cr20:block', button.ironIcon);
+    assertEquals('settings20:undo', button.ironIcon);
 
     const clickEventPromise =
         eventToPromise<CustomEvent<{origin: string, detail: string}>>(
@@ -162,9 +162,9 @@ suite('SafetyHubModule', function() {
     // Check the item list is filled with the data.
     const text = 'Dummy tooltip text';
     await assignAndShowTestData();
-    testElement.buttonIcon = 'cr20:block';
+    testElement.buttonIcon = 'settings20:undo';
     testElement.buttonAriaLabelId =
-        'safetyHubNotificationPermissionReviewDontAllowAriaLabel';
+        'safetyHubUnusedSitePermissionsAllowAgainAriaLabel';
     testElement.buttonTooltipText = text;
     await microtasksFinished();
 

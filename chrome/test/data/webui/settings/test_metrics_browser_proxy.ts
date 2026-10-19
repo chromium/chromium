@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {SuggestionsFromGeminiAction, SuggestionsFromGeminiEntryPoint, YourSavedInfoDataCategory, YourSavedInfoDataChip, YourSavedInfoRelatedService} from 'chrome://settings/settings.js';
-import type {AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckNotificationsModuleInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, SettingsSearchExitReasonDesktop} from 'chrome://settings/settings.js';
+import type {AiPageComposeInteractions, AiPageHistorySearchInteractions, AiPageInteractions, AiPageSuggestionsInteractions, AutofillSettingsReferrer, DeleteBrowsingDataAction, MetricsBrowserProxy, PrivacyElementInteractions, PrivacyGuideInteractions, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached, SafeBrowsingInteractions, SafetyCheckUnusedSitePermissionsModuleInteractions, SafetyHubCardState, SafetyHubEntryPoint, SafetyHubModuleType, SafetyHubSurfaces, SettingsSearchExitReasonDesktop} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestMetricsBrowserProxy extends TestBrowserProxy implements
@@ -29,8 +29,6 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordSafetyHubImpression',
       'recordSafetyHubInteraction',
       'recordSafetyHubModuleWarningImpression',
-      'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram',
-      'recordSafetyHubNotificationPermissionsModuleListCountHistogram',
       'recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram',
       'recordSafetyHubUnusedSitePermissionsModuleListCountHistogram',
       // <if expr="_google_chrome and is_win">
@@ -158,20 +156,6 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordSafetyHubModuleWarningImpression(module: SafetyHubModuleType) {
     this.methodCalled('recordSafetyHubModuleWarningImpression', module);
-  }
-
-  recordSafetyHubNotificationPermissionsModuleInteractionsHistogram(
-      interaction: SafetyCheckNotificationsModuleInteractions) {
-    this.methodCalled(
-        'recordSafetyHubNotificationPermissionsModuleInteractionsHistogram',
-        interaction);
-  }
-
-  recordSafetyHubNotificationPermissionsModuleListCountHistogram(
-      suggestions: number) {
-    this.methodCalled(
-        'recordSafetyHubNotificationPermissionsModuleListCountHistogram',
-        suggestions);
   }
 
   recordSafetyHubUnusedSitePermissionsModuleInteractionsHistogram(

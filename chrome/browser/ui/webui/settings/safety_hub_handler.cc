@@ -323,13 +323,6 @@ void SafetyHubHandler::HandleDismissActiveMenuNotification(
       ->DismissActiveNotification();
 }
 
-void SafetyHubHandler::HandleGetNotificationPermissionReviewList(
-    const base::ListValue& args) {
-  AllowJavascript();
-  const base::Value& callback_id = args[0];
-  ResolveJavascriptCallback(callback_id, base::ListValue());
-}
-
 void SafetyHubHandler::HandleDismissPasswordMenuNotification(
     const base::ListValue& args) {
   SafetyHubMenuNotificationServiceFactory::GetForProfile(profile_)
@@ -410,7 +403,7 @@ void SafetyHubHandler::HandleGetSafetyHubEntryPointData(
   }
 
   // Modules in subheader should be added in the following order: Passwords,
-  // Version, Safe Browsing, Extensions, Notifications, Permissions.
+  // Version, Safe Browsing, Extensions, Permissions.
   std::u16string subheader = u"";
 
   if (modules.contains(SafetyHubModule::kPasswords)) {
@@ -525,11 +518,6 @@ void SafetyHubHandler::RegisterMessages() {
       base::BindRepeating(
           &SafetyHubHandler::
               HandleUndoAcknowledgeRevokedUnusedSitePermissionsList,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getNotificationPermissionReview",
-      base::BindRepeating(
-          &SafetyHubHandler::HandleGetNotificationPermissionReviewList,
           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "dismissActiveMenuNotification",

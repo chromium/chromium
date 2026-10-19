@@ -457,9 +457,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "safetyHubExtensionsReviewLabel",
       IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS);
   plural_string_handler->AddLocalizedString(
-      "safetyHubNotificationPermissionReviewBlockAllToastLabel",
-      IDS_SETTINGS_SAFETY_CHECK_NOTIFICATION_PERMISSION_REVIEW_BLOCK_ALL_TOAST_LABEL);
-  plural_string_handler->AddLocalizedString(
       "safetyHubUnusedSitePermissionsPrimaryLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_PRIMARY_LABEL);
   plural_string_handler->AddLocalizedString(
@@ -471,12 +468,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   plural_string_handler->AddLocalizedString(
       "safetyHubUnusedSitePermissionsToastBulkLabel",
       IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_TOAST_BULK_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyHubNotificationPermissionsPrimaryLabel",
-      IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL);
-  plural_string_handler->AddLocalizedString(
-      "safetyHubNotificationPermissionsSecondaryLabel",
-      IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL);
   plural_string_handler->AddLocalizedString(
       "batchUploadPromoLabel", IDS_BATCH_UPLOAD_PROMO_SUBTITLE_ITEMS_WITH_LINK);
   plural_string_handler->AddLocalizedString("cpuPerformanceCores",

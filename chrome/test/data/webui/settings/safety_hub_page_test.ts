@@ -32,11 +32,6 @@ suite('SafetyHubPage', function() {
   let prefsBrowserProxy: TestPrefsBrowserProxy;
   let prefService: PrefService;
 
-  const notificationPermissionMockData = [{
-    origin: 'www.example.com',
-    notificationInfoString: 'About 1 notifications a day',
-  }];
-
   const unusedSitePermissionMockData = [{
     origin: 'www.example.com',
     permissions: [
@@ -144,26 +139,6 @@ suite('SafetyHubPage', function() {
       });
 
   test(
-      'No Recommendation State Visibility With Notification Permissions Module',
-      async function() {
-        // The element is visible when there is nothing to review.
-        assertNoRecommendationState(true);
-
-        // The element becomes hidden if the is any module that needs attention.
-        webUIListenerCallback(
-            SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-            notificationPermissionMockData);
-        await microtasksFinished();
-        assertNoRecommendationState(false);
-
-        // Once hidden, it remains hidden as other modules are visible.
-        webUIListenerCallback(
-            SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
-        await microtasksFinished();
-        assertNoRecommendationState(false);
-      });
-
-  test(
       'No Recommendation State Visibility With Extensions Module',
       async function() {
         // The element is visible when there is nothing to review.
@@ -204,33 +179,6 @@ suite('SafetyHubPage', function() {
         unusedSitePermissionMockData);
     await microtasksFinished();
     assertTrue(isChildVisible(testElement, unusedSitePermissionsElementTag));
-  });
-
-  test('Notification Permissions Module Visibility', async function() {
-    // The element is not visible when there is nothing to review.
-    const notificationPermissionsElementTag =
-        'settings-safety-hub-notification-permissions-module';
-    assertFalse(isChildVisible(testElement, notificationPermissionsElementTag));
-
-    // The element becomes visible if the list of permissions is no longer
-    // empty.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        notificationPermissionMockData);
-    await microtasksFinished();
-    assertTrue(isChildVisible(testElement, notificationPermissionsElementTag));
-
-    // Once visible, it remains visible regardless of list length.
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED, []);
-    await microtasksFinished();
-    assertTrue(isChildVisible(testElement, notificationPermissionsElementTag));
-
-    webUIListenerCallback(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        notificationPermissionMockData);
-    await microtasksFinished();
-    assertTrue(isChildVisible(testElement, notificationPermissionsElementTag));
   });
 
   test('Extensions Module Visibility', async function() {
@@ -513,7 +461,6 @@ suite('SafetyHubPage', function() {
       safetyHubBrowserProxy.setVersionCardData(safeCardData);
       safetyHubBrowserProxy.setSafeBrowsingCardData(safeCardData);
       safetyHubBrowserProxy.setUnusedSitePermissions([]);
-      safetyHubBrowserProxy.setNotificationPermissionReview([]);
       safetyHubBrowserProxy.setNumberOfExtensionsThatNeedReview(0);
       metricsBrowserProxy.reset();
     }
@@ -575,16 +522,6 @@ suite('SafetyHubPage', function() {
     result = await metricsBrowserProxy.whenCalled(
         'recordSafetyHubModuleWarningImpression');
     assertEquals(SafetyHubModuleType.PERMISSIONS, result);
-
-    // Expect recordSafetyHubModuleWarningImpression is called for notification
-    // permissions.
-    reset();
-    safetyHubBrowserProxy.setNotificationPermissionReview(
-        notificationPermissionMockData);
-    await refresh();
-    result = await metricsBrowserProxy.whenCalled(
-        'recordSafetyHubModuleWarningImpression');
-    assertEquals(SafetyHubModuleType.NOTIFICATIONS, result);
 
     // Expect recordSafetyHubModuleWarningImpression is called for extensions.
     reset();

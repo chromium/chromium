@@ -1671,12 +1671,6 @@ IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest, NotificationsPage) {
           "runMochaSuite('NotificationsPage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsNotificationsPageTest,
-                       NotificationPermissionReview) {
-  RunTest("settings/notifications_page_test.js",
-          "runMochaSuite('NotificationPermissionReview')");
-}
-
 class SettingsGeolocationPageTest : public SettingsBrowserTest {};
 
 IN_PROC_BROWSER_TEST_F(SettingsGeolocationPageTest, GeolocationPage) {
@@ -1735,11 +1729,6 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubPage) {
 
 IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, UnusedSitePermissionsModule) {
   RunTest("settings/safety_hub_unused_site_permissions_module_test.js",
-          "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, NotificationPermissionsModule) {
-  RunTest("settings/safety_hub_notification_permissions_module_test.js",
           "mocha.run()");
 }
 

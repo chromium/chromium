@@ -224,24 +224,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Extended preloading"/>
 </enum>
 
-<!-- LINT.IfChange(SafetyCheckNotificationsModuleInteractions) -->
-
-<enum name="SafetyCheckNotificationsModuleInteractions">
-  <int value="0" label="Block"/>
-  <int value="1" label="Block all"/>
-  <int value="2" label="Ignore"/>
-  <int value="3" label="Minimize"/>
-  <int value="4" label="Reset"/>
-  <int value="5" label="Undo block"/>
-  <int value="6" label="Undo ignore"/>
-  <int value="7" label="Undo reset"/>
-  <int value="8" label="Open review UI"/>
-  <int value="9" label="Undo block all"/>
-  <int value="10" label="Go to settings"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/resources/settings/metrics_browser_proxy.ts:SafetyCheckNotificationsModuleInteractions) -->
-
 <enum name="SafetyCheckPasswordsStatus">
   <int value="0" label="CHECKING"/>
   <int value="1" label="SAFE"/>

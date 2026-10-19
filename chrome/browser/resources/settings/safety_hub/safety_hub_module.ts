@@ -27,7 +27,7 @@ import {getHtml} from './safety_hub_module.html.js';
 
 /**
  * Corresponds to the animation-duration CSS parameter defined
- * in review_notification_permissions.html. Set to be slightly higher, as we
+ * in safety_hub_module.css. Set to be slightly higher, as we
  * want to ensure that the animation is finished before updating the model for
  * the right visual effect.
  */
@@ -37,10 +37,6 @@ export interface SiteInfo {
   origin: string;
   detail: string|TrustedHTML;
   icon?: string;
-}
-
-export interface SiteInfoWithTarget extends SiteInfo {
-  target: EventTarget;
 }
 
 export interface SettingsSafetyHubModuleElement {
@@ -103,13 +99,6 @@ export class SettingsSafetyHubModuleElement extends
 
       // The string for the tooltip for the button of the list item.
       buttonTooltipText: {type: String},
-
-      // Whether the more action button is visible.
-      moreActionVisible: {type: Boolean},
-
-      // The string ID for the aria label for the more action button of the list
-      // item.
-      moreButtonAriaLabelId: {type: String},
     };
   }
 
@@ -124,8 +113,6 @@ export class SettingsSafetyHubModuleElement extends
   accessor buttonIcon: string = '';
   accessor buttonAriaLabelId: string = '';
   accessor buttonTooltipText: string = '';
-  accessor moreButtonAriaLabelId: string = '';
-  accessor moreActionVisible: boolean = false;
 
   private modelUpdateDelayMsForTesting_: number|null = null;
 
@@ -328,16 +315,6 @@ export class SettingsSafetyHubModuleElement extends
     this.fire('sh-module-item-button-click', item);
   }
 
-  protected onMoreActionClick_(e: Event) {
-    assert(this.sites);
-    const target = e.currentTarget as HTMLElement;
-    const item: SiteInfoWithTarget = {
-      ...this.sites[Number(target.dataset['index'])],
-      target,
-    };
-    this.fire('sh-module-more-action-button-click', item);
-  }
-
   private onHeaderIconChanged_() {
     // The check icon is always green for all Safety Hub modules.
     if (this.headerIcon === 'cr:check') {
@@ -371,12 +348,6 @@ export class SettingsSafetyHubModuleElement extends
   protected getButtonAriaLabelForOrigin_(origin: string): string {
     return this.buttonAriaLabelId ? this.i18n(this.buttonAriaLabelId, origin) :
                                     '';
-  }
-
-  protected getMoreButtonAriaLabelForOrigin_(origin: string): string {
-    return this.moreButtonAriaLabelId ?
-        this.i18n(this.moreButtonAriaLabelId, origin) :
-        '';
   }
 }
 

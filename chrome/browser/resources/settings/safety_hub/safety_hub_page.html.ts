@@ -38,10 +38,6 @@ export function getHtml(this: SettingsSafetyHubPageElement) {
   <h2 class="section-header cr-secondary-text">
     $i18n{safetyHubPageModuleSectionHeader}
   </h2>
-  ${this.showNotificationPermissions_ ? html`
-    <settings-safety-hub-notification-permissions-module class="module box">
-    </settings-safety-hub-notification-permissions-module>
-  ` : ''}
   ${this.showUnusedSitePermissions_ ? html`
     <settings-safety-hub-unused-site-permissions-module class="module box">
     </settings-safety-hub-unused-site-permissions-module>

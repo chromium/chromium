@@ -15,7 +15,6 @@ import '../settings_page/settings_subpage.js';
 import './safety_hub_card.js';
 import './safety_hub_module.js';
 import './extensions_module.js';
-import './notification_permissions_module.js';
 import './unused_site_permissions_module.js';
 
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
@@ -34,7 +33,7 @@ import {Router} from '../router.js';
 import type {Route} from '../router.js';
 import {SettingsViewMixinLit} from '../settings_page/settings_view_mixin_lit.js';
 
-import type {CardInfo, NotificationPermission, SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
+import type {CardInfo, SafetyHubBrowserProxy, UnusedSitePermissions} from './safety_hub_browser_proxy.js';
 import {CardState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from './safety_hub_browser_proxy.js';
 import type {SettingsSafetyHubCardElement} from './safety_hub_card.js';
 import type {SiteInfo} from './safety_hub_module.js';
@@ -78,9 +77,6 @@ export class SettingsSafetyHubPageElement extends
       // The object that holds data of Safe Browsing card.
       safeBrowsingCardData_: {type: Object},
 
-      // Whether Notification Permissions module should be visible.
-      showNotificationPermissions_: {type: Boolean},
-
       // Whether Unused Site Permissions module should be visible.
       showUnusedSitePermissions_: {type: Boolean},
 
@@ -88,9 +84,6 @@ export class SettingsSafetyHubPageElement extends
       showExtensions_: {type: Boolean},
 
       userEducationItemList_: {type: Array},
-
-      // Whether the data for notification permissions is ready.
-      hasDataForNotificationPermissions_: {type: Boolean},
 
       // Whether the data for unused site permissions is ready.
       hasDataForUnusedPermissions_: {type: Boolean},
@@ -117,8 +110,6 @@ export class SettingsSafetyHubPageElement extends
     subheader: '',
     state: CardState.INFO,
   };
-  protected accessor showNotificationPermissions_: boolean = false;
-  private accessor hasDataForNotificationPermissions_: boolean = false;
   protected accessor showUnusedSitePermissions_: boolean = false;
   private accessor hasDataForUnusedPermissions_: boolean = false;
   protected accessor showExtensions_: boolean = false;
@@ -153,7 +144,6 @@ export class SettingsSafetyHubPageElement extends
         changedPrivateProperties.has('versionCardData_') ||
         changedPrivateProperties.has('safeBrowsingCardData_') ||
         changedPrivateProperties.has('hasDataForUnusedPermissions_') ||
-        changedPrivateProperties.has('hasDataForNotificationPermissions_') ||
         changedPrivateProperties.has('hasDataForExtensions_')) {
       this.onAllModulesLoaded_();
     }
@@ -213,11 +203,6 @@ export class SettingsSafetyHubPageElement extends
 
   private initializeModules_() {
     this.addWebUiListener(
-        SafetyHubEvent.NOTIFICATION_PERMISSIONS_MAYBE_CHANGED,
-        (sites: NotificationPermission[]) =>
-            this.onNotificationPermissionListChanged_(sites));
-
-    this.addWebUiListener(
         SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
         (sites: UnusedSitePermissions[]) =>
             this.onUnusedSitePermissionListChanged_(sites));
@@ -225,10 +210,6 @@ export class SettingsSafetyHubPageElement extends
     this.addWebUiListener(
         SafetyHubEvent.EXTENSIONS_CHANGED,
         (num: number) => this.onExtensionsChanged_(num));
-
-    this.browserProxy_.getNotificationPermissionReview().then(
-        (sites: NotificationPermission[]) =>
-            this.onNotificationPermissionListChanged_(sites));
 
     this.browserProxy_.getRevokedUnusedSitePermissionsList().then(
         (sites: UnusedSitePermissions[]) =>
@@ -349,15 +330,6 @@ export class SettingsSafetyHubPageElement extends
     }
   }
 
-  private onNotificationPermissionListChanged_(permissions:
-                                                   NotificationPermission[]) {
-    // The module should be visible if there is any item on the list, or if
-    // there is no item on the list but the list was shown before.
-    this.showNotificationPermissions_ =
-        permissions.length > 0 || this.showNotificationPermissions_;
-    this.hasDataForNotificationPermissions_ = true;
-  }
-
   private onUnusedSitePermissionListChanged_(permissions:
                                                  UnusedSitePermissions[]) {
     // The module should be visible if there is any item on the list, or if
@@ -368,9 +340,7 @@ export class SettingsSafetyHubPageElement extends
   }
 
   protected shouldShowNoRecommendationsState_(): boolean {
-    return !(
-        this.showUnusedSitePermissions_ || this.showNotificationPermissions_ ||
-        this.showExtensions_);
+    return !(this.showUnusedSitePermissions_ || this.showExtensions_);
   }
 
   private onExtensionsChanged_(numberOfExtensions: number) {
@@ -406,9 +376,7 @@ export class SettingsSafetyHubPageElement extends
     }
 
     // Wait till the data of the modules be ready.
-    if (!this.hasDataForUnusedPermissions_ ||
-        !this.hasDataForNotificationPermissions_ ||
-        !this.hasDataForExtensions_) {
+    if (!this.hasDataForUnusedPermissions_ || !this.hasDataForExtensions_) {
       return;
     }
 
@@ -430,12 +398,6 @@ export class SettingsSafetyHubPageElement extends
     if (this.versionCardData_.state !== CardState.SAFE) {
       this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
           SafetyHubModuleType.VERSION);
-      hasAnyWarning = true;
-    }
-
-    if (this.showNotificationPermissions_) {
-      this.metricsBrowserProxy_.recordSafetyHubModuleWarningImpression(
-          SafetyHubModuleType.NOTIFICATIONS);
       hasAnyWarning = true;
     }
 

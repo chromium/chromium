@@ -46,14 +46,6 @@ ${this.sites && this.sites.length ? html`
               @mouseenter="${this.onMainButtonMouseenter_}">
           </cr-icon-button>
         ` : ''}
-        ${this.moreActionVisible ? html`
-          <cr-icon-button class="icon-more-vert" id="moreActionButton"
-              data-index="${index}"
-              @click="${this.onMoreActionClick_}" title="$i18n{moreActions}"
-              aria-label="${this.getMoreButtonAriaLabelForOrigin_(item.origin)}"
-              actionable>
-          </cr-icon-button>
-        ` : ''}
       </div>
     `)}
   </div>
