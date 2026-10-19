@@ -45,9 +45,7 @@ source_set("read_anything") {
     ":prefs",
     "//base",
     "//chrome/browser:primitives",
-    "//chrome/browser/dom_distiller",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui_browser:headers",
     "//chrome/common",
     "//chrome/common/read_anything:mojo_bindings",
     "//components/user_education/common",
@@ -55,22 +53,18 @@ source_set("read_anything") {
     "//pdf:buildflags",
     "//printing/buildflags",
     "//ui/base",
+    "//ui/base/unowned_user_data",
     "//ui/views",
     "//ui/views/controls/webview",
     "//url",
   ]
   deps = [
     "//chrome/browser/ui/side_panel",
-    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
-    "//chrome/browser/ui/views/side_panel",
     "//components/page_load_metrics/browser",
   ]
 }
 
 source_set("impl") {
-  # TODO(https://crbug.com/552467653): Migrate additional implementation-
-  # specific cc files to this project to reduce overall dependencies of the
-  # main project above.
   sources = [
     "read_anything_contents_wrapper.cc",
     "read_anything_controller.cc",
@@ -98,6 +92,7 @@ source_set("impl") {
     "//chrome/browser:browser_process",
     "//chrome/browser/accessibility",
     "//chrome/browser/component_updater",
+    "//chrome/browser/dom_distiller",
     "//chrome/browser/extensions",
     "//chrome/browser/language",
     "//chrome/browser/profiles",
@@ -116,6 +111,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/side_panel/read_anything",
+    "//chrome/browser/ui/webui_browser:headers",
     "//components/find_in_page",
     "//components/input",
     "//components/language/core/browser",
