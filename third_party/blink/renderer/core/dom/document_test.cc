@@ -77,6 +77,8 @@
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/frame/permissions_policy_violation_report_body.h"
+#include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -1340,11 +1342,20 @@ class MockReportingContext final : public ReportingContext {
  public:
   explicit MockReportingContext(ExecutionContext& ec) : ReportingContext(ec) {}
 
-  void QueueReport(Report* report, const Vector<String>& endpoint) override {
+  void QueueReport(Report* report, const Vector<String>& endpoints) override {
     report_count++;
+    last_report = report;
+    last_endpoints = endpoints;
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(last_report);
+    ReportingContext::Trace(visitor);
   }
 
   unsigned report_count = 0;
+  Member<Report> last_report;
+  Vector<String> last_endpoints;
 };
 
 }  // namespace
@@ -2553,6 +2564,121 @@ TEST_F(DocumentFocusUseCounterTest,
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kFocusWithoutUserActivationBlocked));
 }
+
+class DocumentFocusReportingTest : public DocumentFocusUseCounterTest,
+                                   public testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    DocumentFocusUseCounterTest::SetUp();
+    SetUpChildFrameWithHeader(
+        nullptr,
+        IsReportOnly()
+            ? nullptr
+            : "focus-without-user-activation=();report-to=enforcing-endpoint",
+        "focus-without-user-activation=();report-to=report-only-endpoint");
+  }
+
+  bool IsReportOnly() const { return GetParam(); }
+
+  MockReportingContext* CaptureReports(LocalFrame& frame) {
+    auto* window = frame.DomWindow();
+    auto* reporting_context =
+        MakeGarbageCollected<MockReportingContext>(*window);
+    Supplement<ExecutionContext>::ProvideTo(*window, reporting_context);
+    return reporting_context;
+  }
+
+ private:
+  ScopedBlockingFocusWithoutUserActivationForTest feature_{true};
+};
+
+TEST_P(DocumentFocusReportingTest, ReportsViolationOnInitiator) {
+  auto* initiator_reports = CaptureReports(*ChildFrame());
+  auto* target_reports = CaptureReports(*GetDocument().GetFrame());
+
+  EXPECT_EQ(IsReportOnly(),
+            GetDocument().IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_EQ(initiator_reports->report_count, 1u);
+  EXPECT_EQ(target_reports->report_count, 0u);
+  ASSERT_TRUE(initiator_reports->last_report);
+  EXPECT_EQ(initiator_reports->last_report->url(),
+            ChildDocument()->Url().GetString());
+  ASSERT_EQ(initiator_reports->last_report->type(),
+            ReportType::kPermissionsPolicyViolation);
+  const auto* body = static_cast<PermissionsPolicyViolationReportBody*>(
+      initiator_reports->last_report->body());
+  EXPECT_EQ(body->featureId(), "focus-without-user-activation");
+  EXPECT_EQ(body->disposition(), IsReportOnly() ? "report" : "enforce");
+  EXPECT_THAT(initiator_reports->last_endpoints,
+              ElementsAre(IsReportOnly() ? "report-only-endpoint"
+                                         : "enforcing-endpoint"));
+}
+
+TEST_P(DocumentFocusReportingTest, FocusedFrameDoesNotReport) {
+  auto* reports = CaptureReports(*ChildFrame());
+  ChildDocument()->GetPage()->GetFocusController().SetFocusedFrame(
+      ChildFrame());
+
+  EXPECT_TRUE(
+      ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_EQ(reports->report_count, 0u);
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByPolicy));
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
+}
+
+TEST_P(DocumentFocusReportingTest, FocusedDescendantDoesNotReport) {
+  ChildDocument()->body()->SetInnerHTMLWithoutTrustedTypes("<iframe></iframe>");
+  auto* descendant = To<LocalFrame>(ChildFrame()->FirstChild());
+  ASSERT_TRUE(descendant);
+  auto* reports = CaptureReports(*ChildFrame());
+  ChildDocument()->GetPage()->GetFocusController().SetFocusedFrame(descendant);
+
+  EXPECT_TRUE(
+      ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_EQ(reports->report_count, 0u);
+  EXPECT_FALSE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByPolicy));
+  EXPECT_TRUE(ChildDocument()->IsUseCounted(
+      WebFeature::kFocusWithoutUserActivationAllowedByDescendant));
+}
+
+TEST_P(DocumentFocusReportingTest, UserActivationDoesNotReport) {
+  auto* reports = CaptureReports(*ChildFrame());
+  LocalFrame::NotifyUserActivation(
+      ChildFrame(), mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(ChildFrame()));
+
+  EXPECT_TRUE(
+      ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_EQ(reports->report_count, 0u);
+}
+
+TEST_P(DocumentFocusReportingTest, UserGestureDoesNotReport) {
+  auto* reports = CaptureReports(*ChildFrame());
+
+  EXPECT_TRUE(ChildDocument()->IsFocusAllowed(FocusTrigger::kUserGesture,
+                                              *ChildFrame()));
+
+  EXPECT_EQ(reports->report_count, 0u);
+}
+
+TEST_P(DocumentFocusReportingTest, DisabledFeatureDoesNotReport) {
+  ScopedBlockingFocusWithoutUserActivationForTest disabled(false);
+  auto* reports = CaptureReports(*ChildFrame());
+
+  EXPECT_TRUE(
+      ChildDocument()->IsFocusAllowed(FocusTrigger::kScript, *ChildFrame()));
+
+  EXPECT_EQ(reports->report_count, 0u);
+}
+
+INSTANTIATE_TEST_SUITE_P(All, DocumentFocusReportingTest, testing::Bool());
 
 TEST_F(DocumentTest, CreateElementFastPath) {
   // 1. Standard HTML elements hit the fast path in CreateElementForBinding.

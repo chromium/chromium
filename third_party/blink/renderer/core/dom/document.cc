@@ -9777,16 +9777,6 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
     return true;
   }
 
-  // Check the focus setter's permissions policy to see if it allows focus
-  // without user activation.
-  const ExecutionContext* initiator_context = initiator_frame.DomWindow();
-  if (initiator_context && initiator_context->IsFeatureEnabled(
-                               network::mojom::PermissionsPolicyFeature::
-                                   kFocusWithoutUserActivation)) {
-    CountUse(WebFeature::kFocusWithoutUserActivationAllowedByPolicy);
-    return true;
-  }
-
   // Allow focus if the currently focused frame is an inclusive descendant of
   // the focus setter's frame. This means the setter (or one of its children)
   // already has focus, so moving focus within is not stealing it from a parent.
@@ -9800,6 +9790,17 @@ bool Document::IsFocusAllowed(FocusTrigger trigger,
       CountUse(WebFeature::kFocusWithoutUserActivationAllowedByDescendant);
       return true;
     }
+  }
+
+  // Check the focus setter's permissions policy to see if it allows focus
+  // without user activation.
+  const LocalDOMWindow* initiator_window = initiator_frame.DomWindow();
+  if (initiator_window &&
+      initiator_window->GetExecutionContext()->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kFocusWithoutUserActivation,
+          ReportOptions::kReportOnFailure)) {
+    CountUse(WebFeature::kFocusWithoutUserActivationAllowedByPolicy);
+    return true;
   }
 
   AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
