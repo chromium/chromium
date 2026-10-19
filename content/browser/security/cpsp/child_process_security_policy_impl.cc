@@ -1797,25 +1797,21 @@ void ChildProcessSecurityPolicyImpl::GrantWebUIBindings_Cpp(
 }
 
 void ChildProcessSecurityPolicyImpl::GrantOriginCheckExemptionForWebView(
-    int child_id,
+    ChildProcessId child_id,
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (auto* state = process_states_.GetProcessStateForMutation(
-          ChildProcessId::FromUnsafeValue(child_id))) {
+  if (auto* state = process_states_.GetProcessStateForMutation(child_id)) {
     state->GrantOriginCheckExemptionForWebView(origin);
   }
 }
 
 bool ChildProcessSecurityPolicyImpl::HasOriginCheckExemptionForWebView(
-    int child_id,
+    ChildProcessId child_id,
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  auto* state = process_states_.GetProcessStateForQuery(
-      ChildProcessId::FromUnsafeValue(child_id));
+  auto* state = process_states_.GetProcessStateForQuery(child_id);
   if (!state) {
     return false;
   }
@@ -2424,9 +2420,11 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     // the universal access check, but in practice no apps in the wild seem to
     // be failing any other types of validation, so doing it here is a narrower
     // exemption.) See https://crbug.com/326250356.
+    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     bool exempt_due_to_webview_universal_access =
         (origin.scheme() == url::kFileScheme) &&
-        HasOriginCheckExemptionForWebView(child_id, origin);
+        HasOriginCheckExemptionForWebView(
+            ChildProcessId::FromUnsafeValue(child_id), origin);
     if (!exempt_due_to_webview_universal_access) {
       return CanCommitStatus::CANNOT_COMMIT_URL;
     }

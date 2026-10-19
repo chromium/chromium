@@ -575,13 +575,13 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // Note that LoadDataWithBaseURL can be used with non-opaque origins as well,
   // but in that case the bypass is only allowed for the document and not the
   // entire origin, to prevent other code in the origin from bypassing checks.
-  void GrantOriginCheckExemptionForWebView(int child_id,
+  void GrantOriginCheckExemptionForWebView(ChildProcessId child_id,
                                            const url::Origin& origin);
 
   // Returns whether the given opaque or file origin was granted an exemption
   // due to Android WebView and <webview> APIs, allowing its documents to bypass
   // certain URL and origin checks.
-  bool HasOriginCheckExemptionForWebView(int child_id,
+  bool HasOriginCheckExemptionForWebView(ChildProcessId child_id,
                                          const url::Origin& origin);
 
   // Explicit permissions checks for FileSystemURL specified files.
