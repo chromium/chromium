@@ -765,7 +765,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   mutable std::optional<gfx::Rect> anchor_rect_;
 
   bool accept_events_ = true;
-  bool accept_drag_drop_ = false;
+  bool accept_drag_drop_ = true;
   gfx::NativeView parent_window_ = gfx::NativeView();
 
   // By default, all BubbleDialogDelegates have parent windows.

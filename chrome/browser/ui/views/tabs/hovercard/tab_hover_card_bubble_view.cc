@@ -665,6 +665,7 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   set_accept_events(false);
 #endif
+  set_accept_drag_drop(false);
 
   // Set so that the tab hover card is not focus traversable when keyboard
   // navigating through the tab strip.
