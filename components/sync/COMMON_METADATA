@@ -5,3 +5,9 @@ team_email: "chrome-sync-client-team@google.com"
 buganizer_public: {
   component_id: 1457192
 }
+agentic_review: {
+  capability_groups: {
+    path_expression: "components/sync/protocol/.*\\.proto"
+    review_capability_skills: "agents/skills/sync-proto-review/SKILL.md"
+  }
+}
