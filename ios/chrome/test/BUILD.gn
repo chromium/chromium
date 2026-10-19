@@ -261,6 +261,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/authentication/ui_bundled:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/cells:unit_tests",
+    "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/identity_chooser:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signin:unit_tests",
     "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet:unit_tests",

@@ -10,7 +10,7 @@
 // Delegate for the full screen signin coordinator
 @protocol FullscreenSigninCoordinatorDelegate <NSObject>
 
-// Let the delegate knows the result and request to be stopped.
+// Lets the delegate know the result and requests to be stopped.
 - (void)fullscreenSigninCoordinatorWantsToBeStopped:
             (FullscreenSigninCoordinator*)coordinator
                                              result:(SigninCoordinatorResult)

@@ -125,14 +125,8 @@
 // presenting the screens.
 - (void)finishPresentingScreens {
   __weak __typeof(self) weakSelf = self;
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
   void (^completion)(void) = ^{
-    SigninCoordinatorResult result =
-        identity ? SigninCoordinatorResultSuccess
-                 : SigninCoordinatorResultCanceledByUser;
-    [weakSelf finishWithResult:result identity:identity];
+    [weakSelf finishWithPrimaryIdentity];
   };
   [self.navigationController dismissViewControllerAnimated:YES
                                                 completion:completion];
@@ -184,8 +178,15 @@
   return nil;
 }
 
-- (void)finishWithResult:(SigninCoordinatorResult)result
-                identity:(id<SystemIdentity>)identity {
+- (void)finishWithPrimaryIdentity {
+  id<SystemIdentity> identity =
+      AuthenticationServiceFactory::GetForProfile(self.profile)
+          ->GetPrimaryIdentity();
+  [self finishWithResult:identity ? SigninCoordinatorResultSuccess
+                                  : SigninCoordinatorResultCanceledByUser];
+}
+
+- (void)finishWithResult:(SigninCoordinatorResult)result {
   [self stopChildCoordinator];
   self.navigationController = nil;
   self.screenProvider = nil;

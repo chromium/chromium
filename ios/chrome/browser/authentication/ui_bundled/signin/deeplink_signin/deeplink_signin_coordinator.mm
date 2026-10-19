@@ -200,8 +200,12 @@
     _selectedIdentity = resultIdentity;
     [self startSigninFlow];
   } else {
-    [self runCompletionWithSigninResult:result
-                     completionIdentity:resultIdentity];
+    SigninCoordinatorResult completionResult =
+        result == SigninCoordinatorResultSuccess
+            ? SigninCoordinatorResultCanceledByUser
+            : result;
+    [self runCompletionWithSigninResult:completionResult
+                     completionIdentity:nil];
   }
 }
 
@@ -217,6 +221,7 @@
                                              result:(SigninCoordinatorResult)
                                                         result {
   CHECK_EQ(_childCoordinator, coordinator);
+  [self stopChildCoordinator];
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForProfile(self.profile);
   id<SystemIdentity> identity = authService->GetPrimaryIdentity();
