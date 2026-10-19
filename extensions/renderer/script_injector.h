@@ -47,7 +47,7 @@ class ScriptInjector {
     blink::WebStyleSheetKey key;
   };
 
-  virtual ~ScriptInjector() {}
+  virtual ~ScriptInjector() = default;
 
   // Returns the script type of this particular injection.
   virtual mojom::InjectionType script_type() const = 0;

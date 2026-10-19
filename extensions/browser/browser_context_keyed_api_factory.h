@@ -139,7 +139,7 @@ class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
   BrowserContextKeyedAPIFactory& operator=(
       const BrowserContextKeyedAPIFactory&) = delete;
 
-  ~BrowserContextKeyedAPIFactory() override {}
+  ~BrowserContextKeyedAPIFactory() override = default;
 
  private:
   friend struct BrowserContextFactoryDependencies<T>;

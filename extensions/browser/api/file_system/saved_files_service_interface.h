@@ -17,7 +17,7 @@ struct SavedFileEntry;
 // Provides an LRU of saved file entries that persist across app reloads.
 class SavedFilesServiceInterface {
  public:
-  virtual ~SavedFilesServiceInterface() {}
+  virtual ~SavedFilesServiceInterface() = default;
 
   // Registers a file entry with the saved files service, making it eligible to
   // be put into the queue. File entries that are in the retained files queue at

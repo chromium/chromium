@@ -50,7 +50,7 @@ class StorageStorageAreaGetFunction : public SettingsFunction {
   DECLARE_EXTENSION_FUNCTION("storage.get", STORAGE_GET)
 
  protected:
-  ~StorageStorageAreaGetFunction() override {}
+  ~StorageStorageAreaGetFunction() override = default;
 
   // SettingsFunction:
   ResponseAction Run() override;
@@ -81,7 +81,7 @@ class StorageStorageAreaSetFunction : public SettingsFunction {
   DECLARE_EXTENSION_FUNCTION("storage.set", STORAGE_SET)
 
  protected:
-  ~StorageStorageAreaSetFunction() override {}
+  ~StorageStorageAreaSetFunction() override = default;
 
   // SettingsFunction:
   ResponseAction Run() override;
@@ -95,7 +95,7 @@ class StorageStorageAreaRemoveFunction : public SettingsFunction {
   DECLARE_EXTENSION_FUNCTION("storage.remove", STORAGE_REMOVE)
 
  protected:
-  ~StorageStorageAreaRemoveFunction() override {}
+  ~StorageStorageAreaRemoveFunction() override = default;
 
   // SettingsFunction:
   ResponseAction Run() override;
@@ -109,7 +109,7 @@ class StorageStorageAreaClearFunction : public SettingsFunction {
   DECLARE_EXTENSION_FUNCTION("storage.clear", STORAGE_CLEAR)
 
  protected:
-  ~StorageStorageAreaClearFunction() override {}
+  ~StorageStorageAreaClearFunction() override = default;
 
   // SettingsFunction:
   ResponseAction Run() override;
@@ -125,7 +125,7 @@ class StorageStorageAreaGetBytesInUseFunction : public SettingsFunction {
   FRIEND_TEST_ALL_PREFIXES(StorageApiUnittest, GetBytesInUseIntOverflow);
 
  protected:
-  ~StorageStorageAreaGetBytesInUseFunction() override {}
+  ~StorageStorageAreaGetBytesInUseFunction() override = default;
 
   // SettingsFunction:
   ResponseAction Run() override;

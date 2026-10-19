@@ -39,7 +39,7 @@ class AlarmsCreateFunction : public ExtensionFunction {
 
 class AlarmsGetFunction : public ExtensionFunction {
  protected:
-  ~AlarmsGetFunction() override {}
+  ~AlarmsGetFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -51,7 +51,7 @@ class AlarmsGetFunction : public ExtensionFunction {
 
 class AlarmsGetAllFunction : public ExtensionFunction {
  protected:
-  ~AlarmsGetAllFunction() override {}
+  ~AlarmsGetAllFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -63,7 +63,7 @@ class AlarmsGetAllFunction : public ExtensionFunction {
 
 class AlarmsClearFunction : public ExtensionFunction {
  protected:
-  ~AlarmsClearFunction() override {}
+  ~AlarmsClearFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -75,7 +75,7 @@ class AlarmsClearFunction : public ExtensionFunction {
 
 class AlarmsClearAllFunction : public ExtensionFunction {
  protected:
-  ~AlarmsClearAllFunction() override {}
+  ~AlarmsClearAllFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

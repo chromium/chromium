@@ -38,7 +38,7 @@ class RulesCacheDelegate {
     virtual void OnUpdateRules() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   // Determines the type of a cache, indicating whether or not its rules are

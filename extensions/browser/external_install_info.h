@@ -23,7 +23,7 @@ struct ExternalInstallInfo {
   ExternalInstallInfo(const ExternalInstallInfo&) = delete;
   ExternalInstallInfo& operator=(const ExternalInstallInfo&) = delete;
   ExternalInstallInfo(ExternalInstallInfo&& other);
-  virtual ~ExternalInstallInfo() {}
+  virtual ~ExternalInstallInfo() = default;
 
   ExtensionId extension_id;
   int creation_flags;

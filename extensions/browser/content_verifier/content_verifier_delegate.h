@@ -40,7 +40,7 @@ class ContentVerifierDelegate {
     SIGNED_HASHES,
   };
 
-  virtual ~ContentVerifierDelegate() {}
+  virtual ~ContentVerifierDelegate() = default;
 
   // Returns verification source type for `extension`.
   virtual VerifierSourceType GetVerifierSourceType(

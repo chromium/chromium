@@ -13,7 +13,7 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 namespace extensions {
 
 class I18nGetAcceptLanguagesFunction : public ExtensionFunction {
-  ~I18nGetAcceptLanguagesFunction() override {}
+  ~I18nGetAcceptLanguagesFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("i18n.getAcceptLanguages", I18N_GETACCEPTLANGUAGES)
 };

@@ -18,13 +18,13 @@ namespace extensions {
 // A delegate class of MimeHandlerViewGuest that are not a part of chrome.
 class MimeHandlerViewGuestDelegate {
  public:
-  MimeHandlerViewGuestDelegate() {}
+  MimeHandlerViewGuestDelegate() = default;
 
   MimeHandlerViewGuestDelegate(const MimeHandlerViewGuestDelegate&) = delete;
   MimeHandlerViewGuestDelegate& operator=(const MimeHandlerViewGuestDelegate&) =
       delete;
 
-  virtual ~MimeHandlerViewGuestDelegate() {}
+  virtual ~MimeHandlerViewGuestDelegate() = default;
 
   // Handles context menu, or returns false if unhandled.
   //

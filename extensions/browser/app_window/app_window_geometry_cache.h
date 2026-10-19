@@ -64,7 +64,7 @@ class AppWindowGeometryCache : public KeyedService,
                                         const gfx::Rect& bounds) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   AppWindowGeometryCache(content::BrowserContext* context,

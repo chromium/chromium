@@ -25,7 +25,7 @@ namespace extensions {
 // A delegate class of WebViewGuest that are not a part of chrome.
 class WebViewGuestDelegate {
  public :
-  virtual ~WebViewGuestDelegate() {}
+  virtual ~WebViewGuestDelegate() = default;
 
   // Called when context menu operation was handled.
   //

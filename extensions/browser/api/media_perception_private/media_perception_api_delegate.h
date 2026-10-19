@@ -33,7 +33,7 @@ class MediaPerceptionAPIDelegate {
       mojo::PendingReceiver<chromeos::media_perception::mojom::MediaPerception>
           receiver)>;
 
-  virtual ~MediaPerceptionAPIDelegate() {}
+  virtual ~MediaPerceptionAPIDelegate() = default;
 
   // Provides an interface through which a media analytics Chrome OS component
   // from Component Updater can be loaded and mounted on a device.

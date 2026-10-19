@@ -63,7 +63,7 @@ class ContentRulesRegistry : public RulesRegistry {
   virtual void WebContentsDestroyed(content::WebContents* contents) = 0;
 
  protected:
-  ~ContentRulesRegistry() override {}
+  ~ContentRulesRegistry() override = default;
 };
 
 }  // namespace extensions

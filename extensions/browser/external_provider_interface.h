@@ -65,10 +65,10 @@ class ExternalProviderInterface {
         const std::set<std::string>& removed_extensions) = 0;
 
    protected:
-    virtual ~VisitorInterface() {}
+    virtual ~VisitorInterface() = default;
   };
 
-  virtual ~ExternalProviderInterface() {}
+  virtual ~ExternalProviderInterface() = default;
 
   // The visitor (ExtensionsService) calls this function before it goes away.
   virtual void ServiceShutdown() = 0;

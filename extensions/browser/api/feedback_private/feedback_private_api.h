@@ -85,7 +85,7 @@ class FeedbackPrivateGetUserEmailFunction : public ExtensionFunction {
                              FEEDBACKPRIVATE_GETUSEREMAIL)
 
  protected:
-  ~FeedbackPrivateGetUserEmailFunction() override {}
+  ~FeedbackPrivateGetUserEmailFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -95,7 +95,7 @@ class FeedbackPrivateGetSystemInformationFunction : public ExtensionFunction {
                              FEEDBACKPRIVATE_GETSYSTEMINFORMATION)
 
  protected:
-  ~FeedbackPrivateGetSystemInformationFunction() override {}
+  ~FeedbackPrivateGetSystemInformationFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -112,7 +112,7 @@ class FeedbackPrivateReadLogSourceFunction : public ExtensionFunction {
                              FEEDBACKPRIVATE_READLOGSOURCE)
 
  protected:
-  ~FeedbackPrivateReadLogSourceFunction() override {}
+  ~FeedbackPrivateReadLogSourceFunction() override = default;
   ResponseAction Run() override;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -128,7 +128,7 @@ class FeedbackPrivateSendFeedbackFunction : public ExtensionFunction {
                              FEEDBACKPRIVATE_SENDFEEDBACK)
 
  protected:
-  ~FeedbackPrivateSendFeedbackFunction() override {}
+  ~FeedbackPrivateSendFeedbackFunction() override = default;
   ResponseAction Run() override;
   void OnCompleted(api::feedback_private::LandingPageType type, bool success);
 };

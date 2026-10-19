@@ -170,7 +170,7 @@ class EventListenerMap {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void OnListenerAdded(const EventListener* listener) = 0;
     virtual void OnListenerRemoved(const EventListener* listener) = 0;
     virtual void OnListenerUpdated(const EventListener* listener) = 0;

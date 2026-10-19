@@ -279,7 +279,7 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
    private:
     friend class base::RefCountedThreadSafe<ApiResourceData>;
 
-    virtual ~ApiResourceData() {}
+    virtual ~ApiResourceData() = default;
 
     T* GetOwnedResource(const ExtensionId& extension_id, int api_resource_id) {
       const std::unique_ptr<T>& ptr = api_resource_map_[api_resource_id];

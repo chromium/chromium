@@ -60,7 +60,7 @@ class WebViewInternalCaptureVisibleRegionFunction
       const WebViewInternalCaptureVisibleRegionFunction&) = delete;
 
  protected:
-  ~WebViewInternalCaptureVisibleRegionFunction() override {}
+  ~WebViewInternalCaptureVisibleRegionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -90,7 +90,7 @@ class WebViewInternalNavigateFunction
  public:
   DECLARE_EXTENSION_FUNCTION("webViewInternal.navigate",
                              WEBVIEWINTERNAL_NAVIGATE)
-  WebViewInternalNavigateFunction() {}
+  WebViewInternalNavigateFunction() = default;
 
   WebViewInternalNavigateFunction(const WebViewInternalNavigateFunction&) =
       delete;
@@ -98,7 +98,7 @@ class WebViewInternalNavigateFunction
       const WebViewInternalNavigateFunction&) = delete;
 
  protected:
-  ~WebViewInternalNavigateFunction() override {}
+  ~WebViewInternalNavigateFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -167,7 +167,7 @@ class WebViewInternalExecuteScriptFunction
       const WebViewInternalExecuteScriptFunction&) = delete;
 
  protected:
-  ~WebViewInternalExecuteScriptFunction() override {}
+  ~WebViewInternalExecuteScriptFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -187,7 +187,7 @@ class WebViewInternalInsertCSSFunction
       const WebViewInternalInsertCSSFunction&) = delete;
 
  protected:
-  ~WebViewInternalInsertCSSFunction() override {}
+  ~WebViewInternalInsertCSSFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

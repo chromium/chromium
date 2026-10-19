@@ -21,7 +21,7 @@ namespace extensions {
 // Chrome OS.
 class NonNativeFileSystemDelegate {
  public:
-  virtual ~NonNativeFileSystemDelegate() {}
+  virtual ~NonNativeFileSystemDelegate() = default;
 
   // Checks whether |path| points to a non-local filesystem that
   // requires special handling.

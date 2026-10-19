@@ -45,12 +45,12 @@ class IdleManager : public ExtensionRegistryObserver,
  public:
   class IdleTimeProvider {
    public:
-    IdleTimeProvider() {}
+    IdleTimeProvider() = default;
 
     IdleTimeProvider(const IdleTimeProvider&) = delete;
     IdleTimeProvider& operator=(const IdleTimeProvider&) = delete;
 
-    virtual ~IdleTimeProvider() {}
+    virtual ~IdleTimeProvider() = default;
     virtual ui::IdleState CalculateIdleState(int idle_threshold) = 0;
     virtual int CalculateIdleTime() = 0;
     virtual bool CheckIdleStateIsLocked() = 0;
@@ -58,12 +58,12 @@ class IdleManager : public ExtensionRegistryObserver,
 
   class EventDelegate {
    public:
-    EventDelegate() {}
+    EventDelegate() = default;
 
     EventDelegate(const EventDelegate&) = delete;
     EventDelegate& operator=(const EventDelegate&) = delete;
 
-    virtual ~EventDelegate() {}
+    virtual ~EventDelegate() = default;
     virtual void OnStateChanged(const ExtensionId& extension_id,
                                 ui::IdleState new_state) = 0;
     virtual void RegisterObserver(EventRouter::Observer* observer) = 0;

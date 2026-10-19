@@ -30,7 +30,7 @@ class JSRunner {
   // Clears the instance for a given `context`.
   static void ClearInstanceForContext(v8::Local<v8::Context> context);
 
-  virtual ~JSRunner() {}
+  virtual ~JSRunner() = default;
 
   // Called with the result of executing the function, as well as the context
   // it was executed in. Note: This callback is *not* guaranteed to be invoked

@@ -130,7 +130,7 @@ class BluetoothStartDiscoveryFunction : public BluetoothExtensionFunction {
                              BLUETOOTH_STARTDISCOVERY)
 
  protected:
-  ~BluetoothStartDiscoveryFunction() override {}
+  ~BluetoothStartDiscoveryFunction() override = default;
 
   // BluetoothExtensionFunction:
   void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) override;
@@ -145,7 +145,7 @@ class BluetoothStopDiscoveryFunction : public BluetoothExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("bluetooth.stopDiscovery", BLUETOOTH_STOPDISCOVERY)
 
  protected:
-  ~BluetoothStopDiscoveryFunction() override {}
+  ~BluetoothStopDiscoveryFunction() override = default;
 
   // BluetoothExtensionFunction:
   void DoWork(scoped_refptr<device::BluetoothAdapter> adapter) override;

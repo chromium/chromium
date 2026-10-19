@@ -10,7 +10,7 @@ namespace extensions {
 // Delegate class for embedder-specific functionality of chrome.metricsPrivate.
 class MetricsPrivateDelegate {
  public:
-  virtual ~MetricsPrivateDelegate() {}
+  virtual ~MetricsPrivateDelegate() = default;
 
   // Returns whether crash reporting is enabled.
   virtual bool IsCrashReportingEnabled() = 0;

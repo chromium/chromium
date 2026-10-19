@@ -31,7 +31,7 @@ class ExtensionHost;
 // declared.
 class ExtensionHostDelegate {
  public:
-  virtual ~ExtensionHostDelegate() {}
+  virtual ~ExtensionHostDelegate() = default;
 
   // Called after the hosting `web_contents` for an extension is created. The
   // implementation may wish to add preference observers to `web_contents`.

@@ -24,7 +24,7 @@ class NativeAppWindow;
 // TODO(hashimoto): Move some functions to ExtensionsClient.
 class AppWindowClient {
  public:
-  virtual ~AppWindowClient() {}
+  virtual ~AppWindowClient() = default;
 
   // Creates a new AppWindow for the app in `extension` for `context`.
   // Caller takes ownership.

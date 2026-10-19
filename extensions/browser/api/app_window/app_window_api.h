@@ -22,7 +22,7 @@ class AppWindowCreateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("app.window.create", APP_WINDOW_CREATE)
 
  protected:
-  ~AppWindowCreateFunction() override {}
+  ~AppWindowCreateFunction() override = default;
   ResponseAction Run() override;
 
  private:

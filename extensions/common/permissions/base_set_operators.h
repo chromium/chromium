@@ -84,7 +84,7 @@ class BaseSetOperators {
   BaseSetOperators(BaseSetOperators<T>&& other) = default;
   BaseSetOperators<T>& operator=(BaseSetOperators<T>&& rhs) = default;
 
-  ~BaseSetOperators() {}
+  ~BaseSetOperators() = default;
 
   bool operator==(const BaseSetOperators<T>& rhs) const { return Equal(rhs); }
   bool operator!=(const BaseSetOperators<T>& rhs) const { return !Equal(rhs); }

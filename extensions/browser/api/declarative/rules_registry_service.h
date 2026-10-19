@@ -52,7 +52,7 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
     virtual void OnUpdateRules() = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   explicit RulesRegistryService(content::BrowserContext* context);

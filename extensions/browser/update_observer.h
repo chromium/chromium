@@ -17,7 +17,7 @@ class UpdateObserver {
   virtual void OnChromeUpdateAvailable() = 0;
 
  protected:
-  virtual ~UpdateObserver() {}
+  virtual ~UpdateObserver() = default;
 };
 
 }  // namespace extensions

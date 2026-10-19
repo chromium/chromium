@@ -65,7 +65,7 @@ class PermissionsData {
   // have control over policy decisions.
   class PolicyDelegate {
    public:
-    virtual ~PolicyDelegate() {}
+    virtual ~PolicyDelegate() = default;
 
     // Returns true if script access should be blocked on this page.
     // Otherwise, default policy should decide.

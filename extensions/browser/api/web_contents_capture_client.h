@@ -31,7 +31,7 @@ class WebContentsCaptureClient {
   WebContentsCaptureClient& operator=(const WebContentsCaptureClient&) = delete;
 
  protected:
-  virtual ~WebContentsCaptureClient() {}
+  virtual ~WebContentsCaptureClient() = default;
 
   virtual base::expected<void, ScreenshotAccessError> GetScreenshotAccess(
       content::WebContents* web_contents) const = 0;

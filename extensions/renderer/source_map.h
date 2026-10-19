@@ -14,7 +14,7 @@ namespace extensions {
 // A map storing resources associated with a given API or utility.
 class SourceMap {
  public:
-  virtual ~SourceMap() {}
+  virtual ~SourceMap() = default;
 
   // Gets the source for the given resource name.
   virtual v8::Local<v8::String> GetSource(v8::Isolate* isolate,

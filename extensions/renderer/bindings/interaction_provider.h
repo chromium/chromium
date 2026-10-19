@@ -18,16 +18,16 @@ class InteractionProvider {
   // interaction.
   class Token {
    public:
-    virtual ~Token() {}
+    virtual ~Token() = default;
   };
   // The scope for an interaction.
   // A context is assumed to have active interaction while this is present.
   class Scope {
    public:
-    virtual ~Scope() {}
+    virtual ~Scope() = default;
   };
 
-  virtual ~InteractionProvider() {}
+  virtual ~InteractionProvider() = default;
 
   // Returns a token representing the current state of interaction,
   // possibly for use in later point in time to create a `Scope`.

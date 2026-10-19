@@ -38,7 +38,7 @@ class StateStore : public ExtensionRegistryObserver {
 
   class TestObserver {
    public:
-    virtual ~TestObserver() {}
+    virtual ~TestObserver() = default;
     virtual void WillSetExtensionValue(const ExtensionId& extension_id,
                                        const std::string& key) = 0;
   };

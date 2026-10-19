@@ -58,7 +58,7 @@ class PrinterProviderInternalAPIObserver {
       const api::printer_provider::PrinterInfo* printer_info) = 0;
 
  protected:
-  virtual ~PrinterProviderInternalAPIObserver() {}
+  virtual ~PrinterProviderInternalAPIObserver() = default;
 };
 
 }  // namespace extensions

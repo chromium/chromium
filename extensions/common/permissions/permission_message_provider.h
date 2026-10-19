@@ -18,8 +18,8 @@ class PermissionSet;
 // a new set of permissions entails showing new warning messages.
 class PermissionMessageProvider {
  public:
-  PermissionMessageProvider() {}
-  virtual ~PermissionMessageProvider() {}
+  PermissionMessageProvider() = default;
+  virtual ~PermissionMessageProvider() = default;
 
   // Return the global permission message provider.
   static const PermissionMessageProvider* Get();

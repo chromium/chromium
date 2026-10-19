@@ -22,7 +22,7 @@ namespace extensions {
 // the resource bundle.
 class ComponentExtensionResourceManager {
  public:
-  virtual ~ComponentExtensionResourceManager() {}
+  virtual ~ComponentExtensionResourceManager() = default;
 
   // Checks whether image is a component extension resource. Returns false
   // if a given `resource` does not have a corresponding image in bundled

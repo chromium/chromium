@@ -156,7 +156,7 @@ class QuotaLimitHeuristic {
   // for this QuotaLimitHeuristic.
   class BucketMapper {
    public:
-    virtual ~BucketMapper() {}
+    virtual ~BucketMapper() = default;
     // In most cases, this should simply extract item IDs from the arguments
     // (e.g for bookmark operations involving an existing item). If a problem
     // occurs while parsing `args`, the function aborts - buckets may be non-
@@ -171,7 +171,7 @@ class QuotaLimitHeuristic {
   // QuotaLimitHeuristic.
   class SingletonBucketMapper : public BucketMapper {
    public:
-    SingletonBucketMapper() {}
+    SingletonBucketMapper() = default;
 
     SingletonBucketMapper(const SingletonBucketMapper&) = delete;
     SingletonBucketMapper& operator=(const SingletonBucketMapper&) = delete;

@@ -16,7 +16,7 @@ class Extension;
 // Customization of ProcessManager for the extension system embedder.
 class ProcessManagerDelegate {
  public:
-  virtual ~ProcessManagerDelegate() {}
+  virtual ~ProcessManagerDelegate() = default;
 
   // Returns true if the embedder allows background pages for the given
   // `context`.

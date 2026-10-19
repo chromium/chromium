@@ -48,7 +48,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   class ExceptionHandler {
    public:
     explicit ExceptionHandler(ScriptContext* context) : context_(context) {}
-    virtual ~ExceptionHandler() {}
+    virtual ~ExceptionHandler() = default;
     virtual void HandleUncaughtException(const v8::TryCatch& try_catch) = 0;
 
    protected:

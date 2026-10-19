@@ -18,12 +18,12 @@ namespace extensions {
 // An interface that provides a fixed ordering for a set of apps.
 class AppSorting {
  public:
-  AppSorting() {}
+  AppSorting() = default;
 
   AppSorting(const AppSorting&) = delete;
   AppSorting& operator=(const AppSorting&) = delete;
 
-  virtual ~AppSorting() {}
+  virtual ~AppSorting() = default;
 
   // Signals that ordinals for the WebAppProvider system should (or can) be
   // loaded now. Calls to the WebAppProvider system should not be done before

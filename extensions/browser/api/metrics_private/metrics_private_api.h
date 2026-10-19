@@ -23,7 +23,7 @@ class MetricsPrivateGetIsCrashReportingEnabledFunction
                              METRICSPRIVATE_GETISCRASHRECORDINGENABLED)
 
  protected:
-  ~MetricsPrivateGetIsCrashReportingEnabledFunction() override {}
+  ~MetricsPrivateGetIsCrashReportingEnabledFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -35,7 +35,7 @@ class MetricsPrivateGetFieldTrialFunction : public ExtensionFunction {
                              METRICSPRIVATE_GETFIELDTRIAL)
 
  protected:
-  ~MetricsPrivateGetFieldTrialFunction() override {}
+  ~MetricsPrivateGetFieldTrialFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -47,7 +47,7 @@ class MetricsPrivateGetVariationParamsFunction : public ExtensionFunction {
                              METRICSPRIVATE_GETVARIATIONPARAMS)
 
  protected:
-  ~MetricsPrivateGetVariationParamsFunction() override {}
+  ~MetricsPrivateGetVariationParamsFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -59,7 +59,7 @@ class MetricsPrivateRecordUserActionFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDUSERACTION)
 
  protected:
-  ~MetricsPrivateRecordUserActionFunction() override {}
+  ~MetricsPrivateRecordUserActionFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -83,7 +83,7 @@ class MetricsPrivateRecordValueFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDVALUE)
 
  protected:
-  ~MetricsPrivateRecordValueFunction() override {}
+  ~MetricsPrivateRecordValueFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -95,7 +95,7 @@ class MetricsPrivateRecordBooleanFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDBOOLEAN)
 
  protected:
-  ~MetricsPrivateRecordBooleanFunction() override {}
+  ~MetricsPrivateRecordBooleanFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -107,7 +107,7 @@ class MetricsPrivateRecordEnumerationValueFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDENUMERATIONVALUE)
 
  protected:
-  ~MetricsPrivateRecordEnumerationValueFunction() override {}
+  ~MetricsPrivateRecordEnumerationValueFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -149,7 +149,7 @@ class MetricsPrivateRecordSparseValueFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDSPARSEVALUE)
 
  protected:
-  ~MetricsPrivateRecordSparseValueFunction() override {}
+  ~MetricsPrivateRecordSparseValueFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -161,7 +161,7 @@ class MetricsPrivateRecordPercentageFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDPERCENTAGE)
 
  protected:
-  ~MetricsPrivateRecordPercentageFunction() override {}
+  ~MetricsPrivateRecordPercentageFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -173,7 +173,7 @@ class MetricsPrivateRecordCountFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDCOUNT)
 
  protected:
-  ~MetricsPrivateRecordCountFunction() override {}
+  ~MetricsPrivateRecordCountFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -185,7 +185,7 @@ class MetricsPrivateRecordSmallCountFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDSMALLCOUNT)
 
  protected:
-  ~MetricsPrivateRecordSmallCountFunction() override {}
+  ~MetricsPrivateRecordSmallCountFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -197,7 +197,7 @@ class MetricsPrivateRecordMediumCountFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDMEDIUMCOUNT)
 
  protected:
-  ~MetricsPrivateRecordMediumCountFunction() override {}
+  ~MetricsPrivateRecordMediumCountFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -209,7 +209,7 @@ class MetricsPrivateRecordTimeFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDTIME)
 
  protected:
-  ~MetricsPrivateRecordTimeFunction() override {}
+  ~MetricsPrivateRecordTimeFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -221,7 +221,7 @@ class MetricsPrivateRecordMediumTimeFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDMEDIUMTIME)
 
  protected:
-  ~MetricsPrivateRecordMediumTimeFunction() override {}
+  ~MetricsPrivateRecordMediumTimeFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -233,7 +233,7 @@ class MetricsPrivateRecordLongTimeFunction : public ExtensionFunction {
                              METRICSPRIVATE_RECORDLONGTIME)
 
  protected:
-  ~MetricsPrivateRecordLongTimeFunction() override {}
+  ~MetricsPrivateRecordLongTimeFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

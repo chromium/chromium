@@ -51,12 +51,12 @@ class ManagementPolicy {
   // to an applicable error message, but this is not required.
   class Provider {
    public:
-    Provider() {}
+    Provider() = default;
 
     Provider(const Provider&) = delete;
     Provider& operator=(const Provider&) = delete;
 
-    virtual ~Provider() {}
+    virtual ~Provider() = default;
 
     // A human-readable name for this provider, for use in debug messages.
     // Implementers should return an empty string in non-debug builds, to save

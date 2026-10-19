@@ -58,12 +58,12 @@ class PlatformAppBrowserTest;
 // native window.
 class AppWindowContents {
  public:
-  AppWindowContents() {}
+  AppWindowContents() = default;
 
   AppWindowContents(const AppWindowContents&) = delete;
   AppWindowContents& operator=(const AppWindowContents&) = delete;
 
-  virtual ~AppWindowContents() {}
+  virtual ~AppWindowContents() = default;
 
   // Called to initialize the WebContents, before the app window is created.
   virtual void Initialize(content::BrowserContext* context,

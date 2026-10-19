@@ -98,7 +98,7 @@ class NativeAppWindow : public ui::BaseWindow,
   // Sets whether the window should be activated on pointer event.
   virtual void SetActivateOnPointer(bool activate_on_pointer) = 0;
 
-  ~NativeAppWindow() override {}
+  ~NativeAppWindow() override = default;
 };
 
 }  // namespace extensions

@@ -27,10 +27,10 @@ class NativeMessagingChannel {
     // EventHandler is guaranteed not to be called after OnDisconnect().
     virtual void OnDisconnect() = 0;
 
-    virtual ~EventHandler() {}
+    virtual ~EventHandler() = default;
   };
 
-  virtual ~NativeMessagingChannel() {}
+  virtual ~NativeMessagingChannel() = default;
 
   // Starts reading and processing messages.
   virtual void Start(EventHandler* event_handler) = 0;

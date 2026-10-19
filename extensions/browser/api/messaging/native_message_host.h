@@ -37,7 +37,7 @@ class NativeMessageHost {
   // Callback interface for receiving messages from the native host.
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
 
     // Called on the UI thread.
     virtual void PostMessageFromNativeHost(const std::string& message) = 0;
@@ -53,7 +53,7 @@ class NativeMessageHost {
       bool allow_user_level,
       std::string* error);
 
-  virtual ~NativeMessageHost() {}
+  virtual ~NativeMessageHost() = default;
 
   // Called when a message is received from MessageService (Chrome).
   virtual void OnMessage(const std::string& message) = 0;

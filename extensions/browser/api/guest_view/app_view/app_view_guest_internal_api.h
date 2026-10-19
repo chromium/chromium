@@ -21,7 +21,7 @@ class AppViewGuestInternalAttachFrameFunction : public ExtensionFunction {
       const AppViewGuestInternalAttachFrameFunction&) = delete;
 
  protected:
-  ~AppViewGuestInternalAttachFrameFunction() override {}
+  ~AppViewGuestInternalAttachFrameFunction() override = default;
   ResponseAction Run() final;
 };
 
@@ -37,7 +37,7 @@ class AppViewGuestInternalDenyRequestFunction : public ExtensionFunction {
       const AppViewGuestInternalDenyRequestFunction&) = delete;
 
  protected:
-  ~AppViewGuestInternalDenyRequestFunction() override {}
+  ~AppViewGuestInternalDenyRequestFunction() override = default;
   ResponseAction Run() final;
 };
 

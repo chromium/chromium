@@ -54,7 +54,7 @@ class ExtensionFunctionDispatcher {
     virtual WindowController* GetExtensionWindowController();
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Public constructor. Callers must ensure that:

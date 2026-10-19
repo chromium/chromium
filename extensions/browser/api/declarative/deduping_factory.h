@@ -97,7 +97,7 @@ DedupingFactory<BaseClassT, ValueT>::DedupingFactory(
     : max_number_prototypes_(max_number_prototypes) {}
 
 template <typename BaseClassT, typename ValueT>
-DedupingFactory<BaseClassT, ValueT>::~DedupingFactory() {}
+DedupingFactory<BaseClassT, ValueT>::~DedupingFactory() = default;
 
 template <typename BaseClassT, typename ValueT>
 void DedupingFactory<BaseClassT, ValueT>::RegisterFactoryMethod(

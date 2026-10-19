@@ -43,7 +43,7 @@ class Extension;
 // like handling links and showing UI prompts to the user.
 class AppDelegate {
  public:
-  virtual ~AppDelegate() {}
+  virtual ~AppDelegate() = default;
 
   // General initialization.
   virtual void InitWebContents(content::WebContents* web_contents) = 0;

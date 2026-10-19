@@ -33,7 +33,7 @@ class SetDisjunctionPermission : public APIPermission {
   explicit SetDisjunctionPermission(const APIPermissionInfo* info)
       : APIPermission(info) {}
 
-  ~SetDisjunctionPermission() override {}
+  ~SetDisjunctionPermission() override = default;
 
   // APIPermission overrides
   bool Check(const APIPermission::CheckParam* param) const override {

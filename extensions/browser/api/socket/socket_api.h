@@ -238,7 +238,7 @@ class SocketDestroyFunction : public SocketApiFunction {
   DECLARE_EXTENSION_FUNCTION("socket.destroy", SOCKET_DESTROY)
 
  protected:
-  ~SocketDestroyFunction() override {}
+  ~SocketDestroyFunction() override = default;
 
   // SocketApiFunction:
   ResponseAction Work() override;
@@ -273,7 +273,7 @@ class SocketDisconnectFunction : public SocketApiFunction {
   DECLARE_EXTENSION_FUNCTION("socket.disconnect", SOCKET_DISCONNECT)
 
  protected:
-  ~SocketDisconnectFunction() override {}
+  ~SocketDisconnectFunction() override = default;
 
   // SocketApiFunction:
   ResponseAction Work() override;
@@ -284,7 +284,7 @@ class SocketBindFunction : public SocketApiFunction {
   DECLARE_EXTENSION_FUNCTION("socket.bind", SOCKET_BIND)
 
  protected:
-  ~SocketBindFunction() override {}
+  ~SocketBindFunction() override = default;
 
   // SocketApiFunction:
   ResponseAction Work() override;
@@ -460,7 +460,7 @@ class SocketGetNetworkListFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("socket.getNetworkList", SOCKET_GETNETWORKLIST)
 
  protected:
-  ~SocketGetNetworkListFunction() override {}
+  ~SocketGetNetworkListFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

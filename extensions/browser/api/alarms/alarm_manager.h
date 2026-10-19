@@ -79,7 +79,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     // Called when an alarm fires.
     virtual void OnAlarm(const ExtensionId& extension_id,
                          const Alarm& alarm) = 0;

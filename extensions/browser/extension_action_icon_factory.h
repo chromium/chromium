@@ -22,7 +22,7 @@ class ExtensionActionIconFactory : public IconImage::Observer {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     // Called when the underlying icon image changes.
     virtual void OnIconUpdated() = 0;
   };

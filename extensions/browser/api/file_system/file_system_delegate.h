@@ -41,7 +41,7 @@ class FileSystemDelegate {
   using VolumeListCallback =
       base::OnceCallback<void(const std::vector<api::file_system::Volume>&)>;
 
-  virtual ~FileSystemDelegate() {}
+  virtual ~FileSystemDelegate() = default;
 
   virtual base::FilePath GetDefaultDirectory() = 0;
 

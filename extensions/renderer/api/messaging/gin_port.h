@@ -38,7 +38,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Posts a message to the port.
     virtual void PostMessageToPort(v8::Local<v8::Context> context,

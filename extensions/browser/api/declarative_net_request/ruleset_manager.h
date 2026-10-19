@@ -64,7 +64,7 @@ class RulesetManager {
     virtual void OnRulesetCountChanged(size_t new_count) {}
 
    protected:
-    virtual ~TestObserver() {}
+    virtual ~TestObserver() = default;
   };
 
   // Adds the ruleset for the given `extension_id`. Should not be called twice

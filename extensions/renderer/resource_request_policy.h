@@ -28,7 +28,7 @@ class ResourceRequestPolicy {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns true if `origin` is a special origin from which requests should
     // always be allowed.

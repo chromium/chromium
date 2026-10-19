@@ -39,7 +39,7 @@ class ScriptContextSetIterable {
   void ForEach(const mojom::HostID& host_id,
                const base::RepeatingCallback<void(ScriptContext*)>& callback);
 
-  virtual ~ScriptContextSetIterable() {}
+  virtual ~ScriptContextSetIterable() = default;
 };
 
 }  // namespace extensions
