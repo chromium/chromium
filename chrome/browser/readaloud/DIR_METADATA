@@ -1,7 +1,1 @@
-monorail: {
-  component: "UI>Browser>ReadAloud"
-}
-os: ANDROID
-buganizer_public: {
-  component_id: 1457412
-}
+mixins: "//chrome/browser/readaloud/COMMON_METADATA"

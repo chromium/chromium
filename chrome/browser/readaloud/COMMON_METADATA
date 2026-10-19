@@ -1,0 +1,10 @@
+monorail: {
+  component: "UI>Browser>ReadAloud"
+}
+os: ANDROID
+buganizer_public: {
+  component_id: 1457412
+}
+
+# Opt in to Chromium Review Agent.
+agentic_review {}
