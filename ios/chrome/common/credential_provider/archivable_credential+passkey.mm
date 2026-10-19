@@ -53,6 +53,11 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
 
   if ([credential.privateKey length] > 0) {
     credential_specifics.set_private_key(DataToString(credential.privateKey));
+  } else if ([credential.securityDomainEncrypted length] > 0) {
+    credential_specifics.set_security_domain_encrypted(
+        DataToString(credential.securityDomainEncrypted));
+    credential_specifics.set_device_authorization_key_version(
+        credential.deviceAuthKeyVersion);
   } else {
     credential_specifics.set_encrypted(DataToString(credential.encrypted));
   }
@@ -81,6 +86,8 @@ sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(
                           rpId:SysUTF8ToNSString(passkey.rp_id())
                     privateKey:StringToData(passkey.private_key())
                      encrypted:StringToData(passkey.encrypted())
+       securityDomainEncrypted:StringToData(passkey.security_domain_encrypted())
+          deviceAuthKeyVersion:passkey.device_authorization_key_version()
                   creationTime:passkey.creation_time()
                   lastUsedTime:passkey.last_used_time_windows_epoch_micros()
                         hidden:passkey.hidden()

@@ -27,6 +27,8 @@ NSString* const kACCredentialIdKey = @"credentialId";
 NSString* const kACRpIdKey = @"rpId";
 NSString* const kACPrivateKeyKey = @"privateKey";
 NSString* const kACEncryptedKey = @"encrypted";
+NSString* const kACSecurityDomainEncryptedKey = @"securityDomainEncrypted";
+NSString* const kACDeviceAuthKeyVersionKey = @"deviceAuthKeyVersion";
 NSString* const kACCreationTimeKey = @"creationTime";
 NSString* const kACLastUsedTimeKey = @"lastUsedTime";
 NSString* const kACHiddenKey = @"hidden";
@@ -78,6 +80,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
 @synthesize rpId = _rpId;
 @synthesize privateKey = _privateKey;
 @synthesize encrypted = _encrypted;
+@synthesize securityDomainEncrypted = _securityDomainEncrypted;
+@synthesize deviceAuthKeyVersion = _deviceAuthKeyVersion;
 @synthesize creationTime = _creationTime;
 @synthesize lastUsedTime = _lastUsedTime;
 @synthesize hidden = _hidden;
@@ -99,6 +103,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                             rpId:credential.rpId
                       privateKey:credential.privateKey
                        encrypted:credential.encrypted
+         securityDomainEncrypted:credential.securityDomainEncrypted
+            deviceAuthKeyVersion:credential.deviceAuthKeyVersion
                     creationTime:credential.creationTime
                     lastUsedTime:credential.lastUsedTime
                           hidden:credential.hidden
@@ -160,6 +166,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
                            rpId:(NSString*)rpId
                      privateKey:(NSData*)privateKey
                       encrypted:(NSData*)encrypted
+        securityDomainEncrypted:(NSData*)securityDomainEncrypted
+           deviceAuthKeyVersion:(int32_t)deviceAuthKeyVersion
                    creationTime:(int64_t)creationTime
                    lastUsedTime:(int64_t)lastUsedTime
                          hidden:(BOOL)hidden
@@ -179,6 +187,8 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     _rpId = rpId;
     _privateKey = privateKey;
     _encrypted = encrypted;
+    _securityDomainEncrypted = securityDomainEncrypted;
+    _deviceAuthKeyVersion = deviceAuthKeyVersion;
     _creationTime = creationTime;
     _lastUsedTime = lastUsedTime;
     _hidden = hidden;
@@ -242,6 +252,9 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
            stringsAreEqual(self.rpId, otherCredential.rpId) &&
            dataAreEqual(self.privateKey, otherCredential.privateKey) &&
            dataAreEqual(self.encrypted, otherCredential.encrypted) &&
+           dataAreEqual(self.securityDomainEncrypted,
+                        otherCredential.securityDomainEncrypted) &&
+           self.deviceAuthKeyVersion == otherCredential.deviceAuthKeyVersion &&
            self.creationTime == otherCredential.creationTime &&
            self.lastUsedTime == otherCredential.lastUsedTime &&
            self.hidden == otherCredential.hidden &&
@@ -275,6 +288,10 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
     [coder encodeObject:self.rpId forKey:kACRpIdKey];
     [coder encodeObject:self.privateKey forKey:kACPrivateKeyKey];
     [coder encodeObject:self.encrypted forKey:kACEncryptedKey];
+    [coder encodeObject:self.securityDomainEncrypted
+                 forKey:kACSecurityDomainEncryptedKey];
+    [coder encodeInt32:self.deviceAuthKeyVersion
+                forKey:kACDeviceAuthKeyVersionKey];
     [coder encodeInt64:self.creationTime forKey:kACCreationTimeKey];
     [coder encodeInt64:self.lastUsedTime forKey:kACLastUsedTimeKey];
     [coder encodeBool:self.hidden forKey:kACHiddenKey];
@@ -298,22 +315,28 @@ BOOL dataAreEqual(NSData* lhs, NSData* rhs) {
   if (credentialId.length > 0) {
     // Use the passkey initilizer
     return [self
-         initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
-                    gaia:[coder decodeNSStringForKey:kACGaiaKey]
-        recordIdentifier:[coder decodeNSStringForKey:kACRecordIdentifierKey]
-                  syncId:[coder decodeNSDataForKey:kACSyncIdKey]
-                username:[coder decodeNSStringForKey:kACUserKey]
-         userDisplayName:[coder decodeNSStringForKey:kACUserDisplayNameKey]
-                  userId:[coder decodeNSDataForKey:kACUserIdKey]
-            credentialId:credentialId
-                    rpId:[coder decodeNSStringForKey:kACRpIdKey]
-              privateKey:[coder decodeNSDataForKey:kACPrivateKeyKey]
-               encrypted:[coder decodeNSDataForKey:kACEncryptedKey]
-            creationTime:[coder decodeInt64ForKey:kACCreationTimeKey]
-            lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]
-                  hidden:[coder decodeBoolForKey:kACHiddenKey]
-              hiddenTime:[coder decodeInt64ForKey:kACHiddenTimeKey]
-            editedByUser:[coder decodeBoolForKey:kACEditedByUserKey]];
+                initWithFavicon:[coder decodeNSStringForKey:kACFaviconKey]
+                           gaia:[coder decodeNSStringForKey:kACGaiaKey]
+               recordIdentifier:[coder
+                                    decodeNSStringForKey:kACRecordIdentifierKey]
+                         syncId:[coder decodeNSDataForKey:kACSyncIdKey]
+                       username:[coder decodeNSStringForKey:kACUserKey]
+                userDisplayName:[coder
+                                    decodeNSStringForKey:kACUserDisplayNameKey]
+                         userId:[coder decodeNSDataForKey:kACUserIdKey]
+                   credentialId:credentialId
+                           rpId:[coder decodeNSStringForKey:kACRpIdKey]
+                     privateKey:[coder decodeNSDataForKey:kACPrivateKeyKey]
+                      encrypted:[coder decodeNSDataForKey:kACEncryptedKey]
+        securityDomainEncrypted:
+            [coder decodeNSDataForKey:kACSecurityDomainEncryptedKey]
+           deviceAuthKeyVersion:
+               [coder decodeInt32ForKey:kACDeviceAuthKeyVersionKey]
+                   creationTime:[coder decodeInt64ForKey:kACCreationTimeKey]
+                   lastUsedTime:[coder decodeInt64ForKey:kACLastUsedTimeKey]
+                         hidden:[coder decodeBoolForKey:kACHiddenKey]
+                     hiddenTime:[coder decodeInt64ForKey:kACHiddenTimeKey]
+                   editedByUser:[coder decodeBoolForKey:kACEditedByUserKey]];
 
   } else {
     // Use the password initializer

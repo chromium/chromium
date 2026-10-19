@@ -49,19 +49,29 @@ TEST_F(ArchivableCredentialTest, create) {
 
 // Tests that a passkey ArchivableCredential can be created.
 TEST_F(ArchivableCredentialTest, createPasskey) {
-  // In a real world scenario, "privateKey" and "encrypted" are mutually
-  // exclusive. They use the same internal pointer in the passkey data structure
-  // and an internal enum determines if the data pointer to represents one or
-  // the other. This test verifies that either of them can be nil without issue.
+  // In a real world scenario, "privateKey", "encrypted", and
+  // "securityDomainEncrypted" are mutually exclusive. They use the same
+  // internal pointer in the passkey data structure and an internal enum
+  // determines which field the data pointer represents. This test verifies that
+  // any of them can be nil without issue.
 
   ArchivableCredential* credential =
       TestPasskeyCredential(TestPasskeyCredentialOverrides{
-          .private_key = TestDataFromString("test"), .encrypted = nil});
+          .private_key = TestDataFromString("test"),
+      });
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 
   credential = TestPasskeyCredential(TestPasskeyCredentialOverrides{
-      .private_key = nil, .encrypted = TestDataFromString("test")});
+      .encrypted = TestDataFromString("test"),
+  });
+  EXPECT_TRUE(credential);
+  EXPECT_TRUE(credential.isPasskey);
+
+  credential = TestPasskeyCredential(TestPasskeyCredentialOverrides{
+      .security_domain_encrypted = TestDataFromString("test"),
+      .device_auth_key_version = 42,
+  });
   EXPECT_TRUE(credential);
   EXPECT_TRUE(credential.isPasskey);
 }
@@ -152,6 +162,10 @@ TEST_F(ArchivableCredentialTest, retrievePasskeyData) {
   EXPECT_NSEQ(credential.rpId, unarchivedCredential.rpId);
   EXPECT_NSEQ(credential.privateKey, unarchivedCredential.privateKey);
   EXPECT_NSEQ(credential.encrypted, unarchivedCredential.encrypted);
+  EXPECT_NSEQ(credential.securityDomainEncrypted,
+              unarchivedCredential.securityDomainEncrypted);
+  EXPECT_EQ(credential.deviceAuthKeyVersion,
+            unarchivedCredential.deviceAuthKeyVersion);
   EXPECT_EQ(credential.creationTime, unarchivedCredential.creationTime);
   EXPECT_EQ(credential.hidden, unarchivedCredential.hidden);
   EXPECT_EQ(credential.hiddenTime, unarchivedCredential.hiddenTime);
@@ -214,6 +228,9 @@ TEST_F(ArchivableCredentialTest, passkeyEquality) {
           .rp_id = @"other_rpId",
           .private_key = TestDataFromString("other_privateKey"),
           .encrypted = TestDataFromString("other_encrypted"),
+          .security_domain_encrypted =
+              TestDataFromString("other_securityDomainEncrypted"),
+          .device_auth_key_version = 43,
           .creation_time = kDefaultCreationTime + 10,
           .last_used_time = kDefaultLastUsedTime + 10,
           .hidden = NO,
@@ -236,6 +253,38 @@ TEST_F(ArchivableCredentialTest, HiddenTimeNotSetForNotHiddenPasskey) {
           .hidden = NO, .hidden_time = kDefaultLastUsedTime});
 
   EXPECT_FALSE(PasskeyFromCredential(credential).has_hidden_time());
+}
+
+// Tests that `initWithFavicon:gaia:passkey:` and `PasskeyFromCredential`
+// preserve `security_domain_encrypted` and `device_authorization_key_version`.
+TEST_F(ArchivableCredentialTest, PasskeyFromCredentialSecurityDomainEncrypted) {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id("sync_id_16_bytes");
+  passkey.set_credential_id("cred_id_16_bytes");
+  passkey.set_rp_id("example.com");
+  passkey.set_user_id("user_id");
+  passkey.set_user_name("username");
+  passkey.set_user_display_name("userDisplayName");
+  passkey.set_security_domain_encrypted("encrypted_secrets");
+  passkey.set_device_authorization_key_version(7);
+
+  ArchivableCredential* credential =
+      [[ArchivableCredential alloc] initWithFavicon:@"favicon"
+                                               gaia:@"gaia"
+                                            passkey:passkey];
+  ASSERT_TRUE(credential);
+  EXPECT_EQ(credential.privateKey.length, 0u);
+  EXPECT_EQ(credential.encrypted.length, 0u);
+  EXPECT_NSEQ(credential.securityDomainEncrypted,
+              TestDataFromString("encrypted_secrets"));
+  EXPECT_EQ(credential.deviceAuthKeyVersion, 7);
+
+  sync_pb::WebauthnCredentialSpecifics roundtrip =
+      PasskeyFromCredential(credential);
+  EXPECT_FALSE(roundtrip.has_private_key());
+  EXPECT_FALSE(roundtrip.has_encrypted());
+  EXPECT_EQ(roundtrip.security_domain_encrypted(), "encrypted_secrets");
+  EXPECT_EQ(roundtrip.device_authorization_key_version(), 7);
 }
 
 }  // namespace

@@ -46,6 +46,8 @@
                            rpId:(NSString*)rpId
                      privateKey:(NSData*)privateKey
                       encrypted:(NSData*)encrypted
+        securityDomainEncrypted:(NSData*)securityDomainEncrypted
+           deviceAuthKeyVersion:(int32_t)deviceAuthKeyVersion
                    creationTime:(int64_t)creationTime
                    lastUsedTime:(int64_t)lastUsedTime
                          hidden:(BOOL)hidden

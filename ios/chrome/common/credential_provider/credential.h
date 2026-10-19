@@ -66,6 +66,14 @@
 // Passkey encrypted. Used by passkeys only.
 @property(nonatomic, readonly) NSData* encrypted;
 
+// Passkey encrypted with a security domain secret and a device authorization
+// key. Used by passkeys only.
+@property(nonatomic, readonly) NSData* securityDomainEncrypted;
+
+// Key version of the device authorization key used to encrypt
+// `securityDomainEncrypted`. Used by passkeys only.
+@property(nonatomic, readonly) int32_t deviceAuthKeyVersion;
+
 // Passkey creation time in milliseconds. Used by passkeys only.
 @property(nonatomic, readonly) int64_t creationTime;
 
