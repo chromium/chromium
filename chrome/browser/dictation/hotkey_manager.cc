@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dictation/local_hotkey_manager.h"
+#include "chrome/browser/dictation/hotkey_manager.h"
 
 #include <string>
 #include <utility>
@@ -64,7 +64,7 @@ ui::GlobalAcceleratorListener* GetGlobalListener() {
 
 }  // namespace
 
-LocalHotkeyManager::LocalHotkeyManager(
+HotkeyManager::HotkeyManager(
     Profile* profile,
     std::unique_ptr<RegistrationDelegate> registration_delegate,
     bool is_listening)
@@ -75,52 +75,50 @@ LocalHotkeyManager::LocalHotkeyManager(
   CHECK(registration_delegate_);
 
   pref_registrar_.Init(profile_->GetPrefs());
-  pref_registrar_.Add(
-      prefs::kVoiceTypingHotkey,
-      base::BindRepeating(&LocalHotkeyManager::OnHotkeyPrefChanged,
-                          base::Unretained(this)));
+  pref_registrar_.Add(prefs::kVoiceTypingHotkey,
+                      base::BindRepeating(&HotkeyManager::OnHotkeyPrefChanged,
+                                          base::Unretained(this)));
 
   UpdateRegistration();
   UpdateGlobalRegistration();
 }
 
-LocalHotkeyManager::~LocalHotkeyManager() = default;
+HotkeyManager::~HotkeyManager() = default;
 
 // static
 base::AutoReset<ui::GlobalAcceleratorListener*>
-LocalHotkeyManager::SetGlobalAcceleratorListenerForTesting(
+HotkeyManager::SetGlobalAcceleratorListenerForTesting(
     ui::GlobalAcceleratorListener* listener) {
   return base::AutoReset<ui::GlobalAcceleratorListener*>(
       &g_global_listener_for_testing, listener);
 }
 
-void LocalHotkeyManager::OnSessionStateChanged(SessionState state) {
+void HotkeyManager::OnSessionStateChanged(SessionState state) {
   listening_ = IsListeningState(state);
   UpdateGlobalRegistration();
 }
 
-DictationKeyedService& LocalHotkeyManager::service() {
+DictationKeyedService& HotkeyManager::service() {
   DictationKeyedService* const service = DictationKeyedService::Get(profile_);
   CHECK(service);
   return *service;
 }
 
-bool LocalHotkeyManager::AcceleratorPressed(
-    const ui::Accelerator& accelerator) {
+bool HotkeyManager::AcceleratorPressed(const ui::Accelerator& accelerator) {
   service().ToggleHotkeyHandler();
   return true;
 }
 
-bool LocalHotkeyManager::CanHandleAccelerators() const {
+bool HotkeyManager::CanHandleAccelerators() const {
   return true;
 }
 
-void LocalHotkeyManager::OnHotkeyPrefChanged() {
+void HotkeyManager::OnHotkeyPrefChanged() {
   UpdateRegistration();
   UpdateGlobalRegistration();
 }
 
-void LocalHotkeyManager::UpdateRegistration() {
+void HotkeyManager::UpdateRegistration() {
   hotkey_registration_.reset();
 
   const ui::Accelerator accelerator = GetDictationHotkeyFromPrefs(profile_);
@@ -132,7 +130,7 @@ void LocalHotkeyManager::UpdateRegistration() {
       profile_, accelerator, *this);
 }
 
-void LocalHotkeyManager::UpdateGlobalRegistration() {
+void HotkeyManager::UpdateGlobalRegistration() {
   const ui::Accelerator accelerator =
       listening_ ? GetDictationHotkeyFromPrefs(profile_) : ui::Accelerator();
   if (accelerator.IsEmpty()) {
@@ -148,13 +146,13 @@ void LocalHotkeyManager::UpdateGlobalRegistration() {
   // Unretained is safe: `this` owns `global_hotkey_`.
   global_hotkey_ = std::make_unique<ScopedGlobalHotkey>(
       GetGlobalListener(), accelerator,
-      base::BindRepeating(&LocalHotkeyManager::OnGlobalHotkeyPressed,
+      base::BindRepeating(&HotkeyManager::OnGlobalHotkeyPressed,
                           base::Unretained(this)));
   VT_LOG(profile_) << "Global hotkey registered: "
                    << global_hotkey_->is_registered();
 }
 
-void LocalHotkeyManager::OnGlobalHotkeyPressed() {
+void HotkeyManager::OnGlobalHotkeyPressed() {
   // The OS intercepts the global hotkey, so the local one never fires. If this
   // profile's window is focused, keep the in-Chrome toggle behavior.
   BrowserWindowInterface* const active_browser =

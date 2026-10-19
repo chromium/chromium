@@ -10,8 +10,8 @@
 #include "base/check.h"
 #include "chrome/browser/dictation/dictation_browser_test_base.h"
 #include "chrome/browser/dictation/dictation_keyed_service.h"
+#include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
-#include "chrome/browser/dictation/local_hotkey_manager.h"
 #include "chrome/browser/dictation/session_controller.h"
 #include "chrome/browser/dictation/test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -31,7 +31,7 @@ class DictationGlobalHotkeyInteractiveTest : public DictationBrowserTestBase {
   void SetUpOnMainThread() override {
     DictationBrowserTestBase::SetUpOnMainThread();
     // The global hotkey is owned by the hotkey manager.
-    ASSERT_NE(dictation_service().local_hotkey_manager_for_testing(), nullptr);
+    ASSERT_NE(dictation_service().hotkey_manager_for_testing(), nullptr);
   }
 
   ui::Accelerator hotkey() { return GetDictationHotkeyFromPrefs(profile()); }

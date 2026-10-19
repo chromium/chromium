@@ -197,7 +197,7 @@ void DictationKeyedService::Shutdown() {
   EndSession();
   // Ensure accelerators are unregistered safely before UI objects are
   // destroyed.
-  local_hotkey_manager_.reset();
+  hotkey_manager_.reset();
 }
 
 content::BrowserContext* DictationKeyedService::GetBrowserContext() const {
@@ -428,9 +428,9 @@ void DictationKeyedService::UpdateHotkeyManager() {
       prefs::kPrefDictationOnboardingCompleted);
 
   if (!IsEnabledAndReady() || !onboarding_completed) {
-    local_hotkey_manager_.reset();
-  } else if (!local_hotkey_manager_) {
-    local_hotkey_manager_ = std::make_unique<LocalHotkeyManager>(
+    hotkey_manager_.reset();
+  } else if (!hotkey_manager_) {
+    hotkey_manager_ = std::make_unique<HotkeyManager>(
         profile_, std::make_unique<ApplicationRegistrationDelegate>(),
         /*is_listening=*/session_ &&
             IsListeningState(session_->controller_.GetState()));
@@ -439,8 +439,8 @@ void DictationKeyedService::UpdateHotkeyManager() {
 
 void DictationKeyedService::OnSessionStateChanged(
     dictation::SessionState state) {
-  if (local_hotkey_manager_) {
-    local_hotkey_manager_->OnSessionStateChanged(state);
+  if (hotkey_manager_) {
+    hotkey_manager_->OnSessionStateChanged(state);
   }
 }
 

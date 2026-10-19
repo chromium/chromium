@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/dictation/connector_component_extension.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
-#include "chrome/browser/dictation/local_hotkey_manager.h"
+#include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/logging.h"
 #include "chrome/browser/dictation/metrics.h"
 #include "chrome/browser/dictation/onboarding_manager.h"
@@ -116,9 +116,7 @@ class DictationKeyedService : public KeyedService,
 
   bool IsEnabledAndReady() const;
 
-  LocalHotkeyManager* local_hotkey_manager_for_testing() {
-    return local_hotkey_manager_.get();
-  }
+  HotkeyManager* hotkey_manager_for_testing() { return hotkey_manager_.get(); }
 
   DictationLogBuffer& log_buffer() { return log_buffer_; }
   const DictationLogBuffer& log_buffer() const { return log_buffer_; }
@@ -144,7 +142,7 @@ class DictationKeyedService : public KeyedService,
   void OnPrefChanged();
   void UpdateHotkeyManager();
 
-  // Forwards session state changes to `local_hotkey_manager_`.
+  // Forwards session state changes to `hotkey_manager_`.
   void OnSessionStateChanged(dictation::SessionState state);
 
   // Handles triggering a session, either starting a new one
@@ -167,7 +165,7 @@ class DictationKeyedService : public KeyedService,
 
   ReviewingPageStatusUiController reviewing_page_status_ui_controller_;
 
-  std::unique_ptr<LocalHotkeyManager> local_hotkey_manager_;
+  std::unique_ptr<HotkeyManager> hotkey_manager_;
 
   struct SessionState {
     SessionState(SessionControllerDelegate& delegate, tabs::TabInterface& tab);

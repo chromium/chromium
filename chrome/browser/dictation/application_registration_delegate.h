@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_DICTATION_APPLICATION_REGISTRATION_DELEGATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/dictation/local_hotkey_manager.h"
+#include "chrome/browser/dictation/hotkey_manager.h"
 
 class Profile;
 
@@ -15,7 +15,7 @@ namespace dictation {
 // A registration delegate that registers hotkeys application-wide for a
 // specific profile.
 class ApplicationRegistrationDelegate
-    : public LocalHotkeyManager::RegistrationDelegate {
+    : public HotkeyManager::RegistrationDelegate {
  public:
   ApplicationRegistrationDelegate();
   ApplicationRegistrationDelegate(const ApplicationRegistrationDelegate&) =
@@ -24,10 +24,10 @@ class ApplicationRegistrationDelegate
       const ApplicationRegistrationDelegate&) = delete;
   ~ApplicationRegistrationDelegate() override;
 
-  std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
+  std::unique_ptr<HotkeyManager::ScopedHotkeyRegistration>
   CreateScopedHotkeyRegistration(Profile* profile,
                                  ui::Accelerator accelerator,
-                                 LocalHotkeyManager& hotkey_manager) override;
+                                 HotkeyManager& hotkey_manager) override;
 };
 
 }  // namespace dictation

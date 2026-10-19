@@ -224,7 +224,7 @@ class FakeGlobalAcceleratorListener : public ui::GlobalAcceleratorListener {
   std::set<ui::Accelerator> listening_;
 };
 
-// Installs a FakeGlobalAcceleratorListener for all LocalHotkeyManagers for the
+// Installs a FakeGlobalAcceleratorListener for all HotkeyManagers for the
 // lifetime of this object, so that tests never register real OS-wide hotkeys.
 // Must be destroyed before `service` (e.g. in TearDownOnMainThread()). Ends any
 // active session on destruction so nothing remains registered with the fake.

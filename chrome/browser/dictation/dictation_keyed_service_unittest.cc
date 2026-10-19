@@ -46,7 +46,7 @@ class DictationKeyedServiceTest : public testing::Test,
     profile_.GetPrefs()->SetBoolean(prefs::kPrefDictationOnboardingCompleted,
                                     true);
     // Go through the factory so that DictationKeyedService::Get() (used by
-    // LocalHotkeyManager) returns `service_`.
+    // HotkeyManager) returns `service_`.
     DictationKeyedServiceFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
@@ -70,7 +70,7 @@ class DictationKeyedServiceTest : public testing::Test,
   }
   // Null unless Dictation is listening and hotkeys are enabled.
   ScopedGlobalHotkey* global_hotkey() {
-    LocalHotkeyManager* manager = service_->local_hotkey_manager_for_testing();
+    HotkeyManager* manager = service_->hotkey_manager_for_testing();
     return manager ? manager->global_hotkey_for_testing() : nullptr;
   }
   void StartContextMenuSession() {
@@ -199,13 +199,13 @@ TEST_P(DictationKeyedServiceTest, HotkeyIgnoredIfNoActiveBrowser) {
 }
 
 TEST_P(DictationKeyedServiceTest, HotkeyManagerLifecycle) {
-  EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
+  EXPECT_NE(service_->hotkey_manager_for_testing(), nullptr);
 
   profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 2);
-  EXPECT_EQ(service_->local_hotkey_manager_for_testing(), nullptr);
+  EXPECT_EQ(service_->hotkey_manager_for_testing(), nullptr);
 
   profile_.GetPrefs()->SetInteger(prefs::kVoiceTypingSettings, 0);
-  EXPECT_NE(service_->local_hotkey_manager_for_testing(), nullptr);
+  EXPECT_NE(service_->hotkey_manager_for_testing(), nullptr);
 }
 
 TEST_P(DictationKeyedServiceTest, GlobalHotkeyRegisteredOnlyWhileListening) {

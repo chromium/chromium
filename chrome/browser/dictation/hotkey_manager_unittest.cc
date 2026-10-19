@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/dictation/local_hotkey_manager.h"
+#include "chrome/browser/dictation/hotkey_manager.h"
 
 #include <memory>
 #include <optional>
@@ -28,7 +28,7 @@ namespace dictation {
 namespace {
 
 class FakeScopedHotkeyRegistration
-    : public LocalHotkeyManager::ScopedHotkeyRegistration {
+    : public HotkeyManager::ScopedHotkeyRegistration {
  public:
   explicit FakeScopedHotkeyRegistration(base::OnceClosure destruction_callback)
       : destruction_callback_(std::move(destruction_callback)) {}
@@ -45,9 +45,9 @@ class FakeScopedHotkeyRegistration
 
 class FakeState {
  public:
-  std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
+  std::unique_ptr<HotkeyManager::ScopedHotkeyRegistration>
   CreateScopedHotkeyRegistration(ui::Accelerator accelerator,
-                                 LocalHotkeyManager& /*hotkey_manager*/) {
+                                 HotkeyManager& /*hotkey_manager*/) {
     last_registered_accelerator_ = accelerator;
     registration_count_++;
     auto registration =
@@ -77,14 +77,13 @@ class FakeState {
   bool is_registered_ = false;
 };
 
-class FakeRegistrationDelegate
-    : public LocalHotkeyManager::RegistrationDelegate {
+class FakeRegistrationDelegate : public HotkeyManager::RegistrationDelegate {
  public:
   explicit FakeRegistrationDelegate(FakeState* state) : state_(state) {}
-  std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
+  std::unique_ptr<HotkeyManager::ScopedHotkeyRegistration>
   CreateScopedHotkeyRegistration(Profile* profile,
                                  ui::Accelerator accelerator,
-                                 LocalHotkeyManager& hotkey_manager) override {
+                                 HotkeyManager& hotkey_manager) override {
     return state_->CreateScopedHotkeyRegistration(accelerator, hotkey_manager);
   }
 
@@ -92,9 +91,9 @@ class FakeRegistrationDelegate
   raw_ptr<FakeState> state_;
 };
 
-class DictationLocalHotkeyManagerTest : public testing::Test {
+class DictationHotkeyManagerTest : public testing::Test {
  public:
-  DictationLocalHotkeyManagerTest()
+  DictationHotkeyManagerTest()
       : scoped_feature_list_(CreateEnablingFeatureList()) {
     DictationKeyedServiceFactory::GetInstance()->SetTestingFactory(
         &profile_, base::BindRepeating([](content::BrowserContext* context)
@@ -109,7 +108,7 @@ class DictationLocalHotkeyManagerTest : public testing::Test {
   void CreateManager(bool is_listening = false) {
     // Create the mock service (and so its fake global listener) first.
     CHECK(DictationKeyedService::Get(&profile_));
-    manager_ = std::make_unique<LocalHotkeyManager>(
+    manager_ = std::make_unique<HotkeyManager>(
         &profile_, std::make_unique<FakeRegistrationDelegate>(&fake_state_),
         is_listening);
   }
@@ -126,17 +125,17 @@ class DictationLocalHotkeyManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
   FakeState fake_state_;
-  std::unique_ptr<LocalHotkeyManager> manager_;
+  std::unique_ptr<HotkeyManager> manager_;
 };
 
-TEST_F(DictationLocalHotkeyManagerTest, NoRegistrationIfPrefEmpty) {
+TEST_F(DictationHotkeyManagerTest, NoRegistrationIfPrefEmpty) {
   profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey, "");
   CreateManager();
   EXPECT_FALSE(fake_state_.is_registered());
   EXPECT_EQ(fake_state_.registration_count(), 0);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, RegistrationWithDefaultPref) {
+TEST_F(DictationHotkeyManagerTest, RegistrationWithDefaultPref) {
   // Do not set kVoiceTypingHotkey pref explicitly.
   // It should use the default set in browser_prefs.cc.
   CreateManager();
@@ -153,7 +152,7 @@ TEST_F(DictationLocalHotkeyManagerTest, RegistrationWithDefaultPref) {
 #endif
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, RegistrationIfPrefValid) {
+TEST_F(DictationHotkeyManagerTest, RegistrationIfPrefValid) {
   ui::Accelerator accelerator(ui::VKEY_D,
                               ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
   profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey,
@@ -164,7 +163,7 @@ TEST_F(DictationLocalHotkeyManagerTest, RegistrationIfPrefValid) {
   EXPECT_EQ(fake_state_.last_registered_accelerator(), accelerator);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, PrefChangeUpdatesFromDefaultToCustom) {
+TEST_F(DictationHotkeyManagerTest, PrefChangeUpdatesFromDefaultToCustom) {
   // Start with default pref (do not set kVoiceTypingHotkey explicitly).
   CreateManager();
   EXPECT_TRUE(fake_state_.is_registered());
@@ -183,7 +182,7 @@ TEST_F(DictationLocalHotkeyManagerTest, PrefChangeUpdatesFromDefaultToCustom) {
   EXPECT_EQ(fake_state_.last_registered_accelerator(), custom_accelerator);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, PrefClearedUnregistersFromDefault) {
+TEST_F(DictationHotkeyManagerTest, PrefClearedUnregistersFromDefault) {
   // Start with default pref (do not set kVoiceTypingHotkey explicitly).
   CreateManager();
   EXPECT_TRUE(fake_state_.is_registered());
@@ -195,7 +194,7 @@ TEST_F(DictationLocalHotkeyManagerTest, PrefClearedUnregistersFromDefault) {
   EXPECT_EQ(fake_state_.destruction_count(), 1);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, AcceleratorPressedCallsEventHandler) {
+TEST_F(DictationHotkeyManagerTest, AcceleratorPressedCallsEventHandler) {
   ui::Accelerator accelerator(ui::VKEY_D, ui::EF_CONTROL_DOWN);
   profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey,
                                  ui::Command::AcceleratorToString(accelerator));
@@ -209,8 +208,7 @@ TEST_F(DictationLocalHotkeyManagerTest, AcceleratorPressedCallsEventHandler) {
   EXPECT_TRUE(manager_->AcceleratorPressed(accelerator));
 }
 
-TEST_F(DictationLocalHotkeyManagerTest,
-       GlobalHotkeyRegisteredOnlyWhileListening) {
+TEST_F(DictationHotkeyManagerTest, GlobalHotkeyRegisteredOnlyWhileListening) {
   CreateManager();
   const ui::Accelerator accelerator = GetDictationHotkeyFromPrefs(&profile_);
   EXPECT_FALSE(global_listener().IsListeningFor(accelerator));
@@ -228,7 +226,7 @@ TEST_F(DictationLocalHotkeyManagerTest,
   EXPECT_EQ(manager_->global_hotkey_for_testing(), nullptr);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest,
+TEST_F(DictationHotkeyManagerTest,
        GlobalHotkeyRegisteredOnConstructionWhileListening) {
   CreateManager(/*is_listening=*/true);
   EXPECT_TRUE(
@@ -236,7 +234,7 @@ TEST_F(DictationLocalHotkeyManagerTest,
   EXPECT_NE(manager_->global_hotkey_for_testing(), nullptr);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, GlobalHotkeyFollowsPrefWhileListening) {
+TEST_F(DictationHotkeyManagerTest, GlobalHotkeyFollowsPrefWhileListening) {
   CreateManager();
   manager_->OnSessionStateChanged(SessionState::kTranscribing);
   const ui::Accelerator old_accelerator =
@@ -255,7 +253,7 @@ TEST_F(DictationLocalHotkeyManagerTest, GlobalHotkeyFollowsPrefWhileListening) {
   EXPECT_EQ(manager_->global_hotkey_for_testing(), nullptr);
 }
 
-TEST_F(DictationLocalHotkeyManagerTest, InvalidPrefDoesNotRegister) {
+TEST_F(DictationHotkeyManagerTest, InvalidPrefDoesNotRegister) {
   // A modifier is required for the dictation hot key to be valid.
   profile_.GetPrefs()->SetString(prefs::kVoiceTypingHotkey, "D");
   CreateManager();

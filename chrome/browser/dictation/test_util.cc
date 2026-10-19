@@ -13,8 +13,8 @@
 #include "chrome/browser/dictation/dictation_keyed_service.h"
 #include "chrome/browser/dictation/dictation_multiplexer.h"
 #include "chrome/browser/dictation/features.h"
+#include "chrome/browser/dictation/hotkey_manager.h"
 #include "chrome/browser/dictation/listener_stream_provider.h"
-#include "chrome/browser/dictation/local_hotkey_manager.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
@@ -409,8 +409,7 @@ ScopedFakeGlobalAcceleratorListener::ScopedFakeGlobalAcceleratorListener(
     DictationKeyedService& service)
     : service_(service),
       listener_override_(
-          LocalHotkeyManager::SetGlobalAcceleratorListenerForTesting(
-              &listener_)) {}
+          HotkeyManager::SetGlobalAcceleratorListenerForTesting(&listener_)) {}
 
 ScopedFakeGlobalAcceleratorListener::~ScopedFakeGlobalAcceleratorListener() {
   // End the session first so that nothing remains registered with

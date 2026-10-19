@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_DICTATION_LOCAL_HOTKEY_MANAGER_H_
-#define CHROME_BROWSER_DICTATION_LOCAL_HOTKEY_MANAGER_H_
+#ifndef CHROME_BROWSER_DICTATION_HOTKEY_MANAGER_H_
+#define CHROME_BROWSER_DICTATION_HOTKEY_MANAGER_H_
 
 #include <memory>
 
@@ -37,7 +37,7 @@ bool IsListeningState(SessionState state);
 // It listens to preference changes and registers the hotkey with standard
 // priority using a delegate. While Dictation is listening, it also registers
 // the hotkey OS-wide so that Dictation can be stopped from any window.
-class LocalHotkeyManager : public ui::AcceleratorTarget {
+class HotkeyManager : public ui::AcceleratorTarget {
  public:
   // Interface for managing the lifetime of a registered hotkey.
   // Implementations handle the specific registration/unregistration logic
@@ -55,21 +55,20 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual std::unique_ptr<ScopedHotkeyRegistration>
     CreateScopedHotkeyRegistration(Profile* profile,
                                    ui::Accelerator accelerator,
-                                   LocalHotkeyManager& hotkey_manager) = 0;
+                                   HotkeyManager& hotkey_manager) = 0;
   };
 
   // `is_listening` is the initial listening state (see
   // OnSessionStateChanged()); when true the OS-wide hotkey is registered
   // immediately.
-  LocalHotkeyManager(
-      Profile* profile,
-      std::unique_ptr<RegistrationDelegate> registration_delegate,
-      bool is_listening);
+  HotkeyManager(Profile* profile,
+                std::unique_ptr<RegistrationDelegate> registration_delegate,
+                bool is_listening);
 
-  LocalHotkeyManager(const LocalHotkeyManager&) = delete;
-  LocalHotkeyManager& operator=(const LocalHotkeyManager&) = delete;
+  HotkeyManager(const HotkeyManager&) = delete;
+  HotkeyManager& operator=(const HotkeyManager&) = delete;
 
-  ~LocalHotkeyManager() override;
+  ~HotkeyManager() override;
 
   // Overrides the listener used for the OS-wide hotkey (by default
   // ui::GlobalAcceleratorListener::GetInstance()) for all managers until the
@@ -117,4 +116,4 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
 
 }  // namespace dictation
 
-#endif  // CHROME_BROWSER_DICTATION_LOCAL_HOTKEY_MANAGER_H_
+#endif  // CHROME_BROWSER_DICTATION_HOTKEY_MANAGER_H_

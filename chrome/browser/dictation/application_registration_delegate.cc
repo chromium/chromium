@@ -23,11 +23,11 @@ namespace {
 // hotkeys tied to a profile. It registers and unregisters accelerators with the
 // FocusManager of all current and future BrowserViews belonging to the profile.
 class ApplicationScopedHotkeyRegistration
-    : public LocalHotkeyManager::ScopedHotkeyRegistration,
+    : public HotkeyManager::ScopedHotkeyRegistration,
       public BrowserCollectionObserver {
  public:
   ApplicationScopedHotkeyRegistration(ui::Accelerator accelerator,
-                                      LocalHotkeyManager& hotkey_manager,
+                                      HotkeyManager& hotkey_manager,
                                       ProfileBrowserCollection* collection);
 
   ApplicationScopedHotkeyRegistration(
@@ -45,7 +45,7 @@ class ApplicationScopedHotkeyRegistration
   void UnregisterAccelerator(BrowserWindowInterface* browser_window_interface);
 
   ui::Accelerator accelerator_;
-  raw_ref<LocalHotkeyManager> hotkey_manager_;
+  raw_ref<HotkeyManager> hotkey_manager_;
   raw_ptr<ProfileBrowserCollection> collection_;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
@@ -53,7 +53,7 @@ class ApplicationScopedHotkeyRegistration
 
 ApplicationScopedHotkeyRegistration::ApplicationScopedHotkeyRegistration(
     ui::Accelerator accelerator,
-    LocalHotkeyManager& hotkey_manager,
+    HotkeyManager& hotkey_manager,
     ProfileBrowserCollection* collection)
     : accelerator_(accelerator),
       hotkey_manager_(hotkey_manager),
@@ -108,11 +108,11 @@ ApplicationRegistrationDelegate::ApplicationRegistrationDelegate() = default;
 
 ApplicationRegistrationDelegate::~ApplicationRegistrationDelegate() = default;
 
-std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
+std::unique_ptr<HotkeyManager::ScopedHotkeyRegistration>
 ApplicationRegistrationDelegate::CreateScopedHotkeyRegistration(
     Profile* profile,
     ui::Accelerator accelerator,
-    LocalHotkeyManager& hotkey_manager) {
+    HotkeyManager& hotkey_manager) {
   return std::make_unique<ApplicationScopedHotkeyRegistration>(
       accelerator, hotkey_manager,
       ProfileBrowserCollection::GetForProfile(profile));
