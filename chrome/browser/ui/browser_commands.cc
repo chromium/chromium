@@ -560,6 +560,10 @@ std::optional<MruTabResult> GetGlobalMruTab(
 
   collection->ForEach(
       [&](BrowserWindowInterface* b) {
+        if (!WindowFeatureController::From(b)->CanSupportWindowFeature(
+                WindowFeatureController::WindowFeature::kFeatureTabStrip)) {
+          return true;
+        }
         TabStripModel* model = b->GetTabStripModel();
         int i = 0;
         for (auto it = model->begin(); it != model->end(); ++it, ++i) {

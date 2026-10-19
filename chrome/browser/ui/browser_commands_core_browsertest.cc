@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -163,6 +164,45 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest, CycleToMruTab) {
 
   // If MRU is active, the most recently used tab before 2 is 0.
   updater->ExecuteCommand(IDC_CYCLE_TO_NEXT_TAB);
+  EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
+}
+
+// Tests that non-tabbed app windows (such as standalone PWAs) are excluded from
+// global MRU cycling so Ctrl+Tab does not switch into a window where tab
+// cycling commands are disabled.
+IN_PROC_BROWSER_TEST_F(BrowserCommandsCoreTest,
+                       CycleToMruTabExcludesNonTabbedAppWindow) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kCtrlTabMru, true);
+
+  auto* lifecycle_source = resource_coordinator::GetTabLifecycleUnitSource();
+  GURL about_blank(url::kAboutBlankURL);
+
+  base::ScopedClosureRunner scoped_focus =
+      lifecycle_source->SetFocusedTabStripModelForTesting(
+          browser()->GetTabStripModel());
+  AddTab(browser(), about_blank);
+  AddTab(browser(), about_blank);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  browser()->GetTabStripModel()->ActivateTabAt(1);
+  scoped_focus.RunAndReset();
+
+  BrowserWindowInterface* app_browser =
+      CreateBrowserForApp("test_app", browser()->GetProfile());
+  ASSERT_FALSE(
+      WindowFeatureController::From(app_browser)
+          ->CanSupportWindowFeature(
+              WindowFeatureController::WindowFeature::kFeatureTabStrip));
+  scoped_focus = lifecycle_source->SetFocusedTabStripModelForTesting(
+      app_browser->GetTabStripModel());
+  scoped_focus.RunAndReset();
+
+  scoped_focus = lifecycle_source->SetFocusedTabStripModelForTesting(
+      browser()->GetTabStripModel());
+
+  CommandUpdater* updater = chrome::BrowserCommandController::From(browser());
+  updater->ExecuteCommand(IDC_CYCLE_TO_NEXT_TAB);
+
+  // Cycling MRU should skip the app window and switch back to tab 0.
   EXPECT_EQ(0, browser()->GetTabStripModel()->active_index());
 }
 
