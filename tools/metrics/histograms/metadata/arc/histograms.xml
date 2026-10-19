@@ -1161,8 +1161,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.FileSystem.ContentUrlAccessCheckResult"
     enum="ArcContentUrlAccessCheckResult" expires_after="2027-07-17">
-  <owner>youkichihosoi@chromium.org</owner>
   <owner>djacobo@chromium.org</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The result of checking whether an Android content:// URL is recorded as
     known/explicitly granted access by the browser. Recorded upon every
@@ -1174,8 +1174,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.FileSystem.ContentUrlGrantAccessResult"
     enum="ArcContentUrlGrantAccessResult" expires_after="2027-07-17">
-  <owner>youkichihosoi@chromium.org</owner>
   <owner>djacobo@chromium.org</owner>
+  <owner>arc-storage@google.com</owner>
   <summary>
     The result of attempting to record that an Android content:// URL is known/
     explicitly granted access by the browser. Recorded upon every request to
@@ -2427,7 +2427,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.VmDataMigration.AccessDeniedAtOpenSourceFileFailureType"
     enum="ArcVmDataMigrationAccessDeniedAtOpenFileFailureType"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The detailed cause of an access denied error at opening a source file during
@@ -2438,7 +2438,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.AutoResumeCount" units="count"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The number of times ARCVM /data migration has been automatically resumed.
@@ -2454,7 +2454,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.BatteryConsumption" units="%"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The amount of decrease in battery level during ARCVM /data migration,
@@ -2467,7 +2467,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.DesiredDiskImageSizeInGB.{SatisfiedOrNot}"
     units="GB" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The desired disk image size for the destination of ARCVM /data migration.
@@ -2482,7 +2482,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.Duration" units="seconds"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     Duration of the ARCVM /data migration. This is reported once when a newly
@@ -2492,7 +2492,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.EndStatus"
     enum="CrOSFileSystemMigrationEndStatus" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The status of ARCVM /data migration when it ends. This is reported when a
@@ -2502,7 +2502,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.FailedErrorCode" enum="PlatformFileError"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The error code of a file operation failure that caused the ARCVM /data
@@ -2515,7 +2515,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.VmDataMigration.FailedOperationType"
     enum="CrOSFileSystemMigrationFailedOperationType"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The type of file operation at which the ARCVM /data migration failed.
@@ -2527,7 +2527,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.FailedPathType"
     enum="ArcVmDataMigrationFailedPathType" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The location of files at which ARCVM /data migration failed. Reported when a
@@ -2539,7 +2539,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.GetAndroidDataInfoDuration" units="ms"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The time taken for ArcVmDataMigrator's D-Bus method GetAndroidDataInfo to
@@ -2550,7 +2550,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.InitialBatteryLevel" units="%"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The battery level when the user enters the UX flow of ARCVM /data migration.
@@ -2560,7 +2560,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.InitialFreeSpace" units="MB"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The total amount of free disk space on the system when a new or resumed
@@ -2571,7 +2571,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.MigrationFinishReason{ArcUserTypes}"
     enum="ArcVmDataMigrationFinishReason" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The reason why ARCVM /data migration is marked as finished. {ArcUserTypes}
@@ -2581,7 +2581,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.MigrationStatusOnArcStarted{ArcUserTypes}"
     enum="ArcVmDataMigrationStatus" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The status of ARCVM /data migration at the beginning of each ARC session.
@@ -2592,7 +2592,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.NoSpaceFailureFreeSpace" units="MB"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The total amount of free disk space on the system when the user encounters
@@ -2603,7 +2603,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.NoSpaceFailureXattrSize" units="bytes"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The total number of bytes of xattr data that we are trying to store on a
@@ -2617,7 +2617,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.NotificationShownForTheFirstTime"
     enum="BooleanEnabled" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     Counts the number of events that the notification for ARCVM /data migration
@@ -2628,7 +2628,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Arc.VmDataMigration.RemainingDays.{ArcVmDataMigrationFrontEndEvents}"
     units="days" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The number of days until the deadline displayed in the notification or the
@@ -2653,7 +2653,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Arc.VmDataMigration.RequiredFreeDiskSpaceInGB.{SatisfiedOrNot}"
     units="GB" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The size of free disk space required for the ARCVM /data migration. Reported
@@ -2668,7 +2668,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.ResumeNotificationShown"
     enum="BooleanEnabled" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     Counts how many times the notification for resuming ARCVM /data migration is
@@ -2681,7 +2681,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.ScreenEvent.On{ArcVmDataMigrationType}"
     enum="ArcVmDataMigrationScreenEvent" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     Records events happening in the screen flow of ARCVM /data migration.
@@ -2693,7 +2693,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Arc.VmDataMigration.ScreenInitialState.On{ArcVmDataMigrationType}"
     enum="ArcVmDataMigrationScreenInitialState" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The initial state of the screen flow of ARCVM /data migration. Recorded at
@@ -2705,7 +2705,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Arc.VmDataMigration.ScreenSetupFailure.On{ArcVmDataMigrationType}"
     enum="ArcVmDataMigrationScreenSetupFailure" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     Records failures in the setup phase of the screen flow of ARCVM /data
@@ -2717,7 +2717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.SetupResult"
     enum="ArcVmDataMigrationSetupResult" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The result of the setup of ARCVM /data migration. Reported before triggering
@@ -2727,7 +2727,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.StartStatus"
     enum="CrOSFileSystemMigrationStartStatus" expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     The status of ARCVM /data migration when it starts. This is reported when a
@@ -2737,7 +2737,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.TotalFiles" units="files"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     Total number of files to be migrated in ARCVM /data migration. Reported once
@@ -2747,7 +2747,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.VmDataMigration.TotalSizeMB" units="MB"
     expires_after="2026-12-31">
-  <owner>youkichihosoi@google.com</owner>
+  <owner>niwa@google.com</owner>
   <owner>arc-storage@google.com</owner>
   <summary>
     Total bytes to be migrated in ARCVM /data migration. Reported once at the
