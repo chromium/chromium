@@ -17,6 +17,7 @@ import logging
 import os
 import pkgutil
 import re
+import shutil
 import types
 from typing import Any, NamedTuple, Type
 import unittest
@@ -264,6 +265,10 @@ class GpuIntegrationTest(
       overlay_support.ParseOverlayJsonFile(
         cls._finder_options.extra_overlay_config_json
       )
+    # TODO(crbug.com/574658973): Remove this once the driver shader cache
+    # slowdown is resolved.
+    if cls._finder_options.clear_system_shader_cache:
+      cls._ClearSystemShaderCache()
     # Tests for web-engine-shell and cast-streaming-shell are running on very
     # less performant smart display devices and also use DCHECK-enabled
     # binaries. The combination can cause a significant slowness of the
@@ -368,6 +373,17 @@ class GpuIntegrationTest(
         'Start an isolated headless Wayland display server for each test '
         'worker process to prevent window occlusion issues in parallel '
         'testing.'
+      ),
+    )
+    # TODO(crbug.com/574658973): Remove this once the driver shader cache
+    # slowdown is resolved.
+    parser.add_argument(
+      '--clear-system-shader-cache',
+      default=False,
+      action='store_true',
+      help=(
+        'Clears the system GPU driver shader cache (e.g. NVIDIA DXCache on '
+        'Windows) once per shard before starting the browser.'
       ),
     )
 
@@ -635,6 +651,36 @@ class GpuIntegrationTest(
     )
 
   # The following is the rest of the framework for the GPU integration tests.
+
+  @classmethod
+  def _ClearSystemShaderCache(cls) -> None:
+    """Clears system GPU driver shader caches before starting the browser."""
+    # TODO(crbug.com/574658973): Remove this once the driver shader cache
+    # slowdown is resolved.
+    if not host_information.IsWindows():
+      return
+
+    user_profile = os.path.expanduser('~')
+    local_app_data = os.environ.get('LOCALAPPDATA') or os.path.join(
+      user_profile, 'AppData', 'Local'
+    )
+    locallow_app_data = os.path.join(user_profile, 'AppData', 'LocalLow')
+    cache_dirs = [
+      os.path.join(local_app_data, 'NVIDIA', 'DXCache'),
+      os.path.join(local_app_data, 'NVIDIA', 'PerDriverVersion', 'DXCache'),
+      os.path.join(locallow_app_data, 'NVIDIA', 'DXCache'),
+      os.path.join(locallow_app_data, 'NVIDIA', 'PerDriverVersion', 'DXCache'),
+    ]
+
+    if cls.child.worker_num == 1:
+      for cache_dir in cache_dirs:
+        if not os.path.exists(cache_dir):
+          continue
+        shutil.rmtree(cache_dir, ignore_errors=True)
+        logging.warning('Cleared system shader cache %s', cache_dir)
+    else:
+      for cache_dir in cache_dirs:
+        py_utils.WaitFor(lambda d=cache_dir: not os.path.exists(d), timeout=30)
 
   @classmethod
   def GenerateTestCases__RunGpuTest(

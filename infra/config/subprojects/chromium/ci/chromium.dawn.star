@@ -2949,7 +2949,18 @@ ci.thin_tester(
         targets = [
             "dawn_chromium_isolated_scripts",
             "gpu_common_gtests_passthrough",
-            "gpu_dawn_telemetry_win_x64_tests",
+            targets.bundle(
+                targets = "gpu_dawn_telemetry_win_x64_tests",
+                mixins = [
+                    targets.mixin(
+                        args = [
+                            # TODO(crbug.com/574658973): Remove this once the
+                            # driver shader cache slowdown is resolved.
+                            "--clear-system-shader-cache",
+                        ],
+                    ),
+                ],
+            ),
         ],
         mixins = [
             "limited_capacity_bot",
@@ -3315,7 +3326,18 @@ ci.thin_tester(
         # should be running the same test_suites as 'Dawn Win10 x86 Release
         # (NVIDIA)'.
         targets = [
-            "gpu_dawn_telemetry_tests_fxc",
+            targets.bundle(
+                targets = "gpu_dawn_telemetry_tests_fxc",
+                mixins = [
+                    targets.mixin(
+                        args = [
+                            # TODO(crbug.com/574658973): Remove this once the
+                            # driver shader cache slowdown is resolved.
+                            "--clear-system-shader-cache",
+                        ],
+                    ),
+                ],
+            ),
             "gpu_dawn_integration_gtests_passthrough",
             "gpu_dawn_isolated_scripts",
         ],

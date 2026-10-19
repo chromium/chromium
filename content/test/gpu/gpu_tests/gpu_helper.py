@@ -331,6 +331,7 @@ def GetMockArgs(webgl_version: str = '1.0.0') -> mock.MagicMock:
   args.expected_device_id = 0
   args.browser_options = []
   args.use_worker = 'none'
+  args.clear_system_shader_cache = False
   return args
 
 
@@ -411,8 +412,6 @@ def EvaluateVersionComparison(
   return operation in ('eq', 'ge', 'le')
 
 
-
-
 # No good way to reduce the number of return statements to the required level
 # without harming readability.
 def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
@@ -464,8 +463,6 @@ def IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
     return not EvaluateVersionComparison(version1, 'le', version2)
   assert False
   return False
-
-
 
 
 def GetExpectationFileDriverTagsForOs(target_os: str) -> frozenset[str]:
