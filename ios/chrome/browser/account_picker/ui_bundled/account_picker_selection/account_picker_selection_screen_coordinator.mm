@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_selection/account_picker_selection_screen_coordinator.h"
 
+#import <utility>
+
 #import "base/metrics/user_metrics.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
@@ -135,11 +137,12 @@
                   prefilledEmail:nil
             continuationProvider:DoNothingContinuationProvider()];
   __weak __typeof(self) weakSelf = self;
-  _addAccountSigninCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator,
-      SigninCoordinatorResultOrIdentity result) {
-    [weakSelf addAccountDoneWithSigninCoordinator:coordinator result:result];
-  };
+  _addAccountSigninCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+        [weakSelf addAccountDoneWithSigninCoordinator:coordinator
+                                               result:std::move(result)];
+      };
   [_addAccountSigninCoordinator start];
 }
 

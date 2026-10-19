@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/scene/coordinator/scene_coordinator.h"
 
+#import <utility>
+
 #import "base/cancelable_callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -2107,7 +2109,7 @@ inline LayoutStateScenePassKey PassKey() {
       ^(SigninCoordinator* coordinator,
         SigninCoordinatorResultOrIdentity result) {
         [weakSelf signinCompletedWithCoordinator:coordinator
-                                          result:result
+                                          result:std::move(result)
                                       completion:completion];
       };
 
@@ -2136,7 +2138,7 @@ inline LayoutStateScenePassKey PassKey() {
   CHECK_EQ(coordinator, _signinCoordinator);
 
   if (completion) {
-    completion(coordinator, result);
+    completion(coordinator, std::move(result));
   }
   [self stopSigninCoordinatorAnimated:YES];
 }

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 
+#import <utility>
+
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -114,7 +116,7 @@
     // of whether the history sync was displayed and/or accepted.
     TriggerAccountSwitchSnackbarWithIdentity(primaryIdentity, self.browser);
   }
-  [self runCompletionWithSigninResult:signinResult];
+  [self runCompletionWithSigninResult:std::move(signinResult)];
 }
 
 @end

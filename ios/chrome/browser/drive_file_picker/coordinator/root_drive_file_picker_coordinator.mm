@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/root_drive_file_picker_coordinator.h"
 
 #import <memory>
+#import <utility>
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -438,11 +439,9 @@ void ConfirmChangeProfileWithCompletion(
   _addAccountCoordinator = nil;
 }
 
-- (void)
-    addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
-                                 result:
-                                     (const SigninCoordinatorResultOrIdentity&)
-                                         result {
+- (void)addAccountCompletionWithCoordinator:(SigninCoordinator*)coordinator
+                                     result:(SigninCoordinatorResultOrIdentity)
+                                                result {
   CHECK_EQ(_addAccountCoordinator, coordinator);
   if (result.has_value()) {
     CHECK(result.value());
@@ -472,11 +471,12 @@ void ConfirmChangeProfileWithCompletion(
                                    prefilledEmail:nil
                              continuationProvider:
                                  DoNothingContinuationProvider()];
-  _addAccountCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator,
-      SigninCoordinatorResultOrIdentity result) {
-    [weakSelf addAccountCompletionWithCoordinator:coordinator result:result];
-  };
+  _addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+        [weakSelf addAccountCompletionWithCoordinator:coordinator
+                                               result:std::move(result)];
+      };
   [_addAccountCoordinator start];
 }
 
@@ -494,7 +494,7 @@ void ConfirmChangeProfileWithCompletion(
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinator* coordinator,
                           SigninCoordinatorResultOrIdentity result) {
-               [weakSelf handleSignInResult:result];
+               [weakSelf handleSignInResult:std::move(result)];
              }];
   command.confirmChangeProfile = ^(void (^completion)(BOOL)) {
     ConfirmChangeProfileWithCompletion(weakSelf, completion);
@@ -506,7 +506,7 @@ void ConfirmChangeProfileWithCompletion(
   [_signinCoordinator start];
 }
 
-- (void)handleSignInResult:(const SigninCoordinatorResultOrIdentity&)result {
+- (void)handleSignInResult:(SigninCoordinatorResultOrIdentity)result {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
   [_metricsHelper reportDriveSignInResult:result];

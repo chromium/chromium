@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <utility>
+
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/core/browser/account_reconcilor.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -178,7 +180,7 @@ TEST_F(ConsistencyPromoSigninCoordinatorTest, StartAndCancel) {
   __block bool signin_completion_called = false;
   coordinator_.signinCompletion = ^(SigninCoordinator* coordinator,
                                     SigninCoordinatorResultOrIdentity result) {
-    coordinator_result = result;
+    coordinator_result = std::move(result);
     signin_completion_called = true;
   };
   StartCoordinator();

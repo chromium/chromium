@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
 
+#import <utility>
+
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/consent_level.h"
@@ -324,7 +326,8 @@
   _addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator,
         SigninCoordinatorResultOrIdentity result) {
-        [weakSelf addAccountDoneWithCoordinator:coordinator result:result];
+        [weakSelf addAccountDoneWithCoordinator:coordinator
+                                         result:std::move(result)];
       };
   [_addAccountSigninCoordinator start];
 }
@@ -348,7 +351,7 @@
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
     case SigninCoordinatorProfileSwitch:
-      [self runCompletionWithSigninResult:result];
+      [self runCompletionWithSigninResult:std::move(result)];
       break;
     case SigninCoordinatorResultSuccess:
     case SigninCoordinatorUINotAvailable:

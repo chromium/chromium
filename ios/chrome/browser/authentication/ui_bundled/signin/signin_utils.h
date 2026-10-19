@@ -202,7 +202,7 @@ void CheckSigninCoordinatorResultAndIdentity(SigninCoordinatorResult result,
 // removed.
 SigninCoordinatorResult
 SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-    const SigninCoordinatorResultOrIdentity& result);
+    SigninCoordinatorResultOrIdentity result);
 
 // Converts the legacy (`result`, `identity`) pair into
 // `SigninCoordinatorResultOrIdentity`.

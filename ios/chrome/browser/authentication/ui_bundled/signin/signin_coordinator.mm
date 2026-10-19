@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/notreached.h"
@@ -417,7 +419,7 @@ using signin_metrics::PromoAction;
 #pragma mark - Protected
 
 - (void)runCompletionWithSigninResult:
-    (const SigninCoordinatorResultOrIdentity&)signinResult {
+    (SigninCoordinatorResultOrIdentity)signinResult {
   if (signinResult.has_value()) {
     CHECK(signinResult.value());
   }
@@ -428,7 +430,7 @@ using signin_metrics::PromoAction;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.
   self.signinCompletion = nil;
-  signinCompletion(self, signinResult);
+  signinCompletion(self, std::move(signinResult));
 }
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult

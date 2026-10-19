@@ -6,6 +6,8 @@
 
 #import <StoreKit/StoreKit.h>
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -247,7 +249,7 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
     base::HistogramTester histogram_tester;
 
     ASSERT_TRUE(signin_completion);
-    signin_completion(signin_coordinator, simulated_signin_result);
+    signin_completion(signin_coordinator, std::move(simulated_signin_result));
 
     histogram_tester.ExpectUniqueSample(kSaveToPhotosSignInResultHistogram,
                                         expected_histogram, 1);

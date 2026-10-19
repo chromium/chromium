@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <optional>
+#import <utility>
 
 #import "base/check_deref.h"
 #import "base/metrics/user_metrics.h"
@@ -223,7 +224,7 @@
 #pragma mark - SigninCoordinator
 
 - (void)runCompletionWithSigninResult:
-    (const SigninCoordinatorResultOrIdentity&)signinResult {
+    (SigninCoordinatorResultOrIdentity)signinResult {
   if (signinResult.has_value()) {
     base::RecordAction(
         base::UserMetricsAction("Signin_BottomSheet_ClosedBySignIn"));
@@ -251,7 +252,7 @@
   }
   DCHECK(!self.alertCoordinator);
   [self disconnectMediatorWithResult:signinResult];
-  [super runCompletionWithSigninResult:signinResult];
+  [super runCompletionWithSigninResult:std::move(signinResult)];
 }
 
 #pragma mark - BuggyAuthenticationViewOwner
@@ -433,7 +434,7 @@
       ^(SigninCoordinator* coordinator,
         SigninCoordinatorResultOrIdentity result) {
         [weakSelf addAccountCompletionWithCoordinator:coordinator
-                                         SigninResult:result
+                                         SigninResult:std::move(result)
                                           hasAccounts:hasAccounts];
       };
   [self.addAccountCoordinator start];

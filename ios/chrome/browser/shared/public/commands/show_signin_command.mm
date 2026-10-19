@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 
+#import <utility>
+
 #import "base/check.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -156,7 +158,7 @@
     if (firstCompletion) {
       firstCompletion(coordinator, result);
     }
-    completion(coordinator, result);
+    completion(coordinator, std::move(result));
   };
 }
 

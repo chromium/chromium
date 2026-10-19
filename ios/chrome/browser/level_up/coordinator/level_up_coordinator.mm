@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/level_up/coordinator/level_up_coordinator.h"
 
+#import <utility>
+
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -413,7 +415,7 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinator* coordinator,
                           SigninCoordinatorResultOrIdentity result) {
-               [weakSelf handleSignInResult:result];
+               [weakSelf handleSignInResult:std::move(result)];
              }];
   id<SceneSignInCommands> sceneSignInHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SceneSignInCommands);

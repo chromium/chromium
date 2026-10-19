@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_entry_flow_coordinator.h"
 
+#import <utility>
+
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
@@ -253,7 +255,7 @@ signin_metrics::AccessPoint AccessPointFromGeminiEntryPoint(
   _signinCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator,
         SigninCoordinatorResultOrIdentity result) {
-        [weakSelf signinDidFinishWithResult:result];
+        [weakSelf signinDidFinishWithResult:std::move(result)];
       };
   [_signinCoordinator start];
 }

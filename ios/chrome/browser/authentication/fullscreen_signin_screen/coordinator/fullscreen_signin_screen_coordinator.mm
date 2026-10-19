@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -243,17 +245,16 @@
       ^(SigninCoordinator* coordinator,
         SigninCoordinatorResultOrIdentity result) {
         [weakSelf addAccountSigninCompleteWithCoordinator:coordinator
-                                             signinResult:result];
+                                             signinResult:std::move(result)];
       };
   [self.addAccountSigninCoordinator start];
 }
 
 // Callback handling the completion of the AddAccount action.
-- (void)
-    addAccountSigninCompleteWithCoordinator:(SigninCoordinator*)coordinator
-                               signinResult:
-                                   (const SigninCoordinatorResultOrIdentity&)
-                                       signinResult {
+- (void)addAccountSigninCompleteWithCoordinator:(SigninCoordinator*)coordinator
+                                   signinResult:
+                                       (SigninCoordinatorResultOrIdentity)
+                                           signinResult {
   CHECK_EQ(self.addAccountSigninCoordinator, coordinator);
   [self stopAddAccountCoordinator];
   if (signinResult.has_value() && self.accountManagerService->IsValidIdentity(

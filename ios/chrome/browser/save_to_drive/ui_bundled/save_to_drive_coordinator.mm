@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/save_to_drive/ui_bundled/save_to_drive_coordinator.h"
 
+#import <utility>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
@@ -317,7 +319,7 @@
                             PROMO_ACTION_NO_SIGNIN_PROMO
              completion:^(SigninCoordinator* coordinator,
                           SigninCoordinatorResultOrIdentity result) {
-               [weakSelf doSigninCompletionWithResult:result];
+               [weakSelf doSigninCompletionWithResult:std::move(result)];
              }];
   command.confirmChangeProfile = ^(void (^completion)(BOOL)) {
     [weakSelf confirmChangeProfileWithCompletion:completion];

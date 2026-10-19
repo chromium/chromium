@@ -74,8 +74,7 @@ enum class DriveFilePickerSearchState {
              hasAccountOnDevice:(BOOL)hasAccountOnDevice;
 
 // Reports the sign-in result after the sign-in flow completes.
-- (void)reportDriveSignInResult:
-    (const SigninCoordinatorResultOrIdentity&)result;
+- (void)reportDriveSignInResult:(SigninCoordinatorResultOrIdentity)result;
 
 @end
 

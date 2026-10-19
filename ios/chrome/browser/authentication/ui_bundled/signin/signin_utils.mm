@@ -181,7 +181,7 @@ void AllBrowsersSignedOut(signin::SignoutCompletion completion,
 // value or a non-success cancellation/failure reason
 // (`SigninCoordinatorResult`).
 void CheckSigninCoordinatorResultOrIdentity(
-    const SigninCoordinatorResultOrIdentity& result) {
+    SigninCoordinatorResultOrIdentity result) {
   if (result.has_value()) {
     CHECK(result.value());
   } else {
@@ -662,7 +662,7 @@ void CheckSigninCoordinatorResultAndIdentity(SigninCoordinatorResult result,
 
 SigninCoordinatorResult
 SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-    const SigninCoordinatorResultOrIdentity& result) {
+    SigninCoordinatorResultOrIdentity result) {
   CheckSigninCoordinatorResultOrIdentity(result);
   if (result.has_value()) {
     return SigninCoordinatorResultSuccess;

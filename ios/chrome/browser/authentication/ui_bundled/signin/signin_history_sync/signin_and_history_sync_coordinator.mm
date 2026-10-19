@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
@@ -260,7 +262,7 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
             SigninCoordinatorResultOrIdentity result) {
             SigninCoordinatorResult signinResult = signin::
                 SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-                    result);
+                    std::move(result));
             [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
                                                          result:signinResult];
           };
@@ -282,7 +284,7 @@ SigninCoordinatorResult HistorySyncResultToSigninCoordinatorResult(
             SigninCoordinatorResultOrIdentity result) {
             SigninCoordinatorResult signinResult = signin::
                 SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-                    result);
+                    std::move(result));
             [weakSelf currentSigninStepDidFinishWithCoordinator:coordinator
                                                          result:signinResult];
           };

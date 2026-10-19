@@ -6,6 +6,8 @@
 
 #import <StoreKit/StoreKit.h>
 
+#import <utility>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -462,7 +464,7 @@ void ConfirmChangeProfileWithCompletion(SaveToPhotosCoordinator* coordinator,
   _signinCoordinator.signinCompletion =
       ^(SigninCoordinator* coordinator,
         SigninCoordinatorResultOrIdentity result) {
-        [weakSelf handleSigninResult:result];
+        [weakSelf handleSigninResult:std::move(result)];
       };
   [_signinCoordinator start];
 }
@@ -509,7 +511,7 @@ void ConfirmChangeProfileWithCompletion(SaveToPhotosCoordinator* coordinator,
   _alertController = nil;
 }
 
-- (void)handleSigninResult:(const SigninCoordinatorResultOrIdentity&)result {
+- (void)handleSigninResult:(SigninCoordinatorResultOrIdentity)result {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
   if (result.has_value()) {

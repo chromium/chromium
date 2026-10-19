@@ -163,8 +163,7 @@ enum class FilePickerFilterChange {
   }
 }
 
-- (void)reportDriveSignInResult:
-    (const SigninCoordinatorResultOrIdentity&)result {
+- (void)reportDriveSignInResult:(SigninCoordinatorResultOrIdentity)result {
   if (result.has_value()) {
     base::UmaHistogramEnumeration("IOS.FilePicker.Drive.SignIn.Result",
                                   FilePickerDriveSignInResult::kSignInSuccess);
