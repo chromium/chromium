@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
+import("//build/config/sanitizers/sanitizers.gni")
 
 config("default_coverage") {
   if (use_clang_coverage) {
@@ -24,6 +25,18 @@ config("default_coverage") {
       if (toolchain_has_rust) {
         configs += [ "//build/config/clang:compiler_profile" ]
       }
+    }
+
+    if (is_mac && current_cpu == "x64" && !is_component_build &&
+        use_fuzzing_engine) {
+      # In static coverage builds on macOS x64 (4 KiB pages), __llvm_prf_cnts
+      # and __llvm_prf_data can push the __DATA segment past 256 MiB (65,536
+      # pages), overflowing the uint16_t page index in Mach-O chained fixups
+      # and crashing at dyld startup (crbug.com/572893519).
+      # TODO(crbug.com/574123801): This configuration is temporary once ld64.lld
+      # can handle chained fixups past 256 MiB or we move mac-libfuzzer-coverage
+      # builder to arm64.
+      ldflags += [ "-Wl,-no_fixup_chains" ]
     }
 
     cflags = [
