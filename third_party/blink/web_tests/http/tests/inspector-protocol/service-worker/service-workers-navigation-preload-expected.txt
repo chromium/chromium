@@ -1,0 +1,36 @@
+Tests that Network events for navigation preload requests are reported on the service worker target.
+
+-----------------
+Loading an iframe.
+requestWillBeSent:
+  url: http://127.0.0.1:8000/inspector-protocol/service-worker/resources/navigation-preload-scope.php
+  request.headers['Service-Worker-Navigation-Preload']: hello
+responseReceived:
+  status: 200
+  timing available: true
+loadingFinished
+The iframe loaded.
+-----------------
+Loading another iframe.
+requestWillBeSent:
+  url: http://127.0.0.1:8000/inspector-protocol/service-worker/resources/navigation-preload-scope.php?BrokenChunked
+  request.headers['Service-Worker-Navigation-Preload']: hello
+responseReceived:
+  status: 200
+  timing available: true
+loadingFailed:
+  errorText: net::ERR_INVALID_CHUNKED_ENCODING
+The iframe loaded.
+-----------------
+Loading another iframe.
+requestWillBeSent:
+  url: http://127.0.0.1:8000/inspector-protocol/service-worker/resources/navigation-preload-scope.php?Redirect
+  request.headers['Service-Worker-Navigation-Preload']: hello
+responseReceived:
+  status: 302
+  timing available: true
+loadingFinished
+The iframe loaded.
+-----------------
+Done
+

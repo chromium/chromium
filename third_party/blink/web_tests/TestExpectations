@@ -4369,8 +4369,6 @@ crbug.com/702837 virtual/text-antialias/aat-morx.html [ Crash Failure Pass Timeo
 
 crbug.com/688670 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-removed.html [ Failure Pass ]
 
-crbug.com/40579361 http/tests/devtools/service-workers/service-worker-v8-cache.js [ Crash Failure Pass Timeout ]
-
 # ====== Random order flaky tests end here ======
 
 # ====== Tests from enabling .any.js/.worker.js tests begin here ======

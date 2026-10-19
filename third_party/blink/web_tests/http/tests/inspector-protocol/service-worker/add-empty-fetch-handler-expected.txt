@@ -1,0 +1,4 @@
+Tests that a Log.entryAdded warning is reported if addEventListener adds an empty fetch handler.
+
+javascript warning: Fetch event handler is recognized as no-op. No-op fetch handler may bring overhead during navigation. Consider removing the handler if possible.
+

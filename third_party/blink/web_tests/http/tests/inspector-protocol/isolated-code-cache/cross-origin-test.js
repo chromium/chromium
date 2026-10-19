@@ -18,7 +18,7 @@
       'http://127.0.0.1:8000/devtools/resources/test-page-v8-code-cache.html');
 
   const scope =
-      'http://127.0.0.1:8000/devtools/service-workers/resources/v8-cache-iframe.html';
+      'http://127.0.0.1:8000/inspector-protocol/service-worker/resources/v8-cache-iframe.html';
   const frameId = 'frame_id';
 
   await helper.addIframe(scope, frameId);
@@ -51,7 +51,7 @@
       'http://localhost:8000/devtools/resources/test-page-v8-code-cache.html');
 
   const localhostScope =
-      'http://localhost:8000/devtools/service-workers/resources/v8-cache-iframe.html';
+      'http://localhost:8000/inspector-protocol/service-worker/resources/v8-cache-iframe.html';
 
   await helper.addIframe(localhostScope, frameId);
   await helper.startTracing();

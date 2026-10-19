@@ -1,0 +1,48 @@
+Tests that v8.compile and v8.produceCache trace events report code cache usage for scripts stored in Service Worker Cache Storage.
+
+--- Trace events while installing -------------
+v8.compile: {
+    columnNumber : 1
+    lineNumber : 1
+    notStreamedReason : <string>
+    streamed : <boolean>
+    url : .../inspector-protocol/service-worker/resources/v8-cache-worker.js
+}
+v8.compile: {
+    columnNumber : 1
+    eager : true
+    lineNumber : 1
+    notStreamedReason : <string>
+    streamed : <boolean>
+    url : .../devtools/resources/v8-cache-script.js
+}
+v8.produceCache: {
+    columnNumber : 1
+    lineNumber : 1
+    producedCacheSize : <number>
+    url : .../devtools/resources/v8-cache-script.js
+}
+-----------------------------------------------
+--- Trace events while executing scripts ------
+v8.compile: {
+    cacheKind : full
+    cacheRejected : false
+    columnNumber : 1
+    consumedCacheSize : <number>
+    lineNumber : 1
+    notStreamedReason : <string>
+    streamed : <boolean>
+    url : .../devtools/resources/v8-cache-script.js
+}
+v8.compile: {
+    cacheKind : full
+    cacheRejected : false
+    columnNumber : 1
+    consumedCacheSize : <number>
+    lineNumber : 1
+    notStreamedReason : <string>
+    streamed : <boolean>
+    url : .../devtools/resources/v8-cache-script.js
+}
+-----------------------------------------------
+

@@ -1,0 +1,11 @@
+Tests that a Log.entryAdded warning is reported if addEventListener is called after initial evaluation of the service worker script.
+
+javascript warning: Event handler of 'install' event must be added on the initial evaluation of worker script.
+    (anonymous) @ service-worker-lazy-install-addeventlistener.js:1:2
+    -- setTimeout --
+    (anonymous) @ service-worker-lazy-install-addeventlistener.js:0:0
+javascript warning: Event handler of 'fetch' event must be added on the initial evaluation of worker script.
+    (anonymous) @ service-worker-lazy-fetch-addeventlistener.js:1:2
+    -- setTimeout --
+    (anonymous) @ service-worker-lazy-fetch-addeventlistener.js:0:0
+
