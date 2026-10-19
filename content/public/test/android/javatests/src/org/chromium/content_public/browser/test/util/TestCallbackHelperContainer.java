@@ -104,7 +104,14 @@ public class TestCallbackHelperContainer {
                         }
                     };
             mJsonResult = null;
-            ThreadUtils.runOnUiThreadBlocking(() -> webContents.evaluateJavaScript(code, callback));
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        if (webContents.isDestroyed()) {
+                            notifyCalled("null");
+                            return;
+                        }
+                        webContents.evaluateJavaScript(code, callback);
+                    });
         }
 
         /**
@@ -123,7 +130,13 @@ public class TestCallbackHelperContainer {
                     };
             mJsonResult = null;
             ThreadUtils.runOnUiThreadBlocking(
-                    () -> webContents.evaluateJavaScriptForTests(code, callback));
+                    () -> {
+                        if (webContents.isDestroyed()) {
+                            notifyCalled("null");
+                            return;
+                        }
+                        webContents.evaluateJavaScriptForTests(code, callback);
+                    });
         }
 
         /**

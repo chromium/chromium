@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCapturePickerDelegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager;
 import org.chromium.chrome.browser.media.PictureInPicture;
+import org.chromium.chrome.browser.media.PictureInPictureActivity;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -465,6 +467,16 @@ public class TabAlertIndicatorTest {
 
     private void exitPictureInPicture() {
         DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), EXIT_PIP_ID);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    for (Activity activity : ApplicationStatus.getRunningActivities()) {
+                        if (activity instanceof PictureInPictureActivity) {
+                            return false;
+                        }
+                    }
+                    return true;
+                },
+                "PictureInPictureActivity did not close.");
     }
 
     private void requestMic() {
