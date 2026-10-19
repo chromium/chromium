@@ -289,10 +289,11 @@ struct BASE_EXPORT LOGICALLY_CONST Feature {
   // Keep this in sync with base/feature_list_internal.h:kRuntimeMutabilityMask
   enum { kRuntimeMutabilityMask = 1 << 18 };
 
-  // A packed value where the first 8 bits represent the `OverrideState` of this
-  // feature, the next 8 bits are reserved for flags (e.g. logging, runtime
-  // mutability, etc.), and the last 16 bits are a caching context ID used to
-  // allow ScopedFeatureLists to invalidate these cached values in testing. A
+  // A packed value where the upper 8 bits (bits 24-31) represent the
+  // `OverrideState` of this feature, the next 8 bits (bits 16-23) are reserved
+  // for flags (e.g. logging, runtime mutability, etc.), and the lower 16 bits
+  // (bits 0-15) are a caching context ID used to allow ScopedFeatureLists to
+  // invalidate these cached values in testing. A
   // value of 0 in the caching context ID field indicates that this value has
   // never been looked up and cached, a value of 1 indicates this value contains
   // the cached `OverrideState` that was looked up via `base::FeatureList`,
