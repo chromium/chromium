@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.test.transit.hub;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -16,6 +14,7 @@ import android.widget.EditText;
 
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.ViewElement;
+import org.chromium.base.test.transit.ViewFinder;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryItemView;
 import org.chromium.chrome.browser.hub.PaneId;
@@ -78,7 +77,7 @@ public class HistoryPaneStation extends HubBaseStation {
 
         /** Expect an entry to be not displayed in the history pane. */
         public void expectNoEntry(String text) {
-            onView(withText(text)).check(doesNotExist());
+            ViewFinder.waitForNoView(withText(text));
         }
 
         /** Open the history search. */
