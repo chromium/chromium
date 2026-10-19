@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -76,6 +77,8 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/test/views_test_utils.h"
 
 #if BUILDFLAG(IS_OZONE)
@@ -610,6 +613,55 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewPageActionHideWhileEditingTests,
 
   EnsureLayout();
   EXPECT_TRUE(zoom_view->GetVisible());
+}
+
+class LocationBarViewFullWebUIPopupAppearanceTest
+    : public LocationBarViewPageActionHideWhileEditingTests {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      omnibox::internal::kWebUIOmniboxFullPopup};
+};
+
+// Under `kFull`, the native location bar keeps its focused look (focus ring,
+// unindented location icon with background, visible page actions) underneath
+// the full WebUI popup, while `kAim` uses the popup-open look.
+IN_PROC_BROWSER_TEST_F(LocationBarViewFullWebUIPopupAppearanceTest,
+                       KeepsFocusedLookUnderFullPopupAndNotAimPopup) {
+  LocationBarView* location_bar = GetLocationBarView();
+  auto* focus_ring = views::FocusRing::Get(location_bar);
+  ASSERT_TRUE(focus_ring);
+  page_actions::PageActionView* zoom_view = GetZoomPageActionView();
+  ASSERT_TRUE(zoom_view);
+
+  // Set focus directly on the edit model rather than via `SetFocus()`, which
+  // relies on `RequestFocus()` before the WebUI popup finishes loading and
+  // no-ops on inactive windows when `browser_tests` runs in parallel.
+  location_bar->GetOmniboxController()->edit_model()->OnSetFocus(
+      /*control_down=*/false);
+  EnsureLayout();
+  const int focused_icon_x = location_bar->location_icon_view()->bounds().x();
+  EXPECT_TRUE(focus_ring->ShouldPaintForTesting());
+  EXPECT_NE(location_bar->location_icon_view()->GetBackground()->color(),
+            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(zoom_view->GetVisible());
+
+  auto* state_manager =
+      location_bar->GetOmniboxController()->popup_state_manager();
+  state_manager->SetPopupState(OmniboxPopupState::kFull);
+  EnsureLayout();
+  EXPECT_TRUE(focus_ring->ShouldPaintForTesting());
+  EXPECT_EQ(location_bar->location_icon_view()->bounds().x(), focused_icon_x);
+  EXPECT_NE(location_bar->location_icon_view()->GetBackground()->color(),
+            SK_ColorTRANSPARENT);
+  EXPECT_TRUE(zoom_view->GetVisible());
+
+  state_manager->SetPopupState(OmniboxPopupState::kAim);
+  EnsureLayout();
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+  EXPECT_GT(location_bar->location_icon_view()->bounds().x(), focused_icon_x);
+  EXPECT_EQ(location_bar->location_icon_view()->GetBackground()->color(),
+            SK_ColorTRANSPARENT);
+  EXPECT_FALSE(zoom_view->GetVisible());
 }
 
 class LocationBarViewAddContextButtonBrowserTest

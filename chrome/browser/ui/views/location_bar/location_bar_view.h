@@ -456,6 +456,8 @@ class LocationBarView
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override;
 
+  bool ShouldUsePopupOpenAppearance() const;
+
   bool ShouldHidePageActionIcons() const;
 
   struct PageActionInfo {
