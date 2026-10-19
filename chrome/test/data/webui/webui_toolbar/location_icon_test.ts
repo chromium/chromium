@@ -93,8 +93,8 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.button;
-    assertEquals('View site information', container.title);
+    const innerButton = locationIcon.$.button.$.button;
+    assertEquals('View site information', innerButton.title);
   });
 
   test('Dangerous text', async function() {
@@ -123,9 +123,9 @@ suite('LocationIconTest', function() {
     assertTrue(locationIcon.hasAttribute('is-text-dangerous'));
     assertTrue(locationIcon.hasAttribute('is-dangerous'));
 
-    const container = locationIcon.$.button;
-    assertTrue(hasStyle(container, 'background-color', 'rgb(0, 0, 255)'));
-    assertTrue(hasStyle(container, 'color', 'rgb(0, 255, 0)'));
+    const innerButton = locationIcon.$.button.$.button;
+    assertTrue(hasStyle(innerButton, 'background-color', 'rgb(0, 0, 255)'));
+    assertTrue(hasStyle(innerButton, 'color', 'rgb(0, 255, 0)'));
   });
 
   test('Dangerous level, Not secure text', async function() {
@@ -152,8 +152,8 @@ suite('LocationIconTest', function() {
     assertFalse(locationIcon.hasAttribute('is-text-dangerous'));
     assertTrue(locationIcon.hasAttribute('is-dangerous'));
 
-    const container = locationIcon.$.button;
-    assertTrue(hasStyle(container, 'color', 'rgb(255, 0, 0)'));
+    const innerButton = locationIcon.$.button.$.button;
+    assertTrue(hasStyle(innerButton, 'color', 'rgb(255, 0, 0)'));
   });
 
   test('Warning text', async function() {
@@ -199,6 +199,9 @@ suite('LocationIconTest', function() {
     assertFalse(locationIcon.hasAttribute('clickable'));
 
     const container = locationIcon.$.button;
+    assertTrue(container.hasAttribute('disable-hover-highlight'));
+    assertTrue(container.hasAttribute('disable-pressed-highlight'));
+    assertEquals(-1, container.$.button.tabIndex);
     container.dispatchEvent(new PointerEvent('pointerdown'));
     assertEquals(0, toolbarUiHandler.getCallCount('onLhsChipMousePressed'));
 
@@ -229,6 +232,10 @@ suite('LocationIconTest', function() {
     await microtasksFinished();
 
     const container = locationIcon.$.button;
+    assertEquals('TOOLBAR-CHIP-BUTTON', container.tagName);
+    assertFalse(container.hasAttribute('disable-hover-highlight'));
+    assertFalse(container.hasAttribute('disable-pressed-highlight'));
+    assertEquals(0, container.$.button.tabIndex);
 
     // Simulate normal click pointerdown
     container.dispatchEvent(new PointerEvent('pointerdown', {button: 0}));
@@ -478,6 +485,10 @@ suite('LocationIconTest', function() {
     assertEquals(
         'webui-toolbar:info_glow_up_forward', crIcon.getAttribute('icon'));
     assertTrue(locationIcon.hasAttribute('glow-up-active'));
+    // The pressed ripple is suppressed while GlowUp animates the icon, but the
+    // hover highlight is still allowed.
+    assertTrue(locationIcon.$.button.hasAttribute('disable-pressed-highlight'));
+    assertFalse(locationIcon.$.button.hasAttribute('disable-hover-highlight'));
 
     // Trigger the timeout to finish opening animation
     assertTrue(!!timeoutCallback);
@@ -584,11 +595,11 @@ suite('LocationIconTest', function() {
     };
     await microtasksFinished();
 
-    const container = locationIcon.$.button;
-    assertEquals('img', container.getAttribute('role'));
-    assertEquals('Search icon', container.getAttribute('aria-label'));
+    const innerButton = locationIcon.$.button.$.button;
+    assertEquals('img', innerButton.getAttribute('role'));
+    assertEquals('Search icon', innerButton.getAttribute('aria-label'));
     assertEquals(
-        'Context description', container.getAttribute('aria-description'));
+        'Context description', innerButton.getAttribute('aria-description'));
 
     // Verify the default button role updates correctly.
     locationIcon.state = Object.assign({}, locationIcon.state, {
@@ -599,6 +610,19 @@ suite('LocationIconTest', function() {
       },
     });
     await microtasksFinished();
-    assertEquals('button', container.getAttribute('role'));
+    assertEquals('button', innerButton.getAttribute('role'));
+  });
+
+  test('Help bubble highlight is forwarded to the chip', async function() {
+    const chip = locationIcon.$.button;
+    assertFalse(chip.classList.contains('help-anchor-highlight'));
+
+    locationIcon.hasHelpBubble = true;
+    await microtasksFinished();
+    assertTrue(chip.classList.contains('help-anchor-highlight'));
+
+    locationIcon.hasHelpBubble = false;
+    await microtasksFinished();
+    assertFalse(chip.classList.contains('help-anchor-highlight'));
   });
 });

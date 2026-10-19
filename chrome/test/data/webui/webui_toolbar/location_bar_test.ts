@@ -57,7 +57,9 @@ suite('LocationBar', function() {
 
     const locationIcon = locationBar.shadowRoot.querySelector('location-icon');
     assertTrue(!!locationIcon);
-    const button = locationIcon.$.button;
+    const chip = locationIcon.$.button;
+    assertTrue(!!chip);
+    const button = chip.$.button;
     assertTrue(!!button);
     assertEquals('BUTTON', button.tagName);
     assertEquals(accessibilityLabel, button.ariaLabel);

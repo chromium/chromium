@@ -4,11 +4,8 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
- * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=/shared/help_bubble_anchor.css.js
  * #import=/shared/webui_toolbar_shared_vars.css.js
  * #scheme=relative
- * #include=help-bubble-anchor
  * #css_wrapper_metadata_end */
 
 :host {
@@ -26,110 +23,39 @@
   min-width: 0;
 }
 
-/* The base layer of the chip, defining its shape, size, and base background
-   color. */
+/* The chip, defining its shape, size, and base colors.
+ * These must be applied to the toolbar-chip-button element from the outside
+ * rather than on :host, because toolbar-chip-button's own :host block defines
+ * default values that would override any values inherited from
+ * location-icon. */
 #button {
-  appearance: none;
-  background: none;
-  border: none;
-  display: inline-flex;
-  font: inherit;
-  margin: 0;
-  padding: 0;
-  align-items: center;
-  border-radius: calc((var(--location-bar-leading-icon-size) +
-                       var(--location-bar-page-info-icon-padding-top) +
-                       var(--location-bar-page-info-icon-padding-bottom)) / 2);
-  padding-block-start: var(--location-bar-page-info-icon-padding-top);
-  padding-block-end: var(--location-bar-page-info-icon-padding-bottom);
-  padding-inline-start: var(--location-bar-page-info-icon-padding-left);
-  padding-inline-end: var(--location-bar-page-info-icon-padding-right);
-  background-color: var(--color-omnibox-icon-background);
-  color: var(--color-omnibox-text, currentColor);
-  cursor: default;
+  /* toolbar-chip-button does not shrink by default. Restore the default flex
+   * item behavior so that the chip can shrink and crop its label (see the
+   * :host min-width above). */
+  flex-shrink: 1;
+  min-width: auto;
 
-  /* Ensure the ::after overlay does not spill outside the rounded corners. */
-  position: relative;
-  outline: none;
-  user-select: none; /* Disables text selection on double-click/drag */
+  --toolbar-chip-height: calc(
+      var(--location-bar-leading-icon-size) +
+      var(--location-bar-page-info-icon-padding-top) +
+      var(--location-bar-page-info-icon-padding-bottom));
+  --toolbar-chip-icon-size: var(--location-bar-leading-icon-size);
+  --toolbar-chip-padding-start:
+      var(--location-bar-page-info-icon-padding-start);
+  --toolbar-chip-padding-end: var(--location-bar-page-info-icon-padding-end);
+  /* The spacing around the label is fully managed by #text below (so that it
+   * can be animated), so opt out of the chip's implicit label cushion. */
+  --toolbar-chip-label-side-spacing: 0px;
 
-  /* Disables the default browser tap highlight so that our custom InkDrop
-     overlay provides the sole visual feedback for taps. */
-  -webkit-tap-highlight-color: transparent;
-}
+  --toolbar-chip-bg-color: var(--color-omnibox-icon-background, transparent);
+  --toolbar-chip-fg-color: var(--color-omnibox-text, currentColor);
 
-#button:focus-visible:focus {
-  outline: 2px solid var(--cr-focus-outline-color);
-  outline-offset: 2px;
-}
-
-@media (forced-colors: active) {
-  #button:focus-visible:focus {
-    /* Use outline instead of box-shadow (which does not work) in Windows
-       HCM. */
-    outline: var(--cr-focus-outline-hcm, 2px solid transparent);
-  }
-}
-
-/* An invisible overlay that mimics the native views::InkDrop highlight
-   (hover state). */
-#button::before {
-  background-color: var(--color-omnibox-icon-hover, transparent);
-  border-radius: inherit;
-  content: '';
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  /* Matches views::kHighlightFadeOutOnHoverChangeDuration (250ms) */
-  transition: opacity 250ms ease-in-out;
-}
-
-/* An invisible overlay that mimics the native views::InkDrop ripple
-   (pressed state). */
-#button::after {
-  background-color: var(--color-omnibox-icon-pressed, transparent);
-  border-radius: inherit;
-  content: '';
-  inset: 0;
-  opacity: 0;
-  pointer-events: none;
-  position: absolute;
-  /* Matches views::FloodFillInkDropRipple::ACTION_TRIGGERED_FADE_OUT (300ms) */
-  transition: opacity 300ms ease-in-out;
-}
-
-/* --- HOVER LAYER (HOVER HIGHLIGHT) ---
-   Native Views applies the highlight on hover AND when the ripple is active
-   (SHOW_ON_RIPPLE mode). */
-:host([clickable]:hover) #button::before,
-:host([clickable]:active) #button::before,
-:host([clickable][anchor-highlighted]) #button::before {
-  /* The alpha value is baked directly into the color variable in C++. */
-  opacity: 1;
-}
-
-:host([is-text-dangerous]) #button::before {
-  background-color:
-      var(--color-omnibox-security-chip-ink-drop-hover, transparent);
-}
-
-/* --- PRESSED LAYER (RIPPLE) ---
-   Native Views composites the ripple on top of the hover highlight. */
-:host([clickable]:not([glow-up-active]):active) #button::after,
-:host([clickable][anchor-highlighted]) #button::after {
-  /* The alpha value is baked directly into the color variable in C++. */
-  opacity: 1;
-  transition: none; /* Instant press */
-}
-
-:host([is-text-dangerous]) #button::after {
-  background-color:
-      var(--color-omnibox-security-chip-ink-drop-ripple, transparent);
-}
-
-icon-from-table {
-  --icon-size: var(--location-bar-leading-icon-size);
+  /* Mimics the native views::InkDrop highlight (hover state) and ripple
+   * (pressed state). */
+  --toolbar-chip-ink-drop-hover-color:
+      var(--color-omnibox-icon-hover, transparent);
+  --toolbar-chip-ink-drop-ripple-color:
+      var(--color-omnibox-icon-pressed, transparent);
 }
 
 #icon {
@@ -138,23 +64,31 @@ icon-from-table {
 }
 
 :host([is-dangerous]) #button {
-  color: var(--color-omnibox-security-chip-dangerous, currentColor);
+  --toolbar-chip-fg-color:
+      var(--color-omnibox-security-chip-dangerous, currentColor);
 }
 
 :host([has-text][is-dangerous]) #button {
-  padding-inline-start:
+  --toolbar-chip-padding-start:
       var(--location-bar-page-info-icon-dangerous-leading-padding);
-  padding-inline-end:
+  --toolbar-chip-padding-end:
       var(--location-bar-page-info-icon-dangerous-trailing-padding);
 }
 
 :host([is-text-dangerous]) #button {
-  background-color: var(
+  --toolbar-chip-bg-color: var(
       --color-omnibox-security-chip-dangerous-background,
-      var(--color-omnibox-icon-background));
-  color: var(--color-omnibox-security-chip-text, currentColor);
+      var(--color-omnibox-icon-background, transparent));
+  --toolbar-chip-fg-color:
+      var(--color-omnibox-security-chip-text, currentColor);
+  --toolbar-chip-ink-drop-hover-color:
+      var(--color-omnibox-security-chip-ink-drop-hover, transparent);
+  --toolbar-chip-ink-drop-ripple-color:
+      var(--color-omnibox-security-chip-ink-drop-ripple, transparent);
 }
 
+/* Note: these rules intentionally override toolbar-chip-button's defaults for
+ * slotted content (e.g. flex-shrink: 0), so that the label can shrink. */
 #text {
   font-family: var(--omnibox-chip-font-family);
   font-size: var(--omnibox-chip-font-size);
@@ -201,14 +135,4 @@ icon-from-table {
 :host([has-text][is-dangerous]) #text {
   /* Prevent mathematically double-applying the extra trailing pad */
   padding-inline-end: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #button,
-  #text,
-  #button::before,
-  #button::after {
-    animation: none !important;
-    transition: none !important;
-  }
 }

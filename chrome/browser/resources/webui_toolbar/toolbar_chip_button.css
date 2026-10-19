@@ -111,17 +111,25 @@
 
 /* HOVER STATE: Highlight layer fade-in.
  * SHOW_ON_RIPPLE compositing: Hover layer stays visible during active/menu
- * states. */
-:host(:hover) #button::before,
-:host([is-menu-open]) #button::before {
+ * states.
+ *
+ * The [disable-hover-highlight] attribute suppresses the highlight (including
+ * the [is-menu-open] state) for chips that are not currently interactive. */
+:host(:hover:not([disable-hover-highlight])) #button::before,
+:host(:active:not([disable-hover-highlight])) #button::before,
+:host([is-menu-open]:not([disable-hover-highlight])) #button::before {
   opacity: 1;
 }
 
 /* --- PRESSED/MENU STATE ---
  * Pressed highlight layer fade-in. This layer composites on top of the hover
- * layer. */
-:host(:active) #button::after,
-:host([is-menu-open]) #button::after {
+ * layer.
+ *
+ * The [disable-pressed-highlight] attribute suppresses the pointer-driven
+ * (:active) pressed highlight, e.g. for chips that are not currently
+ * interactive, or that play their own press animation. */
+:host(:active:not([disable-pressed-highlight])) #button::after,
+:host([is-menu-open]:not([disable-hover-highlight])) #button::after {
   opacity: 1;
   transition-duration: 0s; /* Instant for pressed state */
 }
@@ -191,8 +199,11 @@
    * native views use different values for different chips, and none of them
    * uses H/4. To keep 1:1 pixel parity with native views, each chip still needs
    * to set its own cushion. Then this is no longer needed, and also causes
-   * double-counting the cushion if the WebUI chips set their own cushion. */
-  --label-side-spacing: calc(round(down, var(--toolbar-chip-height) / 4, 1px));
+   * double-counting the cushion if the WebUI chips set their own cushion.
+   * Chips that already set their own cushion can opt out by setting
+   * --toolbar-chip-label-side-spacing (e.g. to 0px). */
+  --label-side-spacing: var(--toolbar-chip-label-side-spacing,
+      calc(round(down, var(--toolbar-chip-height) / 4, 1px)));
 
   padding-inline-start: calc(var(--toolbar-chip-padding-start)
                              + var(--label-side-spacing));

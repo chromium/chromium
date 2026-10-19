@@ -73,6 +73,9 @@ export class ToolbarChipButtonElement extends CrLitElement {
       buttonTabIndex: {
         type: Number,
       },
+      buttonRole: {
+        type: String,
+      },
     };
   }
 
@@ -102,6 +105,12 @@ export class ToolbarChipButtonElement extends CrLitElement {
   // Draws an outward-expanding focus ring instead of an inset focus ring.
   accessor outsetFocusRing: boolean = false;
   accessor buttonTabIndex: number = -1;
+
+  /**
+   * ARIA role for the inner button (e.g. 'img'). When unset, the inner button
+   * keeps its implicit 'button' role.
+   */
+  accessor buttonRole: string|null = null;
 
   override focus() {
     this.$.button.focus();

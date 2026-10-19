@@ -4,7 +4,9 @@
 
 import '/shared/icon_from_table.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
+import './toolbar_chip_button.js';
 
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isMac} from '//resources/js/platform.js';
@@ -14,29 +16,25 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
 import {TimerHelper} from '/shared/timer_helper.js';
+import {HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
 import {LhsChipIdentifier, SecurityChipRole, SecurityLevel} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SecurityChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
-import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './location_icon.css.js';
 import {getHtml} from './location_icon.html.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
+import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface LocationIconElement {
   $: {
-    button: HTMLButtonElement,
+    button: ToolbarChipButtonElement,
   };
 }
 
-const LocationIconElementBase = HelpBubbleMixinLit(CrLitElement);
+const LocationIconElementBase = HelpBubbleAnchorMixin(CrLitElement);
 
 export class LocationIconElement extends LocationIconElementBase {
-  protected getAccessibilityRole_(): string {
-    return this.state.accessibilityState.role === SecurityChipRole.kImage ?
-        'img' :
-        'button';
-  }
   static get is() {
     return 'location-icon';
   }
@@ -124,14 +122,27 @@ export class LocationIconElement extends LocationIconElementBase {
   private animationTimer_: TimerHelper = new TimerHelper();
   private isSecureIcon_: boolean = false;
 
+  // TODO(crbug.com/575229109): Use ToolbarActionMixin, like
+  // content-setting-icon and page-action-icon, once it registers help bubbles
+  // again when the element is re-attached. It currently only registers when
+  // getElementId() changes, while HelpBubbleMixin unregisters everything on
+  // disconnect.
   override connectedCallback() {
     super.connectedCallback();
     this.registerHelpBubble('kLocationIconElementId', this, {
       onHighlightChanged: (highlighted: boolean) => {
-        // Manually toggle the DOM attribute to bypass Lit's asynchronous
-        // update batching, ensuring the style updates synchronously without
-        // a 1-frame tear against the fast native IPCs.
-        this.toggleAttribute('anchor-highlighted', highlighted);
+        // Manually toggle the DOM attribute on the inner chip to bypass Lit's
+        // asynchronous update batching, ensuring the style updates
+        // synchronously without a 1-frame tear against the fast native IPCs.
+        this.$.button.toggleAttribute('is-menu-open', highlighted);
+      },
+      // Forwards the IPH pulse highlight to the inner toolbar-chip-button,
+      // whose shadow root hosts the .iph-visual-target element.
+      onHelpBubbleShown: () => {
+        this.hasHelpBubble = true;
+      },
+      onHelpBubbleHidden: () => {
+        this.hasHelpBubble = false;
       },
     });
   }
@@ -181,6 +192,18 @@ export class LocationIconElement extends LocationIconElementBase {
       if (oldShowing !== newShowing) {
         this.onContextMenuVisibleChanged_();
       }
+    }
+  }
+
+  protected getAccessibilityRole_(): string {
+    const role = this.state.accessibilityState.role;
+    switch (role) {
+      case SecurityChipRole.kButton:
+        return 'button';
+      case SecurityChipRole.kImage:
+        return 'img';
+      default:
+        assertNotReachedCase(role);
     }
   }
 

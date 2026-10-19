@@ -68,6 +68,22 @@ suite('ToolbarChipButtonTest', function() {
     assertFalse(button.hasAttribute('aria-expanded'));
   });
 
+  test('ForwardButtonRole', async function() {
+    const button = element.$.button;
+
+    // Default is null (not present), keeping the implicit button role.
+    assertFalse(button.hasAttribute('role'));
+
+    // Set property
+    element.buttonRole = 'img';
+    await microtasksFinished();
+    assertEquals('img', button.getAttribute('role'));
+
+    // Clear property
+    element.buttonRole = null;
+    await microtasksFinished();
+    assertFalse(button.hasAttribute('role'));
+  });
 
   test('ForwardTooltip', async function() {
     const button = element.$.button;
