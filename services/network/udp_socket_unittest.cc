@@ -754,6 +754,19 @@ TEST_F(UDPSocketTest, MAYBE_JoinMulticastGroup) {
   EXPECT_EQ(2u, listener.results().size());
 }
 
+TEST_F(UDPSocketTest, JoinAndLeaveGroupRejectInvalidGroupAddress) {
+  mojo::Remote<mojom::UDPSocket> socket_remote;
+  factory()->CreateUDPSocket(socket_remote.BindNewPipeAndPassReceiver(),
+                             mojo::NullRemote());
+  test::UDPSocketTestHelper helper(&socket_remote);
+
+  net::IPEndPoint socket_address(net::IPAddress::IPv4Localhost(), 0);
+  ASSERT_EQ(net::OK, helper.BindSync(socket_address, nullptr, &socket_address));
+
+  EXPECT_EQ(net::ERR_ADDRESS_INVALID, helper.JoinGroupSync(net::IPAddress()));
+  EXPECT_EQ(net::ERR_ADDRESS_INVALID, helper.LeaveGroupSync(net::IPAddress()));
+}
+
 TEST_F(UDPSocketTest, ErrorHappensDuringSocketOptionsConfiguration) {
   mojo::Remote<mojom::UDPSocket> server_socket_remote;
   factory()->CreateUDPSocket(server_socket_remote.BindNewPipeAndPassReceiver(),

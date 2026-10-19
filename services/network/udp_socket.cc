@@ -253,6 +253,10 @@ void UDPSocket::JoinGroup(const net::IPAddress& group_address,
     std::move(callback).Run(net::ERR_UNEXPECTED);
     return;
   }
+  if (!group_address.IsValid()) {
+    std::move(callback).Run(net::ERR_ADDRESS_INVALID);
+    return;
+  }
   int net_result = wrapped_socket_->JoinGroup(group_address, source_address);
   std::move(callback).Run(net_result);
 }
@@ -262,6 +266,10 @@ void UDPSocket::LeaveGroup(const net::IPAddress& group_address,
                            LeaveGroupCallback callback) {
   if (!is_bound_) {
     std::move(callback).Run(net::ERR_UNEXPECTED);
+    return;
+  }
+  if (!group_address.IsValid()) {
+    std::move(callback).Run(net::ERR_ADDRESS_INVALID);
     return;
   }
   int net_result = wrapped_socket_->LeaveGroup(group_address, source_address);
