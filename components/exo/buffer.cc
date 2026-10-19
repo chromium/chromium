@@ -55,12 +55,6 @@
 namespace exo {
 namespace {
 
-// When enabled, this feature allows ReleaseSharedImage() to EndExport and
-// run callback immediately, skipping WaitSyncToken, and Begin/EndQuery
-// operations. This kill switch is used to verify the assumption that these
-// skipped operations are actually needed in this case.
-BASE_FEATURE(kReleaseSharedImageImmediately, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The amount of time before we wait for release queries using
 // GetQueryObjectuivEXT(GL_QUERY_RESULT_EXT).
 const int kWaitForReleaseDelayMs = 500;
@@ -431,34 +425,10 @@ void Buffer::Texture::Release(base::OnceClosure callback,
 
 void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
                                          viz::ReturnedResource resource) {
-  if (base::FeatureList::IsEnabled(kReleaseSharedImageImmediately)) {
-    gpu::SyncToken resource_sync_token = shared_image()->EndExport(
-        std::move(resource.shared_image_export_result));
-    if (resource_sync_token.HasData()) {
-      sync_token_ = resource_sync_token;
-    }
-    std::move(callback).Run();
-    return;
-  }
-
-  if (context_provider_ && query_type_ != 0) {
-    gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    gpu::SyncToken resource_sync_token = shared_image()->EndExport(
-        std::move(resource.shared_image_export_result));
-    if (resource_sync_token.HasData()) {
-      ri->WaitSyncTokenCHROMIUM(resource_sync_token.GetConstData());
-      sync_token_ = resource_sync_token;
-    }
-    ri->BeginQueryEXT(query_type_, query_id_);
-    ri->EndQueryEXT(query_type_);
-    // Run callback when query result is available (i.e., when all operations
-    // on the shared image have completed and it's ready to be reused) if sync
-    // token has data and buffer has been used. If buffer was never used then
-    // run the callback immediately.
-    if (resource_sync_token.HasData()) {
-      ReleaseWhenQueryResultIsAvailable(std::move(callback));
-      return;
-    }
+  gpu::SyncToken resource_sync_token =
+      shared_image()->EndExport(std::move(resource.shared_image_export_result));
+  if (resource_sync_token.HasData()) {
+    sync_token_ = resource_sync_token;
   }
   std::move(callback).Run();
 }
