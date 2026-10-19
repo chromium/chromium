@@ -5,37 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_ACTOR_LOGIN_IOS_CHROME_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_ACTOR_LOGIN_IOS_CHROME_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace actor_login {
-class ActorLoginPermissionCleaningService;
-}  // namespace actor_login
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all `ActorLoginPermissionCleaningService` instances and
 // associates them with `ProfileIOS` instances.
 class IOSChromeActorLoginPermissionCleaningServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeActorLoginPermissionCleaningServiceFactory,
+          actor_login::ActorLoginPermissionCleaningService> {
  public:
-  static actor_login::ActorLoginPermissionCleaningService* GetForProfile(
-      ProfileIOS* profile);
-
-  static IOSChromeActorLoginPermissionCleaningServiceFactory* GetInstance();
-
-  IOSChromeActorLoginPermissionCleaningServiceFactory(
-      const IOSChromeActorLoginPermissionCleaningServiceFactory&) = delete;
-  IOSChromeActorLoginPermissionCleaningServiceFactory& operator=(
-      const IOSChromeActorLoginPermissionCleaningServiceFactory&) = delete;
+  explicit IOSChromeActorLoginPermissionCleaningServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<
-      IOSChromeActorLoginPermissionCleaningServiceFactory>;
-
-  IOSChromeActorLoginPermissionCleaningServiceFactory();
-  ~IOSChromeActorLoginPermissionCleaningServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

@@ -5,28 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_CREDENTIALS_CLEANER_RUNNER_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace password_manager {
-class CredentialsCleanerRunner;
-}  // namespace password_manager
+#include "components/password_manager/core/browser/credentials_cleaner_runner.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Creates instances of CredentialsCleanerRunner per Profile.
-class CredentialsCleanerRunnerFactory : public ProfileKeyedServiceFactoryIOS {
+class CredentialsCleanerRunnerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          CredentialsCleanerRunnerFactory,
+          password_manager::CredentialsCleanerRunner> {
  public:
-  static CredentialsCleanerRunnerFactory* GetInstance();
-  static password_manager::CredentialsCleanerRunner* GetForProfile(
-      ProfileIOS* profile);
+  explicit CredentialsCleanerRunnerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<CredentialsCleanerRunnerFactory>;
-
-  CredentialsCleanerRunnerFactory();
-  ~CredentialsCleanerRunnerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

@@ -5,27 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_FIELD_CLASSIFICATION_MODEL_HANDLER_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_PASSWORD_FIELD_CLASSIFICATION_MODEL_HANDLER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace autofill {
-class FieldClassificationModelHandler;
-}
+#import "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // A factory for creating one `FieldClassificationModelHandler` per profile.
 class IOSPasswordFieldClassificationModelHandlerFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSPasswordFieldClassificationModelHandlerFactory,
+          autofill::FieldClassificationModelHandler> {
  public:
-  static IOSPasswordFieldClassificationModelHandlerFactory* GetInstance();
-  static autofill::FieldClassificationModelHandler* GetForProfile(
-      ProfileIOS* profile);
+  explicit IOSPasswordFieldClassificationModelHandlerFactory(PassKey key);
 
  private:
-  friend base::NoDestructor<IOSPasswordFieldClassificationModelHandlerFactory>;
-
-  IOSPasswordFieldClassificationModelHandlerFactory();
-  ~IOSPasswordFieldClassificationModelHandlerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

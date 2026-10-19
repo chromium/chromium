@@ -7,35 +7,23 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "components/password_manager/core/browser/ode/on_device_encryption_metrics_reporter.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
-namespace password_manager {
-class OnDeviceEncryptionMetricsReporter;
-}  // namespace password_manager
-
 // Singleton that creates and owns the OnDeviceEncryptionMetricsReporter for
 // each ProfileIOS.
 class IOSChromeOnDeviceEncryptionMetricsReporterFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeOnDeviceEncryptionMetricsReporterFactory,
+          password_manager::OnDeviceEncryptionMetricsReporter> {
  public:
-  static password_manager::OnDeviceEncryptionMetricsReporter* GetForProfile(
-      ProfileIOS* profile);
-  static IOSChromeOnDeviceEncryptionMetricsReporterFactory* GetInstance();
+  explicit IOSChromeOnDeviceEncryptionMetricsReporterFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<
-      IOSChromeOnDeviceEncryptionMetricsReporterFactory>;
-
-  IOSChromeOnDeviceEncryptionMetricsReporterFactory();
-  ~IOSChromeOnDeviceEncryptionMetricsReporterFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

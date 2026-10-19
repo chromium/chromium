@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 
-#import "base/no_destructor.h"
 #import "build/build_config.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_reuse_detector_impl.h"
@@ -15,30 +14,15 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-IOSChromePasswordReuseManagerFactory*
-IOSChromePasswordReuseManagerFactory::GetInstance() {
-  static base::NoDestructor<IOSChromePasswordReuseManagerFactory> instance;
-  return instance.get();
-}
-
-// static
-password_manager::PasswordReuseManager*
-IOSChromePasswordReuseManagerFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<password_manager::PasswordReuseManager>(
-          profile, /*create=*/true);
-}
-
-IOSChromePasswordReuseManagerFactory::IOSChromePasswordReuseManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("PasswordReuseManager",
-                                    ProfileSelection::kRedirectedInIncognito) {
+IOSChromePasswordReuseManagerFactory::IOSChromePasswordReuseManagerFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "PasswordReuseManager",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(IOSChromeAccountPasswordStoreFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
 }
-
-IOSChromePasswordReuseManagerFactory::~IOSChromePasswordReuseManagerFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordReuseManagerFactory::BuildServiceInstanceFor(

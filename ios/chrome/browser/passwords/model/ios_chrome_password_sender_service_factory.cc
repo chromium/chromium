@@ -13,29 +13,14 @@
 #include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 
-// static
-IOSChromePasswordSenderServiceFactory*
-IOSChromePasswordSenderServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSChromePasswordSenderServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-password_manager::PasswordSenderService*
-IOSChromePasswordSenderServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<password_manager::PasswordSenderService>(
-          profile, /*create=*/true);
-}
-
-IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("PasswordSenderService",
-                                    ProfileSelection::kRedirectedInIncognito) {
+IOSChromePasswordSenderServiceFactory::IOSChromePasswordSenderServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "PasswordSenderService",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
-
-IOSChromePasswordSenderServiceFactory::
-    ~IOSChromePasswordSenderServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSChromePasswordSenderServiceFactory::BuildServiceInstanceFor(
