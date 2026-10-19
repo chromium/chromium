@@ -5,9 +5,13 @@
 #include "components/signin/core/browser/about_signin_internals.h"
 
 #include <memory>
+#include <optional>
+#include <set>
+#include <string>
 
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
+#include "build/build_config.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
@@ -223,6 +227,52 @@ TEST_F(AboutSigninInternalsTest, AccountReconcilorEvents) {
                                   .Set("result",
                                        "Failure: Service responded with error: "
                                        "'Logout failed'"))));
+}
+
+TEST_F(AboutSigninInternalsTest, GetSigninStatus_IsPii) {
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+  identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
+      account_info.GetAccountId(),
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  base::DictValue status = about_signin_internals()->GetSigninStatus();
+  const base::ListValue* signin_info = status.FindList("signin_info");
+  ASSERT_TRUE(signin_info);
+
+  std::set<std::string> pii_labels;
+  std::set<std::string> non_pii_labels;
+  for (const base::Value& section : *signin_info) {
+    const base::ListValue* data = section.GetDict().FindList("data");
+    ASSERT_TRUE(data);
+    for (const base::Value& entry : *data) {
+      const base::DictValue& entry_dict = entry.GetDict();
+      const std::string* label = entry_dict.FindString("label");
+      ASSERT_TRUE(label);
+      std::optional<bool> is_pii = entry_dict.FindBool("isPii");
+      ASSERT_TRUE(is_pii.has_value());
+      if (*is_pii) {
+        pii_labels.insert(*label);
+      } else {
+        non_pii_labels.insert(*label);
+      }
+    }
+  }
+
+  std::set<std::string> expected_pii_labels = {
+      "Account Id",
+      "Gaia Id",
+      "Username",
+      "Auth Error Account Id",
+      "Auth Error Username",
+#if !BUILDFLAG(IS_CHROMEOS)
+      "RefreshToken Account Id",
+#endif
+  };
+  EXPECT_EQ(pii_labels, expected_pii_labels);
+  EXPECT_FALSE(non_pii_labels.empty());
 }
 
 }  // namespace

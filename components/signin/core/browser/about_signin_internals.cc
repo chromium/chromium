@@ -97,11 +97,13 @@ void AddSection(base::ListValue& parent_list,
 void AddSectionEntry(base::ListValue& section_list,
                      std::string_view field_name,
                      std::string_view field_status,
-                     std::string_view field_time = "") {
+                     std::string_view field_time = "",
+                     bool is_pii = false) {
   base::DictValue entry;
   entry.Set("label", field_name);
   entry.Set("status", field_status);
   entry.Set("time", field_time);
+  entry.Set("isPii", is_pii);
   section_list.Append(std::move(entry));
 }
 
@@ -622,11 +624,6 @@ void AboutSigninInternals::OnAccountsInCookieUpdated(
                    account.verified ? "Verified" : "Not verified");
   }
 
-  if (accounts_in_cookie_jar_info.GetAllAccounts().empty()) {
-    AddCookieEntry(cookie_info, "No Accounts Present.", GaiaId(), std::string(),
-                   std::string(), std::string());
-  }
-
   base::DictValue cookie_status_dict;
   cookie_status_dict.Set("cookie_info", std::move(cookie_info));
   // Update the observers that the cookie's accounts are updated.
@@ -833,13 +830,16 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
       AddSectionEntry(
           basic_info,
           SigninStatusFieldToLabel(signin_internals_util::ACCOUNT_ID),
-          account_info.account_id.ToString());
+          account_info.account_id.ToString(), /*field_time=*/"",
+          /*is_pii=*/true);
       AddSectionEntry(basic_info,
                       SigninStatusFieldToLabel(signin_internals_util::GAIA_ID),
-                      account_info.gaia.ToString());
+                      account_info.gaia.ToString(), /*field_time=*/"",
+                      /*is_pii=*/true);
       AddSectionEntry(basic_info,
                       SigninStatusFieldToLabel(signin_internals_util::USERNAME),
-                      account_info.email);
+                      account_info.email, /*field_time=*/"",
+                      /*is_pii=*/true);
       if (signin_error_controller) {
         if (signin_error_controller->HasError()) {
           const CoreAccountId error_account_id =
@@ -850,9 +850,11 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
           AddSectionEntry(basic_info, "Auth Error",
                           signin_error_controller->auth_error().ToString());
           AddSectionEntry(basic_info, "Auth Error Account Id",
-                          error_account_id.ToString());
+                          error_account_id.ToString(), /*field_time=*/"",
+                          /*is_pii=*/true);
           AddSectionEntry(basic_info, "Auth Error Username",
-                          error_account_info.GetEmail());
+                          error_account_info.GetEmail(), /*field_time=*/"",
+                          /*is_pii=*/true);
         } else {
           AddSectionEntry(basic_info, "Auth Error", "None");
         }
@@ -908,7 +910,8 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
           timed_signin_fields[i - signin_internals_util::TIMED_FIELDS_BEGIN]
               .first,
           timed_signin_fields[i - signin_internals_util::TIMED_FIELDS_BEGIN]
-              .second);
+              .second,
+          /*is_pii=*/i == signin_internals_util::LAST_REFRESH_TOKEN_ACCOUNT_ID);
     }
 
     base::TimeDelta cookie_requests_delay =
@@ -957,36 +960,30 @@ base::DictValue AboutSigninInternals::SigninStatus::ToValue(
   base::ListValue account_info_section;
   const std::vector<CoreAccountInfo>& accounts_with_refresh_tokens =
       identity_manager->GetAccountsWithRefreshTokens();
-  if (accounts_with_refresh_tokens.size() == 0) {
-    base::DictValue no_token_entry;
-    no_token_entry.Set("accountId", "No token in Token Service.");
-    account_info_section.Append(std::move(no_token_entry));
-  } else {
-    for (const CoreAccountInfo& account_info : accounts_with_refresh_tokens) {
-      base::DictValue entry;
-      entry.Set("accountId", account_info.account_id.ToString());
-      // TODO(crbug.com/41434401): Remove this field once the token
-      // service is internally consistent on all platforms.
-      entry.Set("hasRefreshToken", identity_manager->HasAccountWithRefreshToken(
-                                       account_info.account_id));
-      entry.Set(
-          "hasAuthError",
-          identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-              account_info.account_id));
+  for (const CoreAccountInfo& account_info : accounts_with_refresh_tokens) {
+    base::DictValue entry;
+    entry.Set("accountId", account_info.account_id.ToString());
+    // TODO(crbug.com/41434401): Remove this field once the token
+    // service is internally consistent on all platforms.
+    entry.Set("hasRefreshToken", identity_manager->HasAccountWithRefreshToken(
+                                     account_info.account_id));
+    entry.Set(
+        "hasAuthError",
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            account_info.account_id));
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      if (switches::IsChromeRefreshTokenBindingEnabled(
-              signin_client->GetPrefs())) {
-        entry.Set("isBound", identity_manager->HasAccountWithBoundRefreshToken(
-                                 account_info.account_id));
-      }
-      if (base::FeatureList::IsEnabled(switches::kEnableMtlsTokenBinding)) {
-        entry.Set("mtlsTokenBinding",
-                  identity_manager->HasAccountWithRefreshTokenBoundToMtls(
-                      account_info.account_id));
-      }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-      account_info_section.Append(std::move(entry));
+    if (switches::IsChromeRefreshTokenBindingEnabled(
+            signin_client->GetPrefs())) {
+      entry.Set("isBound", identity_manager->HasAccountWithBoundRefreshToken(
+                               account_info.account_id));
     }
+    if (base::FeatureList::IsEnabled(switches::kEnableMtlsTokenBinding)) {
+      entry.Set("mtlsTokenBinding",
+                identity_manager->HasAccountWithRefreshTokenBoundToMtls(
+                    account_info.account_id));
+    }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+    account_info_section.Append(std::move(entry));
   }
   signin_status.Set("accountInfo", std::move(account_info_section));
 

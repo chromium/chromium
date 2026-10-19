@@ -65,6 +65,7 @@ interface BasicInfoData {
   label: string;
   status: string;
   time: string;
+  isPii: boolean;
 }
 
 interface BasicInfo {
@@ -174,7 +175,11 @@ function getCookieInfoHtml(cookieAccountsInfo: CookieAccountsInfo) {
           <td>Sign-in status</td>
           <td>Verification status</td>
         </tr>
-        ${cookieAccountsInfo.cookie_info.map(item => html`
+        ${cookieAccountsInfo.cookie_info.length === 0 ? html`
+          <tr>
+            <td colspan="5">No Accounts Present.</td>
+          </tr>
+        ` : cookieAccountsInfo.cookie_info.map(item => html`
           <tr>
             <td>${item.email}</td>
             <td>${item.gaia_id}</td>
@@ -199,11 +204,15 @@ function getAccountInfoHtml(infos: AccountInfo[]) {
           <td>Account Id</td>
           <td>Has refresh token</td>
           <td>Has persistent auth error</td>
-          <td ?hidden="${infos[0]!.isBound == null}">Is bound to the device</td>
-          <td ?hidden="${infos[0]!.mtlsTokenBinding == null}"
+          <td ?hidden="${infos[0]?.isBound == null}">Is bound to the device</td>
+          <td ?hidden="${infos[0]?.mtlsTokenBinding == null}"
               >Is bound to mTLS certificate</td>
         </tr>
-        ${infos.map(item => html`
+        ${infos.length === 0 ? html`
+          <tr>
+            <td colspan="3">No token in Token Service.</td>
+          </tr>
+        ` : infos.map(item => html`
           <tr>
             <td>${item.accountId}</td>
             <td>${item.hasRefreshToken}</td>
@@ -313,9 +322,12 @@ function getBoundSessionInfoHtml(infos?: BoundSessionInfo[]) {
   // clang-format on
 }
 
-function onOverrideValueChange(accountId: string, capName: string, e: Event) {
+function onOverrideValueChange(
+    accountIndex: number, capName: string, e: Event) {
   const select = e.target as HTMLSelectElement;
   const overrideValue = select.value;
+  const accountId =
+      latestSigninInfo!.accountCapabilities[accountIndex]!.accountId;
   chrome.send('overrideCapability', [accountId, capName, overrideValue]);
 }
 
@@ -325,7 +337,7 @@ function getAccountCapabilitiesHtml(infos: AccountCapabilitiesInfo[]) {
   }
   // clang-format off
   return html`
-    ${infos.map(item => {
+    ${infos.map((item, index) => {
       // Only show the override column if at least one capability of this
       // account can be overridden.
       const canOverrideAny = item.capabilities.some(cap => cap.can_override);
@@ -345,7 +357,7 @@ function getAccountCapabilitiesHtml(infos: AccountCapabilitiesInfo[]) {
               <td ?hidden="${!canOverrideAny}">
                 <select ?disabled="${!cap.can_override}"
                         @change="${(ev: Event) => onOverrideValueChange(
-                            item.accountId, cap.name, ev)}">
+                            index, cap.name, ev)}">
                   <option value=""
                           ?selected="${cap.override === ''}">
                   </option>
@@ -381,46 +393,130 @@ function getClassFromValue(value: string): string {
   return '';
 }
 
+const HASH_SEED = crypto.getRandomValues(new Uint32Array(1))[0]!;
+
+// Computes a 32-bit FNV-1a hash seeded with a per-page random salt, followed
+// by a MurmurHash3 (`fmix32`) avalanche finalizer cropped to 16 bits.
+// Implemented manually because browser Web Crypto (`crypto.subtle.digest`) is
+// asynchronous and Chromium WebUI does not provide a synchronous string
+// hashing utility.
+function hashIdentifier(value: string): string {
+  if (!value) {
+    return '';
+  }
+  let h = HASH_SEED;
+  for (let i = 0; i < value.length; i++) {
+    h = Math.imul(h ^ value.charCodeAt(i), 0x01000193);
+  }
+  h = Math.imul(h ^ (h >>> 16), 0x85ebca6b);
+  h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+  return '0x' + ((h ^ (h >>> 16)) & 0xffff).toString(16).padStart(4, '0');
+}
+
+function shouldShowRealIdentifiers(): boolean {
+  return getRequiredElement<HTMLInputElement>('show-real-identifiers-checkbox')
+      .checked;
+}
+
+function sanitizeBasicInfoData(data: BasicInfoData): BasicInfoData {
+  if (data.isPii) {
+    return {...data, status: hashIdentifier(data.status)};
+  }
+  return data;
+}
+
+function getDisplaySigninInfo(signinInfo: SigninInfo): SigninInfo {
+  if (shouldShowRealIdentifiers()) {
+    return signinInfo;
+  }
+  return {
+    ...signinInfo,
+    signin_info: signinInfo.signin_info.map(
+        section => ({
+          ...section,
+          data: section.data.map(sanitizeBasicInfoData),
+        })),
+    token_info: signinInfo.token_info.map(item => ({
+                                            ...item,
+                                            title: hashIdentifier(item.title),
+                                          })),
+    accountInfo:
+        signinInfo.accountInfo.map(item => ({
+                                     ...item,
+                                     accountId: hashIdentifier(item.accountId),
+                                   })),
+    refreshTokenEvents: signinInfo.refreshTokenEvents.map(
+        event => ({
+          ...event,
+          accountId: hashIdentifier(event.accountId),
+        })),
+    accountCapabilities: signinInfo.accountCapabilities.map(
+        item => ({
+          ...item,
+          accountId: hashIdentifier(item.accountId),
+        })),
+  };
+}
+
+function getDisplayCookieAccountsInfo(info: CookieAccountsInfo):
+    CookieAccountsInfo {
+  if (shouldShowRealIdentifiers()) {
+    return info;
+  }
+  return {
+    cookie_info: info.cookie_info.map(item => ({
+                                        ...item,
+                                        email: hashIdentifier(item.email),
+                                        gaia_id: hashIdentifier(item.gaia_id),
+                                      })),
+  };
+}
+
 let latestSigninInfo: SigninInfo|null = null;
 let latestCookieAccountsInfo: CookieAccountsInfo|null = null;
 
 // Replace the displayed values with the latest fetched ones.
 function refreshSigninInfo(signinInfo: SigninInfo) {
   latestSigninInfo = signinInfo;
+  const displaySigninInfo = getDisplaySigninInfo(signinInfo);
   // Process templates even against an empty `signinInfo` to hide some sections.
   render(
-      getSigninInfoHtml(signinInfo.signin_info),
+      getSigninInfoHtml(displaySigninInfo.signin_info),
       getRequiredElement('signin-info'));
   render(
-      getTokenInfoHtml(signinInfo.token_info),
+      getTokenInfoHtml(displaySigninInfo.token_info),
       getRequiredElement('token-info'));
   render(
-      getAccountInfoHtml(signinInfo.accountInfo),
+      getAccountInfoHtml(displaySigninInfo.accountInfo),
       getRequiredElement('account-info'));
   render(
-      getRefreshTokenEventsHtml(signinInfo.refreshTokenEvents),
+      getRefreshTokenEventsHtml(displaySigninInfo.refreshTokenEvents),
       getRequiredElement('refresh-token-events'));
   render(
-      getAccountReconcilorEventsHtml(signinInfo.accountReconcilorEvents),
+      getAccountReconcilorEventsHtml(displaySigninInfo.accountReconcilorEvents),
       getRequiredElement('account-reconcilor-events'));
   render(
-      getBoundSessionInfoHtml(signinInfo.boundSessionInfo),
+      getBoundSessionInfoHtml(displaySigninInfo.boundSessionInfo),
       getRequiredElement('bound-session-info'));
   render(
-      getAccountCapabilitiesHtml(signinInfo.accountCapabilities),
+      getAccountCapabilitiesHtml(displaySigninInfo.accountCapabilities),
       getRequiredElement('account-capabilities'));
 }
 
 // Replace the cookie information with the fetched values.
 function updateCookieAccounts(info: CookieAccountsInfo) {
   latestCookieAccountsInfo = info;
-  render(getCookieInfoHtml(info), getRequiredElement('cookie-info'));
+  const displayInfo = getDisplayCookieAccountsInfo(info);
+  render(getCookieInfoHtml(displayInfo), getRequiredElement('cookie-info'));
 }
 
 function downloadSigninInternals() {
   const data = {
-    signinInfo: latestSigninInfo,
-    cookieAccountsInfo: latestCookieAccountsInfo,
+    signinInfo: latestSigninInfo ? getDisplaySigninInfo(latestSigninInfo) :
+                                   null,
+    cookieAccountsInfo: latestCookieAccountsInfo ?
+        getDisplayCookieAccountsInfo(latestCookieAccountsInfo) :
+        null,
   };
   const blob =
       new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
@@ -432,11 +528,22 @@ function downloadSigninInternals() {
   URL.revokeObjectURL(url);
 }
 
+function onShowRealIdentifiersChange() {
+  if (latestSigninInfo) {
+    refreshSigninInfo(latestSigninInfo);
+  }
+  if (latestCookieAccountsInfo) {
+    updateCookieAccounts(latestCookieAccountsInfo);
+  }
+}
+
 // On load, do an initial refresh and register refreshSigninInfo to be invoked
 // whenever we get new signin information from SigninInternalsUI.
 function onLoad() {
   getRequiredElement('download-button')
       .addEventListener('click', downloadSigninInternals);
+  getRequiredElement('show-real-identifiers-checkbox')
+      .addEventListener('change', onShowRealIdentifiersChange);
   addWebUiListener('signin-info-changed', refreshSigninInfo);
   addWebUiListener('update-cookie-accounts', updateCookieAccounts);
 
