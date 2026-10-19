@@ -2042,6 +2042,29 @@ source_set("ui_controls") {
          ]
 }
 
+# Replacements for libmutter functions whose upstream behavior makes tests
+# flaky. They are hooked in with -Wl,--wrap (see the executable("mutter")
+# target below), so that src/ can track a pristine upstream release.
+source_set("test_workarounds") {
+  testonly = true
+
+  defines = [ "G_LOG_DOMAIN=\"libmutter\"" ]
+
+  sources = [ "chromium/meta-test-workarounds.c" ]
+
+  configs += [
+    ":gbm",
+    ":libmutter_config",
+    ":mtk_public_config",
+    "//third_party/libei:libei_include_dirs",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  deps = _libmutter_deps + [ ":libmutter" ]
+}
+
 shared_library("libdefault") {
   testonly = true
 
@@ -2185,6 +2208,7 @@ executable("mutter") {
     ":clutter",
     ":compile_schemas",
     ":libmutter",
+    ":test_workarounds",
     ":ui_controls",
   ]
 
@@ -2196,6 +2220,12 @@ executable("mutter") {
     # Hook ui_controls initialization into Wayland compositor creation. See
     # chromium/meta-wayland-ui-controls.c.
     "-Wl,--wrap=meta_wayland_compositor_new",
+
+    # Workarounds for upstream mutter bugs that affect tests. See
+    # chromium/meta-test-workarounds.c.
+    "-Wl,--wrap=meta_compositor_size_change_window",
+    "-Wl,--wrap=meta_window_get_unit_cgroup",
+    "-Wl,--wrap=meta_window_unit_cgroup_equal",
   ]
 
   # TODO(crbug.com/396647882) remove this temporary measure to build with
