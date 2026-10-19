@@ -41,6 +41,11 @@ _CUSTOM_D8_SRC = 'third_party/r8/java/src/org/chromium/build/CustomD8.java'
 # after "checkout" runs, and fails if the directory already exists.
 _CUSTOM_D8_CHECKOUT_SUBPATH = 'r8_custom_d8/CustomD8.java'
 _CUSTOM_D8_MAIN_CLASS = 'org.chromium.build.CustomD8'
+# Lowest min_sdk_version any Chromium target builds with; the globals dex must
+# cover it. Any gn arg min_sdk_version >= this works with the same dex.
+# LINT.IfChange(min_supported_sdk_version)
+_MIN_SUPPORTED_SDK_VERSION = '23'
+# LINT.ThenChange(//build/config/android/config.gni:min_supported_sdk_version)
 # Uses default methods, static interface methods, and lambdas so that tracing
 # covers desugaring and desugar-dependency tracking.
 _SAMPLE_IFACE_JAVA = """\
@@ -59,6 +64,13 @@ import java.util.function.Supplier;
 public class Sample implements Iface {
   public Supplier<String> supplier() { return () -> greet(); }
 }
+"""
+# Record desugaring emits a global synthetic (RecordTag), which --intermediate
+# dexing rejects unless --ignore-globals is passed.
+_SAMPLE_RECORD_JAVA = """\
+package org.chromium.sample;
+
+public record Point(int x, int y) {}
 """
 
 # Examples of version strings:
@@ -175,9 +187,58 @@ def _install(version, output_prefix):
     out_dir = os.path.join(output_prefix, 'lib')
     os.makedirs(out_dir)
     shutil.move('r8.jar', out_dir)
+    r8_jar = os.path.join(out_dir, 'r8.jar')
 
-    _build_native_custom_d8(os.path.join(out_dir, 'r8.jar'),
+    _build_global_synthetics_dex(
+        r8_jar, java_home, os.path.join(out_dir, 'global_synthetics.dex.jar'))
+    _build_native_custom_d8(r8_jar,
                             os.path.join(output_prefix, 'bin', 'custom_d8'))
+
+
+def _build_global_synthetics_dex(r8_jar, java_home, output_path):
+    """Dexes every "global synthetic" class that D8 can emit.
+
+    Desugaring some constructs (e.g. Java records) makes D8 emit classes
+    shared by the whole app rather than owned by one library. Chromium's
+    per-library dexing discards them (--ignore-globals in dex.py) and the
+    final dex step of non-R8 APKs adds this .dex.jar instead. In intermediate
+    mode D8 emits only library-independent globals (RecordTag, DesugarVarHandle,
+    DesugarMethodHandlesLookup, ...), so no android.jar is needed here.
+    """
+    java = os.path.join(java_home, 'bin', 'java')
+    # D8 keys the globals format on the file extension: a ".globals" file is a
+    # single globals archive, while ".zip" is expected to hold one.
+    globals_path = os.path.abspath('desugar.globals')
+    common.run_cmd([
+        java,
+        '-cp',
+        r8_jar,
+        'com.android.tools.r8.GlobalSyntheticsGenerator',
+        '--min-api',
+        _MIN_SUPPORTED_SDK_VERSION,
+        '--output',
+        globals_path,
+    ])
+    dex_dir = os.path.abspath('global_synthetics_dex')
+    os.makedirs(dex_dir)
+    common.run_cmd([
+        java,
+        '-cp',
+        r8_jar,
+        'com.android.tools.r8.D8',
+        '--no-desugaring',
+        '--min-api',
+        _MIN_SUPPORTED_SDK_VERSION,
+        '--globals',
+        globals_path,
+        '--output',
+        dex_dir,
+    ])
+    dex_files = sorted(os.listdir(dex_dir))
+    if dex_files != ['classes.dex']:
+        raise RuntimeError(f'Expected a single classes.dex, got: {dex_files}')
+    with zipfile.ZipFile(output_path, 'w') as z:
+        z.write(os.path.join(dex_dir, 'classes.dex'), 'classes.dex')
 
 
 def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_class_files,
@@ -192,6 +253,7 @@ def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_class_files,
         # Per-library dexing with desugaring.
         common_args + [
             '--intermediate',
+            '--ignore-globals',
             '--file-per-class-file',
             '--classpath',
             classpath_jar,
@@ -231,11 +293,14 @@ def _build_native_custom_d8(r8_jar, output_path):
     (sample_src / 'Iface.java').write_text(_SAMPLE_IFACE_JAVA,
                                            encoding='utf-8')
     (sample_src / 'Sample.java').write_text(_SAMPLE_JAVA, encoding='utf-8')
+    (sample_src / 'Point.java').write_text(_SAMPLE_RECORD_JAVA,
+                                           encoding='utf-8')
     sample_classes = os.path.abspath('sample_classes')
     common.run_cmd([
-        javac_bin, '--release', '11', '-d', sample_classes,
+        javac_bin, '--release', '17', '-d', sample_classes,
         str(sample_src / 'Iface.java'),
-        str(sample_src / 'Sample.java')
+        str(sample_src / 'Sample.java'),
+        str(sample_src / 'Point.java')
     ])
     iface_class = 'org/chromium/sample/Iface.class'
     iface_jar = os.path.abspath('sample_classpath.jar')

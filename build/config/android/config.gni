@@ -121,7 +121,10 @@ if (is_android) {
   }
 
   # Our build system no longer supports legacy multidex.
+  # LINT.IfChange(min_supported_sdk_version)
   min_supported_sdk_version = 23
+
+  # LINT.ThenChange(//third_party/r8/3pp/3pp.py:min_supported_sdk_version)
 
   # ASAN requires O MR1.
   # https://github.com/google/sanitizers/wiki/AddressSanitizerOnAndroid/01f8df1ac1a447a8475cdfcb03e8b13140042dbd#running-with-wrapsh-recommended
