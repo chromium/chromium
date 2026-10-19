@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -183,6 +184,26 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
               return content::RenderFrameHost::FrameIterationAction::kContinue;
             });
     return web_view_guests;
+  }
+
+  // Waits until onload has run in every Controlled Frame embedded in
+  // `embedder_web_contents`. `CreateControlledFrame()` only waits for
+  // `loadcommit`, at which point the response body (and its HTTP cache entry)
+  // may still be in flight. The HTTP cache writes each chunk of the body
+  // before handing it to the renderer, so once onload has run, the cache
+  // entries for these loads are fully written.
+  [[nodiscard]] bool WaitForControlledFramesToFinishLoading(
+      content::WebContents* embedder_web_contents) {
+    return base::test::RunUntil([&]() {
+      for (extensions::WebViewGuest* guest :
+           GetWebViewGuests(embedder_web_contents)) {
+        if (!guest->GetGuestMainFrame()
+                 ->IsDocumentOnLoadCompletedInMainFrame()) {
+          return false;
+        }
+      }
+      return true;
+    });
   }
 
  private:
@@ -461,6 +482,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
                                     "persist:partition_name_0"));
   ASSERT_TRUE(
       CreateControlledFrame(web_contents, cache_url, "partition_name_1"));
+  ASSERT_TRUE(WaitForControlledFramesToFinishLoading(web_contents));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs{
       url_info.storage_partition_config(profile()),
@@ -650,6 +672,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
                                     "persist:partition_name_0"));
   ASSERT_TRUE(
       CreateControlledFrame(web_contents, cache_url, "partition_name_1"));
+  ASSERT_TRUE(WaitForControlledFramesToFinishLoading(web_contents));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs{
       url_info.storage_partition_config(profile()),
@@ -730,6 +753,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
                                     "persist:partition_name_0"));
   ASSERT_TRUE(
       CreateControlledFrame(web_contents, cache_url, "partition_name_1"));
+  ASSERT_TRUE(WaitForControlledFramesToFinishLoading(web_contents));
   // Put the IWA in the uninstalling stage.
   {
     ScopedRegistryUpdate update =
@@ -951,6 +975,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     ASSERT_EQ(GetLocalStorageCount(controlled_frame_rfh), 1);
     ASSERT_EQ(GetLocalStorageValue(controlled_frame_rfh, "foo"), "bar");
 
+    ASSERT_TRUE(WaitForControlledFramesToFinishLoading(web_contents));
     int64_t old_cache_size = GetCacheSize(controlled_frame_partition);
 
     GURL clear_site_data_url = embedded_https_test_server().GetURL(
