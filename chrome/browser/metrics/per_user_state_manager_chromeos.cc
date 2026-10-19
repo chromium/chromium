@@ -303,7 +303,7 @@ void PerUserStateManagerChromeOS::SetReportingState(bool user_choice) {
 
   GetCurrentUserPrefs()->SetBoolean(prefs::kMetricsUserConsent, user_choice);
 
-  std::string hash = user_manager_->GetActiveUser()->username_hash();
+  std::string hash = current_user_->username_hash();
   base::FilePath daemon_store_consent = base::FilePath(kDaemonStorePath)
                                             .Append(hash)
                                             .Append(kDaemonStoreFileName);

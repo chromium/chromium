@@ -12,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -46,6 +47,8 @@
 #include "components/metrics/structured/recorder.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
@@ -235,12 +238,16 @@ bool ChromeOSMetricsProvider::UpdateUserTypeUMA() {
   if (!user_manager::UserManager::IsInitialized()) {
     return false;
   }
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary_user) {
+  // TODO(crbug.com/278643115): Take the AccountId from the caller.
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     return false;
   }
-  user_manager::UserType user_type = primary_user->GetType();
+  user_manager::UserType user_type =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                      primary_session->account_id()))
+          .GetType();
   base::UmaHistogramEnumeration("UMA.PrimaryUserType", user_type);
   return true;
 }
