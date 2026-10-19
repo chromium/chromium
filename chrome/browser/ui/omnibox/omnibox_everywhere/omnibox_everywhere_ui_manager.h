@@ -364,10 +364,15 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   std::unique_ptr<WebUIContentsWrapper> CreateContentsWrapper(Profile* profile);
 
-  void BuildInputContextMenu(const content::ContextMenuParams& params);
+  void ShowContextMenu(const content::ContextMenuParams& params,
+                       std::u16string clipboard_text);
+  void BuildInputContextMenu(const content::ContextMenuParams& params,
+                             const std::u16string& clipboard_text);
   void BuildSelectionContextMenu(const content::ContextMenuParams& params);
   void BuildBackgroundContextMenu(const content::ContextMenuParams& params);
   void AppendSettingsContextMenu();
+  std::u16string GetPasteAndGoMenuLabel(
+      const std::u16string& clipboard_text) const;
 #if BUILDFLAG(IS_WIN)
   void AppendWindowControlsContextMenu();
 #endif  // BUILDFLAG(IS_WIN)

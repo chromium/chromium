@@ -52,6 +52,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/ai_mode_button_service.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -61,6 +62,7 @@
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -74,9 +76,12 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/text_elider.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -113,6 +118,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/omnibox/omnibox_everywhere/mac_window_util.h"
+#include "ui/base/cocoa/appkit_utils.h"
 #endif
 
 namespace omnibox_everywhere {
@@ -1478,6 +1484,33 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
     return true;
   }
 
+  bool can_read_clipboard =
+      params.is_editable && !ui::Clipboard::GetForCurrentThread()
+                                 ->IsMarkedByOriginatorAsConfidential();
+#if BUILDFLAG(IS_MAC)
+  if (ui::PasteMightBlockWithPrivacyAlert()) {
+    can_read_clipboard = false;
+  }
+#endif
+
+  if (can_read_clipboard) {
+    GetClipboardText(
+        /*notify_if_restricted=*/false,
+        base::BindOnce(&OmniboxEverywhereUIManager::ShowContextMenu,
+                       weak_factory_.GetWeakPtr(), params));
+  } else {
+    ShowContextMenu(params, /*clipboard_text=*/std::u16string());
+  }
+  return true;
+}
+
+void OmniboxEverywhereUIManager::ShowContextMenu(
+    const content::ContextMenuParams& params,
+    std::u16string clipboard_text) {
+  if (!widget_ || !widget_->GetContentsView()) {
+    return;
+  }
+
   // Cancel and clean up any existing context menu before creating a new one.
   if (context_menu_runner_) {
     context_menu_runner_->Cancel();
@@ -1494,7 +1527,7 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
 
   // 1. Query input box / editable text
   if (params.is_editable) {
-    BuildInputContextMenu(params);
+    BuildInputContextMenu(params, clipboard_text);
     // 2. Highlighted text
   } else if (!params.selection_text.empty()) {
     BuildSelectionContextMenu(params);
@@ -1508,7 +1541,7 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
 #endif  // BUILDFLAG(IS_WIN)
 
   if (context_menu_model_->GetItemCount() == 0) {
-    return true;
+    return;
   }
 
   is_context_menu_open_ = true;
@@ -1531,11 +1564,11 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
   context_menu_runner_->RunMenuAt(
       widget_.get(), nullptr, gfx::Rect(screen_point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, params.source_type);
-  return true;
 }
 
 void OmniboxEverywhereUIManager::BuildInputContextMenu(
-    const content::ContextMenuParams& params) {
+    const content::ContextMenuParams& params,
+    const std::u16string& clipboard_text) {
   if (ui::IsEmojiPanelSupported()) {
     context_menu_model_->AddItemWithStringId(kEmoji, IDS_CONTENT_CONTEXT_EMOJI);
     context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1547,8 +1580,8 @@ void OmniboxEverywhereUIManager::BuildInputContextMenu(
   context_menu_model_->AddItemWithStringId(kCut, IDS_APP_CUT);
   context_menu_model_->AddItemWithStringId(kCopy, IDS_APP_COPY);
   context_menu_model_->AddItemWithStringId(kPaste, IDS_APP_PASTE);
-  context_menu_model_->AddItemWithStringId(kPasteAndSearch,
-                                           IDS_PASTE_AND_GO_EMPTY);
+  context_menu_model_->AddItem(kPasteAndSearch,
+                               GetPasteAndGoMenuLabel(clipboard_text));
   context_menu_model_->AddItemWithStringId(kDelete, IDS_APP_DELETE);
   context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -1607,6 +1640,43 @@ void OmniboxEverywhereUIManager::AppendSettingsContextMenu() {
       IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_CUSTOMIZE_KEYBOARD_SHORTCUT);
   context_menu_model_->AddItemWithStringId(
       kSettings, IDS_OMNIBOX_EVERYWHERE_STATUS_ICON_MENU_SETTINGS);
+}
+
+std::u16string OmniboxEverywhereUIManager::GetPasteAndGoMenuLabel(
+    const std::u16string& clipboard_text) const {
+  if (!profile_ ||
+      ui::Clipboard::GetForCurrentThread()->IsMarkedByOriginatorAsConfidential()
+#if BUILDFLAG(IS_MAC)
+      || ui::PasteMightBlockWithPrivacyAlert()
+#endif
+      || clipboard_text.empty()) {
+    return l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY);
+  }
+
+  constexpr size_t kMaxSelectionTextLength = 50;
+  std::u16string selection_text = gfx::TruncateString(
+      clipboard_text, kMaxSelectionTextLength, gfx::WORD_BREAK);
+
+  auto* classifier = AutocompleteClassifierFactory::GetForProfile(profile_);
+  if (!classifier) {
+    return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
+  }
+
+  AutocompleteMatch match;
+  classifier->Classify(clipboard_text, /*in_keyword_mode=*/false,
+                       /*allow_exact_keyword_match=*/true,
+                       metrics::OmniboxEventProto::OMNIBOX_EVERYWHERE, &match,
+                       nullptr);
+  if (AutocompleteMatch::IsSearchType(match.type)) {
+    return l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, selection_text);
+  }
+
+  const gfx::FontList& font_list = views::MenuConfig::instance().font_list;
+  const float max_selection_pixel_width =
+      gfx::GetStringWidthF(selection_text, font_list);
+  const std::u16string url = url_formatter::ElideUrl(
+      match.destination_url, font_list, max_selection_pixel_width);
+  return l10n_util::GetStringFUTF16(IDS_PASTE_AND_GO, url);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -1832,8 +1902,11 @@ bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
                blink::ContextMenuDataEditFlags::kCanPaste) != 0) ||
              last_context_menu_params_.is_editable;
     case kPasteAndSearch:
-      return profile_ && (OmniboxEverywhereServiceFactory::GetForProfile(
-                              profile_) != nullptr);
+      return profile_ &&
+             (OmniboxEverywhereServiceFactory::GetForProfile(profile_) !=
+              nullptr) &&
+             !ui::Clipboard::GetForCurrentThread()
+                  ->IsMarkedByOriginatorAsConfidential();
     case kDelete:
       return ((last_context_menu_params_.edit_flags &
                blink::ContextMenuDataEditFlags::kCanDelete) != 0) ||

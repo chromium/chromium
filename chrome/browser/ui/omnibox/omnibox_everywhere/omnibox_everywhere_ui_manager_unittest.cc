@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -54,6 +55,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/test/event_generator.h"
@@ -2272,6 +2274,58 @@ TEST_F(OmniboxEverywhereUIManagerTest, ExecutePasteAndSearchCommand) {
       omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch));
   ui_manager->ExecuteCommand(
       omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch, 0);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuPasteAndSearchAndGoLabels) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+  content::ContextMenuParams params;
+  params.is_editable = true;
+
+  // 1. Search query on clipboard -> "Paste and Search for “8551957”".
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"8551957");
+  }
+  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  std::optional<size_t> paste_and_go_index = model->GetIndexOfCommandId(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
+  ASSERT_TRUE(paste_and_go_index.has_value());
+  EXPECT_EQ(model->GetLabelAt(*paste_and_go_index),
+            l10n_util::GetStringFUTF16(IDS_PASTE_AND_SEARCH, u"8551957"));
+
+  // 2. URL on clipboard -> "Paste and Go to example.com".
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.WriteText(u"https://example.com/");
+  }
+  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+  model = ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  paste_and_go_index = model->GetIndexOfCommandId(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
+  ASSERT_TRUE(paste_and_go_index.has_value());
+  EXPECT_NE(model->GetLabelAt(*paste_and_go_index).find(u"example.com"),
+            std::u16string::npos);
+
+  // 3. Empty clipboard -> generic "Paste and Go".
+  ui::Clipboard::GetForCurrentThread()->Clear(ui::ClipboardBuffer::kCopyPaste);
+  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+  model = ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  paste_and_go_index = model->GetIndexOfCommandId(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kPasteAndSearch);
+  ASSERT_TRUE(paste_and_go_index.has_value());
+  EXPECT_EQ(model->GetLabelAt(*paste_and_go_index),
+            l10n_util::GetStringUTF16(IDS_PASTE_AND_GO_EMPTY));
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
