@@ -98,10 +98,11 @@ public class SettingsSearchTestUtils {
 
     /** Asserts that no search results are found in Settings search. */
     public static void assertNoSearchResultsFound() {
-        // Uses {@code ViewFinder.waitForView} rather than {@code isDisplayed()} because the
-        // keyboard can cover the empty state text on smaller devices, resulting in less than 51% of
-        // the view being displayed.
-        waitForView(withText(R.string.search_in_settings_no_match), displayingAtLeastOption(1));
+        // Uses {@code ViewFinder.waitForView} with {@code displayingAtLeastOption(0)} rather than
+        // {@code isDisplayed()} because the keyboard can completely cover the empty state text on
+        // smaller or landscape screens, resulting in 0% of the view being displayed even though it
+        // is effectively VISIBLE.
+        waitForView(withText(R.string.search_in_settings_no_match), displayingAtLeastOption(0));
     }
 
     /**
