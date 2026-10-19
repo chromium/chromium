@@ -5,3 +5,6 @@ team_email: "chrome-kids-eng@google.com"
 buganizer_public: {
   component_id: 1456907
 }
+
+# Opt in to agentic code review.
+agentic_review {}
