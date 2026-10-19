@@ -977,6 +977,7 @@ void MaybeRegisterChromeFeaturePromos(
               }))
           .SetAdditionalConditions(
               std::move(AdditionalConditions()
+                            .set_initial_delay_days(0)
                             .AddAdditionalCondition(AdditionalCondition{
                                 "actor_action_logged",
                                 AdditionalConditions::Constraint::kAtLeast, 1})

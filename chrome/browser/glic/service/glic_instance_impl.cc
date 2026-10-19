@@ -1263,8 +1263,8 @@ void GlicInstanceImpl::ClearActiveEmbedderAndNotifyVisibilityChange() {
 #if !BUILDFLAG(IS_ANDROID)
     // KeyedService lookups are illegal once profile destruction has started.
     if (!profile_->ShutdownStarted()) {
-      MaybeShowShortcutSnoozePromo();
       MaybeShowCriticalActionFeaturePromo();
+      MaybeShowShortcutSnoozePromo();
     }
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
