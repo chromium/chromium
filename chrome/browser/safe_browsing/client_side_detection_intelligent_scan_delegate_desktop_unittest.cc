@@ -139,7 +139,9 @@ class ClientSideDetectionIntelligentScanDelegateDesktopTest
  protected:
   ClientSideDetectionIntelligentScanDelegateDesktopTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{kClientSideDetectionServerModelForScamDetectionDesktop,
+        {{kClientSideDetectionImageEmbeddingMatch,
+          {{"CsdImageEmbeddingMatchWithIntelligentScan", "true"}}},
+         {kClientSideDetectionServerModelForScamDetectionDesktop,
           {{"MaxIntelligentScansPerDayDesktop", "3"}}},
          {kClientSideDetectionScamDetectionRequestWithUrl, {}}},
         /*disabled_features=*/{kClientSideDetectionKillswitch});
@@ -163,6 +165,40 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
       ClientSideDetectionType::FORCE_REQUEST);
   verdict.mutable_llama_forced_trigger_info()->set_intelligent_scan(true);
   EXPECT_TRUE(delegate_->ShouldRequestIntelligentScan(&verdict));
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       ShouldRequestIntelligentScan_ImageEmbeddingMatch) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  ClientPhishingRequest verdict;
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+  verdict.set_is_phishing(true);
+  EXPECT_TRUE(delegate_->ShouldRequestIntelligentScan(&verdict));
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       ShouldNotRequestIntelligentScan_ImageEmbeddingMatchNotPhishing) {
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  ClientPhishingRequest verdict;
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+  verdict.set_is_phishing(false);
+  EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
+}
+
+TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
+       ShouldNotRequestIntelligentScan_ImageEmbeddingMatchParamDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionImageEmbeddingMatch,
+      {{"CsdImageEmbeddingMatchWithIntelligentScan", "false"}});
+  CreateDelegate(/*is_enhanced_protection_enabled=*/true);
+  ClientPhishingRequest verdict;
+  verdict.set_client_side_detection_type(
+      ClientSideDetectionType::IMAGE_EMBEDDING_MATCH);
+  verdict.set_is_phishing(true);
+  EXPECT_FALSE(delegate_->ShouldRequestIntelligentScan(&verdict));
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,

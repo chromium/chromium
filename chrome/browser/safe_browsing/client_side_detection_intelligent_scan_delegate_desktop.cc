@@ -306,6 +306,13 @@ bool ClientSideDetectionIntelligentScanDelegateDesktop::
     return false;
   }
 
+  if (verdict->client_side_detection_type() ==
+          ClientSideDetectionType::IMAGE_EMBEDDING_MATCH &&
+      verdict->is_phishing() &&
+      kCsdImageEmbeddingMatchWithIntelligentScan.Get()) {
+    return true;
+  }
+
   bool is_keyboard_lock_requested =
       verdict->client_side_detection_type() ==
       ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED;
