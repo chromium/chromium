@@ -4,12 +4,19 @@
 
 #include "chrome/browser/media/webrtc/multi_capture/multi_capture_session_controller.h"
 
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 
 namespace multi_capture {
 
-MultiCaptureSessionController::MultiCaptureSessionController() {
+MultiCaptureSessionController::MultiCaptureSessionController(
+    content::BrowserContext* context)
+    : context_(context) {
   if (user_manager::UserManager::IsInitialized()) {
     user_session_state_observation_.Observe(user_manager::UserManager::Get());
   }
@@ -24,7 +31,16 @@ MultiCaptureSessionController::~MultiCaptureSessionController() = default;
 void MultiCaptureSessionController::Shutdown() {
   user_session_state_observation_.Reset();
   session_manager_observation_.Reset();
+  context_ = nullptr;
   StopAllCaptures();
+}
+
+bool MultiCaptureSessionController::IsSessionEligibleForMultiCapture() const {
+  return CHECK_DEREF(session_manager::SessionManager::Get()).session_state() ==
+             session_manager::SessionState::ACTIVE &&
+         &CHECK_DEREF(ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+             context_)) ==
+             CHECK_DEREF(user_manager::UserManager::Get()).GetActiveUser();
 }
 
 void MultiCaptureSessionController::MultiCaptureStarted(
@@ -46,18 +62,8 @@ void MultiCaptureSessionController::ActiveUserChanged(
 }
 
 void MultiCaptureSessionController::OnSessionStateChanged() {
-  switch (session_manager::SessionManager::Get()->session_state()) {
-    case session_manager::SessionState::LOCKED:
-    case session_manager::SessionState::LOGIN_PRIMARY:
-    case session_manager::SessionState::LOGIN_SECONDARY:
-      StopAllCaptures();
-      break;
-    case session_manager::SessionState::UNKNOWN:
-    case session_manager::SessionState::OOBE:
-    case session_manager::SessionState::LOGGED_IN_NOT_ACTIVE:
-    case session_manager::SessionState::ACTIVE:
-    case session_manager::SessionState::RMA:
-      break;
+  if (!IsSessionEligibleForMultiCapture()) {
+    StopAllCaptures();
   }
 }
 

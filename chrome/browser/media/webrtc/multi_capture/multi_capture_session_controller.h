@@ -9,11 +9,16 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace user_manager {
 class User;
@@ -21,14 +26,15 @@ class User;
 
 namespace multi_capture {
 
-// A KeyedService that handles stopping of active multi capture sessions when
-// the session state changes (e.g. active user is switched).
+// A KeyedService that gates multi-capture session admission and handles
+// stopping of active multi-capture sessions when the session state changes
+// (e.g. active user is switched or screen is locked / in secondary login).
 class MultiCaptureSessionController
     : public KeyedService,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver {
  public:
-  MultiCaptureSessionController();
+  explicit MultiCaptureSessionController(content::BrowserContext* context);
   ~MultiCaptureSessionController() override;
   MultiCaptureSessionController(const MultiCaptureSessionController&) = delete;
   MultiCaptureSessionController& operator=(
@@ -36,6 +42,10 @@ class MultiCaptureSessionController
 
   // KeyedService:
   void Shutdown() override;
+
+  // Returns true iff the ChromeOS session state is ACTIVE and the user
+  // owning `context_` is the currently active user.
+  bool IsSessionEligibleForMultiCapture() const;
 
   // Called when a new multi capture starts.
   void MultiCaptureStarted(const std::string& label,
@@ -52,6 +62,8 @@ class MultiCaptureSessionController
 
  private:
   void StopAllCaptures();
+
+  raw_ptr<content::BrowserContext> context_;
 
   // A map of active multi-capture streams. The key is the unique string label
   // identifying the capture stream. The value is the callback to terminate it.

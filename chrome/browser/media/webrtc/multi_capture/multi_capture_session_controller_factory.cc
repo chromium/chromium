@@ -34,7 +34,7 @@ MultiCaptureSessionControllerFactory::~MultiCaptureSessionControllerFactory() =
 std::unique_ptr<KeyedService>
 MultiCaptureSessionControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return std::make_unique<MultiCaptureSessionController>();
+  return std::make_unique<MultiCaptureSessionController>(context);
 }
 
 }  // namespace multi_capture

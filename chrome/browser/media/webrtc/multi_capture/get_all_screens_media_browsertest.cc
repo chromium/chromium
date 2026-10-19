@@ -58,9 +58,15 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/test_helper.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
+#include "google_apis/gaia/gaia_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -378,6 +384,74 @@ IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
       track_ids, &error_name);
   EXPECT_FALSE(result);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
+                       GetAllScreensMediaDeniedWhenSessionNotActive) {
+  if (!IsPermissionPolicySet()) {
+    GTEST_SKIP();
+  }
+  SetScreens(/*screen_count=*/1u);
+  content::RenderFrameHost* app_frame = OpenApp(allowed_url_info_1().app_id());
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(app_frame);
+
+  for (const auto blocked_state :
+       {session_manager::SessionState::LOGIN_SECONDARY,
+        session_manager::SessionState::LOGGED_IN_NOT_ACTIVE,
+        session_manager::SessionState::LOCKED}) {
+    session_manager::SessionManager::Get()->SetSessionState(blocked_state);
+
+    std::set<std::string> stream_ids;
+    std::set<std::string> track_ids;
+    std::string error_name;
+    EXPECT_FALSE(RunGetAllScreensMediaAndGetIds(web_contents, stream_ids,
+                                                track_ids, &error_name));
+    EXPECT_EQ(error_name, "NotAllowedError");
+  }
+
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
+  std::string error_name;
+  EXPECT_TRUE(RunGetAllScreensMediaAndGetIds(web_contents, stream_ids,
+                                             track_ids, &error_name));
+  EXPECT_EQ(track_ids.size(), 1u);
+}
+
+IN_PROC_BROWSER_TEST_P(MultiScreenCaptureInIsolatedWebAppBrowserTest,
+                       GetAllScreensMediaDeniedWhenUserNotActive) {
+  if (!IsPermissionPolicySet()) {
+    GTEST_SKIP();
+  }
+  SetScreens(/*screen_count=*/1u);
+  content::RenderFrameHost* app_frame = OpenApp(allowed_url_info_1().app_id());
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(app_frame);
+
+  const AccountId secondary_account_id = AccountId::FromUserEmailGaiaId(
+      "secondary@example.com", GaiaId("secondary-gaia-id"));
+
+  user_manager::UserManager::Get()->EnsureUser(secondary_account_id,
+                                               user_manager::UserType::kRegular,
+                                               /*is_ephemeral=*/false);
+  session_manager::SessionManager::Get()->CreateSession(
+      secondary_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(secondary_account_id),
+      /*new_user=*/false, /*has_active_session=*/true);
+
+  session_manager::SessionManager::Get()->SwitchActiveSession(
+      secondary_account_id);
+
+  std::set<std::string> stream_ids;
+  std::set<std::string> track_ids;
+  std::string error_name;
+  EXPECT_FALSE(RunGetAllScreensMediaAndGetIds(web_contents, stream_ids,
+                                              track_ids, &error_name));
+  EXPECT_EQ(error_name, "NotAllowedError");
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Test that getDisplayMedia and getAllScreensMedia are independent,
 // so stopping one will not stop the other.

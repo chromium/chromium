@@ -2857,11 +2857,15 @@ bool ChromeContentBrowserClient::IsTopChromeWebUIURL(const GURL& url) {
 bool ChromeContentBrowserClient::IsMultiCaptureAllowed(
     content::RenderFrameHost* render_frame_host) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return multi_capture::MultiCaptureDataServiceFactory::GetForBrowserContext(
-             WebContents::FromRenderFrameHost(render_frame_host)
-                 ->GetBrowserContext())
-      ->IsMultiCaptureAllowed(
-          render_frame_host->GetLastCommittedOrigin().GetURL());
+  return CHECK_DEREF(
+             multi_capture::MultiCaptureSessionControllerFactory::
+                 GetForBrowserContext(render_frame_host->GetBrowserContext()))
+             .IsSessionEligibleForMultiCapture() &&
+         CHECK_DEREF(
+             multi_capture::MultiCaptureDataServiceFactory::
+                 GetForBrowserContext(render_frame_host->GetBrowserContext()))
+             .IsMultiCaptureAllowed(
+                 render_frame_host->GetLastCommittedOrigin().GetURL());
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
