@@ -493,6 +493,7 @@ source_set("unit_tests") {
     "tools/password_manager/change_password/change_password_tool_request_unittest.cc",
     "tools/password_manager/change_password/change_password_tool_unittest.cc",
     "tools/tool_request_unittest.cc",
+    "tools/tool_result_unittest.cc",
     "tools/type_tool_request_unittest.cc",
     "transport/actor_keyed_service_adapter_unittest.cc",
     "transport/chrome_actuation_transport_handler_factory_unittest.cc",

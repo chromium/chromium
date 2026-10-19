@@ -4,46 +4,58 @@
 
 #include "chrome/browser/actor/tools/tool_result.h"
 
-#include "base/notimplemented.h"
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "chrome/common/actor/action_result.h"
 
 namespace actor {
 
 // static
 ToolResult ToolResult::Success() {
-  // TODO(crbug.com/574090562): Implement status-only success result.
-  NOTIMPLEMENTED();
   return ToolResult();
 }
 
 // static
 ToolResult ToolResult::Success(mojom::ActionResultPtr action_result) {
-  // TODO(crbug.com/574090562): Store ActionResult on ToolResult.
-  NOTIMPLEMENTED();
-  return ToolResult();
+  return ToolResult(std::move(action_result));
 }
 
 // static
 ToolResult ToolResult::Error(ToolError error) {
-  // TODO(crbug.com/574090562): Store ToolError on ToolResult.
-  NOTIMPLEMENTED();
-  return ToolResult();
+  return ToolResult(std::move(error));
 }
 
-ToolResult::ToolResult() = default;
+ToolResult::ToolResult() : action_result_(MakeOkResult()) {}
+
+ToolResult::ToolResult(mojom::ActionResultPtr action_result)
+    : action_result_(std::move(action_result)) {}
+
+ToolResult::ToolResult(std::unique_ptr<ToolResultData> data)
+    : action_result_(MakeOkResult()), data_(std::move(data)) {}
+
+ToolResult::ToolResult(ToolError error)
+    : action_result_(MakeResult(error.code,
+                                /*requires_page_stabilization=*/false,
+                                error.message.value_or(std::string()))),
+      error_(std::move(error)) {}
+
 ToolResult::ToolResult(ToolResult&&) noexcept = default;
 ToolResult& ToolResult::operator=(ToolResult&&) noexcept = default;
 ToolResult::~ToolResult() = default;
 
 ToolResult ToolResult::Clone() const {
-  // TODO(crbug.com/574090562): Clone ToolResult.
-  NOTIMPLEMENTED();
-  return ToolResult();
+  ToolResult cloned(action_result_ ? action_result_->Clone() : nullptr);
+  if (data_) {
+    cloned.data_ = data_->Clone();
+  }
+  cloned.error_ = error_;
+  return cloned;
 }
 
 bool ToolResult::Ok() const {
-  // TODO(crbug.com/574090562): Return whether the result succeeded.
-  NOTIMPLEMENTED();
-  return false;
+  return !error_.has_value();
 }
 
 }  // namespace actor

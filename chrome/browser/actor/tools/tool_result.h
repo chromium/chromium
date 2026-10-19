@@ -10,7 +10,6 @@
 #include <optional>
 #include <utility>
 
-#include "base/notimplemented.h"
 #include "chrome/browser/actor/tool_result_data.h"
 #include "chrome/common/actor.mojom.h"
 
@@ -32,9 +31,7 @@ class ToolResult {
     requires(std::derived_from<T, ToolResultData> &&
              !std::same_as<T, ToolResultData>)
   static ToolResult Success(T data) {
-    // TODO(crbug.com/574090562): Store typed ToolResultData payload.
-    NOTIMPLEMENTED();
-    return ToolResult();
+    return ToolResult(std::make_unique<T>(std::move(data)));
   }
 
   // Creates an error result.
@@ -72,6 +69,9 @@ class ToolResult {
 
  private:
   ToolResult();
+  explicit ToolResult(mojom::ActionResultPtr action_result);
+  explicit ToolResult(std::unique_ptr<ToolResultData> data);
+  explicit ToolResult(ToolError error);
 
   mojom::ActionResultPtr action_result_;
   std::unique_ptr<ToolResultData> data_;
