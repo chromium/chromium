@@ -643,10 +643,6 @@ if (!is_android) {
         "//components/os_crypt/browser:test_secret_portal",
       ]
     }
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -669,8 +665,4 @@ source_set("platform_browser_tests") {
     "//chrome/test/base:chrome_test_utils",
     "//content/test:test_support",
   ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

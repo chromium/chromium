@@ -219,9 +219,6 @@ if (is_android) {
 source_set("unit_tests") {
   testonly = true
 
-  # Some of these tests declare file-scope objects with non-trivial destructors.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   sources = [
     "metrics_web_contents_observer_unittest.cc",
     "observers/captcha_metrics_observer_unittest.cc",
