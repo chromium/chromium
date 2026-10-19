@@ -230,12 +230,13 @@ void OSSettingsUI::BindInterface(
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::SearchHandler> receiver) {
   auto* profile = Profile::FromWebUI(web_ui());
-  DCHECK(personalization_app::CanSeeWallpaperOrPersonalizationApp(profile));
+  CHECK(personalization_app::CanSeeWallpaperOrPersonalizationApp(profile),
+        base::NotFatalUntil::M162);
 
   auto* search_handler = personalization_app::PersonalizationAppManagerFactory::
                              GetForBrowserContext(profile)
                                  ->search_handler();
-  DCHECK(search_handler);
+  CHECK(search_handler, base::NotFatalUntil::M162);
   search_handler->BindInterface(std::move(receiver));
 }
 

@@ -41,7 +41,7 @@ void SendSearchFeedbackHandler::OpenFeedbackDialogWrapper(
 
 void SendSearchFeedbackHandler::HandleOpenFeedbackDialog(
     const base::ListValue& args) {
-  DCHECK_EQ(args.size(), 1U);
+  CHECK_EQ(args.size(), 1U, base::NotFatalUntil::M162);
   OpenFeedbackDialogWrapper(args.front().GetString());
 }
 }  // namespace ash::settings

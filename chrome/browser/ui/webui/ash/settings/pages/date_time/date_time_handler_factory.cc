@@ -25,8 +25,8 @@ DateTimeHandlerFactory::~DateTimeHandlerFactory() = default;
 void DateTimeHandlerFactory::CreatePageHandler(
     mojo::PendingRemote<date_time::mojom::Page> page,
     mojo::PendingReceiver<date_time::mojom::PageHandler> receiver) {
-  DCHECK(page);
-  DCHECK(!page_handler_);
+  CHECK(page, base::NotFatalUntil::M162);
+  CHECK(!page_handler_, base::NotFatalUntil::M162);
 
   page_handler_ = std::make_unique<NewDateTimeHandler>(
       std::move(receiver), std::move(page), web_ui_, profile_);

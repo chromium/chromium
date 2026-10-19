@@ -112,7 +112,7 @@ bool GetServicePathFromGuid(const std::string& guid,
 }
 
 void SetDeviceProperties(base::DictValue* dictionary) {
-  DCHECK(dictionary);
+  CHECK(dictionary, base::NotFatalUntil::M162);
   const std::string* device = dictionary->FindString(shill::kDeviceProperty);
   if (!device) {
     return;
@@ -665,7 +665,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   }
 
   void AddNetwork(const base::ListValue& args) {
-    DCHECK(!args.empty());
+    CHECK(!args.empty(), base::NotFatalUntil::M162);
     std::string onc_type = args[0].GetString();
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
   }

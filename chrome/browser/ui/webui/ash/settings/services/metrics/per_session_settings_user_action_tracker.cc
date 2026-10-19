@@ -48,7 +48,7 @@ PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker(
     : metric_start_time_(base::TimeTicks::Now()),
       window_last_active_timestamp_(base::TimeTicks::Now()),
       profile_pref_service_(profile_pref_service) {
-  DCHECK(profile_pref_service_);
+  CHECK(profile_pref_service_, base::NotFatalUntil::M162);
 }
 
 PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
@@ -62,7 +62,7 @@ PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
 }
 
 bool PerSessionSettingsUserActionTracker::HasUserMetricsConsent() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M162);
 
   metrics::MetricsService* metrics_service_ =
       g_browser_process->metrics_service();
@@ -126,7 +126,8 @@ bool PerSessionSettingsUserActionTracker::IsTodayInFirst7Days() {
   // The pref kOobeOnboardingTime does not get set for users in guest mode.
   // Because we are accessing the value of the pref, we must ensure that it does
   // exist.
-  DCHECK(profile_pref_service_->HasPrefPath(prefs::kOobeOnboardingTime));
+  CHECK(profile_pref_service_->HasPrefPath(prefs::kOobeOnboardingTime),
+        base::NotFatalUntil::M162);
   return base::Time::Now() - profile_pref_service_->GetTime(
                                  ::ash::prefs::kOobeOnboardingTime) <=
          kOneWeek;

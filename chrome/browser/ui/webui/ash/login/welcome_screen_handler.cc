@@ -71,7 +71,7 @@ WelcomeScreenHandler::~WelcomeScreenHandler() = default;
 void WelcomeScreenHandler::Show() {
   // TODO(crbug.com/1105387): Part of initial screen logic.
   if (local_state_->GetBoolean(ash::prefs::kFactoryResetRequested)) {
-    DCHECK(LoginDisplayHost::default_host());
+    CHECK(LoginDisplayHost::default_host(), base::NotFatalUntil::M162);
     LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
     return;
   }

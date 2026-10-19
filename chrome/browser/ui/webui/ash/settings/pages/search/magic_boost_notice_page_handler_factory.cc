@@ -24,7 +24,7 @@ MagicBoostNoticePageHandlerFactory::~MagicBoostNoticePageHandlerFactory() =
 
 void MagicBoostNoticePageHandlerFactory::CreatePageHandler(
     mojo::PendingReceiver<magic_boost_handler::mojom::PageHandler> receiver) {
-  DCHECK(!page_handler_);
+  CHECK(!page_handler_, base::NotFatalUntil::M162);
 
   page_handler_ =
       std::make_unique<MagicBoostNoticeHandler>(std::move(receiver), profile_);

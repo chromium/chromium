@@ -67,7 +67,8 @@ ParentAccessDialogProvider::ShowError ParentAccessDialogProvider::Show(
     return ParentAccessDialogProvider::ShowError::kDialogAlreadyVisible;
   }
 
-  DCHECK(ParentAccessDialog::GetInstance() == nullptr);
+  CHECK(ParentAccessDialog::GetInstance() == nullptr,
+        base::NotFatalUntil::M162);
   // Note:  |dialog|'s memory is freed when
   // SystemWebDialogDelegate::OnDialogClosed() is called.
   ParentAccessDialog* dialog =
@@ -160,7 +161,7 @@ ParentAccessDialog::ParentAccessDialog(
       callback_(std::move(callback)) {}
 
 void ParentAccessDialog::ShowDimmer() {
-  DCHECK_EQ(nullptr, dimmer_);
+  CHECK_EQ(nullptr, dimmer_, base::NotFatalUntil::M162);
   dimmer_ = std::make_unique<WindowDimmer>(
       Shell::GetPrimaryRootWindow()->GetChildById(
           kShellWindowId_SystemModalContainer));

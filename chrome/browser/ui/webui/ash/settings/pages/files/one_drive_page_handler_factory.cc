@@ -23,8 +23,8 @@ OneDrivePageHandlerFactory::~OneDrivePageHandlerFactory() = default;
 void OneDrivePageHandlerFactory::CreatePageHandler(
     mojo::PendingRemote<one_drive::mojom::Page> page,
     mojo::PendingReceiver<one_drive::mojom::PageHandler> receiver) {
-  DCHECK(page);
-  DCHECK(!page_handler_);
+  CHECK(page, base::NotFatalUntil::M162);
+  CHECK(!page_handler_, base::NotFatalUntil::M162);
 
   page_handler_ = std::make_unique<OneDrivePageHandler>(
       std::move(receiver), std::move(page), profile_);

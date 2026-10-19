@@ -33,7 +33,7 @@ StylusHandler::StylusHandler() = default;
 StylusHandler::~StylusHandler() = default;
 
 void StylusHandler::RegisterMessages() {
-  DCHECK(web_ui());
+  CHECK(web_ui(), base::NotFatalUntil::M162);
 
   // Note: initializeStylusSettings must be called before observers will be
   // added.
@@ -134,7 +134,8 @@ void StylusHandler::HandleInitialize(const base::ListValue& args) {
 }
 
 void StylusHandler::SendHasStylus() {
-  DCHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete());
+  CHECK(ui::DeviceDataManager::GetInstance()->AreDeviceListsComplete(),
+        base::NotFatalUntil::M162);
   FireWebUIListener("has-stylus-changed",
                     base::Value(stylus_utils::HasStylusInput()));
 }
@@ -147,8 +148,8 @@ void StylusHandler::HandleShowPlayStoreApps(const base::ListValue& args) {
     return;
   }
 
-  DCHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile),
+        base::NotFatalUntil::M162);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithUrl(
       arc::kPlayStoreAppId, ui::EF_NONE, GURL(apps_url),
       apps::LaunchSource::kFromChromeInternal);

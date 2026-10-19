@@ -25,9 +25,9 @@ MetricsChoiceHandler::MetricsChoiceHandler(
     : profile_(profile),
       metrics_service_(metrics_service),
       user_manager_(user_manager) {
-  DCHECK(profile_);
-  DCHECK(metrics_service_);
-  DCHECK(user_manager_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(metrics_service_, base::NotFatalUntil::M162);
+  CHECK(user_manager_, base::NotFatalUntil::M162);
 }
 
 MetricsChoiceHandler::~MetricsChoiceHandler() = default;

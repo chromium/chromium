@@ -113,7 +113,7 @@ void AndroidAppsHandler::ShowAndroidAppsSettings(const base::ListValue& args) {
 
 int64_t AndroidAppsHandler::GetDisplayIdForCurrentProfile() {
   // Settings in secondary profile cannot access ARC.
-  DCHECK(arc::IsArcAllowedForProfile(profile_));
+  CHECK(arc::IsArcAllowedForProfile(profile_), base::NotFatalUntil::M162);
   return display::Screen::Get()
       ->GetDisplayNearestView(web_ui()->GetWebContents()->GetNativeView())
       .id();

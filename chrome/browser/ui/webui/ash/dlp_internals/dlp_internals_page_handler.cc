@@ -80,7 +80,7 @@ std::vector<dlp_internals::mojom::RenderFrameHostInfoPtr> RfhInfoToMojo(
     std::vector<DlpContentTabHelper::RfhInfo> rfh_info_vector) {
   std::vector<dlp_internals::mojom::RenderFrameHostInfoPtr> rfh_info_mojo_arr;
   for (const auto& rfh_info : rfh_info_vector) {
-    DCHECK(rfh_info.first);
+    CHECK(rfh_info.first, base::NotFatalUntil::M162);
     rfh_info_mojo_arr.push_back(dlp_internals::mojom::RenderFrameHostInfo::New(
         rfh_info.first->GetLastCommittedURL(),
         RestrictionSetToMojo(rfh_info.second)));

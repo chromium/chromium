@@ -463,7 +463,7 @@ void SearchSection::OnIsDeleting() {
 }
 
 void SearchSection::UpdateQuickAnswersSearchTags() {
-  DCHECK(QuickAnswersState::Get());
+  CHECK(QuickAnswersState::Get(), base::NotFatalUntil::M162);
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
@@ -485,7 +485,7 @@ void SearchSection::UpdateQuickAnswersSearchTags() {
 
 void SearchSection::UpdateMagicBoostSearchTags(bool is_magic_boost_available) {
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
-  DCHECK(magic_boost_state);
+  CHECK(magic_boost_state, base::NotFatalUntil::M162);
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 

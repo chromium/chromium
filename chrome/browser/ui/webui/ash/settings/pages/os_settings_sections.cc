@@ -126,7 +126,7 @@ const OsSettingsSection* OsSettingsSections::GetSection(
 void OsSettingsSections::AddSection(
     chromeos::settings::mojom::Section section_id,
     std::unique_ptr<OsSettingsSection> section) {
-  DCHECK(!sections_map_.contains(section_id));
+  CHECK(!sections_map_.contains(section_id), base::NotFatalUntil::M162);
 
   sections_map_[section_id] = section.get();
   sections_.push_back(std::move(section));

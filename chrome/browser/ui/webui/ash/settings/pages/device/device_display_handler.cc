@@ -49,7 +49,7 @@ void DisplayHandler::HandleHighlightDisplay(const base::ListValue& args) {
 }
 
 void DisplayHandler::HandleDragDisplayDelta(const base::ListValue& args) {
-  DCHECK_EQ(3U, args.size());
+  CHECK_EQ(3U, args.size(), base::NotFatalUntil::M162);
   AllowJavascript();
 
   const std::string& display_id_str = args[0].GetString();

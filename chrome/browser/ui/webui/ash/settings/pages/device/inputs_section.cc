@@ -563,7 +563,7 @@ void InputsSection::UpdateSpellCheckSearchTags() {
 
 void InputsSection::UpdateAutocorrectTags(
     input_method::InputMethodManager* manager) {
-  DCHECK(manager);
+  CHECK(manager, base::NotFatalUntil::M162);
   const std::string engine_id =
       extension_ime_util::GetComponentIDByInputMethodID(
           manager->GetActiveIMEState()->GetCurrentInputMethod().id());

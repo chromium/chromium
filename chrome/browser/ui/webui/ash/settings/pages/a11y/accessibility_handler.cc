@@ -96,7 +96,7 @@ void AccessibilityHandler::HandleShowBrowserAppearanceSettings(
 
 void AccessibilityHandler::HandleSetStartupSoundEnabled(
     const base::ListValue& args) {
-  DCHECK_EQ(1U, args.size());
+  CHECK_EQ(1U, args.size(), base::NotFatalUntil::M162);
   bool enabled = false;
   if (args[0].is_bool()) {
     enabled = args[0].GetBool();

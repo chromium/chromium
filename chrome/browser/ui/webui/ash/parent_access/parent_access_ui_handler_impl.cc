@@ -162,7 +162,7 @@ void ParentAccessUiHandlerImpl::OnParentAccessDone(
   }
   switch (result) {
     case parent_access_ui::mojom::ParentAccessResult::kApproved:
-      DCHECK(parent_access_token_);
+      CHECK(parent_access_token_, base::NotFatalUntil::M162);
       if (state_tracker_) {
         state_tracker_->OnWebUiStateChanged(
             ParentAccessStateTracker::FlowResult::kAccessApproved);
@@ -219,7 +219,7 @@ void ParentAccessUiHandlerImpl::GetParentAccessUrl(
     url = command_line->GetSwitchValueASCII(kParentAccessSwitch);
   } else {
     url = kParentAccessDefaultURL;
-    DCHECK(GURL(url).DomainIs("google.com"));
+    CHECK(GURL(url).DomainIs("google.com"), base::NotFatalUntil::M162);
   }
 
   const GURL base_url(url);
@@ -297,7 +297,7 @@ void ParentAccessUiHandlerImpl::OnParentAccessCallbackReceived(
               .verification_proof_case() ==
           kids::platform::parentaccess::client::proto::OnParentVerified::
               VerificationProofCase::kParentAccessToken) {
-        DCHECK(!parent_access_token_);
+        CHECK(!parent_access_token_, base::NotFatalUntil::M162);
         parent_access_token_ = std::make_unique<
             kids::platform::parentaccess::client::proto::ParentAccessToken>();
         parent_access_token_->CopyFrom(

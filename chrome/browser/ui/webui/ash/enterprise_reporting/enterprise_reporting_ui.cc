@@ -74,7 +74,8 @@ EnterpriseReportingUI::EnterpriseReportingUI(
     const policy::BrowserPolicyConnectorAsh* connector,
     content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui), connector_(CHECK_DEREF(connector)) {
-  DCHECK(base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI));
+  CHECK(base::FeatureList::IsEnabled(ash::features::kEnterpriseReportingUI),
+        base::NotFatalUntil::M162);
   // Set up the chrome://enterprise-reporting source.
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* html_source =
@@ -109,7 +110,7 @@ void EnterpriseReportingUI::BindInterface(
 void EnterpriseReportingUI::CreatePageHandler(
     mojo::PendingRemote<enterprise_reporting::mojom::Page> page,
     mojo::PendingReceiver<enterprise_reporting::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
   // Ensure sequencing for `EnterpriseReportingPageHandler` in order to make it
   // capable of using weak pointers.
   page_handler_ = EnterpriseReportingPageHandler::Create(std::move(receiver),

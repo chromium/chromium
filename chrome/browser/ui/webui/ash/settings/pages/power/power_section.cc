@@ -285,7 +285,8 @@ void PowerSection::PowerChanged(
   if (!has_observed_power_status_) {
     // IsAdaptiveChargingSupported and IsBatterySaverSupported both rely on
     // GetLastStatus, so make sure its not nullopt.
-    DCHECK(chromeos::PowerManagerClient::Get()->GetLastStatus());
+    CHECK(chromeos::PowerManagerClient::Get()->GetLastStatus(),
+          base::NotFatalUntil::M162);
     if (!has_observed_power_status_) {
       if (Shell::Get()
               ->adaptive_charging_controller()

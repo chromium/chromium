@@ -146,7 +146,8 @@ void GuestOsHandler::HandleSetGuestOsUsbDeviceShared(
 
 void GuestOsHandler::OnUsbDevicesChanged() {
   CrosUsbDetector* detector = CrosUsbDetector::Get();
-  DCHECK(detector);  // This callback is called by the detector.
+  CHECK(detector,
+        base::NotFatalUntil::M162);  // This callback is called by the detector.
   FireWebUIListener("guest-os-shared-usb-devices-changed",
                     GetSharableUsbDevices(detector));
 }

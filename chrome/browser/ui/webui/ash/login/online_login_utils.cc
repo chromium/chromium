@@ -255,8 +255,8 @@ void GaiaCookieRetriever::RetrieveCookies(
   }
 
   // Validity check that partition did not change during login flow.
-  DCHECK_EQ(signin_partition_manager_->GetCurrentStoragePartitionName(),
-            signin_partition_name_);
+  CHECK_EQ(signin_partition_manager_->GetCurrentStoragePartitionName(),
+           signin_partition_name_, base::NotFatalUntil::M162);
 
   network::mojom::CookieManager* cookie_manager =
       partition->GetCookieManagerForBrowserProcess();

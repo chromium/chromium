@@ -66,7 +66,7 @@ bool IsVpnConfigAllowed(const user_manager::User& user) {
 }  // namespace
 
 InternetHandler::InternetHandler(Profile* profile) : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
 
   auto* tether_service = tether::TetherService::Get(profile);
   gms_core_notifications_state_tracker_ =
@@ -142,8 +142,9 @@ void InternetHandler::AddThirdPartyVpn(const base::ListValue& args) {
   // Request to launch Arc VPN provider.
   const auto* arc_app_list_prefs = ArcAppListPrefs::Get(profile_);
   if (arc_app_list_prefs && arc_app_list_prefs->GetApp(app_id)) {
-    DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-        profile_));
+    CHECK(
+        apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_),
+        base::NotFatalUntil::M162);
     apps::AppServiceProxyFactory::GetForProfile(profile_)->Launch(
         app_id, ui::EF_NONE, apps::LaunchSource::kFromParentalControls);
     return;
@@ -245,7 +246,8 @@ void InternetHandler::SetGmsCoreNotificationsDisabledDeviceNames() {
   if (!gms_core_notifications_state_tracker_) {
     // No device names should be present in the list if
     // |gms_core_notifications_state_tracker_| is null.
-    DCHECK(device_names_without_notifications_.empty());
+    CHECK(device_names_without_notifications_.empty(),
+          base::NotFatalUntil::M162);
     return;
   }
 

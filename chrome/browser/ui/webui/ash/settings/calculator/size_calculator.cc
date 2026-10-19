@@ -281,7 +281,7 @@ void BrowsingDataSizeCalculator::PerformCalculation() {
 
 void BrowsingDataSizeCalculator::OnGetCacheSize(bool is_upper_limit,
                                                 int64_t size) {
-  DCHECK(!is_upper_limit);
+  CHECK(!is_upper_limit, base::NotFatalUntil::M162);
   OnGetBrowsingDataSize(/*is_site_data=*/false, size);
 }
 

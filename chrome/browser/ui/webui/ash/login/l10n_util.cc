@@ -218,8 +218,8 @@ base::ListValue GetLanguageList(
       display_names.push_back(display_name);
     }
   }
-  DCHECK_EQ(display_names.size() + most_relevant_locales_count,
-            language_map.size());
+  CHECK_EQ(display_names.size() + most_relevant_locales_count,
+           language_map.size(), base::NotFatalUntil::M162);
 
   // Build the list of display names, and build the language map.
   for (const auto& base_language_code : base_language_codes) {
@@ -439,7 +439,7 @@ void ResolveUILanguageList(
     std::unique_ptr<locale_util::LanguageSwitchResult> language_switch_result,
     input_method::InputMethodManager& input_method_manager,
     UILanguageListResolvedCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   input_method::InputMethodDescriptors descriptors =
       CHECK_DEREF(input_method_manager.GetComponentExtensionIMEManager())
@@ -530,7 +530,8 @@ base::ListValue GetAndActivateOobeInputMethods(
   const std::vector<std::string>& hardware_input_methods =
       util->GetHardwareInputMethodIds();
 
-  DCHECK(IsSigninBrowserContext(ProfileManager::GetActiveUserProfile()));
+  CHECK(IsSigninBrowserContext(ProfileManager::GetActiveUserProfile()),
+        base::NotFatalUntil::M162);
   input_method_manager->GetActiveIMEState()->EnableOobeInputMethods(
       base::i18n::GetLanguageTagFromString(locale).value_or(
           base::i18n::GetKnownLanguageTag("und")),
@@ -573,7 +574,7 @@ base::ListValue GetAndActivateOobeInputMethods(
   if (input_methods_added.find(us_keyboard_id) == input_methods_added.end()) {
     const input_method::InputMethodDescriptor* us_eng_descriptor =
         util->GetInputMethodDescriptorFromId(us_keyboard_id);
-    DCHECK(us_eng_descriptor);
+    CHECK(us_eng_descriptor, base::NotFatalUntil::M162);
     if (!optgroup_added) {
       optgroup_added = true;
       AddOptgroupOtherLayouts(input_methods_list);

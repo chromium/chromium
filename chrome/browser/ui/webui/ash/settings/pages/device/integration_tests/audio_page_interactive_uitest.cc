@@ -102,7 +102,7 @@ class ActiveAudioNodeStateObserver : public ui::test::ObservationStateObserver<
 
  private:
   uint64_t GetActiveNode() const {
-    DCHECK(source());
+    CHECK(source(), base::NotFatalUntil::M162);
     return is_input_ ? source()->GetPrimaryActiveInputNode()
                      : source()->GetPrimaryActiveOutputNode();
   }
@@ -193,7 +193,7 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
   }
 
   auto MaybeWaitForInputDevice(const uint64_t device_id) {
-    DCHECK(audio_handler());
+    CHECK(audio_handler(), base::NotFatalUntil::M162);
     const uint64_t primary_node = audio_handler()->GetPrimaryActiveInputNode();
 
     return Steps(If(
@@ -205,7 +205,7 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
   }
 
   auto MaybeWaitForOutputDevice(const uint64_t device_id) {
-    DCHECK(audio_handler());
+    CHECK(audio_handler(), base::NotFatalUntil::M162);
     const uint64_t primary_node = audio_handler()->GetPrimaryActiveOutputNode();
 
     return Steps(If(
@@ -229,10 +229,10 @@ class AudioSettingsInteractiveUiTest : public InteractiveAshTest {
   // and wait for it to exist.
   auto DoSetActiveDevice(uint64_t device_id) {
     return Steps(Do([this, device_id]() {
-      DCHECK(audio_handler());
+      CHECK(audio_handler(), base::NotFatalUntil::M162);
       const AudioDevice* audio_device =
           audio_handler()->GetDeviceFromId(device_id);
-      DCHECK(audio_device);
+      CHECK(audio_device, base::NotFatalUntil::M162);
       audio_handler()->SwitchToDevice(*audio_device, /*notify=*/true,
                                       DeviceActivateType::kActivateByUser);
       if (audio_device->is_input) {

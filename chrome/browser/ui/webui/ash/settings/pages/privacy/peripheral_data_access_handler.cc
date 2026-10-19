@@ -132,7 +132,7 @@ void PeripheralDataAccessHandler::OnFilePathChecked(
 }
 
 void PeripheralDataAccessHandler::OnPeripheralDataAccessProtectionChanged() {
-  DCHECK(PciguardClient::Get());
+  CHECK(PciguardClient::Get(), base::NotFatalUntil::M162);
 
   bool new_state = false;
   CrosSettings::Get()->GetBoolean(kDevicePeripheralDataAccessEnabled,

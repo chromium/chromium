@@ -182,7 +182,7 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
       "accountListDescription", IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION);
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
   html_source->AddString(
       "accountListChildDescription",
       l10n_util::GetStringFUTF16(
@@ -528,11 +528,11 @@ PeopleSection::PeopleSection(Profile* profile,
     // Some Account Manager search tags are added/removed dynamically.
     account_manager_ = AccountManagerFactory::Get()->GetAccountManager(
         profile->GetPath().value());
-    DCHECK(account_manager_);
+    CHECK(account_manager_, base::NotFatalUntil::M162);
     account_manager_facade_ =
         AccountManagerFactory::Get()->GetAccountManagerFacade(
             profile->GetPath().value());
-    DCHECK(account_manager_facade_);
+    CHECK(account_manager_facade_, base::NotFatalUntil::M162);
     account_manager_observation_.Observe(account_manager_.get());
     account_apps_availability_ =
         AccountAppsAvailabilityFactory::GetForProfile(profile);
@@ -567,7 +567,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile());
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
 
   html_source->AddString(
       "osProfileName", l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_PROFILE_NAME,
@@ -688,14 +688,14 @@ void PeopleSection::OnAccountRemoved(
 
 void PeopleSection::UpdateAccountManagerSearchTags(
     const std::vector<::account_manager::Account>& accounts) {
-  DCHECK(IsAccountManagerAvailable(profile()));
+  CHECK(IsAccountManagerAvailable(profile()), base::NotFatalUntil::M162);
 
   // Start with no Account Manager search tags.
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.RemoveSearchTags(GetRemoveAccountSearchConcepts());
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile());
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
 
   for (const ::account_manager::Account& account : accounts) {
     if (IsSameAccount(account.key, user->GetAccountId())) {

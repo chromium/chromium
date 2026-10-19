@@ -339,7 +339,7 @@ void InputDeviceSettingsProvider::BindInterface(
 
 void InputDeviceSettingsProvider::RestoreDefaultKeyboardRemappings(
     uint32_t device_id) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   InputDeviceSettingsController::Get()->RestoreDefaultKeyboardRemappings(
       device_id);
 }
@@ -347,7 +347,7 @@ void InputDeviceSettingsProvider::RestoreDefaultKeyboardRemappings(
 void InputDeviceSettingsProvider::SetKeyboardSettings(
     uint32_t device_id,
     ::ash::mojom::KeyboardSettingsPtr settings) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   if (!InputDeviceSettingsController::Get()->SetKeyboardSettings(
           device_id, std::move(settings))) {
     NotifyKeyboardsUpdated();
@@ -357,7 +357,7 @@ void InputDeviceSettingsProvider::SetKeyboardSettings(
 void InputDeviceSettingsProvider::SetPointingStickSettings(
     uint32_t device_id,
     ::ash::mojom::PointingStickSettingsPtr settings) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   if (!InputDeviceSettingsController::Get()->SetPointingStickSettings(
           device_id, std::move(settings))) {
     NotifyPointingSticksUpdated();
@@ -367,7 +367,7 @@ void InputDeviceSettingsProvider::SetPointingStickSettings(
 void InputDeviceSettingsProvider::SetMouseSettings(
     uint32_t device_id,
     ::ash::mojom::MouseSettingsPtr settings) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   if (!InputDeviceSettingsController::Get()->SetMouseSettings(
           device_id, std::move(settings))) {
     NotifyMiceUpdated();
@@ -377,7 +377,7 @@ void InputDeviceSettingsProvider::SetMouseSettings(
 void InputDeviceSettingsProvider::SetTouchpadSettings(
     uint32_t device_id,
     ::ash::mojom::TouchpadSettingsPtr settings) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   if (!InputDeviceSettingsController::Get()->SetTouchpadSettings(
           device_id, std::move(settings))) {
     NotifyTouchpadsUpdated();
@@ -387,7 +387,7 @@ void InputDeviceSettingsProvider::SetTouchpadSettings(
 void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
     uint32_t device_id,
     ::ash::mojom::GraphicsTabletSettingsPtr settings) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   if (!InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
           device_id, std::move(settings))) {
     NotifyGraphicsTabletUpdated();
@@ -436,7 +436,7 @@ void InputDeviceSettingsProvider::OnReceiveKeyboardAmbientLightSensorEnabled(
 
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(
     mojo::PendingRemote<mojom::KeyboardSettingsObserver> observer) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   const auto id = keyboard_settings_observers_.Add(std::move(observer));
   auto* keyboard_settings_observer = keyboard_settings_observers_.Get(id);
   keyboard_settings_observer->OnKeyboardListUpdated(SanitizeAndSortDeviceList(
@@ -447,7 +447,7 @@ void InputDeviceSettingsProvider::ObserveKeyboardSettings(
 
 void InputDeviceSettingsProvider::ObserveTouchpadSettings(
     mojo::PendingRemote<mojom::TouchpadSettingsObserver> observer) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   const auto id = touchpad_settings_observers_.Add(std::move(observer));
   touchpad_settings_observers_.Get(id)->OnTouchpadListUpdated(
       SanitizeAndSortDeviceList(
@@ -456,7 +456,7 @@ void InputDeviceSettingsProvider::ObserveTouchpadSettings(
 
 void InputDeviceSettingsProvider::ObservePointingStickSettings(
     mojo::PendingRemote<mojom::PointingStickSettingsObserver> observer) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   const auto id = pointing_stick_settings_observers_.Add(std::move(observer));
   pointing_stick_settings_observers_.Get(id)->OnPointingStickListUpdated(
       SanitizeAndSortDeviceList(
@@ -465,7 +465,7 @@ void InputDeviceSettingsProvider::ObservePointingStickSettings(
 
 void InputDeviceSettingsProvider::ObserveMouseSettings(
     mojo::PendingRemote<mojom::MouseSettingsObserver> observer) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   const auto id = mouse_settings_observers_.Add(std::move(observer));
   auto* mouse_settings_observer = mouse_settings_observers_.Get(id);
   mouse_settings_observer->OnMouseListUpdated(SanitizeAndSortDeviceList(
@@ -476,7 +476,7 @@ void InputDeviceSettingsProvider::ObserveMouseSettings(
 
 void InputDeviceSettingsProvider::ObserveGraphicsTabletSettings(
     mojo::PendingRemote<mojom::GraphicsTabletSettingsObserver> observer) {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   const auto id = graphics_tablet_settings_observers_.Add(std::move(observer));
   auto* graphics_tablet_settings_observer =
       graphics_tablet_settings_observers_.Get(id);
@@ -707,7 +707,7 @@ void InputDeviceSettingsProvider::OnMousePoliciesUpdated(
 }
 
 void InputDeviceSettingsProvider::NotifyKeyboardsUpdated() {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   auto keyboards = SanitizeAndSortDeviceList(
       InputDeviceSettingsController::Get()->GetConnectedKeyboards());
   for (const auto& observer : keyboard_settings_observers_) {
@@ -716,7 +716,7 @@ void InputDeviceSettingsProvider::NotifyKeyboardsUpdated() {
 }
 
 void InputDeviceSettingsProvider::NotifyTouchpadsUpdated() {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   auto touchpads = SanitizeAndSortDeviceList(
       InputDeviceSettingsController::Get()->GetConnectedTouchpads());
   for (const auto& observer : touchpad_settings_observers_) {
@@ -725,7 +725,7 @@ void InputDeviceSettingsProvider::NotifyTouchpadsUpdated() {
 }
 
 void InputDeviceSettingsProvider::NotifyPointingSticksUpdated() {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   auto pointing_sticks = SanitizeAndSortDeviceList(
       InputDeviceSettingsController::Get()->GetConnectedPointingSticks());
   for (const auto& observer : pointing_stick_settings_observers_) {
@@ -734,7 +734,7 @@ void InputDeviceSettingsProvider::NotifyPointingSticksUpdated() {
 }
 
 void InputDeviceSettingsProvider::NotifyMiceUpdated() {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   auto mice = SanitizeAndSortDeviceList(
       InputDeviceSettingsController::Get()->GetConnectedMice());
   for (const auto& observer : mouse_settings_observers_) {
@@ -743,7 +743,7 @@ void InputDeviceSettingsProvider::NotifyMiceUpdated() {
 }
 
 void InputDeviceSettingsProvider::NotifyGraphicsTabletUpdated() {
-  DCHECK(InputDeviceSettingsController::Get());
+  CHECK(InputDeviceSettingsController::Get(), base::NotFatalUntil::M162);
   auto graphics_tablets = SanitizeAndSortDeviceList(
       InputDeviceSettingsController::Get()->GetConnectedGraphicsTablets());
   for (const auto& observer : graphics_tablet_settings_observers_) {
@@ -856,7 +856,7 @@ void InputDeviceSettingsProvider::RecordKeyboardColorLinkClicked() {
 
 void InputDeviceSettingsProvider::RecordKeyboardBrightnessChangeFromSlider(
     double percent) {
-  DCHECK(0 <= percent && percent <= 100);
+  CHECK(0 <= percent && percent <= 100, base::NotFatalUntil::M162);
   base::UmaHistogramPercentage(
       "ChromeOS.Settings.Device.Keyboard.BrightnessSliderAdjusted", percent);
 }

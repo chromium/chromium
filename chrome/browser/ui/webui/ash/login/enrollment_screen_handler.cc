@@ -644,7 +644,7 @@ void EnrollmentScreenHandler::HandleToggleFakeEnrollmentAndCompleteLogin(
 }
 
 void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M162);
   if (reason == "cancel") {
     controller_->OnCancel();
   } else if (reason == "done") {
@@ -680,8 +680,8 @@ void EnrollmentScreenHandler::HandleCompleteLogin(const std::string& user,
   }
 
   // Validity check that partition did not change during enrollment flow.
-  DCHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
-            signin_partition_name_);
+  CHECK_EQ(signin_partition_manager->GetCurrentStoragePartitionName(),
+           signin_partition_name_, base::NotFatalUntil::M162);
 
   login::OnlineSigninArtifacts signin_artifacts;
   signin_artifacts.email = user;
@@ -707,7 +707,7 @@ void EnrollmentScreenHandler::CompleteAuthWithCookies(
     login::OnlineSigninArtifacts signin_artifacts,
     int license_type,
     login::GaiaCookiesData cookies) {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M162);
   signin_artifacts.email = gaia::SanitizeEmail(signin_artifacts.email);
   controller_->OnLoginDone(std::move(signin_artifacts), license_type,
                            cookies.auth_code);
@@ -725,12 +725,12 @@ void EnrollmentScreenHandler::OnCookieWaitTimeout() {
 
 void EnrollmentScreenHandler::HandleIdentifierEntered(
     const std::string& email) {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M162);
   controller_->OnIdentifierEntered(email);
 }
 
 void EnrollmentScreenHandler::HandleRetry() {
-  DCHECK(controller_);
+  CHECK(controller_, base::NotFatalUntil::M162);
   controller_->OnRetry();
 }
 

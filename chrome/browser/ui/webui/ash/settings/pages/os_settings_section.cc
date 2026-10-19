@@ -44,8 +44,8 @@ OsSettingsSection::~OsSettingsSection() = default;
 OsSettingsSection::OsSettingsSection(Profile* profile,
                                      SearchTagRegistry* search_tag_registry)
     : profile_(profile), search_tag_registry_(search_tag_registry) {
-  DCHECK(profile);
-  DCHECK(search_tag_registry);
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK(search_tag_registry, base::NotFatalUntil::M162);
 }
 
 OsSettingsSection::OsSettingsSection() = default;

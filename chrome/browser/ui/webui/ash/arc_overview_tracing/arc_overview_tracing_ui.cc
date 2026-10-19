@@ -110,7 +110,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override {
-    DCHECK(arc_active_window_);
+    CHECK(arc_active_window_, base::NotFatalUntil::M162);
 
     // Only two flags (decorators) must be on.
     constexpr int kFlags = ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN;
@@ -135,7 +135,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
 
  private:
   void HandleLoadFromText(const base::ListValue& args) {
-    DCHECK_EQ(1U, args.size());
+    CHECK_EQ(1U, args.size(), base::NotFatalUntil::M162);
     if (!args[0].is_string()) {
       LOG(ERROR) << "Invalid input";
       return;
@@ -155,7 +155,7 @@ class Handler : public content::WebUIMessageHandler, public ui::EventHandler {
   }
 
   void ActivateWebUIWindow() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     auto* const window = web_ui()->GetWebContents()->GetTopLevelNativeWindow();
     if (!window) {
       LOG(ERROR) << "Failed to activate, no top level window.";

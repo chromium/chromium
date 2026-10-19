@@ -24,8 +24,9 @@ constexpr char kUserActedCallback[] = ".userActed";
 
 BaseScreenHandler::BaseScreenHandler(OobeScreenId oobe_screen)
     : oobe_screen_(oobe_screen) {
-  DCHECK_NE(oobe_screen_.name, OOBE_SCREEN_UNKNOWN.name);
-  DCHECK(!oobe_screen_.external_api_prefix.empty());
+  CHECK_NE(oobe_screen_.name, OOBE_SCREEN_UNKNOWN.name,
+           base::NotFatalUntil::M162);
+  CHECK(!oobe_screen_.external_api_prefix.empty(), base::NotFatalUntil::M162);
   user_acted_method_path_ = base::StrCat(
       {kLoginPrefix, oobe_screen_.external_api_prefix, kUserActedCallback});
 }
@@ -84,7 +85,7 @@ bool BaseScreenHandler::HandleUserActionImpl(const base::ListValue& args) {
 
 std::string BaseScreenHandler::GetFullExternalAPIFunctionName(
     const std::string& short_name) {
-  DCHECK(!oobe_screen_.external_api_prefix.empty());
+  CHECK(!oobe_screen_.external_api_prefix.empty(), base::NotFatalUntil::M162);
   return base::StrCat(
       {kLoginPrefix, oobe_screen_.external_api_prefix, ".", short_name});
 }

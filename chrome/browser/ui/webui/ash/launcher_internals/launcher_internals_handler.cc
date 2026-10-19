@@ -14,7 +14,7 @@ LauncherInternalsHandler::LauncherInternalsHandler(
     app_list::SearchController* search_controller,
     mojo::PendingRemote<launcher_internals::mojom::Page> page)
     : page_(std::move(page)) {
-  DCHECK(search_controller);
+  CHECK(search_controller, base::NotFatalUntil::M162);
   search_controller_observation_.Observe(search_controller);
 }
 

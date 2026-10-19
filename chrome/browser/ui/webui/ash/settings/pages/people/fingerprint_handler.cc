@@ -43,8 +43,8 @@ base::DictValue GetFingerprintsInfo(
   base::DictValue response;
   base::ListValue fingerprints;
 
-  DCHECK_LE(static_cast<int>(fingerprints_list.size()),
-            kMaxAllowedFingerprints);
+  CHECK_LE(static_cast<int>(fingerprints_list.size()), kMaxAllowedFingerprints,
+           base::NotFatalUntil::M162);
   for (auto& fingerprint_name : fingerprints_list) {
     fingerprints.Append(fingerprint_name);
   }

@@ -89,7 +89,7 @@ StorageHandler::~StorageHandler() {
 }
 
 void StorageHandler::RegisterMessages() {
-  DCHECK(web_ui());
+  CHECK(web_ui(), base::NotFatalUntil::M162);
 
   web_ui()->RegisterMessageCallback(
       "updateAndroidEnabled",
@@ -137,7 +137,8 @@ void StorageHandler::OnJavascriptDisallowed() {
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
+  CHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()),
+        base::NotFatalUntil::M162);
   arc_observation_.Reset();
 
   StopObservingEvents();

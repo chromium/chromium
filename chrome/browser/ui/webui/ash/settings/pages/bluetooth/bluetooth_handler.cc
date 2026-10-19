@@ -41,7 +41,7 @@ void BluetoothHandler::OnJavascriptDisallowed() {}
 
 void BluetoothHandler::BluetoothDeviceAdapterReady(
     scoped_refptr<device::BluetoothAdapter> adapter) {
-  DCHECK(adapter);
+  CHECK(adapter, base::NotFatalUntil::M162);
   bluetooth_adapter_ = std::move(adapter);
 }
 

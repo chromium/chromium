@@ -23,8 +23,8 @@ GoogleDrivePageHandlerFactory::~GoogleDrivePageHandlerFactory() = default;
 void GoogleDrivePageHandlerFactory::CreatePageHandler(
     mojo::PendingRemote<google_drive::mojom::Page> page,
     mojo::PendingReceiver<google_drive::mojom::PageHandler> receiver) {
-  DCHECK(page);
-  DCHECK(!page_handler_);
+  CHECK(page, base::NotFatalUntil::M162);
+  CHECK(!page_handler_, base::NotFatalUntil::M162);
 
   page_handler_ = std::make_unique<GoogleDrivePageHandler>(
       std::move(receiver), std::move(page), profile_);

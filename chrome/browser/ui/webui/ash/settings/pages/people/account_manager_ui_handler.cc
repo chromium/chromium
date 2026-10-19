@@ -53,12 +53,12 @@ constexpr char kAccountRemovedToastId[] =
 ::account_manager::AccountKey GetAccountKeyFromJsCallback(
     const base::DictValue& dictionary) {
   const std::string* id = dictionary.FindString("id");
-  DCHECK(id);
-  DCHECK(!id->empty());
+  CHECK(id, base::NotFatalUntil::M162);
+  CHECK(!id->empty(), base::NotFatalUntil::M162);
 
   const std::optional<int> account_type_value =
       dictionary.FindInt("accountType");
-  DCHECK(account_type_value);
+  CHECK(account_type_value, base::NotFatalUntil::M162);
 
   // Currently, we only support `kGaia` account type. Should a new type be added
   // in the future, consider removing the `CHECK_EQ()` below and handling the
@@ -185,15 +185,15 @@ class AccountBuilder {
   // Should be called only once.
   base::DictValue Build() {
     // Check that values were set.
-    DCHECK(account_.FindString("id"));
-    DCHECK(account_.FindString("email"));
-    DCHECK(account_.FindString("fullName"));
-    DCHECK(account_.FindInt("accountType"));
-    DCHECK(account_.FindBool("isDeviceAccount"));
-    DCHECK(account_.FindBool("isSignedIn"));
-    DCHECK(account_.FindBool("unmigrated"));
-    DCHECK(account_.FindString("pic"));
-    DCHECK(account_.FindBool("isAvailableInArc"));
+    CHECK(account_.FindString("id"), base::NotFatalUntil::M162);
+    CHECK(account_.FindString("email"), base::NotFatalUntil::M162);
+    CHECK(account_.FindString("fullName"), base::NotFatalUntil::M162);
+    CHECK(account_.FindInt("accountType"), base::NotFatalUntil::M162);
+    CHECK(account_.FindBool("isDeviceAccount"), base::NotFatalUntil::M162);
+    CHECK(account_.FindBool("isSignedIn"), base::NotFatalUntil::M162);
+    CHECK(account_.FindBool("unmigrated"), base::NotFatalUntil::M162);
+    CHECK(account_.FindString("pic"), base::NotFatalUntil::M162);
+    CHECK(account_.FindBool("isAvailableInArc"), base::NotFatalUntil::M162);
     // "organization" is an optional field.
 
     return std::move(account_);
@@ -213,11 +213,11 @@ AccountManagerUIHandler::AccountManagerUIHandler(
     : account_manager_(account_manager),
       account_manager_facade_(account_manager_facade),
       identity_manager_(identity_manager) {
-  DCHECK(account_manager_);
-  DCHECK(account_manager_facade_);
-  DCHECK(identity_manager_);
+  CHECK(account_manager_, base::NotFatalUntil::M162);
+  CHECK(account_manager_facade_, base::NotFatalUntil::M162);
+  CHECK(identity_manager_, base::NotFatalUntil::M162);
   account_apps_availability_ = account_apps_availability;
-  DCHECK(account_apps_availability_);
+  CHECK(account_apps_availability_, base::NotFatalUntil::M162);
 }
 
 AccountManagerUIHandler::~AccountManagerUIHandler() = default;
@@ -288,7 +288,7 @@ void AccountManagerUIHandler::FinishHandleGetAccounts(
   }
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
 
   base::DictValue gaia_device_account;
   base::ListValue accounts = GetSecondaryGaiaAccounts(
@@ -427,8 +427,8 @@ void AccountManagerUIHandler::HandleRemoveAccount(const base::ListValue& args) {
 
   // Show toast with removal message.
   const std::string* email = dictionary->FindString("email");
-  DCHECK(email);
-  DCHECK(!email->empty());
+  CHECK(email, base::NotFatalUntil::M162);
+  CHECK(!email->empty(), base::NotFatalUntil::M162);
 
   ShowToast(kAccountRemovedToastId, ToastCatalogName::kAccountRemoved,
             l10n_util::GetStringFUTF16(

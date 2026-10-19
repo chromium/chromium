@@ -228,28 +228,32 @@ void MultideviceHandler::OnJavascriptDisallowed() {
   pref_change_registrar_.RemoveAll();
 
   if (multidevice_setup_client_) {
-    DCHECK(multidevice_setup_observation_.IsObservingSource(
-        multidevice_setup_client_.get()));
+    CHECK(multidevice_setup_observation_.IsObservingSource(
+              multidevice_setup_client_.get()),
+          base::NotFatalUntil::M162);
     multidevice_setup_observation_.Reset();
   }
 
   if (multidevice_feature_access_manager_) {
-    DCHECK(multidevice_feature_access_manager_observation_.IsObservingSource(
-        multidevice_feature_access_manager_.get()));
+    CHECK(multidevice_feature_access_manager_observation_.IsObservingSource(
+              multidevice_feature_access_manager_.get()),
+          base::NotFatalUntil::M162);
     multidevice_feature_access_manager_observation_.Reset();
     notification_access_operation_.reset();
   }
 
   if (apps_access_manager_) {
-    DCHECK(apps_access_manager_observation_.IsObservingSource(
-        apps_access_manager_.get()));
+    CHECK(apps_access_manager_observation_.IsObservingSource(
+              apps_access_manager_.get()),
+          base::NotFatalUntil::M162);
     apps_access_manager_observation_.Reset();
     apps_access_operation_.reset();
   }
 
   if (camera_roll_manager_) {
-    DCHECK(camera_roll_manager_observation_.IsObservingSource(
-        camera_roll_manager_.get()));
+    CHECK(camera_roll_manager_observation_.IsObservingSource(
+              camera_roll_manager_.get()),
+          base::NotFatalUntil::M162);
     camera_roll_manager_observation_.Reset();
   }
 
@@ -313,7 +317,7 @@ void MultideviceHandler::UpdatePageContent() {
 
 void MultideviceHandler::HandleShowMultiDeviceSetupDialog(
     const base::ListValue& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty(), base::NotFatalUntil::M162);
   multidevice_setup::MultiDeviceSetupDialog::Show();
   ash::phonehub::util::LogMultiDeviceSetupDialogEntryPoint(
       ash::phonehub::util::MultiDeviceSetupDialogEntrypoint::kSettingsPage);
@@ -325,7 +329,7 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue& args) {
   AllowJavascript();
 
   const base::Value& callback_id = args[0];
-  DCHECK(callback_id.is_string());
+  CHECK(callback_id.is_string(), base::NotFatalUntil::M162);
 
   base::DictValue page_content_dictionary = GeneratePageContentDataDictionary();
   PA_LOG(INFO) << "Responding to getPageContentData() request with: "
@@ -337,13 +341,14 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue& args) {
 void MultideviceHandler::HandleSetFeatureEnabledState(
     const base::ListValue& args) {
   const auto& list = args;
-  DCHECK_GE(list.size(), 3u);
+  CHECK_GE(list.size(), 3u, base::NotFatalUntil::M162);
   const std::string& callback_id = list[0].GetString();
 
   int feature_as_int = list[1].GetInt();
 
   auto feature = static_cast<multidevice_setup::mojom::Feature>(feature_as_int);
-  DCHECK(multidevice_setup::mojom::IsKnownEnumValue(feature));
+  CHECK(multidevice_setup::mojom::IsKnownEnumValue(feature),
+        base::NotFatalUntil::M162);
 
   bool enabled = list[2].GetBool();
 
@@ -370,21 +375,21 @@ void MultideviceHandler::HandleSetFeatureEnabledState(
 }
 
 void MultideviceHandler::HandleRemoveHostDevice(const base::ListValue& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty(), base::NotFatalUntil::M162);
   multidevice_setup_client_->RemoveHostDevice();
 }
 
 void MultideviceHandler::HandleRetryPendingHostSetup(
     const base::ListValue& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty(), base::NotFatalUntil::M162);
   multidevice_setup_client_->RetrySetHostNow(
       base::BindOnce(&OnRetrySetHostNowResult));
 }
 
 void MultideviceHandler::HandleAttemptNotificationSetup(
     const base::ListValue& args) {
-  DCHECK(features::IsPhoneHubEnabled());
-  DCHECK(!notification_access_operation_);
+  CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
+  CHECK(!notification_access_operation_, base::NotFatalUntil::M162);
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus
       notification_access_status =
@@ -399,20 +404,20 @@ void MultideviceHandler::HandleAttemptNotificationSetup(
   notification_access_operation_ =
       multidevice_feature_access_manager_->AttemptNotificationSetup(
           /*delegate=*/this);
-  DCHECK(notification_access_operation_);
+  CHECK(notification_access_operation_, base::NotFatalUntil::M162);
 }
 
 void MultideviceHandler::HandleCancelNotificationSetup(
     const base::ListValue& args) {
-  DCHECK(features::IsPhoneHubEnabled());
-  DCHECK(notification_access_operation_);
+  CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
+  CHECK(notification_access_operation_, base::NotFatalUntil::M162);
 
   notification_access_operation_.reset();
 }
 
 void MultideviceHandler::HandleAttemptAppsSetup(const base::ListValue& args) {
-  DCHECK(features::IsEcheSWAEnabled());
-  DCHECK(!apps_access_operation_);
+  CHECK(features::IsEcheSWAEnabled(), base::NotFatalUntil::M162);
+  CHECK(!apps_access_operation_, base::NotFatalUntil::M162);
 
   phonehub::MultideviceFeatureAccessManager::AccessStatus apps_access_status =
       apps_access_manager_->GetAccessStatus();
@@ -426,12 +431,12 @@ void MultideviceHandler::HandleAttemptAppsSetup(const base::ListValue& args) {
 
   apps_access_operation_ =
       apps_access_manager_->AttemptAppsAccessSetup(/*delegate=*/this);
-  DCHECK(apps_access_operation_);
+  CHECK(apps_access_operation_, base::NotFatalUntil::M162);
 }
 
 void MultideviceHandler::HandleCancelAppsSetup(const base::ListValue& args) {
-  DCHECK(features::IsEcheSWAEnabled());
-  DCHECK(apps_access_operation_);
+  CHECK(features::IsEcheSWAEnabled(), base::NotFatalUntil::M162);
+  CHECK(apps_access_operation_, base::NotFatalUntil::M162);
 
   apps_access_manager_->NotifyAppsAccessCanceled();
   apps_access_operation_.reset();
@@ -448,8 +453,8 @@ void MultideviceHandler::HandleAttemptCombinedFeatureSetup(
     notifications = args[1].GetBool();
   }
 
-  DCHECK(features::IsPhoneHubEnabled());
-  DCHECK(!combined_access_operation_);
+  CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
+  CHECK(!combined_access_operation_, base::NotFatalUntil::M162);
 
   if (!multidevice_feature_access_manager_->GetFeatureSetupRequestSupported()) {
     PA_LOG(WARNING) << "Cannot request combined access setup flow; "
@@ -481,31 +486,31 @@ void MultideviceHandler::HandleAttemptCombinedFeatureSetup(
   combined_access_operation_ =
       multidevice_feature_access_manager_->AttemptCombinedFeatureSetup(
           camera_roll, notifications, /*delegate=*/this);
-  DCHECK(combined_access_operation_);
+  CHECK(combined_access_operation_, base::NotFatalUntil::M162);
 }
 
 void MultideviceHandler::HandleCancelCombinedFeatureSetup(
     const base::ListValue& args) {
-  DCHECK(features::IsPhoneHubEnabled());
-  DCHECK(combined_access_operation_);
+  CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
+  CHECK(combined_access_operation_, base::NotFatalUntil::M162);
 
   combined_access_operation_.reset();
 }
 
 void MultideviceHandler::HandleAttemptFeatureSetupConnection(
     const base::ListValue& args) {
-  DCHECK(features::IsPhoneHubEnabled());
-  DCHECK(!feature_setup_connection_operation_);
+  CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
+  CHECK(!feature_setup_connection_operation_, base::NotFatalUntil::M162);
 
   feature_setup_connection_operation_ =
       multidevice_feature_access_manager_->AttemptFeatureSetupConnection(this);
-  DCHECK(feature_setup_connection_operation_);
+  CHECK(feature_setup_connection_operation_, base::NotFatalUntil::M162);
 }
 
 void MultideviceHandler::HandleCancelFeatureSetupConnection(
     const base::ListValue& args) {
-  DCHECK(features::IsPhoneHubEnabled());
-  DCHECK(feature_setup_connection_operation_);
+  CHECK(features::IsPhoneHubEnabled(), base::NotFatalUntil::M162);
+  CHECK(feature_setup_connection_operation_, base::NotFatalUntil::M162);
 
   feature_setup_connection_operation_.reset();
 }

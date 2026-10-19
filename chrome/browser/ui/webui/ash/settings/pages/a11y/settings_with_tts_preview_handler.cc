@@ -66,7 +66,7 @@ void SettingsWithTtsPreviewHandler::FireTtsPreviewEvent() {
 
 void SettingsWithTtsPreviewHandler::HandlePreviewTtsVoice(
     const base::ListValue& args) {
-  DCHECK_EQ(2U, args.size());
+  CHECK_EQ(2U, args.size(), base::NotFatalUntil::M162);
   const std::string& text = args[0].GetString();
   const std::string& voice_id = args[1].GetString();
 

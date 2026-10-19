@@ -230,7 +230,7 @@ void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
 chromeos::PinDialogManager* GetLoginScreenPinDialogManager() {
   auto* browser_context =
       BrowserContextHelper::Get()->GetSigninBrowserContext();
-  DCHECK(browser_context);
+  CHECK(browser_context, base::NotFatalUntil::M162);
   chromeos::CertificateProviderService* certificate_provider_service =
       chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
           browser_context);
@@ -415,8 +415,8 @@ GaiaScreenHandler::GaiaScreenHandler(
           ErrorScreensHistogramHelper::ErrorParentScreen::kSignin)),
       auth_flow_auto_reload_manager_(local_state) {
   CHECK(shared_url_loader_factory_);
-  DCHECK(network_state_informer_.get());
-  DCHECK(error_screen_);
+  CHECK(network_state_informer_.get(), base::NotFatalUntil::M162);
+  CHECK(error_screen_, base::NotFatalUntil::M162);
   HttpAuthDialog::AddObserver(this);
 }
 
@@ -609,8 +609,9 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
 
   if (public_saml_url_fetcher_) {
     params.Set("startsOnSamlPage", true);
-    DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kPublicAccountsSamlAclUrl));
+    CHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kPublicAccountsSamlAclUrl),
+          base::NotFatalUntil::M162);
     std::string saml_acl_url =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kPublicAccountsSamlAclUrl);
@@ -631,7 +632,7 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
         login::GetAccountId(local_state_.get(), context.email,
                             context.gaia_id.ToString(), AccountType::GOOGLE);
     auto* user = user_manager::UserManager::Get()->FindUser(account_id);
-    DCHECK(user);
+    CHECK(user, base::NotFatalUntil::M162);
     bool is_child_account = user && user->IsChild();
     // Enable the new endpoint for supervised account for now. We might expand
     // it to other account type in the future.
@@ -1164,8 +1165,9 @@ void GaiaScreenHandler::HandleSecurityTokenPinEntered(
     const std::string& user_input) {
   // Invariant: when the pin_entered_callback is present, the closed_callback
   // must be present as well.
-  DCHECK(!security_token_pin_entered_callback_ ||
-         security_token_pin_dialog_closed_callback_);
+  CHECK(!security_token_pin_entered_callback_ ||
+            security_token_pin_dialog_closed_callback_,
+        base::NotFatalUntil::M162);
 
   if (!is_security_token_pin_dialog_running()) {
     // The PIN request has already been canceled on the handler side.
@@ -1203,7 +1205,7 @@ void GaiaScreenHandler::HandleUserRemoved(const std::string& email) {
       email, /*id=*/std::string(), AccountType::UNKNOWN);
   if (account_id == user_manager::UserManager::Get()->GetOwnerAccountId()) {
     // Shows powerwash UI if the user is device owner.
-    DCHECK(LoginDisplayHost::default_host());
+    CHECK(LoginDisplayHost::default_host(), base::NotFatalUntil::M162);
     LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
   } else {
     // Removes the account on the device.
@@ -1261,7 +1263,7 @@ void GaiaScreenHandler::StartClearingDnsCache() {
 }
 
 void GaiaScreenHandler::OnDnsCleared() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   dns_clear_task_running_ = false;
   dns_cleared_ = true;
   ShowGaiaScreenIfReady();
@@ -1279,7 +1281,7 @@ void GaiaScreenHandler::StartClearingCookies(
 }
 
 void GaiaScreenHandler::OnCookiesCleared(base::OnceClosure on_clear_callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   cookies_cleared_ = true;
   std::move(on_clear_callback).Run();
 }
@@ -1422,10 +1424,10 @@ void GaiaScreenHandler::ShowSecurityTokenPinDialog(
     const std::optional<AccountId>& /*authenticating_user_account_id*/,
     SecurityTokenPinEnteredCallback pin_entered_callback,
     SecurityTokenPinDialogClosedCallback pin_dialog_closed_callback) {
-  DCHECK(is_security_token_pin_enabled_);
+  CHECK(is_security_token_pin_enabled_, base::NotFatalUntil::M162);
   // There must be either no active PIN dialog, or the active dialog for which
   // the PIN has already been entered.
-  DCHECK(!security_token_pin_entered_callback_);
+  CHECK(!security_token_pin_entered_callback_, base::NotFatalUntil::M162);
 
   security_token_pin_entered_callback_ = std::move(pin_entered_callback);
   // Note that this overwrites the previous closed_callback in the case where
@@ -1441,11 +1443,12 @@ void GaiaScreenHandler::ShowSecurityTokenPinDialog(
 }
 
 void GaiaScreenHandler::CloseSecurityTokenPinDialog() {
-  DCHECK(is_security_token_pin_enabled_);
+  CHECK(is_security_token_pin_enabled_, base::NotFatalUntil::M162);
   // Invariant: when the pin_entered_callback is present, the closed_callback
   // must be present as well.
-  DCHECK(!security_token_pin_entered_callback_ ||
-         security_token_pin_dialog_closed_callback_);
+  CHECK(!security_token_pin_entered_callback_ ||
+            security_token_pin_dialog_closed_callback_,
+        base::NotFatalUntil::M162);
 
   security_token_pin_entered_callback_.Reset();
   security_token_pin_dialog_closed_callback_.Reset();
@@ -1511,7 +1514,7 @@ void GaiaScreenHandler::ShowGaiaScreenIfReady() {
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
   if (local_state_->GetBoolean(ash::prefs::kFactoryResetRequested)) {
-    DCHECK(LoginDisplayHost::default_host());
+    CHECK(LoginDisplayHost::default_host(), base::NotFatalUntil::M162);
     LoginDisplayHost::default_host()->StartWizard(ResetView::kScreenId);
   }
 }

@@ -43,7 +43,8 @@ bool IsSystemTimezoneAutomaticDetectionManaged(const PrefService& local_state) {
 // enum and determines whether the user's setting will be overridden.
 int GetSystemTimezoneAutomaticDetectionPolicyValue(
     const PrefService& local_state) {
-  DCHECK(IsSystemTimezoneAutomaticDetectionManaged(local_state));
+  CHECK(IsSystemTimezoneAutomaticDetectionManaged(local_state),
+        base::NotFatalUntil::M162);
 
   return local_state.GetInteger(
       ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
@@ -145,7 +146,8 @@ void DateTimeHandler::HandleShowSetDateTimeUI(const base::ListValue& args) {
 
 void DateTimeHandler::HandleShowParentAccessForTimeZone(
     const base::ListValue& args) {
-  DCHECK(user_manager::UserManager::Get()->GetActiveUser()->IsChild());
+  CHECK(user_manager::UserManager::Get()->GetActiveUser()->IsChild(),
+        base::NotFatalUntil::M162);
 
   if (!parent_access::ParentAccessService::IsApprovalRequired(
           SupervisedAction::kUpdateTimezone)) {

@@ -59,8 +59,9 @@ void CrostiniInstallerDialog::Show(
   }
 
   // TODO(lxj): Move installer status tracking into the CrostiniInstaller.
-  DCHECK(!crostini::CrostiniManager::GetForProfile(profile)
-              ->IsCrostiniInstallerOpen());
+  CHECK(!crostini::CrostiniManager::GetForProfile(profile)
+             ->IsCrostiniInstallerOpen(),
+        base::NotFatalUntil::M162);
   crostini::CrostiniManager::GetForProfile(profile)->SetCrostiniInstallerOpen(
       true);
 
@@ -128,11 +129,11 @@ void CrostiniInstallerDialog::OnDialogShown(content::WebUI* webui) {
 }
 
 void CrostiniInstallerDialog::OnWebContentsFinishedLoad() {
-  DCHECK(dialog_window());
+  CHECK(dialog_window(), base::NotFatalUntil::M162);
   dialog_window()->SetTitle(
       l10n_util::GetStringUTF16(IDS_CROSTINI_INSTALLER_TITLE));
   if (!on_loaded_callback_.is_null()) {
-    DCHECK(installer_ui_);
+    CHECK(installer_ui_, base::NotFatalUntil::M162);
     std::move(on_loaded_callback_).Run(installer_ui_);
   }
 }

@@ -21,14 +21,14 @@ FaceGazeSettingsHandler::~FaceGazeSettingsHandler() {
 
 void FaceGazeSettingsHandler::HandleRequestEnableFaceGaze(
     const base::ListValue& args) {
-  DCHECK_EQ(args.size(), 1U);
+  CHECK_EQ(args.size(), 1U, base::NotFatalUntil::M162);
   const bool& enable = args[0].GetBool();
   AccessibilityManager::Get()->RequestEnableFaceGaze(enable);
 }
 
 void FaceGazeSettingsHandler::HandleToggleGestureInfoForSettings(
     const base::ListValue& args) {
-  DCHECK_EQ(args.size(), 1U);
+  CHECK_EQ(args.size(), 1U, base::NotFatalUntil::M162);
   const bool& enabled = args[0].GetBool();
 
   AccessibilityManager::Get()->ToggleGestureInfoForSettings(enabled);

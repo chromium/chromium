@@ -365,9 +365,10 @@ void CupsPrintersHandler::RegisterMessages() {
 }
 
 void CupsPrintersHandler::OnJavascriptAllowed() {
-  DCHECK(!printers_manager_observation_.IsObserving());
+  CHECK(!printers_manager_observation_.IsObserving(),
+        base::NotFatalUntil::M162);
   printers_manager_observation_.Observe(printers_manager_.get());
-  DCHECK(!local_printers_observation_.IsObserving());
+  CHECK(!local_printers_observation_.IsObserving(), base::NotFatalUntil::M162);
   local_printers_observation_.Observe(printers_manager_.get());
 }
 
@@ -1154,7 +1155,7 @@ void CupsPrintersHandler::ResolvePrintersDone(
 
 void CupsPrintersHandler::FileSelected(const ui::SelectedFileInfo& file,
                                        int index) {
-  DCHECK(!webui_callback_id_.empty());
+  CHECK(!webui_callback_id_.empty(), base::NotFatalUntil::M162);
 
   select_file_dialog_ = nullptr;
 
@@ -1558,12 +1559,12 @@ void CupsPrintersHandler::OnQueryPrintServerCompleted(
 
 void CupsPrintersHandler::HandleOpenPrintManagementApp(
     const base::ListValue& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty(), base::NotFatalUntil::M162);
   ash::ShowPrintManagementApp(profile_);
 }
 
 void CupsPrintersHandler::HandleOpenScanningApp(const base::ListValue& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty(), base::NotFatalUntil::M162);
   ash::ShowScanningApp(profile_);
 }
 

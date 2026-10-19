@@ -209,7 +209,7 @@ KerberosAccountsHandler::~KerberosAccountsHandler() = default;
 KerberosAccountsHandler::KerberosAccountsHandler(
     KerberosCredentialsManager* kerberos_credentials_manager)
     : kerberos_credentials_manager_(kerberos_credentials_manager) {
-  DCHECK(kerberos_credentials_manager_);
+  CHECK(kerberos_credentials_manager_, base::NotFatalUntil::M162);
 }
 
 void KerberosAccountsHandler::RegisterMessages() {

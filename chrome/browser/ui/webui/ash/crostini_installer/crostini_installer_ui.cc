@@ -192,7 +192,7 @@ void CrostiniInstallerUI::CreatePageHandler(
     mojo::PendingRemote<crostini_installer::mojom::Page> pending_page,
     mojo::PendingReceiver<crostini_installer::mojom::PageHandler>
         pending_page_handler) {
-  DCHECK(pending_page.is_valid());
+  CHECK(pending_page.is_valid(), base::NotFatalUntil::M162);
 
   page_handler_ = std::make_unique<CrostiniInstallerPageHandler>(
       crostini::CrostiniInstallerFactory::GetForProfile(

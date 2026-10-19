@@ -375,7 +375,7 @@ void PowerHandler::HandleSetOptimizedCharging(const base::ListValue& args) {
 void PowerHandler::SendBatteryStatus() {
   const std::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
-  DCHECK(proto);
+  CHECK(proto, base::NotFatalUntil::M162);
   bool charging = proto->battery_state() ==
                   power_manager::PowerSupplyProperties_BatteryState_CHARGING;
   bool calculating = proto->is_calculating_battery_time();
@@ -421,7 +421,7 @@ void PowerHandler::SendBatteryStatus() {
 void PowerHandler::SendPowerSources() {
   const std::optional<power_manager::PowerSupplyProperties>& proto =
       PowerManagerClient::Get()->GetLastStatus();
-  DCHECK(proto);
+  CHECK(proto, base::NotFatalUntil::M162);
   base::ListValue sources_list;
   for (int i = 0; i < proto->available_external_power_source_size(); i++) {
     const auto& source = proto->available_external_power_source(i);
@@ -578,9 +578,10 @@ PowerHandler::IdleBehaviorInfo PowerHandler::GetAllowedIdleBehaviors(
   //    1. Not managed.
   //    2. Or managed and set to
   //    PowerPolicyController::ACTION_DO_NOTHING.
-  DCHECK(!prefs_->IsManagedPreference(idle_pref) ||
-         (prefs_->GetInteger(idle_pref) ==
-          PowerPolicyController::ACTION_DO_NOTHING));
+  CHECK(!prefs_->IsManagedPreference(idle_pref) ||
+            (prefs_->GetInteger(idle_pref) ==
+             PowerPolicyController::ACTION_DO_NOTHING),
+        base::NotFatalUntil::M162);
 
   // If screen off delay is managed and set to a value greater than 0
   // and
@@ -628,7 +629,8 @@ PowerHandler::IdleBehaviorInfo PowerHandler::GetAllowedIdleBehaviors(
       // Note that we reach here only when screen off delays are
       // set by enterprise policy to 0 to prevent display from turning
       // off.
-      DCHECK(prefs_->GetInteger(screen_off_delay_pref) == 0);
+      CHECK(prefs_->GetInteger(screen_off_delay_pref) == 0,
+            base::NotFatalUntil::M162);
       current_idle_behavior = IdleBehavior::DISPLAY_ON;
       possible_behaviors.insert(IdleBehavior::DISPLAY_ON);
       return IdleBehaviorInfo(possible_behaviors, current_idle_behavior,

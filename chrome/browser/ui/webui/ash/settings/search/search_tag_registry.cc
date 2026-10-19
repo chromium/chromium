@@ -99,7 +99,7 @@ SearchTagRegistry::SearchTagRegistry(
       local_search_service::IndexId::kCrosSettings,
       local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
-  DCHECK(index_remote_.is_bound());
+  CHECK(index_remote_.is_bound(), base::NotFatalUntil::M162);
 }
 
 SearchTagRegistry::~SearchTagRegistry() = default;

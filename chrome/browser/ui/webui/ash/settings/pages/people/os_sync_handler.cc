@@ -39,7 +39,7 @@ const char kWallpaperEnabledKey[] = "wallpaperEnabled";
 }  // namespace
 
 OSSyncHandler::OSSyncHandler(Profile* profile) : profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
 }
 
 OSSyncHandler::~OSSyncHandler() {

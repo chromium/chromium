@@ -55,7 +55,7 @@ SearchHandler::SearchHandler(
       local_search_service::IndexId::kCrosSettings,
       local_search_service::Backend::kLinearMap,
       index_remote_.BindNewPipeAndPassReceiver());
-  DCHECK(index_remote_.is_bound());
+  CHECK(index_remote_.is_bound(), base::NotFatalUntil::M162);
 
   search_tag_registry_->AddObserver(this);
 }
@@ -263,7 +263,7 @@ mojom::SearchResultPtr SearchHandler::ResultToSearchResult(
   }
 
   // |result| is expected to have one position, whose ID is a stringified int.
-  DCHECK_EQ(1u, result.positions.size());
+  CHECK_EQ(1u, result.positions.size(), base::NotFatalUntil::M162);
   int content_id;
   if (!base::StringToInt(result.positions[0].content_id, &content_id)) {
     return nullptr;

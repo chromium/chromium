@@ -43,11 +43,11 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
 
   // Unpack JS args.
   const base::DictValue* notifObj = args[0].GetIfDict();
-  DCHECK(notifObj);
+  CHECK(notifObj, base::NotFatalUntil::M162);
 
   // Set notification ID to the system time (always unique) if specified.
   const std::string* id = notifObj->FindString("id");
-  DCHECK(id);
+  CHECK(id, base::NotFatalUntil::M162);
   std::string notification_id = *id;
   if (*id == "random") {
     auto current_time_in_ms =
@@ -56,41 +56,41 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
   }
 
   const std::string* title = notifObj->FindString("title");
-  DCHECK(title);
+  CHECK(title, base::NotFatalUntil::M162);
 
   const std::string* message = notifObj->FindString("message");
-  DCHECK(message);
+  CHECK(message, base::NotFatalUntil::M162);
 
   const std::string* icon = notifObj->FindString("icon");
-  DCHECK(icon);
+  CHECK(icon, base::NotFatalUntil::M162);
   auto notification_icon = GetNotificationIconFromString(*icon);
 
   const std::string* image = notifObj->FindString("richDataImage");
-  DCHECK(image);
+  CHECK(image, base::NotFatalUntil::M162);
 
   const std::string* display_source = notifObj->FindString("displaySource");
-  DCHECK(display_source);
+  CHECK(display_source, base::NotFatalUntil::M162);
 
   const std::string* origin_url_str = notifObj->FindString("originURL");
-  DCHECK(origin_url_str);
+  CHECK(origin_url_str, base::NotFatalUntil::M162);
   GURL origin_url(*origin_url_str);
 
   std::optional<int> warning_level_int = notifObj->FindInt("warningLevel");
-  DCHECK(warning_level_int);
+  CHECK(warning_level_int, base::NotFatalUntil::M162);
   auto warning_level =
       static_cast<message_center::SystemNotificationWarningLevel>(
           warning_level_int.value());
 
   std::optional<int> notification_type_int =
       notifObj->FindInt("notificationType");
-  DCHECK(notification_type_int);
+  CHECK(notification_type_int, base::NotFatalUntil::M162);
   auto notification_type = static_cast<message_center::NotificationType>(
       notification_type_int.value());
 
   // notifier_id should be constructed differently if the notifier type is
   // message_center::NotifierType::WEB_PAGE.
   std::optional<int> notifier_type = notifObj->FindInt("notifierType");
-  DCHECK(notifier_type);
+  CHECK(notifier_type, base::NotFatalUntil::M162);
   message_center::NotifierId notifier_id;
   if (notifier_type.value() ==
       static_cast<int>(message_center::NotifierType::WEB_PAGE)) {
@@ -207,66 +207,66 @@ NotificationTesterHandler::DictToOptionalFields(
   message_center::RichNotificationData optional_fields;
   // Unpack notification object and populate optional_fields.
   const std::string* image = notifObj->FindString("richDataImage");
-  DCHECK(image);
+  CHECK(image, base::NotFatalUntil::M162);
   optional_fields.image = GetRichDataImageFromString(*image);
 
   const std::string* small_image = notifObj->FindString("richDataSmallImage");
-  DCHECK(small_image);
+  CHECK(small_image, base::NotFatalUntil::M162);
   optional_fields.vector_small_image =
       &GetRichDataSmallImageFromString(*small_image);
 
   std::optional<bool> never_timeout =
       notifObj->FindBool("richDataNeverTimeout");
-  DCHECK(never_timeout);
+  CHECK(never_timeout, base::NotFatalUntil::M162);
   optional_fields.never_timeout = never_timeout.value();
 
   std::optional<int> priority = notifObj->FindInt("richDataPriority");
-  DCHECK(priority);
+  CHECK(priority, base::NotFatalUntil::M162);
   optional_fields.priority = priority.value();
 
   std::optional<int> num_mins_since_received =
       notifObj->FindInt("richDataTimestamp");
-  DCHECK(num_mins_since_received);
+  CHECK(num_mins_since_received, base::NotFatalUntil::M162);
   optional_fields.timestamp =
       base::Time::Now() - base::Minutes(num_mins_since_received.value());
 
   std::optional<bool> pinned = notifObj->FindBool("richDataPinned");
-  DCHECK(pinned);
+  CHECK(pinned, base::NotFatalUntil::M162);
   optional_fields.pinned = pinned.value();
 
   std::optional<bool> show_snooze = notifObj->FindBool("richDataShowSnooze");
-  DCHECK(show_snooze);
+  CHECK(show_snooze, base::NotFatalUntil::M162);
   optional_fields.should_show_snooze_button = show_snooze.value();
 
   std::optional<bool> show_settings =
       notifObj->FindBool("richDataShowSettings");
-  DCHECK(show_settings);
+  CHECK(show_settings, base::NotFatalUntil::M162);
   optional_fields.settings_button_handler =
       show_settings.value() ? message_center::SettingsButtonHandler::INLINE
                             : message_center::SettingsButtonHandler::NONE;
 
   std::optional<int> num_buttons = notifObj->FindInt("richDataNumButtons");
-  DCHECK(num_buttons);
+  CHECK(num_buttons, base::NotFatalUntil::M162);
   optional_fields.buttons = GetRichDataButtons(num_buttons.value());
 
   // Set additional fields for specific notification types.
   std::optional<int> notification_type = notifObj->FindInt("notificationType");
-  DCHECK(notification_type);
+  CHECK(notification_type, base::NotFatalUntil::M162);
 
   if (notification_type ==
       message_center::NotificationType::NOTIFICATION_TYPE_PROGRESS) {
     std::optional<int> progress = notifObj->FindInt("richDataProgress");
-    DCHECK(progress);
+    CHECK(progress, base::NotFatalUntil::M162);
     optional_fields.progress = progress.value();
 
     const std::string* progress_status =
         notifObj->FindString("richDataProgressStatus");
-    DCHECK(progress_status);
+    CHECK(progress_status, base::NotFatalUntil::M162);
     optional_fields.progress_status = base::UTF8ToUTF16(*progress_status);
   } else if (notification_type ==
              message_center::NotificationType::NOTIFICATION_TYPE_MULTIPLE) {
     std::optional<int> num_items = notifObj->FindInt("richDataNumNotifItems");
-    DCHECK(num_items);
+    CHECK(num_items, base::NotFatalUntil::M162);
     optional_fields.items = GetRichDataNotifItems(num_items.value());
   }
 
