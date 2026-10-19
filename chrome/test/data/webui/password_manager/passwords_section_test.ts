@@ -76,6 +76,15 @@ suite('PasswordsSectionTest', function() {
     return section;
   }
 
+  function setSavingDisabledByMandatoryPolicy(
+      section: PasswordsSectionElement) {
+    section.prefs = makePasswordManagerPrefs();
+    const pref = section.getPref<boolean>('credentials_enable_service');
+    pref.value = false;
+    pref.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
+    pref.controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+  }
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     passwordManager = new TestPasswordManagerProxy();
@@ -427,13 +436,7 @@ suite('PasswordsSectionTest', function() {
       async function() {
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
-        section.prefs = makePasswordManagerPrefs();
-        const prefObject =
-            section.getPref<boolean>('credentials_enable_service');
-        prefObject.value = false;
-        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-        prefObject.controlledBy =
-            chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+        setSavingDisabledByMandatoryPolicy(section);
 
         document.body.appendChild(section);
         await flushTasks();
@@ -479,18 +482,34 @@ suite('PasswordsSectionTest', function() {
       async function() {
         const section: PasswordsSectionElement =
             document.createElement('passwords-section');
-        section.prefs = makePasswordManagerPrefs();
-        const prefObject =
-            section.getPref<boolean>('credentials_enable_service');
-        prefObject.value = false;
-        prefObject.enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-        prefObject.controlledBy =
-            chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+        setSavingDisabledByMandatoryPolicy(section);
 
         document.body.appendChild(section);
         await flushTasks();
 
         assertFalse(isVisible(section.$.importPasswords));
+      });
+
+  test(
+      'trusted vault unlock visible when mandatory policy blocks password ' +
+          'saving',
+      async function() {
+        loadTimeData.overrideValues({enableTrustedVaultUnlock: true});
+        passwordManager.data.getActionableError =
+            PasswordManagerActionableError.kTrustedVaultKeyNeeded;
+
+        const section: PasswordsSectionElement =
+            document.createElement('passwords-section');
+        setSavingDisabledByMandatoryPolicy(section);
+
+        document.body.appendChild(section);
+        await passwordManager.whenCalled('getCredentialGroups');
+        await passwordManager.whenCalled('getPasswordManagerActionableError');
+        await flushTasks();
+
+        assertTrue(isVisible(section.$.trustedVaultUnlock));
+        assertFalse(isVisible(section.$.importPasswords));
+        assertFalse(isVisible(section.$.addPasswordButton));
       });
 
   test('description is hidden during search', async function() {

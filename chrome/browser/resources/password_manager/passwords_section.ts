@@ -297,8 +297,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private showTrustedVaultUnlockOption_(): boolean {
-    if (this.groups_ === null || this.actionableError === null ||
-        this.passwordSavingBlockedByPolicy_) {
+    if (this.groups_ === null || this.actionableError === null) {
       return false;
     }
     return this.groups_.length === 0 && this.isTrustedVaultKeyNeeded();
