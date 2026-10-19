@@ -10,6 +10,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 
 namespace {
 
@@ -44,6 +45,9 @@ MiniMapService::MiniMapService(PrefService* pref_service,
                           weak_factory_.GetWeakPtr()));
   is_mini_map_enabled_ = mini_map_enabled_pref_.GetValue();
 
+  is_maps_native_preview_bypass_enabled_ =
+      ios::provider::IsMapsNativePreviewBypassEnabled();
+
   // Start the application observer
   MiniMapService::MiniMapAppObserver::GetInstance();
 }
@@ -71,6 +75,10 @@ bool MiniMapService::IsDSEGoogle() {
 bool MiniMapService::IsGoogleMapsInstalled() {
   return MiniMapService::MiniMapAppObserver::GetInstance()
       ->IsGoogleMapsInstalled();
+}
+
+bool MiniMapService::IsMapsNativePreviewBypassEnabled() {
+  return is_maps_native_preview_bypass_enabled_;
 }
 
 #pragma mark - TemplateURLServiceObserver

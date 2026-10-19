@@ -139,8 +139,15 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     // Only consider links from Google Search results page when service exists.
     return false;
   }
-  if (mini_map_service_->IsGoogleMapsInstalled()) {
-    // Do not intercept if Google Maps is installed.
+
+  // If Google Maps is installed and the bypass experiment is disabled, do not
+  // intercept; allow standard navigation / Universal Links to handle the URL.
+  // When the bypass flag is enabled, we intercept the request so that the
+  // downstream provider/handler can directly launch Google Maps via custom
+  // schemes, avoiding any intermediate preview sheets and disengaged link
+  // issues.
+  if (mini_map_service_->IsGoogleMapsInstalled() &&
+      !mini_map_service_->IsMapsNativePreviewBypassEnabled()) {
     return false;
   }
 
