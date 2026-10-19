@@ -652,8 +652,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   otp_suggestion.icon = Suggestion::Icon::kMailAsterisk;
   otp_suggestion.minor_texts = {Suggestion::Text(l10n_util::GetStringUTF16(
       IDS_AUTOFILL_GMAIL_OTP_VERIFICATION_CODE_LABEL))};
-  otp_suggestion.labels = {{Suggestion::Text(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_GMAIL_OTP_FROM_ACCOUNT_LABEL, u"elisa.becket@gmail.com"))}};
+  otp_suggestion.labels = {{Suggestion::Text(u"elisa.becket@gmail.com")}};
 
   Suggestion open_gmail(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_OPEN_GMAIL_FOR_OTP),
