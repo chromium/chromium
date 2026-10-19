@@ -135,14 +135,11 @@ export class Oobe extends DisplayManager {
       }
     }
 
-    chrome.send('OobeTestApi.skipToLoginForTesting');
-
     if (!enterpriseEnroll) {
+      chrome.send('OobeTestApi.skipToLoginForTesting');
       chrome.send('OobeTestApi.completeLogin', [gaiaId, username, password]);
     } else {
-      waitForOobeScreen('gaia-signin', function(): void {
-        chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
-      });
+      chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
 
       waitForOobeScreen('enterprise-enrollment', function(): void {
         // TODO(b/260015541): migrate logic to dedicated test api.
