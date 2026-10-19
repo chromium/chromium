@@ -177,6 +177,8 @@ static const char* ToSkFontMgrLocale(UScriptCode script) {
       return "zh-Hans";
     case USCRIPT_TRADITIONAL_HAN:
       return "zh-Hant";
+    case USCRIPT_ARABIC_NASTALIQ:
+      return "und-Aran";
     default:
       return nullptr;
   }
@@ -186,7 +188,7 @@ const char* LayoutLocale::LocaleForSkFontMgr() const {
   if (!string_for_sk_font_mgr_.empty())
     return string_for_sk_font_mgr_.c_str();
 
-  if (const char* sk_font_mgr_locale = ToSkFontMgrLocale(script_)) {
+  if (const char* sk_font_mgr_locale = ToSkFontMgrLocale(script_for_font_)) {
     string_for_sk_font_mgr_ = sk_font_mgr_locale;
     DCHECK(!string_for_sk_font_mgr_.empty());
     return string_for_sk_font_mgr_.c_str();

@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -129,6 +130,38 @@ TEST(FontCacheAndroid, GenericFamilyNameForScript) {
   EXPECT_EQ(font_family_names::kMonospace,
             FontCache::GetGenericFamilyNameForScript(
                 font_family_names::kMonospace, fallback, chinese));
+}
+
+TEST(FontCacheAndroid, GenericFamilyNameForScriptArabicNastaliq) {
+  ScopedNastaliqScriptForTest scoped_feature(true);
+  font_family_names::Init();
+  AtomicString fallback("MyGenericFamilyNameFallback");
+
+  for (const char* locale_str : {"ur", "ks", "ar-Aran", "und-Aran"}) {
+    FontDescription description;
+    scoped_refptr<LayoutLocale> locale =
+        LayoutLocale::CreateForTesting(AtomicString(locale_str));
+    description.SetLocale(locale.get());
+    EXPECT_NE(fallback,
+              FontCache::GetGenericFamilyNameForScript(
+                  font_family_names::kWebkitStandard, fallback, description))
+        << locale_str;
+    EXPECT_EQ(font_family_names::kMonospace,
+              FontCache::GetGenericFamilyNameForScript(
+                  font_family_names::kMonospace, fallback, description))
+        << locale_str;
+  }
+
+  for (const char* locale_str : {"ar", "ur-Arab"}) {
+    FontDescription description;
+    scoped_refptr<LayoutLocale> locale =
+        LayoutLocale::CreateForTesting(AtomicString(locale_str));
+    description.SetLocale(locale.get());
+    EXPECT_EQ(fallback,
+              FontCache::GetGenericFamilyNameForScript(
+                  font_family_names::kWebkitStandard, fallback, description))
+        << locale_str;
+  }
 }
 
 }  // namespace blink

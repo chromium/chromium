@@ -253,7 +253,7 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
   // or locale. We need an API that honors both to find appropriate
   // fonts. crbug.com/642340
   UChar32 exampler_char;
-  switch (content_locale->GetScript()) {
+  switch (content_locale->GetScriptForFont()) {
     case USCRIPT_SIMPLIFIED_HAN:
     case USCRIPT_TRADITIONAL_HAN:
     case USCRIPT_KATAKANA_OR_HIRAGANA:
@@ -261,6 +261,15 @@ AtomicString FontCache::GetGenericFamilyNameForScript(
       break;
     case USCRIPT_HANGUL:
       exampler_char = 0xAC00;
+      break;
+    case USCRIPT_ARABIC_NASTALIQ:
+      DCHECK(RuntimeEnabledFeatures::NastaliqScriptEnabled());
+      // Use a code point present in both NotoNastaliqUrdu and NotoNaskhArabic.
+      // `MatchFamilyStyleCharacter()` selects NotoNastaliqUrdu via the
+      // "und-Aran" locale when available, and falls back to NotoNaskhArabic
+      // (instead of returning `nullptr`) on older Android versions without
+      // NotoNastaliqUrdu.
+      exampler_char = 0x06CC;  // U+06CC ARABIC LETTER FARSI YEH
       break;
     default:
       // For other scripts, use the default generic family mapping logic.

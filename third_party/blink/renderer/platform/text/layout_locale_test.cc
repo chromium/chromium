@@ -51,7 +51,7 @@ struct LocaleTestData {
     // Common lang-script.
     {"en-Latn", USCRIPT_LATIN, "en-Latn"},
     {"ar-Arab", USCRIPT_ARABIC, "ar-Arab"},
-    {"ar-Aran", USCRIPT_ARABIC_NASTALIQ, "ar-Aran"},
+    {"ar-Aran", USCRIPT_ARABIC_NASTALIQ, "und-Aran"},
 
     // Examples from `fonts.xml`.
     // https://android.googlesource.com/platform/frameworks/base/+/master/data/fonts/fonts.xml
@@ -60,11 +60,11 @@ struct LocaleTestData {
     {"und-Thai", USCRIPT_THAI, "und-Thai"},
 
     // Arabic Nastaliq locales.
-    {"ur", USCRIPT_ARABIC_NASTALIQ, "ur"},
-    {"ur-PK", USCRIPT_ARABIC_NASTALIQ, "ur"},
-    {"ur-IN", USCRIPT_ARABIC_NASTALIQ, "ur"},
+    {"ur", USCRIPT_ARABIC_NASTALIQ, "und-Aran"},
+    {"ur-PK", USCRIPT_ARABIC_NASTALIQ, "und-Aran"},
+    {"ur-IN", USCRIPT_ARABIC_NASTALIQ, "und-Aran"},
     {"ur-Arab", USCRIPT_ARABIC, "ur-Arab"},
-    {"ks", USCRIPT_ARABIC_NASTALIQ, "ks"},
+    {"ks", USCRIPT_ARABIC_NASTALIQ, "und-Aran"},
     {"ks-Deva", USCRIPT_DEVANAGARI, "ks-Deva"},
 
     // Common lang-region in East Asia.
