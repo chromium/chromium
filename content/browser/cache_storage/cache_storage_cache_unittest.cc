@@ -732,7 +732,8 @@ class MockCacheStorage : public CacheStorage {
                      bucket_locator,
                      owner) {}
 
-  void CacheUnreferenced(CacheStorageCache* cache) override {
+  void CacheUnreferenced(CacheStorageCache* cache,
+                         int64_t size_bytes) override {
     // Normally the CacheStorage will attempt to delete the cache
     // from its map when the cache has become unreferenced.  Since we are
     // using detached cache objects we instead override to do nothing here.
@@ -2922,7 +2923,7 @@ TEST_P(CacheStorageCacheTestP, OperationsFailDuringAndAfterForceClose) {
 
     base::test::TestFuture<int64_t> size;
     cache_->Size(size.GetCallback());
-    EXPECT_EQ(0, size.Get());
+    EXPECT_EQ(CacheStorage::kSizeUnknown, size.Get());
   }
 }
 

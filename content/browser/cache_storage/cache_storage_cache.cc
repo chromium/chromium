@@ -47,6 +47,7 @@
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/common/features.h"
 #include "crypto/hmac.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -799,7 +800,8 @@ void CacheStorageCache::DropHandleRef() {
   // `this` pointer in this method after the following code.
   if (handle_ref_count_ == 0 && cache_storage_) {
     CacheStorageHandle handle = std::move(cache_storage_handle_);
-    cache_storage_->CacheUnreferenced(this);
+    cache_storage_->CacheUnreferenced(this, PaddedCacheSize());
+    // `this` may be deleted!
   }
 }
 
@@ -1074,10 +1076,10 @@ void CacheStorageCache::Keys(blink::mojom::FetchAPIRequestPtr request,
 }
 
 void CacheStorageCache::Size(SizeCallback callback) {
+  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), CacheStorage::kSizeUnknown);
   if (backend_state_ == BACKEND_CLOSED) {
     // TODO(jkarlin): Delete caches that can't be initialized.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), 0));
     return;
   }
 
@@ -1085,9 +1087,10 @@ void CacheStorageCache::Size(SizeCallback callback) {
   scheduler_->ScheduleOperation(
       id, CacheStorageSchedulerMode::kShared, CacheStorageSchedulerOp::kSize,
       CacheStorageSchedulerPriority::kNormal,
-      base::BindOnce(
-          &CacheStorageCache::SizeImpl, weak_ptr_factory_.GetWeakPtr(),
-          scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
+      // Unretained is safe because `this` owns `scheduler_`.
+      base::BindOnce(&CacheStorageCache::PaddedCacheSize,
+                     base::Unretained(this))
+          .Then(scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
 }
 
 void CacheStorageCache::SetObserver(CacheStorageCacheObserver* observer) {
@@ -2558,14 +2561,6 @@ void CacheStorageCache::DeleteBackendCompletedIO() {
   std::move(post_backend_closed_callback_).Run();
 }
 
-void CacheStorageCache::SizeImpl(SizeCallback callback) {
-  CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
-
-  // TODO(cmumford): Can CacheStorage::kSizeUnknown be returned instead of zero?
-  std::move(callback).Run(backend_state_ == BACKEND_OPEN ? PaddedCacheSize()
-                                                         : 0);
-}
-
 void CacheStorageCache::ForceClose(base::OnceClosure callback) {
   // The backend guarantees that it will call `DeleteBackendCompletedIO` when
   // it's closed or when initialization fails. If that's already happened, we
@@ -2729,7 +2724,6 @@ void CacheStorageCache::InitGotCacheSizeAndPadding(
 }
 
 int64_t CacheStorageCache::PaddedCacheSize() const {
-  CHECK_NE(BACKEND_UNINITIALIZED, backend_state_, base::NotFatalUntil::M158);
   if (cache_size_ == CacheStorage::kSizeUnknown ||
       cache_padding_ == CacheStorage::kSizeUnknown) {
     return CacheStorage::kSizeUnknown;

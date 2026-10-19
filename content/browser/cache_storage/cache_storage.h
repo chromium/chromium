@@ -191,7 +191,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
 
  protected:
   // Virtual for testing
-  virtual void CacheUnreferenced(CacheStorageCache* cache);
+  virtual void CacheUnreferenced(CacheStorageCache* cache, int64_t size_bytes);
 
  private:
   friend class CacheStorageCache;
@@ -248,10 +248,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                                 ErrorCallback callback,
                                 int64_t trace_id,
                                 bool success);
-  void DeleteCacheFinalize(CacheStorageCache* doomed_cache);
-  void DeleteCacheDidGetSize(CacheStorageCache* doomed_cache,
-                             int64_t cache_size);
-  void DeleteCacheDidCleanUp(bool success);
 
   // The EnumerateCache callbacks are below.
   void EnumerateCachesImpl(int64_t trace_id, EnumerateCachesCallback callback);
@@ -287,10 +283,8 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       CacheStorageCache::ResponseCallback callback);
 
   void SizeImpl(SizeCallback callback);
-  void SizeRetrievedFromCache(CacheStorageCacheHandle cache_handle,
-                              base::OnceClosure closure,
-                              int64_t* accumulator,
-                              int64_t size);
+
+  void SizeRetrievedFromCache(CacheStorageCacheHandle cache_handle);
 
   void NotifyCacheContentChanged(const std::u16string& cache_name);
 

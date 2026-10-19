@@ -509,8 +509,6 @@ class CONTENT_EXPORT CacheStorageCache {
       blink::mojom::CacheStorageError error,
       std::unique_ptr<QueryCacheResults> query_cache_results);
 
-  void SizeImpl(SizeCallback callback);
-
   // Loads the backend and calls the callback with the result (true for
   // success). The callback will always be called. Virtual for tests.
   virtual void CreateBackend(ErrorCallback callback);
