@@ -486,8 +486,9 @@ TEST_F(AtMemorySearchMediatorTest, LogsAcknowledgedMetric) {
       AutofillMetrics::PopupNoticeInteractions::kAcknowledged, 1);
 }
 
-// Tests that clicking the settings link logs the "LinkButtonClicked" metric and
-// opens the enhanced autofill settings page.
+// Tests that clicking the settings link acknowledges the notice, updates the
+// UI, logs the "LinkButtonClicked" metric, and opens the enhanced autofill
+// settings page.
 TEST_F(AtMemorySearchMediatorTest,
        LogsSettingsLinkClickedMetricAndOpensSettings) {
   first_run_service_.set_should_show_at_memory_notice(true);
@@ -497,6 +498,7 @@ TEST_F(AtMemorySearchMediatorTest,
 
   mediator_.settingsNavigator = mock_navigator;
 
+  OCMExpect([mock_consumer_ setNoticeVisible:NO]);
   OCMExpect([mock_navigator
       openSettingsForPage:AutofillSettingsPage::kSuggestionsFromGemini]);
 
@@ -504,11 +506,13 @@ TEST_F(AtMemorySearchMediatorTest,
 
   [mediator_ didTapSettingsLink];
 
+  EXPECT_TRUE(first_run_service_.acknowledged());
   histogram_tester.ExpectBucketCount(
       "PersonalContext.AtMemory.NoticeInteractions",
       AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked, 1);
 
   EXPECT_OCMOCK_VERIFY(mock_navigator);
+  EXPECT_OCMOCK_VERIFY(mock_consumer_);
 }
 
 // Tests that tapping the AI disclosure link opens the "Suggestions from Gemini"
