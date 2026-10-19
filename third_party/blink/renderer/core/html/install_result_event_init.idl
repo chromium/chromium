@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 dictionary InstallResultEventInit : EventInit {
-    InstallResult result;
+    InstallResult result = "aborted";
 };

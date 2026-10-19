@@ -13,9 +13,7 @@ InstallResultEvent::InstallResultEvent(
     const AtomicString& type,
     const InstallResultEventInit* initializer)
     : Event(type, initializer) {
-  if (initializer->hasResult()) {
-    result_ = initializer->result().AsEnum();
-  }
+  result_ = initializer->result().AsEnum();
 }
 
 InstallResultEvent::~InstallResultEvent() = default;
