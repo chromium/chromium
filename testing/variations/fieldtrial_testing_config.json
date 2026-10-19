@@ -11471,28 +11471,6 @@
             ]
         }
     ],
-    "MigrateAutomaticJsOptimizer": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "min_age_of_initial_visit": "24h",
-                        "min_site_engagement_score": "10"
-                    },
-                    "enable_features": [
-                        "MigrateToBlockV8OptimizerOnUnfamiliarSites"
-                    ]
-                }
-            ]
-        }
-    ],
     "MigrateSyncingUserToSignedInDesktop": [
         {
             "platforms": [
