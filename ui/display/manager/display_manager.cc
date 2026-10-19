@@ -700,8 +700,9 @@ bool DisplayManager::UpdateWorkAreaOfDisplay(int64_t display_id,
                              in_creating_display_.value() == display_id;
 
   // Do not notify observer if this is called during display creation, because
-  // `OnDisplayAdded` is not yet called.
-  if (workarea_changed && !in_display_creation) {
+  // `OnDisplayAdded` is not yet called, or while updating the display list
+  // during display removal.
+  if (workarea_changed && !in_display_creation && !is_updating_display_list_) {
     NotifyMetricsChanged(*display, DisplayObserver::DISPLAY_METRIC_WORK_AREA);
 
     CHECK(pending_display_changes_.has_value());

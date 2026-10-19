@@ -27,6 +27,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/power/power_button_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
@@ -5676,6 +5677,58 @@ TEST_F(DisplayManagerTest, MirrorUsePrimaryAsSourceDisplay) {
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
   EXPECT_EQ(1u, display_manager()->GetNumDisplays());
   EXPECT_EQ(external_id, display_manager()->mirroring_source_id());
+}
+
+// Regression test for b/573369896: replacing two displays with a single new
+// display while the power button menu is open should not notify work area
+// changes for a display being removed before the new display's root window
+// controller is created.
+TEST_F(DisplayManagerTest, ReplaceTwoDisplaysWithNewDisplayWhilePowerMenuOpen) {
+  constexpr int64_t kDisplayId1 = 100;
+  constexpr int64_t kDisplayId2 = 201;
+  constexpr int64_t kDisplayId3 = 302;
+
+  const auto display_info_1 = display::ManagedDisplayInfo::CreateFromSpecWithID(
+      "1366x768", kDisplayId1);
+  const auto display_info_2 = display::ManagedDisplayInfo::CreateFromSpecWithID(
+      "1024x768", kDisplayId2);
+  const auto display_info_3 = display::ManagedDisplayInfo::CreateFromSpecWithID(
+      "1500x800", kDisplayId3);
+
+  display_manager()->OnNativeDisplaysChanged({display_info_1, display_info_2});
+  ASSERT_EQ(2u, display_manager()->GetNumDisplays());
+  EXPECT_EQ("c1 a2 r1 w1 d1", GetCountSummary());
+  EXPECT_EQ(kDisplayId1, changed()[0].id());
+  EXPECT_EQ(display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+                display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+                display::DisplayObserver::DISPLAY_METRIC_PRIMARY,
+            changed_metrics(kDisplayId1));
+  reset();
+
+  // Make the primary display's shelf alignment differ from the secondary
+  // display so that promoting the secondary display during removal of the
+  // primary display changes its work area.
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
+  EXPECT_EQ(kDisplayId1, changed()[0].id());
+  EXPECT_EQ(display::DisplayObserver::DISPLAY_METRIC_WORK_AREA,
+            changed_metrics(kDisplayId1));
+  reset();
+
+  Shell::Get()->power_button_controller()->ShowMenuOnDebugAccelerator();
+  ASSERT_TRUE(Shell::Get()->power_button_controller()->IsMenuOpened());
+  EXPECT_EQ("c0 a0 r0 w0 d0", GetCountSummary());
+
+  display_manager()->OnNativeDisplaysChanged({display_info_3});
+  EXPECT_EQ("c2 a1 r2 w1 d1", GetCountSummary());
+  EXPECT_EQ(1u, display_manager()->GetNumDisplays());
+  EXPECT_EQ(kDisplayId3, display::Screen::Get()->GetPrimaryDisplay().id());
+  EXPECT_EQ(kDisplayId3, changed()[0].id());
+  EXPECT_EQ(kDisplayId3, changed()[1].id());
+  EXPECT_EQ(display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
+                display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
+                display::DisplayObserver::DISPLAY_METRIC_PRIMARY,
+            changed_metrics(kDisplayId3));
 }
 
 }  // namespace ash
