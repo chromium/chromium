@@ -950,6 +950,85 @@ public class PdfPageUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testUpdateForUrl_localAfterTransientDownload_updatesTitle() {
+        String localPageUrl = PdfUtils.encodePdfPageUrl(FILE_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        localPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        Assert.assertEquals(FILE_NAME, pdfPage.getTitle());
+
+        pdfPage.updateForUrl(mPdfPageUrl);
+        pdfPage.onDownloadComplete("transient.pdf", FILE_PATH, true);
+        Assert.assertEquals("transient.pdf", pdfPage.getTitle());
+        Assert.assertFalse(pdfPage.mPdfCoordinator.isPdfLoaded());
+        Assert.assertFalse(pdfPage.mPdfCoordinator.hasChanges());
+
+        pdfPage.updateForUrl(localPageUrl);
+        Assert.assertEquals(FILE_NAME, pdfPage.getTitle());
+        Assert.assertEquals(FILE_URL, pdfPage.getCanonicalFilepath());
+
+        String contentPageUrl = PdfUtils.encodePdfPageUrl(CONTENT_URL);
+        pdfPage.updateForUrl(contentPageUrl);
+        Assert.assertEquals(DEFAULT_TAB_TITLE, pdfPage.getTitle());
+        Assert.assertEquals(CONTENT_URL, pdfPage.getCanonicalFilepath());
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testUpdateForUrl_localToTransient_resetsTitleToDefault() {
+        String localPageUrl = PdfUtils.encodePdfPageUrl(FILE_URL);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        localPageUrl,
+                        mPdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        Assert.assertEquals(FILE_NAME, pdfPage.getTitle());
+        Assert.assertFalse(pdfPage.mPdfCoordinator.isPdfLoaded());
+        Assert.assertFalse(pdfPage.mPdfCoordinator.hasChanges());
+
+        pdfPage.updateForUrl(mPdfPageUrl);
+        Assert.assertEquals(DEFAULT_TAB_TITLE, pdfPage.getTitle());
+
+        pdfPage.destroy();
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.PDF_REUSE_FRAGMENT)
+    public void testUpdateForUrl_sameTransientUrl_preservesPdfInfoFilename() {
+        PdfInfo pdfInfo = new PdfInfo("downloaded.pdf", FILE_PATH, true);
+        PdfPage pdfPage =
+                new PdfPage(
+                        mMockNativePageHost,
+                        mMockTab,
+                        mActivity,
+                        mPdfPageUrl,
+                        pdfInfo,
+                        DEFAULT_TAB_TITLE,
+                        mPdfFragmentViewTracker);
+        Assert.assertEquals("downloaded.pdf", pdfPage.getTitle());
+        Assert.assertFalse(pdfPage.mPdfCoordinator.isPdfLoaded());
+        Assert.assertFalse(pdfPage.mPdfCoordinator.hasChanges());
+
+        pdfPage.updateForUrl(mPdfPageUrl);
+        Assert.assertEquals("downloaded.pdf", pdfPage.getTitle());
+
+        pdfPage.destroy();
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testReload_WebPdf_WithChanges_ShowsDialog() throws Exception {

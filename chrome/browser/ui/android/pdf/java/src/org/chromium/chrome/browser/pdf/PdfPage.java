@@ -28,6 +28,7 @@ import org.chromium.url.GURL;
 public class PdfPage extends BasicNativePage {
     @VisibleForTesting public final PdfCoordinatorInterface mPdfCoordinator;
     private final Tab mTab;
+    private final String mDefaultTitle;
     private String mTitle;
     private String mUrl;
     private final boolean mIsIncognito;
@@ -55,6 +56,7 @@ public class PdfPage extends BasicNativePage {
             PdfFragmentViewTracker pdfFragmentViewTracker) {
         super(host);
         mTab = tab;
+        mDefaultTitle = defaultTitle;
 
         Profile profile = tab.getProfile();
         mIsIncognito = profile.isOffTheRecord();
@@ -66,13 +68,13 @@ public class PdfPage extends BasicNativePage {
         mIsDownloadSafe = pdfInfo.isDownloadSafe;
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         String filepath =
-            pdfInfo.filepath == null
-                ? PdfUtils.getFilePathFromUrl(decodedUrl)
-                : pdfInfo.filepath;
+                pdfInfo.filepath == null
+                        ? PdfUtils.getFilePathFromUrl(decodedUrl)
+                        : pdfInfo.filepath;
         mTitle =
-            pdfInfo.filename == null
-                ? PdfUtils.getFileNameFromUrl(decodedUrl, defaultTitle)
-                : pdfInfo.filename;
+                pdfInfo.filename == null
+                        ? PdfUtils.getFileNameFromUrl(decodedUrl, defaultTitle)
+                        : pdfInfo.filename;
         mUrl = url;
         mPdfCoordinator =
                 OnDemandModule.getImpl()
@@ -126,14 +128,22 @@ public class PdfPage extends BasicNativePage {
 
                     // Note that only local PDF loading is handled here. Non-local ones are taken
                     // care of by DownloadController#onDownloadCompleted.
-                    if (!localPdf) return;
+                    if (!localPdf) {
+                        // A different transient PDF is being downloaded: show the default title
+                        // until DownloadController#onDownloadCompleted provides the filename. Keep
+                        // the title when the URL is unchanged, e.g. a freshly built page after
+                        // reparenting or unfreezing already carries the filename from PdfInfo.
+                        if (!sameUrl) mTitle = mDefaultTitle;
+                        return;
+                    }
 
                     // Use the URL encoded in |mUrl| if available i.e.
                     // chrome-native://pdf/link?url=...
                     String pageUrl = PdfUtils.decodePdfPageUrl(url);
                     String pdfUrl = pageUrl != null ? pageUrl : url;
-                    mPdfCoordinator.onDownloadComplete(
-                            pdfUrl, PdfUtils.getFileNameFromUrl(pdfUrl, ""));
+                    String fileName = PdfUtils.getFileNameFromUrl(pdfUrl, "");
+                    mTitle = TextUtils.isEmpty(fileName) ? mDefaultTitle : fileName;
+                    mPdfCoordinator.onDownloadComplete(pdfUrl, fileName);
                 };
 
         if (sameUrl && mPdfCoordinator.hasChanges()) {
@@ -300,7 +310,7 @@ public class PdfPage extends BasicNativePage {
         mTitle = pdfFileName;
         mIsDownloadSafe = isDownloadSafe;
         PdfUtils.recordPdfTransientDownloadTime(
-            SystemClock.elapsedRealtime() - mTransientDownloadStartTimestamp);
+                SystemClock.elapsedRealtime() - mTransientDownloadStartTimestamp);
         mPdfCoordinator.onDownloadComplete(pdfFilePath, pdfFileName);
     }
 
