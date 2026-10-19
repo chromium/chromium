@@ -47,7 +47,6 @@
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
-#include "content/browser/cache_storage/cache_storage_scheduler.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1210,123 +1209,6 @@ class CacheStorageCacheTest : public testing::Test {
     EXPECT_FALSE(Match(no_body_request_));
     EXPECT_FALSE(Delete(body_request_));
     EXPECT_FALSE(Keys());
-  }
-
-  base::OnceClosure BlockScheduler() {
-    auto scheduler = std::make_unique<CacheStorageScheduler>(
-        CacheStorageSchedulerClient::kCache);
-    auto* scheduler_ptr = scheduler.get();
-    cache_->SetSchedulerForTesting(std::move(scheduler));
-    auto id = scheduler_ptr->CreateId();
-    scheduler_ptr->ScheduleOperation(id, CacheStorageSchedulerMode::kExclusive,
-                                     CacheStorageSchedulerOp::kTest,
-                                     CacheStorageSchedulerPriority::kNormal,
-                                     base::DoNothing());
-    return base::BindOnce(&CacheStorageScheduler::CompleteOperationAndRunNext,
-                          base::Unretained(scheduler_ptr), id);
-  }
-
-  void VerifyOpsFailWhileClosing() {
-    ASSERT_TRUE(Keys());
-    auto unblock = BlockScheduler();
-
-    // Operations queued before closing must still complete successfully.
-    base::test::TestFuture<CacheStorageError,
-                           std::unique_ptr<CacheStorageCache::Requests>>
-        before;
-    cache_->Keys(nullptr, nullptr, 0, before.GetCallback());
-    base::test::TestFuture<void> closed;
-    auto on_closed = base::BindLambdaForTesting([&] {
-      cache_.reset();
-      closed.SetValue();
-    });
-    cache_->GetSizeThenClose(base::BindOnce(
-        [](base::OnceClosure callback, int64_t) { std::move(callback).Run(); },
-        std::move(on_closed)));
-
-    base::test::TestFuture<CacheStorageError, blink::mojom::FetchAPIResponsePtr>
-        match;
-    cache_->Match(CopyFetchRequest(no_body_request_), nullptr,
-                  CacheStorageSchedulerPriority::kNormal, 0,
-                  match.GetCallback());
-    base::test::TestFuture<CacheStorageError,
-                           std::vector<blink::mojom::FetchAPIResponsePtr>>
-        all;
-    cache_->MatchAll(nullptr, nullptr, 0, all.GetCallback());
-    base::test::TestFuture<CacheStorageError,
-                           std::unique_ptr<CacheStorageCache::Requests>>
-        keys;
-    cache_->Keys(nullptr, nullptr, 0, keys.GetCallback());
-    base::test::TestFuture<CacheStorageError,
-                           std::vector<blink::mojom::CacheEntryPtr>>
-        entries;
-    cache_->GetAllMatchedEntries(nullptr, nullptr, 0, entries.GetCallback());
-    base::test::TestFuture<CacheStorageError> put;
-    cache_->Put(CopyFetchRequest(no_body_request_), CreateNoBodyResponse(), 0,
-                put.GetCallback());
-    base::test::TestFuture<CacheStorageVerboseErrorPtr> batch;
-    auto operation = blink::mojom::BatchOperation::New();
-    operation->operation_type = blink::mojom::OperationType::kDelete;
-    operation->request = CopyFetchRequest(no_body_request_);
-    std::vector<blink::mojom::BatchOperationPtr> operations;
-    operations.push_back(std::move(operation));
-    cache_->BatchOperation(std::move(operations), 0, batch.GetCallback(),
-                           base::DoNothing());
-    cache_->WriteSideData(cache_->CreateHandle(), NoBodyUrl(), response_time_,
-                          /*trace_id=*/0,
-                          mojo_base::BigBuffer(base::as_byte_span("data")));
-    EXPECT_TRUE(cache_->IsUnreferenced());
-    base::test::TestFuture<int64_t> size;
-    cache_->Size(size.GetCallback());
-    base::test::TestFuture<int64_t> size_then_close;
-    cache_->GetSizeThenClose(size_then_close.GetCallback());
-
-    EXPECT_TRUE(base::test::RunUntil([&] {
-      return match.IsReady() && all.IsReady() && keys.IsReady() &&
-             entries.IsReady() && put.IsReady() && batch.IsReady() &&
-             size.IsReady() && size_then_close.IsReady();
-    }));
-    EXPECT_FALSE(closed.IsReady());
-    EXPECT_FALSE(before.IsReady());
-    // Only read completed callbacks so a failure does not block teardown.
-    // Before the fix, closing destroyed the callbacks still queued behind it.
-    EXPECT_TRUE(match.IsReady());
-    EXPECT_TRUE(all.IsReady());
-    EXPECT_TRUE(keys.IsReady());
-    EXPECT_TRUE(entries.IsReady());
-    EXPECT_TRUE(put.IsReady());
-    EXPECT_TRUE(batch.IsReady());
-    EXPECT_TRUE(size.IsReady());
-    EXPECT_TRUE(size_then_close.IsReady());
-    if (match.IsReady()) {
-      EXPECT_EQ(CacheStorageError::kErrorStorage, match.Get<0>());
-    }
-    if (all.IsReady()) {
-      EXPECT_EQ(CacheStorageError::kErrorStorage, all.Get<0>());
-    }
-    if (keys.IsReady()) {
-      EXPECT_EQ(CacheStorageError::kErrorStorage, keys.Get<0>());
-    }
-    if (entries.IsReady()) {
-      EXPECT_EQ(CacheStorageError::kErrorStorage, entries.Get<0>());
-    }
-    if (put.IsReady()) {
-      EXPECT_EQ(CacheStorageError::kErrorStorage, put.Get());
-    }
-    if (batch.IsReady()) {
-      EXPECT_EQ(CacheStorageError::kErrorStorage, batch.Get()->value);
-    }
-    if (size.IsReady()) {
-      EXPECT_EQ(0, size.Get());
-    }
-    if (size_then_close.IsReady()) {
-      EXPECT_EQ(0, size_then_close.Get());
-    }
-
-    std::move(unblock).Run();
-    ASSERT_TRUE(closed.Wait());
-    EXPECT_EQ(CacheStorageError::kSuccess, before.Get<0>());
-    EXPECT_FALSE(cache_);
   }
 
   virtual bool MemoryOnly() { return false; }
@@ -3013,46 +2895,6 @@ TEST_P(CacheStorageCacheTestP, GetSizeThenClose) {
 
   // Reading blob should fail.
   EXPECT_EQ("", storage::BlobToString(blob.get()));
-}
-
-TEST_P(CacheStorageCacheTestP, OpsFailWhileGetSizeThenCloseIsPending) {
-  VerifyOpsFailWhileClosing();
-}
-
-TEST_P(CacheStorageCacheTestP, QuotaCallbacksFailWhileCloseIsPending) {
-  ASSERT_TRUE(Keys());
-  auto unblock = BlockScheduler();
-
-  base::test::TestFuture<CacheStorageVerboseErrorPtr> batch;
-  auto operation = blink::mojom::BatchOperation::New();
-  operation->operation_type = blink::mojom::OperationType::kPut;
-  operation->request = CopyFetchRequest(body_request_);
-  operation->response = CreateBlobBodyResponse();
-  std::vector<blink::mojom::BatchOperationPtr> operations;
-  operations.push_back(std::move(operation));
-  cache_->BatchOperation(std::move(operations), 0, batch.GetCallback(),
-                         base::DoNothing());
-  cache_->WriteSideData(cache_->CreateHandle(), BodyUrl(), response_time_,
-                        /*trace_id=*/0,
-                        mojo_base::BigBuffer(base::as_byte_span("data")));
-  EXPECT_FALSE(cache_->IsUnreferenced());
-
-  base::test::TestFuture<void> closed;
-  cache_->GetSizeThenClose(base::BindLambdaForTesting([&](int64_t) {
-    cache_.reset();
-    closed.SetValue();
-  }));
-  EXPECT_TRUE(base::test::RunUntil(
-      [&] { return batch.IsReady() && cache_->IsUnreferenced(); }));
-  EXPECT_FALSE(closed.IsReady());
-  EXPECT_TRUE(batch.IsReady());
-  EXPECT_TRUE(cache_->IsUnreferenced());
-  if (batch.IsReady()) {
-    EXPECT_EQ(CacheStorageError::kErrorStorage, batch.Get()->value);
-  }
-
-  std::move(unblock).Run();
-  ASSERT_TRUE(closed.Wait());
 }
 
 // Shutdown the cache in the middle of its writing the response body. Upon

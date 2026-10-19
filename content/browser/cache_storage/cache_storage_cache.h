@@ -506,10 +506,6 @@ class CONTENT_EXPORT CacheStorageCache {
       blink::mojom::CacheStorageError error,
       std::unique_ptr<QueryCacheResults> query_cache_results);
 
-  bool IsClosingOrClosed() const {
-    return close_requested_ || backend_state_ == BACKEND_CLOSED;
-  }
-
   void SizeImpl(SizeCallback callback);
 
   void GetSizeThenCloseDidGetSize(SizeCallback callback, int64_t cache_size);
@@ -600,10 +596,6 @@ class CONTENT_EXPORT CacheStorageCache {
   BackendState backend_state_ = BACKEND_UNINITIALIZED;
   std::unique_ptr<CacheStorageScheduler> scheduler_;
   bool initializing_ = false;
-  // Reject new operations once closing is requested. Keep this separate from
-  // backend_state_ so previously scheduled operations can use the open backend
-  // until the close operation runs.
-  bool close_requested_ = false;
   // The actual cache size (not including padding).
   int64_t cache_size_;
   int64_t cache_padding_ = 0;
