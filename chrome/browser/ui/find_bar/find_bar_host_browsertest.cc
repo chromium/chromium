@@ -886,9 +886,10 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   // navigation starts, it will miss the DidStartNavigation callback.
   FindBarController::From(browser())->find_bar();
 
-  // Start a navigation but don't wait for it to complete.
+  // Start a navigation and pause it at WillStartRequest so it cannot commit
+  // before the find bar is opened.
   url = GetURL(kLinkPage);
-  content::TestNavigationObserver observer(web_contents, 1);
+  content::TestNavigationManager navigation_manager(web_contents, url);
   ASSERT_TRUE(content::BeginNavigateToURLFromRenderer(web_contents, url));
 
   // Now open the find bar after the current navigation.
@@ -901,8 +902,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   EXPECT_TRUE(GetFindBarWindowInfo(&position, &fully_visible));
   EXPECT_TRUE(fully_visible);
 
-  // Wait for the navigation to complete.
-  observer.Wait();
+  // Resume and wait for the navigation to complete.
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(navigation_manager.was_successful());
 
   // The find bar should still be visible because it was opened after
   // navigation started - user intends to search the new page.
@@ -929,9 +931,10 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   // we start the navigation.
   FindBarController::From(browser())->find_bar();
 
-  // Start a navigation but don't wait for it to complete.
+  // Start a navigation and pause it at WillStartRequest so it cannot commit
+  // while FindInPageASCII is waiting for find results on the old page.
   url = GetURL(kLinkPage);
-  content::TestNavigationObserver observer(web_contents, 1);
+  content::TestNavigationManager navigation_manager(web_contents, url);
   ASSERT_TRUE(content::BeginNavigateToURLFromRenderer(web_contents, url));
 
   // Open the find bar after the navigation and search for text.
@@ -941,8 +944,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageControllerTest,
   FindInPageASCII(web_contents, "test", kFwd, kIgnoreCase, &ordinal);
   EXPECT_GT(ordinal, 0);
 
-  // Wait for the navigation to complete.
-  observer.Wait();
+  // Resume and wait for the navigation to complete.
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+  EXPECT_TRUE(navigation_manager.was_successful());
 
   // The find bar should still be visible.
   gfx::Point position;
