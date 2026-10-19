@@ -568,7 +568,7 @@ public abstract class ContentUriUtils {
         Uri treeUri = DocumentsContract.buildTreeDocumentUri(authority, tree);
         Uri queryUri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, parentDocumentId);
         // Use a selection to match displayName, but don't trust that it actually works.
-        String selection = String.format("%s = ?", DocumentsContract.Document.COLUMN_DISPLAY_NAME);
+        final String selection = DocumentsContract.Document.COLUMN_DISPLAY_NAME + " = ?";
         String[] selectionArgs = {displayName};
         try (Cursor c =
                 assumeNonNull(resolver.query(queryUri, columns, selection, selectionArgs, null))) {

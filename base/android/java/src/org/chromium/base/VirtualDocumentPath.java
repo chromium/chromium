@@ -238,9 +238,9 @@ class VirtualDocumentPath {
             DocumentsContract.Document.COLUMN_MIME_TYPE,
         };
         // Use a selection to match displayName, but don't trust that it actually works.
-        String selection =
+        final String selection =
                 displayName != null
-                        ? String.format("%s = ?", DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+                        ? DocumentsContract.Document.COLUMN_DISPLAY_NAME + " = ?"
                         : null;
         String[] selectionArgs = displayName != null ? new String[] {displayName} : null;
         try (Cursor c = mResolver.query(queryUri, columns, selection, selectionArgs, null)) {

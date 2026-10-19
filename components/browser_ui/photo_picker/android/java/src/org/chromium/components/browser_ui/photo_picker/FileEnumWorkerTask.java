@@ -62,6 +62,32 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
     // The camera directory under DCIM.
     private static final String SAMPLE_DCIM_SOURCE_SUB_DIRECTORY = "Camera";
 
+    private static final String WHERE_DIRECTORIES =
+            MediaStore.Files.FileColumns.RELATIVE_PATH
+                    + " LIKE ? OR "
+                    + MediaStore.Files.FileColumns.RELATIVE_PATH
+                    + " LIKE ? OR "
+                    + MediaStore.Files.FileColumns.RELATIVE_PATH
+                    + " LIKE ? OR "
+                    + MediaStore.Files.FileColumns.RELATIVE_PATH
+                    + " LIKE ? OR "
+                    + MediaStore.Files.FileColumns.RELATIVE_PATH
+                    + " LIKE ? OR "
+                    + MediaStore.Files.FileColumns.RELATIVE_PATH
+                    + " LIKE ?";
+
+    private static final String WHERE_DIRECTORIES_AND_ONE_MEDIA_TYPE =
+            "(" + WHERE_DIRECTORIES + ") AND " + MediaStore.Files.FileColumns.MEDIA_TYPE + " = ?";
+
+    private static final String WHERE_DIRECTORIES_AND_TWO_MEDIA_TYPES =
+            "("
+                    + WHERE_DIRECTORIES
+                    + ") AND ("
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE
+                    + " = ? OR "
+                    + MediaStore.Files.FileColumns.MEDIA_TYPE
+                    + " = ?)";
+
     /**
      * A FileEnumWorkerTask constructor.
      *
@@ -110,43 +136,13 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
 
         List<PickerBitmap> pickerBitmaps = new ArrayList<>();
 
-        final String directoryColumnName = "relative_path";
         final String[] selectColumns = {
             MediaStore.Files.FileColumns._ID,
             MediaStore.Files.FileColumns.DATE_ADDED,
             MediaStore.Files.FileColumns.MEDIA_TYPE,
             MediaStore.Files.FileColumns.MIME_TYPE,
-            directoryColumnName,
+            MediaStore.Files.FileColumns.RELATIVE_PATH,
         };
-
-        String whereClause =
-                directoryColumnName
-                        + " LIKE ? OR "
-                        + directoryColumnName
-                        + " LIKE ? OR "
-                        + directoryColumnName
-                        + " LIKE ? OR "
-                        + directoryColumnName
-                        + " LIKE ? OR "
-                        + directoryColumnName
-                        + " LIKE ? OR "
-                        + directoryColumnName
-                        + " LIKE ?";
-        String additionalClause = "";
-        if (mIncludeImages) {
-            additionalClause =
-                    MediaStore.Files.FileColumns.MEDIA_TYPE
-                            + "="
-                            + MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
-        }
-        if (mIncludeVideos) {
-            if (mIncludeImages) additionalClause += " OR ";
-            additionalClause +=
-                    MediaStore.Files.FileColumns.MEDIA_TYPE
-                            + "="
-                            + MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO;
-        }
-        if (!additionalClause.isEmpty()) whereClause += " AND (" + additionalClause + ")";
 
         String cameraDir = getCameraDirectory();
         String picturesDir = Environment.DIRECTORY_PICTURES;
@@ -158,22 +154,27 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
         // DCIM/Screenshots, as opposed to DCIM/Pictures/Screenshots.
         String screenshotsDir = Environment.DIRECTORY_DCIM + "/Screenshots";
 
-        String[] whereArgs =
-                new String[] {
-                    // Include:
-                    cameraDir + "%",
-                    picturesDir + "%",
-                    moviesDir + "%",
-                    downloadsDir + "%",
-                    restoredDir + "%",
-                    screenshotsDir + "%",
-                };
+        int count = 6 + (mIncludeImages ? 1 : 0) + (mIncludeVideos ? 1 : 0);
+        int index = 0;
+        String[] whereArgs = new String[count];
+        whereArgs[index++] = cameraDir + "%";
+        whereArgs[index++] = picturesDir + "%";
+        whereArgs[index++] = moviesDir + "%";
+        whereArgs[index++] = downloadsDir + "%";
+        whereArgs[index++] = restoredDir + "%";
+        whereArgs[index++] = screenshotsDir + "%";
+
+        if (mIncludeImages) {
+            whereArgs[index++] = Integer.toString(MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE);
+        }
+        if (mIncludeVideos) {
+            whereArgs[index++] = Integer.toString(MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO);
+        }
 
         final String orderBy = MediaStore.MediaColumns.DATE_ADDED + " DESC";
 
         Uri contentUri = MediaStore.Files.getContentUri("external");
-        Cursor imageCursor =
-                createImageCursor(contentUri, selectColumns, whereClause, whereArgs, orderBy);
+        Cursor imageCursor = createImageCursor(contentUri, selectColumns, whereArgs, orderBy);
         if (imageCursor == null) {
             Log.e(TAG, "Content Resolver query() returned null");
             return null;
@@ -184,7 +185,7 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
                 "Found %d media files, when requesting columns: %s, with WHERE %s, params: %s",
                 imageCursor.getCount(),
                 Arrays.toString(selectColumns),
-                whereClause,
+                getWhereClause(),
                 Arrays.toString(whereArgs));
 
         while (imageCursor.moveToNext()) {
@@ -235,17 +236,22 @@ class FileEnumWorkerTask extends AsyncTask<@Nullable List<PickerBitmap>> {
         mCallback.filesEnumeratedCallback(files);
     }
 
+    private String getWhereClause() {
+        return (mIncludeImages && mIncludeVideos)
+                ? WHERE_DIRECTORIES_AND_TWO_MEDIA_TYPES
+                : (mIncludeImages || mIncludeVideos)
+                        ? WHERE_DIRECTORIES_AND_ONE_MEDIA_TYPE
+                        : WHERE_DIRECTORIES;
+    }
+
     /**
      * Creates a cursor containing the image files to show. Can be overridden in tests to provide
      * fake data.
      */
     protected @Nullable Cursor createImageCursor(
-            Uri contentUri,
-            String[] selectColumns,
-            String whereClause,
-            String[] whereArgs,
-            String orderBy) {
-        return mContentResolver.query(contentUri, selectColumns, whereClause, whereArgs, orderBy);
+            Uri contentUri, String[] selectColumns, String[] whereArgs, String orderBy) {
+        return mContentResolver.query(
+                contentUri, selectColumns, getWhereClause(), whereArgs, orderBy);
     }
 
     /** Returns whether to include the Camera tile also. */
