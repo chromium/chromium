@@ -112,7 +112,7 @@ ${this.variant === TodoItemVariant.TAB ?
           ${this.variant === TodoItemVariant.HISTORY ? html`
             <div class="split-button">
               <cr-button class="tonal-button split-main-button"
-                  disabled
+                  ?disabled="${!this.hasOpenableReferences_()}"
                   @click="${this.onContinueInTabsClick_}">
                 Continue in tabs
               </cr-button>
@@ -121,7 +121,7 @@ ${this.variant === TodoItemVariant.TAB ?
                   aria-label="More task actions"
                   title="More task actions"
                   aria-haspopup="menu"
-                  disabled
+                  ?disabled="${!this.hasOpenableReferences_()}"
                   @click="${this.onTaskMenuClick_}">
                 <cr-icon icon="cr:arrow-drop-down"></cr-icon>
               </cr-button>
@@ -167,7 +167,7 @@ ${this.variant === TodoItemVariant.TAB ?
     ${this.variant === TodoItemVariant.HISTORY ? html`
       <cr-action-menu id="taskMenu">
         <button class="dropdown-item"
-            disabled
+            ?disabled="${!this.hasOpenableReferences_()}"
             @click="${this.onContinueInTabsClick_}">
           Continue in tabs
         </button>

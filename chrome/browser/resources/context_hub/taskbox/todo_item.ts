@@ -11,6 +11,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
@@ -26,6 +27,21 @@ const THIRD_PARTY_FORM_URL =
     'https://docs.google.com/forms/d/e/1FAIpQLSdtsEqA8FnELO5VMUgz2ZotDxeuT2A1ctqmYUj_XEPL5SgzZg/viewform';
 const ENTRY_LIKED = 'entry.1262687224';
 const ENTRY_DETAILS = 'entry.809272442';
+const MAX_URLS_TO_OPEN = 10;
+
+// Only web pages are openable, matching the browser-side filter in
+// `PageHandler::OpenUrlsInTabGroup()`.
+function isWebUrl(url: string): boolean {
+  if (!url) {
+    return false;
+  }
+  try {
+    const {protocol} = new URL(url);
+    return protocol === 'https:' || protocol === 'http:';
+  } catch {
+    return false;
+  }
+}
 
 export enum TodoItemVariant {
   DEFAULT = 'default',
@@ -262,10 +278,31 @@ export class TodoItemElement extends CrLitElement {
     }
   }
 
-  protected onContinueInTabsClick_(e: Event) {
+  protected async onContinueInTabsClick_(e: Event) {
     e.stopPropagation();
-    // TODO(igoralsky): Implement this.
     this.shadowRoot.querySelector<CrActionMenuElement>('#taskMenu')?.close();
+
+    const urls = this.getOpenableReferenceUrls_();
+    if (urls.length === 0) {
+      return;
+    }
+
+    const groupLabel = this.heading || 'Related Tabs';
+    try {
+      const {success} =
+          await browserProxyFactory.getInstance().handler.openUrlsInTabGroup(
+              groupLabel, urls);
+      if (success) {
+        return;
+      }
+    } catch (err) {
+      console.error('Failed to open tabs in group:', err);
+    }
+
+    // Fallback to opening individual tabs.
+    for (const url of urls.slice(0, MAX_URLS_TO_OPEN)) {
+      OpenWindowProxyImpl.getInstance().openUrl(url);
+    }
   }
 
   protected onContinueInGeminiClick_(e: Event) {
@@ -338,6 +375,16 @@ export class TodoItemElement extends CrLitElement {
           return null;
         })
         .filter((ref): ref is {label: string, url: string} => ref !== null);
+  }
+
+  protected getOpenableReferenceUrls_(): string[] {
+    return this.getReferences()
+        .map(ref => ref.url)
+        .filter(url => isWebUrl(url));
+  }
+
+  protected hasOpenableReferences_(): boolean {
+    return this.getOpenableReferenceUrls_().length > 0;
   }
 
   protected onActionsClick_(e: Event) {

@@ -1175,12 +1175,13 @@ void ContextHubPageHandler::OpenUrlsInTabGroup(
     const std::string& group_label,
     const std::vector<GURL>& urls,
     OpenUrlsInTabGroupCallback callback) {
-  if (!base::FeatureList::IsEnabled(browser::context_hub::mojom::kTopics) &&
+  if (!base::FeatureList::IsEnabled(browser::context_hub::mojom::kAutoTodos) &&
+      !base::FeatureList::IsEnabled(browser::context_hub::mojom::kTopics) &&
       !base::FeatureList::IsEnabled(
           browser::context_hub::mojom::kSmartSearch)) {
     receiver_.ReportBadMessage(
-        "OpenUrlsInTabGroup cannot be called without Topics or SmartSearch "
-        "enabled.");
+        "OpenUrlsInTabGroup cannot be called without AutoTodos, Topics, or "
+        "SmartSearch enabled.");
     return;
   }
 
