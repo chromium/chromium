@@ -6,6 +6,7 @@ package org.chromium.components.payments;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -143,5 +144,33 @@ public class PaymentManifestVerifierTest {
         verify(mCache)
                 .addPaymentMethodManifest(eq(PAYMENT_METHOD), eq(new String[] {APP_PACKAGE_NAME}));
         verify(mCache).addPaymentWebAppManifest(eq(PAYMENT_METHOD), any());
+    }
+
+    /**
+     * Verifies that a web app manifest download failure does not call onVerificationError, which
+     * would otherwise expose the web app manifest URL (from the cross-origin payment method
+     * manifest body) to the merchant.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testWebAppManifestDownloadFailure_DoesNotLeakWebAppManifestUrl() {
+        GURL webAppManifestUrl = new GURL("https://example.com/app.json");
+        when(mCache.getPaymentMethodManifest(eq(PAYMENT_METHOD), any())).thenReturn(true);
+        when(mParser.parsePaymentMethodManifest(eq(mMethodName), any()))
+                .thenReturn(new PaymentMethodManifest(new GURL[] {webAppManifestUrl}, new GURL[0]));
+
+        mVerifier.verify();
+        mVerifier.onPaymentMethodManifestFetched(new String[0]);
+        mVerifier.onPaymentMethodManifestDownloadSuccess(
+                mMethodName, mMerchantOrigin, "placeholder_content");
+        verify(mDownloader)
+                .downloadWebAppManifest(eq(mMerchantOrigin), eq(webAppManifestUrl), eq(mVerifier));
+
+        mVerifier.onManifestDownloadFailure(
+                "Unable to download payment manifest \"" + webAppManifestUrl.getSpec() + "\".");
+
+        verify(mCallback, never()).onVerificationError(any());
+        verify(mCallback).onFinishedVerification();
+        verify(mCallback).onFinishedUsingResources();
     }
 }

@@ -148,8 +148,17 @@ public class PaymentManifestVerifier
     /** Whether the manifest cache is stale (unusable). */
     private boolean mIsManifestCacheStaleOrUnusable;
 
-    /** Whether at least one payment method manifest or web app manifest failed to download or parse. */
+    /**
+     * Whether at least one payment method manifest or web app manifest failed to download or parse.
+     */
     private boolean mAtLeastOneManifestFailedToDownloadOrParse;
+
+    /**
+     * Whether the web app manifest downloads have started. After this is set, any download failure
+     * is a web app manifest download failure, whose error message contains the web app manifest URL
+     * from the cross-origin payment method manifest and must not be exposed to the merchant.
+     */
+    private boolean mIsDownloadingWebAppManifests;
 
     /**
      * Builds the manifest verifier.
@@ -415,6 +424,7 @@ public class PaymentManifestVerifier
         }
 
         mPendingWebAppManifestsCount = manifest.webAppManifestUris.length;
+        mIsDownloadingWebAppManifests = true;
         for (int i = 0; i < manifest.webAppManifestUris.length; i++) {
             if (mAtLeastOneManifestFailedToDownloadOrParse) return;
             assert manifest.webAppManifestUris[i] != null;
@@ -586,7 +596,16 @@ public class PaymentManifestVerifier
         if (mAtLeastOneManifestFailedToDownloadOrParse) return;
         mAtLeastOneManifestFailedToDownloadOrParse = true;
 
-        mCallback.onVerificationError(errorMessage);
+        // Do not forward `errorMessage` for web app manifest download failures, because it contains
+        // the web app manifest URL, which comes from the cross-origin payment method manifest and
+        // should not be exposed to the merchant website. Instead, skip calling
+        // `onVerificationError()` so that if no payment apps are available, the payment request
+        // falls back to the generic NotSupportedError message (matching
+        // `onManifestParseFailure()`).
+        // The detailed message is still logged above and in DevTools by the downloader.
+        if (!mIsDownloadingWebAppManifests) {
+            mCallback.onVerificationError(errorMessage);
+        }
 
         if (mIsManifestCacheStaleOrUnusable) mCallback.onFinishedVerification();
         mCallback.onFinishedUsingResources();
