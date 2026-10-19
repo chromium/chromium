@@ -110,7 +110,7 @@ TEST_F(WidgetDelegateTest, OverlayViewFactoryCanReplaceOverlayView) {
     return view;
   }));
 
-  auto overlay = base::WrapUnique<View>(delegate->CreateOverlayView());
+  auto overlay = delegate->CreateOverlayView();
   EXPECT_EQ(tracker.view(), overlay.get());
 }
 

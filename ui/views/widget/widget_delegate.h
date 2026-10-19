@@ -681,7 +681,7 @@ class VIEWS_EXPORT WidgetDelegate {
   // NULL for no overlay. The overlay View will fill the Widget and sit on top
   // of the ClientView and FrameView (both visually and wrt click
   // targeting).
-  virtual View* CreateOverlayView();
+  virtual std::unique_ptr<View> CreateOverlayView();
 
   // Returns true if window has a hit-test mask.
   virtual bool WidgetHasHitTestMask() const;

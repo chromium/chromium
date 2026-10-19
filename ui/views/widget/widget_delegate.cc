@@ -379,9 +379,9 @@ std::unique_ptr<FrameView> WidgetDelegate::CreateFrameView(Widget* widget) {
   return frame_view_factory_.Run(widget);
 }
 
-View* WidgetDelegate::CreateOverlayView() {
+std::unique_ptr<View> WidgetDelegate::CreateOverlayView() {
   DCHECK(overlay_view_factory_);
-  return std::move(overlay_view_factory_).Run().release();
+  return std::move(overlay_view_factory_).Run();
 }
 
 bool WidgetDelegate::WidgetHasHitTestMask() const {

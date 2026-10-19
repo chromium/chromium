@@ -4118,10 +4118,10 @@ views::ClientView* BrowserView::CreateClientView(views::Widget* widget) {
   return this;
 }
 
-views::View* BrowserView::CreateOverlayView() {
-  auto* overlay_view =
-      new TopContainerOverlayView(weak_ptr_factory_.GetWeakPtr());
-  overlay_view_tracker_.SetView(overlay_view);
+std::unique_ptr<views::View> BrowserView::CreateOverlayView() {
+  auto overlay_view =
+      std::make_unique<TopContainerOverlayView>(weak_ptr_factory_.GetWeakPtr());
+  overlay_view_tracker_.SetView(overlay_view.get());
   overlay_view->SetVisible(false);
   overlay_view->SetEventTargeter(std::make_unique<views::ViewTargeter>(
       std::make_unique<OverlayViewTargeterDelegate>()));

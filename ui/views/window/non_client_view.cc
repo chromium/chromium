@@ -60,18 +60,19 @@ void NonClientView::SetFrameView(std::unique_ptr<FrameView> frame_view) {
   }
 }
 
-void NonClientView::SetOverlayView(View* view) {
+void NonClientView::SetOverlayViewInternal(std::unique_ptr<View> view) {
+  owned_overlay_view_.reset();
   if (overlay_view_) {
-    RemoveChildView(overlay_view_);
+    RemoveChildViewT(std::exchange(overlay_view_, nullptr));
   }
 
-  if (!view) {
+  if (!parent()) {
+    owned_overlay_view_ = std::move(view);
     return;
   }
 
-  overlay_view_ = view;
-  if (parent()) {
-    AddChildViewRaw(overlay_view_.get());
+  if (view) {
+    overlay_view_ = AddChildView(std::move(view));
   }
 }
 
@@ -179,8 +180,8 @@ void NonClientView::ViewHierarchyChanged(
   if (details.is_add && GetWidget() && details.child == this) {
     AddChildViewAt(frame_view_.get(), 0);
     frame_view_->InsertClientView(client_view_);
-    if (overlay_view_) {
-      AddChildViewRaw(overlay_view_.get());
+    if (owned_overlay_view_) {
+      overlay_view_ = AddChildView(std::move(owned_overlay_view_));
     }
   }
 }

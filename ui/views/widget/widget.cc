@@ -604,8 +604,8 @@ void Widget::Init(InitParams params) {
   if (RequiresNonClientView(type)) {
     non_client_view_ =
         new NonClientView(widget_delegate_->CreateClientView(this));
-    non_client_view_->SetFrameView(CreateFrameView());
     non_client_view_->SetOverlayView(widget_delegate_->CreateOverlayView());
+    non_client_view_->SetFrameView(CreateFrameView());
 
     // Bypass the layout that happens in Widget::SetContentsView().
     // LayoutImmediately() will occur after setting the initial bounds below.

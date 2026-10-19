@@ -74,6 +74,7 @@
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/views_features.h"
 #include "ui/views/views_test_suite.h"
 #include "ui/views/widget/native_widget_delegate.h"
@@ -86,6 +87,7 @@
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/window/native_frame_view.h"
+#include "ui/views/window/non_client_view.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -7278,6 +7280,47 @@ TEST_F(WidgetTest, ScheduleThemeChangedRunsSynchronouslyWhenDisabled) {
   widget->ScheduleThemeChanged();
   // When feature is disabled, ScheduleThemeChanged runs synchronously.
   EXPECT_EQ(tracking_view->theme_changed_count(), initial_count + 1);
+}
+
+TEST_F(WidgetTest, NonClientViewOverlayViewOwnership) {
+  ViewTracker initial_tracker;
+  auto delegate = std::make_unique<WidgetDelegate>();
+  delegate->SetOverlayViewFactory(
+      base::BindLambdaForTesting([&initial_tracker]() {
+        auto view = std::make_unique<View>();
+        initial_tracker.SetView(view.get());
+        return view;
+      }));
+
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.delegate = delegate.get();
+  widget->Init(std::move(params));
+
+  NonClientView* non_client_view = widget->non_client_view();
+  ASSERT_TRUE(non_client_view);
+  ASSERT_TRUE(initial_tracker.view());
+  EXPECT_EQ(initial_tracker.view()->parent(), non_client_view);
+
+  ViewTracker tracker1;
+  auto overlay1 = std::make_unique<View>();
+  tracker1.SetView(overlay1.get());
+  non_client_view->SetOverlayView(std::move(overlay1));
+  EXPECT_FALSE(initial_tracker.view());
+  EXPECT_TRUE(tracker1.view());
+  EXPECT_EQ(tracker1.view()->parent(), non_client_view);
+
+  ViewTracker tracker2;
+  auto overlay2 = std::make_unique<View>();
+  tracker2.SetView(overlay2.get());
+  non_client_view->SetOverlayView(std::move(overlay2));
+  EXPECT_FALSE(tracker1.view());
+  EXPECT_TRUE(tracker2.view());
+  EXPECT_EQ(tracker2.view()->parent(), non_client_view);
+
+  non_client_view->SetOverlayView(std::unique_ptr<View>());
+  EXPECT_FALSE(tracker2.view());
 }
 
 }  // namespace views::test

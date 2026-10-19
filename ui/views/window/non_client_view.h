@@ -68,7 +68,12 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   void SetFrameView(std::unique_ptr<FrameView> frame_view);
 
   // Replaces the current |overlay_view_| (if any) with the specified one.
-  void SetOverlayView(View* view);
+  template <typename T>
+  T* SetOverlayView(std::unique_ptr<T> view) {
+    T* raw = view.get();
+    SetOverlayViewInternal(base::WrapUnique<View>(view.release()));
+    return raw;
+  }
 
   // Returned value signals whether the ClientView can be closed.
   CloseRequestResult OnWindowCloseRequested();
@@ -131,6 +136,8 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
       const ViewHierarchyChangedDetails& details) override;
 
  private:
+  void SetOverlayViewInternal(std::unique_ptr<View> view);
+
   // The FrameView that renders the non-client portions of the window.
   // This object is not owned by the view hierarchy because it can be replaced
   // dynamically as the system settings change.
@@ -142,8 +149,12 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   const raw_ptr<ClientView, DanglingUntriaged> client_view_;
 
   // The overlay view, when non-NULL and visible, takes up the entire widget and
-  // is placed on top of the ClientView and FrameView.
+  // is placed on top of the ClientView and FrameView. Since this class holds
+  // ownership of the overlay view until it can hand it off to a Widget, but
+  // also needs to reference the overlay view after handing off ownership, it
+  // holds two separate pointers to it.
   raw_ptr<View> overlay_view_ = nullptr;
+  std::unique_ptr<View> owned_overlay_view_;
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, NonClientView, View)

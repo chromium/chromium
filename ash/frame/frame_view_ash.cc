@@ -228,11 +228,11 @@ FrameViewAsh::FrameViewAsh(views::Widget* widget)
   auto overlay_view = std::make_unique<OverlayView>(header_view.get());
   header_view_ = overlay_view->AddChildView(std::move(header_view));
   header_view_->Init();
-  overlay_view_ = overlay_view.get();
 
   // |header_view_| is set as the non client view's overlay view so that it can
   // overlay the web contents in immersive fullscreen.
-  widget_->non_client_view()->SetOverlayView(overlay_view.release());
+  overlay_view_ =
+      widget_->non_client_view()->SetOverlayView(std::move(overlay_view));
 
   UpdateDefaultFrameColors();
 

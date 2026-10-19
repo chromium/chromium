@@ -682,7 +682,7 @@ class BrowserView : public BrowserWindow,
       ui::mojom::WindowShowState* show_state) const override;
   views::View* GetContentsView() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
-  views::View* CreateOverlayView() override;
+  std::unique_ptr<views::View> CreateOverlayView() override;
 #if BUILDFLAG(IS_MAC)
   views::View* CreateMacOverlayView();
 #endif
