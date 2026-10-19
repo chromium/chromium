@@ -5123,8 +5123,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   TestStandaloneWindowController standalone_controller(
       /*base_window=*/nullptr, profile(), standalone_window_id,
       web_contents.get());
-  standalone_controller.SetBrowserWindowInterfaceForLookup(
-      browser_window_interface());
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("CreateSplitStandaloneTabTest").Build();
@@ -5241,10 +5239,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   TestStandaloneWindowController standalone_controller(
       /*base_window=*/nullptr, profile(), standalone_window_id,
       web_contents.get());
-  // Allow GetTabById (2 calls) to resolve the standalone tab, then return
-  // nullptr when MoveTab queries source_window->GetBrowserWindowInterface().
-  standalone_controller.SetBrowserWindowInterfaceForLookup(
-      browser_window_interface(), 2);
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("MoveStandaloneTabTest").Build();
@@ -5276,8 +5270,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   TestStandaloneWindowController standalone_controller(
       /*base_window=*/nullptr, profile(), standalone_window_id,
       web_contents.get());
-  standalone_controller.SetBrowserWindowInterfaceForLookup(
-      browser_window_interface());
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ReloadPipTabTest").Build();
@@ -5287,6 +5279,38 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   std::string error =
       utils::RunFunctionAndReturnError(function.get(), args, profile());
   EXPECT_EQ(tabs_constants::kNotAllowedForPictureInPictureError, error);
+}
+
+// Verifies that TabsUpdateFunction returns an error rather than crashing on a
+// null TabInterface when openerTabId specifies a standalone tab without a
+// TabInterface.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       TabsUpdate_StandaloneOpenerTabIdRejected) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(profile()));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const int standalone_tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(standalone_tab_id, api::tabs::TAB_ID_NONE);
+
+  const SessionID standalone_window_id = SessionID::NewUnique();
+  TestStandaloneWindowController standalone_controller(
+      /*base_window=*/nullptr, profile(), standalone_window_id,
+      web_contents.get());
+
+  const int target_tab_id = ExtensionTabUtil::GetTabId(GetActiveWebContents());
+  ASSERT_NE(target_tab_id, api::tabs::TAB_ID_NONE);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("UpdateStandaloneOpenerTabTest").Build();
+  auto function = base::MakeRefCounted<TabsUpdateFunction>();
+  function->set_extension(extension.get());
+  std::string args = base::StringPrintf(R"([%d, {"openerTabId": %d}])",
+                                        target_tab_id, standalone_tab_id);
+  std::string error =
+      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  EXPECT_EQ("Tab opener must be in the same window as the updated tab.", error);
 }
 
 }  // namespace extensions

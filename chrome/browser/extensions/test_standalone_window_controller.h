@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_TEST_STANDALONE_WINDOW_CONTROLLER_H_
 #define CHROME_BROWSER_EXTENSIONS_TEST_STANDALONE_WINDOW_CONTROLLER_H_
 
-#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -32,10 +31,10 @@ namespace extensions {
 
 class Extension;
 
-// A standalone WindowController test double that defaults to having no
-// associated BrowserWindowInterface or Browser (both return nullptr unless
-// overridden for lookup tests), representing standalone windows hosting a
-// single WebContents (such as Document Picture-in-Picture windows).
+// A standalone WindowController test double that has no associated
+// BrowserWindowInterface or Browser (both return nullptr), representing
+// standalone windows hosting a single WebContents (such as Document
+// Picture-in-Picture windows).
 class TestStandaloneWindowController : public WindowController {
  public:
   TestStandaloneWindowController(ui::BaseWindow* base_window,
@@ -48,19 +47,11 @@ class TestStandaloneWindowController : public WindowController {
       const TestStandaloneWindowController&) = delete;
   ~TestStandaloneWindowController() override;
 
-  // Allows ExtensionTabUtil::GetTabById (or GetSplitById) to resolve this
-  // window during tests while optionally returning nullptr on subsequent
-  // GetBrowserWindowInterface() calls once `count` lookups have occurred.
-  void SetBrowserWindowInterfaceForLookup(
-      BrowserWindowInterface* bwi,
-      std::optional<int> count = std::nullopt);
-
   // WindowController:
   int GetWindowId() const override;
   std::string GetWindowTypeText() const override;
   void SetFullscreenMode(bool is_fullscreen,
                          const GURL& extension_url) const override;
-  BrowserWindowInterface* GetBrowserWindowInterface() override;
   content::WebContents* GetActiveTab() const override;
   int GetTabCount() const override;
   content::WebContents* GetWebContentsAt(int i) const override;
@@ -80,8 +71,6 @@ class TestStandaloneWindowController : public WindowController {
  private:
   const SessionID session_id_;
   raw_ptr<content::WebContents> web_contents_;
-  raw_ptr<BrowserWindowInterface> lookup_bwi_ = nullptr;
-  std::optional<int> remaining_bwi_lookups_;
 };
 
 }  // namespace extensions

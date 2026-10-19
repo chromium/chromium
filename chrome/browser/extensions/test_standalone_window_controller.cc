@@ -24,13 +24,6 @@ TestStandaloneWindowController::~TestStandaloneWindowController() {
   WindowControllerList::GetInstance()->RemoveExtensionWindow(this);
 }
 
-void TestStandaloneWindowController::SetBrowserWindowInterfaceForLookup(
-    BrowserWindowInterface* bwi,
-    std::optional<int> count) {
-  lookup_bwi_ = bwi;
-  remaining_bwi_lookups_ = count;
-}
-
 int TestStandaloneWindowController::GetWindowId() const {
   return session_id_.id();
 }
@@ -42,18 +35,6 @@ std::string TestStandaloneWindowController::GetWindowTypeText() const {
 void TestStandaloneWindowController::SetFullscreenMode(
     bool is_fullscreen,
     const GURL& extension_url) const {}
-
-BrowserWindowInterface*
-TestStandaloneWindowController::GetBrowserWindowInterface() {
-  if (!remaining_bwi_lookups_.has_value()) {
-    return lookup_bwi_;
-  }
-  if (*remaining_bwi_lookups_ > 0) {
-    --(*remaining_bwi_lookups_);
-    return lookup_bwi_;
-  }
-  return nullptr;
-}
 
 content::WebContents* TestStandaloneWindowController::GetActiveTab() const {
   return web_contents_;

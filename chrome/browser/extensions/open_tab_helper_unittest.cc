@@ -51,7 +51,6 @@ TEST_F(OpenTabHelperUnitTest, OpenTab_StandaloneSplitWithTabIdRejected) {
 
   testing::NiceMock<MockBrowserWindowInterface> mock_browser;
   ON_CALL(mock_browser, GetProfile()).WillByDefault(testing::Return(profile()));
-  controller.SetBrowserWindowInterfaceForLookup(&mock_browser);
   testing::NiceMock<MockTabListInterface> mock_tab_list;
   ON_CALL(mock_tab_list, GetTabCount()).WillByDefault(testing::Return(1));
   ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(

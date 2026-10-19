@@ -118,6 +118,8 @@ constexpr char kTabIndexNotFoundError[] = "No tab at index: *.";
 constexpr char kCannotFindTabToDiscard[] = "Cannot find a tab to discard.";
 constexpr char kCannotUnhighlightAllTabsError[] =
     "Cannot unhighlight all tabs.";
+constexpr char kTabOpenerMustBeInSameWindowError[] =
+    "Tab opener must be in the same window as the updated tab.";
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kTabsCreateIwaUrlNotAllowedError[] =
@@ -148,7 +150,7 @@ bool SetOpenerOfTab(Profile& profile,
   BrowserWindowInterface* tab_browser =
       browser_window_util::GetBrowserForTabContents(*tab.GetContents());
   if (!opener_browser || opener_browser != tab_browser) {
-    error = "Tab opener must be in the same window as the updated tab.";
+    error = kTabOpenerMustBeInSameWindowError;
     return false;
   }
 
@@ -1037,8 +1039,7 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     BrowserWindowInterface* opener_browser =
         browser_window_util::GetBrowserForTabContents(*opener);
     if (!opener_browser || opener_browser != browser) {
-      return RespondNow(
-          Error("Tab opener must be in the same window as the updated tab."));
+      return RespondNow(Error(kTabOpenerMustBeInSameWindowError));
     }
   }
 
@@ -1140,8 +1141,9 @@ void TabsCreateFunction::OpenTabInBrowser(BrowserWindowInterface& browser,
     // We know these should never be null:
     // * We just created the tab in OpenTabHelper::OpenTab() above, and verified
     //   it returned a valid contents.
-    // * The `opener_tab` is fetched from GetTabById(), which only returns tab
-    //   contents, so if `opener_tab` is non-null, there should always be a
+    // * We verified in TabsCreateFunction::Run() (via
+    //   browser_window_util::GetBrowserForTabContents()) that `opener_tab`
+    //   belongs to the target browser window, so there should always be a
     //   TabInterface for it.
     ::tabs::TabInterface* tab_interface =
         ::tabs::TabInterface::GetFromContents(new_contents);
@@ -1435,8 +1437,10 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     }
 
     ::tabs::TabInterface* opener_tab =
-        ::tabs::TabInterface::GetFromContents(opener_contents);
-    CHECK(opener_tab);
+        ::tabs::TabInterface::MaybeGetFromContents(opener_contents);
+    if (!opener_tab) {
+      return RespondNow(Error(kTabOpenerMustBeInSameWindowError));
+    }
     if (!SetOpenerOfTab(*window->profile(), *target_tab, *opener_tab, error)) {
       return RespondNow(Error(std::move(error)));
     }

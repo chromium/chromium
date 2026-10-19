@@ -12,8 +12,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/test_standalone_window_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_registrar.h"
@@ -454,6 +456,32 @@ TEST_F(ChromeExtensionNavigationTest,
 
   EXPECT_FALSE(ExtensionTabUtil::OpenOptionsPageFromWebContents(
       extension.get(), web_contents.get()));
+}
+
+// Verifies that ExtensionTabUtil::GetTabById resolves a WebContents hosted in a
+// standalone WindowController that has no BrowserWindowInterface.
+TEST_F(ChromeExtensionNavigationTest, GetTabById_StandaloneWindowController) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  const int tab_id = ExtensionTabUtil::GetTabId(web_contents.get());
+  ASSERT_NE(tab_id, api::tabs::TAB_ID_NONE);
+
+  const SessionID window_id = SessionID::NewUnique();
+  TestStandaloneWindowController controller(
+      /*base_window=*/nullptr, profile(), window_id, web_contents.get());
+  ASSERT_EQ(nullptr, controller.GetBrowserWindowInterface());
+
+  WindowController* found_window = nullptr;
+  content::WebContents* found_contents = nullptr;
+  int found_index = -1;
+  EXPECT_TRUE(ExtensionTabUtil::GetTabById(
+      tab_id, profile(), /*include_incognito=*/false, &found_window,
+      &found_contents, &found_index));
+  EXPECT_EQ(&controller, found_window);
+  EXPECT_EQ(web_contents.get(), found_contents);
+  EXPECT_EQ(0, found_index);
 }
 
 }  // namespace extensions
