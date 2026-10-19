@@ -25,16 +25,8 @@
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/visited_url_ranking/model/ios_tab_model_url_visit_data_fetcher.h"
 
-// static
-visited_url_ranking::VisitedURLRankingService*
-VisitedURLRankingServiceFactory::GetForProfile(ProfileIOS* state) {
-  return GetInstance()
-      ->GetServiceForProfileAs<visited_url_ranking::VisitedURLRankingService>(
-          state, /*create=*/true);
-}
-
-VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("VisitedURLRanking") {
+VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "VisitedURLRanking") {
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::BookmarkModelFactory::GetInstance());
@@ -42,15 +34,6 @@ VisitedURLRankingServiceFactory::VisitedURLRankingServiceFactory()
       segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
 }
-
-// static
-VisitedURLRankingServiceFactory*
-VisitedURLRankingServiceFactory::GetInstance() {
-  static base::NoDestructor<VisitedURLRankingServiceFactory> instance;
-  return instance.get();
-}
-
-VisitedURLRankingServiceFactory::~VisitedURLRankingServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 VisitedURLRankingServiceFactory::BuildServiceInstanceFor(

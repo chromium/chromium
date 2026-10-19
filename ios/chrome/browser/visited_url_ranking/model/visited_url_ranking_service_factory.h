@@ -7,29 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace visited_url_ranking {
-class VisitedURLRankingService;
-}
+#import "components/visited_url_ranking/public/visited_url_ranking_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Factory for the components VisitedURLRankingService service which fetches and
 // ranks visited URL.
-class VisitedURLRankingServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class VisitedURLRankingServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          VisitedURLRankingServiceFactory,
+          visited_url_ranking::VisitedURLRankingService> {
  public:
-  static visited_url_ranking::VisitedURLRankingService* GetForProfile(
-      ProfileIOS* profile);
-  static VisitedURLRankingServiceFactory* GetInstance();
+  explicit VisitedURLRankingServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<VisitedURLRankingServiceFactory>;
-
-  VisitedURLRankingServiceFactory();
-  ~VisitedURLRankingServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
