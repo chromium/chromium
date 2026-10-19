@@ -818,7 +818,9 @@ int32_t BookmarkBridge::GetTotalBookmarkCount(JNIEnv* env,
                                               int64_t id,
                                               int32_t type) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/574131894): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
 
   std::queue<const BookmarkNode*> nodes;
   const BookmarkNode* parent = GetNodeByID(id, type);
