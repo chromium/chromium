@@ -300,6 +300,12 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
                : nullptr;
   }
 
+  bool ShouldBeOpen() { return coordinator_->ShouldBeOpen(); }
+
+  void SetActiveTab(tabs::TabInterface* tab) {
+    ON_CALL(*tab_list_, GetActiveTab()).WillByDefault(Return(tab));
+  }
+
   void SetPermissionControllerForTesting(
       std::unique_ptr<ContextualTasksPermissionController> controller) {
     coordinator_->permission_controller_ = std::move(controller);
@@ -720,6 +726,153 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       .Times(0);
 
   coordinator_->Close();
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       Close_ScopedToTab_DisassociatesOnlyActiveTab) {
+  base::test::ScopedFeatureList feature_list(kContextualTasksSidePanelTabState);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  SessionID tab_a_id =
+      sessions::SessionTabHelper::IdForTab(tab_a->GetContents());
+  SessionID tab_b_id =
+      sessions::SessionTabHelper::IdForTab(tab_b->GetContents());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{tab_a_id, tab_b_id}));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  SetActiveTab(tab_b);
+  UpdateWebContentsForActiveTab();
+
+  EXPECT_CALL(*mock_controller_,
+              DisassociateTabFromTask(task.GetTaskId(), tab_b_id))
+      .Times(1);
+  EXPECT_CALL(*mock_controller_,
+              DisassociateTabFromTask(task.GetTaskId(), tab_a_id))
+      .Times(0);
+
+  coordinator_->Close();
+
+  // The panel stays open on the other tab of the task.
+  SetActiveTab(tab_a);
+  EXPECT_TRUE(ShouldBeOpen());
+  EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(task.GetTaskId()));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       Close_ScopedToTab_EphemeralBranded_ClosesPanelOnlyOnActiveTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksSidePanelTabState, {}},
+       {kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+      {});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{
+          sessions::SessionTabHelper::IdForTab(tab_a->GetContents()),
+          sessions::SessionTabHelper::IdForTab(tab_b->GetContents())}));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  SetActiveTab(tab_b);
+  UpdateWebContentsForActiveTab();
+
+  // Tabs stay associated with the task so that the ephemeral button can
+  // resume the thread.
+  EXPECT_CALL(*mock_controller_, DisassociateTabFromTask(_, _)).Times(0);
+
+  coordinator_->Close();
+  EXPECT_FALSE(ShouldBeOpen());
+
+  // The panel stays open on the other tab of the task.
+  SetActiveTab(tab_a);
+  EXPECT_TRUE(ShouldBeOpen());
+
+  // Reopening the panel on the tab from the ephemeral toolbar button resumes
+  // the same task.
+  SetActiveTab(tab_b);
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  EXPECT_TRUE(ShouldBeOpen());
+  EXPECT_EQ(1u, GetNumberOfActiveTasksForTesting(task.GetTaskId()));
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       Close_ScopedToTab_EndsSessionWhenClosedOnLastTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksSidePanelTabState, {}},
+       {kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+      {});
+  base::HistogramTester histogram_tester;
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{
+          sessions::SessionTabHelper::IdForTab(tab_a->GetContents()),
+          sessions::SessionTabHelper::IdForTab(tab_b->GetContents())}));
+
+  // Open the panel from the ephemeral toolbar button and interact with it.
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+  coordinator_->OnAiInteraction();
+
+  // Closing the panel on tab A doesn't end the session, since tab B still shows
+  // the panel.
+  coordinator_->Close();
+  histogram_tester.ExpectTotalCount("ContextualTasks.Session.Completed", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 0);
+
+  // Closing the panel on tab B, the last tab that shows it, ends the session.
+  SetActiveTab(tab_b);
+  UpdateWebContentsForActiveTab();
+  coordinator_->Close();
+  histogram_tester.ExpectUniqueSample("ContextualTasks.Session.Completed", true,
+                                      1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Session.Duration.EphemeralToolbarButton", 1);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       Close_TabStateDisabled_ClosesPanelOnAllTabsOfTask) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kContextualTasksEphemeralBrandedEntryPoint,
+        {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
+      {kContextualTasksSidePanelTabState});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{
+          sessions::SessionTabHelper::IdForTab(tab_a->GetContents()),
+          sessions::SessionTabHelper::IdForTab(tab_b->GetContents())}));
+  CreateCachedWebContentsForTesting(task.GetTaskId(), /*is_open=*/true);
+  SetActiveTab(tab_b);
+  UpdateWebContentsForActiveTab();
+
+  coordinator_->Close();
+
+  SetActiveTab(tab_a);
+  EXPECT_FALSE(ShouldBeOpen());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

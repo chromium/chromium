@@ -144,7 +144,9 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
          {kContextualTasksForceEntryPointEligibility, {}},
          {kContextualTasksEphemeralBrandedEntryPoint,
           {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
-        {});
+        // These tests expect the side panel state to be shared by the tabs in a
+        // task.
+        {kContextualTasksSidePanelTabState});
   }
   ~ContextualTasksSidePanelCoordinatorInteractiveUiTest() override = default;
 

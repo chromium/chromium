@@ -164,6 +164,15 @@ extern const base::FeatureParam<bool> kOpenNewTabOnSidePanelLinkClick;
 // always open a new tab instead of focusing an existing affiliated tab.
 bool ShouldOpenNewTabOnSidePanelLinkClick();
 
+// Controls whether closing the contextual tasks side panel only applies to the
+// tab where the user closed it, instead of all tabs affiliated with the same
+// task.
+extern const base::FeatureParam<bool> kScopeSidePanelStateToTab;
+
+// Returns whether closing the contextual tasks side panel should only apply to
+// the tab where the user closed it.
+bool ShouldScopeSidePanelStateToTab();
+
 // Enables emitting attached tab context tokens in OnSuggestInputsChanged for
 // tab-based query suggestions.
 BASE_DECLARE_FEATURE(kContextualTasksTabBasedSuggestions);

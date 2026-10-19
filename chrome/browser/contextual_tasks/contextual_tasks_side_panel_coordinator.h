@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_SIDE_PANEL_COORDINATOR_H_
 
 #include <map>
+#include <set>
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
@@ -280,6 +281,16 @@ class ContextualTasksSidePanelCoordinator
   // ephemeral button resume.
   void DisassociateAllTabsFromCurrentTask();
 
+  // Disassociates only the active tab from its task when the panel is closed.
+  // Used instead of `DisassociateAllTabsFromCurrentTask()` when
+  // `ShouldScopeSidePanelStateToTab()` is true. Under kToolbarEphemeralBranded
+  // mode, the tab stays associated to allow ephemeral button resume.
+  void DisassociateActiveTabOnClose();
+
+  // Returns whether a tab in this window other than the active one is
+  // associated with `task_id` and still shows the panel.
+  bool IsPanelOpenOnOtherTabOfTask(const base::Uuid& task_id);
+
   // Update open state of the panel.
   void UpdateOpenState(bool is_open);
 
@@ -288,6 +299,9 @@ class ContextualTasksSidePanelCoordinator
 
   // Closes any active Lens sessions for tabs associated with the given task.
   void CloseLensSessionsForTask(const ContextualTask& task);
+
+  // Closes any active Lens session on the given tab.
+  void CloseLensSessionForTab(tabs::TabInterface* tab);
 
   // Closes any active Lens session on the given tab if it matches an
   // eligibility criteria.
@@ -363,6 +377,11 @@ class ContextualTasksSidePanelCoordinator
   // is being closed so that it can be logged.
   std::optional<ContextualTasksPanelController::EntrySource>
       closing_entry_source_;
+
+  // Tabs on which the panel was closed while the tab stays associated with its
+  // task, so that the panel stays open on other tabs of the same task. Only
+  // used when `ShouldScopeSidePanelStateToTab()` is true.
+  std::set<tabs::TabHandle> tabs_with_closed_panel_;
 
   base::ObserverList<ContextualTasksPanelController::Observer> observers_;
 

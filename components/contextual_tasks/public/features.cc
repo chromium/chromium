@@ -312,6 +312,16 @@ bool ShouldOpenNewTabOnSidePanelLinkClick() {
          kOpenNewTabOnSidePanelLinkClick.Get();
 }
 
+const base::FeatureParam<bool> kScopeSidePanelStateToTab(
+    &kContextualTasksSidePanelTabState,
+    "scope_side_panel_state_to_tab",
+    true);
+
+bool ShouldScopeSidePanelStateToTab() {
+  return base::FeatureList::IsEnabled(kContextualTasksSidePanelTabState) &&
+         kScopeSidePanelStateToTab.Get();
+}
+
 BASE_FEATURE(kContextualTasksTabBasedSuggestions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

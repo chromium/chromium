@@ -127,7 +127,11 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
           {{"contextualize", "true"}}},
          {lens::features::kLensSidePanelUnification,
           {{"allow-signed-out", "true"}}}},
-        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
+        /*disabled_features=*/
+        {features::kNonBlockingOsClipboardReads,
+         // These tests expect closing the side panel to close Lens sessions in
+         // all tabs that share its task.
+         contextual_tasks::kContextualTasksSidePanelTabState});
   }
 
   void SetUpOnMainThread() override {

@@ -35,6 +35,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_test_user_variation.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -5749,6 +5750,342 @@ IN_PROC_BROWSER_TEST_F(
       }),
       UninstrumentWebContents(kInnerWebContentsId,
                               /*fail_if_not_instrumented=*/false));
+}
+
+namespace {
+
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabStateSidePanelToolbarId);
+
+constexpr char kTabStateSidePanelToolbarName[] = "TabStateSidePanelToolbar";
+constexpr char kTabStateThreadId[] = "thread1";
+constexpr char kTabStateThreadUrl[] =
+    "https://www.google.com/search?udm=50&q=Title+1&mtid=thread1";
+
+std::string RearchitectureParamName(const testing::TestParamInfo<bool>& info) {
+  return info.param ? "RearchitectureEnabled" : "RearchitectureDisabled";
+}
+
+}  // namespace
+
+// Tests that closing the side panel only applies to the tab where the user took
+// the action. The test param controls whether the Contextual Tasks
+// rearchitecture is enabled.
+class ContextualTasksSidePanelTabStateInteractiveUiTest
+    : public ContextualTasksInteractiveUiTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    enabled.push_back({kContextualTasksEphemeralBrandedEntryPoint,
+                       {{"ContextualTasksEntryPoint", entry_point_}}});
+    auto disabled = GetDefaultDisabledFeatures();
+    if (tab_state_enabled_) {
+      enabled.push_back({kContextualTasksSidePanelTabState, {}});
+    } else {
+      disabled.push_back(kContextualTasksSidePanelTabState);
+    }
+    if (IsRearchitectureEnabled()) {
+      enabled.push_back({kContextualTasksRearchitecture, {}});
+      enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
+    } else {
+      disabled.push_back(kContextualTasksRearchitecture);
+      disabled.push_back(kContextualTasksSidePanelRearchitecture);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+
+ protected:
+  bool IsRearchitectureEnabled() const { return GetParam(); }
+
+  ContextualTasksService* GetContextualTasksService() {
+    return ContextualTasksServiceFactory::GetForProfile(
+        browser()->GetProfile());
+  }
+
+  ContextualTasksPanelController* GetPanelController() {
+    return ContextualTasksPanelController::From(browser());
+  }
+
+  SessionID GetTabId(int index) {
+    return sessions::SessionTabHelper::IdForTab(
+        browser()->tab_strip_model()->GetWebContentsAt(index));
+  }
+
+  std::optional<base::Uuid> GetTaskIdForTab(int index) {
+    std::optional<ContextualTask> task =
+        GetContextualTasksService()->GetContextualTaskForTab(GetTabId(index));
+    if (!task) {
+      return std::nullopt;
+    }
+    return task->GetTaskId();
+  }
+
+  void ActivateTab(int index) {
+    browser()->tab_strip_model()->ActivateTabAt(index);
+  }
+
+  content::WebContents* GetPanelContents() {
+    return GetPanelController()->GetActiveWebContents();
+  }
+
+  bool IsPanelOpen() {
+    return GetPanelController()->IsPanelOpenForContextualTask();
+  }
+
+  // Returns whether `panel_contents` shows the thread with `kTabStateThreadId`.
+  bool ShowsThread(content::WebContents* panel_contents) {
+    if (!panel_contents) {
+      return false;
+    }
+    if (IsRearchitectureEnabled()) {
+      // The rearchitecture panel shows the AI page directly.
+      std::string thread_id;
+      return net::GetValueForKeyInQuery(panel_contents->GetLastCommittedURL(),
+                                        "mtid", &thread_id) &&
+             thread_id == kTabStateThreadId;
+    }
+    // The legacy panel shows a WebUI that embeds the AI page.
+    content::WebUI* web_ui = panel_contents->GetWebUI();
+    return web_ui && static_cast<ContextualTasksUI*>(web_ui->GetController())
+                             ->GetThreadId() == kTabStateThreadId;
+  }
+
+  // Adds tab1 and tab2, opens the panel on tab0 with a thread, and associates
+  // tab2 with the same task, as if it was opened from the panel. tab1 isn't
+  // associated with a task.
+  MultiStep OpenPanelWithSharedThread() {
+    return Steps(Do([this]() {
+                   chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+                   chrome::AddTabAt(browser(), GURL("about:blank"), -1, false);
+                   ContextualTasksUiServiceFactory::GetForBrowserContext(
+                       browser()->GetProfile())
+                       ->StartTaskUiInSidePanel(
+                           browser(), browser()->GetActiveTabInterface(),
+                           GURL(kTabStateThreadUrl), nullptr);
+                 }),
+                 WaitForShow(kContextualTasksSidePanelWebViewElementId),
+                 PollUntil([this]() { return ShowsThread(GetPanelContents()); },
+                           "Wait for the thread to load in the panel."),
+                 Do([this]() {
+                   std::optional<base::Uuid> task_id = GetTaskIdForTab(0);
+                   ASSERT_TRUE(task_id.has_value());
+                   shared_task_id_ = *task_id;
+                   GetContextualTasksService()->AssociateTabWithTask(
+                       shared_task_id_, GetTabId(2));
+                 }));
+  }
+
+  // Instruments the WebView that hosts the side panel toolbar as
+  // `kTabStateSidePanelToolbarId`. The toolbar is part of the panel content's
+  // WebUI in the legacy UI, and a separate WebUI in the rearchitecture.
+  MultiStep InstrumentSidePanelToolbar() {
+    if (IsRearchitectureEnabled()) {
+      return Steps(NameViewRelative(
+                       kContextualTasksSidePanelWebViewElementId,
+                       kTabStateSidePanelToolbarName,
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->toolbar_web_view();
+                       }),
+                   InstrumentNonTabWebView(kTabStateSidePanelToolbarId,
+                                           kTabStateSidePanelToolbarName));
+    }
+    return Steps(
+        NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                         kTabStateSidePanelToolbarName,
+                         [](ContextualTasksWebView* web_view) -> views::View* {
+                           return web_view->content_web_view();
+                         }),
+        InstrumentNonTabWebView(kTabStateSidePanelToolbarId,
+                                kTabStateSidePanelToolbarName));
+  }
+
+  // Clicks `button_id` in the side panel toolbar.
+  MultiStep ClickToolbarButton(const std::string& button_id) {
+    const DeepQuery kButton = {IsRearchitectureEnabled()
+                                   ? "contextual-tasks-toolbar-app"
+                                   : "contextual-tasks-app",
+                               "#toolbar", "#" + button_id};
+    return Steps(
+        InstrumentSidePanelToolbar(),
+        WaitForElementExists(kTabStateSidePanelToolbarId, kButton),
+        // The click can navigate or hide the panel, so don't wait for
+        // a response.
+        ExecuteJsAt(kTabStateSidePanelToolbarId, kButton, "el => el.click()",
+                    ExecuteJsMode::kFireAndForget));
+  }
+
+  std::string entry_point_ = "toolbar-ephemeral-branded";
+  bool tab_state_enabled_ = true;
+  base::Uuid shared_task_id_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksSidePanelTabStateInteractiveUiTest,
+                         testing::Bool(),
+                         &RearchitectureParamName);
+
+// This tests the following CUJ with the ephemeral toolbar button:
+//  (1) The side panel is open with the same thread on tab0 and tab2.
+//  (2) User closes the panel on tab0 from the toolbar's close button.
+//  (3) The panel stays open with the thread on tab2, and closed on tab0.
+//  (4) User reopens the panel on tab0, which resumes the thread.
+IN_PROC_BROWSER_TEST_P(ContextualTasksSidePanelTabStateInteractiveUiTest,
+                       CloseButton_KeepsPanelOpenOnTabsSharingThread) {
+  content::WebContents* panel_contents = nullptr;
+  RunTestSequence(
+      OpenPanelWithSharedThread(),
+      Do([&]() { panel_contents = GetPanelContents(); }),
+
+      ClickToolbarButton("closeButton"),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_FALSE(IsPanelOpen());
+        // tab0 stays on the thread so that the ephemeral button can resume it.
+        EXPECT_EQ(shared_task_id_, GetTaskIdForTab(0));
+
+        ActivateTab(2);
+        EXPECT_TRUE(IsPanelOpen());
+        EXPECT_EQ(panel_contents, GetPanelContents());
+        EXPECT_TRUE(ShowsThread(GetPanelContents()));
+
+        // tab1 doesn't have a thread.
+        ActivateTab(1);
+        EXPECT_FALSE(IsPanelOpen());
+
+        ActivateTab(0);
+        EXPECT_FALSE(IsPanelOpen());
+
+        // Switching between the tabs again keeps their state.
+        ActivateTab(2);
+        EXPECT_TRUE(IsPanelOpen());
+        ActivateTab(0);
+        EXPECT_FALSE(IsPanelOpen());
+
+        // Reopen the panel on tab0 as the ephemeral toolbar button does.
+        GetPanelController()->Show(
+            /*transition_from_tab=*/false,
+            omnibox::ChromeAimEntryPoint::
+                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_EQ(shared_task_id_, GetTaskIdForTab(0));
+        EXPECT_EQ(panel_contents, GetPanelContents());
+        EXPECT_TRUE(ShowsThread(GetPanelContents()));
+
+        ActivateTab(2);
+        EXPECT_TRUE(IsPanelOpen());
+        EXPECT_EQ(panel_contents, GetPanelContents());
+      }));
+}
+
+// This tests the following CUJ:
+//  (1) The side panel is open with the same thread on tab0 and tab2.
+//  (2) User closes the panel on tab0, and then closes tab0.
+//  (3) The panel stays open with the thread on tab2.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelTabStateInteractiveUiTest,
+    ClosePanelThenCloseTab_KeepsPanelOpenOnTabsSharingThread) {
+  content::WebContents* panel_contents = nullptr;
+  RunTestSequence(OpenPanelWithSharedThread(), Do([&]() {
+                    panel_contents = GetPanelContents();
+                    GetPanelController()->Close();
+                    EXPECT_FALSE(IsPanelOpen());
+
+                    // Close tab0, so tab1 and tab2 move to indices 0 and 1.
+                    browser()->tab_strip_model()->CloseWebContentsAt(
+                        0, TabCloseTypes::CLOSE_USER_GESTURE);
+                    ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+                    ActivateTab(1);
+                    EXPECT_EQ(shared_task_id_, GetTaskIdForTab(1));
+                    EXPECT_TRUE(IsPanelOpen());
+                    EXPECT_EQ(panel_contents, GetPanelContents());
+                    EXPECT_TRUE(ShowsThread(GetPanelContents()));
+                  }));
+}
+
+class ContextualTasksSidePanelTabStateNoEntryPointInteractiveUiTest
+    : public ContextualTasksSidePanelTabStateInteractiveUiTest {
+ public:
+  ContextualTasksSidePanelTabStateNoEntryPointInteractiveUiTest() {
+    entry_point_ = "no-entry-point";
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksSidePanelTabStateNoEntryPointInteractiveUiTest,
+    testing::Bool(),
+    &RearchitectureParamName);
+
+// This tests the following CUJ without the ephemeral toolbar button:
+//  (1) The side panel is open with the same thread on tab0 and tab2.
+//  (2) User closes the panel on tab0 from the toolbar's close button.
+//  (3) The panel stays open with the thread on tab2, and closed on tab0.
+//  (4) User reopens the panel on tab0, which starts a new thread.
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelTabStateNoEntryPointInteractiveUiTest,
+    CloseButton_ReopeningStartsNewThreadOnlyOnActiveTab) {
+  content::WebContents* panel_contents = nullptr;
+  RunTestSequence(
+      OpenPanelWithSharedThread(),
+      Do([&]() { panel_contents = GetPanelContents(); }),
+
+      ClickToolbarButton("closeButton"),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        EXPECT_FALSE(IsPanelOpen());
+        // tab0 leaves the thread, so reopening the panel starts a new one.
+        EXPECT_FALSE(GetTaskIdForTab(0).has_value());
+
+        ActivateTab(2);
+        EXPECT_TRUE(IsPanelOpen());
+        EXPECT_EQ(panel_contents, GetPanelContents());
+        EXPECT_TRUE(ShowsThread(GetPanelContents()));
+
+        ActivateTab(0);
+        EXPECT_FALSE(IsPanelOpen());
+        GetPanelController()->Show(
+            /*transition_from_tab=*/false,
+            omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        std::optional<base::Uuid> task_id = GetTaskIdForTab(0);
+        ASSERT_TRUE(task_id.has_value());
+        EXPECT_NE(shared_task_id_, *task_id);
+        EXPECT_NE(panel_contents, GetPanelContents());
+
+        // tab2 still shows the existing thread.
+        ActivateTab(2);
+        EXPECT_TRUE(IsPanelOpen());
+        EXPECT_EQ(shared_task_id_, GetTaskIdForTab(2));
+        EXPECT_EQ(panel_contents, GetPanelContents());
+      }));
+}
+
+// With side panel tab state disabled, closing the panel applies to all tabs
+// that share the thread.
+class ContextualTasksSidePanelTabStateDisabledInteractiveUiTest
+    : public ContextualTasksSidePanelTabStateInteractiveUiTest {
+ public:
+  ContextualTasksSidePanelTabStateDisabledInteractiveUiTest() {
+    tab_state_enabled_ = false;
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksSidePanelTabStateDisabledInteractiveUiTest,
+    testing::Bool(),
+    &RearchitectureParamName);
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSidePanelTabStateDisabledInteractiveUiTest,
+    CloseButton_ClosesPanelOnTabsSharingThread) {
+  RunTestSequence(
+      OpenPanelWithSharedThread(), ClickToolbarButton("closeButton"),
+      WaitForHide(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        ActivateTab(2);
+        EXPECT_FALSE(IsPanelOpen());
+      }));
 }
 
 }  // namespace contextual_tasks
