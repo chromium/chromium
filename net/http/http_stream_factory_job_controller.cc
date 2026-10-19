@@ -705,10 +705,12 @@ void HttpStreamFactory::JobController::OnConnectionInitialized(Job* job,
     // `rv` is either `ERR_IO_PENDING` (the QUIC crypto handshake is in flight,
     // so unblock the main job and start its delayed-TCP wait timer) or an
     // actual connection initiation error (resume immediately if FastFail is
-    // enabled).
+    // enabled, or if DNS has no QUIC endpoint for `job`).
     base::TimeDelta delay = main_job_wait_time_;
     if ((job == alternative_job_.get() || job == dns_alpn_h3_job_.get()) &&
-        features::kAsyncDnsQuicJobFastFail.Get() && rv != ERR_IO_PENDING) {
+        rv != ERR_IO_PENDING &&
+        (features::kAsyncDnsQuicJobFastFail.Get() ||
+         rv == ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)) {
       delay = base::TimeDelta();
     }
     return MaybeResumeMainJob(job, delay);

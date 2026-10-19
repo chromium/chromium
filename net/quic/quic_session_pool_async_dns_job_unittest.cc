@@ -939,6 +939,102 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, PartialResultWithoutUsableEndpoint) {
   socket_data.ExpectAllWriteDataConsumed();
 }
 
+// When `require_dns_https_alpn` is true, a fresh crypto-ready partial update
+// whose endpoints lack a matching QUIC ALPN fires the host resolution and
+// session creation signals with ERR_DNS_NO_MATCHING_SUPPORTED_ALPN while DNS
+// is still resolving, so that the caller stops waiting on the job. The job and
+// its resolver request stay alive until DNS finishes.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       PartialResultWithoutMatchingAlpnSignalsWhenAlpnRequired) {
+  quic_params_->supported_versions = {version_};
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+
+  RequestBuilder builder(this);
+  builder.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder.require_dns_https_alpn = true;
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback host_resolution_callback;
+  EXPECT_TRUE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
+  TestCompletionCallback creation_callback;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+  }
+
+  // Simulate A (or AAAA) and HTTPS finishing where HTTPS only advertises "h2"
+  // (or no HTTPS record was returned), while the other address family query is
+  // still in flight.
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v4(kIpv4Addr1, kDefaultServerPort)
+                                     .set_alpns({"h2"})
+                                     .endpoint());
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v4(kIpv4Addr1, kDefaultServerPort)
+                                     .endpoint());
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  // Both signals fire inside the partial update.
+  ASSERT_TRUE(host_resolution_callback.have_result());
+  EXPECT_THAT(host_resolution_callback.WaitForResult(),
+              IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
+  if (async_quic_session()) {
+    ASSERT_TRUE(creation_callback.have_result());
+    EXPECT_THAT(creation_callback.WaitForResult(),
+                IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
+  }
+  EXPECT_FALSE(builder.request.dns_resolution_start_time().is_null());
+  EXPECT_FALSE(builder.request.dns_resolution_end_time().is_null());
+
+  // The job does not complete, and keeps the resolver request alive.
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_TRUE(endpoint_request);
+
+  // A request that joins the job after the signals is told right away that no
+  // QUIC endpoint is usable, and is not promised either signal.
+  TestCompletionCallback callback2;
+  RequestBuilder builder2(this);
+  builder2.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder2.require_dns_https_alpn = true;
+  builder2.callback = callback2.callback();
+  EXPECT_THAT(builder2.CallRequest(), IsError(ERR_IO_PENDING));
+  EXPECT_EQ(builder2.request.last_attempt_failure(),
+            ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+  TestCompletionCallback host_resolution_callback2;
+  EXPECT_FALSE(builder2.request.WaitForHostResolution(
+      host_resolution_callback2.callback()));
+  TestCompletionCallback creation_callback2;
+  EXPECT_FALSE(builder2.request.WaitForQuicSessionCreation(
+      creation_callback2.callback()));
+
+  // A later update from the remaining address family query does not fire the
+  // signals again.
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v6("2001:db8::1", kDefaultServerPort)
+                                     .set_alpns({"h2"})
+                                     .endpoint());
+  endpoint_request->CallOnServiceEndpointsUpdated();
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_TRUE(endpoint_request);
+
+  // The job completes when DNS finishes.
+  endpoint_request->CallOnServiceEndpointRequestFinished(OK);
+  ASSERT_TRUE(callback_.have_result());
+  EXPECT_THAT(callback_.WaitForResult(),
+              IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
+  ASSERT_TRUE(callback2.have_result());
+  EXPECT_THAT(callback2.WaitForResult(),
+              IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN));
+  EXPECT_FALSE(HasActiveSession(kDefaultDestination, PRIVACY_MODE_DISABLED,
+                                NetworkAnonymizationKey(), ProxyChain::Direct(),
+                                SessionUsage::kDestination,
+                                /*require_dns_https_alpn=*/true));
+}
+
 // A partial update that is not crypto ready does not start an attempt even
 // when a usable endpoint is visible.
 TEST_P(QuicSessionPoolAsyncDnsJobTest, PartialResultNotCryptoReady) {
@@ -5813,6 +5909,65 @@ TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
   stale_ipv4_data.ExpectAllWriteDataConsumed();
   fresh_ipv4_data.ExpectAllReadDataConsumed();
   fresh_ipv4_data.ExpectAllWriteDataConsumed();
+}
+
+// When `require_dns_https_alpn` is true, a stale crypto-ready update lacking a
+// matching QUIC ALPN must not fail the job early; it must wait for fresh DNS
+// results, which may advertise a compatible QUIC ALPN.
+TEST_P(QuicSessionPoolAsyncDnsJobOptimisticDnsTest,
+       StaleResultWithoutMatchingAlpnWaitsForFreshWhenAlpnRequired) {
+  quic_params_->supported_versions = {version_};
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  builder.quic_version = quic::ParsedQuicVersion::Unsupported();
+  builder.require_dns_https_alpn = true;
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback host_resolution_callback;
+  EXPECT_TRUE(builder.request.WaitForHostResolution(
+      host_resolution_callback.callback()));
+
+  // Stale cache entry has no QUIC ALPN. The job must not fail early.
+  endpoint_request->set_is_stale_while_refreshing(true);
+  endpoint_request->add_endpoint(ServiceEndpointBuilder()
+                                     .add_v4(kIpv4Addr1, kDefaultServerPort)
+                                     .set_alpns({"h2"})
+                                     .endpoint());
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  EXPECT_FALSE(host_resolution_callback.have_result());
+  EXPECT_TRUE(builder.request.dns_resolution_end_time().is_null());
+  EXPECT_FALSE(callback_.have_result());
+  ASSERT_TRUE(endpoint_request);
+
+  FastForwardBy(base::Milliseconds(10));
+
+  // Fresh DNS update arrives with a compatible QUIC ALPN.
+  endpoint_request->set_is_stale_while_refreshing(false);
+  endpoint_request->set_endpoints(
+      {ServiceEndpointBuilder()
+           .add_v4(kIpv4Addr1, kDefaultServerPort)
+           .set_alpns({quic::AlpnForVersion(version_)})
+           .endpoint()});
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_TRUE(host_resolution_callback.have_result());
+  EXPECT_EQ(builder.request.dns_resolution_end_time(), base::TimeTicks::Now());
+
+  socket_data.ExpectAllReadDataConsumed();
+  socket_data.ExpectAllWriteDataConsumed();
 }
 
 }  // namespace net::test

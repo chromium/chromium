@@ -4678,6 +4678,23 @@ TEST_F(HttpStreamFactoryJobControllerTest,
                               /*expect_immediate_resume=*/false);
 }
 
+// ERR_DNS_NO_MATCHING_SUPPORTED_ALPN means DNS has no QUIC endpoint, so the
+// main job resumes immediately even without FastFail.
+TEST_F(HttpStreamFactoryJobControllerTest,
+       OnConnectionInitializedNoMatchingAlpnResumesMainJobImmediately) {
+  TestOnConnectionInitialized(/*use_alternative_job=*/true,
+                              ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
+                              /*expect_immediate_resume=*/true);
+}
+
+TEST_F(
+    HttpStreamFactoryJobControllerTest,
+    OnConnectionInitializedDnsAlpnH3JobNoMatchingAlpnResumesMainJobImmediately) {
+  TestOnConnectionInitialized(/*use_alternative_job=*/false,
+                              ERR_DNS_NO_MATCHING_SUPPORTED_ALPN,
+                              /*expect_immediate_resume=*/true);
+}
+
 void HttpStreamFactoryJobControllerTest::TestFirstQuicCandidateFails(
     bool async_quic_session,
     bool fast_fail,

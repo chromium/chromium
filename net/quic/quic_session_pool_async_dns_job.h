@@ -319,6 +319,20 @@ class QuicSessionPool::AsyncDnsJob
   // True when a connector has an attempt in flight.
   bool HasAttemptInFlight() const;
 
+  // True when `require_dns_https_alpn_` is set and fresh crypto-ready DNS
+  // results are present but contain no usable QUIC endpoints. Once the HTTPS
+  // record has been evaluated without a matching ALPN, remaining A/AAAA
+  // queries cannot make any endpoint usable.
+  bool FreshEndpointsLackRequiredAlpn() const;
+
+  // Called when FreshEndpointsLackRequiredAlpn() is true and nothing is in
+  // flight while DNS is still resolving. Fires the pending host resolution and
+  // session creation signals with ERR_DNS_NO_MATCHING_SUPPORTED_ALPN so that
+  // callers stop waiting on this job, but does not complete the job. The job
+  // and its resolver request stay alive until DNS finishes, so that non-QUIC
+  // connection attempts can join the in-flight resolution. Only the first call
+  // has an effect.
+  void SignalNoMatchingAlpn();
 
   // Returns the result of the most recently failed attempt, or nothing while
   // no attempt failed.
@@ -374,6 +388,8 @@ class QuicSessionPool::AsyncDnsJob
   // Set when the one-shot session creation signal fired. Later creation
   // results are dropped.
   bool session_creation_notified_ = false;
+  // Set by SignalNoMatchingAlpn().
+  bool no_matching_alpn_signaled_ = false;
   // Cleared after the first IP pooling check that saw endpoints. Later
   // checks do not record negative metric entries.
   bool log_negative_ip_pool_result_ = true;

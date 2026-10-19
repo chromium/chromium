@@ -166,7 +166,11 @@ int QuicSessionPool::AsyncDnsJob::Run(CompletionOnceCallback callback) {
 
 void QuicSessionPool::AsyncDnsJob::SetRequestExpectations(
     QuicSessionRequest* request) {
-  if (last_attempt_failure_.has_value()) {
+  if (no_matching_alpn_signaled_) {
+    // No QUIC endpoint can become usable before DNS finishes, so let the new
+    // request's caller stop waiting on this job right away.
+    request->set_last_attempt_failure(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+  } else if (last_attempt_failure_.has_value()) {
     request->set_last_attempt_failure(last_attempt_failure_->rv);
   }
   if (!host_resolution_notified_) {
@@ -261,6 +265,14 @@ void QuicSessionPool::AsyncDnsJob::OnServiceEndpointsUpdated() {
 
   std::optional<int> rv = ProcessServiceEndpointResults();
   if (!rv.has_value()) {
+    if (FreshEndpointsLackRequiredAlpn()) {
+      // No QUIC endpoint can become usable before DNS finishes. Unblock the
+      // waiting non-QUIC jobs now, but keep the job and its resolver request
+      // alive until DNS finishes so that they can join the in-flight
+      // resolution instead of starting a new one.
+      SignalNoMatchingAlpn();
+      return;
+    }
     if (!host_resolution_notified_ && LastFailureResult().has_value()) {
       NotifyRequestsOfHostResolution(*LastFailureResult());
     }
@@ -865,6 +877,35 @@ bool QuicSessionPool::AsyncDnsJob::HasAttemptInFlight() const {
           stale_state_.secondary_connector->has_attempt_in_flight());
 }
 
+bool QuicSessionPool::AsyncDnsJob::FreshEndpointsLackRequiredAlpn() const {
+  return require_dns_https_alpn_ && service_endpoint_request_ &&
+         service_endpoint_request_->EndpointsCryptoReady() &&
+         !service_endpoint_request_->IsStaleWhileRefreshing() &&
+         !service_endpoint_request_->GetEndpointResults().empty() &&
+         GetUsableEndpoints().empty();
+}
+
+void QuicSessionPool::AsyncDnsJob::SignalNoMatchingAlpn() {
+  if (no_matching_alpn_signaled_) {
+    return;
+  }
+  no_matching_alpn_signaled_ = true;
+  MaybeSetDnsResolutionEndTime();
+
+  auto weak_this = weak_factory_.GetWeakPtr();
+  if (!host_resolution_notified_) {
+    NotifyRequestsOfHostResolution(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+    if (!weak_this) {
+      return;
+    }
+  }
+  // Requests are promised the session creation signal only when
+  // kAsyncQuicSession is enabled. See SetRequestExpectations().
+  if (!session_creation_notified_ &&
+      base::FeatureList::IsEnabled(features::kAsyncQuicSession)) {
+    NotifyRequestsOfSessionCreation(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN);
+  }
+}
 
 std::optional<int> QuicSessionPool::AsyncDnsJob::LastFailureResult() const {
   if (!last_attempt_failure_.has_value()) {
