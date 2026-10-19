@@ -1,0 +1,19 @@
+Cast the length passed to memmove() in StringBuilder::AddSubstring() to
+size_t, which silences a signedness conversion warning.
+
+Chromium commit 38e34d99eaf86, Bug: 1292951. Upstream in 701e5e790f49
+(v3.2.1).
+
+diff --git a/src/double-conversion/utils.h b/src/double-conversion/utils.h
+index c84c0fa56be50..0cf6c5ca8d2f9 100644
+--- a/src/double-conversion/utils.h
++++ b/src/double-conversion/utils.h
+@@ -288,7 +288,7 @@ class StringBuilder {
+   void AddSubstring(const char* s, int n) {
+     DOUBLE_CONVERSION_ASSERT(!is_finalized() && position_ + n < buffer_.length());
+     DOUBLE_CONVERSION_ASSERT(static_cast<size_t>(n) <= strlen(s));
+-    memmove(&buffer_[position_], s, n);
++    memmove(&buffer_[position_], s, static_cast<size_t>(n));
+     position_ += n;
+   }
+ 

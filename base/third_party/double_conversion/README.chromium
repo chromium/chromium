@@ -16,3 +16,8 @@ Provides binary-decimal and decimal-binary routines for IEEE doubles.
 
 Local Modifications:
 Added cast - https://github.com/google/double-conversion/pull/182
+
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from
+this directory:
+crowbar build --no-dry-run ./

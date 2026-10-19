@@ -1,0 +1,15 @@
+upstream {
+  commit: "32bc443c60c860eb6b4843533a614766d611172e"
+  artifacts {
+    git {
+      repository: "https://github.com/google/double-conversion"
+      commit: "32bc443c60c860eb6b4843533a614766d611172e"
+    }
+  }
+}
+stages {
+  input {
+    patch { copybara {} }
+  }
+  publish { git {} }
+}
