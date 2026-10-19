@@ -705,8 +705,8 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
     bool rest_of_the_chain_already_appled = false;
     const LayoutObject* current_object = &layout_object;
     while (!rest_of_the_chain_already_appled && current_object) {
-      const auto* reference_clip =
-          To<ReferenceClipPathOperation>(current_object->Style().ClipPath());
+      const auto* reference_clip = DynamicTo<ReferenceClipPathOperation>(
+          current_object->Style().ClipPath());
       if (!reference_clip || reference_clip->IsLoading()) {
         break;
       }
