@@ -152,6 +152,8 @@ class WebViewAutofillClientIOS : public AutofillClientIOS {
   // Returns null if the embedder cannot authenticate the user.
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
       std::string histogram) const override;
+  std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+  GetDeviceAuthAvailabilityChecker() const override;
 
   LogManager* GetCurrentLogManager() override;
 

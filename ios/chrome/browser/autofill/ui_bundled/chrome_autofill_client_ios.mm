@@ -83,6 +83,7 @@
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
+#import "ios/chrome/browser/device_reauth/model/ios_device_auth_availability_checker.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator_factory.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
@@ -771,6 +772,14 @@ ChromeAutofillClientIOS::GetIOSDeviceAuthenticator(
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeAutofillClientIOS::GetDeviceAuthenticator(std::string histogram) const {
   return GetIOSDeviceAuthenticator(std::move(histogram));
+}
+
+std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+ChromeAutofillClientIOS::GetDeviceAuthAvailabilityChecker() const {
+  id<ReauthenticationProtocol> reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(profile_)
+          ->GetReauthModule();
+  return CreateIOSDeviceAuthAvailabilityChecker(reauthModule);
 }
 
 std::optional<std::u16string> ChromeAutofillClientIOS::GetUserEmail() {

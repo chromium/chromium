@@ -36,7 +36,10 @@
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "net/base/schemeful_site.h"
@@ -358,16 +361,17 @@ int64_t AutofillClient::GetNavigationId() const {
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-AutofillClient::GetDeviceAuthenticator(std::string histogram) const {
-  return nullptr;
-}
-
-std::unique_ptr<device_reauth::DeviceAuthenticator>
 AutofillClient::GetDeviceAuthenticator() const {
   return GetDeviceAuthenticator("");
 }
 
 bool AutofillClient::SupportsDeviceReauth() const {
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker =
+        GetDeviceAuthAvailabilityChecker();
+    return checker && checker->CanAuthenticateWithBiometricOrScreenLock();
+  }
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
       GetDeviceAuthenticator();
   return authenticator &&

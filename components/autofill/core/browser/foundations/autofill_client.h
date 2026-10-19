@@ -58,8 +58,9 @@ class ConsentAuditor;
 }
 
 namespace device_reauth {
+class DeviceAuthAvailabilityChecker;
 class DeviceAuthenticator;
-}
+}  // namespace device_reauth
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -834,18 +835,49 @@ class AutofillClient {
   // to the use of a large keyboard accessory view. See b/40942168.
   virtual bool ShouldFormatForLargeKeyboardAccessory() const;
 
-  // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
-  // platform is not supported.
-  virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
-  GetDeviceAuthenticator() const;
+  // Convenience wrapper for `GetDeviceAuthenticator("")`.
+  std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
+      const;
 
-  // Same as `GetDeviceAuthenticator()` but also logs authentication results to
-  // `histogram`.
+  // Returns a new authenticator used to prompt the user for device
+  // authentication (e.g. biometrics or screen lock / passcode) and record
+  // authentication metrics to `histogram`. Might be `nullptr` if device
+  // authentication is unsupported by the embedder or platform.
+  //
+  // Use `GetDeviceAuthenticator()` to initiate an interactive authentication
+  // flow (e.g. `AuthenticateWithMessage()`). To query whether device
+  // authentication is available or supported on the device prior to initiating
+  // a flow, use `GetDeviceAuthAvailabilityChecker()` if
+  // `kDeviceReauthRefactor` is enabled.
+  //
+  // Note: both the `DeviceAuthenticator` and
+  // `DeviceAuthAvailabilityChecker` should have the same level of support
+  // for a given embedder/platform, so there should be no situation in which
+  // only one of them is null.
+  //
+  // A new instance should be used for each authentication attempt.
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
-  GetDeviceAuthenticator(std::string histogram) const;
+  GetDeviceAuthenticator(std::string histogram) const = 0;
 
-  // Returns true if the device supports any kind of re-auth through the
-  // `GetDeviceAuthenticator()`.
+  // Returns a new checker used to passively query whether device authentication
+  // (biometrics or screen lock) is supported and available on the device.
+  // Unlike `GetDeviceAuthenticator()`, this method and the returned checker
+  // never trigger user prompts. Might be `nullptr` if unsupported by the
+  // embedder or platform.
+  //
+  // Note: both the `DeviceAuthenticator` and
+  // `DeviceAuthAvailabilityChecker` should have the same level of support
+  // for a given embedder/platform, so there should be no situation in which
+  // only one of them is null.
+  //
+  // To be used if `kDeviceReauthRefactor` is enabled.
+  //
+  // It's cheap to construct, so it doesn't need to be persisted between
+  // queries.
+  virtual std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+  GetDeviceAuthAvailabilityChecker() const = 0;
+
+  // Returns `true` if the device supports any kind of re-auth.
   virtual bool SupportsDeviceReauth() const;
 
   // Attaches the IPH for `feature` to the `field`, on

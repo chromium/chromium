@@ -154,6 +154,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/buildflags.h"
 #include "components/critical_actions/core/browser/critical_action_service.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/one_time_tokens/core/common/one_time_token_features.h"
@@ -1272,6 +1273,16 @@ ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
 
   return ChromeDeviceAuthenticatorFactory::GetForProfile(
       GetProfile(), web_contents()->GetTopLevelNativeWindow(), params);
+#else
+  return nullptr;
+#endif
+}
+
+std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+ChromeAutofillClient::GetDeviceAuthAvailabilityChecker() const {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_CHROMEOS)
+  return ChromeDeviceAuthenticatorFactory::CreateAvailabilityChecker();
 #else
   return nullptr;
 #endif

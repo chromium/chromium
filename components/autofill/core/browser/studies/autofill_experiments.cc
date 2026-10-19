@@ -25,6 +25,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -241,6 +242,16 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
   std::string country_code = base::ToUpperASCII(user_country_code);
   return Iban::IsIbanApplicableInCountry(country_code) ||
          prefs::HasSeenIban(pref_service);
+}
+
+bool IsDeviceAuthAvailable(
+    device_reauth::DeviceAuthAvailabilityChecker* checker) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  CHECK(checker);
+  return checker->CanAuthenticateWithBiometricOrScreenLock();
+#else
+  return false;
+#endif
 }
 
 bool IsDeviceAuthAvailable(

@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -28,6 +29,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using device_reauth::MockDeviceAuthAvailabilityChecker;
 using device_reauth::MockDeviceAuthenticator;
 using testing::Return;
 
@@ -42,6 +44,7 @@ class AutofillExperimentsTest : public testing::Test {
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());
     prefs::RegisterProfilePrefs(pref_service_.registry());
     log_manager_ = LogManager::Create(nullptr, base::NullCallback());
+    mock_checker_ = std::make_unique<MockDeviceAuthAvailabilityChecker>();
     mock_device_authenticator_ = std::make_unique<MockDeviceAuthenticator>();
   }
 
@@ -63,6 +66,8 @@ class AutofillExperimentsTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<LogManager> log_manager_;
+  std::unique_ptr<device_reauth::MockDeviceAuthAvailabilityChecker>
+      mock_checker_;
   std::unique_ptr<device_reauth::MockDeviceAuthenticator>
       mock_device_authenticator_;
 };
@@ -326,11 +331,15 @@ TEST_F(
     AutofillExperimentsTest,
     IsDeviceAuthAvailable_FeatureEnabledAndAuthenticationAvailableForMacAndWin) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  ON_CALL(*mock_checker_, CanAuthenticateWithBiometricOrScreenLock)
+      .WillByDefault(Return(true));
   ON_CALL(*mock_device_authenticator_, CanAuthenticateWithBiometricOrScreenLock)
       .WillByDefault(Return(true));
 
+  EXPECT_TRUE(IsDeviceAuthAvailable(mock_checker_.get()));
   EXPECT_TRUE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 #else
+  EXPECT_FALSE(IsDeviceAuthAvailable(mock_checker_.get()));
   EXPECT_FALSE(IsDeviceAuthAvailable(mock_device_authenticator_.get()));
 #endif
 }

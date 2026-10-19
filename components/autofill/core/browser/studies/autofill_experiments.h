@@ -18,6 +18,7 @@ class SyncService;
 }
 
 namespace device_reauth {
+class DeviceAuthAvailabilityChecker;
 class DeviceAuthenticator;
 }
 
@@ -55,6 +56,8 @@ bool ShouldShowIbanOnSettingsPage(const std::string& user_country_code,
 
 // Returns true if we can use device authentication to authenticate the user.
 // We currently only support biometric authentication for the same.
+bool IsDeviceAuthAvailable(
+    device_reauth::DeviceAuthAvailabilityChecker* checker);
 bool IsDeviceAuthAvailable(
     device_reauth::DeviceAuthenticator* device_authenticator);
 

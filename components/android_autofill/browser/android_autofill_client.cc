@@ -26,6 +26,8 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/credential_management/android/features.h"
 #include "components/credential_management/android/third_party_credential_manager_impl.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/content/android/security_state_client.h"
 #include "components/security_state/content/android/security_state_model_delegate.h"
@@ -305,6 +307,16 @@ AndroidAutofillClient::GetFormInteractionsUkmLogger() {
 metrics::ProfileMetricsService*
 AndroidAutofillClient::GetProfileMetricsService() {
   NOTREACHED();
+}
+
+std::unique_ptr<device_reauth::DeviceAuthenticator>
+AndroidAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
+  return nullptr;
+}
+
+std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+AndroidAutofillClient::GetDeviceAuthAvailabilityChecker() const {
+  return nullptr;
 }
 
 content::WebContents& AndroidAutofillClient::GetWebContents() const {

@@ -121,6 +121,8 @@ ios_web_view_sources = [
   "//ios/web_view/internal/autofill/web_view_autofill_image_fetcher_impl.mm",
   "//ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h",
   "//ios/web_view/internal/autofill/web_view_autofill_log_router_factory.mm",
+  "//ios/web_view/internal/autofill/web_view_device_auth_availability_checker.h",
+  "//ios/web_view/internal/autofill/web_view_device_auth_availability_checker.mm",
   "//ios/web_view/internal/autofill/web_view_device_authenticator.h",
   "//ios/web_view/internal/autofill/web_view_device_authenticator.mm",
   "//ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h",

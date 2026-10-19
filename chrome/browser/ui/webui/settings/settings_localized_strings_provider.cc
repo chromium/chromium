@@ -85,6 +85,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/device_reauth/device_auth_availability_checker.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
@@ -1593,6 +1594,11 @@ bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kDeviceReauthRefactor)) {
+    return autofill::IsDeviceAuthAvailable(
+        client->GetDeviceAuthAvailabilityChecker().get());
+  }
   return autofill::IsDeviceAuthAvailable(
       client->GetDeviceAuthenticator().get());
 }

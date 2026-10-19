@@ -29,6 +29,7 @@
 #import "ios/web_view/internal/autofill/ios_web_view_payments_autofill_client.h"
 #import "ios/web_view/internal/autofill/web_view_autocomplete_history_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
+#import "ios/web_view/internal/autofill/web_view_device_auth_availability_checker.h"
 #import "ios/web_view/internal/autofill/web_view_device_authenticator.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 #import "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
@@ -336,6 +337,17 @@ WebViewAutofillClientIOS::GetDeviceAuthenticator(std::string histogram) const {
     return nullptr;
   }
   return std::make_unique<WebViewDeviceAuthenticator>(bridge_);
+}
+
+std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+WebViewAutofillClientIOS::GetDeviceAuthAvailabilityChecker() const {
+  // Without an embedder that can prompt, there is no way to authenticate.
+  // Returning null keeps consumers on their "no authenticator" path (for
+  // mandatory re-auth, filling without authentication).
+  if (![bridge_ canAuthenticateUser]) {
+    return nullptr;
+  }
+  return std::make_unique<WebViewDeviceAuthAvailabilityChecker>();
 }
 
 }  // namespace autofill

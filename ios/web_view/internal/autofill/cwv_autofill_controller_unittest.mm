@@ -46,6 +46,7 @@
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/test_form_activity_tab_helper.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_string.h"
@@ -2430,6 +2431,10 @@ TEST_F(CWVAutofillControllerMandatoryReauthTest, DeviceAuthenticatorCancel) {
 // Test that the client only vends a device authenticator when the delegate can
 // authenticate, so that mandatory re-auth is skipped otherwise.
 TEST_F(CWVAutofillControllerMandatoryReauthTest, GetDeviceAuthenticator) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::kDeviceReauthRefactor);
+
   std::unique_ptr<autofill::WebViewAutofillClientIOS> client =
       CreateClientBridgedToController();
   autofill::payments::MandatoryReauthManager* manager =
@@ -2444,6 +2449,30 @@ TEST_F(CWVAutofillControllerMandatoryReauthTest, GetDeviceAuthenticator) {
   autofill_controller_.delegate =
       OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
   EXPECT_TRUE(client->GetDeviceAuthenticator());
+}
+
+// Test that the client only vends a device auth availability checker when the
+// delegate can authenticate, so that mandatory re-auth is skipped otherwise.
+TEST_F(CWVAutofillControllerMandatoryReauthTest,
+       GetDeviceAuthAvailabilityChecker) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::kDeviceReauthRefactor);
+
+  std::unique_ptr<autofill::WebViewAutofillClientIOS> client =
+      CreateClientBridgedToController();
+  autofill::payments::MandatoryReauthManager* manager =
+      client->GetPaymentsAutofillClient()
+          ->GetOrCreatePaymentsMandatoryReauthManager();
+
+  EXPECT_FALSE(client->GetDeviceAuthAvailabilityChecker());
+  EXPECT_EQ(autofill::payments::MandatoryReauthAuthenticationMethod::kUnknown,
+            manager->GetAuthenticationMethod());
+  EXPECT_FALSE(manager->IsDeviceAuthenticationSupported());
+
+  autofill_controller_.delegate =
+      OCMProtocolMock(@protocol(CWVAutofillControllerDelegate));
+  EXPECT_TRUE(client->GetDeviceAuthAvailabilityChecker());
 }
 
 // Test the end-to-end `MandatoryReauthManager` flow, which transfers ownership

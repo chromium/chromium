@@ -76,6 +76,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
@@ -578,6 +579,27 @@ class TestAutofillClientTemplate : public T {
         // BUILDFLAG(IS_CHROMEOS)
   }
 
+  std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+  GetDeviceAuthAvailabilityChecker() const override {
+    if (device_auth_availability_checker_) {
+      return std::move(device_auth_availability_checker_);
+    }
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_CHROMEOS)
+    return std::make_unique<device_reauth::MockDeviceAuthAvailabilityChecker>();
+#else
+    return nullptr;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_CHROMEOS)
+  }
+
+  // Sets the `DeviceAuthAvailabilityChecker` to return on the next call to
+  // `GetDeviceAuthAvailabilityChecker()`.
+  void set_device_auth_availability_checker(
+      std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker> checker) {
+    device_auth_availability_checker_ = std::move(checker);
+  }
+
 #if BUILDFLAG(IS_IOS)
   bool IsLastQueriedField(FieldGlobalId field_id) override { return true; }
 #endif
@@ -994,6 +1016,9 @@ class TestAutofillClientTemplate : public T {
   bool is_credit_card_upload_enabled_ = true;
 
   bool supports_device_reauth_ = true;
+
+  mutable std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
+      device_auth_availability_checker_;
 
   bool is_tab_in_actor_mode_ = false;
 
