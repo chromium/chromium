@@ -976,9 +976,7 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   if (!gesture_listener_manager_)
     return;
 
-  base::WeakPtr<RenderWidgetHostViewAndroid> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-
+  input::ScopedInputDispatchPin pin(this);
   UpdateTouchSelectionController(
       metadata.selection, metadata.page_scale_factor,
       metadata.browser_controls_metadata.top_controls_height,
@@ -987,7 +985,7 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
 
   // Abort if the view was destroyed during UpdateTouchSelectionController
   // (e.g. via synchronous JNI callout to Java).
-  if (!weak_this) {
+  if (destroy_pending()) {
     return;
   }
 
@@ -2258,8 +2256,10 @@ void RenderWidgetHostViewAndroid::SelectBetweenCoordinates(
 
 void RenderWidgetHostViewAndroid::OnSelectionEvent(
     ui::SelectionEventType event) {
-  if (!selection_popup_controller_)
+  if (destroy_pending() || !selection_popup_controller_) {
     return;
+  }
+  input::ScopedInputDispatchPin pin(this);
   CHECK(touch_selection_controller_, base::NotFatalUntil::M152);
   // If a selection drag has started, it has taken over the active touch
   // sequence. Immediately cancel gesture detection and any downstream touch
@@ -2280,6 +2280,9 @@ void RenderWidgetHostViewAndroid::OnSelectionEvent(
     }
     if (gesture_provider_->GetCurrentDownEvent()) {
       ResetGestureDetection();
+      if (destroy_pending() || !selection_popup_controller_) {
+        return;
+      }
     }
   }
   selection_popup_controller_->OnSelectionEvent(
@@ -2383,12 +2386,17 @@ void RenderWidgetHostViewAndroid::UpdateTouchSelectionController(
     float top_controls_height,
     float top_controls_shown_ratio,
     const gfx::SizeF& scrollable_viewport_size_dip) {
-  if (!touch_selection_controller_)
+  if (destroy_pending() || !touch_selection_controller_) {
     return;
+  }
+  input::ScopedInputDispatchPin pin(this);
 
   CHECK(touch_selection_controller_client_manager_, base::NotFatalUntil::M152);
   touch_selection_controller_client_manager_->UpdateClientSelectionBounds(
       selection.start, selection.end, this, nullptr);
+  if (destroy_pending()) {
+    return;
+  }
   OnUpdateScopedSelectionHandles();
 
   // Set parameters for adaptive handle orientation.
