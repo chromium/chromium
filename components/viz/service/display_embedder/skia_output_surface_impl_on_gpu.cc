@@ -648,14 +648,15 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
 
-  int sample_count = 0;
   SkSurfaceProps surface_props;
   if (ddl) {
-    sample_count = ddl->characterization().sampleCount();
     surface_props = ddl->characterization().surfaceProps();
   }
+  // Render pass DDLs are always characterized without MSAA (see
+  // SkiaOutputSurfaceImpl::CreateGrSurfaceCharacterizationRenderPass()), and
+  // Graphite ignores the sample count.
   auto local_scoped_access = skia_representation->BeginScopedWriteAccess(
-      sample_count, surface_props, update_rect, &begin_semaphores,
+      /*final_msaa_count=*/1, surface_props, update_rect, &begin_semaphores,
       &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
   if (!local_scoped_access) {
