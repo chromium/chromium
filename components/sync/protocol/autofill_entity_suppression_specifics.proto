@@ -13,6 +13,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// LINT.IfChange(EntitySuppressionKey)
 message EntitySuppressionKey {
   message Attribute {
     optional string name = 1;
@@ -25,7 +26,9 @@ message EntitySuppressionKey {
   // The set of attributes identifying the entity instance.
   repeated Attribute attributes = 2;
 }
+// LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.cc:TrimEntitySuppressionKey)
 
+// LINT.IfChange(AutofillEntitySuppressionSpecifics)
 message AutofillEntitySuppressionSpecifics {
   // Random UUIDv4 identifying this record.
   optional string guid = 1;
@@ -38,3 +41,4 @@ message AutofillEntitySuppressionSpecifics {
   // The time the suppression was created.
   optional int64 creation_time_windows_epoch_micros = 4;
 }
+// LINT.ThenChange(//components/autofill/core/browser/webdata/personal_context/entity_suppression_sync_util.cc:TrimAutofillEntitySuppressionSpecificsDataForCaching)

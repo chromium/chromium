@@ -27,6 +27,7 @@ namespace {
 
 using testing::NiceMock;
 using testing::Return;
+using testing::ReturnRef;
 
 class MockEntitySuppressionManagerObserver
     : public EntitySuppressionManager::Observer {
@@ -43,6 +44,8 @@ class EntitySuppressionManagerImplTest : public testing::Test {
 
   void SetUp() override {
     ON_CALL(mock_processor_, IsTrackingMetadata()).WillByDefault(Return(true));
+    ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
+        .WillByDefault(ReturnRef(sync_pb::EntitySpecifics::default_instance()));
     auto bridge = std::make_unique<EntitySuppressionSyncBridge>(
         mock_processor_.CreateForwardingProcessor(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),

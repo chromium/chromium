@@ -24,11 +24,24 @@
 
 namespace autofill {
 
+namespace {
+
+// LINT.IfChange(TrimEntitySuppressionKey)
+void TrimEntitySuppressionKey(sync_pb::EntitySuppressionKey& key) {
+  key.clear_entity_type_name();
+  key.clear_attributes();
+}
+// LINT.ThenChange(//components/sync/protocol/autofill_entity_suppression_specifics.proto:EntitySuppressionKey)
+
+}  // namespace
+
 sync_pb::AutofillEntitySuppressionSpecifics
-CreateSpecificsFromEntitySuppressionEntry(const std::string& guid,
-                                          const EntitySuppressionEntry& entry,
-                                          base::Time creation_time) {
-  sync_pb::AutofillEntitySuppressionSpecifics specifics;
+CreateSpecificsFromEntitySuppressionEntry(
+    const std::string& guid,
+    const EntitySuppressionEntry& entry,
+    base::Time creation_time,
+    const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
+  sync_pb::AutofillEntitySuppressionSpecifics specifics = base_specifics;
   specifics.set_guid(guid);
   specifics.set_creation_time_windows_epoch_micros(
       creation_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
@@ -38,6 +51,7 @@ CreateSpecificsFromEntitySuppressionEntry(const std::string& guid,
   sync_pb::EntitySuppressionKey* key =
       specifics.mutable_entity_suppression_key();
   key->set_entity_type_name(std::string(entry.type.name_as_string()));
+  key->clear_attributes();
   for (const auto& [attr_type, hash] : entry.attribute_hashes) {
     sync_pb::EntitySuppressionKey::Attribute* attr = key->add_attributes();
     attr->set_name(std::string(attr_type.name_as_string()));
@@ -49,9 +63,11 @@ CreateSpecificsFromEntitySuppressionEntry(const std::string& guid,
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntitySuppressionEntry(
     const std::string& guid,
     const EntitySuppressionEntry& entry,
-    base::Time creation_time) {
+    base::Time creation_time,
+    const sync_pb::AutofillEntitySuppressionSpecifics& base_specifics) {
   return CreateEntityDataFromEntitySuppressionSpecifics(
-      CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time));
+      CreateSpecificsFromEntitySuppressionEntry(guid, entry, creation_time,
+                                                base_specifics));
 }
 
 std::unique_ptr<syncer::EntityData>
@@ -122,5 +138,24 @@ std::optional<EntitySuppressionEntry> CreateEntitySuppressionEntryFromSpecifics(
           std::move(attribute_hashes)),
   };
 }
+
+// LINT.IfChange(TrimAutofillEntitySuppressionSpecificsDataForCaching)
+sync_pb::AutofillEntitySuppressionSpecifics
+TrimAutofillEntitySuppressionSpecificsDataForCaching(
+    const sync_pb::AutofillEntitySuppressionSpecifics& specifics) {
+  sync_pb::AutofillEntitySuppressionSpecifics trimmed_specifics(specifics);
+  trimmed_specifics.clear_guid();
+  if (trimmed_specifics.has_entity_suppression_key()) {
+    TrimEntitySuppressionKey(
+        *trimmed_specifics.mutable_entity_suppression_key());
+    if (trimmed_specifics.entity_suppression_key().ByteSizeLong() == 0) {
+      trimmed_specifics.clear_entity_suppression_key();
+    }
+  }
+  trimmed_specifics.clear_schema_version();
+  trimmed_specifics.clear_creation_time_windows_epoch_micros();
+  return trimmed_specifics;
+}
+// LINT.ThenChange(//components/sync/protocol/autofill_entity_suppression_specifics.proto:AutofillEntitySuppressionSpecifics)
 
 }  // namespace autofill
