@@ -26,10 +26,6 @@ TEST_F(TipsNotificationsRankerTest, InitAndFetchModel) {
 }
 
 TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputNoResult) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAndroidTipsNotifications, {{"trust_and_safety", "true"}});
-
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
@@ -38,58 +34,7 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputNoResult) {
   ExpectClassifierResults(input, {});
 }
 
-TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForTrustAndSafety) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAndroidTipsNotifications, {{"trust_and_safety", "true"}});
-
-  ExpectInitAndFetchModel();
-  ASSERT_TRUE(fetched_metadata_);
-
-  EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
-
-  // Test EnhancedSafeBrowsing with all features not being used.
-  std::vector<float> input1(TipsFeature::kFeatureCount, 0);
-  ExpectClassifierResults(input1, {kEnhancedSafeBrowsing});
-
-  // Test QuickDelete with ESB being used.
-  std::vector<float> input2(TipsFeature::kFeatureCount, 0);
-  input2[TipsFeature::kEnhancedSafeBrowsingUseCountIdx] = 1;
-  input2[TipsFeature::kEnhancedSafeBrowsingIsEnabledIdx] = 1;
-  ExpectClassifierResults(input2, {kQuickDelete});
-
-  // Test GoogleLens with ESB and QuickDelete being used.
-  std::vector<float> input3(TipsFeature::kFeatureCount, 0);
-  input3[TipsFeature::kEnhancedSafeBrowsingUseCountIdx] = 1;
-  input3[TipsFeature::kEnhancedSafeBrowsingIsEnabledIdx] = 1;
-  input3[TipsFeature::kQuickDeleteMagicStackShownCountIdx] = 1;
-  input3[TipsFeature::kQuickDeleteWasEverUsedIdx] = 1;
-  ExpectClassifierResults(input3, {kGoogleLens});
-
-  // Test BottomOmnibox with ESB, QuickDelete and Google Lens being used.
-  std::vector<float> input4(TipsFeature::kFeatureCount, 1);
-  input4[TipsFeature::kAllFeatureTipsShownCountIdx] = 0;
-  input4[TipsFeature::kBottomOmniboxIsEnabledIdx] = 0;
-  input4[TipsFeature::kBottomOmniboxWasEverUsedIdx] = 0;
-  input4[TipsFeature::kBottomOmniboxTipShownIdx] = 0;
-  ExpectClassifierResults(input4, {kBottomOmnibox});
-
-  // Test AllFeatureTipsShownCount blocks scheduling notifications.
-  std::vector<float> input5(TipsFeature::kFeatureCount, 0);
-  input5[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
-  ExpectClassifierResults(input5, {});
-
-  // Test TipShown blocks scheduling ESB as first eligible.
-  std::vector<float> input6(TipsFeature::kFeatureCount, 0);
-  input6[TipsFeature::kEnhancedSafeBrowsingTipShownIdx] = 1;
-  ExpectClassifierResults(input6, {kQuickDelete});
-}
-
-TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForEssentials) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAndroidTipsNotifications, {{"essential", "true"}});
-
+TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInput) {
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
 
@@ -134,72 +79,10 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForEssentials) {
   ExpectClassifierResults(input6, {kBottomOmnibox});
 }
 
-TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForNewFeatures) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      features::kAndroidTipsNotifications,
-      {{"essential", "false"}, {"new_features", "true"}});
-
-  ExpectInitAndFetchModel();
-  ASSERT_TRUE(fetched_metadata_);
-
-  EXPECT_FALSE(ExecuteWithInput(/*inputs=*/{}));
-
-  // Test GoogleLens with all features not being used.
-  std::vector<float> input1(TipsFeature::kFeatureCount, 0);
-  ExpectClassifierResults(input1, {kGoogleLens});
-
-  // Test BottomOmnibox with GoogleLens being used.
-  std::vector<float> input2(TipsFeature::kFeatureCount, 0);
-  input2[TipsFeature::kGoogleLensNewTabPageUseCountIdx] = 1;
-  input2[TipsFeature::kGoogleLensMobileOmniboxUseCountIdx] = 1;
-  input2[TipsFeature::kGoogleLensTasksSurfaceUseCountIdx] = 1;
-  input2[TipsFeature::kGoogleLensTipsNotificationsUseCountIdx] = 1;
-  ExpectClassifierResults(input2, {kBottomOmnibox});
-
-  // Test QuickDelete with GoogleLens and BottomOmnibox being used.
-  std::vector<float> input3(TipsFeature::kFeatureCount, 0);
-  input3[TipsFeature::kBottomOmniboxIsEnabledIdx] = 1;
-  input3[TipsFeature::kBottomOmniboxWasEverUsedIdx] = 1;
-  input3[TipsFeature::kGoogleLensNewTabPageUseCountIdx] = 1;
-  input3[TipsFeature::kGoogleLensMobileOmniboxUseCountIdx] = 1;
-  input3[TipsFeature::kGoogleLensTasksSurfaceUseCountIdx] = 1;
-  input3[TipsFeature::kGoogleLensTipsNotificationsUseCountIdx] = 1;
-  ExpectClassifierResults(input3, {kQuickDelete});
-
-  // Test ESB with GoogleLens, BottomOmnibox and QuickDelete being used.
-  std::vector<float> input4(TipsFeature::kFeatureCount, 1);
-  input4[TipsFeature::kAllFeatureTipsShownCountIdx] = 0;
-  input4[TipsFeature::kEnhancedSafeBrowsingUseCountIdx] = 0;
-  input4[TipsFeature::kEnhancedSafeBrowsingIsEnabledIdx] = 0;
-  input4[TipsFeature::kEnhancedSafeBrowsingTipShownIdx] = 0;
-  ExpectClassifierResults(input4, {kEnhancedSafeBrowsing});
-
-  // Test AllFeatureTipsShownCount blocks scheduling notifications.
-  std::vector<float> input5(TipsFeature::kFeatureCount, 0);
-  input5[TipsFeature::kAllFeatureTipsShownCountIdx] = 1;
-  ExpectClassifierResults(input5, {});
-
-  // Test TipShown blocks scheduling Google Lens as first eligible.
-  std::vector<float> input6(TipsFeature::kFeatureCount, 0);
-  input6[TipsFeature::kGoogleLensTipShownIdx] = 1;
-  ExpectClassifierResults(input6, {kBottomOmnibox});
-}
-
 TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForV2EcosystemLockIn) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Assume the Essential arm as the default one.
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{features::kAndroidTipsNotifications,
-        {{
-            {"essential", "true"},
-        }}},
-       {features::kAndroidTipsNotificationsV2,
-        {{
-            {"ecosystem_lock_in", "true"},
-        }}}},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAndroidTipsNotificationsV2, {{"ecosystem_lock_in", "true"}});
 
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);
@@ -273,18 +156,9 @@ TEST_F(TipsNotificationsRankerTest, ExecuteModelWithInputForV2EcosystemLockIn) {
 TEST_F(TipsNotificationsRankerTest,
        ExecuteModelWithInputForV2UtilityAndOrganization) {
   base::test::ScopedFeatureList scoped_feature_list;
-  // Assume the Essential arm as the default one.
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{features::kAndroidTipsNotifications,
-        {{
-            {"essential", "true"},
-        }}},
-       {features::kAndroidTipsNotificationsV2,
-        {{
-            {"utility_and_organization", "true"},
-        }}}},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAndroidTipsNotificationsV2,
+      {{"utility_and_organization", "true"}});
 
   ExpectInitAndFetchModel();
   ASSERT_TRUE(fetched_metadata_);

@@ -104,16 +104,6 @@ TEST_F(QuickDeleteTipTest, IsEligible_FeatureDisabled) {
   EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
 }
 
-TEST_F(QuickDeleteTipTest, IsEligible_FeatureParamDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kAndroidTipsNotifications,
-      {{"enable_quick_delete_tip", "false"}});
-
-  std::map<std::string, float> signals;
-  EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
-}
-
 // End-to-end integration test verifying that DetermineBestTip suggests
 // QuickDelete as the best tip when evaluated against segmentation platform.
 TEST_F(QuickDeleteTipTest, DetermineBestTip_QuickDelete) {

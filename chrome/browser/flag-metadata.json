@@ -620,11 +620,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "android-tips-notifications",
-    "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 166
-  },
-  {
     "name": "android-tips-notifications-v2",
     "owners": [ "bjfong@google.com", "wylieb@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 166

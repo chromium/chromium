@@ -42,8 +42,7 @@ bool EnhancedSafeBrowsingTip::IsEligible(
     const std::map<std::string, float>& signal_values,
     const PrefService& pref_service) const {
   if (!base::FeatureList::IsEnabled(
-          segmentation_platform::features::kAndroidTipsNotifications) ||
-      !segmentation_platform::features::kEnableEnhancedSafeBrowsingTip.Get()) {
+          segmentation_platform::features::kAndroidTipsNotifications)) {
     return false;
   }
 

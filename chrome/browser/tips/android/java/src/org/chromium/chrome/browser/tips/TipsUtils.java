@@ -337,7 +337,7 @@ public class TipsUtils {
      * @return Whether the opt-in promo should be always shown for testing tips.
      */
     public static boolean shouldAlwaysShowOptInPromo() {
-        return ChromeFeatureList.sAndroidTipsNotificationsAlwaysShowOptInPromo.getValue();
+        return ChromeFeatureList.sTipsSelfServiceAlwaysShowOptInPromo.getValue();
     }
 
     /**

@@ -201,42 +201,6 @@ constexpr base::FeatureParam<int> kMaxDefaultBrowserMagicStackIosImpressions{
 
 BASE_FEATURE(kAndroidTipsNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
-constexpr base::FeatureParam<bool> kTrustAndSafety{&kAndroidTipsNotifications,
-                                                   "trust_and_safety",
-                                                   /*default_value=*/false};
-
-constexpr base::FeatureParam<bool> kEssential{&kAndroidTipsNotifications,
-                                              "essential",
-                                              /*default_value=*/true};
-
-constexpr base::FeatureParam<bool> kNewFeatures{&kAndroidTipsNotifications,
-                                                "new_features",
-                                                /*default_value=*/false};
-
-constexpr base::FeatureParam<int> kStartTimeMinutes{&kAndroidTipsNotifications,
-                                                    "start_time_minutes",
-                                                    /*default_value=*/120};
-
-constexpr base::FeatureParam<int> kWindowTimeMinutes{&kAndroidTipsNotifications,
-                                                     "window_time_minutes",
-                                                     /*default_value=*/120};
-
-constexpr base::FeatureParam<bool> kEnableEnhancedSafeBrowsingTip{
-    &kAndroidTipsNotifications, "enable_enhanced_safe_browsing_tip",
-    /*default_value=*/true};
-
-constexpr base::FeatureParam<bool> kEnableQuickDeleteTip{
-    &kAndroidTipsNotifications, "enable_quick_delete_tip",
-    /*default_value=*/true};
-
-constexpr base::FeatureParam<bool> kEnableGoogleLensTip{
-    &kAndroidTipsNotifications, "enable_google_lens_tip",
-    /*default_value=*/true};
-
-constexpr base::FeatureParam<bool> kEnableBottomOmniboxTip{
-    &kAndroidTipsNotifications, "enable_bottom_omnibox_tip",
-    /*default_value=*/true};
-
 BASE_FEATURE(kAndroidTipsNotificationsV2, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool> kEcosystemLockIn{

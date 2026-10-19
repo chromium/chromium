@@ -111,16 +111,6 @@ TEST_F(EnhancedSafeBrowsingTipTest, IsEligible_FeatureDisabled) {
   EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
 }
 
-TEST_F(EnhancedSafeBrowsingTipTest, IsEligible_FeatureParamDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kAndroidTipsNotifications,
-      {{"enable_enhanced_safe_browsing_tip", "false"}});
-
-  std::map<std::string, float> signals;
-  EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
-}
-
 // End-to-end integration test verifying that DetermineBestTip suggests ESB as
 // the best tip when evaluated against real segmentation platform database
 // calls.

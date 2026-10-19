@@ -31,7 +31,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/segmentation_platform/public/constants.h"
-#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -43,6 +42,11 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
+
+// The default delay and delivery window, in minutes, for scheduling a tips
+// notification when the self-service approach is not enabled.
+constexpr int kDefaultStartTimeMinutes = 120;
+constexpr int kDefaultWindowTimeMinutes = 120;
 
 tips::TipsNotificationsFeatureType GetFeatureType(const std::string& label) {
   if (label == segmentation_platform::kEnhancedSafeBrowsing) {
@@ -75,10 +79,8 @@ notifications::ScheduleParams GetCurrentScheduleParams() {
     start_time_minutes = tips::kTipsSelfServiceStartTimeMinutes.Get();
     window_time_minutes = tips::kTipsSelfServiceWindowTimeMinutes.Get();
   } else {
-    start_time_minutes =
-        segmentation_platform::features::kStartTimeMinutes.Get();
-    window_time_minutes =
-        segmentation_platform::features::kWindowTimeMinutes.Get();
+    start_time_minutes = kDefaultStartTimeMinutes;
+    window_time_minutes = kDefaultWindowTimeMinutes;
   }
 
   // Setup the schedule params to either be for testing with instant and delayed

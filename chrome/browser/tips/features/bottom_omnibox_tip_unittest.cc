@@ -101,16 +101,6 @@ TEST_F(BottomOmniboxTipTest, IsEligible_FeatureDisabled) {
   EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
 }
 
-TEST_F(BottomOmniboxTipTest, IsEligible_FeatureParamDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kAndroidTipsNotifications,
-      {{"enable_bottom_omnibox_tip", "false"}});
-
-  std::map<std::string, float> signals;
-  EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
-}
-
 // End-to-end integration test verifying that DetermineBestTip suggests
 // BottomOmnibox as the best tip when evaluated against segmentation platform.
 TEST_F(BottomOmniboxTipTest, DetermineBestTip_BottomOmnibox) {

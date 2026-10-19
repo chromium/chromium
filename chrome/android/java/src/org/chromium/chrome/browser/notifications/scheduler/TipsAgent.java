@@ -94,8 +94,7 @@ public class TipsAgent {
 
                     if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()
                             && TipsUtils.isSupportedDeviceType()) {
-                        if (ChromeFeatureList.sAndroidTipsNotificationsResetFeatureTipShown
-                                .getValue()) {
+                        if (ChromeFeatureList.sTipsSelfServiceResetFeatureTipShown.getValue()) {
                             TipsUtils.clearFeatureTipShownPrefs(profile);
                         }
 

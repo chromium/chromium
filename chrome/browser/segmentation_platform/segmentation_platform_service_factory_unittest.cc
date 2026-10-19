@@ -125,7 +125,6 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformEphemeralCardRanker, {}},
          {features::kSegmentationSurveyPage, {}},
          {features::kSegmentationPlatformFedCmUser, {}},
-         {features::kAndroidTipsNotifications, {}},
          {features::kNewTabPageCustomizationV2, {{"show_promo", "true"}}}},
         {});
 

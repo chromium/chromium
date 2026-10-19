@@ -5658,11 +5658,6 @@ inline constexpr char kAndroidThemeResourceProviderName[] =
 inline constexpr char kAndroidThemeResourceProviderDescription[] =
     "Enables the Android theme resource provider.";
 
-inline constexpr char kAndroidTipsNotificationsName[] =
-    "Android Tips Notifications";
-inline constexpr char kAndroidTipsNotificationsDescription[] =
-    "Enable tips notifications for supported features on Android.";
-
 inline constexpr char kAndroidTipsNotificationsV2Name[] =
     "Android Tips Notifications V2";
 inline constexpr char kAndroidTipsNotificationsV2Description[] =

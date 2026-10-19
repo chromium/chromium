@@ -124,16 +124,6 @@ TEST_F(GoogleLensTipTest, IsEligible_FeatureDisabled) {
   EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
 }
 
-TEST_F(GoogleLensTipTest, IsEligible_FeatureParamDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      segmentation_platform::features::kAndroidTipsNotifications,
-      {{"enable_google_lens_tip", "false"}});
-
-  std::map<std::string, float> signals;
-  EXPECT_FALSE(tip_.IsEligible(signals, pref_service_));
-}
-
 // End-to-end integration test verifying that DetermineBestTip suggests
 // GoogleLens as the best tip when evaluated against segmentation platform.
 TEST_F(GoogleLensTipTest, DetermineBestTip_GoogleLens) {

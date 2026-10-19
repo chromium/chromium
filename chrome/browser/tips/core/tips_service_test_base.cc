@@ -144,8 +144,7 @@ void TipsServiceTestBase::SetUp() {
   base::SetRecordActionTaskRunner(task_environment_.GetMainThreadTaskRunner());
   scoped_feature_list_.InitWithFeatures(
       {segmentation_platform::features::kSegmentationPlatformFeature,
-       segmentation_platform::features::kSegmentationPlatformUkmEngine,
-       segmentation_platform::features::kAndroidTipsNotifications},
+       segmentation_platform::features::kSegmentationPlatformUkmEngine},
       {});
   test_utils_ =
       std::make_unique<segmentation_platform::UkmDataManagerTestUtils>(

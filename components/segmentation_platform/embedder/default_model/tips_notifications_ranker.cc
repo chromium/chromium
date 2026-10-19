@@ -173,49 +173,12 @@ std::vector<int> GetTipsPriorityRankingList() {
     }
   }
 
-  if (features::kTrustAndSafety.Get()) {
-    if (features::kEnableEnhancedSafeBrowsingTip.Get()) {
-      tips_list.emplace_back(
-          TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
-    }
-    if (features::kEnableQuickDeleteTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
-    }
-    if (features::kEnableGoogleLensTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
-    }
-    if (features::kEnableBottomOmniboxTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
-    }
-  } else if (features::kEssential.Get()) {
-    if (features::kEnableQuickDeleteTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
-    }
-    if (features::kEnableBottomOmniboxTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
-    }
-    if (features::kEnableEnhancedSafeBrowsingTip.Get()) {
-      tips_list.emplace_back(
-          TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
-    }
-    if (features::kEnableGoogleLensTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
-    }
-  } else if (features::kNewFeatures.Get()) {
-    if (features::kEnableGoogleLensTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
-    }
-    if (features::kEnableBottomOmniboxTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
-    }
-    if (features::kEnableQuickDeleteTip.Get()) {
-      tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
-    }
-    if (features::kEnableEnhancedSafeBrowsingTip.Get()) {
-      tips_list.emplace_back(
-          TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
-    }
-  }
+  // V1 tips are always ranked by the launched "essential" prioritization and
+  // appended after any V2 tips.
+  tips_list.emplace_back(TipsNotificationsRanker::kQuickDeleteTipIdx);
+  tips_list.emplace_back(TipsNotificationsRanker::kBottomOmniboxTipIdx);
+  tips_list.emplace_back(TipsNotificationsRanker::kEnhancedSafeBrowsingTipIdx);
+  tips_list.emplace_back(TipsNotificationsRanker::kGoogleLensTipIdx);
   return tips_list;
 }
 
@@ -364,10 +327,8 @@ void TipsNotificationsRanker::ExecuteModelWithInput(
   float customize_mvt_tip_shown = inputs[kCustomizeMVTTipShownIdx];
   float recent_tabs_tip_shown = inputs[kRecentTabsTipShownIdx];
 
-  // Only choose an eligible tip if none have been shown for the last 7 days or
-  // if the testing flags to instantly schedule a notification are active.
-  if (all_feature_tips_shown_count == 0 ||
-      features::kStartTimeMinutes.Get() < 5) {
+  // Only choose an eligible tip if none have been shown for the last 7 days.
+  if (all_feature_tips_shown_count == 0) {
     // Cycle through the priority list and mark the highest ranked eligible tip
     // to show if it exists and then early exit.
     std::vector<int> tips_priority_list = GetTipsPriorityRankingList();
