@@ -100,7 +100,7 @@ void SavePreRestartTabWindowCounts() {
   // Number of profiles with at least one normal (`TYPE_NORMAL`) or app
   // (`TYPE_APP`) window open before restart, saved to
   // `kPreSmartRestartProfileCounts` and read by
-  // ProfileDiffAfterRestartRecorder::MaybeStartRecording() in
+  // ProfileDiffAfterRestartRecorder::OnStartupLaunchesStarting() in
   // chrome/browser/sessions/profile_diff_after_restart_recorder.cc. These
   // counts are not collected on ChromeOS because restarts there end the user
   // session rather than relaunching into it, and startup ignores
@@ -173,7 +173,7 @@ void SavePreRestartTabWindowCounts() {
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
+  ProfileDiffAfterRestartRecorder::GetInstance().SavePreRestartCounts(
       g_browser_process->local_state(), normal_profiles, app_profiles);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }

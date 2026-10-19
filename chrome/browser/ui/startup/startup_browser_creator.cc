@@ -801,16 +801,11 @@ void StartupBrowserCreator::LaunchBrowserForLastProfiles(
 #if !BUILDFLAG(IS_CHROMEOS)
   // Start observing before launching profiles: primary-profile session restore
   // completes synchronously during launch, so observing any later would miss
-  // its completion notification and record restored profiles as lost. On
-  // non-restarts, clear any stale pre-restart counts from an aborted restart.
+  // its completion notification and record restored profiles as lost.
   ProfileDiffAfterRestartRecorder& profile_diff_recorder =
       ProfileDiffAfterRestartRecorder::GetInstance();
-  if (WasRestarted()) {
-    profile_diff_recorder.MaybeStartRecording(g_browser_process->local_state());
-  } else {
-    ProfileDiffAfterRestartRecorder::ClearPreRestartCounts(
-        g_browser_process->local_state());
-  }
+  profile_diff_recorder.OnStartupLaunchesStarting(
+      g_browser_process->local_state(), WasRestarted());
   base::ScopedClosureRunner on_launches_finished(base::BindOnce(
       &ProfileDiffAfterRestartRecorder::OnStartupLaunchesFinished,
       base::Unretained(&profile_diff_recorder)));

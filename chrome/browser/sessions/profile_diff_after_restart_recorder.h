@@ -25,9 +25,9 @@ class Profile;
 // local state pref by SavePreRestartTabWindowCounts() while the browser is
 // shutting down. This class consumes them during the next startup:
 //
-//   1. StartupBrowserCreator calls MaybeStartRecording() before launching
-//      profiles, which consumes the saved pre-restart counts from local state
-//      and enables the recorder if the browser was restarted.
+//   1. StartupBrowserCreator calls OnStartupLaunchesStarting() before launching
+//      profiles. On restarts it consumes the saved counts and enables the
+//      recorder; otherwise it discards stale counts.
 //   2. While enabled, the recorder observes session restore and remembers
 //      which profiles restored at least one normal or app window.
 //   3. The metrics are emitted once startup launches have finished *and* no
@@ -67,23 +67,18 @@ class ProfileDiffAfterRestartRecorder : public SessionRestoreObserver {
   // Saves the number of profiles that had normal and app windows open before a
   // restart. Clears the pref when both counts are zero so counts from an
   // earlier restart cannot carry over.
-  static void SavePreRestartCounts(PrefService* local_state,
-                                   size_t normal_profiles,
-                                   size_t app_profiles);
-
-  // Discards pre-restart counts saved by an earlier session. Called on startups
-  // that are not restarts, where the saved counts can never be consumed.
-  static void ClearPreRestartCounts(PrefService* local_state);
+  void SavePreRestartCounts(PrefService* local_state,
+                            size_t normal_profiles,
+                            size_t app_profiles);
 
   ProfileDiffAfterRestartRecorder(const ProfileDiffAfterRestartRecorder&) =
       delete;
   ProfileDiffAfterRestartRecorder& operator=(
       const ProfileDiffAfterRestartRecorder&) = delete;
 
-  // Consumes any saved pre-restart counts from `local_state` and starts
-  // observing session restore if the feature is enabled. Must only be called
-  // when the browser was restarted.
-  void MaybeStartRecording(PrefService* local_state);
+  // Called before startup launches profiles. On restarts, consumes the saved
+  // counts and starts recording; otherwise discards stale counts.
+  void OnStartupLaunchesStarting(PrefService* local_state, bool was_restarted);
 
   // Called once StartupBrowserCreator has finished launching every profile it
   // intends to launch. Records the metrics if no session restore is still in
@@ -109,6 +104,15 @@ class ProfileDiffAfterRestartRecorder : public SessionRestoreObserver {
   // Never called: the instance is a NoDestructor singleton. Defined so that
   // the class can hold members with non-trivial destructors.
   ~ProfileDiffAfterRestartRecorder();
+
+  // Consumes any saved pre-restart counts from `local_state` and starts
+  // observing session restore if the feature is enabled. Must only be called
+  // when the browser was restarted.
+  void MaybeStartRecording(PrefService* local_state);
+
+  // Clears any pre-restart counts saved in `local_state`. Does not affect an
+  // in-flight recording.
+  void ClearPreRestartCounts(PrefService* local_state);
 
   // Emits the metrics and stops recording, but only once startup launches have
   // finished and every in-flight session restore has completed.

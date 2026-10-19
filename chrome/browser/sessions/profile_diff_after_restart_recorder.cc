@@ -61,11 +61,11 @@ ProfileDiffAfterRestartRecorder::GetInstance() {
   return *instance;
 }
 
-// static
 void ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
     PrefService* local_state,
     size_t normal_profiles,
     size_t app_profiles) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearPreRestartCounts(local_state);
 
   base::DictValue profile_dict;
@@ -82,9 +82,9 @@ void ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
   }
 }
 
-// static
 void ProfileDiffAfterRestartRecorder::ClearPreRestartCounts(
     PrefService* local_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_state);
   local_state->ClearPref(prefs::kPreSmartRestartProfileCounts);
 }
@@ -136,6 +136,19 @@ void ProfileDiffAfterRestartRecorder::MaybeStartRecording(
   expected_normal_profiles_ = expected_normal;
   expected_app_profiles_ = expected_app;
   SessionRestore::AddObserver(this);
+}
+
+void ProfileDiffAfterRestartRecorder::OnStartupLaunchesStarting(
+    PrefService* local_state,
+    bool was_restarted) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (was_restarted) {
+    MaybeStartRecording(local_state);
+  } else {
+    // On non-restarts, clear any stale pre-restart counts from an aborted
+    // restart.
+    ClearPreRestartCounts(local_state);
+  }
 }
 
 void ProfileDiffAfterRestartRecorder::OnStartupLaunchesFinished() {

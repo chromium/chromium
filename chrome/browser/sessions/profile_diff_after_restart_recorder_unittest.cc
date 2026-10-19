@@ -57,8 +57,8 @@ class ProfileDiffAfterRestartRecorderTest : public testing::Test {
   // Writes the counts that a restart would have left behind.
   void SetPreRestartCounts(std::optional<size_t> normal_profiles,
                            std::optional<size_t> app_profiles) {
-    ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
-        local_state(), normal_profiles.value_or(0), app_profiles.value_or(0));
+    recorder().SavePreRestartCounts(local_state(), normal_profiles.value_or(0),
+                                    app_profiles.value_or(0));
   }
 
   bool HasPreRestartCounts() {
@@ -77,8 +77,8 @@ class ProfileDiffAfterRestartRecorderTest : public testing::Test {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest,
        SavePreRestartCountsOverwritesAndClears) {
-  ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
-      local_state(), /*normal_profiles=*/1, /*app_profiles=*/2);
+  recorder().SavePreRestartCounts(local_state(), /*normal_profiles=*/1,
+                                  /*app_profiles=*/2);
   EXPECT_EQ(local_state()
                 ->GetDict(prefs::kPreSmartRestartProfileCounts)
                 .FindInt(ProfileDiffAfterRestartRecorder::kNormalProfilesKey),
@@ -89,8 +89,8 @@ TEST_F(ProfileDiffAfterRestartRecorderTest,
             2);
 
   // Saving only normal_profiles must wipe out the earlier app_profiles count.
-  ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
-      local_state(), /*normal_profiles=*/1, /*app_profiles=*/0);
+  recorder().SavePreRestartCounts(local_state(), /*normal_profiles=*/1,
+                                  /*app_profiles=*/0);
   EXPECT_EQ(local_state()
                 ->GetDict(prefs::kPreSmartRestartProfileCounts)
                 .FindInt(ProfileDiffAfterRestartRecorder::kNormalProfilesKey),
@@ -100,21 +100,21 @@ TEST_F(ProfileDiffAfterRestartRecorderTest,
                    .FindInt(ProfileDiffAfterRestartRecorder::kAppProfilesKey));
 
   // Saving zero for both clears the pref completely.
-  ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
-      local_state(), /*normal_profiles=*/0, /*app_profiles=*/0);
+  recorder().SavePreRestartCounts(local_state(), /*normal_profiles=*/0,
+                                  /*app_profiles=*/0);
   EXPECT_FALSE(HasPreRestartCounts());
 }
 
-TEST_F(ProfileDiffAfterRestartRecorderTest, ClearPreRestartCountsDiscardsPref) {
+TEST_F(ProfileDiffAfterRestartRecorderTest, NonRestartStartupDiscardsPref) {
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/1);
 
-  ProfileDiffAfterRestartRecorder::ClearPreRestartCounts(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/false);
 
   EXPECT_FALSE(HasPreRestartCounts());
 }
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, DoesNotRecordWithoutSavedCounts) {
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
   ASSERT_FALSE(recorder().is_recording_for_testing());
 
   // Must be a no-op rather than a crash: startup always reports that launches
@@ -131,7 +131,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, DoesNotRecordWhenFeatureDisabled) {
       features::kRecordTabWindowDiffOnRestart);
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/1);
 
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   EXPECT_FALSE(recorder().is_recording_for_testing());
   histogram_tester_.ExpectTotalCount(kNormalHistogram, 0);
@@ -140,7 +140,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, DoesNotRecordWhenFeatureDisabled) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsZeroDiffWhenNothingIsLost) {
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/1);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
   ASSERT_TRUE(recorder().is_recording_for_testing());
 
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/2,
@@ -155,7 +155,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsZeroDiffWhenNothingIsLost) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsLostProfiles) {
   SetPreRestartCounts(/*normal_profiles=*/3, /*app_profiles=*/2);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   // Only one of the profiles came back, and it restored no app windows.
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/1,
@@ -168,7 +168,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsLostProfiles) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsGainedProfilesAsNegative) {
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/std::nullopt);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/1,
                                       /*app_windows=*/0);
@@ -181,7 +181,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsGainedProfilesAsNegative) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsWindowTypesIndependently) {
   SetPreRestartCounts(/*normal_profiles=*/2, /*app_profiles=*/2);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   // One profile came back with only normal windows, the other with only app
   // windows, so exactly one profile is missing for each window type.
@@ -198,7 +198,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsWindowTypesIndependently) {
 TEST_F(ProfileDiffAfterRestartRecorderTest, OnlyRecordsMetricsThatWereSaved) {
   // The previous session had app windows but no normal windows.
   SetPreRestartCounts(/*normal_profiles=*/std::nullopt, /*app_profiles=*/1);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/1,
                                       /*app_windows=*/1);
@@ -216,7 +216,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, IgnoresZeroSavedCounts) {
   profile_dict.Set(ProfileDiffAfterRestartRecorder::kAppProfilesKey, 1);
   local_state()->SetDict(prefs::kPreSmartRestartProfileCounts,
                          std::move(profile_dict));
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/1,
                                       /*app_windows=*/1);
@@ -228,7 +228,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, IgnoresZeroSavedCounts) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, ClampsLargeDiffs) {
   SetPreRestartCounts(/*normal_profiles=*/60, /*app_profiles=*/std::nullopt);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   // None of the 60 profiles came back, but the sample is capped at 50.
   recorder().OnStartupLaunchesFinished();
@@ -238,7 +238,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, ClampsLargeDiffs) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, CountsEachProfileOnce) {
   SetPreRestartCounts(/*normal_profiles=*/2, /*app_profiles=*/std::nullopt);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   // A profile can restore browser and app windows in separate passes.
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/1,
@@ -252,7 +252,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, CountsEachProfileOnce) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, IgnoresProfilesWithoutWindows) {
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/1);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   // A restore that produced nothing does not count as a restored profile.
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/0,
@@ -265,7 +265,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, IgnoresProfilesWithoutWindows) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, DoesNotRecordBeforeLaunchesFinish) {
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/std::nullopt);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
   // The pref is consumed immediately when recording starts.
   EXPECT_FALSE(HasPreRestartCounts());
 
@@ -278,14 +278,14 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, DoesNotRecordBeforeLaunchesFinish) {
 }
 
 TEST_F(ProfileDiffAfterRestartRecorderTest,
-       ClearPreRestartCountsDoesNotClobberInFlightRecording) {
+       NonRestartStartupDoesNotClobberInFlightRecording) {
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/1);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
   ASSERT_TRUE(recorder().is_recording_for_testing());
 
   // Simulate a second StartupBrowserCreator wave clearing local state while a
   // session restore from the initial restart is still in flight.
-  ProfileDiffAfterRestartRecorder::ClearPreRestartCounts(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/false);
 
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/1,
                                       /*app_windows=*/1);
@@ -297,7 +297,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest,
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsOnlyOnce) {
   SetPreRestartCounts(/*normal_profiles=*/1, /*app_profiles=*/std::nullopt);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
 
   recorder().OnProfileSessionRestored(first_profile_, /*normal_windows=*/1,
                                       /*app_windows=*/0);
@@ -310,7 +310,7 @@ TEST_F(ProfileDiffAfterRestartRecorderTest, RecordsOnlyOnce) {
 
 TEST_F(ProfileDiffAfterRestartRecorderTest, AbandonRecordingStopsRecording) {
   SetPreRestartCounts(/*normal_profiles=*/2, /*app_profiles=*/1);
-  recorder().MaybeStartRecording(local_state());
+  recorder().OnStartupLaunchesStarting(local_state(), /*was_restarted=*/true);
   ASSERT_TRUE(recorder().is_recording_for_testing());
   EXPECT_FALSE(HasPreRestartCounts());
 

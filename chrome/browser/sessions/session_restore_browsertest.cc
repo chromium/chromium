@@ -5221,11 +5221,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreRestartMetricTest,
 
   // Set up the state a restart leaves behind: one profile had normal windows.
   PrefService* local_state = g_browser_process->local_state();
-  ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
-      local_state, /*normal_profiles=*/1, /*app_profiles=*/0);
+  recorder.SavePreRestartCounts(local_state, /*normal_profiles=*/1,
+                                /*app_profiles=*/0);
 
   base::HistogramTester histogram_tester;
-  recorder.MaybeStartRecording(local_state);
+  recorder.OnStartupLaunchesStarting(local_state, /*was_restarted=*/true);
   ASSERT_TRUE(recorder.is_recording_for_testing());
 
   // Restore asynchronously: SessionRestore::SYNCHRONOUS is deliberately not
