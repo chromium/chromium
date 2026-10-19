@@ -174,4 +174,13 @@ public class NewTabPageUtils {
     public static boolean isAiModeTileInsideMvt() {
         return getLayoutTypeForAuroraV2() == LayoutType.INSIDE_MVT;
     }
+
+    /**
+     * Returns whether the composeplate buttons are removed in NTP Aurora V2. {@link
+     * LayoutType#BESIDE_MVT} is excluded because it still uses a composeplate view beside the MVT.
+     */
+    public static boolean isComposeplateRemovedInAuroraV2() {
+        @LayoutType int layoutType = getLayoutTypeForAuroraV2();
+        return layoutType == LayoutType.REMOVE || layoutType == LayoutType.INSIDE_MVT;
+    }
 }

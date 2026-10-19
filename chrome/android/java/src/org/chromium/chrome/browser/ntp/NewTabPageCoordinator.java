@@ -614,12 +614,15 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /** Returns whether the AI Mode button can be shown on NTPs. */
     private boolean canShowAiModeButtonOnNtp() {
+        // Returning false here disables the entire composeplate row, hiding both the AI Mode
+        // and Incognito buttons.
+        if (NewTabPageUtils.isComposeplateRemovedInAuroraV2()) return false;
+
         // In the default layout (when not placed beside the MVT), the AI Mode button
         // shares a row with the Incognito button. Consequently, it is hidden when
         // Incognito mode is disabled. However, in the layout where the AI Mode section is
         // positioned beside the MVT, the AI Mode button must remain visible even if Incognito mode
         // is disabled.
-
         if (!mIsBesideMvtModuleEnabled && !mIsIncognitoModeEnabled) {
             return false;
         }

@@ -1137,16 +1137,48 @@ public class NewTabPageCoordinatorUnitTest {
         IncognitoUtils.setEnabledForTesting(false);
         createCoordinator();
 
+        verifyComposeplateDisabledAndUninflatedBetweenDseChanges();
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_AURORA_V2)
+    public void testComposeplateEnabled_AuroraV2Disabled() {
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        assertNotNull(mNewTabPageLayout.findViewById(R.id.composeplate_view));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/3"
+    })
+    public void testComposeplateDisabled_RemoveEnabled() {
+        verifyComposeplateDisabledAndUninflatedBetweenDseChanges();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/2"
+    })
+    public void testComposeplateDisabled_InsideMvtEnabled() {
+        verifyComposeplateDisabledAndUninflatedBetweenDseChanges();
+    }
+
+    private void verifyComposeplateDisabledAndUninflatedBetweenDseChanges() {
         // Verifies that even when Google is the search provider and offers an AI Mode entry point,
-        // disabling incognito mode prevents the composeplate from being enabled or created.
+        // the composeplate is prevented from being enabled or created.
         assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
         assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        assertNull(mNewTabPageLayout.findViewById(R.id.composeplate_view));
 
-        // Switching the default search engine doesn't enable the composeplate either.
+        // Switching the default search engine doesn't enable or inflate the composeplate either.
         changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ true);
         changeSearchEngine(/* isGoogle= */ true, /* hasAiModeButtonUiConfig= */ true);
         assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
         assertNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        assertNull(mNewTabPageLayout.findViewById(R.id.composeplate_view));
     }
 
     @Test
