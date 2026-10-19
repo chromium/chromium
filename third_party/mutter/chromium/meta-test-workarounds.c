@@ -79,6 +79,11 @@ __wrap_meta_compositor_size_change_window (MetaCompositor *compositor,
  * meta_window_unit_cgroup_equal() is wrapped too, since its internal call to
  * meta_window_get_unit_cgroup() is in the same translation unit and therefore
  * is not affected by --wrap.
+ *
+ * Upstream bug: https://gitlab.gnome.org/GNOME/mutter/-/issues/5066
+ * Upstream fix: https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/5343
+ * TODO(crbug.com/575566102): Remove these wrappers once a mutter release
+ * containing the fix is rolled.
  **/
 GFile *
 __wrap_meta_window_get_unit_cgroup (MetaWindow *window)
