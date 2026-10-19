@@ -40,6 +40,12 @@
 # https://crbug.com/538266717
 -org.chromium.chrome.browser.popups.PopupMultiwindowPTTest*
 
+# https://crbug.com/544822220
+-GlobalBrowserCollectionTestWithOrder.*
+-ProfileBrowserCollectionTest.*
+-UkmBrowserTest.IncognitoPlusRegularCheck
+-WebAccessibleResourcesBrowserTest.DNRRedirect
+
 # https://crbug.com/571584010
 -CrComponentsComposeboxTest.ComposeboxFaviconGroup
 -ExtensionApiTabTest.Query
