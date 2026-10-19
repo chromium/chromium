@@ -739,6 +739,8 @@ void ContentSettingImageModel::Update(content::WebContents* contents) {
       ContentSettingImageModelStates::Get(contents)->SetBubbleWasAutoOpened(
           image_type(), false);
     }
+    ContentSettingImageModelStates::Get(contents)->SetIconShownRecorded(
+        image_type(), false);
   }
 }
 
@@ -1454,6 +1456,16 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
              AppShimRegistry::NotificationPermissionStatus::
                  kExplicitlyDenied)) {
       SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/true);
+      // UpdateAndGetVisibility() runs on every location bar refresh, and for
+      // multiple models sharing the same tab, so only record once per time
+      // the icon becomes visible in a tab.
+      ContentSettingImageModelStates* states =
+          ContentSettingImageModelStates::Get(web_contents);
+      if (!states->IconShownRecorded(image_type())) {
+        states->SetIconShownRecorded(image_type(), true);
+        base::RecordAction(base::UserMetricsAction(
+            "ContentSettings.Notifications.SystemPermissionIconShown"));
+      }
       // If the chrome level permission was just auto-denied, also popup the
       // bubble.
       set_should_auto_open_bubble(was_denied_because_of_system_permission);

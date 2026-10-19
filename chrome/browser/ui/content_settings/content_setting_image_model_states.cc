@@ -68,6 +68,17 @@ bool ContentSettingImageModelStates::PromoWasShown(ImageType type) const {
   return promo_was_shown_[static_cast<int>(type)];
 }
 
+void ContentSettingImageModelStates::SetIconShownRecorded(ImageType type,
+                                                          bool recorded) {
+  VerifyType(type);
+  icon_shown_recorded_[static_cast<int>(type)] = recorded;
+}
+
+bool ContentSettingImageModelStates::IconShownRecorded(ImageType type) const {
+  VerifyType(type);
+  return icon_shown_recorded_[static_cast<int>(type)];
+}
+
 ContentSettingImageModelStates::ContentSettingImageModelStates(
     content::WebContents* contents)
     : content::WebContentsUserData<ContentSettingImageModelStates>(*contents) {}

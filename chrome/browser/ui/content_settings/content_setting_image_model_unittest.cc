@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -783,6 +784,7 @@ TEST_F(ContentSettingImageModelTest,
 
   // If the app requests notification permission while the system permission was
   // denied, the notification should show and the bubble should auto open.
+  base::UserActionTester user_action_tester;
   AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
       app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
   content_settings->SetNotificationsWasDeniedBecauseOfSystemPermission();
@@ -791,6 +793,37 @@ TEST_F(ContentSettingImageModelTest,
   EXPECT_TRUE(content_setting_image_model->is_blocked());
   EXPECT_TRUE(content_setting_image_model->should_auto_open_bubble());
   EXPECT_TRUE(content_setting_image_model->blocked_on_system_level());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContentSettings.Notifications.SystemPermissionIconShown"));
+
+  // Subsequent updates while the icon stays visible should not record the
+  // action again.
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContentSettings.Notifications.SystemPermissionIconShown"));
+
+  {
+    auto bubble =
+        content_setting_image_model->CreateBubbleModel(nullptr, web_contents());
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "ContentSettings.NotificationsDialog.Shown"));
+  }
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContentSettings.NotificationsDialog.Closed"));
+
+  // Once the icon is hidden and shown again, the action should be recorded
+  // again.
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kGranted);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_FALSE(content_setting_image_model->is_visible());
+  AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+      app_id, AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied);
+  content_setting_image_model->Update(web_contents());
+  EXPECT_TRUE(content_setting_image_model->is_visible());
+  EXPECT_EQ(2, user_action_tester.GetActionCount(
+                   "ContentSettings.Notifications.SystemPermissionIconShown"));
 }
 #endif
 

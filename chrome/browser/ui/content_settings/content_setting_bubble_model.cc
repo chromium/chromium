@@ -1503,6 +1503,8 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
     : ContentSettingSimpleBubbleModel(delegate,
                                       page,
                                       ContentSettingsType::NOTIFICATIONS) {
+  base::RecordAction(
+      base::UserMetricsAction("ContentSettings.NotificationsDialog.Shown"));
   set_title(l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
   AddListItem(ContentSettingBubbleModel::ListItem(
       &(features::IsRoundedIconsEnabled()
@@ -1517,9 +1519,14 @@ ContentSettingNotificationsBubbleModel::ContentSettingNotificationsBubbleModel(
 }
 
 ContentSettingNotificationsBubbleModel::
-    ~ContentSettingNotificationsBubbleModel() = default;
+    ~ContentSettingNotificationsBubbleModel() {
+  base::RecordAction(
+      base::UserMetricsAction("ContentSettings.NotificationsDialog.Closed"));
+}
 
 void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
+  base::RecordAction(base::UserMetricsAction(
+      "ContentSettings.NotificationsDialog.OpenSystemSettingsClicked"));
   std::string bundle_identifier = base::apple::MainBundleIdentifier();
   if (std::optional<webapps::AppId> app_id =
           web_app::WebAppTabHelper::GetAppIdForNotificationAttribution(
@@ -1532,6 +1539,8 @@ void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
 }
 
 void ContentSettingNotificationsBubbleModel::OnCancelButtonClicked() {
+  base::RecordAction(base::UserMetricsAction(
+      "ContentSettings.NotificationsDialog.DontAllowClicked"));
   if (!web_contents() || !GetProfile()) {
     return;
   }

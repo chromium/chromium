@@ -39,6 +39,9 @@ class ContentSettingImageModelStates
   void SetPromoWasShown(ImageType type, bool promo_was_shown);
   bool PromoWasShown(ImageType type) const;
 
+  void SetIconShownRecorded(ImageType type, bool recorded);
+  bool IconShownRecorded(ImageType type) const;
+
  private:
   friend class content::WebContentsUserData<ContentSettingImageModelStates>;
   explicit ContentSettingImageModelStates(content::WebContents* contents);
@@ -67,6 +70,12 @@ class ContentSettingImageModelStates
   // model. This bit is reset to false when the image is hidden.
   std::array<bool, static_cast<size_t>(ImageType::kMaxValue) + 1>
       promo_was_shown_ = {};
+
+  // Array of bool for whether a metric was recorded for the icon being shown
+  // for a given image model. This bit is reset to false when the image is
+  // hidden.
+  std::array<bool, static_cast<size_t>(ImageType::kMaxValue) + 1>
+      icon_shown_recorded_ = {};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

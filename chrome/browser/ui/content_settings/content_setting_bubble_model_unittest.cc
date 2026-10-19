@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -2003,18 +2004,27 @@ TEST_F(ContentSettingBubbleModelTest, NotificationsBubbleModel_DontAllow) {
   hcsm->SetContentSettingDefaultScope(
       url, url, ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
 
-  ContentSettingNotificationsBubbleModel bubble_model(nullptr, page());
-  const auto& content = bubble_model.bubble_content();
-  EXPECT_EQ(content.title,
-            l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
-  EXPECT_EQ(content.done_button_text,
-            l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
-  EXPECT_EQ(content.cancel_button_text,
-            l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
+  base::UserActionTester user_action_tester;
+  {
+    ContentSettingNotificationsBubbleModel bubble_model(nullptr, page());
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "ContentSettings.NotificationsDialog.Shown"));
+    const auto& content = bubble_model.bubble_content();
+    EXPECT_EQ(content.title,
+              l10n_util::GetStringUTF16(IDS_NOTIFICATIONS_TURNED_OFF_IN_MACOS));
+    EXPECT_EQ(content.done_button_text,
+              l10n_util::GetStringUTF16(IDS_OPEN_SETTINGS_LINK));
+    EXPECT_EQ(content.cancel_button_text,
+              l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW));
 
-  bubble_model.OnCancelButtonClicked();
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      hcsm->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+    bubble_model.OnCancelButtonClicked();
+    EXPECT_EQ(1, user_action_tester.GetActionCount(
+                     "ContentSettings.NotificationsDialog.DontAllowClicked"));
+    EXPECT_EQ(
+        CONTENT_SETTING_BLOCK,
+        hcsm->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+  }
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ContentSettings.NotificationsDialog.Closed"));
 }
 #endif  // BUILDFLAG(IS_MAC)

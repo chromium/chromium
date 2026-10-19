@@ -9522,6 +9522,51 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSettings.Notifications.SystemPermissionIconShown">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The notifications blocked icon is shown because the macOS system-level
+    notification permission is not granted for the web app.
+  </description>
+</action>
+
+<action name="ContentSettings.NotificationsDialog.Closed">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The content settings notifications bubble for macOS system permission is
+    closed.
+  </description>
+</action>
+
+<action name="ContentSettings.NotificationsDialog.DontAllowClicked">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user clicked 'Don't allow' from the content settings notifications
+    bubble to block notifications for the site in Chrome.
+  </description>
+</action>
+
+<action name="ContentSettings.NotificationsDialog.OpenSystemSettingsClicked">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The user clicked 'Open System Settings' from the content settings
+    notifications bubble.
+  </description>
+</action>
+
+<action name="ContentSettings.NotificationsDialog.Shown">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <description>
+    The content settings notifications bubble for macOS system permission was
+    shown, either automatically or by clicking the indicator icon.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.ClosedContextMenu">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
