@@ -60,6 +60,8 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkRegion.h"
+#include "ui/base/accelerators/accelerator.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
@@ -1534,6 +1536,11 @@ bool OmniboxEverywhereUIManager::HandleContextMenu(
 
 void OmniboxEverywhereUIManager::BuildInputContextMenu(
     const content::ContextMenuParams& params) {
+  if (ui::IsEmojiPanelSupported()) {
+    context_menu_model_->AddItemWithStringId(kEmoji, IDS_CONTENT_CONTEXT_EMOJI);
+    context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
+  }
+
   context_menu_model_->AddItemWithStringId(kUndo, IDS_APP_UNDO);
   context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
 
@@ -1628,6 +1635,27 @@ bool OmniboxEverywhereUIManager::HandleKeyboardEvent(
 }
 
 // ui::SimpleMenuModel::Delegate:
+// Supplies the platform-native emoji picker keyboard shortcut hint displayed
+// alongside the Emoji item in the right-click context menu (Win + . on Windows,
+// Cmd + Ctrl + Space on macOS).
+bool OmniboxEverywhereUIManager::GetAcceleratorForCommandId(
+    int command_id,
+    ui::Accelerator* accelerator) const {
+  if (command_id == kEmoji) {
+#if BUILDFLAG(IS_WIN)
+    *accelerator = ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN);
+    return true;
+#elif BUILDFLAG(IS_MAC)
+    *accelerator = ui::Accelerator(ui::VKEY_SPACE,
+                                   ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
+    return true;
+#else
+    return false;
+#endif
+  }
+  return false;
+}
+
 // Dispatches standard text editing commands from the context menu to the
 // underlying WebContents. Explicitly focuses the WebContents beforehand so
 // that focus temporarily acquired by the context menu UI runner is returned
@@ -1655,6 +1683,11 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
   }
   web_contents()->Focus();
   switch (command_id) {
+    case kEmoji:
+      if (widget_) {
+        widget_->ShowEmojiPanel();
+      }
+      break;
     case kUndo:
       web_contents()->Undo();
       break;
@@ -1779,6 +1812,9 @@ bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
     return false;
   }
   switch (command_id) {
+    case kEmoji:
+      return ui::IsEmojiPanelSupported() && widget_ != nullptr &&
+             last_context_menu_params_.is_editable;
     case kUndo:
       return (last_context_menu_params_.edit_flags &
               blink::ContextMenuDataEditFlags::kCanUndo) != 0;

@@ -116,6 +116,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
     kSettings = 12,
     kMinimize = 13,
     kClose = 14,
+    kEmoji = 15,
   };
 
   using ContentsWrapperFactory =
@@ -202,6 +203,8 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
                            const input::NativeWebKeyboardEvent& event) override;
 
   // ui::SimpleMenuModel::Delegate:
+  bool GetAcceleratorForCommandId(int command_id,
+                                  ui::Accelerator* accelerator) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdChecked(int command_id) const override;

@@ -49,9 +49,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/test/event_generator.h"
@@ -62,12 +64,18 @@
 #include "ui/views/controls/menu/menu_runner_handler.h"
 #include "ui/views/test/menu_runner_test_api.h"
 #include "ui/views/test/mock_activation_controller.h"
+#include "ui/views/test/test_platform_native_widget.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/widget/native_widget_mac.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 // clang-format off
@@ -84,12 +92,41 @@
 #include "base/win/scoped_propvariant.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
 
 namespace omnibox_everywhere {
 
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+using BaseTestNativeWidget =
+    views::test::TestPlatformNativeWidget<views::NativeWidgetMac>;
+#elif BUILDFLAG(IS_WIN)
+using BaseTestNativeWidget =
+    views::test::TestPlatformNativeWidget<views::DesktopNativeWidgetAura>;
+#endif
+
+class TestNativeWidget : public BaseTestNativeWidget {
+ public:
+  TestNativeWidget(views::internal::NativeWidgetDelegate* delegate,
+                   base::RepeatingClosure on_show_emoji_panel)
+      : BaseTestNativeWidget(delegate,
+                             /*mock_capture=*/false,
+                             /*destroyed=*/nullptr),
+        on_show_emoji_panel_(std::move(on_show_emoji_panel)) {}
+  ~TestNativeWidget() override = default;
+
+  void ShowEmojiPanel() override {
+    if (on_show_emoji_panel_) {
+      on_show_emoji_panel_.Run();
+    }
+  }
+
+ private:
+  base::RepeatingClosure on_show_emoji_panel_;
+};
 
 class ScopedScreenOverride {
  public:
@@ -212,7 +249,30 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
                                  temp_start_menu_dir_.GetPath());
 #endif
     ChromeViewsTestBase::SetUp();
+    views::ViewsDelegate::GetInstance()->set_native_widget_factory(
+        base::BindRepeating(
+            [](OmniboxEverywhereUIManagerTest* test,
+               const views::Widget::InitParams& init_params,
+               views::internal::NativeWidgetDelegate* delegate)
+                -> views::NativeWidget* {
+#if defined(USE_AURA)
+              if (init_params.parent &&
+                  init_params.type != views::Widget::InitParams::TYPE_MENU &&
+                  init_params.type != views::Widget::InitParams::TYPE_TOOLTIP) {
+                return nullptr;
+              }
+#endif
+              return new TestNativeWidget(
+                  delegate, base::BindRepeating(
+                                [](OmniboxEverywhereUIManagerTest* test) {
+                                  ++test->emoji_panel_shown_count_;
+                                },
+                                base::Unretained(test)));
+            },
+            base::Unretained(this)));
   }
+
+  int emoji_panel_shown_count() const { return emoji_panel_shown_count_; }
 
   void SetUpAimEligibilityService(bool is_fusebox_eligible) {
     AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
@@ -264,6 +324,7 @@ class OmniboxEverywhereUIManagerTest : public ChromeViewsTestBase {
  protected:
   base::test::ScopedFeatureList feature_list_;
   TestingProfile profile_;
+  int emoji_panel_shown_count_ = 0;
 #if BUILDFLAG(IS_WIN)
   base::ScopedTempDir temp_start_menu_dir_;
   std::optional<base::ScopedPathOverride> start_menu_override_;
@@ -1792,6 +1853,14 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
   ASSERT_TRUE(model);
 
   size_t index = 0;
+  if (ui::IsEmojiPanelSupported()) {
+    EXPECT_EQ(model->GetCommandIdAt(index++),
+              omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji);
+    EXPECT_EQ(model->GetTypeAt(index++),
+              ui::MenuModel::ItemType::TYPE_SEPARATOR);
+    EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji));
+  }
   EXPECT_EQ(model->GetCommandIdAt(index++),
             omnibox_everywhere::OmniboxEverywhereUIManager::kUndo);
   EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
@@ -1828,6 +1897,50 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
             omnibox_everywhere::OmniboxEverywhereUIManager::kClose);
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(model->GetItemCount(), index);
+}
+
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuEmojiCommand) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+
+  // Non-editable context omits and disables kEmoji.
+  content::ContextMenuParams non_editable_params;
+  non_editable_params.is_editable = false;
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, non_editable_params));
+  EXPECT_FALSE(ui_manager->context_menu_model_for_testing()
+                   ->GetIndexOfCommandId(
+                       omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji)
+                   .has_value());
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji));
+
+  ui::Accelerator accelerator;
+  EXPECT_FALSE(ui_manager->GetAcceleratorForCommandId(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kUndo, &accelerator));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(ui_manager->GetAcceleratorForCommandId(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji, &accelerator));
+#endif
+
+  // Editable context enables kEmoji and ExecuteCommand(kEmoji) triggers
+  // ShowEmojiPanel() on the widget without invoking native OS global panels in
+  // unit_tests.
+  content::ContextMenuParams editable_params;
+  editable_params.is_editable = true;
+  EXPECT_TRUE(ui_manager->HandleContextMenu(*rfh, editable_params));
+  if (ui::IsEmojiPanelSupported()) {
+    EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji));
+    EXPECT_EQ(emoji_panel_shown_count(), 0);
+    ui_manager->ExecuteCommand(
+        omnibox_everywhere::OmniboxEverywhereUIManager::kEmoji, 0);
+    EXPECT_EQ(emoji_panel_shown_count(), 1);
+  }
 }
 
 TEST_F(OmniboxEverywhereUIManagerTest,
