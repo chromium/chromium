@@ -31,7 +31,6 @@ include_rules = [
   "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/extensions",
-  "+chrome/browser/ui/navigator",
   "+chrome/browser/ui/web_applications",
   "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",

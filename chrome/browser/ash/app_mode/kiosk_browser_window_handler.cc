@@ -22,12 +22,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ash/app_mode/kiosk_troubleshooting_controller_ash.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/navigator/browser_navigator.h"
-#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/browser_delegate/browser_type.h"
+#include "components/account_id/account_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -38,6 +36,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
@@ -162,15 +161,14 @@ KioskBrowserWindowHandler::KioskBrowserWindowHandler(
     base::RepeatingCallback<void(bool is_closing)>
         on_browser_window_added_callback,
     base::OnceClosure shutdown_kiosk_browser_session_callback)
-    : profile_(profile),
-      web_app_id_(web_app_id),
+    : web_app_id_(web_app_id),
       on_browser_window_added_callback_(on_browser_window_added_callback),
       shutdown_kiosk_browser_session_callback_(
           std::move(shutdown_kiosk_browser_session_callback)),
-      kiosk_policies_(profile_->GetPrefs()) {
+      kiosk_policies_(profile->GetPrefs()) {
   kiosk_troubleshooting_controller_ =
       std::make_unique<ash::KioskTroubleshootingControllerAsh>(
-          profile_->GetPrefs(),
+          profile->GetPrefs(),
           base::BindOnce(&KioskBrowserWindowHandler::Shutdown,
                          weak_ptr_factory_.GetWeakPtr()));
 
@@ -250,11 +248,9 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
     // existing browser.
     CloseBrowserAndSetTimer(browser);
     // Navigate in the existing browser.
-    NavigateParams nav_params(
-        &settings_browser_->GetBrowser(), GURL(url_string),
-        ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
-    Navigate(&nav_params);
+    settings_browser_->LoadUrl(GURL(url_string),
+                               ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                               {.show_window = true});
     return;
   }
 
@@ -264,13 +260,14 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
   if (!app_browser) {
     // If this browser is not an app browser, create a new app browser if none
     // yet exists.
+    // Capture the account before `browser` starts closing.
+    const AccountId account_id = browser->GetAccountId();
     CloseBrowserAndSetTimer(browser);
     // Create a new app browser.
-    NavigateParams nav_params(
-        profile_, GURL(url_string),
-        ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    nav_params.disposition = WindowOpenDisposition::NEW_POPUP;
-    Navigate(&nav_params);
+    ash::BrowserController::GetInstance()->OpenUrl(
+        account_id, GURL(url_string),
+        {.disposition = WindowOpenDisposition::NEW_POPUP,
+         .transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL});
 
     // We do not save the newly created browser to the `settings_browser_` here
     // because this new browser will be handled by this function after creation,

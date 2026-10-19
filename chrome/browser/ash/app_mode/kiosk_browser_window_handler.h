@@ -132,8 +132,6 @@ class KioskBrowserWindowHandler : public ash::BrowserController::Observer {
   // Calls `shutdown_kiosk_browser_session_callback_` once.
   void Shutdown();
 
-  // Owned by `ProfileManager`.
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
   // `web_app_id_` is set only for web kiosk sessions.
   const std::optional<webapps::AppId> web_app_id_;
   base::RepeatingCallback<void(bool is_closing)>
