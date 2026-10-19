@@ -68,4 +68,7 @@ message SessionPolicies {
   // Allow host-side Gnubby (Security Key) requests to be handled by the client
   // browser. Defaults to true.
   optional bool allow_gnubby_forwarding = 10;
+
+  // Allow remoting a terminal from the remote machine. Defaults to true.
+  optional bool allow_terminal_remoting = 11;
 }
