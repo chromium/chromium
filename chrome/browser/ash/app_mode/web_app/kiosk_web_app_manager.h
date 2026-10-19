@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_web_app_update_observer.h"
+#include "chrome/browser/ash/app_mode/kiosk_web_app_update_observer.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "url/gurl.h"

@@ -10,7 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_browser_session.h"
+#include "chrome/browser/ash/app_mode/kiosk_browser_session.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"

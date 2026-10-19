@@ -108,8 +108,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/app_mode/kiosk_web_app_browser_controller.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_web_app_browser_controller.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"

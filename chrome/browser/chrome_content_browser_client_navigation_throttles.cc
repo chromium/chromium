@@ -116,10 +116,10 @@
 #include "chrome/browser/apps/app_service/app_install/app_install_navigation_throttle.h"
 #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
 #include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
+#include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_navigation_throttle.h"
 #include "chrome/browser/ash/login/signin/merge_session_navigation_throttle.h"
 #include "chrome/browser/ash/login/signin/merge_session_throttling_utils.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_settings_navigation_throttle.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)

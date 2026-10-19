@@ -1586,8 +1586,7 @@
                   '|chrome/browser/ash/file_manager/virtual_tasks/install_isolated_web_app_virtual_task',
     },
     'kiosk': {
-      'filepath': 'chrome/browser/chromeos/app_mode/'\
-                  '|chrome/browser/ash/app_mode/'\
+      'filepath': 'chrome/browser/ash/app_mode/'\
                   '|chrome/browser/ash/login/app_mode/',
     },
     'language': {

@@ -1,0 +1,208 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/app_mode/chrome_kiosk_app_launcher.h"
+
+#include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
+#include "base/types/expected.h"
+#include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/application_launch.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/delayed_install_manager.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/common/extension_id.h"
+#include "extensions/common/manifest_handlers/kiosk_mode_info.h"
+#include "extensions/common/manifest_handlers/offline_enabled_info.h"
+
+namespace chromeos {
+
+ChromeKioskAppLauncher::ChromeKioskAppLauncher(Profile* profile,
+                                               const std::string& app_id,
+                                               bool network_available)
+    : profile_(profile),
+      app_id_(app_id),
+      network_available_(network_available) {}
+
+ChromeKioskAppLauncher::~ChromeKioskAppLauncher() = default;
+
+base::expected<void, ChromeKioskAppLauncher::PreLaunchError>
+ChromeKioskAppLauncher::PerformPreLaunchChecks() {
+  const extensions::Extension* primary_app = GetPrimaryAppExtension();
+
+  // Verify that required apps are installed. While the apps should be
+  // present at this point, crash recovery flow skips app installation steps -
+  // this means that the kiosk app might not yet be downloaded. If that is
+  // the case, bail out from the app launch.
+  if (!primary_app) {
+    return base::unexpected(PreLaunchError::kPrimaryAppMissing);
+  }
+
+  if (apps::chrome_app_deprecation::HandleDeprecation(primary_app->id(),
+                                                      profile_) ==
+      apps::chrome_app_deprecation::DeprecationStatus::kLaunchBlocked) {
+    SYSLOG(WARNING) << "Kiosk Chrome app is deprecated";
+    return base::unexpected(PreLaunchError::kChromeAppDeprecated);
+  }
+
+  if (!extensions::KioskModeInfo::IsKioskEnabled(primary_app)) {
+    SYSLOG(WARNING) << "Kiosk app not kiosk enabled";
+    return base::unexpected(PreLaunchError::kPrimaryAppNotKioskEnabled);
+  }
+
+  if (!AreSecondaryAppsInstalled()) {
+    return base::unexpected(PreLaunchError::kSecondaryAppsMissing);
+  }
+
+  const bool offline_enabled =
+      extensions::OfflineEnabledInfo::IsOfflineEnabled(primary_app);
+  // If the app is not offline enabled, make sure the network is ready before
+  // launching.
+  if (!offline_enabled && !network_available_) {
+    return base::unexpected(PreLaunchError::kNetworkMissing);
+  }
+
+  return base::ok();
+}
+
+void ChromeKioskAppLauncher::LaunchApp(LaunchCallback callback) {
+  on_ready_callback_ = std::move(callback);
+
+  const extensions::Extension* primary_app = GetPrimaryAppExtension();
+
+  SetSecondaryAppsEnabledState(primary_app);
+  MaybeUpdateAppData();
+
+  const extensions::Extension* extension = GetPrimaryAppExtension();
+  CHECK(extension);
+
+  SYSLOG(INFO) << "Attempt to launch app.";
+
+  app_service_launcher_ = std::make_unique<KioskAppServiceLauncher>(profile_);
+  app_service_launcher_->CheckAndMaybeLaunchApp(
+      extension->id(),
+      base::BindOnce(&ChromeKioskAppLauncher::OnAppServiceAppLaunched,
+                     weak_ptr_factory_.GetWeakPtr()));
+  WaitForAppWindow();
+}
+
+void ChromeKioskAppLauncher::WaitForAppWindow() {
+  auto* window_registry_ = extensions::AppWindowRegistry::Get(profile_);
+  if (!window_registry_->GetAppWindowsForApp(app_id_).empty()) {
+    ReportLaunchSuccess();
+  } else {
+    // Start waiting for app window.
+    app_window_observation_.Observe(window_registry_);
+  }
+}
+
+void ChromeKioskAppLauncher::OnAppWindowAdded(
+    extensions::AppWindow* app_window) {
+  if (app_window->extension_id() == app_id_) {
+    app_window_observation_.Reset();
+    ReportLaunchSuccess();
+  }
+}
+
+void ChromeKioskAppLauncher::OnAppServiceAppLaunched(bool success) {
+  if (!success) {
+    ReportLaunchFailure();
+  }
+}
+
+void ChromeKioskAppLauncher::MaybeUpdateAppData() {
+  // Skip copying meta data from the current installed primary app when
+  // there is a pending update.
+  if (PrimaryAppHasPendingUpdate()) {
+    return;
+  }
+
+  ash::KioskChromeAppManager::Get()->ClearAppData(app_id_);
+  ash::KioskChromeAppManager::Get()->UpdateAppDataFromProfile(app_id_, profile_,
+                                                              nullptr);
+}
+
+void ChromeKioskAppLauncher::ReportLaunchSuccess() {
+  SYSLOG(INFO) << "App launch completed";
+  std::move(on_ready_callback_).Run(true);
+}
+
+void ChromeKioskAppLauncher::ReportLaunchFailure() {
+  SYSLOG(ERROR) << "App launch failed";
+  std::move(on_ready_callback_).Run(false);
+}
+
+const extensions::Extension* ChromeKioskAppLauncher::GetPrimaryAppExtension()
+    const {
+  return extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
+      app_id_);
+}
+
+bool ChromeKioskAppLauncher::AreSecondaryAppsInstalled() const {
+  const extensions::Extension& extension =
+      CHECK_DEREF(GetPrimaryAppExtension());
+  const auto& info = CHECK_DEREF(extensions::KioskModeInfo::Get(&extension));
+
+  for (const auto& app : info.secondary_apps) {
+    if (!extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
+            app.id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool ChromeKioskAppLauncher::PrimaryAppHasPendingUpdate() const {
+  return extensions::DelayedInstallManager::Get(profile_)
+      ->GetPendingExtensionUpdate(app_id_);
+}
+
+void ChromeKioskAppLauncher::SetSecondaryAppsEnabledState(
+    const extensions::Extension* primary_app) {
+  const extensions::KioskModeInfo* info =
+      extensions::KioskModeInfo::Get(primary_app);
+  for (const auto& app_info : info->secondary_apps) {
+    // If the enabled on launch is not specified in the manifest, the apps
+    // enabled state should be kept as is.
+    if (!app_info.enabled_on_launch.has_value()) {
+      continue;
+    }
+
+    SetAppEnabledState(app_info.id, app_info.enabled_on_launch.value());
+  }
+}
+
+void ChromeKioskAppLauncher::SetAppEnabledState(
+    const extensions::ExtensionId& id,
+    bool new_enabled_state) {
+  auto* registrar = extensions::ExtensionRegistrar::Get(profile_);
+  extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
+
+  // If the app is already enabled, and we want it to be enabled, nothing to do.
+  if (registrar->IsExtensionEnabled(id) && new_enabled_state) {
+    return;
+  }
+
+  if (new_enabled_state) {
+    // Remove USER_ACTION disable reason - if no other disabled reasons are
+    // present, enable the app.
+    prefs->RemoveDisableReason(id,
+                               extensions::disable_reason::DISABLE_USER_ACTION);
+    if (prefs->GetDisableReasons(id).empty()) {
+      registrar->EnableExtension(id);
+    }
+  } else {
+    registrar->DisableExtension(
+        id, {extensions::disable_reason::DISABLE_USER_ACTION});
+  }
+}
+
+}  // namespace chromeos

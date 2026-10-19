@@ -9,8 +9,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
+#include "chrome/browser/ash/app_mode/kiosk_web_app_install_util.h"
 #include "chrome/browser/ash/app_mode/kiosk_web_app_launcher_base.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_web_app_install_util.h"
 #include "components/account_id/account_id.h"
 #include "components/webapps/common/web_app_id.h"
 

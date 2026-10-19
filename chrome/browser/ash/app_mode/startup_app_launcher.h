@@ -11,12 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/app_mode/chrome_kiosk_app_installer.h"
+#include "chrome/browser/ash/app_mode/chrome_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_installer.h"
-#include "chrome/browser/chromeos/app_mode/chrome_kiosk_app_launcher.h"
 
 class Profile;
 

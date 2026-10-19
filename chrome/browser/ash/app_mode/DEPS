@@ -17,22 +17,34 @@ include_rules = [
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system",
-  "+chrome/browser/chromeos/app_mode",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
+  "+chrome/browser/extensions/external_loader.h",
   "+chrome/browser/extensions/external_provider_impl.h",
+  "+chrome/browser/extensions/forced_extensions",
   "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/updater/extension_updater.h",
   "+chrome/browser/extensions/updater/extension_updater_factory.h",
+  "+chrome/browser/lifetime",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/apps",
   "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/extensions",
+  "+chrome/browser/ui/navigator",
   "+chrome/browser/ui/web_applications",
+  "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
+  "+chrome/browser/web_applications/model",
+  "+chrome/browser/web_applications/mojom",
+  "+chrome/browser/web_applications/proto",
+  "+chrome/browser/web_applications/web_app_constants.h",
+  "+chrome/browser/web_applications/web_app_filter.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
+  "+chrome/browser/web_applications/web_app_management_type.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_registrar.h",
+  "+chrome/browser/web_applications/web_app_tab_helper.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/chrome_switches.h",
 ]
@@ -40,7 +52,9 @@ include_rules = [
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
   ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
+    "+chrome/browser/ash/browser_delegate",
     "+chrome/browser/devtools",
+    "+chrome/browser/ui/browser_window/public",
   ],
   ".*(fake|test|mixin)(_.*)?\\.(cc|h)": [
     "+chrome/browser/browser_process.h",
@@ -49,20 +63,16 @@ specific_include_rules = {
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
   ],
+  "kiosk_app_level_logs_manager_wrapper\\.cc": [
+    "+chrome/browser/browser_process.h",
+  ],
   # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
   "kiosk_app_update_service_factory\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
   ],
-  "kiosk_crash_restore_browsertest\\.cc": [
-    "+chrome/browser/lifetime/termination_notification.h",
-  ],
-  "kiosk_guest_view_browsertest\\.cc": [
-    "+chrome/browser/ui/browser_window/public",
-  ],
   "kiosk_troubleshooting_tools_browsertest\\.cc": [
     "+chrome/browser/ui/browser_init_state.h",
-    "+chrome/browser/ui/browser_window/public",
     "+chrome/browser/ui/views/task_manager_view.h",
     "+chrome/common/pref_names.h",
   ],

@@ -211,10 +211,10 @@ source_set("impl") {
     if (is_chromeos) {
       deps += [
         "//chrome/browser/ash/app_list",
+        "//chrome/browser/ash/app_mode",
         "//chrome/browser/ash/apps",
         "//chrome/browser/ash/file_manager",
         "//chrome/browser/ash/system_web_apps",
-        "//chrome/browser/chromeos/app_mode",
         "//chrome/browser/ui/ash/shelf",
         "//chrome/browser/ui/ash/system_web_apps",
         "//chromeos/ash/components/browser_context_helper",
