@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <array>
 
-#include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 
 namespace remoting {
@@ -800,10 +798,6 @@ const auto kKeySymUnicodeMap = std::to_array<CodePair>({
 });
 // clang-format on
 
-bool CompareCodePair(const CodePair& pair, uint32_t unicode) {
-  return pair.unicode < unicode;
-}
-
 }  // namespace
 
 std::vector<uint32_t> GetKeySymsForUnicode(uint32_t unicode) {
@@ -815,14 +809,9 @@ std::vector<uint32_t> GetKeySymsForUnicode(uint32_t unicode) {
     keysyms.push_back(unicode);
   }
 
-  const CodePair* map_end = base::span<const CodePair>(kKeySymUnicodeMap)
-                                .subspan(std::size(kKeySymUnicodeMap))
-                                .data();
-  const CodePair* pair = std::lower_bound(kKeySymUnicodeMap.data(), map_end,
-                                          unicode, &CompareCodePair);
-  while (pair != map_end && pair->unicode == unicode) {
-    keysyms.push_back(pair->keysym);
-    UNSAFE_TODO(++pair);
+  for (const CodePair& pair : std::ranges::equal_range(
+           kKeySymUnicodeMap, unicode, {}, &CodePair::unicode)) {
+    keysyms.push_back(pair.keysym);
   }
 
   keysyms.push_back(0x01000000 | unicode);
