@@ -7,11 +7,8 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/reading_list/core/reading_list_model.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ReadingListModel;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace reading_list {
 class DualReadingListModel;
@@ -19,19 +16,15 @@ class DualReadingListModel;
 
 // Singleton that creates the ReadingListModel and associates that service with
 // a profile.
-class ReadingListModelFactory : public ProfileKeyedServiceFactoryIOS {
+class ReadingListModelFactory
+    : public TypedProfileKeyedServiceFactoryIOS<ReadingListModelFactory,
+                                                ReadingListModel> {
  public:
-  static ReadingListModel* GetForProfile(ProfileIOS* profile);
+  explicit ReadingListModelFactory(PassKey key);
   static reading_list::DualReadingListModel*
   GetAsDualReadingListModelForProfile(ProfileIOS* profile);
-  static ReadingListModelFactory* GetInstance();
 
  private:
-  friend class base::NoDestructor<ReadingListModelFactory>;
-
-  ReadingListModelFactory();
-  ~ReadingListModelFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

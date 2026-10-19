@@ -8,7 +8,6 @@
 
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
-#import "base/no_destructor.h"
 #import "base/time/default_clock.h"
 #import "components/reading_list/core/dual_reading_list_model.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
@@ -22,12 +21,6 @@
 #import "ios/web/public/thread/web_thread.h"
 
 // static
-ReadingListModel* ReadingListModelFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ReadingListModel>(
-      profile, /*create=*/true);
-}
-
-// static
 reading_list::DualReadingListModel*
 ReadingListModelFactory::GetAsDualReadingListModelForProfile(
     ProfileIOS* profile) {
@@ -36,19 +29,13 @@ ReadingListModelFactory::GetAsDualReadingListModelForProfile(
           profile, /*create=*/true);
 }
 
-// static
-ReadingListModelFactory* ReadingListModelFactory::GetInstance() {
-  static base::NoDestructor<ReadingListModelFactory> instance;
-  return instance.get();
-}
-
-ReadingListModelFactory::ReadingListModelFactory()
-    : ProfileKeyedServiceFactoryIOS("ReadingListModel",
-                                    ProfileSelection::kRedirectedInIncognito) {
+ReadingListModelFactory::ReadingListModelFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ReadingListModel",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
-
-ReadingListModelFactory::~ReadingListModelFactory() {}
 
 std::unique_ptr<KeyedService> ReadingListModelFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
