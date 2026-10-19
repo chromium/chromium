@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/process/process_handle.h"
+#include "base/sanitizer_buildflags.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -460,8 +461,8 @@ void BrowserGpuChannelHostFactory::RestartTimeout() {
   if (!pending_request_ || !is_visible_)
     return;
 
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    BUILDFLAG(ORDERFILE_INSTRUMENTATION)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_HWASAN) || \
+    defined(THREAD_SANITIZER) || BUILDFLAG(ORDERFILE_INSTRUMENTATION)
   constexpr int64_t kGpuChannelTimeoutInSeconds = 40;
 #else
   // This is also monitored by the GPU watchdog (restart or initialization
