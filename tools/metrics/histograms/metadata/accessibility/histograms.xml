@@ -2908,10 +2908,9 @@ recorded in the same way, even if they fit the naming pattern. -->
 
 <histogram
     name="Accessibility.Performance.ProcessDeferredUpdatesLifecycleStage"
-    units="microseconds" expires_after="2026-10-25">
+    units="microseconds" expires_after="2027-06-01">
   <owner>lucasradaelli@google.com</owner>
   <owner>mschillaci@google.com</owner>
-  <owner>lucasradaelli@google.com</owner>
   <owner>janewman@microsoft.com</owner>
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
