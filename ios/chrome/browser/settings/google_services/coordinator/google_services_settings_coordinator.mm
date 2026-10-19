@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -161,10 +162,8 @@ using signin_metrics::PromoAction;
   // `message` in the UIAlertController, the attributed message below
   // specifically denotes the font style to apply.
   if (warning) {
-    // TODO(crbug.com/407498240): Revisit this string - it's partially outdated,
-    // and it does not only apply to managed accounts.
     NSString* clearDataMessage = l10n_util::GetNSString(
-        IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT);
+        IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_NOT_SAVED_DATA);
     self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
         initWithString:clearDataMessage
             attributes:@{
