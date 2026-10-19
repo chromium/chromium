@@ -1788,7 +1788,9 @@ void MTPDeviceDelegateImpl::OnDidFillFileCache(
     return;
   }
 
-  CHECK(path.IsParent(pending_tasks_.front().path), base::NotFatalUntil::M161);
+  // TODO(crbug.com/575078191): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(path.IsParent(pending_tasks_.front().path));
   if (has_more) {
     return;  // Wait until all entries have been read.
   }
