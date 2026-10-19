@@ -189,42 +189,12 @@ class CdmHostProxyImpl : public CdmHostProxy {
   const raw_ptr<HostInterface> host_ = nullptr;
 };
 
-template <>
-void CdmHostProxyImpl<cdm::Host_10>::ReportMetrics(cdm::MetricName metric_name,
-                                                   uint64_t value) {
-  // cdm::ContentDecryptionModule_10 CDM should never call this.
-  NOTIMPLEMENTED();
-}
-
-// Specialization for Host_10's OnResolveKeyStatusPromise with KeyStatus_2
-template <>
-void CdmHostProxyImpl<cdm::Host_10>::OnResolveKeyStatusPromise(
-    uint32_t promise_id,
-    cdm::KeyStatus_2 key_status) {
-  host_->OnResolveKeyStatusPromise(promise_id, ToKeyStatus(key_status));
-}
-
 // Specialization for Host_11's OnResolveKeyStatusPromise with KeyStatus_2
 template <>
 void CdmHostProxyImpl<cdm::Host_11>::OnResolveKeyStatusPromise(
     uint32_t promise_id,
     cdm::KeyStatus_2 key_status) {
   host_->OnResolveKeyStatusPromise(promise_id, ToKeyStatus(key_status));
-}
-
-// Specialization for Host_10's OnSessionKeysChange with KeyInformation_2
-template <>
-void CdmHostProxyImpl<cdm::Host_10>::OnSessionKeysChange(
-    const char* session_id,
-    uint32_t session_id_size,
-    bool has_additional_usable_key,
-    const cdm::KeyInformation_2* keys_info,
-    uint32_t keys_info_count) {
-  std::vector<cdm::KeyInformation> keys_vector =
-      ConvertKeyInformation(keys_info, keys_info_count);
-  host_->OnSessionKeysChange(session_id, session_id_size,
-                             has_additional_usable_key, keys_vector.data(),
-                             keys_vector.size());
 }
 
 // Specialization for Host_11's OnSessionKeysChange with KeyInformation_2

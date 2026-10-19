@@ -299,6 +299,8 @@ class CdmWrapperImpl : public CdmWrapper {
 // Specialization for cdm::ContentDecryptionModule_10 methods and
 // cdm::ContentDecryptionModule_11 methods.
 
+// TODO(b/425796122): Remove CDM_10 once shipped CDM manifests also list 11 in
+// x-cdm-interface-versions.
 template <>
 cdm::Status CdmWrapperImpl<10>::InitializeVideoDecoder(
     const cdm::VideoDecoderConfig_3& video_decoder_config) {
@@ -342,6 +344,8 @@ CdmWrapper* CdmWrapper::Create(CreateCdmFunc create_cdm_func,
                                const CdmConfig& cdm_config,
                                GetCdmHostFunc get_cdm_host_func,
                                void* user_data) {
+  // TODO(b/425796122): Update to (11, 12) and remove 10 from CreateWithVersions
+  // once shipped CDM manifests also list 11 in x-cdm-interface-versions.
   static_assert(CheckSupportedCdmInterfaceVersions(10, 12),
                 "Mismatch between CdmWrapper::Create() and "
                 "IsSupportedCdmInterfaceVersion()");
