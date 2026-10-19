@@ -4,10 +4,13 @@
 
 #include "components/actor/core/safety_list_manager.h"
 
+#include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -15,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -33,7 +37,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
-#include "safety_list_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -138,15 +141,66 @@ ParsePaymentIframeAllowedFromList(const base::ListValue& json_list) {
   return origins;
 }
 
+base::flat_set<std::string> CollectUniqueHosts(
+    const std::map<std::string, std::map<std::string, ContentSetting>>&
+        host_rules) {
+  std::vector<std::string> hosts;
+  for (const auto& [src_host, dst_map] : host_rules) {
+    hosts.push_back(src_host);
+    for (const auto& [dst_host, _] : dst_map) {
+      hosts.push_back(dst_host);
+    }
+  }
+  base::flat_set<std::string> unique_hosts(std::move(hosts));
+  // The vector may have held many duplicate hosts but it is reused by the
+  // flat_set without adjusting the capacity. So we trim the unused capacity
+  // before returning.
+  unique_hosts.shrink_to_fit();
+  return unique_hosts;
+}
+
+// Projects a `std::map` into a `base::flat_map`. `key_projection` must preserve
+// the strict weak ordering of the keys in `map`.
+template <
+    typename IK,
+    typename IV,
+    typename KeyProj = std::identity,
+    typename ValueProj = std::identity,
+    typename OK = std::remove_cvref_t<std::invoke_result_t<KeyProj, const IK&>>,
+    typename OV =
+        std::remove_cvref_t<std::invoke_result_t<ValueProj, const IV&>>>
+base::flat_map<OK, OV> ToFlatMapWithoutSorting(
+    const std::map<IK, IV>& map,
+    KeyProj key_projection = {},
+    ValueProj value_projection = {}) {
+  return base::flat_map<OK, OV>(
+      base::sorted_unique,
+      base::ToVector<std::pair<OK, OV>>(map, [&](const auto& pair) {
+        const auto& [k, v] = pair;
+        return std::pair(std::invoke(key_projection, k),
+                         std::invoke(value_projection, v));
+      }));
+}
+
 }  // namespace
 
 SafetyListManager::SettingsStore::SettingsStore(
-    base::flat_set<std::string> owned_hosts,
+    const std::map<std::string, std::map<std::string, ContentSetting>>&
+        https_host_rules,
     content_settings::HostIndexedContentSettings fallback_settings,
     base::flat_set<url::Origin> payment_iframe_allowed_origins)
-    : owned_hosts_(std::move(owned_hosts)),
+    : owned_hosts_(CollectUniqueHosts(https_host_rules)),
+      https_host_scoped_settings_(ToFlatMapWithoutSorting(
+          https_host_rules,
+          [&](const std::string& host) { return GetViewFromPool(host); },
+          [&](const std::map<std::string, ContentSetting>& inner_map) {
+            return ToFlatMapWithoutSorting(
+                inner_map,
+                [&](const std::string& host) { return GetViewFromPool(host); });
+          })),
       fallback_settings_(std::move(fallback_settings)),
-      payment_iframe_allowed_origins_(payment_iframe_allowed_origins) {}
+      payment_iframe_allowed_origins_(
+          std::move(payment_iframe_allowed_origins)) {}
 SafetyListManager::SettingsStore::~SettingsStore() = default;
 
 class SafetyListManager::SettingsStore::Builder {
@@ -157,36 +211,9 @@ class SafetyListManager::SettingsStore::Builder {
   }
 
   std::unique_ptr<SettingsStore> Build() && {
-    auto store = std::make_unique<SettingsStore>(
-        CollectUniqueHosts(), std::move(fallback_settings_),
+    return std::make_unique<SettingsStore>(
+        https_host_rules_, std::move(fallback_settings_),
         std::move(payment_iframe_allowed_origins_));
-
-    if (https_host_rules_.empty()) {
-      return store;
-    }
-
-    std::vector<std::pair<std::string_view, DestSettingsMap>> elems(
-        https_host_rules_.size());
-
-    std::ranges::transform(
-        https_host_rules_, elems.begin(), [&](const auto& pair) {
-          std::vector<std::pair<std::string_view, ContentSetting>> inner_elems(
-              pair.second.size());
-          std::ranges::transform(
-              pair.second, inner_elems.begin(), [&](const auto& inner) {
-                return std::make_pair(store->GetViewFromPool(inner.first),
-                                      inner.second);
-              });
-          return std::make_pair(
-              store->GetViewFromPool(pair.first),
-              base::flat_map<std::string_view, ContentSetting>(
-                  base::sorted_unique_t(), std::move(inner_elems)));
-        });
-
-    store->https_host_scoped_settings_ =
-        base::flat_map<std::string_view, DestSettingsMap>(
-            base::sorted_unique_t(), std::move(elems));
-    return store;
   }
 
   ParseResult ParseListFromDict(const base::DictValue& json_dict,
@@ -222,17 +249,6 @@ class SafetyListManager::SettingsStore::Builder {
   }
 
  private:
-  base::flat_set<std::string> CollectUniqueHosts() const {
-    std::vector<std::string> hosts;
-    for (const auto& [src_host, dst_map] : https_host_rules_) {
-      hosts.push_back(src_host);
-      for (const auto& [dst_host, _] : dst_map) {
-        hosts.push_back(dst_host);
-      }
-    }
-    return hosts;
-  }
-
   void AddEntries(base::span<const SafetyListEntry> entries,
                   ContentSetting setting) {
     for (const auto& entry : entries) {

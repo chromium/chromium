@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACTOR_CORE_SAFETY_LIST_MANAGER_H_
 #define COMPONENTS_ACTOR_CORE_SAFETY_LIST_MANAGER_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -121,7 +122,8 @@ class SafetyListManager {
     class Builder;
 
     SettingsStore(
-        base::flat_set<std::string> owned_hosts,
+        const std::map<std::string, std::map<std::string, ContentSetting>>&
+            https_host_rules,
         content_settings::HostIndexedContentSettings fallback_settings,
         base::flat_set<url::Origin> payment_iframe_allowed_origins);
     SettingsStore() = delete;
@@ -144,7 +146,8 @@ class SafetyListManager {
     const base::flat_set<std::string> owned_hosts_;
 
     // Fast path for `https://<exact-host>:* -> https://<exact-host>:*` rules.
-    base::flat_map<std::string_view, DestSettingsMap>
+    // Keys are views into `owned_hosts_`.
+    const base::flat_map<std::string_view, DestSettingsMap>
         https_host_scoped_settings_;
 
     // Fallback for wildcards, non-HTTPS schemes, paths, and custom ports.
