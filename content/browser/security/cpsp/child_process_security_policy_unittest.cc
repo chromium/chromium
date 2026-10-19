@@ -1303,6 +1303,76 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindingsWithHandle) {
   EXPECT_FALSE(p->HasWebUIBindings(kRendererProcess));
 }
 
+TEST_P(ChildProcessSecurityPolicyTest, OriginCheckExemptionForWebView) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  const url::Origin file_origin = url::Origin::Create(GURL("file:///"));
+  const url::Origin opaque_origin =
+      url::Origin::Create(GURL("http://foo.com")).DeriveNewOpaqueOrigin();
+  const url::Origin other_opaque_origin =
+      url::Origin::Create(GURL("http://foo.com")).DeriveNewOpaqueOrigin();
+
+  // Queries and grants for an unregistered process should be safe no-ops.
+  EXPECT_FALSE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, file_origin));
+  p->GrantOriginCheckExemptionForWebView(kRendererProcess, file_origin);
+  EXPECT_FALSE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, file_origin));
+
+  // A newly registered process has no origin check exemptions.
+  p->AddForTesting(kRendererProcess, browser_context());
+  EXPECT_FALSE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, file_origin));
+  EXPECT_FALSE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, opaque_origin));
+
+  // Granting an exemption for a file origin should exempt only that origin.
+  p->GrantOriginCheckExemptionForWebView(kRendererProcess, file_origin);
+  EXPECT_TRUE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, file_origin));
+  EXPECT_FALSE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, opaque_origin));
+
+  // Granting an exemption for an opaque origin should exempt that origin, but
+  // not a distinct opaque origin with the same precursor.
+  p->GrantOriginCheckExemptionForWebView(kRendererProcess, opaque_origin);
+  EXPECT_TRUE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, opaque_origin));
+  EXPECT_FALSE(p->HasOriginCheckExemptionForWebView(kRendererProcess,
+                                                    other_opaque_origin));
+
+  // Creating a Handle should make the ProcessState live beyond Remove.
+  auto handle = p->CreateHandle(kRendererProcess);
+  p->Remove(kRendererProcess);
+  EXPECT_TRUE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, file_origin));
+  EXPECT_TRUE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, opaque_origin));
+
+  // Grants after Remove should be ignored even while a Handle exists.
+  p->GrantOriginCheckExemptionForWebView(kRendererProcess, other_opaque_origin);
+  EXPECT_FALSE(p->HasOriginCheckExemptionForWebView(kRendererProcess,
+                                                    other_opaque_origin));
+
+  // Invalidate `handle` so it does not preserve process state anymore.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+
+  // Post a task to the IO loop that then posts a task to the UI loop.
+  // This should cause the |run_loop| to return after the removal has completed.
+  base::RunLoop run_loop;
+  GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Once removal has completed, the process should no longer have any
+  // exemptions.
+  EXPECT_FALSE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, file_origin));
+  EXPECT_FALSE(
+      p->HasOriginCheckExemptionForWebView(kRendererProcess, opaque_origin));
+}
+
 TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
