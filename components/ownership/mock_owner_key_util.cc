@@ -16,15 +16,6 @@
 #include "crypto/nss_key_util.h"
 #include "crypto/nss_util.h"
 
-// Not defined in the NSS headers of older sysroots. NSS_OptionGet() fails for
-// these on versions of NSS that don't support them.
-#ifndef NSS_KEY_SIZE_POLICY_FLAGS
-#define NSS_KEY_SIZE_POLICY_FLAGS 0x00e
-#endif
-#ifndef NSS_KEY_SIZE_POLICY_SIGN_FLAG
-#define NSS_KEY_SIZE_POLICY_SIGN_FLAG 4
-#endif
-
 namespace ownership {
 
 namespace {
@@ -137,13 +128,17 @@ constexpr auto kPreGeneratedPrivateKey = std::to_array<uint8_t>({
     0xe0, 0x9d, 0x30,
 });
 
-// Number of MockOwnerKeyUtil instances that relaxed the NSS key size policy,
-// and the flags to restore when the last of them is destroyed. Instances may
+// The size of the smallest RSA keys used by tests, e.g. policy::PolicyBuilder's
+// signing keys.
+constexpr PRInt32 kMinTestRsaKeySizeInBits = 512;
+
+// Number of MockOwnerKeyUtil instances that lowered NSS's minimum RSA key size,
+// and the value to restore when the last of them is destroyed. Instances may
 // outlive the test that created them (e.g. when held by a factory until the
-// next test replaces them), so the policy is tracked process-wide.
+// next test replaces them), so the setting is tracked process-wide.
 int g_relaxed_key_size_policy_count = 0;
-PRInt32 g_saved_key_size_policy_flags = 0;
-bool g_has_saved_key_size_policy_flags = false;
+PRInt32 g_saved_rsa_min_key_size = 0;
+bool g_has_saved_rsa_min_key_size = false;
 
 base::Lock& GetKeySizePolicyLock() {
   static base::NoDestructor<base::Lock> lock;
@@ -155,13 +150,12 @@ void RelaxKeySizePolicy() {
   if (g_relaxed_key_size_policy_count++ > 0) {
     return;
   }
-  g_has_saved_key_size_policy_flags =
-      NSS_OptionGet(NSS_KEY_SIZE_POLICY_FLAGS,
-                    &g_saved_key_size_policy_flags) == SECSuccess;
-  if (g_has_saved_key_size_policy_flags) {
-    NSS_OptionSet(
-        NSS_KEY_SIZE_POLICY_FLAGS,
-        g_saved_key_size_policy_flags & ~NSS_KEY_SIZE_POLICY_SIGN_FLAG);
+  g_has_saved_rsa_min_key_size =
+      NSS_OptionGet(NSS_RSA_MIN_KEY_SIZE, &g_saved_rsa_min_key_size) ==
+      SECSuccess;
+  if (g_has_saved_rsa_min_key_size &&
+      g_saved_rsa_min_key_size > kMinTestRsaKeySizeInBits) {
+    NSS_OptionSet(NSS_RSA_MIN_KEY_SIZE, kMinTestRsaKeySizeInBits);
   }
 }
 
@@ -171,8 +165,8 @@ void RestoreKeySizePolicy() {
   if (--g_relaxed_key_size_policy_count > 0) {
     return;
   }
-  if (g_has_saved_key_size_policy_flags) {
-    NSS_OptionSet(NSS_KEY_SIZE_POLICY_FLAGS, g_saved_key_size_policy_flags);
+  if (g_has_saved_rsa_min_key_size) {
+    NSS_OptionSet(NSS_RSA_MIN_KEY_SIZE, g_saved_rsa_min_key_size);
   }
 }
 
@@ -264,8 +258,9 @@ void MockOwnerKeyUtil::ImportPrivateKeyAndSetPublicKeyImpl(
 
   // Test keys (e.g. policy::PolicyBuilder's signing keys) may be smaller than
   // the minimum RSA key size that newer versions of NSS enforce for signing by
-  // default. Disable that check while this key is in use, as older versions of
-  // NSS did.
+  // default. Lower the minimum while this key is in use. Keys that are too
+  // small for signing at all (e.g. in SignPolicyFailure tests) are still
+  // rejected by the policy check rather than failing inside the RSA operation.
   if (!relaxed_key_size_policy_) {
     relaxed_key_size_policy_ = true;
     RelaxKeySizePolicy();

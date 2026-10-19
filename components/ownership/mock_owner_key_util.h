@@ -69,7 +69,7 @@ class OWNERSHIP_EXPORT MockOwnerKeyUtil : public OwnerKeyUtil {
   std::vector<uint8_t> public_key_;
   std::optional<CK_SLOT_ID> private_key_slot_id_;
   crypto::ScopedSECKEYPrivateKey private_key_;
-  // Whether this instance relaxed NSS's key size policy for signing.
+  // Whether this instance lowered NSS's minimum RSA key size.
   bool relaxed_key_size_policy_ = false;
 };
 
