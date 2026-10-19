@@ -546,7 +546,9 @@ void EmbeddedWorkerInstance::OnProcessAllocated(
     ServiceWorkerMetrics::StartSituation start_situation) {
   CHECK_EQ(blink::EmbeddedWorkerStatus::kStarting, status_,
            base::NotFatalUntil::M159);
-  CHECK(!process_handle_, base::NotFatalUntil::M159);
+  // TODO(crbug.com/573268612): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!process_handle_);
 
   process_handle_ = std::move(handle);
 
