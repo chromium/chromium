@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+enum class AssistantContainerDetent : NSInteger;
+
 namespace ios::provider {
 enum class GeminiViewState;
 }  // namespace ios::provider
@@ -32,6 +34,16 @@ enum class GeminiViewState;
 // Called when the Gemini container session is dismissed. Records end-of-session
 // metrics and resets session state.
 - (void)sessionDismissed;
+
+#pragma mark - View State
+
+// Called when the Gemini view state changes to `viewState`. Tracks minimized
+// duration and records expansion/collapse transitions.
+- (void)didChangeViewState:(ios::provider::GeminiViewState)viewState;
+
+// Called when the Gemini container detent changes to `detent`. Tracks
+// minimized duration and records expansion/collapse transitions.
+- (void)didChangeDetent:(AssistantContainerDetent)detent;
 
 #pragma mark - Tab Switching
 

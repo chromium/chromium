@@ -8,6 +8,7 @@
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/task_environment.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "testing/platform_test.h"
@@ -82,4 +83,52 @@ TEST_F(GeminiSessionMetricsManagerTest, TestSessionDismissed) {
 
   [metrics_manager_ sessionDismissed];
   histogram_tester_.ExpectBucketCount(kSessionTabSwitchCountHistogram, 0, 1);
+}
+
+// Tests that floaty view state changes track minimized duration and record
+// state transitions.
+TEST_F(GeminiSessionMetricsManagerTest, TestViewStateChangesAndMinimizedTime) {
+  [metrics_manager_ didChangeViewState:GeminiViewState::kCollapsed];
+  histogram_tester_.ExpectBucketCount(
+      kFloatyViewStateTransitionHistogram,
+      IOSGeminiViewStateTransition::kExpandedToCollapsed, 1);
+
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  [metrics_manager_ didChangeViewState:GeminiViewState::kExpanded];
+  histogram_tester_.ExpectBucketCount(
+      kFloatyViewStateTransitionHistogram,
+      IOSGeminiViewStateTransition::kCollapsedToExpanded, 1);
+  histogram_tester_.ExpectUniqueTimeSample(kFloatyTimeMinimizedHistogram,
+                                           base::Seconds(3), 1);
+}
+
+// Tests that container detent changes track minimized duration and only record
+// collapse/expansion transitions when crossing the minimized boundary.
+TEST_F(GeminiSessionMetricsManagerTest, TestDidChangeDetent) {
+  // Transitioning from kMedium (initial) to kLarge should not record
+  // expanded/collapsed transitions.
+  [metrics_manager_ didChangeDetent:AssistantContainerDetent::kLarge];
+  histogram_tester_.ExpectTotalCount(kFloatyViewStateTransitionHistogram, 0);
+
+  // Transitioning from kLarge to kMinimized records kExpandedToCollapsed.
+  [metrics_manager_ didChangeDetent:AssistantContainerDetent::kMinimized];
+  histogram_tester_.ExpectBucketCount(
+      kFloatyViewStateTransitionHistogram,
+      IOSGeminiViewStateTransition::kExpandedToCollapsed, 1);
+
+  // Duplicate kMinimized does not record again.
+  [metrics_manager_ didChangeDetent:AssistantContainerDetent::kMinimized];
+  histogram_tester_.ExpectTotalCount(kFloatyViewStateTransitionHistogram, 1);
+
+  task_environment_.FastForwardBy(base::Seconds(4));
+
+  // Transitioning from kMinimized to kMedium records kCollapsedToExpanded and
+  // minimized duration.
+  [metrics_manager_ didChangeDetent:AssistantContainerDetent::kMedium];
+  histogram_tester_.ExpectBucketCount(
+      kFloatyViewStateTransitionHistogram,
+      IOSGeminiViewStateTransition::kCollapsedToExpanded, 1);
+  histogram_tester_.ExpectUniqueTimeSample(kFloatyTimeMinimizedHistogram,
+                                           base::Seconds(4), 1);
 }

@@ -496,6 +496,7 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   [_stateManager updateDetent:newDetent];
+  [_sessionMetricsManager didChangeDetent:newDetent];
 
   if (_stateManager.currentUIState.actuating) {
     [self.containerHandler setAssistantContainerGrabberHidden:NO animated:YES];
@@ -516,6 +517,13 @@ class GeminiContainerMediatorTabHelperObserver
 #pragma mark - GeminiViewStateDelegate
 
 - (void)didSwitchToViewState:(GeminiViewState)viewState {
+  // Skip Gemini view state updates to avoid double metrics logs as for
+  // Gemini Bottom Sheet migration we record the corresponding metrics on detent
+  // change.
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
+
   if (_eventHandler) {
     _eventHandler->OnViewStateChanged(viewState);
     _eventHandler->SetLastShownViewState(viewState);

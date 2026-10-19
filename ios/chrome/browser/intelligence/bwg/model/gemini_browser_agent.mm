@@ -1335,14 +1335,7 @@ void GeminiBrowserAgent::SetLastShownViewState(
     return;
   }
 
-  if (view_state == ios::provider::GeminiViewState::kExpanded) {
-    RecordFloatyCollapsedToExpanded();
-    RecordFloatyMinimizedTime(elapsed_minimized_floaty_time_);
-    elapsed_minimized_floaty_time_ = base::TimeTicks();
-  } else if (view_state == ios::provider::GeminiViewState::kCollapsed) {
-    RecordFloatyExpandedToCollapsed();
-    elapsed_minimized_floaty_time_ = base::TimeTicks::Now();
-  }
+  [session_metrics_manager_ didChangeViewState:view_state];
   last_shown_view_state_ = view_state;
 }
 
@@ -1475,7 +1468,6 @@ void GeminiBrowserAgent::DismissFloaty() {
   }
   is_hidden_by_keyboard_ = false;
   processing_status_ = ios::provider::GeminiClientMode::kUnknown;
-  elapsed_minimized_floaty_time_ = base::TimeTicks();
   entry_point_ = gemini::EntryPoint::Unknown;
   ResetFullscreenDisabler();
 }

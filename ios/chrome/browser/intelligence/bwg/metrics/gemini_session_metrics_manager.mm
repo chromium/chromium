@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
@@ -16,6 +17,12 @@ using ios::provider::GeminiViewState;
 @implementation GeminiSessionMetricsManager {
   // Timestamp when the Gemini flow started.
   base::TimeTicks _startTime;
+
+  // Tracks the elapsed time a floaty is minimized until it is expanded.
+  base::TimeTicks _elapsedMinimizedFloatyTime;
+
+  // Whether the Gemini container is currently minimized.
+  BOOL _isMinimized;
 
   // The number of times the active tab was switched during the current session.
   int _sessionTabSwitchCount;
@@ -49,6 +56,31 @@ using ios::provider::GeminiViewState;
   RecordSessionTabSwitchCount(_sessionTabSwitchCount);
   _sessionTabSwitchCount = 0;
   _startTime = base::TimeTicks();
+  _elapsedMinimizedFloatyTime = base::TimeTicks();
+  _isMinimized = NO;
+}
+
+#pragma mark - View State
+
+- (void)didChangeViewState:(GeminiViewState)viewState {
+  if (viewState == GeminiViewState::kExpanded) {
+    RecordFloatyCollapsedToExpanded();
+    RecordFloatyMinimizedTime(_elapsedMinimizedFloatyTime);
+    _elapsedMinimizedFloatyTime = base::TimeTicks();
+  } else if (viewState == GeminiViewState::kCollapsed) {
+    RecordFloatyExpandedToCollapsed();
+    _elapsedMinimizedFloatyTime = base::TimeTicks::Now();
+  }
+}
+
+- (void)didChangeDetent:(AssistantContainerDetent)detent {
+  BOOL isMinimized = (detent == AssistantContainerDetent::kMinimized);
+  if (isMinimized == _isMinimized) {
+    return;
+  }
+  _isMinimized = isMinimized;
+  [self didChangeViewState:isMinimized ? GeminiViewState::kCollapsed
+                                       : GeminiViewState::kExpanded];
 }
 
 #pragma mark - Tab Switching

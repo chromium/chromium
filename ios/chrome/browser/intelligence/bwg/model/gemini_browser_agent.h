@@ -501,10 +501,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // transitions.
   base::TimeTicks floaty_hidden_timestamp_;
 
-  // Tracks the elapsed time a floaty is minimized until it's expanded. If the
-  // floaty is expanded, the time is reset to null.
-  base::TimeTicks elapsed_minimized_floaty_time_;
-
   // Registrar for pref changes.
   PrefChangeRegistrar pref_change_registrar_;
 
