@@ -52,5 +52,7 @@ public class TabGroupRowViewBinder {
     /** Cleans up the view when recycled. */
     public static void onViewRecycled(TabGroupRowView view) {
         view.setSharedImageTilesView(null);
+        view.setMenuRunnables(null, null, null);
+        view.setRowClickRunnable(null);
     }
 }

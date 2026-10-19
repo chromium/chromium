@@ -120,8 +120,9 @@ class TabGroupRowMediator {
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
         builder.with(
                 TabGroupRowProperties.TIMESTAMP_EVENT, getTabGroupTimeAgoTimestampEvent(groupInfo));
-        builder.with(TabGroupRowProperties.OPEN_RUNNABLE, this::openGroup);
-        builder.with(TabGroupRowProperties.ROW_CLICK_RUNNABLE, this::openGroup);
+        Runnable openRunnable = mCallbackController.makeCancelable(this::openGroup);
+        builder.with(TabGroupRowProperties.OPEN_RUNNABLE, openRunnable);
+        builder.with(TabGroupRowProperties.ROW_CLICK_RUNNABLE, openRunnable);
         builder.with(TabGroupRowProperties.DESTROYABLE, this::destroy);
         mPropertyModel = builder.build();
 
@@ -157,7 +158,8 @@ class TabGroupRowMediator {
             @Nullable GroupData groupData,
             boolean enableContainment) {
         if (sharedState == GroupSharedState.NOT_SHARED) {
-            mPropertyModel.set(DELETE_RUNNABLE, this::processDeleteGroup);
+            mPropertyModel.set(
+                    DELETE_RUNNABLE, mCallbackController.makeCancelable(this::processDeleteGroup));
             mPropertyModel.set(LEAVE_RUNNABLE, null);
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, false);
             mPropertyModel.set(TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW, null);
@@ -169,13 +171,17 @@ class TabGroupRowMediator {
         @MemberRole
         int memberRole = mCollaborationService.getCurrentUserRoleForGroup(collaborationId);
         if (memberRole == MemberRole.OWNER) {
-            mPropertyModel.set(DELETE_RUNNABLE, this::processLeaveOrDeleteShareGroup);
+            mPropertyModel.set(
+                    DELETE_RUNNABLE,
+                    mCallbackController.makeCancelable(this::processLeaveOrDeleteShareGroup));
             mPropertyModel.set(LEAVE_RUNNABLE, null);
         } else {
             // TODO(crbug.com/365852281): Leave action should look like a delete if there are no
             // other users.
             mPropertyModel.set(DELETE_RUNNABLE, null);
-            mPropertyModel.set(LEAVE_RUNNABLE, this::processLeaveOrDeleteShareGroup);
+            mPropertyModel.set(
+                    LEAVE_RUNNABLE,
+                    mCallbackController.makeCancelable(this::processLeaveOrDeleteShareGroup));
         }
 
         if (sharedState == GroupSharedState.HAS_OTHER_USERS

@@ -621,4 +621,23 @@ public class TabGroupRowMediatorUnitTest {
         EitherGroupId eitherId = EitherGroupId.createSyncId(SYNC_GROUP_ID1);
         verify(mDataSharingTabManager).leaveOrDeleteFlow(eq(eitherId), anyInt());
     }
+
+    @Test
+    public void testDelete_DestroyedBeforeDeleteAttempt() {
+        when(mFetchGroupState.get()).thenReturn(GroupWindowState.HIDDEN);
+        PropertyModel propertyModel = buildTestModel(/* isShared= */ false, mUrl1);
+
+        Runnable openRunnable = propertyModel.get(OPEN_RUNNABLE);
+        Runnable deleteRunnable = propertyModel.get(DELETE_RUNNABLE);
+        assertNotNull(openRunnable);
+        assertNotNull(deleteRunnable);
+
+        propertyModel.get(DESTROYABLE).destroy();
+
+        openRunnable.run();
+        deleteRunnable.run();
+        verifyNoInteractions(mActionConfirmationManager);
+        verifyNoInteractions(mTabGroupUiActionHandler);
+        verifyNoInteractions(mPaneManager);
+    }
 }
