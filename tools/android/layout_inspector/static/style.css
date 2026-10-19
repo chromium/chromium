@@ -280,6 +280,10 @@ label:has(#sel-zoom) {
       background-color: var(--bg-hover);
     }
 
+    &.is-window {
+      font-weight: bold;
+    }
+
     &.expanded {
       .tree-toggle span {
         transform: rotate(90deg);

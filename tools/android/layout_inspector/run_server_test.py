@@ -5,6 +5,7 @@
 """Unit tests for run_server.py."""
 
 import io
+import subprocess
 import sys
 import unittest
 from http import HTTPStatus
@@ -75,6 +76,42 @@ class RunServerTest(unittest.TestCase):
         handler = self.create_mock_handler('/api/screenshot.png')
         png_data = handler._get_screenshot_data()
         self.assertEqual(png_data, b'\x89PNG\r\n\x1a\nDATA')
+
+    def test_dump_ui_standard(self):
+        handler = self.create_mock_handler('/api/ui-dump.json')
+        handler._dump_ui('/sdcard/temp.xml')
+        run_server._config.adb.run.assert_called_once_with(
+            ['shell', 'uiautomator', 'dump', '--windows', '/sdcard/temp.xml']
+        )
+
+    def test_dump_ui_legacy_flag(self):
+        run_server._config.legacy = True
+        handler = self.create_mock_handler('/api/ui-dump.json')
+        handler._dump_ui('/sdcard/temp.xml')
+        run_server._config.adb.run.assert_called_once_with(
+            ['shell', 'uiautomator', 'dump', '/sdcard/temp.xml']
+        )
+
+    def test_dump_ui_fallback_on_failure(self):
+        run_server._config.adb.run.side_effect = [
+            subprocess.CalledProcessError(
+                1, ['uiautomator', 'dump', '--windows']
+            ),
+            MagicMock(),
+        ]
+        handler = self.create_mock_handler('/api/ui-dump.json')
+        handler._dump_ui('/sdcard/temp.xml')
+
+        self.assertTrue(run_server._config.legacy)
+        self.assertEqual(run_server._config.adb.run.call_count, 2)
+        self.assertEqual(
+            run_server._config.adb.run.call_args_list[0][0][0],
+            ['shell', 'uiautomator', 'dump', '--windows', '/sdcard/temp.xml'],
+        )
+        self.assertEqual(
+            run_server._config.adb.run.call_args_list[1][0][0],
+            ['shell', 'uiautomator', 'dump', '/sdcard/temp.xml'],
+        )
 
     # --- Security & Routing Tests ---
 

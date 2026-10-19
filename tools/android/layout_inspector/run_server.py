@@ -109,6 +109,7 @@ class ServerConfig:
 
         # Other configs.
         self.timeout = 120  # Seconds.
+        self.legacy = False
 
     @property
     def ip_address(self):
@@ -157,6 +158,29 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
                 HTTPStatus.INTERNAL_SERVER_ERROR, f'Failed to get density: {e}'
             )
 
+    def _dump_ui(self, temp_device_path):
+        """Dumps UI hierarchy to temp path, falling back if --windows fails."""
+        if not _config.legacy:
+            try:
+                _config.adb.run(
+                    [
+                        'shell',
+                        'uiautomator',
+                        'dump',
+                        '--windows',
+                        temp_device_path,
+                    ]
+                )
+                return
+            except subprocess.CalledProcessError as e:
+                print(
+                    f"Warning: 'uiautomator dump --windows' failed ({e}), "
+                    "falling back to legacy single-window dump."
+                )
+                _config.legacy = True
+
+        _config.adb.run(['shell', 'uiautomator', 'dump', temp_device_path])
+
     def _get_ui_dump_data(self):
         """Gets the UI hierarchy XML from the device."""
         temp_device_path = None
@@ -166,8 +190,8 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
             mktemp_result = _config.adb.run(['shell', 'mktemp'], text=True)
             temp_device_path = mktemp_result.stdout.strip()
 
-            # Dump UI to the temporary file on the device
-            _config.adb.run(['shell', 'uiautomator', 'dump', temp_device_path])
+            # Dump all visible windows to the temporary file on the device.
+            self._dump_ui(temp_device_path)
 
             # Read the file content
             result = _config.adb.run(
@@ -243,7 +267,7 @@ class MainRequestHandler(SimpleHTTPRequestHandler):
         if self.path == '/':
             self.path = '/index.html'
 
-        if self.path == '/api/ui-dump.xml':
+        if self.path == '/api/ui-dump.json':
             self.handle_ui_dump()
             return
         if self.path == '/api/screenshot.png':
@@ -352,6 +376,11 @@ def main():
         action='store_true',
         help='Disable security imprint and timeout (allow all IPs).',
     )
+    parser.add_argument(
+        '--legacy',
+        action='store_true',
+        help='Use legacy adb API calls to test fallback.',
+    )
     args = parser.parse_args()
 
     # Initialize sub-components.
@@ -363,6 +392,7 @@ def main():
     _config.local = not args.remote
     _config.require_imprint = not args.open
     _config.serial = _config.adb.get_device(args.serial)
+    _config.legacy = args.legacy
     print(f"Using ADB device: {_config.serial}")
 
     Handler = (

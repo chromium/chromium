@@ -126,6 +126,22 @@ class Rectangle {
     return new Rectangle(new PointXY(x1, y1), new PointXY(x2, y2));
   }
 
+  /**
+   * Parses Android XML bounds string "[x1,y1][x2,y2]".
+   * @param {?string} rectStr
+   * @return {!Rectangle} The parsed rectangle, or a 0x0 rectangle on error.
+   */
+  static fromAndroidBounds(rectStr) {
+    if (rectStr) {
+      const match = rectStr.match(/-?\d+/g);
+      if (match && match.length >= 4) {
+        return Rectangle.fromComponents(...match.map(Number));
+      }
+    }
+    console.warn(`Bad rectangle: ${rectStr}`);
+    return Rectangle.fromComponents(0, 0, 0, 0);
+  }
+
   // clang-format off
   get left()   { return this.leftTop.x; }
   get top()    { return this.leftTop.y; }

@@ -82,7 +82,7 @@ class VisOptions {
     this.densityFactor = 1.0;
     this.layoutMode = LayoutMode.LEFT;
 
-    // The usage of scaling leads two to sets of dimensions / coordinates:
+    // The usage of scaling leads to two sets of dimensions / coordinates:
     // * "World": Prefixed by "w-", these represent actual pixels on the device,
     //   and is unaffected by zoom value `scale`.
     // * "Scaled": Prefixed by "s-", these represent UI pixels in the
@@ -167,16 +167,14 @@ class ViewNode {
    * @param {number} index
    * @param {?ViewNode} parent
    * @param {number} depth
-   * @param {boolean} isLastChild
    * @param {string} className
    * @param {string} resourceId
    * @param {!Rectangle} rect
    */
-  constructor(index, parent, depth, isLastChild, className, resourceId, rect) {
+  constructor(index, parent, depth, className, resourceId, rect) {
     this.index = index;
     this.parent = parent;
     this.depth = depth;
-    this.isLastChild = isLastChild;
     this.children = [];
 
     this.className = className;
@@ -186,37 +184,34 @@ class ViewNode {
   }
 
   /**
-   * Parses Android XML bounds string "[x1,y1][x2,y2]".
-   * @param {?string} rectStr
-   * @return {!Rectangle} The parsed rectangle, or a 0x0 rectangle on error.
+   * Factory method to instantiate a {@link ViewNode} from a <window> tag.
+   * @param {!Element} xmlWindow
+   * @param {number} index
+   * @return {!{view: !ViewNode, initiallyExpanded: boolean}}
    */
-  static parseRect(rectStr) {
-    if (rectStr) {
-      const match = rectStr.match(/-?\d+/g);
-      if (match && match.length >= 4) {
-        return Rectangle.fromComponents(...match.map(Number));
-      }
-    }
-    console.warn(`Bad rectangle: ${rectStr}`);
-    return Rectangle.fromComponents(0, 0, 0, 0);
+  static fromXmlWindow(xmlWindow, index) {
+    const type = xmlWindow.getAttribute('type') || 'Window';
+    const title = xmlWindow.getAttribute('title');
+    const rect = Rectangle.fromAndroidBounds(xmlWindow.getAttribute('bounds'));
+    const view = new ViewNode(index, null, 0, type, title || type, rect);
+    const initiallyExpanded =
+        (type !== 'TYPE_SYSTEM' && type !== 'TYPE_SPLIT_SCREEN_DIVIDER');
+    return {view, initiallyExpanded};
   }
 
   /**
-   * Factory method to instantiate a {@link ViewNode} from an Android UI Dump.
-   * XML Element.
+   * Factory method to instantiate a {@link ViewNode} from a <node> tag.
    * @param {!Element} xmlNode
    * @param {number} index
    * @param {?ViewNode} parent
    * @param {number} depth
-   * @param {boolean} isLastChild
    * @return {!ViewNode}
    */
-  static fromXml(xmlNode, index, parent, depth, isLastChild) {
+  static fromXmlNode(xmlNode, index, parent, depth) {
     const className = xmlNode.getAttribute('class') || '';
     const resourceId = xmlNode.getAttribute('resource-id') || '';
-    const rect = ViewNode.parseRect(xmlNode.getAttribute('bounds'));
-    return new ViewNode(index, parent, depth, isLastChild, className,
-                        resourceId, rect);
+    const rect = Rectangle.fromAndroidBounds(xmlNode.getAttribute('bounds'));
+    return new ViewNode(index, parent, depth, className, resourceId, rect);
   }
 }
 
@@ -242,8 +237,39 @@ class MainModel {
     this.visOpts = new VisOptions();
     this.isLoaded = false;
     this.imgScreenshot = null;
+
+    /** @type {!Array<!{view: !ViewNode, initiallyExpanded: boolean}>} */
+    this.windowInfos = [];
+    /** @type {!Array<!ViewNode>} */
     this.views = [];
+
     this.engaged = new ViewEngaged();
+  }
+
+  /**
+   * Visits parsed Android UI dump XML hierarchy, instantiates {@link ViewNode}
+   * from its Element, and writes them into {@link MainModel#views}.
+   * @param {!Element} xmlHierarchy Parsed Android UI dump XML `<hierarchy>`.
+   * @param {?ViewNode} ancestorView Optional ancestor {@link ViewNode} to
+   *     attach tree to.
+   */
+  _populateViewTree(xmlHierarchy, ancestorView) {
+    // Recursion-free pre-order DFS traversal of the Window's View hierarchy.
+    const stack = [{parentView: ancestorView, parentXml: xmlHierarchy, i: 0}];
+    while (stack.length > 0) {
+      const frame = stack.at(-1);
+      if (frame.i < frame.parentXml.children.length) {
+        const childXml = frame.parentXml.children[frame.i++];
+        const depth = frame.parentView ? frame.parentView.depth + 1 : 0;
+        const view = ViewNode.fromXmlNode(childXml, this.views.length,
+                                          frame.parentView, depth);
+        if (frame.parentView) frame.parentView.children.push(view);
+        this.views.push(view);
+        stack.push({parentView: view, parentXml: childXml, i: 0});
+      } else {
+        stack.pop();
+      }
+    }
   }
 
   /**
@@ -251,34 +277,23 @@ class MainModel {
    * from its Element, and writes them into {@link MainModel#views}.
    * @param {!Document} xmlDoc Parsed Android UI dump XML.
    */
-  _populateViews(xmlDoc) {
+  _populateViewForest(xmlDoc) {
     this.views.length = 0;
-    const xmlRoot = xmlDoc.querySelector('hierarchy');
-    if (!xmlRoot) return;
+    this.windowInfos.length = 0;
 
-    const makeFrame = (viewParent, xmlNode) => ({
-      viewParent,
-      xmlChildrenElements:
-          Array.from(xmlNode.children).filter(n => n.nodeType === 1),
-      i: 0
-    });
-
-    // Recursion-free pre-order DFS traversal of `xmlRoot`'s Element children.
-    const stack = [makeFrame(null, xmlRoot)];
-    while (stack.length > 0) {
-      const fr = stack.at(-1);
-      if (fr.i < fr.xmlChildrenElements.length) {
-        const xmlChild = fr.xmlChildrenElements[fr.i++];
-        const depth = stack.length - 1;
-        const isLastChild = (fr.i === fr.xmlChildrenElements.length);
-        const view = ViewNode.fromXml(xmlChild, this.views.length,
-                                      fr.viewParent, depth, isLastChild);
-        if (fr.viewParent) fr.viewParent.children.push(view);
-        this.views.push(view);
-        stack.push(makeFrame(view, xmlChild));
-      } else {
-        stack.pop();
+    const xmlWindows = xmlDoc.querySelectorAll('window');
+    if (xmlWindows.length > 0) {
+      for (const xmlWindow of xmlWindows) {
+        const windowInfo = ViewNode.fromXmlWindow(xmlWindow, this.views.length);
+        this.windowInfos.push(windowInfo);
+        const windowView = windowInfo.view;
+        this.views.push(windowView);
+        const xmlHierarchy = xmlWindow.querySelector(':scope > hierarchy');
+        if (xmlHierarchy) this._populateViewTree(xmlHierarchy, windowView);
       }
+    } else {  // Backwards compatibility.
+      const xmlHierarchy = xmlDoc.querySelector('hierarchy');
+      if (xmlHierarchy) this._populateViewTree(xmlHierarchy, null);
     }
   }
 
@@ -286,7 +301,7 @@ class MainModel {
   async _fetchData() {
     const [screenshotResponse, uiDumpResponse, densityResponse] =
         await Promise.all([
-          fetch('/api/screenshot.png'), fetch('/api/ui-dump.xml'),
+          fetch('/api/screenshot.png'), fetch('/api/ui-dump.json'),
           fetch('/api/density.json')
         ]);
 
@@ -327,7 +342,7 @@ class MainModel {
     this.visOpts.setDensityFactor(densityData.density_factor);
 
     const xmlDoc = new DOMParser().parseFromString(uiDumpData.xml, 'text/xml');
-    this._populateViews(xmlDoc);
+    this._populateViewForest(xmlDoc);
 
     this.isLoaded = true;
   }
@@ -337,6 +352,7 @@ class MainModel {
 
     this.engaged.clear();
     this.views.length = 0;
+    this.windowInfos.length = 0;
     this.imgScreenshot = null;
 
     // Reset geometry constraints.

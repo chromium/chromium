@@ -63,12 +63,31 @@ class TreeVis {
     const INDENT_PX = 20;
     const LINE_OFFSET_PX = 9;
 
-    const views = this.model.views;
+    const {views, windowInfos} = this.model;
 
     this.clear();
-    // Fill to true so that every View Row is shown at the start.
+    // Initially expand all View Rows.
     this.expandedMap = new Array(views.length).fill(true);
+    // Collapse specific Window View Rows (e.g., system windows).
+    for (const {view, initiallyExpanded} of windowInfos) {
+      this.expandedMap[view.index] = initiallyExpanded;
+    }
+
     this.viewRows = new Array(views.length);
+
+    // Look-up to determine whether a View (identified by index) should have a
+    // Tree Line drawn to the next sibling.
+    const hasNextSibling = new Array(views.length).fill(true);
+    if (windowInfos.length > 0) {
+      hasNextSibling[windowInfos.at(-1).view.index] = false;
+    } else if (views.length > 0) {
+      hasNextSibling[0] = false;
+    }
+    for (const view of views) {
+      if (view.children && view.children.length > 0) {
+        hasNextSibling[view.children.at(-1).index] = false;
+      }
+    }
 
     const fragment = document.createDocumentFragment();
 
@@ -82,7 +101,7 @@ class TreeVis {
         for (let j = 0; j < view.depth - 1 - i; j++) {
           ancestor = ancestor.parent;
         }
-        if (ancestor && !ancestor.isLastChild) {
+        if (ancestor && hasNextSibling[ancestor.index]) {
           const start = i * INDENT_PX + LINE_OFFSET_PX;
           const end = start + 1;
           lines.push(`linear-gradient(to right, #0000 ${start}px, #0003 ${
@@ -117,6 +136,11 @@ class TreeVis {
 
       fragment.appendChild(row);
       this.viewRows[view.index] = row;
+    }
+
+    // Apply Window-specific styling (e.g., bold text).
+    for (const {view} of windowInfos) {
+      this.viewRows[view.index].classList.add('is-window');
     }
 
     this.el.root.appendChild(fragment);
