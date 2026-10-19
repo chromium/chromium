@@ -32,10 +32,10 @@
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/common/buildflags.h"
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
-#include "chrome/browser/actor/tools/window_management_tool_request.h"
 #endif
 
 namespace actor {
@@ -60,10 +60,10 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const CreateTabToolRequest&) = 0;
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const CreateWindowToolRequest&) = 0;
-  virtual void Apply(const EnterFullscreenToolRequest&) = 0;
-  virtual void Apply(const ExitFullscreenToolRequest&) = 0;
 #endif
   virtual void Apply(const DragAndReleaseToolRequest&) = 0;
+  virtual void Apply(const EnterFullscreenToolRequest&) = 0;
+  virtual void Apply(const ExitFullscreenToolRequest&) = 0;
   virtual void Apply(const FileUploadToolRequest&) = 0;
   virtual void Apply(const FindAndHighlightToolRequest&) = 0;
   virtual void Apply(const HistoryBackToolRequest&) = 0;

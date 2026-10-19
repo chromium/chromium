@@ -75,6 +75,7 @@ source_set("actor") {
     "tools/translate_page_tool_request.h",
     "tools/type_tool_request.h",
     "tools/wait_tool_request.h",
+    "tools/window_management_tool_request.h",
     "transport/actor_keyed_service_adapter.h",
     "transport/chrome_actuation_transport_handler_factory.h",
   ]
@@ -119,7 +120,6 @@ source_set("actor") {
     public += [
       "tools/load_and_extract_content_tool_request.h",
       "tools/open_known_page_tool_request.h",
-      "tools/window_management_tool_request.h",
     ]
     public_deps += [
       "//chrome/browser/actor/resources:browser_resources",
@@ -248,6 +248,9 @@ source_set("impl") {
     "tools/wait_tool.cc",
     "tools/wait_tool.h",
     "tools/wait_tool_request.cc",
+    "tools/window_management_tool.cc",
+    "tools/window_management_tool.h",
+    "tools/window_management_tool_request.cc",
     "transport/actor_keyed_service_adapter.cc",
     "transport/chrome_actuation_transport_handler_factory.cc",
   ]
@@ -348,9 +351,6 @@ source_set("impl") {
       "tools/open_known_page_tool.cc",
       "tools/open_known_page_tool.h",
       "tools/open_known_page_tool_request.cc",
-      "tools/window_management_tool.cc",
-      "tools/window_management_tool.h",
-      "tools/window_management_tool_request.cc",
     ]
     deps += [
       "//chrome/browser/ui:browser_tabstrip",
@@ -598,6 +598,7 @@ source_set("browser_tests") {
     "tools/password_manager/attempt_login/attempt_login_tool_browsertest.cc",
     "tools/switch_tab_tool_browsertest.cc",
     "tools/tab_management_tool_browsertest.cc",
+    "tools/window_management_tool_browsertest.cc",
   ]
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -699,7 +700,6 @@ source_set("browser_tests") {
       "tools/type_tool_browsertest.cc",
       "tools/uaf_regression_browsertest.cc",
       "tools/wait_tool_browsertest.cc",
-      "tools/window_management_tool_browsertest.cc",
     ]
     deps += [
       "//chrome/browser/autofill",

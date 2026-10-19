@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -10,15 +12,24 @@
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor.mojom.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/session_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/base/base_window.h"
 #include "ui/base/ozone_buildflags.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#include "content/public/common/content_switches.h"
+#else
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#endif
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -35,10 +46,35 @@ class ActorWindowManagementToolBrowserTest : public ActorToolsTest {
   ActorWindowManagementToolBrowserTest() = default;
   ~ActorWindowManagementToolBrowserTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ActorToolsTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_ANDROID)
+    // Test devices are often offline. The offline status indicator that
+    // appears a few seconds after startup resizes the top controls, which
+    // causes asserts if the controls are hidden by tab fullscreen.
+    // TODO(crbug.com/574927722): Remove once BrowserControlsManager handles
+    // height changes while the controls are hidden.
+    command_line->AppendSwitch(
+        switches::kForceOnlineConnectionStateForIndicator);
+#endif
+  }
+
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/517619366): Decouple test from Glic eligibility criteria.
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Actor requires Android S+ to run";
+    }
+#endif
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
+    // Navigate to an actual web page so that on Android the tab and view
+    // hierarchy are attached and interactable before exercising fullscreen.
+    const GURL url =
+        embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+    ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
   }
 
   std::unique_ptr<ToolRequest> MakeCreateWindowRequest() {
@@ -60,8 +96,28 @@ class ActorWindowManagementToolBrowserTest : public ActorToolsTest {
   std::unique_ptr<ToolRequest> MakeExitFullscreenRequest(int32_t window_id) {
     return std::make_unique<ExitFullscreenToolRequest>(window_id);
   }
+
+  // Whether `browser_window` is fullscreen. On desktop this is browser
+  // fullscreen; on Android it is the active tab's immersive fullscreen, which
+  // is what the tool drives there.
+  bool IsFullscreen(BrowserWindowInterface* browser_window) {
+#if BUILDFLAG(IS_ANDROID)
+    return web_contents()->IsFullscreen();
+#else
+    return browser_window->GetWindow()->IsFullscreen();
+#endif
+  }
+
+  // Fullscreen transitions can complete asynchronously, so poll.
+  void WaitForFullscreen(BrowserWindowInterface* browser_window,
+                         bool fullscreen) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return IsFullscreen(browser_window) == fullscreen; }));
+  }
 };
 
+// TODO(crbug.com/470475787): Port the remaining window actions to Android.
+#if !BUILDFLAG(IS_ANDROID)
 class NewWindowObserver : public BrowserCollectionObserver {
  public:
   explicit NewWindowObserver(Profile* profile) {
@@ -242,6 +298,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ActivateWindow) {
   EXPECT_EQ(initial_window,
             GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Ensure EnterFullscreen enters fullscreen for a specific window ID and is a
 // no-op if already in fullscreen.
@@ -250,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, EnterFullscreen) {
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
   ASSERT_TRUE(browser_window);
   const int32_t window_id = browser_window->GetSessionID().id();
-  ASSERT_FALSE(browser_window->GetWindow()->IsFullscreen());
+  ASSERT_FALSE(IsFullscreen(browser_window));
 
   // Enter fullscreen.
   {
@@ -258,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, EnterFullscreen) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_TRUE(browser_window->GetWindow()->IsFullscreen());
+    WaitForFullscreen(browser_window, true);
   }
 
   // Already in fullscreen. Should be no-op.
@@ -267,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, EnterFullscreen) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_TRUE(browser_window->GetWindow()->IsFullscreen());
+    EXPECT_TRUE(IsFullscreen(browser_window));
   }
 }
 
@@ -280,8 +337,13 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ExitFullscreen) {
   const int32_t window_id = browser_window->GetSessionID().id();
 
   // Enter fullscreen first.
-  ui_test_utils::ToggleFullscreenModeAndWait(browser_window);
-  ASSERT_TRUE(browser_window->GetWindow()->IsFullscreen());
+  {
+    std::unique_ptr<ToolRequest> action = MakeEnterFullscreenRequest(window_id);
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+    WaitForFullscreen(browser_window, true);
+  }
 
   // Exit fullscreen.
   {
@@ -289,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ExitFullscreen) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_FALSE(browser_window->GetWindow()->IsFullscreen());
+    WaitForFullscreen(browser_window, false);
   }
 
   // Already out of fullscreen. Should be no-op.
@@ -298,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ExitFullscreen) {
     ActResultFuture result;
     actor_task().Act(ToRequestList(action), result.GetCallback());
     ExpectOkResult(result);
-    EXPECT_FALSE(browser_window->GetWindow()->IsFullscreen());
+    EXPECT_FALSE(IsFullscreen(browser_window));
   }
 }
 

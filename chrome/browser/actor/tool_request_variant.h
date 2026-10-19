@@ -33,10 +33,8 @@ using ToolRequestVariant = std::variant<ActivateTabToolRequest,
                                         CreateWindowToolRequest,
 #endif
                                         DragAndReleaseToolRequest,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
                                         EnterFullscreenToolRequest,
                                         ExitFullscreenToolRequest,
-#endif
                                         FileUploadToolRequest,
                                         FindAndHighlightToolRequest,
                                         HistoryBackToolRequest,

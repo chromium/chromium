@@ -5,21 +5,70 @@
 #include "chrome/browser/actor/tools/window_management_tool.h"
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/common/actor/action_result.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/sessions/core/session_id.h"
+#include "ui/base/base_window.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#else
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/actor/action_result.h"
-#include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/sessions/core/session_id.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "url/url_constants.h"
+#endif
 
 namespace actor {
+
+namespace {
+
+// Puts `browser` into or out of fullscreen, as a no-op if it's already in the
+// requested state.
+mojom::ActionResultPtr SetWindowFullscreen(BrowserWindowInterface& browser,
+                                           bool fullscreen) {
+#if BUILDFLAG(IS_ANDROID)
+  // Android has no browser-level fullscreen. A window is fullscreen exactly
+  // when its active tab is in immersive (tab) fullscreen, so drive that state
+  // through the tab's WebContentsDelegate, the same path HTML
+  // requestFullscreen() takes.
+  TabListInterface* tab_list = TabListInterface::From(&browser);
+  tabs::TabInterface* tab = tab_list ? tab_list->GetActiveTab() : nullptr;
+  content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+  if (!contents || !contents->GetDelegate()) {
+    return MakeResult(mojom::ActionResultCode::kTabWentAway,
+                      /*requires_page_stabilization=*/false,
+                      "The target window has no active tab.");
+  }
+  if (contents->IsFullscreen() != fullscreen) {
+    if (fullscreen) {
+      contents->GetDelegate()->EnterFullscreenModeForTab(
+          contents->GetPrimaryMainFrame(), blink::mojom::FullscreenOptions());
+    } else {
+      contents->ExitFullscreen(/*will_cause_resize=*/true);
+    }
+  }
+#else
+  if (browser.GetWindow()->IsFullscreen() != fullscreen) {
+    chrome::ToggleFullscreenMode(&browser);
+  }
+#endif
+  return MakeOkResult();
+}
+
+}  // namespace
 
 WindowManagementTool::WindowManagementTool(TaskId task_id,
                                            ToolDelegate& tool_delegate)
@@ -71,6 +120,13 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
   callback_ = std::move(callback);
 
   switch (action_) {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/470475787): Port these actions to Android. Their
+    // requests aren't dispatched there yet, so they can't reach this point.
+    case Action::kCreate:
+    case Action::kActivate:
+      NOTREACHED();
+#else
     case Action::kCreate: {
       BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                        &tool_delegate().GetProfile(),
@@ -117,6 +173,7 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
       browser->GetWindow()->Show();
       break;
     }
+#endif  // BUILDFLAG(IS_ANDROID)
     case Action::kClose: {
       BrowserWindowInterface* browser = GetTargetBrowser();
       mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
@@ -148,10 +205,7 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
         return;
       }
 
-      if (!browser->GetWindow()->IsFullscreen()) {
-        chrome::ToggleFullscreenMode(browser);
-      }
-      OnInvokeFinished(MakeOkResult());
+      OnInvokeFinished(SetWindowFullscreen(*browser, /*fullscreen=*/true));
       break;
     }
     case Action::kExitFullscreen: {
@@ -168,10 +222,7 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
         return;
       }
 
-      if (browser->GetWindow()->IsFullscreen()) {
-        chrome::ToggleFullscreenMode(browser);
-      }
-      OnInvokeFinished(MakeOkResult());
+      OnInvokeFinished(SetWindowFullscreen(*browser, /*fullscreen=*/false));
       break;
     }
   }
@@ -208,12 +259,17 @@ void WindowManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
     // If closing a window, ensure all acting tabs in this window are removed
     // from the acting set. In particular, this ensures the task isn't stopped
     // when the acting tab is closed.
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/470475787): Port to Android, which has no TabStripModel.
+    NOTREACHED();
+#else
     BrowserWindowInterface* browser = GetTargetBrowser();
     if (browser) {
       for (tabs::TabInterface* tab : *browser->GetTabStripModel()) {
         task.RemoveTab(tab->GetHandle());
       }
     }
+#endif
   }
   std::move(callback).Run(MakeOkResult());
 }
@@ -237,8 +293,7 @@ void WindowManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
 BrowserWindowInterface* WindowManagementTool::GetTargetBrowser() const {
   CHECK_NE(action_, Action::kCreate);
   CHECK(window_id_.has_value());
-  return BrowserWindowInterface::FromSessionID(
-      SessionID::FromSerializedValue(*window_id_));
+  return FindBrowserWindow(SessionID::FromSerializedValue(*window_id_));
 }
 
 void WindowManagementTool::OnBrowserDidClose(BrowserWindowInterface* browser) {
