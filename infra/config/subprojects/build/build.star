@@ -269,7 +269,9 @@ cq_build_perf_builder(
         "builtin": gn_args.config(configs = ["try/linux-rel", "no_reclient"]),
         "no_clang_modules": gn_args.config(configs = ["try/linux-rel", "no_reclient", "no_clang_modules"]),
     },
-    os = os.LINUX_DEFAULT,
+    # The bot runs the noble image, since the jammy kernel soft-locks up under
+    # siso's page-fault load on 384 vCPUs (http://b/574340805).
+    os = os.LINUX_NOBLE,
     console_view_entry = consoles.console_view_entry(
         category = "build perf|linux",
         short_name = "svc",
