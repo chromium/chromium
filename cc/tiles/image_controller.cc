@@ -92,6 +92,10 @@ void ImageController::StopWorkerTasks() {
 
     // Now, begin cleanup.
 
+    // Cancel any posted tasks to avoid request id collisions.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    worker_state_->weak_ptr = weak_ptr_factory_.GetWeakPtr();
+
     // Unlock all of the locked images (note that this vector would only be
     // populated if we actually need to unref the image.
     for (auto& image_pair : requested_locked_images_) {
