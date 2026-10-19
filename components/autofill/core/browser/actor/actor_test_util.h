@@ -136,7 +136,7 @@ class TestActorAutofillClient : public TestAutofillClient {
 class ActorTestBase : public testing::Test,
                       public WithTestAutofillClientDriverManager<
                           TestActorAutofillClient,
-                          TestActorAutofillDriver,
+                          testing::NiceMock<TestActorAutofillDriver>,
                           TestBrowserAutofillManagerWithTestCCAM> {
  public:
   ActorTestBase();
