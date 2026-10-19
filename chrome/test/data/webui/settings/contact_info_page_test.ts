@@ -5,6 +5,7 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import type {
   CrInputElement,
   CrTextareaElement,
@@ -312,6 +313,68 @@ suite('ContactInfoPageUiTest', function() {
     const noEmailsLabel = page.shadowRoot.querySelector('#noEmailsLabel');
     assertTrue(!!noEmailsLabel);
     assertFalse((noEmailsLabel as HTMLElement).hidden);
+  });
+
+  test('EmailVerificationInfoExpandCollapse', async function() {
+    loadTimeData.overrideValues({emailVerificationProtocolEnabled: true});
+
+    const page = await createContactInfoPage([], {
+      profile_enabled: {value: true},
+      email_verification_enabled: {value: true},
+    });
+
+    const collapse = page.shadowRoot.querySelector<CrCollapseElement>(
+        '#emailVerificationInfoCollapse');
+    assertTrue(!!collapse);
+    assertFalse(collapse.opened, 'Info should be collapsed by default');
+
+    const columns = collapse.querySelectorAll('.column');
+    assertEquals(2, columns.length);
+    assertEquals(1, columns[0]!.querySelectorAll('li').length);
+    assertEquals(3, columns[1]!.querySelectorAll('li').length);
+    assertTrue(
+        columns[0]!.textContent.includes(
+            loadTimeData.getString('emailVerificationWhenOnConfirm')));
+    assertTrue(
+        columns[1]!.textContent.includes(
+            loadTimeData.getString('emailVerificationConsiderSupportedSites')));
+    assertTrue(
+        columns[1]!.textContent.includes(
+            loadTimeData.getString('emailVerificationConsiderPerEmail')));
+    assertTrue(
+        columns[1]!.textContent.includes(
+            loadTimeData.getString('emailVerificationConsiderSignedIn')));
+
+    const toggle = page.shadowRoot.querySelector<SettingsToggleButtonElement>(
+        '#autofillEmailVerificationToggle');
+    assertTrue(!!toggle);
+    const expandButton = page.shadowRoot.querySelector<HTMLElement>(
+        '#emailVerificationExpandButton');
+    assertTrue(!!expandButton);
+
+    // Expanding does not change the pref.
+    expandButton.click();
+    await microtasksFinished();
+    assertTrue(collapse.opened);
+    assertTrue(toggle.checked);
+    assertTrue(
+        prefService.getPref<boolean>('autofill.email_verification_enabled')
+            .value);
+
+    // Clicking the row (outside the toggle) collapses without changing the
+    // pref.
+    toggle.click();
+    await microtasksFinished();
+    assertFalse(collapse.opened);
+    assertTrue(toggle.checked);
+
+    // Clicking the actual toggle flips the pref.
+    toggle.$.control.click();
+    await microtasksFinished();
+    assertFalse(toggle.checked);
+    assertFalse(
+        prefService.getPref<boolean>('autofill.email_verification_enabled')
+            .value);
   });
 
   test('EmailVerificationList', async function() {

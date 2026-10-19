@@ -7,9 +7,10 @@
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
+ * #import=../../settings_columned_section_lit.css.js
  * #import=../../settings_shared_lit.css.js
  * #import=../autofill_shared_lit.css.js
- * #include=cr-shared-style-lit settings-shared-lit autofill-shared-lit cr-spinner-style-lit
+ * #include=cr-shared-style-lit settings-shared-lit autofill-shared-lit cr-spinner-style-lit settings-columned-section-lit
  * #css_wrapper_metadata_end */
 
 #addressList .start {
@@ -25,6 +26,16 @@
 
 #noEmailsLabel {
   padding-inline-start: var(--cr-section-indent-padding);
+}
+
+#autofillEmailVerificationToggle .separator {
+  margin-inline-end: 4px;
+  margin-inline-start: 0;
+}
+
+#autofillEmailVerificationToggle .toggle-actions-container {
+  align-items: center;
+  display: flex;
 }
 
 .dropdown-item.external-link-style {

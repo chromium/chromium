@@ -164,8 +164,61 @@ export function getHtml(this: SettingsContactInfoPageElement) {
       ${this.isEmailVerificationProtocolEnabled_ ? html`
         <settings-toggle-button id="autofillEmailVerificationToggle"
             no-extension-indicator label="$i18n{emailVerificationLabel}"
-            pref-key="autofill.email_verification_enabled">
+            pref-key="autofill.email_verification_enabled"
+            no-toggle-on-host-click
+            @click="${this.onEmailVerificationExpandClick_}">
+          <div class="toggle-actions-container" slot="more-actions">
+            <cr-expand-button id="emailVerificationExpandButton" no-hover
+                ?expanded="${this.emailVerificationExpanded_}"
+                @expanded-changed="${
+                    this.onEmailVerificationExpandedChanged_}"
+                aria-label="$i18n{emailVerificationLabel}">
+            </cr-expand-button>
+            <div class="separator"></div>
+          </div>
         </settings-toggle-button>
+        <cr-collapse id="emailVerificationInfoCollapse"
+            ?opened="${this.emailVerificationExpanded_}">
+          <div class="settings-columned-section">
+            <div class="column">
+              <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon aria-hidden="true" icon="settings20:mark-email-read">
+                  </cr-icon>
+                  <div class="cr-secondary-text">
+                    $i18n{emailVerificationWhenOnConfirm}
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="column">
+              <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon aria-hidden="true" icon="settings20:globe">
+                  </cr-icon>
+                  <div class="cr-secondary-text">
+                    $i18n{emailVerificationConsiderSupportedSites}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon aria-hidden="true" icon="settings20:stacked-email">
+                  </cr-icon>
+                  <div class="cr-secondary-text">
+                    $i18n{emailVerificationConsiderPerEmail}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon aria-hidden="true" icon="cr:person"></cr-icon>
+                  <div class="cr-secondary-text">
+                    $i18n{emailVerificationConsiderSignedIn}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </cr-collapse>
         <div class="vertical-list">
           ${this.emailVerificationAddresses_.map((item, index) => html`
             <div class="list-item">

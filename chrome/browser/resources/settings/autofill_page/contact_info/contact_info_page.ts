@@ -9,12 +9,16 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
+import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../../controls/settings_toggle_button.js';
+import '../../icons.html.js';
 import '../../settings_page/settings_subpage.js';
 import '../../simple_confirmation_dialog.js';
 import '../../site_favicon.js';
@@ -128,6 +132,7 @@ export class SettingsContactInfoPageElement extends
       isEmailVerificationProtocolEnabled_: {type: Boolean},
       emailVerificationStatePref_: {type: Object},
       emailVerificationAddresses_: {type: Array},
+      emailVerificationExpanded_: {type: Boolean},
 
       /**
        * Computed field that determines if the Gmail OTP filling toggle should
@@ -162,6 +167,7 @@ export class SettingsContactInfoPageElement extends
       chrome.settingsPrivate.PrefObject<Record<string, {issuer_site?: string}>>|
       undefined;
   protected accessor emailVerificationAddresses_: string[] = [];
+  protected accessor emailVerificationExpanded_: boolean = false;
   private accessor showGmailOtpFillingToggle_: boolean = false;
   private accessor gmailOtpFillingEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
@@ -449,6 +455,15 @@ export class SettingsContactInfoPageElement extends
 
   private computeEmailVerificationAddresses_(): string[] {
     return Object.keys(this.emailVerificationStatePref_?.value || {});
+  }
+
+  protected onEmailVerificationExpandClick_() {
+    this.emailVerificationExpanded_ = !this.emailVerificationExpanded_;
+  }
+
+  protected onEmailVerificationExpandedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.emailVerificationExpanded_ = e.detail.value;
   }
 
   private onAccountHomeAddressClick_() {
