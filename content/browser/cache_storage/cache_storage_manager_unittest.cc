@@ -56,7 +56,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -286,7 +285,7 @@ class CacheStorageManagerTest : public testing::Test {
   void TearDown() override {
     DestroyStorageManager();
     disk_cache::FlushCacheThreadForTesting();
-    content::RunAllTasksUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   virtual bool MemoryOnly() { return false; }
@@ -1822,7 +1821,7 @@ TEST_F(CacheStorageManagerTest, GetBucketUsageConflictingBucketIds) {
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
 
   disk_cache::FlushCacheThreadForTesting();
-  content::RunAllTasksUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We are testing that this call doesn't hang and returns 0 since the
   // directory is owned by the existing instance.
@@ -1843,7 +1842,7 @@ TEST_F(CacheStorageManagerTest, GetBucketUsageConflictingBucketIds) {
   EXPECT_NE(GetBucketUsage(modified_bucket_locator1_), 0);
 
   disk_cache::FlushCacheThreadForTesting();
-  content::RunAllTasksUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(CacheMatch(callback_cache_handle_.value(), kTestURL));
@@ -1871,7 +1870,7 @@ TEST_P(CacheStorageManagerStorageKeyAndBucketTestP,
   // Ensure that the index file has been written to disk before calling
   // `GetBucketUsage()`.
   disk_cache::FlushCacheThreadForTesting();
-  content::RunAllTasksUntilIdle();
+  task_environment_.RunUntilIdle();
 
   auto unpadded_size = GetBucketUsage(bucket_locator1_);
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
@@ -2011,7 +2010,7 @@ TEST_P(CacheStorageManagerTestP, GetStorageKeysIgnoresKeysFromNamedBuckets) {
       EXPECT_TRUE(FlushCacheStorageIndex(bucket_locator4));
     }
     disk_cache::FlushCacheThreadForTesting();
-    content::RunAllTasksUntilIdle();
+    task_environment_.RunUntilIdle();
 
     std::vector<blink::StorageKey> storage_keys = GetStorageKeys();
 
@@ -2690,7 +2689,7 @@ TEST_F(CacheStorageManagerTest, DeleteBucketDataConflictingBucketIds) {
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(), kTestURL));
 
   disk_cache::FlushCacheThreadForTesting();
-  content::RunAllTasksUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We are testing that this call doesn't hang and that it returns kOk without
   // actually deleting the directory (which is currently in use).
@@ -2712,7 +2711,7 @@ TEST_F(CacheStorageManagerTest, DeleteBucketDataConflictingBucketIds) {
             blink::mojom::QuotaStatusCode::kOk);
 
   disk_cache::FlushCacheThreadForTesting();
-  content::RunAllTasksUntilIdle();
+  task_environment_.RunUntilIdle();
 
   ASSERT_FALSE(base::PathExists(bucket_locator1_path));
 
@@ -2956,7 +2955,7 @@ class CacheStorageIndexMigrationTest : public CacheStorageManagerTest {
     // (and subsequent ones) have completed.
     DestroyStorageManager();
     disk_cache::FlushCacheThreadForTesting();
-    content::RunAllTasksUntilIdle();
+    task_environment_.RunUntilIdle();
 
     // Read the newly modified index off of disk.
     proto::CacheStorageIndex upgraded_index;

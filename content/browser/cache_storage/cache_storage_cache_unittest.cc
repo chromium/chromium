@@ -801,7 +801,7 @@ class CacheStorageCacheTest : public testing::Test {
 
   void TearDown() override {
     disk_cache::FlushCacheThreadForTesting();
-    content::RunAllTasksUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   storage::QuotaErrorOr<storage::BucketLocator> GetOrCreateDefaultBucket(
