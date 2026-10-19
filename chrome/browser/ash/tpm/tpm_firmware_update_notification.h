@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_TPM_TPM_FIRMWARE_UPDATE_NOTIFICATION_H_
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace ash {
 namespace tpm_firmware_update {
@@ -13,7 +15,7 @@ namespace tpm_firmware_update {
 // Displays a message that informs the user about a pending TPM Firmware Update,
 // direction the user to the about page to trigger the update and allowing the
 // notification to be silenced.
-void ShowNotificationIfNeeded(Profile* profile);
+void ShowNotificationIfNeeded(content::BrowserContext* browser_context);
 
 }  // namespace tpm_firmware_update
 }  // namespace ash

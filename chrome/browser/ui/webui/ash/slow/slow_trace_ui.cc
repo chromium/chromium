@@ -12,9 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash {
@@ -78,7 +78,7 @@ bool SlowTraceSource::AllowCaching() {
 SlowTraceController::SlowTraceController(content::WebUI* web_ui)
     : WebUIController(web_ui) {
   // Set up the chrome://slow_trace/ source.
-  content::URLDataSource::Add(Profile::FromWebUI(web_ui),
+  content::URLDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                               std::make_unique<SlowTraceSource>());
 }
 

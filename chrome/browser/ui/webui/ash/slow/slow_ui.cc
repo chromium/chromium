@@ -12,12 +12,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/slow_resources.h"
 #include "chrome/grit/slow_resources_map.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -39,9 +40,9 @@ const char kJsApiLoadComplete[] = "loadComplete";
 
 namespace ash {
 
-void CreateAndAddSlowUIHTMLSource(Profile* profile) {
-  content::WebUIDataSource* source =
-      content::WebUIDataSource::CreateAndAdd(profile, ash::kChromeUISlowHost);
+void CreateAndAddSlowUIHTMLSource(content::BrowserContext* browser_context) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      browser_context, ash::kChromeUISlowHost);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"slowDisable", IDS_SLOW_DISABLE},
@@ -58,7 +59,7 @@ void CreateAndAddSlowUIHTMLSource(Profile* profile) {
 // The handler for Javascript messages related to the "slow" view.
 class SlowHandler : public WebUIMessageHandler {
  public:
-  explicit SlowHandler(Profile* profile);
+  explicit SlowHandler(PrefService* pref_service);
 
   SlowHandler(const SlowHandler&) = delete;
   SlowHandler& operator=(const SlowHandler&) = delete;
@@ -78,15 +79,16 @@ class SlowHandler : public WebUIMessageHandler {
   void HandleEnable(const base::ListValue& args);
   void LoadComplete(const base::ListValue& args);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
 };
 
 // SlowHandler ------------------------------------------------------------
 
-SlowHandler::SlowHandler(Profile* profile) : profile_(profile) {
+SlowHandler::SlowHandler(PrefService* pref_service)
+    : pref_service_(pref_service) {
   user_pref_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  user_pref_registrar_->Init(profile_->GetPrefs());
+  user_pref_registrar_->Init(pref_service_);
 }
 
 SlowHandler::~SlowHandler() = default;
@@ -114,13 +116,11 @@ void SlowHandler::OnJavascriptDisallowed() {
 }
 
 void SlowHandler::HandleDisable(const base::ListValue& args) {
-  PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetBoolean(ash::prefs::kPerformanceTracingEnabled, false);
+  pref_service_->SetBoolean(ash::prefs::kPerformanceTracingEnabled, false);
 }
 
 void SlowHandler::HandleEnable(const base::ListValue& args) {
-  PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetBoolean(ash::prefs::kPerformanceTracingEnabled, true);
+  pref_service_->SetBoolean(ash::prefs::kPerformanceTracingEnabled, true);
 }
 
 void SlowHandler::LoadComplete(const base::ListValue& args) {
@@ -129,9 +129,8 @@ void SlowHandler::LoadComplete(const base::ListValue& args) {
 }
 
 void SlowHandler::UpdatePage() {
-  PrefService* pref_service = profile_->GetPrefs();
   bool enabled =
-      pref_service->GetBoolean(ash::prefs::kPerformanceTracingEnabled);
+      pref_service_->GetBoolean(ash::prefs::kPerformanceTracingEnabled);
   base::Value pref_value(enabled);
   FireWebUIListener("tracing-pref-changed", pref_value);
 }
@@ -139,12 +138,14 @@ void SlowHandler::UpdatePage() {
 // SlowUI -----------------------------------------------------------------
 
 SlowUI::SlowUI(content::WebUI* web_ui) : WebUIController(web_ui) {
-  Profile* profile = Profile::FromWebUI(web_ui);
+  content::BrowserContext* const browser_context =
+      web_ui->GetWebContents()->GetBrowserContext();
 
-  web_ui->AddMessageHandler(std::make_unique<SlowHandler>(profile));
+  web_ui->AddMessageHandler(std::make_unique<SlowHandler>(
+      user_prefs::UserPrefs::Get(browser_context)));
 
   // Set up the chrome://slow/ source.
-  CreateAndAddSlowUIHTMLSource(profile);
+  CreateAndAddSlowUIHTMLSource(browser_context);
 }
 
 }  // namespace ash
