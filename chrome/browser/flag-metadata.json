@@ -784,6 +784,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "app-bar-static-symbol-when-hidden",
+    "owners": [ "gambard@chromium.org", "meridian@google.com" ],
+    "expiry_milestone": 163
+  },
+  {
     "name": "app-menu-glow-up",
     "owners": [
       "emshack@chromium.org",

@@ -70,6 +70,11 @@ class AppBarViewControllerTest : public PlatformTest {
   UIView* assistantHighlightView() {
     return [view_controller_ valueForKey:@"assistantHighlightView"];
   }
+
+  // Helper to access the private `_tabGridSymbolView` ivar using KVC.
+  UIImageView* tabGridSymbolView() {
+    return [view_controller_ valueForKey:@"tabGridSymbolView"];
+  }
 };
 
 // Tests that the new tab button shows the menu as primary action when the
@@ -671,6 +676,32 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonMenuDisabledButton) {
                                    signedIn:NO];
   EXPECT_TRUE([view_controller_ contextMenuInteraction:interaction
                         configurationForMenuAtLocation:CGPointZero]);
+}
+
+// Tests that the tab grid symbol is updated when the App Bar is hidden
+// (`AppBarPosition::kNone`), with `kAppBarStaticSymbolWhenHidden` enabled and
+// disabled.
+TEST_F(AppBarViewControllerTest, TestTabGridSymbolUpdatedWhenHidden) {
+  for (bool enabled : {true, false}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(kAppBarStaticSymbolWhenHidden,
+                                             enabled);
+    [layout_state_
+        setAppBarPosition:AppBarPosition::kNone
+                  passKey:LayoutStateTestPassKeyFactory::CreateSceneKey()];
+
+    [view_controller_ setTabGridVisible:NO];
+    UIImage* hidden_grid_image = tabGridSymbolView().image;
+    ASSERT_TRUE(hidden_grid_image);
+
+    [view_controller_ setTabGridVisible:YES];
+    UIImage* visible_grid_image = tabGridSymbolView().image;
+    ASSERT_TRUE(visible_grid_image);
+    EXPECT_NSNE(hidden_grid_image, visible_grid_image);
+
+    [view_controller_ setTabGridVisible:NO];
+    EXPECT_NSEQ(hidden_grid_image, tabGridSymbolView().image);
+  }
 }
 
 // Test that the user interface style is overridden to dark in the Tab Grid or

@@ -1039,4 +1039,13 @@ BASE_DECLARE_FEATURE(kLocationBarPerformanceImprovements);
 // Returns true if the `kLocationBarPerformanceImprovements` feature is enabled.
 bool IsLocationBarPerformanceImprovementsEnabled();
 
+// Skips the animated symbol content transition of the App Bar tab grid button
+// while the App Bar is not visible. On iOS 26, the content transition backs the
+// image view with a RenderBox layer that is rendered synchronously on the main
+// thread during the next `CATransactionCommit`.
+BASE_DECLARE_FEATURE(kAppBarStaticSymbolWhenHidden);
+
+// Returns true if the AppBarStaticSymbolWhenHidden feature is enabled.
+bool IsAppBarStaticSymbolWhenHiddenEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

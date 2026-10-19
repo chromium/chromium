@@ -1268,3 +1268,9 @@ BASE_FEATURE(kLocationBarPerformanceImprovements,
 bool IsLocationBarPerformanceImprovementsEnabled() {
   return base::FeatureList::IsEnabled(kLocationBarPerformanceImprovements);
 }
+
+BASE_FEATURE(kAppBarStaticSymbolWhenHidden, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAppBarStaticSymbolWhenHiddenEnabled() {
+  return base::FeatureList::IsEnabled(kAppBarStaticSymbolWhenHidden);
+}

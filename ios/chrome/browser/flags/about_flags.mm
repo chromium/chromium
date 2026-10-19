@@ -3014,6 +3014,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kLocationBarPerformanceImprovementsName,
      flag_descriptions::kLocationBarPerformanceImprovementsDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kLocationBarPerformanceImprovements)},
+    {"app-bar-static-symbol-when-hidden",
+     flag_descriptions::kAppBarStaticSymbolWhenHiddenName,
+     flag_descriptions::kAppBarStaticSymbolWhenHiddenDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAppBarStaticSymbolWhenHidden)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
