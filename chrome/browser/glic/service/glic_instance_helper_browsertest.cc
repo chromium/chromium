@@ -5,7 +5,11 @@
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
@@ -15,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "content/public/browser/android/child_process_importance.h"
 #endif
@@ -188,5 +191,42 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceHelperBrowserTest,
   EXPECT_OK(run_until_importance_is(content::ChildProcessImportance::NORMAL));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class GlicInstanceHelperGeicBrowserTest : public GlicBrowserTest {
+ public:
+  GlicInstanceHelperGeicBrowserTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGeic,
+        {{"geic-guest-url", "https://business.gemini.google/side-panel"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceHelperGeicBrowserTest,
+                       LogsBindAndPinCountsOnTabClose) {
+  base::HistogramTester histogram_tester;
+
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(tab);
+  tabs::TabInterface* tab2 = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(tab2);
+
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_TRUE(instance->IsShowing());
+
+  ASSERT_OK(CloseGlicForTabAndWait(tab2));
+
+  GetTabListInterface()->CloseTab(tab2->GetHandle());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetTotalCountForPrefix("Glic.Tab.InstanceBindCount") == 1;
+  }));
+
+  histogram_tester.ExpectUniqueSample("Glic.Tab.InstanceBindCount", 1, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Enterprise.Tab.InstanceBindCount",
+                                      1, 1);
+  histogram_tester.ExpectTotalCount("Glic.Consumer.Tab.InstanceBindCount", 0);
+}
 
 }  // namespace glic

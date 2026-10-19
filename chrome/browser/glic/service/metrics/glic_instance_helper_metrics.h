@@ -8,7 +8,10 @@
 #include "base/containers/flat_set.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
+
+class Profile;
 
 namespace glic {
 
@@ -36,7 +39,7 @@ enum class DaisyChainFirstAction {
 // from another Glic panel.
 class GlicInstanceHelperMetrics {
  public:
-  GlicInstanceHelperMetrics();
+  explicit GlicInstanceHelperMetrics(Profile* profile);
   ~GlicInstanceHelperMetrics();
 
   void OnBoundToInstance(const InstanceId& instance_id);
@@ -63,6 +66,7 @@ class GlicInstanceHelperMetrics {
   DaisyChainFirstAction current_metric_action_ =
       DaisyChainFirstAction::kNoAction;
   base::OneShotTimer flush_timer_;
+  GlicMetricReporter metric_reporter_;
 };
 
 }  // namespace glic

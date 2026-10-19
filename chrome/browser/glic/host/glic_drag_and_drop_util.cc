@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -148,7 +149,8 @@ glic::mojom::AdditionalContextPtr BuildDragDropAdditionalContext(
 void TriggerDragDropInvoke(content::WebContents* target_web_contents,
                            content::GlobalRenderFrameHostId source_rfh_id,
                            tabs::TabHandle source_tab_handle,
-                           glic::mojom::AdditionalContextPtr context) {
+                           glic::mojom::AdditionalContextPtr context,
+                           GlicMetricReporter reporter) {
   Profile* profile =
       Profile::FromBrowserContext(target_web_contents->GetBrowserContext());
   GlicKeyedService* service =
@@ -174,8 +176,8 @@ void TriggerDragDropInvoke(content::WebContents* target_web_contents,
     invoke_options.target.surface = source_tab_handle;
   }
 
-  base::UmaHistogramEnumeration("Glic.DragAndDrop.ValidationResult2",
-                                GlicDragAndDropValidationResult::kSuccess);
+  reporter.RecordEnumeration("DragAndDrop.ValidationResult2",
+                             GlicDragAndDropValidationResult::kSuccess);
   service->Invoke(std::move(invoke_options));
 }
 
@@ -296,14 +298,17 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
     return;
   }
 
+  GlicMetricReporter reporter(
+      Profile::FromBrowserContext(target_web_contents->GetBrowserContext()));
+
   // Record Content Type (intent/demand) immediately when the drop is
   // recognized.
-  base::UmaHistogramEnumeration("Glic.DragAndDrop.ContentType",
-                                GetDragAndDropContentType(drop_data));
+  reporter.RecordEnumeration("DragAndDrop.ContentType",
+                             GetDragAndDropContentType(drop_data));
 
   if (!base::FeatureList::IsEnabled(features::kGlicWebDragAndDropFileUpload)) {
-    base::UmaHistogramEnumeration(
-        "Glic.DragAndDrop.ValidationResult2",
+    reporter.RecordEnumeration(
+        "DragAndDrop.ValidationResult2",
         GlicDragAndDropValidationResult::kBlockedByFeatureFlag);
     return;
   }
@@ -311,8 +316,8 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
   // TODO(crbug.com/567183211): Temporarily reject non-file web drags (such as
   // text and links) until extended drag-and-drop payload types are supported.
   if (drop_data.file_contents.empty()) {
-    base::UmaHistogramEnumeration(
-        "Glic.DragAndDrop.ValidationResult2",
+    reporter.RecordEnumeration(
+        "DragAndDrop.ValidationResult2",
         GlicDragAndDropValidationResult::kUnsupportedContentType);
     return;
   }
@@ -323,23 +328,23 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
   if (!info) {
     // No record of this drag in `GlicDragEligibilityMonitor`, e.g. because the
     // drag source was not a tab or had no eligibility helper.
-    base::UmaHistogramEnumeration(
-        "Glic.DragAndDrop.ValidationResult2",
+    reporter.RecordEnumeration(
+        "DragAndDrop.ValidationResult2",
         GlicDragAndDropValidationResult::kUnknownDragSource);
     return;
   }
 
   if (info->source_browser_context.get() !=
       target_web_contents->GetBrowserContext()) {
-    base::UmaHistogramEnumeration(
-        "Glic.DragAndDrop.ValidationResult2",
+    reporter.RecordEnumeration(
+        "DragAndDrop.ValidationResult2",
         GlicDragAndDropValidationResult::kCrossProfileDragBlocked);
     return;
   }
 
   if (!info->is_eligible) {
-    base::UmaHistogramEnumeration(
-        "Glic.DragAndDrop.ValidationResult2",
+    reporter.RecordEnumeration(
+        "DragAndDrop.ValidationResult2",
         GlicDragAndDropValidationResult::kPageContextIneligible);
     // TODO(b/552675444): Implement error signaling through Invoke for the
     // purpose of showing these toasts in the web client.
@@ -354,8 +359,8 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
   content::RenderFrameHost* source_rfh =
       content::RenderFrameHost::FromFrameToken(info->source_rfh_token);
   if (!source_rfh) {
-    base::UmaHistogramEnumeration(
-        "Glic.DragAndDrop.ValidationResult2",
+    reporter.RecordEnumeration(
+        "DragAndDrop.ValidationResult2",
         GlicDragAndDropValidationResult::kSourceFrameDestroyed);
     return;
   }
@@ -364,7 +369,7 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
   auto context = BuildDragDropAdditionalContext(augmented_drop_data,
                                                 info->source_tab_handle);
   TriggerDragDropInvoke(target_web_contents, source_rfh->GetGlobalId(),
-                        info->source_tab_handle, std::move(context));
+                        info->source_tab_handle, std::move(context), reporter);
 }
 
 }  // namespace glic

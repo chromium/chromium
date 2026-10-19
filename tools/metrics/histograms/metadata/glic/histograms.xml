@@ -382,27 +382,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Api.Client.ErrorDialogShown"
-    enum="GlicClientErrorDialogType" expires_after="2027-04-24">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    Records when a client error dialog is shown, indicating the type of error.
-    This may be recorded while the glic web client is in the background, and
-    therefore, may or may not be seen by the user.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Api.Client.TransientError" enum="GoogleRpcCode"
-    expires_after="2027-05-04">
-  <owner>harringtond@chromium.org</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records when the glic web client reports a transient error. These errors may
-    be presented to the user, but may not prevent further use of Glic.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Api.GetImageBytesFromTab.Error"
     enum="GlicGetContextFromTabError" expires_after="2026-11-29">
   <owner>linnan@chromium.org</owner>
@@ -410,39 +389,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records errors that occurred while attempting to retrieve image bytes from
     an arbitrary tab.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Api.NotifyPanelWillOpen" enum="GlicWebClientMode"
-    expires_after="2027-04-11">
-  <owner>carlosk@chromium.org</owner>
-  <owner>harringtond@chromium.org</owner>
-  <summary>
-    Recorded whenever the glic web client returns from being notified that the
-    panel will open. Records the active web client mode.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Api.ProcessCounterAbuseVerdict.Result"
-    enum="GlicProcessCounterAbuseVerdictResult" expires_after="2027-06-01">
-  <owner>skrakowi@google.com</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the outcome of processing a counter-abuse verdict in Glic. Recorded
-    for each call to ProcessCounterAbuseVerdict, except when the feature is
-    disabled, the tab/contents are not found, or the Safe Browsing service is
-    unavailable.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Api.ProcessCounterAbuseVerdict.ThreatType"
-    enum="GlicSbThreatType" expires_after="2027-06-01">
-  <owner>skrakowi@google.com</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the threat type of the counter-abuse verdict when an interstitial is
-    actually shown. Recorded after all filtering (URL matching,
-    show_interstitial check, and allowlist check) has passed.
   </summary>
 </histogram>
 
@@ -809,41 +755,6 @@ chromium-metrics-reviews@google.com.
   <owner>glic@google.com</owner>
   <summary>
     Records the outcome of invoking the Glic window entry point.
-  </summary>
-</histogram>
-
-<histogram name="Glic.DragAndDrop.ContentType"
-    enum="GlicDragAndDropContentType" expires_after="2027-05-01">
-  <owner>birnie@google.com</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Logs the high level content type of dropped content when a web-to-Glic drop
-    action occurs on the Glic panel. Helps identify what kinds of content
-    formats users intend to drop.
-  </summary>
-</histogram>
-
-<histogram name="Glic.DragAndDrop.ValidationResult2"
-    enum="GlicDragAndDropValidationResult" expires_after="2027-05-01">
-  <owner>birnie@google.com</owner>
-  <owner>glic-dev@google.com</owner>
-  <summary>
-    Records the outcome of validating a web-to-Glic drop, before Glic is
-    invoked. Recorded once for each drop of a web drag (one that carries a
-    Chrome drag ID) onto a Glic panel. Records Success if the drop passes every
-    check and the Glic invocation is started; if every check passes but the
-    profile has no Glic service, nothing is recorded. Otherwise records only the
-    first check that failed, in this order: the feature is disabled; the drop
-    has no file contents; no drag-start record exists for the drag (e.g. the
-    drag started outside a tab); the drag started in a different profile or
-    Incognito window than the drop target; the source page was not known to be
-    eligible for page context when the drag started (ineligible or unknown
-    status); the source frame was destroyed before the drop.
-
-    Replaced Glic.DragAndDrop.ValidationResult when page context eligibility
-    moved from drop time to drag start and drops stopped fetching page context,
-    obsoleting values 2 and 4 to 8, adding values 10 to 12, and changing bucket
-    semantics and proportions.
   </summary>
 </histogram>
 
@@ -1285,18 +1196,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Host.OpenedInRegularTab" enum="Boolean"
-    expires_after="2026-11-29">
-  <owner>carlosk@chromium.org</owner>
-  <owner>birnie@chromium.org</owner>
-  <summary>
-    Histogram that records whether the Glic WebUI is being opened in a regular
-    browser tab (records true; expected for development purposes) instead of its
-    expected container types (records false). Recorded when the web client is
-    about to be notified about it being opened.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Host.WebClientLifecycleEvent"
     enum="GlicWebClientLifecycleEvent" expires_after="2027-04-11">
   <owner>harringtond@chromium.org</owner>
@@ -1338,45 +1237,6 @@ chromium-metrics-reviews@google.com.
     AutoPlay permissions to the renderer frame hosting Glic's embedded webview.
     Samples are recorded when their respective events take place.
   </summary>
-</histogram>
-
-<histogram name="Glic.Instance.AutoOpenedPanel.FirstAction.{Source}"
-    enum="GlicDaisyChainFirstAction" expires_after="2027-03-07">
-  <owner>birnie@google.com</owner>
-  <owner>basiaz@google.com</owner>
-  <summary>
-    Records the first action that occurs on a tab that had side panel opened
-    from various `Source`s. Recorded when a significant action occurs (tab
-    closed, side panel closed, input submitted, conversation switched, daisy
-    chain another tab) or records &quot;No Action&quot; when tab helper is
-    destroyed before any action occurs. Only recorded for the source that
-    triggered the opening.
-
-    Tab switching and side panel closure are treated as ambiguous actions that
-    trigger a 5-second timer before logging. This is to catch cases where a user
-    switches tabs back and forth and then performs a more significant action
-    like input submitted or conversation switched.
-
-    This metric should eventually replace
-    Glic.Instance.FirstActionInDaisyChainPanel.
-  </summary>
-<!-- LINT.IfChange(Source) -->
-
-  <token key="Source">
-    <variant name="ActorAddTab" summary="actor adding a new tab"/>
-    <variant name="AutoOpenPdf" summary="auto-opened for a PDF"/>
-    <variant name="Bookmark" summary="opening a bookmark in a new tab"/>
-    <variant name="GlicContents" summary="clicking a link in the Glic panel"/>
-    <variant name="LastActiveInstance"
-        summary="last active instance was used when user triggered glic on an
-                 unbound tab"/>
-    <variant name="NewTab" summary="clicking a link that opens a new tab"/>
-    <variant name="TabContents" summary="clicking a link in the main tab"/>
-    <variant name="WebHandoff"
-        summary="opened via navigation capture / web handoff"/>
-  </token>
-<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:DaisyChainSource) -->
-
 </histogram>
 
 <histogram name="Glic.Instance.AvgClientPrivateMemoryFootprint.{TriggerEvent}"
@@ -1627,16 +1487,6 @@ chromium-metrics-reviews@google.com.
     Records the outcome of the locale filtering check for Glic enablement.
     Recorded once per call to GetLocaleEnablement, which happens once at browser
     process startup.
-  </summary>
-</histogram>
-
-<histogram name="Glic.MaybeReplaceNavigation.Result" enum="Boolean"
-    expires_after="2027-01-17">
-  <owner>liberato@chromium.org</owner>
-  <owner>chrome-bluefin@google.com</owner>
-  <summary>
-    Records the boolean result of calling MaybeReplaceNavigation. This is used
-    to determine if a navigation was replaced with a media viewer.
   </summary>
 </histogram>
 
@@ -2473,28 +2323,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Tab.InstanceBindCount" units="count"
-    expires_after="2027-03-21">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the number of unique Glic instances a tab was bound to during its
-    lifetime. Recorded when the tab is destroyed, but only if it was bound to at
-    least one instance.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Tab.InstancePinCount" units="count"
-    expires_after="2027-03-21">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@chromium.org</owner>
-  <summary>
-    Records the number of unique Glic instances a tab was pinned to during its
-    lifetime. Recorded when the tab is destroyed, but only if it was pinned to
-    at least one instance.
-  </summary>
-</histogram>
-
 <histogram name="Glic.TabContext.PdfContentsRequested" enum="PdfRequestStates"
     expires_after="2027-04-04">
   <owner>carlosk@chromium.org</owner>
@@ -2770,6 +2598,158 @@ chromium-metrics-reviews@google.com.
     The zoom level of the Glic webview as a percentage. Recorded periodically
     for active users (those who have completed the Glic FRE).
   </summary>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Api.Client.ErrorDialogShown"
+    enum="GlicClientErrorDialogType" expires_after="2027-04-24">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Records when a client error dialog is shown, indicating the type of error.
+    This may be recorded while the glic web client is in the background, and
+    therefore, may or may not be seen by the user.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Api.Client.TransientError"
+    enum="GoogleRpcCode" expires_after="2027-05-04">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records when the glic web client reports a transient error. These errors may
+    be presented to the user, but may not prevent further use of Glic.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Api.NotifyPanelWillOpen"
+    enum="GlicWebClientMode" expires_after="2027-04-11">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    Recorded whenever the glic web client returns from being notified that the
+    panel will open. Records the active web client mode.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Api.ProcessCounterAbuseVerdict.Result"
+    enum="GlicProcessCounterAbuseVerdictResult" expires_after="2027-06-01">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the outcome of processing a counter-abuse verdict in Glic. Recorded
+    for each call to ProcessCounterAbuseVerdict, except when the feature is
+    disabled, the tab/contents are not found, or the Safe Browsing service is
+    unavailable.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Api.ProcessCounterAbuseVerdict.ThreatType"
+    enum="GlicSbThreatType" expires_after="2027-06-01">
+  <owner>skrakowi@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the threat type of the counter-abuse verdict when an interstitial is
+    actually shown. Recorded after all filtering (URL matching,
+    show_interstitial check, and allowlist check) has passed.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.DragAndDrop.ContentType"
+    enum="GlicDragAndDropContentType" expires_after="2027-05-01">
+  <owner>birnie@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Logs the high level content type of dropped content when a web-to-Glic drop
+    action occurs on the Glic panel. Helps identify what kinds of content
+    formats users intend to drop.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.DragAndDrop.ValidationResult2"
+    enum="GlicDragAndDropValidationResult" expires_after="2027-05-01">
+  <owner>birnie@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the outcome of validating a web-to-Glic drop, before Glic is
+    invoked. Recorded once for each drop of a web drag (one that carries a
+    Chrome drag ID) onto a Glic panel. Records Success if the drop passes every
+    check and the Glic invocation is started; if every check passes but the
+    profile has no Glic service, nothing is recorded. Otherwise records only the
+    first check that failed, in this order: the feature is disabled; the drop
+    has no file contents; no drag-start record exists for the drag (e.g. the
+    drag started outside a tab); the drag started in a different profile or
+    Incognito window than the drop target; the source page was not known to be
+    eligible for page context when the drag started (ineligible or unknown
+    status); the source frame was destroyed before the drop.
+
+    Replaced Glic.DragAndDrop.ValidationResult when page context eligibility
+    moved from drop time to drag start and drops stopped fetching page context,
+    obsoleting values 2 and 4 to 8, adding values 10 to 12, and changing bucket
+    semantics and proportions.
+
+    Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Host.OpenedInRegularTab" enum="Boolean"
+    expires_after="2026-11-29">
+  <owner>carlosk@chromium.org</owner>
+  <owner>birnie@chromium.org</owner>
+  <summary>
+    Histogram that records whether the Glic WebUI is being opened in a regular
+    browser tab (records true; expected for development purposes) instead of its
+    expected container types (records false). Recorded when the web client is
+    about to be notified about it being opened.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram
+    name="Glic{GlicProvider}.Instance.AutoOpenedPanel.FirstAction.{Source}"
+    enum="GlicDaisyChainFirstAction" expires_after="2027-03-07">
+  <owner>birnie@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <summary>
+    Records the first action that occurs on a tab that had side panel opened
+    from various `Source`s. Recorded when a significant action occurs (tab
+    closed, side panel closed, input submitted, conversation switched, daisy
+    chain another tab) or records &quot;No Action&quot; when tab helper is
+    destroyed before any action occurs. Only recorded for the source that
+    triggered the opening.
+
+    Tab switching and side panel closure are treated as ambiguous actions that
+    trigger a 5-second timer before logging. This is to catch cases where a user
+    switches tabs back and forth and then performs a more significant action
+    like input submitted or conversation switched.
+
+    This metric should eventually replace
+    Glic.Instance.FirstActionInDaisyChainPanel.
+  </summary>
+<!-- LINT.IfChange(Source) -->
+
+  <token key="Source">
+    <variant name="ActorAddTab" summary="actor adding a new tab"/>
+    <variant name="AutoOpenPdf" summary="auto-opened for a PDF"/>
+    <variant name="Bookmark" summary="opening a bookmark in a new tab"/>
+    <variant name="GlicContents" summary="clicking a link in the Glic panel"/>
+    <variant name="LastActiveInstance"
+        summary="last active instance was used when user triggered glic on an
+                 unbound tab"/>
+    <variant name="NewTab" summary="clicking a link that opens a new tab"/>
+    <variant name="TabContents" summary="clicking a link in the main tab"/>
+    <variant name="WebHandoff"
+        summary="opened via navigation capture / web handoff"/>
+  </token>
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:DaisyChainSource) -->
+
+  <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
 <histogram name="Glic{GlicProvider}.Instance.EventCounts"
@@ -3530,6 +3510,17 @@ chromium-metrics-reviews@google.com.
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram name="Glic{GlicProvider}.MaybeReplaceNavigation.Result"
+    enum="Boolean" expires_after="2027-01-17">
+  <owner>liberato@chromium.org</owner>
+  <owner>chrome-bluefin@google.com</owner>
+  <summary>
+    Records the boolean result of calling MaybeReplaceNavigation. This is used
+    to determine if a navigation was replaced with a media viewer.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.PanelWebUiState.FinishState3"
     enum="WebUiState" expires_after="2027-02-28">
   <owner>birnie@google.com</owner>
@@ -3642,6 +3633,30 @@ chromium-metrics-reviews@google.com.
     from Glic. Depth 2 means opened from a tab that was opened from Glic, and so
     on. Recorded each time a tab is bound via daisy chaining from another tab.
     Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Tab.InstanceBindCount" units="count"
+    expires_after="2027-03-21">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the number of unique Glic instances a tab was bound to during its
+    lifetime. Recorded when the tab is destroyed, but only if it was bound to at
+    least one instance.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.Tab.InstancePinCount" units="count"
+    expires_after="2027-03-21">
+  <owner>birnie@google.com</owner>
+  <owner>carlosk@chromium.org</owner>
+  <summary>
+    Records the number of unique Glic instances a tab was pinned to during its
+    lifetime. Recorded when the tab is destroyed, but only if it was pinned to
+    at least one instance.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>

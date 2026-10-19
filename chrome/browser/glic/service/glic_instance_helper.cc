@@ -6,6 +6,7 @@
 
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace glic {
@@ -21,7 +22,7 @@ GlicInstanceHelper* GlicInstanceHelper::From(tabs::TabInterface* tab) {
 
 GlicInstanceHelper::GlicInstanceHelper(tabs::TabInterface* tab)
     : tab_(tab),
-      metrics_(std::make_unique<GlicInstanceHelperMetrics>()),
+      metrics_(std::make_unique<GlicInstanceHelperMetrics>(tab->GetProfile())),
       scoped_unowned_user_data_(tab->GetUnownedUserDataHost(), *this) {
 #if BUILDFLAG(IS_ANDROID)
   InitJavaObject();

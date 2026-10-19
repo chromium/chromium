@@ -4,22 +4,23 @@
 
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
+#include "chrome/browser/profiles/profile.h"
 
 namespace glic {
 
-GlicInstanceHelperMetrics::GlicInstanceHelperMetrics() = default;
+GlicInstanceHelperMetrics::GlicInstanceHelperMetrics(Profile* profile)
+    : metric_reporter_(profile) {}
 
 GlicInstanceHelperMetrics::~GlicInstanceHelperMetrics() {
   if (!bound_instances_.empty()) {
-    base::UmaHistogramCounts100("Glic.Tab.InstanceBindCount",
-                                bound_instances_.size());
+    metric_reporter_.RecordCounts100("Tab.InstanceBindCount",
+                                     bound_instances_.size());
   }
   if (!pinned_by_instances_.empty()) {
-    base::UmaHistogramCounts100("Glic.Tab.InstancePinCount",
-                                pinned_by_instances_.size());
+    metric_reporter_.RecordCounts100("Tab.InstancePinCount",
+                                     pinned_by_instances_.size());
   }
   if (is_daisy_chained_) {
     FlushMetric();
@@ -81,8 +82,8 @@ void GlicInstanceHelperMetrics::FlushMetric() {
   }
   std::string source_str = GetDaisyChainSourceString(daisy_chain_source_);
 
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Glic.Instance.AutoOpenedPanel.FirstAction.", source_str}),
+  metric_reporter_.RecordEnumeration(
+      base::StrCat({"Instance.AutoOpenedPanel.FirstAction.", source_str}),
       current_metric_action_);
   metric_finalized_ = true;
   flush_timer_.Stop();
