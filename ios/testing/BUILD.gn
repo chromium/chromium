@@ -119,6 +119,15 @@ config("xctest_header_config") {
   include_dirs = [ "$ios_sdk_platform_path/Developer/usr/lib" ]
 }
 
+source_set("test_tag_registry") {
+  testonly = true
+  sources = [
+    "test_tag_registry.cc",
+    "test_tag_registry.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("test_expectations") {
   public_configs = [ ":xctest_header_config" ]
   testonly = true
@@ -138,6 +147,7 @@ test("ios_testing_unittests") {
     ":block_swizzler",
     ":ocmock_support",
     ":test_expectations",
+    ":test_tag_registry",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gmock",
@@ -150,6 +160,7 @@ test("ios_testing_unittests") {
     "ocmock_complex_type_helper_unittest.mm",
     "scoped_block_swizzler_unittest.mm",
     "test_expectations_unittest.mm",
+    "test_tag_registry_unittest.mm",
   ]
 
   assert_no_deps = ios_assert_no_deps

@@ -7,6 +7,9 @@
 #import <objc/runtime.h>
 
 #import <memory>
+#import <optional>
+#import <set>
+#import <string_view>
 
 #import "GREYConstants.h"
 #import "base/apple/bundle_locations.h"
@@ -29,6 +32,7 @@
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/test_tag_registry.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
 #import "ios/web/common/features.h"
 #import "net/test/embedded_test_server/default_handlers.h"
@@ -49,6 +53,7 @@ NSString* const kFlakyEarlGreyTestTargetSuffix =
     @"_flaky_eg2tests_module-Runner";
 NSString* const kMultitaskingEarlGreyTestTargetName =
     @"ios_chrome_multitasking_eg2tests_module-Runner";
+NSString* const kRunEGSmokeTestsOnlyFlag = @"--run-eg-smoke-tests-only";
 
 // Returns a base::HeapArray<...> of methods in `klass`.
 base::HeapArray<Method, base::FreeDeleter> GetMethodList(Class klass) {
@@ -174,8 +179,18 @@ void ResetAuthentication() {
 // Sets up mock authentication.
 + (void)enableMockAuthentication;
 
-// Returns a NSArray of test names in this class that contain the given prefix
-+ (NSArray*)testNamesWithPrefix:(NSString*)prefix;
+// Returns a NSArray of test names in this class (including inherited methods
+// from superclasses up to `ChromeTestCase`) that start with the given `prefix`.
++ (NSArray*)testNamesWithPrefix:(std::string_view)prefix;
+
+// Returns a NSArray of test names in this class (including inherited methods
+// from superclasses up to `ChromeTestCase`) tagged with the given `tag` (if
+// specified) and starting with `prefix`.
++ (NSArray*)testNamesWithTag:(std::optional<std::string_view>)tag
+                      prefix:(std::string_view)prefix;
+
+// Creates an `NSInvocation` for the given `selector` on this class.
++ (NSInvocation*)invocationForSelector:(SEL)selector;
 
 // Returns a NSArray of test names in this class for multitasking test suite.
 + (NSArray*)multitaskingTestNames;
@@ -191,13 +206,24 @@ void ResetAuthentication() {
   NSString* targetName = [NSBundle mainBundle].infoDictionary[@"CFBundleName"];
   if ([targetName hasSuffix:kFlakyEarlGreyTestTargetSuffix]) {
     // Only run FLAKY_ tests for flaky test suites.
-    return [self testNamesWithPrefix:@"FLAKY"];
+    return [self testNamesWithPrefix:"FLAKY"];
   } else if ([targetName isEqualToString:kMultitaskingEarlGreyTestTargetName]) {
     // Only run white listed tests for the multitasking test suite.
     return [self multitaskingTestNames];
+  } else if ([NSProcessInfo.processInfo.arguments
+                 containsObject:kRunEGSmokeTestsOnlyFlag]) {
+    // If running in smoke test mode, only run tests tagged with "smoke".
+    // When disabled tests enumeration runs on shard 0, only report tests
+    // prefixed with "DISABLED_" to avoid enumerating disabled tests from
+    // the full test suite.
+    if ([[NSProcessInfo.processInfo.environment
+            objectForKey:@"RUN_DISABLED_EARL_GREY_TESTS"] boolValue]) {
+      return [self testNamesWithTag:testing::kSmokeTag prefix:"DISABLED"];
+    }
+    return [self testNamesWithTag:testing::kSmokeTag prefix:"test"];
   } else if ([[NSProcessInfo.processInfo.environment
                  objectForKey:@"RUN_DISABLED_EARL_GREY_TESTS"] boolValue]) {
-    return [self testNamesWithPrefix:@"DISABLED"];
+    return [self testNamesWithPrefix:"DISABLED"];
   } else {
     return [super testInvocations];
   }
@@ -438,21 +464,43 @@ void ResetAuthentication() {
   [ChromeEarlGrey setUpFakeSyncServer];
 }
 
-+ (NSArray*)testNamesWithPrefix:(NSString*)prefix {
++ (NSArray*)testNamesWithPrefix:(std::string_view)prefix {
+  return [self testNamesWithTag:std::nullopt prefix:prefix];
+}
+
++ (NSArray*)testNamesWithTag:(std::optional<std::string_view>)tag
+                      prefix:(std::string_view)prefix {
   NSMutableArray* testNames = [NSMutableArray array];
-  for (const Method& method : GetMethodList(self)) {
-    SEL selector = method_getName(method);
-    if (base::StartsWith(sel_getName(selector),
-                         base::SysNSStringToUTF8(prefix))) {
-      NSMethodSignature* methodSignature =
-          [self instanceMethodSignatureForSelector:selector];
-      NSInvocation* invocation =
-          [NSInvocation invocationWithMethodSignature:methodSignature];
-      invocation.selector = selector;
-      [testNames addObject:invocation];
+  const char* className = class_getName(self);
+  std::set<SEL> seenSelectors;
+  for (Class cls = self; cls && cls != [ChromeTestCase class];
+       cls = class_getSuperclass(cls)) {
+    for (const Method& method : GetMethodList(cls)) {
+      SEL selector = method_getName(method);
+      if (!seenSelectors.insert(selector).second) {
+        continue;
+      }
+      const char* selectorName = sel_getName(selector);
+      if (!base::StartsWith(selectorName, prefix)) {
+        continue;
+      }
+      if (tag.has_value() && !testing::TestTagRegistry::GetInstance().HasTag(
+                                 className, selectorName, *tag)) {
+        continue;
+      }
+      [testNames addObject:[self invocationForSelector:selector]];
     }
   }
   return testNames;
+}
+
++ (NSInvocation*)invocationForSelector:(SEL)selector {
+  NSMethodSignature* methodSignature =
+      [self instanceMethodSignatureForSelector:selector];
+  NSInvocation* invocation =
+      [NSInvocation invocationWithMethodSignature:methodSignature];
+  invocation.selector = selector;
+  return invocation;
 }
 
 + (NSArray*)multitaskingTestNames {
@@ -461,12 +509,7 @@ void ResetAuthentication() {
     SEL selector = method_getName(method);
     if ([multitaskingTests()
             containsObject:base::SysUTF8ToNSString(sel_getName(selector))]) {
-      NSMethodSignature* methodSignature =
-          [self instanceMethodSignatureForSelector:selector];
-      NSInvocation* invocation =
-          [NSInvocation invocationWithMethodSignature:methodSignature];
-      invocation.selector = selector;
-      [multitaskingTestNames addObject:invocation];
+      [multitaskingTestNames addObject:[self invocationForSelector:selector]];
     }
   }
   return multitaskingTestNames;

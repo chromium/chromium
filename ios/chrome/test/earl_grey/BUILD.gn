@@ -445,6 +445,7 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/testing:http_server_bundle_data",
     "//ios/testing:nserror_support",
+    "//ios/testing:test_tag_registry",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:launch_configuration",
     "//ios/third_party/edo",
