@@ -160,4 +160,208 @@
   <message name="IDS_SETTINGS_TAG_MANAGE_CERTIFICATES_ALT3" meaning="Settings search keyword for 'Manage certificates'" desc="Search keyword for the setting for viewing and managing SSL/TLS client certificates and trusted certificate authorities. Alternate keyword for: 'Manage certificates'" translateable="false">
     ca
   </message>
+
+  <!-- Privacy and Privacy Guide section. -->
+  <message name="IDS_SETTINGS_TAG_PRIVACY_ALT1" meaning="Settings search keyword for 'Privacy and security'" desc="Search keyword for the Privacy and security settings page (cookies, tracking protection, site permissions, and browsing safety). Alternate keyword for: 'Privacy and security'" translateable="false">
+    cookies
+  </message>
+  <message name="IDS_SETTINGS_TAG_PRIVACY_ALT2" meaning="Settings search keyword for 'Privacy and security'" desc="Search keyword for the Privacy and security settings page (cookies, tracking protection, site permissions, and browsing safety). Alternate keyword for: 'Privacy and security'" translateable="false">
+    block
+  </message>
+  <message name="IDS_SETTINGS_TAG_PRIVACY_ALT3" meaning="Settings search keyword for 'Privacy and security'" desc="Search keyword for the Privacy and security settings page (cookies, tracking protection, site permissions, and browsing safety). Alternate keyword for: 'Privacy and security'" translateable="false">
+    track
+  </message>
+  <message name="IDS_SETTINGS_TAG_PRIVACY_GUIDE_ALT1" meaning="Settings search keyword for 'Privacy Guide'" desc="Search keyword for the step-by-step guided tour of key Chrome privacy and security controls. Alternate keyword for: 'Privacy Guide'" translateable="false">
+    wizard
+  </message>
+  <message name="IDS_SETTINGS_TAG_PRIVACY_GUIDE_ALT2" meaning="Settings search keyword for 'Privacy Guide'" desc="Search keyword for the step-by-step guided tour of key Chrome privacy and security controls. Alternate keyword for: 'Privacy Guide'" translateable="false">
+    tour
+  </message>
+  <message name="IDS_SETTINGS_TAG_PRIVACY_GUIDE_ALT3" meaning="Settings search keyword for 'Privacy Guide'" desc="Search keyword for the step-by-step guided tour of key Chrome privacy and security controls. Alternate keyword for: 'Privacy Guide'" translateable="false">
+    checkup
+  </message>
+  <message name="IDS_SETTINGS_TAG_THIRD_PARTY_COOKIES_ALT1" meaning="Settings search keyword for 'Third-party cookies'" desc="Search keyword for the setting that controls how websites use third-party cookies to track browsing across sites. Alternate keyword for: 'Third-party cookies'" translateable="false">
+    block
+  </message>
+  <message name="IDS_SETTINGS_TAG_THIRD_PARTY_COOKIES_ALT2" meaning="Settings search keyword for 'Third-party cookies'" desc="Search keyword for the setting that controls how websites use third-party cookies to track browsing across sites. Alternate keyword for: 'Third-party cookies'" translateable="false">
+    data
+  </message>
+  <message name="IDS_SETTINGS_TAG_THIRD_PARTY_COOKIES_ALT3" meaning="Settings search keyword for 'Third-party cookies'" desc="Search keyword for the setting that controls how websites use third-party cookies to track browsing across sites. Alternate keyword for: 'Third-party cookies'" translateable="false">
+    site
+  </message>
+
+  <!-- Safety Hub and Clear browsing data section. -->
+  <message name="IDS_SETTINGS_TAG_CLEAR_BROWSING_DATA_ALT1" meaning="Settings search keyword for 'Delete browsing data'" desc="Search keyword for the setting to delete browsing history, cookies, cached images, and temporary files. Alternate keyword for: 'Delete browsing data'" translateable="false">
+    cache
+  </message>
+  <message name="IDS_SETTINGS_TAG_CLEAR_BROWSING_DATA_ALT2" meaning="Settings search keyword for 'Delete browsing data'" desc="Search keyword for the setting to delete browsing history, cookies, cached images, and temporary files. Alternate keyword for: 'Delete browsing data'" translateable="false">
+    clear
+  </message>
+  <message name="IDS_SETTINGS_TAG_CLEAR_BROWSING_DATA_ALT3" meaning="Settings search keyword for 'Delete browsing data'" desc="Search keyword for the setting to delete browsing history, cookies, cached images, and temporary files. Alternate keyword for: 'Delete browsing data'" translateable="false">
+    cookies
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB_PAGE_CARD_SECTION_HEADER_ALT1" meaning="Settings search keyword for 'Safety at a glance'" desc="Search keyword for the Safety Check overview section showing proactive safety alerts, compromised password warnings, and security status. Alternate keyword for: 'Safety at a glance'" translateable="false">
+    check
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB_PAGE_CARD_SECTION_HEADER_ALT2" meaning="Settings search keyword for 'Safety at a glance'" desc="Search keyword for the Safety Check overview section showing proactive safety alerts, compromised password warnings, and security status. Alternate keyword for: 'Safety at a glance'" translateable="false">
+    checkup
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB_PAGE_CARD_SECTION_HEADER_ALT3" meaning="Settings search keyword for 'Safety at a glance'" desc="Search keyword for the Safety Check overview section showing proactive safety alerts, compromised password warnings, and security status. Alternate keyword for: 'Safety at a glance'" translateable="false">
+    status
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB_ALT1" meaning="Settings search keyword for 'Safety Check'" desc="Search keyword for the Safety Check page that checks for compromised passwords, dangerous extensions, unused site permissions, and Chrome updates. Alternate keyword for: 'Safety Check'" translateable="false">
+    passwords
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB_ALT2" meaning="Settings search keyword for 'Safety Check'" desc="Search keyword for the Safety Check page that checks for compromised passwords, dangerous extensions, unused site permissions, and Chrome updates. Alternate keyword for: 'Safety Check'" translateable="false">
+    permissions
+  </message>
+  <message name="IDS_SETTINGS_TAG_SAFETY_HUB_ALT3" meaning="Settings search keyword for 'Safety Check'" desc="Search keyword for the Safety Check page that checks for compromised passwords, dangerous extensions, unused site permissions, and Chrome updates. Alternate keyword for: 'Safety Check'" translateable="false">
+    recommendations
+  </message>
+
+  <!-- Site settings section. -->
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ALT1" meaning="Settings search keyword for 'Site settings'" desc="Search keyword for the Site settings page that controls what information websites can use and what content they can show. Alternate keyword for: 'Site settings'" translateable="false">
+    camera
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ALT2" meaning="Settings search keyword for 'Site settings'" desc="Search keyword for the Site settings page that controls what information websites can use and what content they can show. Alternate keyword for: 'Site settings'" translateable="false">
+    data
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ALT3" meaning="Settings search keyword for 'Site settings'" desc="Search keyword for the Site settings page that controls what information websites can use and what content they can show. Alternate keyword for: 'Site settings'" translateable="false">
+    location
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ALL_SITES_ALT1" meaning="Settings search keyword for 'View permissions and data stored across sites'" desc="Search keyword for the subpage to inspect and clear cookies, storage, and permissions for individual websites. Alternate keyword for: 'View permissions and data stored across sites'" translateable="false">
+    storage
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ALL_SITES_ALT2" meaning="Settings search keyword for 'View permissions and data stored across sites'" desc="Search keyword for the subpage to inspect and clear cookies, storage, and permissions for individual websites. Alternate keyword for: 'View permissions and data stored across sites'" translateable="false">
+    quota
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ALL_SITES_ALT3" meaning="Settings search keyword for 'View permissions and data stored across sites'" desc="Search keyword for the subpage to inspect and clear cookies, storage, and permissions for individual websites. Alternate keyword for: 'View permissions and data stored across sites'" translateable="false">
+    cache
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_LOCATION_ALT1" meaning="Settings search keyword for 'Location'" desc="Search keyword for the site setting that controls whether websites can ask to see your physical geographic location. Alternate keyword for: 'Location'" translateable="false">
+    gps
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_LOCATION_ALT2" meaning="Settings search keyword for 'Location'" desc="Search keyword for the site setting that controls whether websites can ask to see your physical geographic location. Alternate keyword for: 'Location'" translateable="false">
+    geolocation
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_LOCATION_ALT3" meaning="Settings search keyword for 'Location'" desc="Search keyword for the site setting that controls whether websites can ask to see your physical geographic location. Alternate keyword for: 'Location'" translateable="false">
+    map
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CAMERA_ALT1" meaning="Settings search keyword for 'Camera'" desc="Search keyword for the site setting to select your default webcam and control which websites are allowed to use your camera. Alternate keyword for: 'Camera'" translateable="false">
+    webcam
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CAMERA_ALT2" meaning="Settings search keyword for 'Camera'" desc="Search keyword for the site setting to select your default webcam and control which websites are allowed to use your camera. Alternate keyword for: 'Camera'" translateable="false">
+    video
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CAMERA_ALT3" meaning="Settings search keyword for 'Camera'" desc="Search keyword for the site setting to select your default webcam and control which websites are allowed to use your camera. Alternate keyword for: 'Camera'" translateable="false">
+    call
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_MIC_ALT1" meaning="Settings search keyword for 'Microphone'" desc="Search keyword for the site setting to select your default audio input device and control which sites can record from your microphone. Alternate keyword for: 'Microphone'" translateable="false">
+    mic
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_MIC_ALT2" meaning="Settings search keyword for 'Microphone'" desc="Search keyword for the site setting to select your default audio input device and control which sites can record from your microphone. Alternate keyword for: 'Microphone'" translateable="false">
+    audio
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_MIC_ALT3" meaning="Settings search keyword for 'Microphone'" desc="Search keyword for the site setting to select your default audio input device and control which sites can record from your microphone. Alternate keyword for: 'Microphone'" translateable="false">
+    voice
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_NOTIFICATIONS_ALT1" meaning="Settings search keyword for 'Notifications'" desc="Search keyword for the site setting that controls which websites can send desktop notifications and configures quieter notification prompts. Alternate keyword for: 'Notifications'" translateable="false">
+    alerts
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_NOTIFICATIONS_ALT2" meaning="Settings search keyword for 'Notifications'" desc="Search keyword for the site setting that controls which websites can send desktop notifications and configures quieter notification prompts. Alternate keyword for: 'Notifications'" translateable="false">
+    push
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_NOTIFICATIONS_ALT3" meaning="Settings search keyword for 'Notifications'" desc="Search keyword for the site setting that controls which websites can send desktop notifications and configures quieter notification prompts. Alternate keyword for: 'Notifications'" translateable="false">
+    banners
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_POPUPS_REDIRECTS_ALT1" meaning="Settings search keyword for 'Pop-ups and redirects'" desc="Search keyword for the site setting to block websites from automatically opening pop-up windows or redirecting tabs. Alternate keyword for: 'Pop-ups and redirects'" translateable="false">
+    popup
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_POPUPS_REDIRECTS_ALT2" meaning="Settings search keyword for 'Pop-ups and redirects'" desc="Search keyword for the site setting to block websites from automatically opening pop-up windows or redirecting tabs. Alternate keyword for: 'Pop-ups and redirects'" translateable="false">
+    blocker
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_POPUPS_REDIRECTS_ALT3" meaning="Settings search keyword for 'Pop-ups and redirects'" desc="Search keyword for the site setting to block websites from automatically opening pop-up windows or redirecting tabs. Alternate keyword for: 'Pop-ups and redirects'" translateable="false">
+    adblock
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ADS_ALT1" meaning="Settings search keyword for 'Intrusive ads'" desc="Search keyword for the site setting to block ads on websites known to show intrusive, misleading, or disruptive advertisements. Alternate keyword for: 'Intrusive ads'" translateable="false">
+    adblock
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ADS_ALT2" meaning="Settings search keyword for 'Intrusive ads'" desc="Search keyword for the site setting to block ads on websites known to show intrusive, misleading, or disruptive advertisements. Alternate keyword for: 'Intrusive ads'" translateable="false">
+    banners
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ADS_ALT3" meaning="Settings search keyword for 'Intrusive ads'" desc="Search keyword for the site setting to block ads on websites known to show intrusive, misleading, or disruptive advertisements. Alternate keyword for: 'Intrusive ads'" translateable="false">
+    popups
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_JAVASCRIPT_ALT1" meaning="Settings search keyword for 'JavaScript'" desc="Search keyword for the site setting to allow or block websites from running JavaScript code in the browser. Alternate keyword for: 'JavaScript'" translateable="false">
+    js
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_JAVASCRIPT_ALT2" meaning="Settings search keyword for 'JavaScript'" desc="Search keyword for the site setting to allow or block websites from running JavaScript code in the browser. Alternate keyword for: 'JavaScript'" translateable="false">
+    scripts
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_JAVASCRIPT_ALT3" meaning="Settings search keyword for 'JavaScript'" desc="Search keyword for the site setting to allow or block websites from running JavaScript code in the browser. Alternate keyword for: 'JavaScript'" translateable="false">
+    code
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_IMAGES_ALT1" meaning="Settings search keyword for 'Images'" desc="Search keyword for the site setting that controls whether websites are allowed to load and display images. Alternate keyword for: 'Images'" translateable="false">
+    pictures
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_IMAGES_ALT2" meaning="Settings search keyword for 'Images'" desc="Search keyword for the site setting that controls whether websites are allowed to load and display images. Alternate keyword for: 'Images'" translateable="false">
+    photos
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_IMAGES_ALT3" meaning="Settings search keyword for 'Images'" desc="Search keyword for the site setting that controls whether websites are allowed to load and display images. Alternate keyword for: 'Images'" translateable="false">
+    graphics
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_SOUND_ALT1" meaning="Settings search keyword for 'Sound'" desc="Search keyword for the site setting to allow or mute audio playback across websites and manage per-site sound exceptions. Alternate keyword for: 'Sound'" translateable="false">
+    audio
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_SOUND_ALT2" meaning="Settings search keyword for 'Sound'" desc="Search keyword for the site setting to allow or mute audio playback across websites and manage per-site sound exceptions. Alternate keyword for: 'Sound'" translateable="false">
+    mute
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_SOUND_ALT3" meaning="Settings search keyword for 'Sound'" desc="Search keyword for the site setting to allow or mute audio playback across websites and manage per-site sound exceptions. Alternate keyword for: 'Sound'" translateable="false">
+    volume
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ALT1" meaning="Settings search keyword for 'Automatic downloads'" desc="Search keyword for the site setting that controls whether websites can automatically download multiple files in sequence. Alternate keyword for: 'Automatic downloads'" translateable="false">
+    files
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ALT2" meaning="Settings search keyword for 'Automatic downloads'" desc="Search keyword for the site setting that controls whether websites can automatically download multiple files in sequence. Alternate keyword for: 'Automatic downloads'" translateable="false">
+    batch
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_ALT3" meaning="Settings search keyword for 'Automatic downloads'" desc="Search keyword for the site setting that controls whether websites can automatically download multiple files in sequence. Alternate keyword for: 'Automatic downloads'" translateable="false">
+    multiple
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_PDF_DOCUMENTS_ALT1" meaning="Settings search keyword for 'PDF documents'" desc="Search keyword for the site setting that chooses whether Chrome opens PDF files directly in a tab or downloads them. Alternate keyword for: 'PDF documents'" translateable="false">
+    acrobat
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_PDF_DOCUMENTS_ALT2" meaning="Settings search keyword for 'PDF documents'" desc="Search keyword for the site setting that chooses whether Chrome opens PDF files directly in a tab or downloads them. Alternate keyword for: 'PDF documents'" translateable="false">
+    reader
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_PDF_DOCUMENTS_ALT3" meaning="Settings search keyword for 'PDF documents'" desc="Search keyword for the site setting that chooses whether Chrome opens PDF files directly in a tab or downloads them. Alternate keyword for: 'PDF documents'" translateable="false">
+    viewer
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CLIPBOARD_ALT1" meaning="Settings search keyword for 'Clipboard'" desc="Search keyword for the site setting that controls whether websites can ask to read text and images saved to your system clipboard. Alternate keyword for: 'Clipboard'" translateable="false">
+    copy
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CLIPBOARD_ALT2" meaning="Settings search keyword for 'Clipboard'" desc="Search keyword for the site setting that controls whether websites can ask to read text and images saved to your system clipboard. Alternate keyword for: 'Clipboard'" translateable="false">
+    paste
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_CLIPBOARD_ALT3" meaning="Settings search keyword for 'Clipboard'" desc="Search keyword for the site setting that controls whether websites can ask to read text and images saved to your system clipboard. Alternate keyword for: 'Clipboard'" translateable="false">
+    text
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_HANDLERS_ALT1" meaning="Settings search keyword for 'Protocol handlers'" desc="Search keyword for the site setting to allow web apps to open special link types such as mailto:. Alternate keyword for: 'Protocol handlers'" translateable="false">
+    mailto
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_HANDLERS_ALT2" meaning="Settings search keyword for 'Protocol handlers'" desc="Search keyword for the site setting to allow web apps to open special link types such as mailto:. Alternate keyword for: 'Protocol handlers'" translateable="false">
+    webcal
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_HANDLERS_ALT3" meaning="Settings search keyword for 'Protocol handlers'" desc="Search keyword for the site setting to allow web apps to open special link types such as mailto:. Alternate keyword for: 'Protocol handlers'" translateable="false">
+    gmail
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ZOOM_LEVELS_ALT1" meaning="Settings search keyword for 'Zoom levels'" desc="Search keyword for the site setting to view and remove custom page zoom levels saved for specific websites. Alternate keyword for: 'Zoom levels'" translateable="false">
+    magnification
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ZOOM_LEVELS_ALT2" meaning="Settings search keyword for 'Zoom levels'" desc="Search keyword for the site setting to view and remove custom page zoom levels saved for specific websites. Alternate keyword for: 'Zoom levels'" translateable="false">
+    scale
+  </message>
+  <message name="IDS_SETTINGS_TAG_SITE_SETTINGS_ZOOM_LEVELS_ALT3" meaning="Settings search keyword for 'Zoom levels'" desc="Search keyword for the site setting to view and remove custom page zoom levels saved for specific websites. Alternate keyword for: 'Zoom levels'" translateable="false">
+    size
+  </message>
 </grit-part>
