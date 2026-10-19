@@ -55,7 +55,6 @@ source_set("web_ui_test_support") {
     "web_ui_test_data_source.cc",
     "web_ui_test_data_source.h",
   ]
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   public_deps = [
     "//base",
     "//content/public/browser",
@@ -1161,7 +1160,6 @@ if (!is_android) {
 
   source_set("browser_with_test_window_test") {
     testonly = true
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
     sources = [
       "browser_with_test_window_test.cc",
       "browser_with_test_window_test.h",
