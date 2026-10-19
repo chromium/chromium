@@ -172,7 +172,6 @@ crbug.com/1421239 [ tvOS26-simulator ] wpt_internal/webcodecs/annexb_decoding.ht
 crbug.com/1421239 [ tvOS26-simulator ] wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Skip Timeout ]
 
 # Expected to crash.
-crbug.com/1421239 [ tvOS26-simulator ] external/wpt/encoding/unsupported-labels.window.html [ Skip Crash ]
 crbug.com/1421239 [ tvOS26-simulator ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/navigate-to-unparseable-url.html [ Skip Crash ]
 crbug.com/1421239 [ tvOS26-simulator ] external/wpt/media-capabilities/encodingInfo.any.worker.html [ Skip Crash ]
 crbug.com/1421239 [ tvOS26-simulator ] external/wpt/html/semantics/embedded-content/the-object-element/object-events.html [ Skip Crash ]
