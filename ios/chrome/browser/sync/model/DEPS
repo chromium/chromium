@@ -26,6 +26,7 @@ include_rules = [
   "+ios/chrome/browser/history/model",
   "+ios/chrome/browser/home_customization/model",
   "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h",
   "+ios/chrome/browser/invalidation/model",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/passwords/model",
