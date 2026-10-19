@@ -6,7 +6,6 @@ import 'chrome://contextual-tasks/top_toolbar.js';
 import 'chrome://contextual-tasks/sources_menu.js';
 import 'chrome://contextual-tasks/overflow_menu.js';
 
-import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_toolbar_browser_proxy.js';
 import type {SourcesMenuElement} from 'chrome://contextual-tasks/sources_menu.js';
 import type {TopToolbarElement} from 'chrome://contextual-tasks/top_toolbar.js';
@@ -17,18 +16,14 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestContextualTasksBrowserProxy, TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
+import {TestToolbarBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
 
 suite('UnboundedMenuTest', () => {
   let topToolbar: TopToolbarElement;
-  let proxy: TestContextualTasksBrowserProxy;
   let toolbarProxy: TestToolbarBrowserProxy;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    proxy = new TestContextualTasksBrowserProxy(
-        'chrome://webui-test/contextual_tasks/test.html');
-    BrowserProxyImpl.setInstance(proxy);
     toolbarProxy = new TestToolbarBrowserProxy();
     ToolbarBrowserProxyImpl.setInstance(toolbarProxy);
 

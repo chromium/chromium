@@ -26,10 +26,12 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/contextual_tasks_resources.h"
@@ -40,6 +42,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -54,6 +57,7 @@
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
@@ -74,6 +78,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/grit/webui_toolbar_shared_resources.h"
 #include "chrome/grit/webui_toolbar_shared_resources_map.h"
@@ -172,6 +177,21 @@ ContextualTasksUIBase::ContextualTasksUIBase(content::WebUI* web_ui)
     }
   }
 #endif
+
+  std::vector<ui::ElementIdentifier> tracked_element_ids = {
+      ContextualTasksUI::kSmartTabSharingMenuItemElementId,
+      kContextualTasksWebUIPinButtonElementId,
+      kContextualTasksWebUIToolbarElementId,
+      kContextualTasksWebUIOverflowMenuElementId,
+      kContextualTasksWebUIOverflowMenuPinButtonElementId,
+      kContextualTasksSuperGButtonElementId};
+#if !BUILDFLAG(IS_ANDROID)
+  tracked_element_ids.push_back(
+      PermissionChipView::kPermissionRequestChipElementId);
+  tracked_element_ids.push_back(PermissionChipView::kIndicatorChipElementId);
+#endif
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, std::move(tracked_element_ids));
 }
 
 ContextualTasksUIBase::~ContextualTasksUIBase() = default;
@@ -345,6 +365,17 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
   dict.Set("isSignedIn", false);
   dict.Set("expandButtonEnabled", false);
   dict.Set("profileAvatarUrl", GetProfileAvatarUrl(profile, GURL()).spec());
+
+  dict.Set("isSmallDeviceFormFactor",
+           ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE);
+#if BUILDFLAG(IS_ANDROID)
+  dict.Set("isUserFeedbackAllowed",
+           profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed));
+#else
+  dict.Set("isUserFeedbackAllowed", true);
+#endif
+  dict.Set("contextualTasksUnboundedMenuEnabled",
+           contextual_tasks::IsContextualTasksUnboundedMenuEnabled());
 
   return dict;
 }
