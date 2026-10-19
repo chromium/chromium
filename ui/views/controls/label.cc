@@ -176,7 +176,7 @@ void Label::UpdateText() {
 void Label::AdjustAccessibleName(std::u16string& new_name,
                                  ax::mojom::NameFrom& name_from) {
   if (new_name.empty()) {
-    new_name = std::u16string(full_text_->GetDisplayText());
+    new_name = std::u16string(GetText());
   }
 }
 

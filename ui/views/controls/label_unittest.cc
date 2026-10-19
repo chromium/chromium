@@ -797,6 +797,54 @@ TEST_P(LabelTooltipTest, DefaultTooltipText) {
   EXPECT_EQ(u"Line 1\nLine 2", label_with_newline.GetTooltipText());
 }
 
+// Tests the default accessible name of labels whose displayed text differs from
+// their text, including after clearing a custom accessible name.
+TEST_P(LabelTooltipTest, DefaultAccessibleName) {
+  const std::u16string kLongText =
+      u"A string that's long enough to exceed the maximum width";
+  label()->SetMaximumWidthSingleLine(50);
+  label()->SetText(kLongText);
+
+  // Not laid out yet: clearing a custom accessible name reverts to the full
+  // text.
+  ASSERT_TRUE(label()->bounds().IsEmpty());
+  label()->GetViewAccessibility().SetName(u"Custom");
+  EXPECT_EQ(u"Custom", label()->GetViewAccessibility().GetCachedName());
+  // The tooltip is the accessible description when it differs from the name.
+  EXPECT_EQ(kLongText, label()->GetViewAccessibility().GetCachedDescription());
+  label()->GetViewAccessibility().SetName(u"");
+  EXPECT_EQ(kLongText, label()->GetViewAccessibility().GetCachedName());
+  // No accessible description when the accessible name matches the tooltip.
+  EXPECT_TRUE(label()->GetViewAccessibility().GetCachedDescription().empty());
+
+  // Laid out narrower than the text: clearing a custom accessible name reverts
+  // to the full text rather than the elided display text.
+  label()->SetBounds(0, 0, 20, 20);
+  label()->GetViewAccessibility().SetName(u"Custom");
+  EXPECT_EQ(u"Custom", label()->GetViewAccessibility().GetCachedName());
+  // The tooltip is the accessible description when it differs from the name.
+  EXPECT_EQ(kLongText, label()->GetViewAccessibility().GetCachedDescription());
+  label()->GetViewAccessibility().SetName(u"");
+  EXPECT_EQ(kLongText, label()->GetViewAccessibility().GetCachedName());
+  // No accessible description when the accessible name matches the tooltip.
+  EXPECT_TRUE(label()->GetViewAccessibility().GetCachedDescription().empty());
+
+  // Changing the text updates the accessible name.
+  const std::u16string kOtherLongText =
+      u"Another string that's long enough to exceed the maximum width";
+  label()->SetText(kOtherLongText);
+  EXPECT_EQ(kOtherLongText, label()->GetViewAccessibility().GetCachedName());
+
+  // Control characters aren't replaced.
+  Label label_with_newline(u"Line 1\nLine 2");
+  label_with_newline.GetViewAccessibility().SetName(u"Custom");
+  EXPECT_EQ(u"Custom",
+            label_with_newline.GetViewAccessibility().GetCachedName());
+  label_with_newline.GetViewAccessibility().SetName(u"");
+  EXPECT_EQ(u"Line 1\nLine 2",
+            label_with_newline.GetViewAccessibility().GetCachedName());
+}
+
 // A label constructed with text and no bounds uses its text as tooltip.
 TEST_P(LabelTooltipTest, TooltipOfLabelConstructedWithText) {
   Label label(u"My cool string.");
