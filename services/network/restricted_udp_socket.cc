@@ -41,6 +41,11 @@ void RestrictedUDPSocket::JoinGroup(
     mojo::ReportBadMessage("no permission to use multicast");
     return;
   }
+  if (!group_address.IsMulticast()) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    mojo::ReportBadMessage("group_address must be a multicast address");
+    return;
+  }
   if (source_address.has_value()) {
     if (!allow_source_specific_multicast_) {
       std::move(callback).Run(net::ERR_ACCESS_DENIED);
@@ -64,6 +69,11 @@ void RestrictedUDPSocket::LeaveGroup(
   if (!allow_multicast_) {
     std::move(callback).Run(net::ERR_ACCESS_DENIED);
     mojo::ReportBadMessage("no permission to use multicast");
+    return;
+  }
+  if (!group_address.IsMulticast()) {
+    std::move(callback).Run(net::ERR_ACCESS_DENIED);
+    mojo::ReportBadMessage("group_address must be a multicast address");
     return;
   }
   if (source_address.has_value()) {

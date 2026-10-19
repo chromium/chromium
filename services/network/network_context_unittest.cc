@@ -10306,6 +10306,73 @@ TEST_F(NetworkContextExpectBadMessageTest,
   AssertBadMessage();
 }
 
+struct NonMulticastGroupTestCase {
+  const char* name;
+  net::IPAddress group_address;
+};
+
+class RestrictedUDPSocketNonMulticastGroupTest
+    : public NetworkContextExpectBadMessageTest,
+      public testing::WithParamInterface<NonMulticastGroupTestCase> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RestrictedUDPSocketNonMulticastGroupTest,
+    testing::Values(
+        NonMulticastGroupTestCase{"Empty", net::IPAddress()},
+        NonMulticastGroupTestCase{"IPv4Unicast", net::IPAddress(192, 0, 2, 1)},
+        NonMulticastGroupTestCase{
+            "IPv6Unicast", *net::IPAddress::FromIPLiteral("2001:db8::1")}),
+    [](const testing::TestParamInfo<NonMulticastGroupTestCase>& info) {
+      return std::string(info.param.name);
+    });
+
+TEST_P(RestrictedUDPSocketNonMulticastGroupTest, JoinGroup) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  mojo::Remote<mojom::RestrictedUDPSocket> socket;
+  base::test::TestFuture<int32_t, const std::optional<net::IPEndPoint>&>
+      create_future;
+  network_context->CreateRestrictedUDPSocket(
+      GetLocalHostWithAnyPort(), mojom::RestrictedUDPSocketMode::BOUND,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      /*params=*/nullptr, socket.BindNewPipeAndPassReceiver(),
+      /*listener=*/mojo::NullRemote(),
+      /*allow_multicast=*/true,
+      /*allow_source_specific_multicast=*/true, create_future.GetCallback());
+  ASSERT_EQ(create_future.Get<0>(), net::OK);
+
+  base::test::TestFuture<int32_t> join_future;
+  socket->JoinGroup(GetParam().group_address, /*source_address=*/std::nullopt,
+                    join_future.GetCallback());
+  EXPECT_EQ(join_future.Get(), net::ERR_ACCESS_DENIED);
+  AssertBadMessage();
+}
+
+TEST_P(RestrictedUDPSocketNonMulticastGroupTest, LeaveGroup) {
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(CreateNetworkContextParamsForTesting());
+
+  mojo::Remote<mojom::RestrictedUDPSocket> socket;
+  base::test::TestFuture<int32_t, const std::optional<net::IPEndPoint>&>
+      create_future;
+  network_context->CreateRestrictedUDPSocket(
+      GetLocalHostWithAnyPort(), mojom::RestrictedUDPSocketMode::BOUND,
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
+      /*params=*/nullptr, socket.BindNewPipeAndPassReceiver(),
+      /*listener=*/mojo::NullRemote(),
+      /*allow_multicast=*/true,
+      /*allow_source_specific_multicast=*/true, create_future.GetCallback());
+  ASSERT_EQ(create_future.Get<0>(), net::OK);
+
+  base::test::TestFuture<int32_t> leave_future;
+  socket->LeaveGroup(GetParam().group_address, /*source_address=*/std::nullopt,
+                     leave_future.GetCallback());
+  EXPECT_EQ(leave_future.Get(), net::ERR_ACCESS_DENIED);
+  AssertBadMessage();
+}
+
 TEST_F(NetworkContextTest,
        AttemptsTrustTokenBearingRequestWhenTrustTokensIsEnabled) {
   std::unique_ptr<NetworkContext> network_context =
