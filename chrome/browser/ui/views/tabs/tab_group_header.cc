@@ -740,7 +740,8 @@ void TabGroupHeader::CreateHeaderWithoutTitle() {
   const bool is_focused =
       is_ephemeral_ ||
       tab_slot_controller_->GetFocusedGroup() == group().value();
-  const float radius = TabGroupStyle::GetChipCornerRadius();
+  const float radius = is_focused ? TabGroupStyle::GetFocusedChipCornerRadius()
+                                  : TabGroupStyle::GetChipCornerRadius();
   const gfx::RoundedCornersF radii =
       is_focused ? gfx::RoundedCornersF(2.0f, radius, radius, 2.0f)
                  : gfx::RoundedCornersF(radius);
@@ -841,7 +842,9 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   const gfx::Point named_origin =
       TabGroupStyle::GetTitleChipOffset(std::nullopt);
 
-  const int corner_radius = TabGroupStyle::GetChipCornerRadius();
+  const int corner_radius = is_focused
+                                ? TabGroupStyle::GetFocusedChipCornerRadius()
+                                : TabGroupStyle::GetChipCornerRadius();
   const gfx::RoundedCornersF radii =
       is_focused
           ? gfx::RoundedCornersF(2.0f, corner_radius, corner_radius, 2.0f)

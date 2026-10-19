@@ -92,7 +92,9 @@ TabGroupStyleViews::GetEmptyTitleChipBackground(const SkColor color) const {
 
 int TabGroupStyleViews::GetHighlightPathGeneratorCornerRadius(
     const views::View* const title) const {
-  return TabGroupStyle::GetChipCornerRadius();
+  return tab_group_views_->IsFocusModeActive()
+             ? TabGroupStyle::GetFocusedChipCornerRadius()
+             : TabGroupStyle::GetChipCornerRadius();
 }
 
 int TabGroupStyleViews::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(

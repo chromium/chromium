@@ -89,7 +89,7 @@ void TabGroupUnfocusButton::UpdateColors() {
   }
   SetEnabledTextColors(fg);
 
-  const float radius = TabGroupStyle::GetChipCornerRadius(orientation_);
+  const float radius = TabGroupStyle::GetFocusedChipCornerRadius(orientation_);
   constexpr float kFlatRadius = 2.0f;
   gfx::RoundedCornersF radii;
   if (orientation_ == TabStripOrientation::kVertical) {

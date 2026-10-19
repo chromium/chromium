@@ -18,6 +18,7 @@ constexpr int kHeaderChipVerticalInset = 2;
 constexpr int kEmptyChipSize = 20;
 constexpr int kFocusedChipHeight = 28;
 constexpr int kCornerRadius = 6;
+constexpr int kFocusedCornerRadius = 10;
 constexpr int kVerticalCornerRadius = 8;
 constexpr int kVerticalHeaderChipHorizontalInset = 8;
 constexpr int kTabGroupOverlapAdjustment = 2;
@@ -37,6 +38,13 @@ int TabGroupStyle::GetTabGroupOverlapAdjustment() {
 int TabGroupStyle::GetChipCornerRadius(TabStripOrientation orientation) {
   return orientation == TabStripOrientation::kHorizontal
              ? kCornerRadius
+             : kVerticalCornerRadius;
+}
+
+// static
+int TabGroupStyle::GetFocusedChipCornerRadius(TabStripOrientation orientation) {
+  return orientation == TabStripOrientation::kHorizontal
+             ? kFocusedCornerRadius
              : kVerticalCornerRadius;
 }
 

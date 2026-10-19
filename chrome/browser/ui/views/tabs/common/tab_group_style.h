@@ -19,6 +19,8 @@ class TabGroupStyle {
   static int GetTabGroupOverlapAdjustment();
   static int GetChipCornerRadius(
       TabStripOrientation orientation = TabStripOrientation::kHorizontal);
+  static int GetFocusedChipCornerRadius(
+      TabStripOrientation orientation = TabStripOrientation::kHorizontal);
   static int GetEmptyChipSize();
   static int GetFocusedChipHeight();
   static gfx::Point GetTitleChipOffset(

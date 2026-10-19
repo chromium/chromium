@@ -764,7 +764,9 @@ void TabGroupHeaderView::ShowEditorBubble() {
 }
 
 int TabGroupHeaderView::GetCornerRadius() const {
-  return TabGroupStyle::GetChipCornerRadius(orientation_);
+  return delegate_->IsGroupFocused()
+             ? TabGroupStyle::GetFocusedChipCornerRadius(orientation_)
+             : TabGroupStyle::GetChipCornerRadius(orientation_);
 }
 
 gfx::RoundedCornersF TabGroupHeaderView::GetCornerRadii() const {
