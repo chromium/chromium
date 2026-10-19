@@ -319,6 +319,46 @@ const TestCase kDistillWebPageTestCases[] = {
         </main>
       <body>)HTML",
      {"Main", "Inside collapsed"}},
+    /* ----------------------- */
+    {"simple_page_table",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <table>
+            <tr><th>H1</th><th>H2</th></tr>
+            <tr><td>C1</td><td>C2</td></tr>
+          </table>
+        </main>
+      <body>)HTML",
+     {"H1H2C1C2"}},
+    /* ----------------------- */
+    // A table is picked as a single content node, rather than each paragraph
+    // inside it.
+    {"simple_page_table_with_paragraphs",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <p>Main</p>
+          <table>
+            <tr><th>H1</th></tr>
+            <tr><td><p>P1</p><p>P2</p></td></tr>
+          </table>
+        </main>
+      <body>)HTML",
+     {"Main", "H1P1P2"}},
+    /* ----------------------- */
+    // Layout tables are not content themselves, but their descendants are
+    // still searched.
+    {"simple_page_layout_table_with_paragraphs",
+     R"HTML(<!doctype html>
+      <body>
+        <main>
+          <table>
+            <tr><td><p>P1</p><p>P2</p></td></tr>
+          </table>
+        </main>
+      <body>)HTML",
+     {"P1", "P2"}},
 };
 
 TEST_P(AXTreeDistillerTest, DistillsWebPage) {
@@ -417,4 +457,53 @@ TEST_F(AXTreeDistillerTestBase, DistillPdfListItem) {
 
   ui::AXTree tree(snapshot);
   DistillAXTree(tree, snapshot, {"Bold lead-in"});
+}
+
+TEST_F(AXTreeDistillerTestBase, DistillPdfTable) {
+  ui::AXTreeUpdate snapshot;
+  ui::AXNodeData pdf_root_node;
+  pdf_root_node.id = 1;
+  pdf_root_node.role = ax::mojom::Role::kPdfRoot;
+
+  ui::AXNodeData table_node;
+  table_node.id = 2;
+  table_node.role = ax::mojom::Role::kTable;
+
+  ui::AXNodeData row_node;
+  row_node.id = 3;
+  row_node.role = ax::mojom::Role::kRow;
+
+  ui::AXNodeData cell_node_1;
+  cell_node_1.id = 4;
+  cell_node_1.role = ax::mojom::Role::kCell;
+
+  ui::AXNodeData cell_text_node_1;
+  cell_text_node_1.id = 5;
+  cell_text_node_1.role = ax::mojom::Role::kStaticText;
+  cell_text_node_1.SetName("Cell 1");
+  cell_text_node_1.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  ui::AXNodeData cell_node_2;
+  cell_node_2.id = 6;
+  cell_node_2.role = ax::mojom::Role::kCell;
+
+  ui::AXNodeData cell_text_node_2;
+  cell_text_node_2.id = 7;
+  cell_text_node_2.role = ax::mojom::Role::kStaticText;
+  cell_text_node_2.SetName("Cell 2");
+  cell_text_node_2.SetNameFrom(ax::mojom::NameFrom::kContents);
+
+  cell_node_1.child_ids = {cell_text_node_1.id};
+  cell_node_2.child_ids = {cell_text_node_2.id};
+  row_node.child_ids = {cell_node_1.id, cell_node_2.id};
+  table_node.child_ids = {row_node.id};
+  pdf_root_node.child_ids = {table_node.id};
+  snapshot.root_id = pdf_root_node.id;
+  snapshot.nodes = {pdf_root_node,    table_node,  row_node,        cell_node_1,
+                    cell_text_node_1, cell_node_2, cell_text_node_2};
+  snapshot.has_tree_data = true;
+  snapshot.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  ui::AXTree tree(snapshot);
+  DistillAXTree(tree, snapshot, {"Cell 1Cell 2"});
 }

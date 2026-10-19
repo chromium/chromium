@@ -767,6 +767,61 @@ TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_ListItems) {
                                    kItemTextId));
 }
 
+TEST_F(ReadAnythingAppModelTest, DisplayNodeIdsContains_Tables) {
+  static constexpr ui::AXNodeID kRootId = 1;
+  static constexpr ui::AXNodeID kTableId = 2;
+  static constexpr ui::AXNodeID kRowId = 3;
+  static constexpr ui::AXNodeID kHeaderCellId = 4;
+  static constexpr ui::AXNodeID kHeaderTextId = 5;
+  static constexpr ui::AXNodeID kCellId = 6;
+  static constexpr ui::AXNodeID kCellTextId = 7;
+
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+
+  ui::AXNodeData root = test::GenericContainerNode(kRootId);
+  root.child_ids = {kTableId};
+
+  ui::AXNodeData table_node;
+  table_node.id = kTableId;
+  table_node.role = ax::mojom::Role::kTable;
+  table_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "table");
+  table_node.child_ids = {kRowId};
+
+  ui::AXNodeData row_node;
+  row_node.id = kRowId;
+  row_node.role = ax::mojom::Role::kRow;
+  row_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "tr");
+  row_node.child_ids = {kHeaderCellId, kCellId};
+
+  ui::AXNodeData header_cell_node;
+  header_cell_node.id = kHeaderCellId;
+  header_cell_node.role = ax::mojom::Role::kColumnHeader;
+  header_cell_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                      "th");
+  header_cell_node.child_ids = {kHeaderTextId};
+  ui::AXNodeData header_text = test::TextNode(kHeaderTextId, u"Header");
+
+  ui::AXNodeData cell_node;
+  cell_node.id = kCellId;
+  cell_node.role = ax::mojom::Role::kCell;
+  cell_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag, "td");
+  cell_node.child_ids = {kCellTextId};
+  ui::AXNodeData cell_text = test::TextNode(kCellTextId, u"Cell");
+
+  update.root_id = kRootId;
+  update.nodes = {std::move(root),        std::move(table_node),
+                  std::move(row_node),    std::move(header_cell_node),
+                  std::move(header_text), std::move(cell_node),
+                  std::move(cell_text)};
+
+  ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
+  ProcessDisplayNodes({kTableId});
+  EXPECT_THAT(model().display_node_ids(),
+              UnorderedElementsAre(kRootId, kTableId, kRowId, kHeaderCellId,
+                                   kHeaderTextId, kCellId, kCellTextId));
+}
+
 TEST_F(ReadAnythingAppModelTest,
        DisplayNodeIdsDoesNotContain_InvisibleOrIgnoredNodes) {
   ui::AXTreeUpdate update;
