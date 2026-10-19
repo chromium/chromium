@@ -62,7 +62,7 @@ class CORE_EXPORT WorkletGlobalScope : public WorkerOrWorkletGlobalScope {
   bool IsContextThread() const final;
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
   void AddInspectorIssue(AuditsIssue) final;
-  void ExceptionThrown(ErrorEvent*) final;
+  void ExceptionThrown(ErrorEvent*, SanitizeScriptErrors) final;
   CoreProbeSink* GetProbeSink() final;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) final;
   FrameOrWorkerScheduler* GetScheduler() final;

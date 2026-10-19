@@ -574,7 +574,9 @@ String LocalDOMWindow::CheckAndGetJavascriptUrl(
   return script_source;
 }
 
-void LocalDOMWindow::ExceptionThrown(ErrorEvent* event) {
+void LocalDOMWindow::ExceptionThrown(
+    ErrorEvent* event,
+    SanitizeScriptErrors sanitize_script_errors) {
   MainThreadDebugger::Instance(GetIsolate())->ExceptionThrown(this, event);
 }
 

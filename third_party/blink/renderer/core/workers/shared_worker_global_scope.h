@@ -110,7 +110,7 @@ class CORE_EXPORT SharedWorkerGlobalScope final : public WorkerGlobalScope {
   }
 
  private:
-  void ExceptionThrown(ErrorEvent*) override;
+  void ExceptionThrown(ErrorEvent*, SanitizeScriptErrors) override;
 
   const SharedWorkerToken token_;
 

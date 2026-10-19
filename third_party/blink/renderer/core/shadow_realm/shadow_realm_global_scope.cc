@@ -96,7 +96,9 @@ ResourceFetcher* ShadowRealmGlobalScope::Fetcher() {
   NOTREACHED();
 }
 
-void ShadowRealmGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
+void ShadowRealmGlobalScope::ExceptionThrown(
+    ErrorEvent* error_event,
+    SanitizeScriptErrors sanitize_script_errors) {
   NOTREACHED();
 }
 

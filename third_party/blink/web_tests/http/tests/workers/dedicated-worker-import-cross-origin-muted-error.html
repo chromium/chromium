@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<title>DedicatedWorker: worker.onerror should be muted for cross-origin script errors</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+setup({ allow_uncaught_exception: true });
+
+function assert_muted_error_event(e) {
+  assert_equals(e.message, "Script error.", "Message should be muted");
+  assert_equals(e.filename, "", "Filename should be muted");
+  assert_equals(e.lineno, 0, "Lineno should be muted");
+  assert_equals(e.colno, 0, "Colno should be muted");
+  assert_equals(e.error, null, "Error should be muted");
+}
+
+promise_test(async t => {
+  const worker = new Worker("resources/worker-import-muted.js");
+  t.add_cleanup(() => worker.terminate());
+
+  const e = await new Promise(resolve => {
+    worker.onerror = event => {
+      event.preventDefault();
+      resolve(event);
+    };
+  });
+
+  assert_muted_error_event(e);
+}, "DedicatedWorker worker.onerror should be muted for cross-origin script errors via importScripts.");
+
+promise_test(async t => {
+  const worker = new Worker("resources/worker-import-muted.js");
+  t.add_cleanup(() => worker.terminate());
+
+  const e = await new Promise(resolve => {
+    window.addEventListener("error", event => {
+      event.preventDefault();
+      resolve(event);
+    }, { once: true });
+  });
+
+  assert_muted_error_event(e);
+}, "DedicatedWorker unhandled cross-origin script error should propagate muted to window.");
+
+promise_test(async t => {
+  const childWorkerUrl = new URL("resources/worker-import-muted.js", location.href).href;
+  const parentScript = `
+    const child = new Worker(${JSON.stringify(childWorkerUrl)});
+    let childError;
+    child.onerror = e => {
+      childError = {
+        message: e.message,
+        filename: e.filename,
+        lineno: e.lineno,
+        colno: e.colno,
+        error: e.error,
+      };
+    };
+    self.addEventListener("error", e => {
+      e.preventDefault();
+      postMessage({
+        childError,
+        parentScopeError: {
+          message: e.message,
+          filename: e.filename,
+          lineno: e.lineno,
+          colno: e.colno,
+          error: e.error,
+        },
+      });
+    });
+  `;
+  const blob = new Blob([parentScript], { type: "text/javascript" });
+  const blobUrl = URL.createObjectURL(blob);
+  const parentWorker = new Worker(blobUrl);
+  t.add_cleanup(() => {
+    parentWorker.terminate();
+    URL.revokeObjectURL(blobUrl);
+  });
+
+  const data = await new Promise(resolve => {
+    parentWorker.onmessage = event => resolve(event.data);
+  });
+
+  assert_muted_error_event(data.childError);
+  assert_muted_error_event(data.parentScopeError);
+}, "Nested DedicatedWorker cross-origin script error should be muted on child.onerror and parent DedicatedWorkerGlobalScope.");
+
+promise_test(async t => {
+  const worker = new SharedWorker("resources/worker-import-muted.js");
+
+  const e = await new Promise(resolve => {
+    worker.onerror = event => {
+      event.preventDefault();
+      resolve(event);
+    };
+  });
+
+  assert_muted_error_event(e);
+}, "SharedWorker worker.onerror should be muted for cross-origin script errors via importScripts.");
+</script>

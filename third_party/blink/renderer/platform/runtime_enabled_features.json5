@@ -5672,6 +5672,10 @@
       status: "stable",
     },
     {
+      name: "SanitizeWorkerErrorPropagation",
+      status: "stable",
+    },
+    {
       name: "ScopedViewTransitionSizeContainment",
       status: "stable",
     },

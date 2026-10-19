@@ -32,7 +32,8 @@ class SharedWorkerReportingProxy final
   void CountFeature(WebFeature) override;
   void ReportException(const String&,
                        const SourceLocation*,
-                       int exception_id) override;
+                       int exception_id,
+                       SanitizeScriptErrors) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,

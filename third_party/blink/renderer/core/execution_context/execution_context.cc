@@ -278,18 +278,19 @@ void ExecutionContext::DispatchErrorEvent(
     ErrorEvent* error_event,
     SanitizeScriptErrors sanitize_script_errors) {
   if (in_dispatch_error_event_) {
-    pending_exceptions_.push_back(error_event);
+    pending_exceptions_.emplace_back(error_event, sanitize_script_errors);
     return;
   }
 
   // First report the original exception and only then all the nested ones.
   if (!DispatchErrorEventInternal(error_event, sanitize_script_errors))
-    ExceptionThrown(error_event);
+    ExceptionThrown(error_event, sanitize_script_errors);
 
   if (pending_exceptions_.empty())
     return;
-  for (ErrorEvent* e : pending_exceptions_)
-    ExceptionThrown(e);
+  for (const auto& [pending_event, pending_sanitize] : pending_exceptions_) {
+    ExceptionThrown(pending_event, pending_sanitize);
+  }
   pending_exceptions_.clear();
 }
 
@@ -301,8 +302,7 @@ bool ExecutionContext::DispatchErrorEventInternal(
     return false;
 
   if (sanitize_script_errors == SanitizeScriptErrors::kSanitize) {
-    error_event = ErrorEvent::CreateSanitizedError(
-        ToScriptState(this, *error_event->World()));
+    error_event = ErrorEvent::CreateSanitizedError(error_event->World());
   }
 
   DCHECK(!in_dispatch_error_event_);

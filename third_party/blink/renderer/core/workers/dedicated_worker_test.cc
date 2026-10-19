@@ -28,10 +28,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_trustedscripturl_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -58,11 +60,16 @@
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -1421,6 +1428,218 @@ TEST_P(DedicatedWorkerConstructorTest, UnparsableScriptURLThrowsSyntaxError) {
             exception_state.CodeAs<DOMExceptionCode>());
   EXPECT_FALSE(worker);
   EXPECT_FALSE(IsCrossOriginBlockedUseCounted());
+}
+
+namespace {
+
+constexpr char kErrorEventMessage[] = "Uncaught Error: exception message";
+constexpr char kErrorEventUrl[] = "http://another.origin/script.js";
+constexpr unsigned kErrorEventLine = 7;
+constexpr unsigned kErrorEventColumn = 13;
+
+// Collects "error" events fired at a target and runs the given closure once
+// the expected number of events has been observed.
+class ErrorEventCollector final : public NativeEventListener {
+ public:
+  ErrorEventCollector(wtf_size_t expected_event_count,
+                      base::OnceClosure quit_closure,
+                      bool prevent_default = true)
+      : expected_event_count_(expected_event_count),
+        quit_closure_(std::move(quit_closure)),
+        prevent_default_(prevent_default) {}
+
+  void Invoke(ExecutionContext*, Event* event) override {
+    auto* error_event = To<ErrorEvent>(event);
+    if (prevent_default_) {
+      error_event->preventDefault();
+    }
+    events_.push_back(error_event);
+    if (events_.size() == expected_event_count_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  const HeapVector<Member<ErrorEvent>>& Events() const { return events_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(events_);
+    NativeEventListener::Trace(visitor);
+  }
+
+ private:
+  const wtf_size_t expected_event_count_;
+  base::OnceClosure quit_closure_;
+  const bool prevent_default_;
+  HeapVector<Member<ErrorEvent>> events_;
+};
+
+ErrorEvent* CreateErrorEventWithLocation(ScriptState* script_state) {
+  auto* location = MakeGarbageCollected<SourceLocation>(
+      kErrorEventUrl, String(), kErrorEventLine, kErrorEventColumn, nullptr);
+  return ErrorEvent::Create(kErrorEventMessage, location,
+                            &script_state->World());
+}
+
+void DispatchErrorEventOnWorkerGlobalScope(
+    SanitizeScriptErrors sanitize_script_errors,
+    ExecutionContext* execution_context) {
+  auto* global_scope = To<WorkerGlobalScope>(execution_context);
+  ScriptState* script_state =
+      global_scope->ScriptController()->GetScriptState();
+  ScriptState::Scope scope(script_state);
+  global_scope->DispatchErrorEvent(CreateErrorEventWithLocation(script_state),
+                                   sanitize_script_errors);
+}
+
+// Dispatches a second error event on the worker global scope while the first
+// one is being dispatched, so that the second event goes through the pending
+// exception queue.
+class DispatchNestedErrorEventListener final : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext* execution_context, Event*) override {
+    DispatchErrorEventOnWorkerGlobalScope(SanitizeScriptErrors::kSanitize,
+                                          execution_context);
+  }
+};
+
+void DispatchNestedErrorEventOnWorkerGlobalScope(
+    ExecutionContext* execution_context) {
+  auto* global_scope = To<WorkerGlobalScope>(execution_context);
+  global_scope->addEventListener(
+      event_type_names::kError,
+      MakeGarbageCollected<DispatchNestedErrorEventListener>());
+  DispatchErrorEventOnWorkerGlobalScope(SanitizeScriptErrors::kDoNotSanitize,
+                                        execution_context);
+}
+
+void ExpectSanitizedErrorEvent(const ErrorEvent* event,
+                               ScriptState* script_state) {
+  ScriptState::Scope scope(script_state);
+  EXPECT_EQ(event->message(), "Script error.");
+  EXPECT_TRUE(event->filename().empty());
+  EXPECT_EQ(event->lineno(), 0u);
+  EXPECT_EQ(event->colno(), 0u);
+  EXPECT_TRUE(event->error(script_state).IsNull());
+}
+
+void ExpectUnsanitizedErrorEvent(const ErrorEvent* event) {
+  EXPECT_EQ(event->message(), kErrorEventMessage);
+  EXPECT_EQ(event->filename(), kErrorEventUrl);
+  EXPECT_EQ(event->lineno(), kErrorEventLine);
+  EXPECT_EQ(event->colno(), kErrorEventColumn);
+}
+
+}  // namespace
+
+TEST_F(DedicatedWorkerTest, ErrorEventFromMutedScriptSanitizedOnWorkerObject) {
+  // Script must run for the worker global scope to dispatch events.
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  auto* collector =
+      MakeGarbageCollected<ErrorEventCollector>(1u, run_loop.QuitClosure());
+  WorkerObject()->addEventListener(event_type_names::kError, collector);
+
+  RunOnWorkerThread(CrossThreadBindOnce(&DispatchErrorEventOnWorkerGlobalScope,
+                                        SanitizeScriptErrors::kSanitize));
+  run_loop.Run();
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  const auto& events = collector->Events();
+  ASSERT_EQ(events.size(), 1u);
+  ExpectSanitizedErrorEvent(events[0], script_state);
+}
+
+TEST_F(DedicatedWorkerTest,
+       ErrorEventFromMutedScriptPropagatesSanitizedToParentWindow) {
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  auto* worker_collector = MakeGarbageCollected<ErrorEventCollector>(
+      1u, base::DoNothing(), /*prevent_default=*/false);
+  WorkerObject()->addEventListener(event_type_names::kError, worker_collector);
+
+  auto* window_collector =
+      MakeGarbageCollected<ErrorEventCollector>(1u, run_loop.QuitClosure());
+  GetFrame().DomWindow()->addEventListener(event_type_names::kError,
+                                           window_collector);
+
+  RunOnWorkerThread(CrossThreadBindOnce(&DispatchErrorEventOnWorkerGlobalScope,
+                                        SanitizeScriptErrors::kSanitize));
+  run_loop.Run();
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  const auto& worker_events = worker_collector->Events();
+  ASSERT_EQ(worker_events.size(), 1u);
+  ExpectSanitizedErrorEvent(worker_events[0], script_state);
+
+  const auto& window_events = window_collector->Events();
+  ASSERT_EQ(window_events.size(), 1u);
+  ExpectSanitizedErrorEvent(window_events[0], script_state);
+}
+
+TEST_F(DedicatedWorkerTest,
+       ErrorEventFromMutedScriptUnsanitizedWhenFeatureDisabled) {
+  ScopedSanitizeWorkerErrorPropagationForTest scoped_feature(false);
+
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  auto* collector =
+      MakeGarbageCollected<ErrorEventCollector>(1u, run_loop.QuitClosure());
+  WorkerObject()->addEventListener(event_type_names::kError, collector);
+
+  RunOnWorkerThread(CrossThreadBindOnce(&DispatchErrorEventOnWorkerGlobalScope,
+                                        SanitizeScriptErrors::kSanitize));
+  run_loop.Run();
+
+  const auto& events = collector->Events();
+  ASSERT_EQ(events.size(), 1u);
+  ExpectUnsanitizedErrorEvent(events[0]);
+}
+
+TEST_F(DedicatedWorkerTest, ErrorEventFromUnmutedScriptReportedToWorkerObject) {
+  // Script must run for the worker global scope to dispatch events.
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  auto* collector =
+      MakeGarbageCollected<ErrorEventCollector>(1u, run_loop.QuitClosure());
+  WorkerObject()->addEventListener(event_type_names::kError, collector);
+
+  RunOnWorkerThread(CrossThreadBindOnce(&DispatchErrorEventOnWorkerGlobalScope,
+                                        SanitizeScriptErrors::kDoNotSanitize));
+  run_loop.Run();
+
+  const auto& events = collector->Events();
+  ASSERT_EQ(events.size(), 1u);
+  ExpectUnsanitizedErrorEvent(events[0]);
+}
+
+TEST_F(DedicatedWorkerTest,
+       NestedErrorEventFromMutedScriptSanitizedOnWorkerObject) {
+  // Script must run for the worker global scope to dispatch events.
+  StartWorker();
+  WaitUntilWorkerIsRunning();
+
+  base::RunLoop run_loop;
+  auto* collector =
+      MakeGarbageCollected<ErrorEventCollector>(2u, run_loop.QuitClosure());
+  WorkerObject()->addEventListener(event_type_names::kError, collector);
+
+  RunOnWorkerThread(
+      CrossThreadBindOnce(&DispatchNestedErrorEventOnWorkerGlobalScope));
+  run_loop.Run();
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  const auto& events = collector->Events();
+  ASSERT_EQ(events.size(), 2u);
+  ExpectUnsanitizedErrorEvent(events[0]);
+  ExpectSanitizedErrorEvent(events[1], script_state);
 }
 
 }  // namespace blink

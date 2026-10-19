@@ -127,7 +127,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
     NOTREACHED();
   }
 
-  void ExceptionThrown(ErrorEvent*) override {}
+  void ExceptionThrown(ErrorEvent*, SanitizeScriptErrors) override {}
 
   // Returns a token uniquely identifying this fake worker.
   WorkerToken GetWorkerToken() const final { return token_; }

@@ -445,7 +445,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
       const KURL& script_url,
       std::unique_ptr<Vector<uint8_t>> meta_data,
       TextEncoding encoding) override;
-  void ExceptionThrown(ErrorEvent*) override;
+  void ExceptionThrown(ErrorEvent*, SanitizeScriptErrors) override;
 
   // Loads and runs the installed top-level classic worker script.
   void LoadAndRunInstalledClassicScript(

@@ -226,7 +226,9 @@ void WorkletGlobalScope::AddInspectorIssue(AuditsIssue issue) {
   }
 }
 
-void WorkletGlobalScope::ExceptionThrown(ErrorEvent* error_event) {
+void WorkletGlobalScope::ExceptionThrown(
+    ErrorEvent* error_event,
+    SanitizeScriptErrors sanitize_script_errors) {
   if (IsMainThreadWorkletGlobalScope()) {
     if (!frame_) {
       return;

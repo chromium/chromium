@@ -72,7 +72,7 @@ class CORE_EXPORT ErrorEvent final : public Event {
   }
 
   // Creates an error for a script whose errors are muted.
-  static ErrorEvent* CreateSanitizedError(ScriptState* script_state);
+  static ErrorEvent* CreateSanitizedError(DOMWrapperWorld* world = nullptr);
 
   explicit ErrorEvent(ScriptState* script_state);
   ErrorEvent(const String& message,

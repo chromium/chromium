@@ -91,8 +91,9 @@ class CORE_EXPORT DedicatedWorkerMessagingProxy
                          const JavaScriptFrameworkDetectionResult& result);
   void PostMessageToWorkerObject(BlinkTransferableMessage);
   void DispatchErrorEvent(const String& error_message,
-                          const CrossThreadSourceLocation& cross_location,
-                          int exception_id);
+                          const CrossThreadSourceLocation&,
+                          int exception_id,
+                          SanitizeScriptErrors);
 
   // Freezes the WorkerThread. `is_in_back_forward_cache` is true only when the
   // page goes to back/forward cache.

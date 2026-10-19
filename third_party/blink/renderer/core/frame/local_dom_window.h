@@ -188,7 +188,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   HttpsState GetHttpsState() const final;
   ResourceFetcher* Fetcher() final;
   bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) final;
-  void ExceptionThrown(ErrorEvent*) final;
+  void ExceptionThrown(ErrorEvent*, SanitizeScriptErrors) final;
   void AddInspectorIssue(AuditsIssue) final;
   EventTarget* ErrorEventTarget() final { return this; }
   KURL OutgoingReferrerUrl() const final;

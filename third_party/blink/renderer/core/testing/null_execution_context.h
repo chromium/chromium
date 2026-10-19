@@ -49,7 +49,7 @@ class NullExecutionContext : public GarbageCollected<NullExecutionContext>,
   void AddConsoleMessageImpl(ConsoleMessage*,
                              bool discard_duplicates) override {}
   void AddInspectorIssue(AuditsIssue) override {}
-  void ExceptionThrown(ErrorEvent*) override {}
+  void ExceptionThrown(ErrorEvent*, SanitizeScriptErrors) override {}
 
   void SetUpSecurityContextForTesting();
 

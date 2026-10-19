@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/parent_execution_context_task_runners.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -340,7 +341,8 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
 void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
     const String& error_message,
     const CrossThreadSourceLocation& cross_location,
-    int exception_id) {
+    int exception_id,
+    SanitizeScriptErrors sanitize_script_errors) {
   DCHECK(IsParentContextThread());
   if (!worker_object_)
     return;
@@ -355,10 +357,20 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
   // the original Document, even if some of the workers along this chain have
   // been terminated and garbage collected."
   // https://html.spec.whatwg.org/C/#runtime-script-errors-2
+  const SanitizeScriptErrors effective_sanitize =
+      RuntimeEnabledFeatures::SanitizeWorkerErrorPropagationEnabled()
+          ? sanitize_script_errors
+          : SanitizeScriptErrors::kDoNotSanitize;
+
   ErrorEvent* event = ErrorEvent::Create(error_message, location, nullptr);
-  if (worker_object_->DispatchEvent(*event) !=
-      DispatchEventResult::kNotCanceled)
+  ErrorEvent* event_for_worker_object =
+      effective_sanitize == SanitizeScriptErrors::kSanitize
+          ? ErrorEvent::CreateSanitizedError()
+          : event;
+  if (worker_object_->DispatchEvent(*event_for_worker_object) !=
+      DispatchEventResult::kNotCanceled) {
     return;
+  }
 
   // The worker thread can already be terminated.
   if (!GetWorkerThread()) {
@@ -377,8 +389,7 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
           CrossThreadUnretained(GetWorkerThread())));
 
   // Propagate an unhandled error to the parent context.
-  const auto mute_script_errors = SanitizeScriptErrors::kDoNotSanitize;
-  GetExecutionContext()->DispatchErrorEvent(event, mute_script_errors);
+  GetExecutionContext()->DispatchErrorEvent(event, effective_sanitize);
 }
 
 void DedicatedWorkerMessagingProxy::Trace(Visitor* visitor) const {

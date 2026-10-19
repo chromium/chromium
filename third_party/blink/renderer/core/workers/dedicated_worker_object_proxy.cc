@@ -98,9 +98,11 @@ void DedicatedWorkerObjectProxy::ProcessUnhandledException(
   global_scope->ExceptionUnhandled(exception_id);
 }
 
-void DedicatedWorkerObjectProxy::ReportException(const String& error_message,
-                                                 const SourceLocation* location,
-                                                 int exception_id) {
+void DedicatedWorkerObjectProxy::ReportException(
+    const String& error_message,
+    const SourceLocation* location,
+    int exception_id,
+    SanitizeScriptErrors sanitize_script_errors) {
   CrossThreadSourceLocation cross_thread_location =
       CrossThreadSourceLocation::From(location);
   PostCrossThreadTask(
@@ -108,7 +110,8 @@ void DedicatedWorkerObjectProxy::ReportException(const String& error_message,
       FROM_HERE,
       CrossThreadBindOnce(&DedicatedWorkerMessagingProxy::DispatchErrorEvent,
                           messaging_proxy_weak_ptr_, error_message,
-                          std::move(cross_thread_location), exception_id));
+                          std::move(cross_thread_location), exception_id,
+                          sanitize_script_errors));
 }
 
 void DedicatedWorkerObjectProxy::DidFailToFetchClassicScript() {

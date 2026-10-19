@@ -123,7 +123,8 @@ class ServiceWorkerGlobalScopeProxy final : public WebServiceWorkerContextProxy,
   void CountFeature(WebFeature) override;
   void ReportException(const String& error_message,
                        const SourceLocation*,
-                       int exception_id) override;
+                       int exception_id,
+                       SanitizeScriptErrors) override;
   void ReportConsoleMessage(mojom::ConsoleMessageSource,
                             mojom::ConsoleMessageLevel,
                             const String& message,

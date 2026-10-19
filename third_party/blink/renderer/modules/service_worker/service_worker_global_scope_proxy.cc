@@ -122,7 +122,8 @@ void ServiceWorkerGlobalScopeProxy::CountFeature(WebFeature feature) {
 void ServiceWorkerGlobalScopeProxy::ReportException(
     const String& error_message,
     const SourceLocation* location,
-    int exception_id) {
+    int exception_id,
+    SanitizeScriptErrors sanitize_script_errors) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   Client().ReportException(error_message, location->LineNumber(),
                            location->ColumnNumber(), location->Url());

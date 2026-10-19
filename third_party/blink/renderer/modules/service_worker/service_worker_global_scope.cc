@@ -853,13 +853,15 @@ ServiceWorkerGlobalScope::CreateWorkerScriptCachedMetadataHandler(
       this, script_url, std::move(meta_data), std::move(encoding));
 }
 
-void ServiceWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
-  WorkerGlobalScope::ExceptionThrown(event);
+void ServiceWorkerGlobalScope::ExceptionThrown(
+    ErrorEvent* event,
+    SanitizeScriptErrors sanitize_script_errors) {
+  WorkerGlobalScope::ExceptionThrown(event, sanitize_script_errors);
   if (WorkerThreadDebugger* debugger =
-          WorkerThreadDebugger::From(GetThread()->GetIsolate()))
+          WorkerThreadDebugger::From(GetThread()->GetIsolate())) {
     debugger->ExceptionThrown(GetThread(), event);
+  }
 }
-
 void ServiceWorkerGlobalScope::CountCacheStorageInstalledScript(
     uint64_t script_size,
     uint64_t script_metadata_size) {

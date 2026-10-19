@@ -193,13 +193,15 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
   DispatchEvent(*event);
 }
 
-void SharedWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
-  WorkerGlobalScope::ExceptionThrown(event);
+void SharedWorkerGlobalScope::ExceptionThrown(
+    ErrorEvent* event,
+    SanitizeScriptErrors sanitize_script_errors) {
+  WorkerGlobalScope::ExceptionThrown(event, sanitize_script_errors);
   if (WorkerThreadDebugger* debugger =
-          WorkerThreadDebugger::From(GetThread()->GetIsolate()))
+          WorkerThreadDebugger::From(GetThread()->GetIsolate())) {
     debugger->ExceptionThrown(GetThread(), event);
+  }
 }
-
 void SharedWorkerGlobalScope::Trace(Visitor* visitor) const {
   WorkerGlobalScope::Trace(visitor);
 }

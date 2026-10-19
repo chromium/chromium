@@ -989,11 +989,14 @@ WorkerGlobalScope::WorkerGlobalScope(
       std::move(creation_params->worker_permissions_policy));
 }
 
-void WorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
+void WorkerGlobalScope::ExceptionThrown(
+    ErrorEvent* event,
+    SanitizeScriptErrors sanitize_script_errors) {
   int next_id = ++last_pending_error_event_id_;
   pending_error_events_.Set(next_id, event);
   ReportingProxy().ReportException(event->MessageForConsole(),
-                                   event->Location(), next_id);
+                                   event->Location(), next_id,
+                                   sanitize_script_errors);
 }
 
 void WorkerGlobalScope::RemoveURLFromMemoryCache(const KURL& url) {
