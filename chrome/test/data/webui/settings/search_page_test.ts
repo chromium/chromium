@@ -4,11 +4,13 @@
 
 // clang-format off
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {DefaultSearchEnginePickerData, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import type {DefaultSearchEnginePickerData, SearchEnginesInfo, SettingsSearchEngineListDialogElement, SettingsSearchEngineMoreEnginesDialogElement, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import {SearchEnginesBrowserProxyImpl, SearchEnginesInteractions, Router, routes, resetRouterForTesting, loadTimeData, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 
@@ -284,6 +286,128 @@ suite('SearchPageTests', function() {
         assertDeepEquals(
             generateDefaultSearchEnginePickerData().primary,
             searchEngineListDialog.searchEngines);
+      });
+
+  /**
+   * Recreates the page with the "More options" entry point enabled, and
+   * replaces the search engine list dialog with the more engines dialog.
+   * `beforeSwitch` is called with the list dialog before switching.
+   */
+  async function openMoreEnginesDialog(
+      beforeSwitch?: (listDialog: SettingsSearchEngineListDialogElement) =>
+          Promise<void>):
+      Promise<SettingsSearchEngineMoreEnginesDialogElement> {
+    page.remove();
+    loadTimeData.overrideValues({
+      searchSettingsUpdate: false,
+      pickerWithMoreEngines: true,
+    });
+    browserProxy.setDefaultSearchEnginePickerData(
+        generateDefaultSearchEnginePickerData());
+    browserProxy.setMoreSearchEngines([createSampleSearchEngine({
+      name: 'DuckDuckGo',
+      id: engineId('db:10'),
+      canBeDefault: true,
+    })]);
+    page = document.createElement('settings-search-page');
+    document.body.appendChild(page);
+    await browserProxy.whenCalled('getDefaultSearchEnginePickerData');
+    await microtasksFinished();
+
+    page.shadowRoot.querySelector<HTMLElement>('#openDialogButton')!.click();
+    await microtasksFinished();
+    const searchEngineListDialog =
+        page.shadowRoot.querySelector('settings-search-engine-list-dialog');
+    assertTrue(!!searchEngineListDialog);
+    if (beforeSwitch) {
+      await beforeSwitch(searchEngineListDialog);
+    }
+
+    const moreEnginesButton =
+        searchEngineListDialog.shadowRoot.querySelector<HTMLElement>(
+            '#moreEnginesButton');
+    assertTrue(!!moreEnginesButton);
+    moreEnginesButton.click();
+    await microtasksFinished();
+
+    const moreEnginesDialog = page.shadowRoot.querySelector(
+        'settings-search-engine-more-engines-dialog');
+    assertTrue(!!moreEnginesDialog);
+    return moreEnginesDialog;
+  }
+
+  test(
+      'More options replaces the list dialog with the more engines dialog',
+      async function() {
+        browserProxy.setSaveGuestChoice(true);
+        const moreEnginesDialog = await openMoreEnginesDialog(
+            async (listDialog: SettingsSearchEngineListDialogElement) => {
+              // Uncheck the guest choice checkbox of the list dialog.
+              const checkbox =
+                  listDialog.shadowRoot.querySelector<CrCheckboxElement>(
+                      '#saveGuestChoiceCheckbox');
+              assertTrue(!!checkbox);
+              assertTrue(checkbox.checked);
+              checkbox.click();
+              await microtasksFinished();
+            });
+
+        // The dialogs are not stacked.
+        assertFalse(!!page.shadowRoot.querySelector(
+            'settings-search-engine-list-dialog'));
+
+        // The more engines dialog is a modal dialog of its own, with the
+        // search field focused by the browser.
+        assertTrue(moreEnginesDialog.$.dialog.getNative().matches(':modal'));
+        assertEquals(
+            moreEnginesDialog.$.searchField.getSearchInput().inputElement,
+            getDeepActiveElement());
+
+        // The guest choice of the list dialog is carried over.
+        const checkbox =
+            moreEnginesDialog.shadowRoot.querySelector<CrCheckboxElement>(
+                '#saveGuestChoiceCheckbox');
+        assertTrue(!!checkbox);
+        assertFalse(checkbox.checked);
+      });
+
+  test(
+      'Cancelling the more engines dialog returns the focus to the button',
+      async function() {
+        const moreEnginesDialog = await openMoreEnginesDialog();
+
+        const closed = eventToPromise('close', moreEnginesDialog);
+        moreEnginesDialog.shadowRoot
+            .querySelector<HTMLElement>('#cancelButton')!.click();
+        await closed;
+        await microtasksFinished();
+
+        assertFalse(!!page.shadowRoot.querySelector(
+            'settings-search-engine-more-engines-dialog'));
+        assertEquals(
+            page.shadowRoot.querySelector('#openDialogButton'),
+            getDeepActiveElement());
+      });
+
+  test(
+      'Choosing an engine in the more engines dialog shows the toast',
+      async function() {
+        const moreEnginesDialog = await openMoreEnginesDialog();
+
+        moreEnginesDialog.shadowRoot.querySelector('cr-radio-button')!.click();
+        await microtasksFinished();
+        const closed = eventToPromise('close', moreEnginesDialog);
+        moreEnginesDialog.shadowRoot
+            .querySelector<HTMLElement>('#setAsDefaultButton')!.click();
+        await closed;
+        await microtasksFinished();
+
+        assertFalse(!!page.shadowRoot.querySelector(
+            'settings-search-engine-more-engines-dialog'));
+        const confirmationToast =
+            page.shadowRoot.querySelector<CrToastElement>('#confirmationToast');
+        assertTrue(!!confirmationToast);
+        assertTrue(confirmationToast.open);
       });
 });
 

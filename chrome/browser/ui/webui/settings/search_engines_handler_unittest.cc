@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 
+#include <optional>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -775,16 +778,57 @@ class SearchEnginesHandlerWithMoreEnginesTest
       switches::kSearchSettingsWithMoreEngines};
 };
 
-TEST_F(SearchEnginesHandlerTest, GetMoreSearchEngines_NoOpWhenFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(switches::kSearchSettingsWithMoreEngines);
+TEST_F(SearchEnginesHandlerWithMoreEnginesTest, GetMoreSearchEngines) {
   ConfigureTestWithRegularProfile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile());
+
+  // Custom engines are not prepopulated, so they should not be listed.
+  AddSearchEngine(template_url_service, "bar.com", u"bar.com",
+                  /*prepopulated_id=*/0, /*url=*/std::nullopt);
+  web_ui()->ClearTrackedCalls();
 
   base::ListValue args;
   args.Append("callback_id");
   web_ui()->HandleReceivedMessage("getMoreSearchEngines", args);
 
-  EXPECT_TRUE(web_ui()->call_data().empty());
+  ASSERT_EQ(1U, web_ui()->call_data().size());
+  const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIResponse", call_data.function_name());
+  EXPECT_EQ("callback_id", call_data.arg1()->GetString());
+  EXPECT_TRUE(call_data.arg2()->GetBool());
+
+  ASSERT_TRUE(call_data.arg3()->is_list());
+  const base::ListValue& engines = call_data.arg3()->GetList();
+  EXPECT_FALSE(engines.empty());
+
+  std::optional<std::string> bing_entry_id;
+  std::optional<std::string> naver_entry_id;
+  bool found_bar = false;
+  for (const auto& entry : engines) {
+    ASSERT_TRUE(entry.is_dict());
+    const std::string* keyword = entry.GetDict().FindString("keyword");
+    ASSERT_TRUE(keyword);
+    const std::string* id = entry.GetDict().FindString("id");
+    ASSERT_TRUE(id);
+    if (*keyword ==
+        base::UTF16ToUTF8(TemplateURLPrepopulateData::bing.keyword)) {
+      bing_entry_id = *id;
+    } else if (*keyword ==
+               base::UTF16ToUTF8(TemplateURLPrepopulateData::naver.keyword)) {
+      naver_entry_id = *id;
+    } else if (*keyword == "bar.com") {
+      found_bar = true;
+    }
+  }
+
+  // Prepopulated engines tracked by the `TemplateURLService` are referenced by
+  // their database ID.
+  EXPECT_EQ(bing_entry_id, bing_id());
+  // Prepopulated engines not tracked by the `TemplateURLService` are referenced
+  // by their prepopulate ID.
+  EXPECT_EQ(naver_entry_id, ToPrepopId(TemplateURLPrepopulateData::naver.id));
+  EXPECT_FALSE(found_bar);
 }
 
 TEST_F(SearchEnginesHandlerWithMoreEnginesTest,

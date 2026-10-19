@@ -26,6 +26,8 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     primary: [],
   };
 
+  private moreSearchEngines_: SearchEngine[] = [];
+
   private searchEnginesInfo_: SearchEnginesInfo =
       {defaults: [], actives: [], others: [], extensions: []};
 
@@ -35,6 +37,7 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     super([
       'getCategorizedTemplateUrls',
       'getDefaultSearchEnginePickerData',
+      'getMoreSearchEngines',
       'getSearchEnginesList',
       'getSaveGuestChoice',
       'removeSearchEngine',
@@ -87,6 +90,11 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.defaultSearchEnginePickerData_);
   }
 
+  getMoreSearchEngines() {
+    this.methodCalled('getMoreSearchEngines');
+    return Promise.resolve(this.moreSearchEngines_);
+  }
+
   getSearchEnginesList() {
     this.methodCalled('getSearchEnginesList');
     return Promise.resolve(this.searchEnginesInfo_);
@@ -134,6 +142,10 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
    */
   setSaveGuestChoice(saveGuestChoice: boolean|null) {
     this.saveGuestChoice_ = saveGuestChoice;
+  }
+
+  setMoreSearchEngines(moreSearchEngines: SearchEngine[]) {
+    this.moreSearchEngines_ = moreSearchEngines;
   }
 }
 

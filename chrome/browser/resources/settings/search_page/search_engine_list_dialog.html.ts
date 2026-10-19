@@ -8,12 +8,16 @@ import type {SettingsSearchEngineListDialogElement} from './search_engine_list_d
 
 export function getHtml(this: SettingsSearchEngineListDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" @cancel="${this.onDialogCancel_}" show-on-attach>
-  <div slot="title">
-    <div class="title">$i18n{searchPageTitle}</div>
-    <div class="subtitle">
-      $i18n{searchEnginesSettingsDialogSubtitle}
-    </div>
+<cr-dialog id="dialog" @cancel="${this.onDialogCancel_}" show-on-attach
+    class="${this.pickerWithMoreEnginesEnabled_ ? 'fixed-height' : ''}">
+  <div slot="header">
+    <h2 class="title">${this.getTitle_()}</h2>
+    <div class="subtitle">${this.getSubtitle_()}</div>
+    <cr-button id="moreEnginesButton"
+        ?hidden="${!this.pickerWithMoreEnginesEnabled_}"
+        @click="${this.onMoreEnginesClick_}">
+      $i18n{searchEnginesMoreOptions}
+    </cr-button>
   </div>
   <div slot="body" class="dialog-body">
     <cr-radio-group .selected="${this.selectedEngineId_}"
@@ -35,9 +39,9 @@ export function getHtml(this: SettingsSearchEngineListDialogElement) {
     </cr-radio-group>
   </div>
   <div slot="button-container">
-    ${this.showSaveGuestChoice_ ? html`
+    ${this.saveGuestChoice !== null ? html`
       <cr-checkbox id="saveGuestChoiceCheckbox"
-          ?checked="${!!this.saveGuestChoice_}"
+          ?checked="${this.saveGuestChoice}"
           @checked-changed="${this.onSaveGuestChoiceCheckedChanged_}">
         $i18n{saveGuestChoiceText}
       </cr-checkbox>

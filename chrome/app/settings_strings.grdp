@@ -2258,6 +2258,27 @@
     <message name="IDS_SETTINGS_SEARCH_ENGINES_QUERY_URL_EXPLANATION" desc="Label for explaining the format of the URL that should be entered by the user in the add/edit search engine dialog.">
       URL with <ph name="SPECIAL_SYMBOL">%s</ph> in place of query
     </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_TITLE" desc="Placeholder" translateable="false">
+      Default search engine
+    </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE" desc="Placeholder" translateable="false">
+      Popular in your region (in random order)
+    </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA" desc="Placeholder" translateable="false">
+      Popular in your region
+    </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_OPTIONS" desc="Placeholder" translateable="false">
+      More options
+    </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_MORE_ENGINES" desc="Placeholder" translateable="false">
+      More search engines
+    </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_SEARCH_PLACEHOLDER" desc="Placeholder" translateable="false">
+      Search
+    </message>
+    <message name="IDS_SETTINGS_SEARCH_ENGINES_NO_SEARCH_RESULTS" desc="Placeholder" translateable="false">
+      No results found
+    </message>
     <message name="IDS_SETTINGS_SEARCH_ENGINES_MAKE_DEFAULT" desc="Text of the button that makes the selected engine the default search engine">
       Make default
     </message>

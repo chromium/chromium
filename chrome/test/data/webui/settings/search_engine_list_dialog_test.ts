@@ -5,10 +5,10 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import type {SearchEngine, SettingsSearchEngineListDialogElement} from 'chrome://settings/settings.js';
+import type {CrButtonElement, SearchEngine, SettingsSearchEngineListDialogElement} from 'chrome://settings/settings.js';
 import {loadTimeData, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createSampleSearchEngine, engineId, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 // clang-format on
@@ -34,7 +34,10 @@ suite('SearchEngineListDialog', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({searchSettingsUpdate: true});
+    loadTimeData.overrideValues({
+      searchSettingsUpdate: true,
+      pickerWithMoreEngines: false,
+    });
 
     browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
@@ -54,6 +57,11 @@ suite('SearchEngineListDialog', function() {
     const radioGroupElement = dialog.shadowRoot.querySelector('cr-radio-group');
     assertTrue(!!radioGroupElement);
     assertEquals('db:2', radioGroupElement.selected);
+  });
+
+  test('More options entry point is hidden', function() {
+    assertFalse(
+        isVisible(dialog.shadowRoot.querySelector('#moreEnginesButton')));
   });
 
   test('Search engine list dialog sets default engine', async function() {
@@ -138,4 +146,35 @@ suite('SearchEngineListDialog', function() {
         // Engine 2 is not recommended from policy.
         assertFalse(!!radioButtons[2]!.querySelector('cr-policy-indicator'));
       });
+});
+
+suite('SearchEngineListDialogWithMoreEngines', function() {
+  let dialog: SettingsSearchEngineListDialogElement;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      searchSettingsUpdate: true,
+      pickerWithMoreEngines: true,
+    });
+    SearchEnginesBrowserProxyImpl.setInstance(
+        new TestSearchEnginesBrowserProxy());
+
+    dialog = document.createElement('settings-search-engine-list-dialog');
+    document.body.appendChild(dialog);
+    dialog.searchEngines = generateActiveSiteShortcuts();
+
+    return microtasksFinished();
+  });
+
+  test('More options fires more-engines-click', async function() {
+    const moreEnginesButton =
+        dialog.shadowRoot.querySelector<CrButtonElement>('#moreEnginesButton');
+    assertTrue(!!moreEnginesButton);
+    assertTrue(isVisible(moreEnginesButton));
+
+    const moreEnginesClicked = eventToPromise('more-engines-click', dialog);
+    moreEnginesButton.click();
+    await moreEnginesClicked;
+  });
 });

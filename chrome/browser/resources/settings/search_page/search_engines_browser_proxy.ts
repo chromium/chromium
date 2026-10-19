@@ -149,6 +149,8 @@ export interface SearchEnginesBrowserProxy {
 
   getDefaultSearchEnginePickerData(): Promise<DefaultSearchEnginePickerData>;
 
+  getMoreSearchEngines(): Promise<SearchEngine[]>;
+
   getSearchEnginesList(): Promise<SearchEnginesInfo>;
 
   getSaveGuestChoice(): Promise<boolean|null>;
@@ -209,6 +211,10 @@ export class SearchEnginesBrowserProxyImpl implements
   getDefaultSearchEnginePickerData() {
     return sendWithPromise<DefaultSearchEnginePickerData>(
         'getDefaultSearchEnginePickerData');
+  }
+
+  getMoreSearchEngines() {
+    return sendWithPromise<SearchEngine[]>('getMoreSearchEngines');
   }
 
   getSearchEnginesList() {

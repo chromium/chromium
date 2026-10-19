@@ -14,6 +14,7 @@ import '/shared/settings/controls/extension_controlled_indicator.js';
 import './extension_controlled_message.js';
 import './search_engine_icon.js';
 import './search_engine_list_dialog.js';
+import './search_engine_more_engines_dialog.js';
 import '../settings_page/settings_section.js';
 
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
@@ -21,6 +22,7 @@ import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_to
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -68,6 +70,15 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       // Boolean to check whether we need to show the dialog or not.
       showSearchEngineListDialog_: {type: Boolean},
 
+      // Whether the more engines dialog, which replaces the search engine list
+      // dialog when requested from it, is shown.
+      showMoreEnginesDialog_: {type: Boolean},
+
+      // State of the dialogs' checkbox to save the search engine choice in
+      // guest mode, or null if the checkbox is not displayed. Shared by both
+      // dialogs, so that it is kept when switching from one to the other.
+      saveGuestChoice_: {type: Boolean},
+
       // The label of the confirmation toast that is displayed when the user
       // chooses a default search engine.
       confirmationToastLabel_: {type: String},
@@ -86,6 +97,8 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
       chrome.settingsPrivate.PrefObject|undefined;
   protected accessor searchEngines_: SearchEngine[] = [];
   protected accessor showSearchEngineListDialog_: boolean = false;
+  protected accessor showMoreEnginesDialog_: boolean = false;
+  protected accessor saveGuestChoice_: boolean|null = null;
   protected accessor defaultSearchEngine_: SearchEngine|null = null;
   protected accessor searchSettingsUpdateEnabled_: boolean =
       loadTimeData.getBoolean('searchSettingsUpdate');
@@ -176,8 +189,19 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   }
 
   protected onOpenDialogButtonClick_() {
+    // The guest choice is fetched here rather than by each dialog, so that a
+    // change made in the list dialog carries over to the more engines dialog
+    // when switching to it.
+    this.browserProxy_.getSaveGuestChoice().then(
+        (saveGuestChoice: boolean|null) => {
+          this.saveGuestChoice_ = saveGuestChoice;
+        });
     this.showSearchEngineListDialog_ = true;
     chrome.metricsPrivate.recordUserAction('ChooseDefaultSearchEngine');
+  }
+
+  protected onSaveGuestChoiceChanged_(e: CustomEvent<{value: boolean | null}>) {
+    this.saveGuestChoice_ = e.detail.value;
   }
 
   protected onSearchEngineChanged_(
@@ -192,6 +216,26 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   protected onSearchEngineListDialogClose_() {
     this.showSearchEngineListDialog_ = false;
+    // This doesn't reset the choice passed to the more engines dialog when
+    // switching to it: the list dialog is then removed while open, which
+    // doesn't fire 'close'.
+    this.saveGuestChoice_ = null;
+  }
+
+  protected onMoreEnginesClick_() {
+    this.showSearchEngineListDialog_ = false;
+    this.showMoreEnginesDialog_ = true;
+  }
+
+  protected onMoreEnginesDialogClose_() {
+    this.showMoreEnginesDialog_ = false;
+    this.saveGuestChoice_ = null;
+    // The browser can't return the focus to the button, since the more engines
+    // dialog was opened from the removed list dialog, so it is done here.
+    const openDialogButton =
+        this.shadowRoot.querySelector<HTMLElement>('#openDialogButton');
+    assert(openDialogButton);
+    focusWithoutInk(openDialogButton);
   }
 
   // SettingsViewMixin implementation.

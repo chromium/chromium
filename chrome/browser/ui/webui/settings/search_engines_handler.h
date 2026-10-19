@@ -66,6 +66,10 @@ class SearchEnginesHandler : public SettingsPageUIHandler,
 
   base::DictValue GetDefaultSearchEnginePickerData();
 
+  // Retrieves the "more search engines" list for the choice dialog and returns
+  // it to WebUI. Called from WebUI.
+  void HandleGetMoreSearchEngines(const base::ListValue& args);
+
   base::ListValue GetMoreSearchEngines();
 
   // Retrieves all search engines and returns them to WebUI.

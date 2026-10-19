@@ -7,7 +7,8 @@
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=../settings_shared_lit.css.js
- * #include=cr-shared-style-lit settings-shared-lit
+ * #import=./search_engine_list_dialog_shared.css.js
+ * #include=cr-shared-style-lit settings-shared-lit search-engine-list-dialog-shared
  * #css_wrapper_metadata_end */
 
 .subtitle {
@@ -16,11 +17,13 @@
 }
 
 .title {
-  margin: 0 0 16px;
+  margin-bottom: 16px;
 }
 
-.dialog-body {
-  color: var(--cr-primary-text-color);
+#moreEnginesButton {
+  align-self: start;
+  grid-column: 2;
+  grid-row: 1 / span 2;
 }
 
 .search-engine {
@@ -35,45 +38,3 @@
   margin-inline-start: auto;
   margin-inline-end: 8px;
 }
-
-#setAsDefaultButton {
-  margin-inline-start: 12px;
-}
-
-#saveGuestChoiceCheckbox {
-  margin-right: auto;
-}
-
-cr-dialog {
-  --cr-dialog-body-padding-horizontal: 16px;
-  --cr-dialog-button-container-padding-horizontal: 24px;
-  --cr-dialog-button-container-padding-bottom: 24px;
-  --cr-dialog-button-container-padding-top: 24px;
-  --cr-dialog-title-slot-padding-bottom: 16px;
-  --cr-dialog-title-slot-padding-end: 16px;
-  --cr-dialog-title-slot-padding-start: 16px;
-  --cr-dialog-title-slot-padding-top: 16px;
-}
-
-cr-dialog::part(body-container) {
-  max-height: 360px;
-}
-
-:host([picker-with-more-engines-enabled_]) cr-dialog::part(wrapper) {
-  /* Height selected because in the most common configuration, it ensures
-   * ~6.5 rows of engines are visible and make it clear that there are more
-   * below the fold. */
-  height: 480px;
-}
-
-:host([picker-with-more-engines-enabled_]) cr-dialog::part(body-container) {
-  flex: 1;
-  max-height: none;
-  scrollbar-gutter: stable;
-}
-
-cr-radio-button {
-  --cr-radio-button-size: 20px;
-  margin: 0 16px;
-}
-

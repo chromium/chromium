@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
@@ -3207,6 +3208,13 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"searchEnginesCancelButton", IDS_CANCEL},
       {"searchEnginesConfirmationToastLabel",
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL},
+      {"searchEnginesPickerTitle", IDS_SETTINGS_SEARCH_ENGINES_PICKER_TITLE},
+      {"searchEnginesMoreOptions", IDS_SETTINGS_SEARCH_ENGINES_MORE_OPTIONS},
+      {"searchEnginesMoreEngines", IDS_SETTINGS_SEARCH_ENGINES_MORE_ENGINES},
+      {"searchEnginesSearchPlaceholder",
+       IDS_SETTINGS_SEARCH_ENGINES_SEARCH_PLACEHOLDER},
+      {"searchEnginesNoSearchResults",
+       IDS_SETTINGS_SEARCH_ENGINES_NO_SEARCH_RESULTS},
       {"defaultSearch", IDS_SETTINGS_DEFAULT_SEARCH},
       {"searchActivate", IDS_SETTINGS_SEARCH_ACTIVATE},
       {"searchDeactivate", IDS_SETTINGS_SEARCH_DEACTIVATE},
@@ -3270,14 +3278,18 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddString("searchExplanationLearnMoreURL",
                          chrome::kOmniboxLearnMoreURL);
 
-  regional_capabilities::RegionalCapabilitiesService* regional_capabilities =
-      regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
-          profile);
+  const bool is_eea =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile))
+          .IsInEeaCountry();
   html_source->AddLocalizedString(
       "searchEnginesSettingsDialogSubtitle",
-      regional_capabilities->IsInEeaCountry()
-          ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
-          : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
+      is_eea ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
+             : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
+  html_source->AddLocalizedString(
+      "searchEnginesPickerSubtitle",
+      is_eea ? IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE
+             : IDS_SETTINGS_SEARCH_ENGINES_PICKER_SUBTITLE_NON_EEA);
 }
 
 void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {

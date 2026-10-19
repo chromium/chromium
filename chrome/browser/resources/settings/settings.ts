@@ -147,6 +147,7 @@ export {OmniboxEverywhereBrowserProxyImpl} from './search_page/omnibox_everywher
 export type {OmniboxEverywhereBrowserProxy} from './search_page/omnibox_everywhere_browser_proxy.js';
 export {SettingsOmniboxEverywhereSectionElement} from './search_page/omnibox_everywhere_section.js';
 export {SettingsSearchEngineListDialogElement} from './search_page/search_engine_list_dialog.js';
+export {SettingsSearchEngineMoreEnginesDialogElement} from './search_page/search_engine_more_engines_dialog.js';
 export {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_page/search_engines_browser_proxy.js';
 export type {CategorizedTemplateUrls, DefaultSearchEnginePickerData, SearchEngine, SearchEngineId, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';
 export {SettingsSearchPageElement} from './search_page/search_page.js';
