@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.system;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -16,9 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.app.ActivityManager.TaskDescription;
 import android.graphics.Color;
-import android.os.Build;
 
 import androidx.annotation.ColorInt;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -32,9 +29,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -121,19 +115,11 @@ public class StatusBarColorControllerUnitTest {
         when(mSystemBarColorHelper.canSetStatusBarColor()).thenReturn(true);
 
         StatusBarColorController.setStatusBarColor(
-                mSystemBarColorHelper,
-                mActivity,
-                Color.BLUE,
-                /* forceLightIconColor= */ true,
-                Color.TRANSPARENT);
+                mSystemBarColorHelper, mActivity, Color.BLUE, /* forceLightIconColor= */ true);
         verify(mSystemBarColorHelper).setStatusBarColor(Color.BLUE, true);
 
         StatusBarColorController.setStatusBarColor(
-                mSystemBarColorHelper,
-                mActivity,
-                Color.RED,
-                /* forceLightIconColor= */ true,
-                Color.TRANSPARENT);
+                mSystemBarColorHelper, mActivity, Color.RED, /* forceLightIconColor= */ true);
         verify(mSystemBarColorHelper).setStatusBarColor(Color.RED, true);
     }
 
@@ -374,46 +360,6 @@ public class StatusBarColorControllerUnitTest {
         // When omnibox gains focus, should NOT force light icon color.
         mStatusBarColorController.onUrlFocusChange(/* hasFocus= */ true);
         verify(mSystemBarColorHelper, atLeastOnce()).setStatusBarColor(anyInt(), eq(false));
-    }
-
-    @Implements(Activity.class)
-    public static class ShadowTaskDescriptionActivity extends ShadowActivity {
-        static int sSetTaskDescriptionCount;
-        static TaskDescription sLastTaskDescription;
-
-        @Implementation
-        protected void setTaskDescription(TaskDescription taskDescription) {
-            sSetTaskDescriptionCount++;
-            sLastTaskDescription = taskDescription;
-        }
-    }
-
-    @Test
-    @Config(
-            sdk = Build.VERSION_CODES.TIRAMISU,
-            shadows = {StatusBarColorControllerUnitTest.ShadowTaskDescriptionActivity.class})
-    public void testUpdateStatusBarColor_CoalescesAndDeduplicatesSetTaskDescription() {
-        when(mSystemBarColorHelper.canSetStatusBarColor()).thenReturn(true);
-        initialize(/* isTablet= */ false, /* isInDesktopWindow= */ false);
-        ShadowTaskDescriptionActivity.sSetTaskDescriptionCount = 0;
-        ShadowTaskDescriptionActivity.sLastTaskDescription = null;
-
-        // Changing toolbar color should invoke setTaskDescription once with both primary and
-        // background colors, and a subsequent update with identical colors should be a no-op.
-        mStatusBarColorController.onToolbarColorChanged(Color.BLUE);
-        assertEquals(1, ShadowTaskDescriptionActivity.sSetTaskDescriptionCount);
-        assertNotNull(ShadowTaskDescriptionActivity.sLastTaskDescription);
-        assertEquals(
-                Color.BLUE, ShadowTaskDescriptionActivity.sLastTaskDescription.getPrimaryColor());
-        assertEquals(
-                ColorUtils.getOpaqueColor(
-                        TabUiThemeUtil.getTabStripBackgroundColor(
-                                mActivity, /* isIncognito= */ false)),
-                ShadowTaskDescriptionActivity.sLastTaskDescription.getBackgroundColor());
-
-        ShadowTaskDescriptionActivity.sSetTaskDescriptionCount = 0;
-        mStatusBarColorController.updateStatusBarColor();
-        assertEquals(0, ShadowTaskDescriptionActivity.sSetTaskDescriptionCount);
     }
 
     private void initialize(boolean isTablet, boolean isInDesktopWindow) {

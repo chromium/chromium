@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.ViewUtils;
@@ -441,8 +440,7 @@ public abstract class ToolbarLayout extends FrameLayout
 
                     @Override
                     public @ColorInt int getPrimaryColor() {
-                        return ChromeColors.getDefaultThemeColor(
-                                getContext(), /* isIncognito= */ false);
+                        return 0;
                     }
 
                     @Override
