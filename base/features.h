@@ -20,9 +20,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kFeatureParamWithCache);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kFastFilePathIsParent);
 
-BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
-                                       kUseRustJsonParserInCurrentSequence);
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kHeapProfilerIncludeResidency);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kI18nOptimizations);
