@@ -55,6 +55,11 @@ const CFStringRef kUrlsKey(CFSTR("URLs"));
 
 using Config = ExtensibleEnterpriseSSOPrefsHandler::Config;
 
+// The handler is owned by `PlatformAuthPolicyObserver` and is created and
+// destroyed as the policy changes, so a non-owning pointer is tracked here
+// instead of making the class a true singleton.
+ExtensibleEnterpriseSSOPrefsHandler* g_instance = nullptr;
+
 base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>&
 GetCfPrefsOverrideForTesting() {
   static base::NoDestructor<
@@ -267,9 +272,14 @@ std::string ConfigToString(const Config& config) {
 ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     PrefService* local_state)
     : cf_preferences_observer_(CreateCfPreferencesObserver()),
-      local_state_(local_state) {
+      local_state_(local_state),
+      read_config_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   CHECK(cf_preferences_observer_, base::NotFatalUntil::M161);
   CHECK(local_state_, base::NotFatalUntil::M161);
+  CHECK(!g_instance);
+  g_instance = this;
+
   auto callback =
       base::BindRepeating(&ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs,
                           weak_ptr_factory_.GetWeakPtr());
@@ -279,22 +289,36 @@ ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
 }
 
 ExtensibleEnterpriseSSOPrefsHandler::~ExtensibleEnterpriseSSOPrefsHandler() {
+  CHECK_EQ(g_instance, this);
+  g_instance = nullptr;
+
   CHECK(cf_preferences_observer_, base::NotFatalUntil::M161);
   cf_preferences_observer_->Unsubscribe();
+}
+
+// static
+std::optional<ExtensibleEnterpriseSSOPrefsHandler::Config>
+ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig() {
+  if (!g_instance) {
+    return std::nullopt;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(g_instance->sequence_checker_);
+  return g_instance->current_config_;
 }
 
 void ExtensibleEnterpriseSSOPrefsHandler::UpdatePrefs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(local_state_, base::NotFatalUntil::M161);
 
-  // Read and parse config on the thread pool, the result is sent back to the
-  // main thread and handled by OnConfigRead.
+  // Read and parse config on a background sequence, the result is sent back to
+  // the main thread and handled by OnConfigRead.
   auto parse_callback = base::BindOnce(&ParseConfig);
   auto on_config_parsed =
       base::BindOnce(&ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead,
                      weak_ptr_factory_.GetWeakPtr());
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  read_config_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       cf_preferences_observer_->GetReadConfigCallback().Then(
           std::move(parse_callback)),
       std::move(on_config_parsed));
@@ -304,19 +328,23 @@ void ExtensibleEnterpriseSSOPrefsHandler::OnConfigRead(
     std::optional<Config> config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (config.has_value()) {
+  current_config_ = std::move(config);
+
+  if (current_config_.has_value()) {
     VLOG_POLICY(1, EXTENSIBLE_SSO) << "Parsed SSO extension MDM payload: "
-                                   << ConfigToString(config.value());
+                                   << ConfigToString(current_config_.value());
   }
 
-  if (!config.has_value() || !config->hosts.has_value()) {
+  // TODO(b/573090861): Deprecate kExtensibleEnterpriseSSOConfiguredHosts in
+  // favour of using GetCurrentConfig().
+  if (!current_config_.has_value() || !current_config_->hosts.has_value()) {
     local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts, {});
     return;
   }
 
   base::ListValue hosts;
-  hosts.reserve(config->hosts->size());
-  for (const std::string& host : config->hosts.value()) {
+  hosts.reserve(current_config_->hosts->size());
+  for (const std::string& host : current_config_->hosts.value()) {
     hosts.Append(host);
   }
   local_state_->SetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts,

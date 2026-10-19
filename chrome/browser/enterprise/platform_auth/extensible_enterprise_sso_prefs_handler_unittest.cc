@@ -385,6 +385,67 @@ TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest, StopAndStartAgain) {
   }
 }
 
+TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
+       GetCurrentConfigEmptyBeforeRead) {
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
+            std::nullopt);
+}
+
+TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
+       GetCurrentConfigReturnsParsedConfig) {
+  const std::vector<std::string_view> hosts = {kExampleHost, kWildcardHost};
+  SetHostsPropertyOverride(hosts);
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(hosts.size());
+
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
+            ExtensibleEnterpriseSSOPrefsHandler::Config({
+                .extension_id = kOktaSsoExtensionId,
+                .team_id = kOktaSsoTeamId,
+                .hosts = std::vector<std::string>{kExampleHost, kWildcardHost},
+                .urls = std::nullopt,
+            }));
+}
+
+TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
+       GetCurrentConfigClearedByInvalidConfig) {
+  const std::vector<std::string_view> hosts = {kExampleHost};
+  SetHostsPropertyOverride(hosts);
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(hosts.size());
+  ASSERT_TRUE(
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig().has_value());
+
+  SetConfigOverride(StringToScopedPropList(kInvalidPropID),
+                    StringToScopedPropList(kOktaSsoTeamId),
+                    HostsToScopedPropList(hosts),
+                    /* urls= */ ScopedPropList());
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(0);
+
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
+            std::nullopt);
+}
+
+TEST_F(ExtensibleEnterpriseSSOPrefsHandlerTest,
+       GetCurrentConfigTracksHandlerLifetime) {
+  const std::vector<std::string_view> hosts = {kExampleHost};
+  SetHostsPropertyOverride(hosts);
+  prefs_handler_->UpdatePrefs();
+  WaitUntilPrefsChange(hosts.size());
+  ASSERT_TRUE(
+      ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig().has_value());
+
+  prefs_handler_.reset();
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
+            std::nullopt);
+
+  prefs_handler_ =
+      std::make_unique<ExtensibleEnterpriseSSOPrefsHandler>(&pref_service_);
+  EXPECT_EQ(ExtensibleEnterpriseSSOPrefsHandler::GetCurrentConfig(),
+            std::nullopt);
+}
+
 struct ConfigTestParams {
   // Null simulates a missing payload entry.
   const char* extension_id;
@@ -496,8 +557,6 @@ class ExtensibleEnterpriseSSOParseConfigTest
     : public ExtensibleEnterpriseSSOPrefsHandlerTest,
       public testing::WithParamInterface<ParseConfigTestParams> {};
 
-// Tests that `ParseConfig` converts each `RawConfig` into the expected
-// `Config`, or rejects it.
 TEST_P(ExtensibleEnterpriseSSOParseConfigTest, ParsesRawConfig) {
   const ParseConfigTestParams& params = GetParam();
   EXPECT_EQ(ParseConfig(params.raw_config), params.expected_config);

@@ -28,7 +28,6 @@
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
-#include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_proxying_url_loader_factory.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -122,10 +121,6 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
 
     session_override_.emplace();
 
-    PrefService* prefs = g_browser_process->local_state();
-    ASSERT_TRUE(prefs);
-    platform_auth_policy_observer_.emplace(prefs);
-
     // Make sure no traffic goes out into the real network.
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.RegisterRequestHandler(base::BindRepeating(
@@ -134,11 +129,6 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
     https_server_.SetCertHostnames({kDomain1, kDomain2, kDomain3});
 
     ASSERT_TRUE(https_server_.Start());
-  }
-
-  void TearDownOnMainThread() override {
-    platform_auth_policy_observer_.reset();
-    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void TearDown() override {
@@ -274,7 +264,6 @@ class ExtensibleEnterpriseSsoOktaBrowserTest : public InProcessBrowserTest {
   std::vector<std::string> configured_hosts_{kDomain1};
   base::RepeatingClosure config_update_callback_;
   base::test::ScopedFeatureList feature_list_{enterprise_auth::kOktaSSO};
-  std::optional<PlatformAuthPolicyObserver> platform_auth_policy_observer_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::ScopedManagementServiceOverrideForTesting platform_management_{
       policy::ManagementServiceFactory::GetForPlatform(),
@@ -312,16 +301,19 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
   CheckSSORequest(/*expect_response=*/false, kDomain1, guest_browser);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest, Unmanaged) {
-  policy::ScopedManagementServiceOverrideForTesting platform_management(
+// Simulates an unmanaged device. The override is a member so that it takes
+// effect before the browser-owned `PlatformAuthPolicyObserver` is created, and
+// it is declared after the base fixture's override so it takes precedence.
+class ExtensibleEnterpriseSsoOktaUnmanagedBrowserTest
+    : public ExtensibleEnterpriseSsoOktaBrowserTest {
+ protected:
+  policy::ScopedManagementServiceOverrideForTesting unmanaged_platform_{
       policy::ManagementServiceFactory::GetForPlatform(),
-      policy::EnterpriseManagementAuthority::NONE);
+      policy::EnterpriseManagementAuthority::NONE};
+};
 
-  // Reset the policy observer.
-  PrefService* prefs = g_browser_process->local_state();
-  ASSERT_TRUE(prefs);
-  platform_auth_policy_observer_.emplace(prefs);
-
+IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaUnmanagedBrowserTest,
+                       Unmanaged) {
   CheckSSORequest(false);
 }
 
@@ -352,11 +344,12 @@ IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
 IN_PROC_BROWSER_TEST_F(ExtensibleEnterpriseSsoOktaBrowserTest,
                        NotConfiguredHost) {
   configured_hosts_ = {};
-
-  // Reset the policy observer to trigger update.
-  PrefService* prefs = g_browser_process->local_state();
-  ASSERT_TRUE(prefs);
-  platform_auth_policy_observer_.emplace(prefs);
+  config_update_callback_.Run();
+  base::test::RunUntil([&]() {
+    return g_browser_process->local_state()
+        ->GetList(prefs::kExtensibleEnterpriseSSOConfiguredHosts)
+        .empty();
+  });
 
   CheckSSORequest(false);
 }
