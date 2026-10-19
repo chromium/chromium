@@ -46,6 +46,8 @@ chromium-metrics-reviews@google.com.
       summary="Promotion for Glic in the context menu."/>
   <variant name="GlicKeyboardShortcutNewBadge"
       summary="Glic keyboard shortcut input on settings page."/>
+  <variant name="IndigoContextMenu"
+      summary="Shown on the Try it on context menu item."/>
   <variant name="LensOverlay"
       summary="Lens Overlay entry points in app and web context menus."/>
   <variant name="NewBadgeTestFeature"

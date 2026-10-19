@@ -1644,11 +1644,21 @@ TEST_F(RenderViewContextMenuPrefsTest,
   }
 
   {
-    // Eligible page -> visible on both image and page context menus, and
-    // ShownEntryPoint metric is deduplicated per page load.
+    // Eligible page -> visible on both image and page context menus, has "NEW"
+    // badge attached, and ShownEntryPoint metric is deduplicated per page load.
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitch(
         indigo::kForceIndigoSwitch);
+
+    auto* const user_education_service =
+        UserEducationServiceFactory::GetForBrowserContext(profile());
+    if (auto* const user_education_controller =
+            user_education_service->new_badge_controller()) {
+      user_education_service->user_education_storage_service()
+          .set_profile_creation_time_for_testing(base::Time::Now() -
+                                                 base::Days(100));
+      user_education_controller->InitData();
+    }
 
     base::HistogramTester histogram_tester;
 
@@ -1657,6 +1667,11 @@ TEST_F(RenderViewContextMenuPrefsTest,
     image_menu.SetBrowser(GetBrowser());
     image_menu.Init();
     EXPECT_TRUE(image_menu.IsItemPresent(IDC_CONTENT_CONTEXT_INDIGO));
+
+    auto item = image_menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_INDIGO);
+    ASSERT_TRUE(item.has_value());
+    EXPECT_EQ(item->first->IsNewFeatureAt(item->second),
+              user_education_service->new_badge_controller() != nullptr);
 
     TestRenderViewContextMenu page_menu(*web_contents()->GetPrimaryMainFrame(),
                                         page_params);
