@@ -216,8 +216,9 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
     // overwrite that information since it is probably the result of an
     // application starting up very quickly.
     const std::string& window_id = item.first;
-    if (extension_data.find(window_id) != extension_data.end())
+    if (extension_data.contains(window_id)) {
       continue;
+    }
 
     const base::DictValue* stored_window = item.second.GetIfDict();
     if (!stored_window)

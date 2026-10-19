@@ -357,8 +357,8 @@ BluetoothPrivateSetAdapterStateFunction::CreatePropertyErrorCallback(
 
 void BluetoothPrivateSetAdapterStateFunction::OnAdapterPropertySet(
     const std::string& property) {
-  DCHECK(pending_properties_.find(property) != pending_properties_.end());
-  DCHECK(failed_properties_.find(property) == failed_properties_.end());
+  DCHECK(pending_properties_.contains(property));
+  DCHECK(!failed_properties_.contains(property));
 
   pending_properties_.erase(property);
   if (pending_properties_.empty() && parsed_) {
@@ -371,8 +371,8 @@ void BluetoothPrivateSetAdapterStateFunction::OnAdapterPropertySet(
 
 void BluetoothPrivateSetAdapterStateFunction::OnAdapterPropertyError(
     const std::string& property) {
-  DCHECK(pending_properties_.find(property) != pending_properties_.end());
-  DCHECK(failed_properties_.find(property) == failed_properties_.end());
+  DCHECK(pending_properties_.contains(property));
+  DCHECK(!failed_properties_.contains(property));
   pending_properties_.erase(property);
   failed_properties_.insert(property);
   if (pending_properties_.empty() && parsed_)

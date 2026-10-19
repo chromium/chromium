@@ -290,7 +290,7 @@ void ExtensionHost::OnBackgroundEventDispatched(
   // We don't expect unacked_messages to be written more than once per event_id
   // since event_ids are supposed to be unique per event dispatch to each
   // extension.
-  CHECK(unacked_messages_.count(event_id) == 0);
+  CHECK(!unacked_messages_.contains(event_id));
   unacked_messages_[event_id] =
       UnackedEventData{event_name, dispatch_start_time, dispatch_source,
                        lazy_background_active_on_dispatch};

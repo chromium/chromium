@@ -242,8 +242,9 @@ void ScriptInjectionManager::RFOHelper::InvalidateAndResetFrame(
   // Reset the frame if either |force_reset| is true, or if the manager is
   // keeping track of the state of the frame (in which case we need to clean it
   // up).
-  if (force_reset || manager_->frame_statuses_.count(render_frame()) != 0)
+  if (force_reset || manager_->frame_statuses_.contains(render_frame())) {
     manager_->InvalidateForFrame(render_frame());
+  }
 }
 
 ScriptInjectionManager::ScriptInjectionManager(
@@ -383,8 +384,9 @@ void ScriptInjectionManager::InjectScripts(content::RenderFrame* frame,
   for (auto iter = frame_injections.begin(); iter != frame_injections.end();) {
     // It's possible for the frame to be invalidated in the course of injection
     // (if a script removes its own frame, for example). If this happens, abort.
-    if (!active_injection_frames_.count(frame))
+    if (!active_injection_frames_.contains(frame)) {
       break;
+    }
     std::unique_ptr<ScriptInjection> injection(std::move(*iter));
     iter = frame_injections.erase(iter);
     TryToInject(std::move(injection), run_location, &scripts_run_info);

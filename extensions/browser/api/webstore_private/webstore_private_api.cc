@@ -186,8 +186,7 @@ class PendingApprovals {
   }
 
   void MaybeAddShutdownSubscription(content::BrowserContext* context) {
-    if (shutdown_subscriptions_.find(context) ==
-        shutdown_subscriptions_.end()) {
+    if (!shutdown_subscriptions_.contains(context)) {
       shutdown_subscriptions_[context] =
           PendingApprovalsShutdownNotifierFactory::GetInstance()
               ->Get(context)

@@ -102,9 +102,9 @@ std::string RulesRegistry::AddRulesNoFill(
     // Every rule should have a priority assigned.
     DCHECK(rule.priority);
     RulesDictionaryKey key(extension_id, rule_id);
-    if (rules_.find(key) != rules_.end() ||
-        manifest_rules_.find(key) != manifest_rules_.end())
+    if (rules_.contains(key) || manifest_rules_.contains(key)) {
       return base::StringPrintf(kDuplicateRuleId, rule_id.c_str());
+    }
   }
 
   std::vector<const api::events::Rule*> rule_ptrs;
@@ -386,7 +386,7 @@ bool RulesRegistry::IsUniqueId(const ExtensionId& extension_id,
   auto identifiers = used_rule_identifiers_.find(extension_id);
   if (identifiers == used_rule_identifiers_.end())
     return true;
-  return identifiers->second.find(rule_id) == identifiers->second.end();
+  return !identifiers->second.contains(rule_id);
 }
 
 std::string RulesRegistry::GenerateUniqueId(const ExtensionId& extension_id) {

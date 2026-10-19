@@ -434,7 +434,7 @@ bool ArgumentSpec::ParseArgumentToFundamental(
         // We already checked that this is a string, so this should never fail.
         CHECK(gin::Converter<std::string>::FromV8(v8::Isolate::GetCurrent(),
                                                   value, &str));
-        if (!enum_values_.empty() && enum_values_.count(str) == 0) {
+        if (!enum_values_.empty() && !enum_values_.contains(str)) {
           *error = api_errors::InvalidEnumValue(enum_values_);
           return false;
         }
@@ -588,7 +588,7 @@ bool ArgumentSpec::ParseArgumentToObject(
 
   for (const auto& pair : properties_) {
     const ArgumentSpec* spec = pair.second.get();
-    if (!spec->optional_ && seen_properties.count(spec) == 0) {
+    if (!spec->optional_ && !seen_properties.contains(spec)) {
       *error = api_errors::MissingRequiredProperty(pair.first.c_str());
       return false;
     }

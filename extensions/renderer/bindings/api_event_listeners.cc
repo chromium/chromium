@@ -403,8 +403,9 @@ v8::LocalVector<v8::Function> FilteredEventListeners::GetListeners(
   v8::LocalVector<v8::Function> listeners(isolate);
   listeners.reserve(ids.size());
   for (const auto& listener : listeners_) {
-    if (ids.count(listener.filter_id))
+    if (ids.contains(listener.filter_id)) {
       listeners.push_back(listener.function.Get(isolate));
+    }
   }
   return listeners;
 }

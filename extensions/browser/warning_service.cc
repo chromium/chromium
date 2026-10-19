@@ -39,7 +39,7 @@ void WarningService::ClearWarnings(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ExtensionIdSet affected_extensions;
   for (auto i = warnings_.begin(); i != warnings_.end();) {
-    if (types.find(i->warning_type()) != types.end()) {
+    if (types.contains(i->warning_type())) {
       affected_extensions.insert(i->extension_id());
       warnings_.erase(i++);
     } else {

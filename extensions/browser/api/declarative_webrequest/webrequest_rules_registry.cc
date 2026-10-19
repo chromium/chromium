@@ -160,7 +160,7 @@ std::string WebRequestRulesRegistry::AddRulesImpl(
 
   for (auto* rule : rules) {
     const WebRequestRule::RuleId& rule_id(*rule->id);
-    DCHECK(registered_rules.find(rule_id) == registered_rules.end());
+    DCHECK(!registered_rules.contains(rule_id));
 
     std::unique_ptr<WebRequestRule> webrequest_rule = WebRequestRule::Create(
         url_matcher_.condition_factory(), browser_context(), extension,

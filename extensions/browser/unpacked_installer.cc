@@ -261,7 +261,7 @@ void UnpackedInstaller::OnInstallChecksComplete(
   }
 
   std::u16string error_message;
-  if (errors.count(PreloadCheck::Error::kDisallowedByPolicy)) {
+  if (errors.contains(PreloadCheck::Error::kDisallowedByPolicy)) {
     error_message = policy_check_->GetErrorMessage();
   } else {
     error_message = requirements_check_->GetErrorMessage();

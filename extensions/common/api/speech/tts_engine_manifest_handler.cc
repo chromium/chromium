@@ -102,8 +102,7 @@ bool TtsEngine::Parse(const base::ListValue& tts_voices,
           *error = errors::kInvalidTtsVoicesEventTypes;
           return false;
         }
-        if (voice_data.event_types.find(event_type) !=
-            voice_data.event_types.end()) {
+        if (voice_data.event_types.contains(event_type)) {
           *error = errors::kInvalidTtsVoicesEventTypes;
           return false;
         }

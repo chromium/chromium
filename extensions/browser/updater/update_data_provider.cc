@@ -87,7 +87,7 @@ void UpdateDataProvider::GetData(
     if (!extension) {
       continue;
     }
-    DCHECK_NE(0u, update_crx_component.count(id));
+    DCHECK(update_crx_component.contains(id));
     const ExtensionUpdateData& extension_data = update_crx_component.at(id);
     auto& crx_component = data.back();
     auto pubkey = base::Base64Decode(extension->public_key());

@@ -159,7 +159,7 @@ AppWindow* AppWindowRegistry::GetAppWindowForAppAndKey(
 bool AppWindowRegistry::HadDevToolsAttached(
     content::WebContents* web_contents) const {
   std::string key = GetWindowKeyForWebContents(web_contents);
-  return key.empty() ? false : inspected_windows_.count(key) != 0;
+  return key.empty() ? false : inspected_windows_.contains(key);
 }
 
 void AppWindowRegistry::DevToolsAgentHostAttached(

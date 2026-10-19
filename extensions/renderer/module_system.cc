@@ -570,7 +570,7 @@ v8::MaybeLocal<v8::Object> ModuleSystem::RequireNativeFromString(
     return v8::MaybeLocal<v8::Object>();
   }
 
-  if (overridden_native_handlers_.count(native_name) > 0u) {
+  if (overridden_native_handlers_.contains(native_name)) {
     v8::Local<v8::Value> value = RequireForJsInner(
         ToV8StringUnsafe(GetIsolate(), native_name.c_str()), true /* create */);
     if (value.IsEmpty() || !value->IsObject())

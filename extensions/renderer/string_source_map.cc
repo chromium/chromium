@@ -31,7 +31,7 @@ bool StringSourceMap::Contains(std::string_view name) const {
 void StringSourceMap::RegisterModule(const std::string& name,
                                      const std::string& source,
                                      bool gzipped) {
-  CHECK_EQ(0u, sources_.count(name))
+  CHECK(!sources_.contains(name))
       << "A module for '" << name << "' already exists.";
   if (!gzipped) {
     sources_[name] = source;

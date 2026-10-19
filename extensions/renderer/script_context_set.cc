@@ -298,7 +298,7 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
     return mojom::ContextType::kWebPage;
   }
 
-  if (extension && active_extension_ids_->count(extension->id()) > 0) {
+  if (extension && active_extension_ids_->contains(extension->id())) {
     // |extension| is active in this process, but it could be either a true
     // extension process or within the extent of a hosted app. In the latter
     // case this would usually be considered a (privileged) web page context,

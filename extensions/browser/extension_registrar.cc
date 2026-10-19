@@ -349,8 +349,9 @@ void ExtensionRegistrar::EnableExtension(const ExtensionId& extension_id) {
 
   // If the extension is currently reloading, it will be enabled once the reload
   // is complete.
-  if (reloading_extensions_.count(extension_id) > 0)
+  if (reloading_extensions_.contains(extension_id)) {
     return;
+  }
 
   // First, check that the extension can be enabled.
   if (IsExtensionEnabled(extension_id) ||
@@ -1178,7 +1179,7 @@ void ExtensionRegistrar::DoReloadExtension(
     // If an unpacked extension previously failed to reload, it will still be
     // marked as disabled, but we can try to reload it again - the developer
     // may have fixed the issue.
-    if (failed_to_reload_unpacked_extensions_.count(path) == 0) {
+    if (!failed_to_reload_unpacked_extensions_.contains(path)) {
       return;
     }
     failed_to_reload_unpacked_extensions_.erase(path);
@@ -1402,7 +1403,7 @@ bool ExtensionRegistrar::CanAddExtension(const Extension* extension) const {
   if (!extensions_enabled() &&
       !Manifest::ShouldAlwaysLoadExtension(extension->location(),
                                            extension->is_theme()) &&
-      disable_flag_exempted_extensions_.count(extension->id()) == 0) {
+      !disable_flag_exempted_extensions_.contains(extension->id())) {
     return false;
   }
   return true;

@@ -1690,7 +1690,7 @@ void MergeOnHeadersReceivedResponses(
       {
         for (const ResponseHeader& header : delta.added_response_headers) {
           ResponseHeader lowercase_header(ToLowerCase(header));
-          if (added_headers.find(lowercase_header) != added_headers.end()) {
+          if (added_headers.contains(lowercase_header)) {
             continue;
           }
           added_headers.insert(lowercase_header);

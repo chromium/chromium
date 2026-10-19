@@ -614,7 +614,7 @@ bool ExtensionDownloader::TryFetchingExtensionsFromCache(
     // In case when there are multiple requests for the same extension ID (they
     // could appear in the same fetch due to merging same URLs) ask the cache
     // only once.
-    if (cache_results.count(task.id) == 0u) {
+    if (!cache_results.contains(task.id)) {
       // Extension is fetched here only in cases when we fail to fetch the
       // update manifest or parsing of update manifest failed. In such cases, we
       // don't have expected version and expected hash. Thus, passing empty hash

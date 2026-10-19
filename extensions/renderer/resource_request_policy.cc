@@ -49,8 +49,7 @@ void ResourceRequestPolicy::OnExtensionLoaded(const Extension& extension) {
 }
 
 bool ResourceRequestPolicy::IsWebAccessibleHost(const std::string& host) {
-  if (web_accessible_resources_map_.find(host) !=
-      web_accessible_resources_map_.end()) {
+  if (web_accessible_resources_map_.contains(host)) {
     return true;
   }
   for (const auto& [id, guid] : web_accessible_resources_map_) {

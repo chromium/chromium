@@ -104,7 +104,7 @@ bool FakeSafeBrowsingDatabaseManager::CheckExtensionIDs(
 
   std::set<safe_browsing::FullHashStr> unsafe_extension_ids;
   for (const auto& extension_id : extension_ids) {
-    if (unsafe_ids_.count(extension_id)) {
+    if (unsafe_ids_.contains(extension_id)) {
       unsafe_extension_ids.insert(extension_id);
     }
   }

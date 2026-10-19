@@ -116,7 +116,7 @@ ScriptContext::ScopedFrameDocumentLoader::ScopedFrameDocumentLoader(
     blink::WebDocumentLoader* document_loader)
     : frame_(frame), document_loader_(document_loader) {
   auto& map = FrameDocumentLoaderMap();
-  DCHECK(map.find(frame_) == map.end());
+  DCHECK(!map.contains(frame_));
   map[frame_] = document_loader_;
 }
 

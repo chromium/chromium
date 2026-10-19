@@ -348,7 +348,7 @@ void UserScriptLoader::StartLoad() {
   // Filter out any scripts that are queued for removal.
   std::erase_if(scripts_to_load,
                 [this](const std::unique_ptr<UserScript>& script) {
-                  return removed_script_ids_.count(script->id()) > 0u;
+                  return removed_script_ids_.contains(script->id());
                 });
 
   // Since all scripts managed by an instance of this class should have unique
@@ -356,7 +356,7 @@ void UserScriptLoader::StartLoad() {
   // updated from `added_scripts_map_`.
   std::erase_if(scripts_to_load,
                 [this](const std::unique_ptr<UserScript>& script) {
-                  return added_scripts_map_.count(script->id()) > 0u;
+                  return added_scripts_map_.contains(script->id());
                 });
 
   std::set<std::string> added_script_ids;
@@ -619,7 +619,7 @@ UserScriptLoader::SendUpdateResult UserScriptLoader::SendUpdate(
           if (loaded_scripts_) {
             UserScriptList filtered_scripts;
             for (const std::unique_ptr<UserScript>& script : *loaded_scripts_) {
-              if (script_ids->count(script->id())) {
+              if (script_ids->contains(script->id())) {
                 std::unique_ptr<UserScript> filtered_script =
                     UserScript::CopyMetadataFrom(*script);
                 for (size_t i = 0; i < script->js_scripts().size(); ++i) {

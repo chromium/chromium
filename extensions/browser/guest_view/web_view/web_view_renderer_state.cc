@@ -39,8 +39,7 @@ void WebViewRendererState::AddGuest(int guest_process_id,
   base::AutoLock auto_lock2(web_view_partition_id_map_lock_);
 
   GlobalRenderFrameHostId global_routing_id(guest_process_id, guest_routing_id);
-  bool updating =
-      web_view_info_map_.find(global_routing_id) != web_view_info_map_.end();
+  bool updating = web_view_info_map_.contains(global_routing_id);
   web_view_info_map_[global_routing_id] = web_view_info;
   if (updating) {
     return;

@@ -204,8 +204,9 @@ void LogSourceAccessManager::RemoveHandle(ResourceId id) {
     return;
   const SourceAndExtension& source_and_extension = *iter->second;
   const LogSource source = source_and_extension.source;
-  if (num_readers_per_source_.find(source) != num_readers_per_source_.end())
+  if (num_readers_per_source_.contains(source)) {
     num_readers_per_source_[source]--;
+  }
 
   open_handles_.erase(id);
 }
@@ -265,7 +266,7 @@ bool LogSourceAccessManager::UpdateSourceAccessTime(ResourceId id) {
     return false;
 
   const SourceAndExtension& key = *iter->second;
-  if (rate_limiters_.find(key) == rate_limiters_.end()) {
+  if (!rate_limiters_.contains(key)) {
     rate_limiters_.emplace(key, std::make_unique<AccessRateLimiter>(
                                     g_max_num_burst_accesses,
                                     GetMinTimeBetweenReads(), tick_clock_));

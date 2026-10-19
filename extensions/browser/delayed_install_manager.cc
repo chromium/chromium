@@ -130,8 +130,7 @@ bool DelayedInstallManager::FinishDelayedInstallationIfReady(
 void DelayedInstallManager::RegisterInstallGate(
     ExtensionPrefs::DelayReason reason,
     InstallGate* install_delayer) {
-  DCHECK(install_delayer_registry_.end() ==
-         install_delayer_registry_.find(reason));
+  DCHECK(!install_delayer_registry_.contains(reason));
   install_delayer_registry_[reason] = install_delayer;
 }
 

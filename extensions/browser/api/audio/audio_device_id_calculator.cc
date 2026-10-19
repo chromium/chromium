@@ -54,7 +54,7 @@ void AudioDeviceIdCalculator::LoadStableIdMap() {
 std::string AudioDeviceIdCalculator::GenerateNewStableDeviceId(
     const std::string& audio_service_stable_id) {
   DCHECK(stable_id_map_loaded_);
-  DCHECK_EQ(0u, stable_id_map_.count(audio_service_stable_id));
+  DCHECK(!stable_id_map_.contains(audio_service_stable_id));
 
   ScopedListPrefUpdate update(user_prefs::UserPrefs::Get(context_.get()),
                               kAudioApiStableDeviceIds);

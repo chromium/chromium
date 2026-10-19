@@ -56,8 +56,7 @@ const ActiveInstallData* InstallTracker::GetActiveInstall(
 
 void InstallTracker::AddActiveInstall(const ActiveInstallData& install_data) {
   DCHECK(!install_data.extension_id.empty());
-  DCHECK(active_installs_.find(install_data.extension_id) ==
-         active_installs_.end());
+  DCHECK(!active_installs_.contains(install_data.extension_id));
   active_installs_.insert(
       std::make_pair(install_data.extension_id, install_data));
 }

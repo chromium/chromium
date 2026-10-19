@@ -81,7 +81,7 @@ bool ErrorMap::Filter::Matches(const ExtensionError* error) const {
       error->extension_id() != restrict_to_extension_id) {
     return false;
   }
-  if (!restrict_to_ids.empty() && restrict_to_ids.count(error->id()) == 0) {
+  if (!restrict_to_ids.empty() && !restrict_to_ids.contains(error->id())) {
     return false;
   }
   return true;

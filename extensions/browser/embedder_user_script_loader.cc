@@ -88,7 +88,7 @@ void EmbedderUserScriptLoader::LoadScripts(
 
   for (const std::unique_ptr<extensions::UserScript>& script :
        user_scripts_cache_) {
-    if (added_script_ids.count(script->id()) == 0) {
+    if (!added_script_ids.contains(script->id())) {
       continue;
     }
 

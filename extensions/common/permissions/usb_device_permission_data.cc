@@ -79,7 +79,7 @@ bool UsbDevicePermissionData::Check(
           interface_id_ == specific_param.interface_id) &&
          (!specific_param.interface_classes ||
           interface_class_ == SPECIAL_VALUE_ANY ||
-          specific_param.interface_classes->count(interface_class_) > 0);
+          specific_param.interface_classes->contains(interface_class_));
 }
 
 base::Value UsbDevicePermissionData::ToValue() const {

@@ -246,8 +246,9 @@ void ManifestFetchData::RemoveExtensions(const ExtensionIdSet& id_to_remove,
 
   for (const auto& data : extensions_data) {
     const ExtensionId& extension_id = data.first;
-    if (id_to_remove.count(extension_id))
+    if (id_to_remove.contains(extension_id)) {
       continue;
+    }
     const ExtensionData& extension_data = data.second;
     auto it = pings_.find(extension_id);
     const DownloadPingData* optional_ping_data =

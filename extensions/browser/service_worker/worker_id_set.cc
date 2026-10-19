@@ -160,7 +160,7 @@ std::vector<WorkerId> WorkerIdSet::GetAllForExtension(
 }
 
 bool WorkerIdSet::Contains(const WorkerId& worker_id) const {
-  return workers_.count(worker_id) != 0;
+  return workers_.contains(worker_id);
 }
 
 std::vector<WorkerId> WorkerIdSet::GetAllForExtension(

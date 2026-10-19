@@ -776,7 +776,7 @@ bool DoesCSPDisallowRemoteCode(const std::string& extension_id,
     if (mapping == &default_src_mapping)
       continue;
 
-    if (mapping->directive && secure_directives.count(mapping->directive)) {
+    if (mapping->directive && secure_directives.contains(mapping->directive)) {
       // We already checked this directive and know it's secure. Skip it.
       continue;
     }

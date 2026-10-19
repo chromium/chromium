@@ -250,7 +250,7 @@ size_t GetTotalLoadedScriptsLength(
     const std::set<std::string>& added_script_ids) {
   size_t total_length = 0u;
   for (const std::unique_ptr<UserScript>& script : *user_scripts) {
-    if (added_script_ids.count(script->id()) == 0) {
+    if (!added_script_ids.contains(script->id())) {
       for (const auto& js_script : script->js_scripts())
         total_length += js_script->GetContent().length();
       for (const auto& js_script : script->css_scripts())
@@ -286,7 +286,7 @@ void LoadUserScripts(
   for (const std::unique_ptr<UserScript>& script : *user_scripts) {
     size_t script_files_length = 0u;
 
-    if (added_script_ids.count(script->id()) == 0) {
+    if (!added_script_ids.contains(script->id())) {
       continue;
     }
     for (const std::unique_ptr<UserScript::Content>& script_file :
@@ -683,7 +683,7 @@ void ExtensionUserScriptLoader::ClearDynamicScripts(
 
 void ExtensionUserScriptLoader::SetSourceEnabled(UserScript::Source source,
                                                  bool enabled) {
-  bool currently_enabled = disabled_sources_.count(source) == 0;
+  bool currently_enabled = !disabled_sources_.contains(source);
   if (enabled == currently_enabled) {
     return;  // Nothing's changed; our work here is done.
   }

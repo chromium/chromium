@@ -230,10 +230,10 @@ bool Command::Parse(const base::DictValue& command,
 
   std::string platform = CommandPlatform();
   std::string key = platform;
-  if (suggestions.find(key) == suggestions.end()) {
+  if (!suggestions.contains(key)) {
     key = ui::kKeybindingPlatformDefault;
   }
-  if (suggestions.find(key) == suggestions.end()) {
+  if (!suggestions.contains(key)) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kInvalidKeyBindingMissingPlatform, base::NumberToString(index),
         keys::kSuggestedKey, platform);

@@ -189,7 +189,7 @@ v8::Local<v8::Object> APIEventHandler::CreateEventInstance(
 
   APIEventPerContextData* data = APIEventPerContextData::GetFrom(
       context, CreatePerContextData::kCreateIfMissing);
-  DCHECK(data->emitters.find(event_name) == data->emitters.end());
+  DCHECK(!data->emitters.contains(event_name));
 
   APIEventListeners::ListenersUpdated updated =
       notify_on_change ? listeners_changed_ : base::DoNothing();
