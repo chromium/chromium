@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -106,6 +107,16 @@ class LinkFocusBorder : public views::Border {
  private:
   const bool is_focused_;
 };
+
+// Records that the user acknowledged the notice and removes it from the popup.
+// Can destroy `controller`.
+void AcknowledgeNotice(AutofillPopupController& controller,
+                       int line_number,
+                       std::string_view histogram_name) {
+  base::UmaHistogramEnumeration(
+      histogram_name, AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
+  controller.RemoveSuggestion(line_number);
+}
 
 }  // namespace
 
@@ -279,10 +290,8 @@ bool PopupNoticeView::IsSelectable() const {
 
 void PopupNoticeView::OnAcceptButtonClicked() {
   if (controller_) {
-    base::UmaHistogramEnumeration(
-        notice_interaction_histogram_name_,
-        AutofillMetrics::PopupNoticeInteractions::kAcknowledged);
-    controller_->RemoveSuggestion(line_number_);
+    AcknowledgeNotice(*controller_, line_number_,
+                      notice_interaction_histogram_name_);
   }
 }
 
@@ -293,6 +302,7 @@ void PopupNoticeView::OnLinkClicked() {
         AutofillMetrics::PopupNoticeInteractions::kLinkButtonClicked);
   }
   if (on_link_clicked_) {
+    // Running the closure can destroy `this`. Do not access members afterwards.
     on_link_clicked_.Run();
   }
 }
@@ -464,20 +474,27 @@ std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
           IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING);
     }
   }
+  // Clicking the link acknowledges the notice and opens the settings.
   auto on_link_clicked = base::BindRepeating(
-      [](base::WeakPtr<AutofillPopupController> controller) {
-        if (!controller || !controller->GetWebContents()) {
+      [](base::WeakPtr<AutofillPopupController> controller, int line_number,
+         const std::string& histogram_name) {
+        if (!controller) {
           return;
         }
-        Profile* profile = Profile::FromBrowserContext(
-            controller->GetWebContents()->GetBrowserContext());
-        if (!profile) {
-          return;
+        // Acknowledging the notice can destroy `controller`, so get the
+        // profile first.
+        content::WebContents* web_contents = controller->GetWebContents();
+        Profile* profile =
+            web_contents
+                ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+                : nullptr;
+        AcknowledgeNotice(*controller, line_number, histogram_name);
+        if (profile) {
+          chrome::ShowSettingsSubPageForProfile(
+              profile, chrome::kSuggestionsFromGeminiSubPage);
         }
-        chrome::ShowSettingsSubPageForProfile(
-            profile, chrome::kSuggestionsFromGeminiSubPage);
       },
-      controller);
+      controller, line_number, histogram_name);
   return std::make_unique<PopupNoticeView>(
       a11y_selection_delegate, announce_callback, std::move(controller),
       line_number, title_text, subtitle_text, link_text, accept_button_text,
