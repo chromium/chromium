@@ -3132,7 +3132,13 @@ void ComputedStyleBuilder::SetAnimatedSource(CSSPropertyID property,
   if (!tracked) {
     return;
   }
-  UpdateAnimatedSource(*tracked, CSSProperty::Get(property),
+  const CSSProperty& css_property = CSSProperty::Get(property);
+  if (css_property.IsInherited() &&
+      !RuntimeEnabledFeatures::
+          TrackAnimatedSourcesForInheritedPropertiesEnabled()) {
+    return;
+  }
+  UpdateAnimatedSource(*tracked, css_property,
                        AnimatedSource::ForElement(&animating_element));
 }
 

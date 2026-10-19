@@ -6863,7 +6863,17 @@
       base_feature: "none",
     },
     {
+      // If enabled and opted-in per property, style tracks the animating
+      // element(s) that each property's computed value is derived from.
+      // Used when deciding which animations can run on the compositor.
       name: "TrackAnimatedSources",
+      status: "stable",
+    },
+    {
+      // Also tracks properties that inherit-by-default, such as `color`.
+      // On a separate flag to collect data on runtime performance impact.
+      name: "TrackAnimatedSourcesForInheritedProperties",
+      depends_on: ["TrackAnimatedSources"],
       status: "test",
     },
     {

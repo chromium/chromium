@@ -3581,10 +3581,15 @@ TEST_P(CSSAnimationsTest, SVGColorTransitionVisitedCurrentColor) {
       "rgb(0, 128, 128)");
 }
 
-class AnimatedSourceTest : public RenderingTest {
+class AnimatedSourceTest
+    : public RenderingTest,
+      private ScopedTrackAnimatedSourcesForTest,
+      private ScopedTrackAnimatedSourcesForInheritedPropertiesForTest {
  public:
   AnimatedSourceTest()
-      : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : RenderingTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        ScopedTrackAnimatedSourcesForTest(true),
+        ScopedTrackAnimatedSourcesForInheritedPropertiesForTest(true) {}
 
   void SetUp() override {
     RenderingTest::SetUp();
@@ -3613,9 +3618,6 @@ class AnimatedSourceTest : public RenderingTest {
   AnimatedSource SourceFor(Element* element, CSSPropertyID property) {
     return element->GetComputedStyle()->GetAnimatedSource(property);
   }
-
- private:
-  ScopedTrackAnimatedSourcesForTest enable_feature_{true};
 };
 
 // Behavior every property marked tracks_animated_source must satisfy.
