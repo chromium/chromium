@@ -32,6 +32,8 @@ source_set("model") {
     "ttc_session_controller_observer_bridge.h",
     "ttc_session_controller_observer_bridge.mm",
     "ttc_states.h",
+    "ttc_voice_focused_web_state_tracker.h",
+    "ttc_voice_focused_web_state_tracker.mm",
     "ttc_websocket_backend.h",
     "ttc_websocket_backend.mm",
   ]
@@ -76,6 +78,7 @@ source_set("unit_tests") {
     "ttc_keyed_service_unittest.mm",
     "ttc_page_context_monitor_unittest.mm",
     "ttc_session_controller_unittest.mm",
+    "ttc_voice_focused_web_state_tracker_unittest.mm",
     "ttc_websocket_backend_unittest.mm",
   ]
   deps = [
@@ -89,7 +92,11 @@ source_set("unit_tests") {
     "//components/ttc/app/public",
     "//ios/chrome/browser/ai_prototyping/ttc/model/audio",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/shared/coordinator/scene",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/providers/intelligence",
     "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
