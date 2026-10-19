@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
@@ -40,7 +41,7 @@ class AX_BASE_EXPORT AXAttributes {
   // default value if it is not present. In the case of a collection holding
   // complex objects (e.g., std::string), the returned reference or view is
   // valid only until the collection is modified.
-  ReturnType Get(Identifier id) const {
+  ReturnType Get(Identifier id) const LIFETIME_BOUND {
     if (auto iter = attributes_.find(id); iter != attributes_.end()) {
       return iter->second;
     }
@@ -111,8 +112,7 @@ using AXFloatAttributes =
 using AXBoolAttributes =
     AXAttributes<ax::mojom::BoolAttribute, FundamentalAttributeTraits<bool>>;
 using AXIntListAttributes =
-    AXAttributes<ax::mojom::IntListAttribute,
-                 ObjectAttributeTraits<std::vector<int32_t>>>;
+    AXAttributes<ax::mojom::IntListAttribute, ListAttributeTraits<int32_t>>;
 using AXStringListAttributes = AXAttributes<ax::mojom::StringListAttribute,
                                             ListAttributeTraits<std::string>>;
 
@@ -120,10 +120,6 @@ using AXStringListAttributes = AXAttributes<ax::mojom::StringListAttribute,
 
 template <>
 const std::string& ObjectAttributeTraits<std::string>::GetDefault();
-
-template <>
-const std::vector<int32_t>&
-ObjectAttributeTraits<std::vector<int32_t>>::GetDefault();
 
 }  // namespace ui
 

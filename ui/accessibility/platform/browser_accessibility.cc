@@ -2050,13 +2050,13 @@ TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
 
   TextAttributeMap spelling_attributes;
   if (IsText()) {
-    const std::vector<int32_t>& marker_types =
+    base::span<const int32_t> marker_types =
         GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
-    const std::vector<int32_t>& highlight_types =
+    base::span<const int32_t> highlight_types =
         GetIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes);
-    const std::vector<int>& marker_starts =
+    base::span<const int> marker_starts =
         GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
-    const std::vector<int>& marker_ends =
+    base::span<const int> marker_ends =
         GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
     CHECK_EQ(marker_types.size(), highlight_types.size());

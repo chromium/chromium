@@ -102,7 +102,7 @@
     }
 
     // Also, add indirect children (if any).
-    const std::vector<int32_t>& indirectChildIds = _node->GetIntListAttribute(
+    base::span<const int32_t> indirectChildIds = _node->GetIntListAttribute(
         ax::mojom::IntListAttribute::kIndirectChildIds);
     for (int32_t childId : indirectChildIds) {
       ui::AXPlatformNode* childNode =

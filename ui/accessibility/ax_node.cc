@@ -1114,7 +1114,7 @@ bool AXNode::CanComputeIntListAttribute(
   }
 }
 
-const std::vector<int32_t>& AXNode::GetIntListAttribute(
+base::span<const int32_t> AXNode::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
   if (data().HasIntListAttribute(attribute)) {
     return data().GetIntListAttribute(attribute);
@@ -1122,7 +1122,7 @@ const std::vector<int32_t>& AXNode::GetIntListAttribute(
   if (CanComputeIntListAttribute(attribute)) {
     return GetComputedNodeData().ComputeAttribute(attribute);
   }
-  return data().GetIntListAttribute(ax::mojom::IntListAttribute::kNone);
+  return {};
 }
 
 const AXComputedNodeData& AXNode::GetComputedNodeData() const {
@@ -1247,7 +1247,7 @@ gfx::RectF AXNode::GetTextContentRangeBoundsUTF16(int start_offset,
     return gfx::RectF();
   }
 
-  const std::vector<int32_t>& character_offsets =
+  base::span<const int32_t> character_offsets =
       GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   int character_offsets_length =
       base::checked_cast<int>(character_offsets.size());

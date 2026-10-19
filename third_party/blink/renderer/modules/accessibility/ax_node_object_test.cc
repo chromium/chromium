@@ -1021,7 +1021,7 @@ TEST_F(AccessibilityTest, RadioButtonsInGroupInTableRows) {
   // kRadioGroupIds.
   EXPECT_EQ(0, node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize));
 
-  std::vector<int32_t> radio_group_ids = node_data.GetIntListAttribute(
+  base::span<const int32_t> radio_group_ids = node_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kRadioGroupIds);
   EXPECT_EQ(6u, radio_group_ids.size());
 }

@@ -7,6 +7,8 @@
 #include <memory>
 #include <ranges>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -1317,8 +1319,8 @@ TEST_F(AccessibilityTest, ComputedDetailsRelationWithDisplayLockedHintPopover) {
     ScopedFreezeAXCache freeze(GetAXObjectCache());
     ui::AXNodeData node_data;
     ax_button->Serialize(&node_data, ui::kAXModeComplete);
-    return node_data.GetIntListAttribute(
-        ax::mojom::IntListAttribute::kDetailsIds);
+    return base::ToVector(node_data.GetIntListAttribute(
+        ax::mojom::IntListAttribute::kDetailsIds));
   };
 
   // popovertarget: the hint is open in the DOM but absent from the AX tree.
@@ -1381,8 +1383,8 @@ TEST_F(AccessibilityTest, ComputedDetailsRelationForPlainContentPopover) {
     ScopedFreezeAXCache freeze(GetAXObjectCache());
     ui::AXNodeData node_data;
     ax_button->Serialize(&node_data, ui::kAXModeComplete);
-    return node_data.GetIntListAttribute(
-        ax::mojom::IntListAttribute::kDetailsIds);
+    return base::ToVector(node_data.GetIntListAttribute(
+        ax::mojom::IntListAttribute::kDetailsIds));
   };
 
   const std::vector<int32_t> manual_popover_ids = {

@@ -194,15 +194,15 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
 
   void SetCharacterOffsets(const std::vector<int32_t>& offsets);
 
-  const std::vector<int32_t>& GetCharacterOffsets() const;
+  base::span<const int32_t> GetCharacterOffsets() const;
 
   void SetWordStarts(const std::vector<int32_t>& offsets);
 
-  const std::vector<int32_t>& GetWordStarts() const;
+  base::span<const int32_t> GetWordStarts() const;
 
   void SetWordEnds(const std::vector<int32_t>& offsets);
 
-  const std::vector<int32_t>& GetWordEnds() const;
+  base::span<const int32_t> GetWordEnds() const;
 
   void ClearTextOffsets();
 

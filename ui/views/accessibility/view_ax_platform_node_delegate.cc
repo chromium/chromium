@@ -686,7 +686,7 @@ gfx::RectF ViewAXPlatformNodeDelegate::GetInlineTextRect(
   DCHECK_GE(start_offset, 0);
   DCHECK_GE(end_offset, 0);
   DCHECK_LE(start_offset, end_offset);
-  const std::vector<int32_t>& character_offsets =
+  base::span<const int32_t> character_offsets =
       data_.GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   if (character_offsets.empty()) {
     return gfx::RectF();

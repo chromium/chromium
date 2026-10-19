@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/to_vector.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -190,8 +191,9 @@ void UpdateCharacterOffsets(const chrome_screen_ai::WordBox& word_box,
     return;
   }
 
-  std::vector<int32_t> character_offsets = inline_text_box.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kCharacterOffsets);
+  std::vector<int32_t> character_offsets =
+      base::ToVector(inline_text_box.GetIntListAttribute(
+          ax::mojom::IntListAttribute::kCharacterOffsets));
 
   // Unrotate the line and symbols before computing the offsets.
   gfx::Transform transform;
@@ -263,10 +265,12 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   }
   inline_text_box.SetNameChecked(inner_text);
 
-  std::vector<int32_t> word_starts = inline_text_box.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kWordStarts);
-  std::vector<int32_t> word_ends = inline_text_box.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kWordEnds);
+  std::vector<int32_t> word_starts =
+      base::ToVector(inline_text_box.GetIntListAttribute(
+          ax::mojom::IntListAttribute::kWordStarts));
+  std::vector<int32_t> word_ends =
+      base::ToVector(inline_text_box.GetIntListAttribute(
+          ax::mojom::IntListAttribute::kWordEnds));
   int32_t new_word_start = 0;
   int32_t new_word_end = base::checked_cast<int32_t>(word_length) - 1;
   if (!word_ends.empty()) {

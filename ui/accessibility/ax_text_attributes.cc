@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/ax_text_attributes.h"
 
+#include "base/containers/to_vector.h"
 #include "ui/accessibility/ax_node_data.h"
 
 namespace ui {
@@ -56,10 +57,10 @@ AXTextAttributes::AXTextAttributes(const AXNodeData& node_data) {
                  &font_weight);
   font_family =
       node_data.GetStringAttribute(ax::mojom::StringAttribute::kFontFamily);
-  marker_types =
-      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
-  highlight_types = node_data.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kHighlightTypes);
+  marker_types = base::ToVector(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes));
+  highlight_types = base::ToVector(node_data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kHighlightTypes));
 }
 
 AXTextAttributes::AXTextAttributes(AXTextAttributes&&) = default;

@@ -1525,7 +1525,7 @@ TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
   ASSERT_TRUE(
       data.HasIntListAttribute(ax::mojom::IntListAttribute::kControlsIds));
-  const std::vector<int32_t>& controlled_ids =
+  base::span<const int32_t> controlled_ids =
       data.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   ASSERT_EQ(1U, controlled_ids.size());
   ASSERT_EQ(popup_window->window_id, controlled_ids[0]);

@@ -11,6 +11,7 @@
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -574,10 +575,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // is aria-hidden, this int attribute only has one value: the non-aria-hidden
   // one. In this case, titleUIElement should not be returned because the name
   // came from two places.
-  std::vector<int32_t> labelledby_ids =
+  base::span<const int32_t> labelledby_ids =
       _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
-  if (labelledby_ids.size() != 1)
+  if (labelledby_ids.size() != 1) {
     return nil;
+  }
 
   ui::AXPlatformNode* label =
       _node->GetDelegate()->GetFromNodeID(labelledby_ids[0]);
@@ -641,7 +643,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   // which suggests this should be exposed via AXTitleUIElement. See
   // crbug.com/1430419
   if (ui::IsRadio(role) || ui::IsCheckBox(role)) {
-    std::vector<int32_t> labelledby_ids =
+    base::span<const int32_t> labelledby_ids =
         _node->GetIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds);
     if (labelledby_ids.size() == 1) {
       ui::AXPlatformNode* label =
@@ -692,7 +694,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     return elements;
   }
 
-  const std::vector<int32_t>& attributeValues =
+  base::span<const int32_t> attributeValues =
       delegate->GetIntListAttribute(attribute);
   for (auto& attributeValue : attributeValues) {
     ui::AXPlatformNode* node = delegate->GetFromNodeID(attributeValue);
@@ -1187,14 +1189,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
     }
 
     // Add misspelling information
-    const std::vector<int32_t>& markerTypes =
-        markers_anchor->GetIntListAttribute(
-            ax::mojom::IntListAttribute::kMarkerTypes);
-    const std::vector<int>& markerStarts = markers_anchor->GetIntListAttribute(
+    base::span<const int32_t> markerTypes = markers_anchor->GetIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerTypes);
+    base::span<const int> markerStarts = markers_anchor->GetIntListAttribute(
         ax::mojom::IntListAttribute::kMarkerStarts);
-    const std::vector<int>& markerEnds = markers_anchor->GetIntListAttribute(
+    base::span<const int> markerEnds = markers_anchor->GetIntListAttribute(
         ax::mojom::IntListAttribute::kMarkerEnds);
-    const std::vector<int32_t>& highlightTypes =
+    base::span<const int32_t> highlightTypes =
         markers_anchor->GetIntListAttribute(
             ax::mojom::IntListAttribute::kHighlightTypes);
 
@@ -3391,11 +3392,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   ax::mojom::Role role = [self internalRole];
 
-  std::vector<int32_t> nodeIds;
+  std::vector<int32_t> ownedNodeIds;
+  base::span<const int32_t> nodeIds;
   if (role == ax::mojom::Role::kTree) {
-    [self getTreeItemDescendantNodeIds:&nodeIds];
+    [self getTreeItemDescendantNodeIds:&ownedNodeIds];
+    nodeIds = ownedNodeIds;
   } else if (ui::IsTableLike(role)) {
-    nodeIds = delegate->GetRowNodeIds();
+    ownedNodeIds = delegate->GetRowNodeIds();
+    nodeIds = ownedNodeIds;
   } else if (role == ax::mojom::Role::kColumn) {
     // Rows attribute for a column is the list of all the elements in that
     // column at each row.

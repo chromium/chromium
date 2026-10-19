@@ -740,7 +740,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   // Actions can be from Blink for the given markup, or from the aria-actions
@@ -789,7 +789,7 @@ BrowserAccessibilityComWin::get_description(LONG action_index,
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   if (action_index < 0 ||
@@ -824,7 +824,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   if (action_index < 0 ||
@@ -863,7 +863,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   if (action_index < 0 ||
@@ -925,7 +925,7 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
 
   BrowserAccessibilityWin* const owner = GetOwner();
   const std::vector<ax::mojom::Action> actions = owner->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   if (action_index < 0 ||

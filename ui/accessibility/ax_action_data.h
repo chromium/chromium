@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "ui/accessibility/ax_attributes.h"
 #include "ui/accessibility/ax_base_export.h"
@@ -117,8 +118,8 @@ struct AX_BASE_EXPORT AXActionData {
     return intlist_attributes.Has(attribute);
   }
 
-  const std::vector<int32_t>& GetIntListAttribute(
-      ax::mojom::IntListAttribute attribute) const {
+  base::span<const int32_t> GetIntListAttribute(
+      ax::mojom::IntListAttribute attribute) const LIFETIME_BOUND {
     return intlist_attributes.Get(attribute);
   }
 
@@ -138,7 +139,7 @@ struct AX_BASE_EXPORT AXActionData {
   }
 
   base::span<const std::string> GetStringListAttribute(
-      ax::mojom::StringListAttribute attribute) const {
+      ax::mojom::StringListAttribute attribute) const LIFETIME_BOUND {
     return stringlist_attributes.Get(attribute);
   }
 

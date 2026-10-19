@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -1445,7 +1446,7 @@ std::u16string BrowserAccessibilityAndroid::GetRadioButtonStateDescription()
   // these attributes for all nodes automatically, including for nodes of
   // <input type="radio"> which share a common name. If the list is empty,
   // escape with empty string.
-  std::vector<ui::AXNodeID> group_ids =
+  base::span<const ui::AXNodeID> group_ids =
       GetIntListAttribute(ax::mojom::IntListAttribute::kRadioGroupIds);
 
   if (group_ids.empty() || group_ids.size() == 1) {
@@ -2404,9 +2405,9 @@ void BrowserAccessibilityAndroid::GetWordBoundaries(
     std::vector<int32_t>* word_ends,
     int offset) {
   if (GetRole() == ax::mojom::Role::kInlineTextBox) {
-    const std::vector<int32_t>& starts =
+    base::span<const int32_t> starts =
         GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts);
-    const std::vector<int32_t>& ends =
+    base::span<const int32_t> ends =
         GetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
     for (size_t i = 0; i < starts.size(); ++i) {
       word_starts->push_back(offset + starts[i]);
@@ -2476,12 +2477,12 @@ void BrowserAccessibilityAndroid::GetSuggestions(
   int start_offset = 0;
   while (node && node != this) {
     if (node->IsText()) {
-      const std::vector<int32_t>& marker_types =
+      base::span<const int32_t> marker_types =
           node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
       if (!marker_types.empty()) {
-        const std::vector<int>& marker_starts = node->GetIntListAttribute(
+        base::span<const int> marker_starts = node->GetIntListAttribute(
             ax::mojom::IntListAttribute::kMarkerStarts);
-        const std::vector<int>& marker_ends =
+        base::span<const int> marker_ends =
             node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
         for (size_t i = 0; i < marker_types.size(); ++i) {
@@ -2757,7 +2758,7 @@ BrowserAccessibilityAndroid::GetAndroidContentInvalidErrorMessage() const {
         BrowserAccessibilityAndroid* child =
             static_cast<BrowserAccessibilityAndroid*>(it.get());
         if (child->IsText()) {
-          const std::vector<int32_t>& marker_types = child->GetIntListAttribute(
+          base::span<const int32_t> marker_types = child->GetIntListAttribute(
               ax::mojom::IntListAttribute::kMarkerTypes);
 
           for (int marker_type : marker_types) {
@@ -2986,8 +2987,8 @@ const std::vector<int> BrowserAccessibilityAndroid::GetLabelledByAndroidIds()
   if (!::features::IsAccessibilityLabeledByEnabled()) {
     return std::vector<int>();
   }
-  std::vector<int32_t> ids = GetData().GetIntListAttribute(
-      ax::mojom::IntListAttribute::kLabelledbyIds);
+  std::vector<int32_t> ids = base::ToVector(GetData().GetIntListAttribute(
+      ax::mojom::IntListAttribute::kLabelledbyIds));
 
   // If this is a table, check for a caption child that labels this table.
   if (GetRole() == ax::mojom::Role::kTable ||

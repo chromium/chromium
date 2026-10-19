@@ -420,7 +420,7 @@ void ViewAccessibility::SetCharacterOffsets(
   SetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets, offsets);
 }
 
-const std::vector<int32_t>& ViewAccessibility::GetCharacterOffsets() const {
+base::span<const int32_t> ViewAccessibility::GetCharacterOffsets() const {
   return data_.GetIntListAttribute(
       ax::mojom::IntListAttribute::kCharacterOffsets);
 }
@@ -429,7 +429,7 @@ void ViewAccessibility::SetWordStarts(const std::vector<int32_t>& offsets) {
   SetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts, offsets);
 }
 
-const std::vector<int32_t>& ViewAccessibility::GetWordStarts() const {
+base::span<const int32_t> ViewAccessibility::GetWordStarts() const {
   return data_.GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts);
 }
 
@@ -437,7 +437,7 @@ void ViewAccessibility::SetWordEnds(const std::vector<int32_t>& offsets) {
   SetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds, offsets);
 }
 
-const std::vector<int32_t>& ViewAccessibility::GetWordEnds() const {
+base::span<const int32_t> ViewAccessibility::GetWordEnds() const {
   return data_.GetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds);
 }
 
@@ -1811,10 +1811,10 @@ void ViewAccessibility::AddAriaNotification(
     ax::mojom::AriaNotificationPriority priority) {
   auto announcements = base::ToVector(data_.GetStringListAttribute(
       ax::mojom::StringListAttribute::kAriaNotificationAnnouncements));
-  auto priority_properties = data_.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties);
-  auto interrupt_properties = data_.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties);
+  auto priority_properties = base::ToVector(data_.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kAriaNotificationPriorityProperties));
+  auto interrupt_properties = base::ToVector(data_.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kAriaNotificationInterruptProperties));
   auto types = base::ToVector(data_.GetStringListAttribute(
       ax::mojom::StringListAttribute::kAriaNotificationTypes));
 

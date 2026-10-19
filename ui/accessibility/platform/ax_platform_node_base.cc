@@ -732,7 +732,7 @@ bool AXPlatformNodeBase::HasIntListAttribute(
   return GetDelegate()->HasIntListAttribute(attribute);
 }
 
-const std::vector<int32_t>& AXPlatformNodeBase::GetIntListAttribute(
+base::span<const int32_t> AXPlatformNodeBase::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
   return GetDelegate()->GetIntListAttribute(attribute);
 }
@@ -2692,7 +2692,7 @@ void AXPlatformNodeBase::SanitizeTextAttributeValue(const std::string& input,
 }
 
 bool AXPlatformNodeBase::IsDescribedByTooltip() const {
-  const std::vector<int32_t>& description_ids =
+  base::span<const int32_t> description_ids =
       GetIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds);
 
   std::string description_from;
@@ -2710,10 +2710,11 @@ bool AXPlatformNodeBase::IsDescribedByTooltip() const {
 }
 
 std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
-  const std::vector<int32_t>& details_ids =
+  base::span<const int32_t> details_ids =
       GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds);
-  if (details_ids.empty())
+  if (details_ids.empty()) {
     return std::string();
+  }
 
   std::set<std::string> details_roles_set;
 

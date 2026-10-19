@@ -725,7 +725,7 @@ bool AutomationTreeManagerOwner::GetBoundsForRange(
                           node->data().relative_bounds.bounds.height());
   const std::string& name =
       node->GetStringAttribute(ax::mojom::StringAttribute::kName);
-  std::vector<int> character_offsets =
+  base::span<const int32_t> character_offsets =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   int len = static_cast<int>(std::min(name.size(), character_offsets.size()));
   if (start >= 0 && start <= end && end <= len) {

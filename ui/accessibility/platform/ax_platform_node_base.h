@@ -189,7 +189,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
 
   const AXIntListAttributes& GetIntListAttributes() const;
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
-  const std::vector<int32_t>& GetIntListAttribute(
+  base::span<const int32_t> GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
   bool GetIntListAttribute(ax::mojom::IntListAttribute attribute,
                            std::vector<int32_t>* value) const;

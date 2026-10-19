@@ -476,7 +476,7 @@ void AXPlatformNodeWin::StateToUIAAriaProperty(
 
 std::vector<AXPlatformNodeWin*>
 AXPlatformNodeWin::CreatePlatformNodeVectorFromRelationIdVector(
-    const std::vector<int32_t>& relation_id_list) {
+    base::span<const int32_t> relation_id_list) {
   std::vector<AXPlatformNodeWin*> platform_node_list;
 
   for (int32_t id : relation_id_list) {
@@ -513,7 +513,7 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAElementsSafeArray(
 }
 
 SAFEARRAY* AXPlatformNodeWin::CreateUIAControllerForArray() {
-  std::vector<int32_t> relation_id_list =
+  base::span<const int32_t> relation_id_list =
       GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
 
   std::vector<AXPlatformNodeWin*> platform_node_list =
@@ -531,7 +531,7 @@ SAFEARRAY* AXPlatformNodeWin::CreateUIAControllerForArray() {
   // expected to be exposed through the ControllerFor property on UIA:
   // https://w3c.github.io/core-aam/#ariaErrorMessage
   if (HasIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds)) {
-    std::vector<int32_t> error_message_node_ids =
+    base::span<const int32_t> error_message_node_ids =
         GetIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds);
     for (int32_t id : error_message_node_ids) {
       AXPlatformNodeWin* error_message_node_win =
@@ -5792,7 +5792,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
                  UiaRegistrarWin::GetInstance().GetAriaActionsPropertyId()) {
         if (HasState(ax::mojom::State::kHasActions) &&
             HasIntListAttribute(ax::mojom::IntListAttribute::kActionsIds)) {
-          const std::vector<int32_t>& aria_actions =
+          base::span<const int32_t> aria_actions =
               GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
           std::vector<AXPlatformNodeWin*> target_nodes;
           for (int32_t action_id : aria_actions) {
@@ -6529,13 +6529,13 @@ void AXPlatformNodeWin::AggregateRangesForMarkerType(
     std::vector<std::pair<int, int>>* ranges,
     const std::optional<ax::mojom::HighlightType>& highlight_type) {
   DCHECK(node->IsText());
-  const std::vector<int32_t>& marker_types =
+  base::span<const int32_t> marker_types =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
-  const std::vector<int32_t>& highlight_types =
+  base::span<const int32_t> highlight_types =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes);
-  const std::vector<int>& marker_starts =
+  base::span<const int> marker_starts =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts);
-  const std::vector<int>& marker_ends =
+  base::span<const int> marker_ends =
       node->GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
   CHECK_EQ(marker_types.size(), marker_starts.size());

@@ -2088,15 +2088,15 @@ void AXPlatformNodeTextRangeProviderWin::TextRangeEndpoints::
     OnTextDeletionOrInsertion(const AXNode& node, const AXNodeData& new_data) {
   DCHECK(new_data.IsTextField());
 
-  const std::vector<int>& start_offsets = new_data.GetIntListAttribute(
+  base::span<const int> start_offsets = new_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kTextOperationStartOffsets);
-  const std::vector<int>& end_offsets = new_data.GetIntListAttribute(
+  base::span<const int> end_offsets = new_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kTextOperationEndOffsets);
-  const std::vector<int>& start_ids = new_data.GetIntListAttribute(
+  base::span<const int> start_ids = new_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kTextOperationStartAnchorIds);
-  const std::vector<int>& end_ids = new_data.GetIntListAttribute(
+  base::span<const int> end_ids = new_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kTextOperationEndAnchorIds);
-  const std::vector<int>& op_vector = new_data.GetIntListAttribute(
+  base::span<const int> op_vector = new_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kTextOperations);
 
   // Each position in the vectors corresponds to a single operation, and these

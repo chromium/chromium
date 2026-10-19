@@ -686,7 +686,7 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(2U, extra_node_0->GetUnignoredIndexInParent());
   EXPECT_EQ(0, extra_node_0->GetIntAttribute(
                    ax::mojom::IntAttribute::kTableColumnIndex));
-  std::vector<AXNodeID> indirect_child_ids;
+  base::span<const AXNodeID> indirect_child_ids;
   EXPECT_EQ(true, extra_node_0->HasIntListAttribute(
                       ax::mojom::IntListAttribute::kIndirectChildIds));
   indirect_child_ids = extra_node_0->GetIntListAttribute(
@@ -704,7 +704,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(3U, extra_node_1->GetUnignoredIndexInParent());
   EXPECT_EQ(1, extra_node_1->GetIntAttribute(
                    ax::mojom::IntAttribute::kTableColumnIndex));
-  indirect_child_ids.clear();
   EXPECT_EQ(true, extra_node_1->HasIntListAttribute(
                       ax::mojom::IntListAttribute::kIndirectChildIds));
   indirect_child_ids = extra_node_1->GetIntListAttribute(
@@ -720,7 +719,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodes) {
   EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2->GetRole());
   EXPECT_EQ(4U, extra_node_2->GetIndexInParent());
   EXPECT_EQ(4U, extra_node_2->GetUnignoredIndexInParent());
-  indirect_child_ids.clear();
   EXPECT_EQ(true, extra_node_2->HasIntListAttribute(
                       ax::mojom::IntListAttribute::kIndirectChildIds));
   indirect_child_ids = extra_node_2->GetIntListAttribute(
@@ -1240,7 +1238,7 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(3U, extra_node_0->GetUnignoredIndexInParent());
     EXPECT_EQ(0, extra_node_0->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
-    std::vector<AXNodeID> indirect_child_ids;
+    base::span<const AXNodeID> indirect_child_ids;
     EXPECT_EQ(true, extra_node_0->HasIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds));
     indirect_child_ids = extra_node_0->GetIntListAttribute(
@@ -1257,7 +1255,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(4U, extra_node_1->GetUnignoredIndexInParent());
     EXPECT_EQ(1, extra_node_1->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
-    indirect_child_ids.clear();
     EXPECT_EQ(true, extra_node_1->HasIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds));
     indirect_child_ids = extra_node_1->GetIntListAttribute(
@@ -1272,7 +1269,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2->GetRole());
     EXPECT_EQ(4U, extra_node_2->GetIndexInParent());
     EXPECT_EQ(5U, extra_node_2->GetUnignoredIndexInParent());
-    indirect_child_ids.clear();
     EXPECT_EQ(true, extra_node_2->HasIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds));
     indirect_child_ids = extra_node_2->GetIntListAttribute(
@@ -1301,7 +1297,7 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(1U, extra_node_0->GetUnignoredIndexInParent());
     EXPECT_EQ(0, extra_node_0->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
-    std::vector<AXNodeID> indirect_child_ids;
+    base::span<const AXNodeID> indirect_child_ids;
     EXPECT_EQ(true, extra_node_0->HasIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds));
     indirect_child_ids = extra_node_0->GetIntListAttribute(
@@ -1318,7 +1314,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(2U, extra_node_1->GetUnignoredIndexInParent());
     EXPECT_EQ(1, extra_node_1->GetIntAttribute(
                      ax::mojom::IntAttribute::kTableColumnIndex));
-    indirect_child_ids.clear();
     EXPECT_EQ(true, extra_node_1->HasIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds));
     indirect_child_ids = extra_node_1->GetIntListAttribute(
@@ -1333,7 +1328,6 @@ TEST_F(AXTableInfoTest, ExtraMacNodesChanges) {
     EXPECT_EQ(ax::mojom::Role::kTableHeaderContainer, extra_node_2->GetRole());
     EXPECT_EQ(3U, extra_node_2->GetIndexInParent());
     EXPECT_EQ(3U, extra_node_2->GetUnignoredIndexInParent());
-    indirect_child_ids.clear();
     EXPECT_EQ(true, extra_node_2->HasIntListAttribute(
                         ax::mojom::IntListAttribute::kIndirectChildIds));
     indirect_child_ids = extra_node_2->GetIntListAttribute(

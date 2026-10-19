@@ -406,7 +406,7 @@ class AX_EXPORT AXNode final {
   }
   bool HasIntListAttribute(ax::mojom::IntListAttribute attribute) const;
   bool CanComputeIntListAttribute(ax::mojom::IntListAttribute attribute) const;
-  const std::vector<int32_t>& GetIntListAttribute(
+  base::span<const int32_t> GetIntListAttribute(
       ax::mojom::IntListAttribute attribute) const;
 
   bool HasStringListAttribute(ax::mojom::StringListAttribute attribute) const {

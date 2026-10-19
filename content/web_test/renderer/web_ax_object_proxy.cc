@@ -1294,12 +1294,14 @@ v8::Local<v8::Object> WebAXObjectProxy::AriaControlsElementAtIndex(
   if (!UpdateLayout()) {
     return v8::Local<v8::Object>();
   }
-  auto ax_ids = GetAXNodeData().GetIntListAttribute(
-      ax::mojom::IntListAttribute::kControlsIds);
+  const ui::AXNodeData node_data = GetAXNodeData();
+  base::span<const int32_t> ax_ids =
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   size_t element_count = ax_ids.size();
 
-  if (index >= element_count)
+  if (index >= element_count) {
     return v8::Local<v8::Object>();
+  }
 
   blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
       accessibility_object_.GetDocument(), ax_ids[index]);
@@ -1312,12 +1314,14 @@ v8::Local<v8::Object> WebAXObjectProxy::AriaDetailsElementAtIndex(
   if (!UpdateLayout()) {
     return v8::Local<v8::Object>();
   }
-  auto ax_ids = GetAXNodeData().GetIntListAttribute(
-      ax::mojom::IntListAttribute::kDetailsIds);
+  const ui::AXNodeData node_data = GetAXNodeData();
+  base::span<const int32_t> ax_ids =
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds);
   size_t element_count = ax_ids.size();
 
-  if (index >= element_count)
+  if (index >= element_count) {
     return v8::Local<v8::Object>();
+  }
 
   blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
       accessibility_object_.GetDocument(), ax_ids[index]);
@@ -1330,7 +1334,8 @@ v8::Local<v8::Object> WebAXObjectProxy::AriaErrorMessageElementAtIndex(
   if (!UpdateLayout()) {
     return v8::Local<v8::Object>();
   }
-  auto ax_ids = GetAXNodeData().GetIntListAttribute(
+  const ui::AXNodeData node_data = GetAXNodeData();
+  base::span<const int32_t> ax_ids = node_data.GetIntListAttribute(
       ax::mojom::IntListAttribute::kErrormessageIds);
   size_t element_count = ax_ids.size();
 
@@ -1349,12 +1354,14 @@ v8::Local<v8::Object> WebAXObjectProxy::AriaFlowToElementAtIndex(
   if (!UpdateLayout()) {
     return v8::Local<v8::Object>();
   }
-  auto ax_ids = GetAXNodeData().GetIntListAttribute(
-      ax::mojom::IntListAttribute::kFlowtoIds);
+  const ui::AXNodeData node_data = GetAXNodeData();
+  base::span<const int32_t> ax_ids =
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kFlowtoIds);
   size_t element_count = ax_ids.size();
 
-  if (index >= element_count)
+  if (index >= element_count) {
     return v8::Local<v8::Object>();
+  }
 
   blink::WebAXObject web_ax_object = blink::WebAXObject::FromWebDocumentByID(
       accessibility_object_.GetDocument(), ax_ids[index]);
@@ -1806,11 +1813,11 @@ std::vector<std::string> WebAXObjectProxy::GetMisspellings() const {
       node_data.HasIntListAttribute(
           ax::mojom::IntListAttribute::kMarkerStarts) &&
       node_data.HasIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds)) {
-    const std::vector<int32_t> marker_types = node_data.GetIntListAttribute(
+    base::span<const int32_t> marker_types = node_data.GetIntListAttribute(
         ax::mojom::IntListAttribute::kMarkerTypes);
-    const std::vector<int32_t> marker_starts = node_data.GetIntListAttribute(
+    base::span<const int32_t> marker_starts = node_data.GetIntListAttribute(
         ax::mojom::IntListAttribute::kMarkerStarts);
-    const std::vector<int32_t> marker_ends =
+    base::span<const int32_t> marker_ends =
         node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds);
 
     DCHECK_EQ(marker_types.size(), marker_starts.size());

@@ -1138,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsUIATest, GetSelectionAndBounds) {
   omnibox_view_views->ConvertRectToScreen(omnibox_view_views,
                                           &bounds_in_screen);
 
-  std::vector<int32_t> offsets =
+  base::span<const int32_t> offsets =
       ax_tree_manager->GetRoot()->GetIntListAttribute(
           ax::mojom::IntListAttribute::kCharacterOffsets);
   int range_start_offset = offsets[selection_range.start()];

@@ -958,7 +958,7 @@ bool TestAXNodeWrapper::ShouldHideChildrenForUIA(const AXNode* node) {
 gfx::RectF TestAXNodeWrapper::GetInlineTextRect(const int start_offset,
                                                 const int end_offset) const {
   DCHECK(start_offset >= 0 && end_offset >= 0 && start_offset <= end_offset);
-  const std::vector<int32_t>& character_offsets =
+  base::span<const int32_t> character_offsets =
       GetIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets);
   gfx::RectF location = GetLocation();
   gfx::RectF bounds;

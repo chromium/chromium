@@ -128,7 +128,7 @@ std::unique_ptr<TestAXNodeHelper> TestAXNodeHelper::InternalGetChild(
 gfx::RectF TestAXNodeHelper::GetInlineTextRect(const int start_offset,
                                                const int end_offset) const {
   DCHECK(start_offset >= 0 && end_offset >= 0 && start_offset <= end_offset);
-  const std::vector<int32_t>& character_offsets = node_->GetIntListAttribute(
+  base::span<const int32_t> character_offsets = node_->GetIntListAttribute(
       ax::mojom::IntListAttribute::kCharacterOffsets);
   gfx::RectF location = GetLocation();
   gfx::RectF bounds;

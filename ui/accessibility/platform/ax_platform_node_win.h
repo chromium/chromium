@@ -1399,7 +1399,7 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   // argument. The function will skip over any ids that cannot be resolved as
   // valid relation target.
   std::vector<AXPlatformNodeWin*> CreatePlatformNodeVectorFromRelationIdVector(
-      const std::vector<int32_t>& relation_id_list);
+      base::span<const int32_t> relation_id_list);
 
   // Create a safearray of automation elements from a vector of
   // AXPlatformNodeWin.

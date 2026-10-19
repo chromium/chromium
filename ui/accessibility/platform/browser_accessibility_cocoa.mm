@@ -645,7 +645,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   // wrappers.
   BrowserAccessibility* browserAccessibility =
       static_cast<BrowserAccessibility*>([self nodeDelegate]);
-  const std::vector<int32_t>& indirectChildIds = _owner->GetIntListAttribute(
+  base::span<const int32_t> indirectChildIds = _owner->GetIntListAttribute(
       ax::mojom::IntListAttribute::kIndirectChildIds);
 
   if (_children) {
@@ -1094,7 +1094,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   DCHECK(!caretPosition->IsNullPosition())
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
          "is a valid selection focus inside the current object.";
-  const std::vector<int> lineStarts =
+  base::span<const int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
 
   // Find the text offset that starts the next line after the current caret
@@ -1137,7 +1137,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   DCHECK(!caretPosition->IsNullPosition())
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
          "is a valid selection focus inside the current object.";
-  const std::vector<int> lineStarts =
+  base::span<const int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
 
   // Find the text offset that starts the next line after the current caret
@@ -2073,7 +2073,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     return NSNotFound;
   }
 
-  const std::vector<int> lineStarts =
+  base::span<const int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   auto iterator = std::upper_bound(lineStarts.begin(), lineStarts.end(), index);
   if (iterator == lineStarts.begin()) {
@@ -2088,7 +2088,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     return NSMakeRange(0, 0);
   }
 
-  const std::vector<int> lineStarts =
+  base::span<const int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
   std::u16string value = _owner->GetValueForControl();
   int valueLength = static_cast<int>(value.size());
@@ -2316,7 +2316,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     }
 
     int textOffset = position->AsTextPosition()->text_offset();
-    const std::vector<int> lineStarts =
+    base::span<const int> lineStarts =
         _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
     const auto iterator =
         std::lower_bound(lineStarts.begin(), lineStarts.end(), textOffset);
@@ -2327,7 +2327,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
           isEqualToString:
               CFToNSPtrCast(kAXTextMarkerRangeForLineParameterizedAttribute)]) {
     int lineIndex = [(NSNumber*)parameter intValue];
-    const std::vector<int> lineStarts =
+    base::span<const int> lineStarts =
         _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
     int lineCount = static_cast<int>(lineStarts.size());
     if (lineIndex < 0 || lineIndex >= lineCount) {
@@ -3435,7 +3435,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     return nil;
   }
 
-  const std::vector<int32_t>& action_ids =
+  base::span<const int32_t> action_ids =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
   if (action_ids.empty()) {
     return nil;

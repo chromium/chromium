@@ -570,7 +570,7 @@ std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
   // interest to ATs. The number of ids should be small.
 
   std::vector<AXPlatformNode*> nodes;
-  const std::vector<int32_t>& target_ids = GetIntListAttribute(attr);
+  base::span<const int32_t> target_ids = GetIntListAttribute(attr);
 
   for (int32_t target_id : target_ids) {
     AXPlatformNode* target = GetFromNodeID(target_id);
@@ -824,10 +824,11 @@ bool AXPlatformNodeDelegate::HasIntListAttribute(
   return GetData().HasIntListAttribute(attribute);
 }
 
-const std::vector<int32_t>& AXPlatformNodeDelegate::GetIntListAttribute(
+base::span<const int32_t> AXPlatformNodeDelegate::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute) const {
-  if (node_)
+  if (node_) {
     return node_->GetIntListAttribute(attribute);
+  }
   return GetData().GetIntListAttribute(attribute);
 }
 
@@ -836,7 +837,8 @@ bool AXPlatformNodeDelegate::GetIntListAttribute(
     std::vector<int32_t>* value) const {
   bool found = HasIntListAttribute(attribute);
   if (found) {
-    *value = GetIntListAttribute(attribute);
+    base::span<const int32_t> int_list = GetIntListAttribute(attribute);
+    value->assign(int_list.begin(), int_list.end());
   }
   return found;
 }

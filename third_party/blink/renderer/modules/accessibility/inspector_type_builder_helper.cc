@@ -624,7 +624,7 @@ void FillRelationships(AXObject& ax_object,
 }
 
 void GetObjectsFromAXIDs(const AXObjectCacheImpl& cache,
-                         const std::vector<int32_t>& ax_ids,
+                         base::span<const int32_t> ax_ids,
                          AXObject::AXObjectVector* ax_objects) {
   for (const auto& ax_id : ax_ids) {
     AXObject* ax_object = cache.ObjectFromAXID(ax_id);

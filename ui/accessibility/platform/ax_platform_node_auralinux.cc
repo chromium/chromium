@@ -567,7 +567,7 @@ gboolean DoAction(AtkAction* atk_action, gint index) {
 
   const std::vector<ax::mojom::Action> actions =
       obj->GetDelegate()->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   // Actions can be from Blink for the given markup, or from the aria-actions
@@ -627,7 +627,7 @@ const gchar* GetLocalizedName(AtkAction* atk_action, gint index) {
 
   const std::vector<ax::mojom::Action> actions =
       obj->GetDelegate()->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   g_return_val_if_fail(
@@ -659,7 +659,7 @@ const gchar* GetName(AtkAction* atk_action, gint index) {
 
   const std::vector<ax::mojom::Action> actions =
       obj->GetDelegate()->GetSupportedActions();
-  const std::vector<int32_t>& aria_actions =
+  base::span<const int32_t> aria_actions =
       obj->GetIntListAttribute(ax::mojom::IntListAttribute::kActionsIds);
 
   g_return_val_if_fail(

@@ -34,6 +34,7 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
@@ -1517,8 +1518,8 @@ void AXObject::SerializeChooserPopupAttributes(ui::AXNodeData* node_data) const 
     return;
 
   int32_t chooser_popup_id = chooser_popup->AXObjectID();
-  auto controls_ids = node_data->GetIntListAttribute(
-      ax::mojom::blink::IntListAttribute::kControlsIds);
+  auto controls_ids = base::ToVector(node_data->GetIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kControlsIds));
   controls_ids.push_back(chooser_popup_id);
   node_data->AddIntListAttribute(
       ax::mojom::blink::IntListAttribute::kControlsIds, controls_ids);
@@ -1553,8 +1554,8 @@ void AXObject::SerializeImplicitActions(ui::AXNodeData* node_data) const {
   const AXObjectVector& potential_actions =
       hasContainer ? children[0]->ChildrenIncludingIgnored() : children;
 
-  auto actions_ids = node_data->GetIntListAttribute(
-      ax::mojom::blink::IntListAttribute::kActionsIds);
+  auto actions_ids = base::ToVector(node_data->GetIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kActionsIds));
   for (const auto& child : potential_actions) {
     if ((child->RoleValue() == ax::mojom::blink::Role::kButton ||
          child->RoleValue() == ax::mojom::blink::Role::kLink) &&
@@ -8295,13 +8296,13 @@ bool AXObject::RequestReplaceRangesAction(const ui::AXActionData& action_data) {
     return false;
   }
 
-  std::vector<int32_t> start_anchor_ids = action_data.GetIntListAttribute(
+  base::span<const int32_t> start_anchor_ids = action_data.GetIntListAttribute(
       ax::mojom::blink::IntListAttribute::kTextOperationStartAnchorIds);
-  std::vector<int32_t> start_offsets = action_data.GetIntListAttribute(
+  base::span<const int32_t> start_offsets = action_data.GetIntListAttribute(
       ax::mojom::blink::IntListAttribute::kTextOperationStartOffsets);
-  std::vector<int32_t> end_anchor_ids = action_data.GetIntListAttribute(
+  base::span<const int32_t> end_anchor_ids = action_data.GetIntListAttribute(
       ax::mojom::blink::IntListAttribute::kTextOperationEndAnchorIds);
-  std::vector<int32_t> end_offsets = action_data.GetIntListAttribute(
+  base::span<const int32_t> end_offsets = action_data.GetIntListAttribute(
       ax::mojom::blink::IntListAttribute::kTextOperationEndOffsets);
   base::span<const std::string> replacement_strings =
       action_data.GetStringListAttribute(ax::mojom::blink::StringListAttribute::
