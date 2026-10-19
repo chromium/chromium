@@ -134,6 +134,7 @@ source_set("interactive_ui_tests") {
   if (toolkit_views) {
     sources += [ "cookie_controls_interactive_uitest.cc" ]
     deps += [
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/views/controls",
       "//components/user_education/views",
       "//net:test_support",

@@ -15,13 +15,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_content_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
-#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -108,12 +107,11 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
     content::SetupCrossSiteRedirector(https_server());
     https_server()->StartAcceptingConnections();
     if (features::IsWebUILocationBarEnabled()) {
-      auto* webview = ToolbarButtonProvider::From(browser())
-                          ->GetWebUIToolbarViewForTesting();
-      if (webview && webview->GetLocationBar()) {
-        webview->GetLocationBar()->SetSuppressionThresholdForTesting(
-            base::TimeDelta());
-      }
+      // Several tests close the bubble (e.g. by switching tabs) and then
+      // immediately press the icon again, which the WebUI toolbar would
+      // otherwise treat as the click that dismissed the bubble and drop.
+      ASSERT_TRUE(SetWebUIToolbarClickSuppressionThreshold(browser(),
+                                                           base::TimeDelta()));
     }
   }
 

@@ -84,6 +84,23 @@ export function setHasHelpBubble(el: Element, value: boolean) {
  *   click if it returns true.
  */
 export class HighlightTracker {
+  // How long after an element is unhighlighted a pointerdown on it is still
+  // assumed to be the one that dismissed the bubble. Sometimes the IPC to
+  // remove highlighting (due to the pointerdown) can arrive before the
+  // pointerdown event itself, so allow for this race. 100ms matches
+  // views::kMinimumTimeBetweenButtonClicks.
+  private static clickSuppressionThresholdMs_: number = 100;
+
+  /**
+   * Overrides the window during which HighlightTracker skips clicks following
+   * an unhighlight. Tests that programmatically close a bubble and immediately
+   * click its anchor again can pass 0 to disable the post-unhighlight window;
+   * clicks while the element is still highlighted are skipped regardless.
+   */
+  static setClickSuppressionThresholdForTesting(thresholdMs: number) {
+    HighlightTracker.clickSuppressionThresholdMs_ = thresholdMs;
+  }
+
   // Set if the TrackedElementManager indicates the element should be
   // highlighted. Public for testing.
   highlighted: boolean = false;
@@ -114,10 +131,8 @@ export class HighlightTracker {
       return;
     }
     this.skipNextClick_ = this.highlighted ||
-        // Sometimes the IPC to remove highlighting (due to the pointerdown) can
-        // arrive before the pointerdown event itself, so allow for this race.
-        // 100ms matches views::kMinimumTimeBetweenButtonClicks.
-        (performance.now() - this.lastUnhighlightedTime < 100);
+        (performance.now() - this.lastUnhighlightedTime <
+         HighlightTracker.clickSuppressionThresholdMs_);
   };
 
   /**

@@ -715,6 +715,13 @@ void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
 }
 
 void PageActionTestAccessor::SetSuppressionThreshold(
-    base::TimeDelta /*threshold*/) {}
+    base::TimeDelta threshold) {
+  // Click suppression for page actions is only implemented by the WebUI
+  // toolbar (HighlightTracker in toolbar_button.ts); there is nothing to
+  // configure for the Views implementation.
+  if (GetWebUIPageActionControl()) {
+    EXPECT_TRUE(SetWebUIToolbarClickSuppressionThreshold(browser_, threshold));
+  }
+}
 
 }  // namespace page_actions

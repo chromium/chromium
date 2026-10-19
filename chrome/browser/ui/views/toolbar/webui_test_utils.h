@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -149,6 +150,20 @@ extern const char kFindDeepJS[];
 // the service pipe (the browser has handled those reactions).
 [[nodiscard]] ::testing::AssertionResult FlushWebUIToolbarPipes(
     BrowserWindowInterface* browser);
+
+// Sets the window during which WebUI toolbar buttons ignore a click that
+// follows the closing of a bubble anchored to them (which would otherwise
+// reopen the bubble, see WebUIBubbleReopenSuppressor and HighlightTracker in
+// toolbar_button.ts). Covers both the native-side suppressors owned by the
+// WebUI location bar and the WebUI-side HighlightTracker. Pass
+// base::TimeDelta() to disable the post-close time window, e.g. for tests that
+// close a bubble (by switching tabs, say) and immediately click its anchor
+// again. Clicks that land while the bubble is still showing are suppressed
+// regardless of `threshold`. Waits for the toolbar WebUI to finish loading.
+// Returns a failure if there is no WebUI toolbar.
+[[nodiscard]] ::testing::AssertionResult
+SetWebUIToolbarClickSuppressionThreshold(BrowserWindowInterface* browser,
+                                         base::TimeDelta threshold);
 
 // Dispatches an event to a WebUI toolbar button.
 // `selector`: The CSS selector for the button element.
