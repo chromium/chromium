@@ -23,7 +23,8 @@ class GURL;
 // Presents a URL in a modal web view sheet, over the Gemini surface.
 //
 // The presented page runs in a detached `web::WebState` backed by the browser's
-// profile and shares the profile's cookies and signed-in session.
+// profile and shares the profile's cookies and signed-in session. Only https
+// URLs on Google-owned domains are allowed in the modal.
 @interface GeminiWebModalCoordinator : ChromeCoordinator
 
 // Initializes the coordinator to present `URL`.

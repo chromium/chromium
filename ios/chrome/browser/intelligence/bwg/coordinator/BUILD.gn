@@ -79,6 +79,7 @@ source_set("coordinator") {
     ":container_mediator",
     "//base",
     "//components/feature_engagement/public",
+    "//components/google/core/common",
     "//components/prefs",
     "//components/signin/public/base",
     "//components/url_formatter",

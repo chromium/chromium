@@ -6,6 +6,8 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_GEMINI_CONTAINER_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+
+class GURL;
 @class GeminiStartupState;
 
 // Coordinator for managing the presentation and lifecycle of the Gemini
@@ -21,6 +23,9 @@
 // Minimizes the assistant container to its smallest detent while keeping it
 // visible.
 - (void)minimize;
+
+// Presents `URL` in a web modal sheet over the Gemini container.
+- (void)showWebModalForURL:(const GURL&)URL;
 
 @end
 

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/google/core/common/google_util.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_modal_content_view_controller.h"
@@ -27,6 +28,20 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
+#import "url/url_constants.h"
+
+namespace {
+
+// Returns whether `URL` may be loaded in the modal. For privacy & security
+// reasons, only Google domains are allowed.
+bool IsAllowedWebModalURL(const GURL& URL) {
+  return URL.SchemeIs(url::kHttpsScheme) &&
+         google_util::IsGoogleDomainUrl(
+             URL, google_util::ALLOW_SUBDOMAIN,
+             google_util::DISALLOW_NON_STANDARD_PORTS);
+}
+
+}  // namespace
 
 @interface GeminiWebModalCoordinator () <
     CRWWebStateDelegate,
@@ -64,6 +79,11 @@
 
 - (void)start {
   [super start];
+
+  if (!IsAllowedWebModalURL(_initialURL)) {
+    [self closeModalAndOpenURLInNewTab:_initialURL];
+    return;
+  }
 
   _webState = web::WebState::Create(
       web::WebState::CreateParams(self.browser->GetProfile()));
@@ -133,7 +153,7 @@
     createNewWebStateForURL:(const GURL&)URL
                   openerURL:(const GURL&)openerURL
             initiatedByUser:(BOOL)initiatedByUser {
-  [self openInNewTab:URL];
+  [self handleInModalNavigationToURL:URL];
   return nullptr;
 }
 
@@ -166,7 +186,7 @@
     return;
   }
   decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
-  [self openInNewTab:net::GURLWithNSURL(request.URL)];
+  [self handleInModalNavigationToURL:net::GURLWithNSURL(request.URL)];
 }
 
 #pragma mark - GeminiModalContentViewControllerDelegate
@@ -196,22 +216,26 @@
   _webState->SetDelegate(nullptr);
 }
 
-// Dismisses this modal, minimizes the Floaty and opens `URL` in a new tab.
-- (void)openInNewTab:(const GURL&)URL {
-  GURL URLCopy = URL;
+// Handles the page inside the modal navigating or opening a window.
+- (void)handleInModalNavigationToURL:(GURL)URL {
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!self->_webState) {
       return;
     }
     RecordGeminiWebModalNavigatedToNewTab();
-    Browser* browser = self.browser;
-    [HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands)
-        minimizeGeminiIfInvoked];
-    [self.delegate geminiWebModalCoordinatorDidDismiss:self];
-    UrlLoadParams params = UrlLoadParams::InNewTab(URLCopy);
-    params.append_to = OpenPosition::kCurrentTab;
-    UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
+    [self closeModalAndOpenURLInNewTab:URL];
   });
+}
+
+// Closes the modal and opens `URL` in a regular tab.
+- (void)closeModalAndOpenURLInNewTab:(const GURL&)URL {
+  Browser* browser = self.browser;
+  [self.delegate geminiWebModalCoordinatorDidDismiss:self];
+  [HandlerForProtocol(browser->GetCommandDispatcher(), GeminiCommands)
+      minimizeGeminiIfInvoked];
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.append_to = OpenPosition::kCurrentTab;
+  UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
 }
 
 // Updates the navigation item to reflect the page's domain and/or title.

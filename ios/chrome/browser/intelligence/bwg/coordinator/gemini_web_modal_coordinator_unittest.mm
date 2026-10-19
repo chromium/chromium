@@ -37,6 +37,8 @@ namespace {
 const char kTestURL[] = "https://gemini.google.com/quiz/123";
 const char kTestURLHost[] = "gemini.google.com";
 const char kLinkURL[] = "https://www.example.com/article";
+const char kNonGoogleURL[] = "https://www.example.com/quiz/123";
+const char kInsecureGoogleURL[] = "http://gemini.google.com/quiz/123";
 
 }  // namespace
 
@@ -238,4 +240,41 @@ TEST_F(GeminiWebModalCoordinatorTest, InitialLoadIsAllowed) {
 
   EXPECT_TRUE(allowed);
   EXPECT_EQ(0, url_loader_->load_new_tab_call_count);
+}
+
+// Test that a URL outside Google-owned domains is never shown in the modal and
+// is opened in a new tab instead.
+TEST_F(GeminiWebModalCoordinatorTest, NonGoogleURLOpensInNewTab) {
+  OCMExpect([mock_gemini_commands_handler_ minimizeGeminiIfInvoked]);
+  coordinator_ = [[GeminiWebModalCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                             URL:GURL(kNonGoogleURL)];
+  coordinator_.delegate = delegate_;
+
+  [coordinator_ start];
+
+  EXPECT_FALSE(base_view_controller_.presentedViewController);
+  EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
+  EXPECT_EQ(GURL(kNonGoogleURL), url_loader_->last_params.web_params.url);
+  EXPECT_EQ(1, delegate_.dismissalCount);
+  EXPECT_OCMOCK_VERIFY(mock_gemini_commands_handler_);
+}
+
+// Test that a Google-owned URL is still rejected when it is not https.
+TEST_F(GeminiWebModalCoordinatorTest, InsecureGoogleURLOpensInNewTab) {
+  OCMExpect([mock_gemini_commands_handler_ minimizeGeminiIfInvoked]);
+  coordinator_ = [[GeminiWebModalCoordinator alloc]
+      initWithBaseViewController:base_view_controller_
+                         browser:browser_.get()
+                             URL:GURL(kInsecureGoogleURL)];
+  coordinator_.delegate = delegate_;
+
+  [coordinator_ start];
+
+  EXPECT_FALSE(base_view_controller_.presentedViewController);
+  EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
+  EXPECT_EQ(GURL(kInsecureGoogleURL), url_loader_->last_params.web_params.url);
+  EXPECT_EQ(1, delegate_.dismissalCount);
+  EXPECT_OCMOCK_VERIFY(mock_gemini_commands_handler_);
 }

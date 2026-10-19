@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_web_modal_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
@@ -41,7 +42,8 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 
-@interface GeminiContainerCoordinator () <GeminiContainerMediatorDelegate>
+@interface GeminiContainerCoordinator () <GeminiContainerMediatorDelegate,
+                                          GeminiWebModalCoordinatorDelegate>
 @end
 
 @implementation GeminiContainerCoordinator {
@@ -57,6 +59,8 @@
   GeminiZeroStateViewController* _geminiZeroStateViewController;
   // Child coordinator managing the actuation worklog.
   ActuationWorklogCoordinator* _actuationWorklogCoordinator;
+  // Child coordinator presenting a URL in a web modal over the container.
+  GeminiWebModalCoordinator* _webModalCoordinator;
 }
 
 - (void)start {
@@ -89,6 +93,7 @@
 }
 
 - (void)minimize {
+  [self dismissWebModal];
   [_containerHandler
       animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized];
 }
@@ -106,6 +111,7 @@
     [_actuationWorklogCoordinator stop];
     _actuationWorklogCoordinator = nil;
   }
+  [self dismissWebModal];
   [_mediator disconnect];
   _mediator = nil;
   _sessionMetricsManager = nil;
@@ -113,6 +119,26 @@
   _containerHandler = nil;
   _geminiZeroStateViewController = nil;
   _startupState = nil;
+}
+
+- (void)showWebModalForURL:(const GURL&)URL {
+  if (_webModalCoordinator) {
+    return;
+  }
+  _webModalCoordinator = [[GeminiWebModalCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                             URL:URL];
+  _webModalCoordinator.delegate = self;
+  [_webModalCoordinator start];
+}
+
+#pragma mark - GeminiWebModalCoordinatorDelegate
+
+- (void)geminiWebModalCoordinatorDidDismiss:
+    (GeminiWebModalCoordinator*)coordinator {
+  CHECK_EQ(_webModalCoordinator, coordinator);
+  [self dismissWebModal];
 }
 
 #pragma mark - GeminiContainerMediatorDelegate
@@ -249,6 +275,12 @@
     [geminiHandler
         dismissGeminiFlowWithCompletion:base::CallbackToBlock(barrier)];
   }
+}
+
+// Stops and releases the web modal coordinator, if any.
+- (void)dismissWebModal {
+  [_webModalCoordinator stop];
+  _webModalCoordinator = nil;
 }
 
 @end

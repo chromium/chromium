@@ -8,6 +8,7 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
@@ -27,10 +28,18 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
+
+namespace {
+
+const char kTestURL[] = "https://gemini.google.com/quiz/123";
+
+}  // namespace
 
 @interface GeminiContainerCoordinator (Testing)
 - (void)dismissGeminiFromOtherWindowsWithCompletion:(ProceduralBlock)completion;
@@ -60,6 +69,7 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(SettingsCommands)];
 
     base_view_controller_ = [[UIViewController alloc] init];
+    [scoped_key_window_.Get() setRootViewController:base_view_controller_];
     startup_state_ = [[GeminiStartupState alloc] init];
 
     coordinator_ = [[GeminiContainerCoordinator alloc]
@@ -79,6 +89,15 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
   }
 
  protected:
+  // Returns whether the web modal went away. Dismissal is animated, so it is
+  // not observable synchronously.
+  bool WaitForWebModalDismissal() {
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^{
+          return base_view_controller_.presentedViewController == nil;
+        });
+  }
+
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -87,6 +106,7 @@ class GeminiContainerCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   id mock_gemini_handler_;
   id mock_settings_handler_;
+  ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_;
   GeminiStartupState* startup_state_;
   GeminiContainerCoordinator* coordinator_;
@@ -244,4 +264,49 @@ TEST_F(GeminiContainerCoordinatorTest, TestStartUpdatesWhenAlreadyInvoked) {
 
   [browser_->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(AssistantContainerCommands)];
+}
+
+// Tests that calling `showWebModalForURL:` while a web modal is already shown
+// keeps the existing modal instead of presenting a second one.
+TEST_F(GeminiContainerCoordinatorTest,
+       TestShowWebModalTwiceReusesExistingModal) {
+  ASSERT_EQ(nil, base_view_controller_.presentedViewController);
+
+  [coordinator_ showWebModalForURL:GURL(kTestURL)];
+  UIViewController* first_modal = base_view_controller_.presentedViewController;
+  ASSERT_TRUE(first_modal);
+
+  [coordinator_ showWebModalForURL:GURL(kTestURL)];
+  EXPECT_EQ(first_modal, base_view_controller_.presentedViewController);
+}
+
+// Tests that minimizing the container dismisses the web modal, since the modal
+// is presented over the container and would otherwise outlive it on screen.
+TEST_F(GeminiContainerCoordinatorTest, TestMinimizeDismissesWebModal) {
+  [coordinator_ showWebModalForURL:GURL(kTestURL)];
+  ASSERT_TRUE(base_view_controller_.presentedViewController);
+
+  [coordinator_ minimize];
+
+  EXPECT_TRUE(WaitForWebModalDismissal());
+}
+
+// Tests that once the user dismisses the web modal, the container releases it
+// so that a later `showWebModalForURL:` presents a fresh modal.
+TEST_F(GeminiContainerCoordinatorTest, TestWebModalCanBeReshownAfterDismiss) {
+  [coordinator_ showWebModalForURL:GURL(kTestURL)];
+  UIViewController* first_modal = base_view_controller_.presentedViewController;
+  ASSERT_TRUE(first_modal);
+
+  UIPresentationController* presentation_controller =
+      first_modal.presentationController;
+  [presentation_controller.delegate
+      presentationControllerDidDismiss:presentation_controller];
+  ASSERT_TRUE(WaitForWebModalDismissal());
+
+  [coordinator_ showWebModalForURL:GURL(kTestURL)];
+  UIViewController* second_modal =
+      base_view_controller_.presentedViewController;
+  EXPECT_TRUE(second_modal);
+  EXPECT_NE(first_modal, second_modal);
 }
