@@ -126,6 +126,22 @@
   <message name="IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULTS" desc="Used when plural/multiple results are found by history search powered by AI." translateable="false">
     best matches
   </message>
+  <!-- TODO(b/573481189): Make translatable when strings are finalized. -->
+  <message name="IDS_HISTORY_TIME_PERIOD_FILTER_ALL_TIME" desc="Option in the time period filter dropdown on the history page. Selecting it shows history from all time, i.e. no time period filtering is applied. This is the default option." translateable="false">
+    All time
+  </message>
+  <message name="IDS_HISTORY_TIME_PERIOD_FILTER_YESTERDAY" desc="Option in the time period filter dropdown on the history page. Selecting it shows only history from yesterday (the day before today)." translateable="false">
+    Yesterday
+  </message>
+  <message name="IDS_HISTORY_TIME_PERIOD_FILTER_EARLIER_THIS_WEEK" desc="Option in the time period filter dropdown on the history page. Selecting it shows only history from Monday of the current week up to now." translateable="false">
+    Earlier this week
+  </message>
+  <message name="IDS_HISTORY_TIME_PERIOD_FILTER_LAST_WEEK" desc="Option in the time period filter dropdown on the history page. Selecting it shows only history from the previous calendar week (Monday to Sunday)." translateable="false">
+    Last week
+  </message>
+  <message name="IDS_HISTORY_TIME_PERIOD_FILTER_TWO_WEEKS_AGO" desc="Option in the time period filter dropdown on the history page. Selecting it shows only history from the calendar week (Monday to Sunday) before the previous one." translateable="false">
+    2 weeks ago
+  </message>
   <message name="IDS_HISTORY_SHOW_HISTORY" desc="The show history menu in the app menu">
     &amp;Open history page
   </message>

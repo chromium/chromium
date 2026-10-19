@@ -9,6 +9,7 @@ include_rules = [
   "+components/optimization_guide",
   "+components/sessions/core/session_id.h",
   "+components/signin/public/identity_manager",
+  "+components/strings/grit/components_strings.h",
   "+components/variations",
   "+components/visitedlink/core",
   "+crypto",
