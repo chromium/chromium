@@ -112,6 +112,7 @@ import {                              //
   getPinCandidatesOptionsFromClient,  //
   idFromClient,                       //
   idToClient,                         //
+  imageBytesResultToClient,           //
   invokeOptionsToClient,              //
   microphoneStatusToMojo,             //
   openPinnedTabPickerOptionsToMojo,   //
@@ -122,6 +123,7 @@ import {                              //
   pinCandidateToClient,               //
   pinTabsOptionsToMojo,               //
   tabContextOptionsFromClient,        //
+  tabContextToClient,                 //
   tabDataToClient,                    //
   timeDeltaFromClient,                //
   unpinTabsOptionsToMojo,             //
@@ -134,20 +136,15 @@ import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever, ResponseExtras} from '../transport/messaging.js';
-import type {                           //
-             createDirectMessagingPair, //
-             PostMessageRemote,         //
-             PostMessageRouter,         //
-} from '../transport/post_message_transport.js';
+import type {createDirectMessagingPair, PostMessageRouter} from '../transport/post_message_transport.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
-import {ErrorWithReasonImpl, newTransferableException} from './../request_types.js';
+import {ErrorWithReasonImpl} from './../request_types.js';
 import type {                              //
              AdditionalContextPrivate,     //
              AnnotatedPageDataPrivate,     //
              FocusedTabDataPrivate,        //
-             GlicException,                //
              ImageBytesResultPrivate,      //
              ImageInfoPrivate,             //
              InvokeOptionsPrivate,         //
@@ -158,7 +155,6 @@ import type {                              //
              WebClient,                    //
              WebClientHost,                //
 } from './../request_types.js';
-import type {GlicBrowserHostBaseContext} from './glic_client_common.js';
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
 import {TabObservable, TabObservableSet} from './observable_set_by_tab_id.js';
@@ -180,27 +176,21 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
     const clientCapabilities = webClient.getClientCapabilities?.() ?? new Set();
     await this.host.webClientCreated(clientCapabilities);
     let success = false;
-    let exception: GlicException|undefined;
     try {
       await webClient.initialize(this.host);
       success = true;
     } catch (e) {
       console.warn(e);
-      if (e instanceof Error) {
-        exception = newTransferableException(e);
-      }
     }
     if (this.host) {
-      this.host.webClientInitialized(success, exception);
+      this.host.webClientInitialized(success);
     }
   }
 }
 
-export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
-                                            GlicBrowserHost,
+export class GlicBrowserHostImpl implements GlicBrowserHost,
                                             WebClientInterface {
   readonly router: PostMessageRouter;
-  readonly clientRemote: PostMessageRemote<WebClientHost>;
 
   readonly actorClient: GlicBrowserHostActor;
   readonly annotationClient: GlicBrowserHostAnnotation;
@@ -270,7 +260,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   ) {
     this.handler = hostApi.handler;
     this.router = directPair.client.router;
-    this.clientRemote = directPair.client.rootRemote;
 
     this.actorClient = new GlicBrowserHostActor();
     this.annotationClient = new GlicBrowserHostAnnotation();
@@ -466,14 +455,12 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
     }
   }
 
-  webClientInitialized(success: boolean, exception: GlicException|undefined) {
+  webClientInitialized(success: boolean) {
     if (success) {
       this.handler.webClientInitialized();
     } else {
       this.handler.webClientInitializeFailed();
     }
-    this.clientRemote.requestNoResponse(
-        'webClientInitialized', {success, exception});
   }
 
   // WebClientInterface implementation.
@@ -816,9 +803,15 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   async getContextFromFocusedTab(options: TabContextOptions):
       Promise<TabContextResult> {
-    const context = await this.clientRemote.requestWithResponse(
-        'getContextFromFocusedTab', {options});
-    return convertTabContextResultFromPrivate(context.tabContextResult);
+    const {result: {errorReason, tabContext}} =
+        await this.handler.getContextFromFocusedTab(
+            tabContextOptionsFromClient(options));
+    if (!tabContext) {
+      throw new Error(`getContextFromFocusedTab failed: ${errorReason}`);
+    }
+    const tabContextResult =
+        tabContextToClient(tabContext, new ResponseExtras());
+    return convertTabContextResultFromPrivate(tabContextResult);
   }
 
   async setMaximumNumberOfPinnedTabs?(requestedMax: number): Promise<number> {
@@ -829,20 +822,31 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
   async getContextFromTab?
       (tabId: string, options: TabContextOptions): Promise<TabContextResult> {
-    const result = await this.clientRemote.requestWithResponse(
-        'getContextFromTab', {tabId, options});
-    return convertTabContextResultFromPrivate(result.tabContextResult);
+    const {result: {errorReason, tabContext}} =
+        await this.handler.getContextFromTab(
+            idFromClient(tabId), tabContextOptionsFromClient(options));
+    if (!tabContext) {
+      throw new Error(`getContextFromTab failed: ${errorReason}`);
+    }
+    const tabContextResult =
+        tabContextToClient(tabContext, new ResponseExtras());
+    return convertTabContextResultFromPrivate(tabContextResult);
   }
 
   async getImageBytesFromTab?
       (tabId: string, documentId: string, domNodeId: number):
           Promise<ImageBytesResult> {
-    const response = await this.clientRemote.requestWithResponse(
-        'getImageBytesFromTab', {tabId, documentId, domNodeId});
-    if (!response.result) {
+    const {result: {errorReason, imageBytes}} =
+        await this.handler.getImageBytesFromTab(
+            idFromClient(tabId), documentId, domNodeId);
+    if (!imageBytes) {
+      throw new Error(`getImageBytesFromTab failed: ${errorReason}`);
+    }
+    const result = imageBytesResultToClient(imageBytes, new ResponseExtras());
+    if (!result) {
       throw new Error('Failed to get image bytes');
     }
-    return convertImageBytesResultFromPrivate(response.result);
+    return convertImageBytesResultFromPrivate(result);
   }
 
   getTabById?(tabId: string): ObservableValueImpl<TabData> {
@@ -991,12 +995,13 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
   }
 
   private async fetchUserProfileDirect(): Promise<UserProfileInfo> {
-    const {profileInfo} = await this.clientRemote.requestWithResponse(
-        'getUserProfileInfo', undefined);
+    const {profileInfo} = await this.handler.getUserProfileInfo();
     if (!profileInfo) {
       throw new Error('getUserProfileInfo failed');
     }
-    const {avatarIcon} = profileInfo;
+    const avatarIcon = profileInfo.avatarIcon ?
+        bitmapN32ToRGBAImage(profileInfo.avatarIcon) :
+        undefined;
     return replaceProperties(profileInfo, {
       avatarIcon: async () =>
           avatarIcon && Promise.resolve(rgbaImageToBlob(avatarIcon)),
@@ -1010,12 +1015,16 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
 
     this.cachedUserProfile = (async () => {
       try {
-        const {profileInfo} = await this.clientRemote.requestWithResponse(
-            'getUserProfileInfo', undefined);
+        const {profileInfo} = await this.handler.getUserProfileInfo();
 
         if (!profileInfo) {
           throw new Error('getUserProfileInfo failed');
         }
+
+        let avatarIcon = profileInfo.avatarIcon ?
+            bitmapN32ToRGBAImage(profileInfo.avatarIcon) :
+            undefined;
+        profileInfo.avatarIcon = null;
 
         let blobPromise: Promise<Blob|undefined>|undefined;
         return replaceProperties(profileInfo, {
@@ -1023,13 +1032,13 @@ export class GlicBrowserHostImpl implements GlicBrowserHostBaseContext,
             if (blobPromise) {
               return blobPromise;
             }
-            if (!profileInfo.avatarIcon) {
+            if (!avatarIcon) {
               blobPromise = Promise.resolve(undefined);
               return blobPromise;
             }
-            const newBlob = rgbaImageToBlob(profileInfo.avatarIcon);
+            const newBlob = rgbaImageToBlob(avatarIcon);
             // Clear memory after conversion
-            profileInfo.avatarIcon = undefined;
+            avatarIcon = undefined;
             blobPromise = Promise.resolve(newBlob);
             return blobPromise;
           },

@@ -2,14 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {WebClientHost} from '../request_types.js';
-import type {PostMessageRemote, PostMessageRouter} from '../transport/post_message_transport.js';
-
-export interface GlicBrowserHostBaseContext {
-  readonly router: PostMessageRouter;
-  readonly clientRemote: PostMessageRemote<WebClientHost>;
-}
-
 // --- Compile-Time Type-Safe Delegation Check Infrastructure ---
 
 type ExcludedKeys = 'initialize'|'constructor';

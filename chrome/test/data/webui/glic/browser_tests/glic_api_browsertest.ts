@@ -423,7 +423,7 @@ class ApiTests extends ApiTestFixtureBase {
     const tabId: string = this.getFocusedTabId();
     await this.host.unpinTabs([tabId]);  // Unpin required for multi-instance.
     await assertRejects(this.host.getContextFromTab(tabId, {}), {
-      withErrorMessage: 'tabContext failed: permission denied:' +
+      withErrorMessage: 'getContextFromTab failed: permission denied:' +
           ' context permission not enabled',
     });
 
@@ -447,13 +447,13 @@ class ApiTests extends ApiTestFixtureBase {
 
     await this.host.setTabContextPermissionState(false);
     await assertRejects(this.host.getContextFromTab(tabId, {}), {
-      withErrorMessage: 'tabContext failed: permission denied:' +
+      withErrorMessage: 'getContextFromTab failed: permission denied:' +
           ' context permission not enabled',
     });
 
     await this.host.setTabContextPermissionState(true);
     await assertRejects(this.host.getContextFromTab(tabId, {}), {
-      withErrorMessage: 'tabContext failed: permission denied',
+      withErrorMessage: 'getContextFromTab failed: permission denied',
     });
   }
 
@@ -482,7 +482,7 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.unpinTabs([tabId]);
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 1);
     await assertRejects(this.host.getContextFromTab(tabId, {}), {
-      withErrorMessage: 'tabContext failed: permission denied:' +
+      withErrorMessage: 'getContextFromTab failed: permission denied:' +
           ' context permission not enabled',
     });
   }
@@ -495,7 +495,7 @@ class ApiTests extends ApiTestFixtureBase {
 
     await assertRejects(
         this.host.getContextFromTab('not-exist', {}),
-        {withErrorMessage: 'tabContext failed: tab not found'},
+        {withErrorMessage: 'getContextFromTab failed: tab not found'},
     );
   }
 
@@ -674,7 +674,7 @@ class ApiTests extends ApiTestFixtureBase {
     // Focused tab extraction should fail for an un-focusable page.
     await this.host.setTabContextPermissionState(true);
     await assertRejects(this.host.getContextFromFocusedTab({}), {
-      withErrorMessage: 'tabContext failed: permission denied',
+      withErrorMessage: 'getContextFromFocusedTab failed: permission denied',
     });
   }
 
@@ -904,7 +904,7 @@ class ApiTests extends ApiTestFixtureBase {
 
     assertDefined(this.host.getContextFromFocusedTab);
     await assertRejects(this.host.getContextFromFocusedTab({}), {
-      withErrorMessage: 'tabContext failed: permission denied:' +
+      withErrorMessage: 'getContextFromFocusedTab failed: permission denied:' +
           ' context permission not enabled',
     });
   }
@@ -2173,13 +2173,15 @@ class ApiTests extends ApiTestFixtureBase {
     // Test failures.
     // 1. Invalid DOM node ID.
     await assertRejects(
-        this.host.getImageBytesFromTab(tabId, documentId, 9999),
-        {withErrorMessage: 'getImageBytes failed: failed to get image bytes'});
+        this.host.getImageBytesFromTab(tabId, documentId, 9999), {
+          withErrorMessage:
+              'getImageBytesFromTab failed: failed to get image bytes',
+        });
 
     // 2. Invalid tab ID.
     await assertRejects(
         this.host.getImageBytesFromTab('99999', documentId, domNodeId),
-        {withErrorMessage: 'getImageBytes failed: tab not found'});
+        {withErrorMessage: 'getImageBytesFromTab failed: tab not found'});
   }
 
   // Test getPinCandidates() in some different scenarios where there is a single

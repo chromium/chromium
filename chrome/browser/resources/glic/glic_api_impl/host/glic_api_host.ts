@@ -9,8 +9,6 @@ import {enumToClient} from '../../enum_conversions.js';
 import {GlicRequestEvent as MojomGlicRequestEvent, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import type {WebClientInitialState} from '../../glic.mojom-webui.js';
 import {ClientCapabilities} from '../../glic_api/glic_api.js';
-import {ObservableValue} from '../../observable.js';
-import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {getHostRequestHistogramInfo} from '../request_types.js';
@@ -24,17 +22,7 @@ import type {                              //
 } from '../transport/post_message_transport.js';
 
 import {conversionSettings, urlFromClient} from './conversions.js';
-import {HostMessageHandler} from './host_from_client.js';
 import {PanelOpenState} from './types.js';
-
-
-export enum WebClientState {
-  UNINITIALIZED,
-  WARMED,
-  RESPONSIVE,
-  UNRESPONSIVE,
-  ERROR,  // Final state
-}
 
 type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
     Promise<unknown>;
@@ -46,7 +34,6 @@ type HandlerFunction = (payload: unknown, extras: ResponseExtras) =>
  * the browser (over Mojo).
  */
 export class GlicApiHost implements PostMessageLifecycleObserver {
-  hostMessageHandler: HostMessageHandler;
   sender: PostMessageRemote<WebClient>;
   panelIsActive = false;
 
@@ -54,13 +41,8 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
   get handlerForTesting(): WebClientHandlerRemote {
     return this.handler;
   }
-  private webClientState =
-      ObservableValue.withValue<WebClientState>(WebClientState.UNINITIALIZED);
   openCloseTasks = new TaskQueue();
   private waitingOnPanelWillOpenValue = false;
-  // Synchronizes panel open/close events between the browser and client,
-  // ensuring panel open state is eventually consistent.
-  private clientActiveObs = ObservableValue.withValue(false);
   // The open state as understood by the client, this is delayed
   // from the notifyPanelWillOpen and notifyPanelWasClosed calls because
   // processing is async.
@@ -79,17 +61,14 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
     this.handler = maybeWrapWithLogging(
         new WebClientHandlerRemote(), {prefix: 'WebClientHandler'});
     this.handler.onConnectionError.addListener(() => {
-      if (this.isDestroyed ||
-          this.webClientState.getCurrentValue() === WebClientState.ERROR) {
+      if (this.isDestroyed) {
         return;
       }
       console.warn(`Mojo connection error in glic host`);
-      this.webClientState.assignAndSignal(WebClientState.ERROR);
     });
     const receiver = this.handler.$.bindNewPipeAndPassReceiver();
     receiver.bindInBrowser();
 
-    this.hostMessageHandler = new HostMessageHandler(this.handler, this);
     if (this.router.receiver) {
       this.router.receiver.requestObserver = this;
       this.router.receiver.setHandlerWrapper(this.handlerWrapper.bind(this));
@@ -98,9 +77,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
 
   destroy() {
     this.isDestroyed = true;
-    this.webClientState = ObservableValue.withValue<WebClientState>(
-        WebClientState.ERROR);  // Final state
-    this.hostMessageHandler.destroy();
   }
 
   setInitialState(
@@ -123,12 +99,10 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
 
   panelOpenStateChanged(state: PanelOpenState) {
     this.panelOpenState = state;
-    this.clientActiveObs.assignAndSignal(this.isClientActive());
   }
 
   setInstanceIsActive(instanceIsActive: boolean) {
     this.instanceIsActive = instanceIsActive;
-    this.clientActiveObs.assignAndSignal(this.isClientActive());
   }
 
   getInstanceIsActive(): boolean {
@@ -137,33 +111,6 @@ export class GlicApiHost implements PostMessageLifecycleObserver {
 
   isPanelOpen(): boolean {
     return this.panelOpenState === PanelOpenState.OPEN;
-  }
-
-  // Returns true if the user might be interacting with the client.
-  // That is, the panel is open, not in an error state, and either the panel
-  // itself is focused or a browser window it could be accessing is.
-  private isClientActive() {
-    return this.panelOpenState === PanelOpenState.OPEN &&
-        this.webClientState.getCurrentValue() !== WebClientState.ERROR &&
-        this.instanceIsActive;
-  }
-
-  // Called when the web client is initialized.
-  webClientInitialized() {
-    this.setWebClientState(WebClientState.RESPONSIVE);
-  }
-
-  webClientInitializeFailed() {
-    console.warn('GlicApiHost: web client initialize failed');
-    this.setWebClientState(WebClientState.ERROR);
-  }
-
-  setWebClientState(state: WebClientState) {
-    this.webClientState.assignAndSignal(state);
-  }
-
-  getWebClientState(): ObservableValueReadOnly<WebClientState> {
-    return this.webClientState;
   }
 
   openLinkInPopup(url: string, initialWidth: number, initialHeight: number) {

@@ -8,7 +8,12 @@
 #include <stdint.h>
 
 #include <string_view>
+#include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 
 namespace glic {
@@ -132,6 +137,31 @@ inline void LogApiRequestCount(
     int32_t request_type_id,
     mojom::GlicRequestEvent event = mojom::GlicRequestEvent::kRequestReceived) {
   LogApiRequestCount(static_cast<GlicHostApiRequestId>(request_type_id), event);
+}
+
+// Records the Glic.Api.RequestHostLatency.{request_type} UMA histogram.
+void LogApiRequestLatency(GlicHostApiRequestId request_type_id,
+                          base::TimeDelta latency);
+
+template <typename... Args>
+base::OnceCallback<void(Args...)> WrapCallbackToLogApiRequestLatency(
+    GlicHostApiRequestId request_id,
+    base::OnceCallback<void(Args...)> callback) {
+  return base::BindOnce(
+      [](GlicHostApiRequestId request_id, base::ElapsedTimer timer,
+         base::OnceCallback<void(Args...)> callback, Args... args) {
+        LogApiRequestLatency(request_id, timer.Elapsed());
+        std::move(callback).Run(std::forward<Args>(args)...);
+      },
+      request_id, base::ElapsedTimer(), std::move(callback));
+}
+
+template <typename... Args>
+base::OnceCallback<void(Args...)> WrapCallbackToLogApiRequestWithLatency(
+    GlicHostApiRequestId request_id,
+    base::OnceCallback<void(Args...)> callback) {
+  LogApiRequestCount(request_id);
+  return WrapCallbackToLogApiRequestLatency(request_id, std::move(callback));
 }
 
 }  // namespace glic

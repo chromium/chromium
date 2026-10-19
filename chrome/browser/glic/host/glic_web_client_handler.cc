@@ -436,6 +436,15 @@ class GlicWebClientHandler
     }
   }
 
+  template <typename... Args>
+  base::OnceCallback<void(Args...)> WrapCallbackToLogApiRequestWithLatency(
+      GlicHostApiRequestId request_type_id,
+      base::OnceCallback<void(Args...)> callback) {
+    LogApiRequest(request_type_id);
+    return WrapCallbackToLogApiRequestLatency(request_type_id,
+                                              std::move(callback));
+  }
+
   // glic::mojom::WebClientHandler implementation.
   void SwitchConversation(glic::mojom::ConversationInfoPtr info,
                           SwitchConversationCallback callback) override {
@@ -851,6 +860,8 @@ class GlicWebClientHandler
   void GetContextFromFocusedTab(
       glic::mojom::TabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
+    callback = WrapCallbackToLogApiRequestWithLatency(
+        GlicHostApiRequestId::kGetContextFromFocusedTab, std::move(callback));
     FocusedTabData ftd = GetSharingManagerInternal().GetFocusedTabData();
     if (ftd.unfocused_tab()) {
       CHECK(!ftd.focus());
@@ -879,6 +890,8 @@ class GlicWebClientHandler
   void GetContextFromTab(int32_t tab_id,
                          glic::mojom::TabContextOptionsPtr options,
                          GetContextFromTabCallback callback) override {
+    callback = WrapCallbackToLogApiRequestWithLatency(
+        GlicHostApiRequestId::kGetContextFromTab, std::move(callback));
     // Extra activation gating is done in this function.
     host().instance_metrics().DidRequestContextFromTab();
     GetSharingManagerInternal().GetContextFromTab(
@@ -894,6 +907,8 @@ class GlicWebClientHandler
                             const std::string& document_id,
                             int32_t dom_node_id,
                             GetImageBytesFromTabCallback callback) override {
+    callback = WrapCallbackToLogApiRequestWithLatency(
+        GlicHostApiRequestId::kGetImageBytesFromTab, std::move(callback));
     GetSharingManagerInternal().GetImageBytes(
         tabs::TabHandle(tab_id), document_id, dom_node_id,
         base::BindOnce(
@@ -1268,6 +1283,8 @@ class GlicWebClientHandler
   }
 
   void GetUserProfileInfo(GetUserProfileInfoCallback callback) override {
+    callback = WrapCallbackToLogApiRequestWithLatency(
+        GlicHostApiRequestId::kGetUserProfileInfo, std::move(callback));
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()

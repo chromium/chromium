@@ -14,14 +14,12 @@ import type {                          //
              PageMetadata,             //
              PdfDocumentData,          //
              ResumeActorTaskResult,    //
-             TabContextOptions,        //
              TabContextResult,         //
              TabData,                  //
-             UserProfileInfo,          //
 } from '../glic_api/glic_api.js';
 
 import type {InterfaceDef, InterfaceDefMethods} from './transport/messaging.js';
-import {defInterface, defMessage} from './transport/messaging.js';
+import {defInterface} from './transport/messaging.js';
 import type {ErrorCodec, TransferableException} from './transport/post_message_transport.js';
 
 /*
@@ -35,57 +33,7 @@ readability, and ensures that each name is unique.
 
 export const WebClientHostDef = defInterface({
   name: 'WebClientHost',
-  methods: [
-    {
-      name: 'webClientInitialized',
-      request: defMessage<{
-        success: boolean,
-        // Exception present if initialize() returns a rejected promise
-        // (success is false).
-        exception?: GlicException,
-      }>(),
-    },
-    {
-      name: 'getContextFromFocusedTab',
-      request: defMessage<{
-        options: TabContextOptions,
-      }>(),
-      response: defMessage<{
-        tabContextResult: TabContextResultPrivate,
-      }>(),
-      histogram: {id: 9},
-    },
-    {
-      name: 'getContextFromTab',
-      request: defMessage<{
-        tabId: string,
-        options: TabContextOptions,
-      }>(),
-      response: defMessage<{
-        tabContextResult: TabContextResultPrivate,
-      }>(),
-      histogram: {id: 10},
-    },
-    {
-      name: 'getImageBytesFromTab',
-      request: defMessage<{
-        tabId: string,
-        documentId: string,
-        domNodeId: number,
-      }>(),
-      response: defMessage<{
-        result: ImageBytesResultPrivate | null,
-      }>(),
-      histogram: {id: 101},
-    },
-    {
-      name: 'getUserProfileInfo',
-      response: defMessage<{
-        profileInfo?: UserProfileInfoPrivate,
-      }>(),
-      histogram: {id: 25},
-    },
-  ],
+  methods: [],
 });
 
 
@@ -102,127 +50,6 @@ export type WebClient = typeof WebClientDef;
 export type WebClientRequestTypes = InterfaceDefMethods<WebClient>;
 
 export type HostRequestTypes = InterfaceDefMethods<WebClientHost>;
-
-type InterfaceHistogramIds<I extends InterfaceDef> = {
-  [M in I['methods'][number] as M['histogram'] extends {id: number} ?
-       (M['histogram'] extends {name: infer Name extends string} ?
-            Name :
-            Capitalize<M['name']&string>) :
-       never]: M['histogram'] extends {id: infer Id} ? Id : never;
-};
-
-// Note: We are migrating API request reporting to C++. This list should be
-// trimmed down and fully deleted eventually.
-// See chrome/browser/glic/public/glic_api_metrics.h.
-export const RECORDED_REQUEST_IDS = {
-  // Do not reuse deleted request ID: 1,
-  // Do not reuse deleted request ID: 2,
-  // Do not reuse deleted request ID: 3,
-  // Do not reuse deleted request ID: 4,
-  // Do not reuse deleted request ID: 5,
-  // Do not reuse deleted request ID: 6,
-  // Do not reuse deleted request ID: 7,
-  // Do not reuse deleted request ID: 8,
-  GetContextFromFocusedTab: 9,
-  GetContextFromTab: 10,
-  // Do not reuse deleted request ID: 11,
-  // Do not reuse deleted request ID: 12,
-  // Do not reuse deleted request ID: 13,
-  // Do not reuse deleted request ID: 14,
-  // Do not reuse deleted request ID: 15,
-  // Do not reuse deleted request ID: 16,
-  // Do not reuse deleted request ID: 17,
-  // Do not reuse deleted request ID: 18,
-  // Do not reuse deleted request ID: 19,
-  // Do not reuse deleted request ID: 20,
-  // Do not reuse deleted request ID: 21,
-  // Do not reuse deleted request ID: 22,
-  // Do not reuse deleted request ID: 23,
-  // Do not reuse deleted request ID: 24,
-  GetUserProfileInfo: 25,
-  // Do not reuse deleted request ID: 26,
-  // Do not reuse deleted request ID: 27,
-  // Do not reuse deleted request ID: 28,
-  // Do not reuse deleted request ID: 29,
-  // Do not reuse deleted request ID: 30,
-  // Do not reuse deleted request ID: 31,
-  // Do not reuse deleted request ID: 32,
-  // Do not reuse deleted request ID: 33,
-  // Do not reuse deleted request ID: 34,
-  // Do not reuse deleted request ID: 35,
-  // Do not reuse deleted request ID: 36,
-  // Do not reuse deleted request ID: 37,
-  // Do not reuse deleted request ID: 38,
-  // Do not reuse deleted request ID: 39,
-  // Do not reuse deleted request ID: 40,
-  // Do not reuse deleted request ID: 41,
-  // Do not reuse deleted request ID: 42,
-  // Do not reuse deleted request ID: 43,
-  // Do not reuse deleted request ID: 44,
-  // Do not reuse deleted request ID: 45,
-  // Do not reuse deleted request ID: 46,
-  // Do not reuse deleted request ID: 47,
-  // Do not reuse deleted request ID: 48,
-  // Do not reuse deleted request ID: 49,
-  // Do not reuse deleted request ID: 50,
-  // Do not reuse deleted request ID: 51,
-  // Do not reuse deleted request ID: 52,
-  // Do not reuse deleted request ID: 53,
-  // Do not reuse deleted request ID: 54,
-  // Do not reuse deleted request ID: 55,
-  // Do not reuse deleted request ID: 56,
-  // Do not reuse deleted request ID: 57,
-  // Do not reuse deleted request ID: 58,
-  // Do not reuse deleted request ID: 59,
-  // Do not reuse deleted request ID: 60,
-  // Do not reuse deleted request ID: 61,
-  // Do not reuse deleted request ID: 62,
-  // Do not reuse deleted request ID: 63,
-  // Do not reuse deleted request ID: 64,
-  // Do not reuse deleted request ID: 65,
-  // Do not reuse deleted request ID: 66,
-  // Do not reuse deleted request ID: 67,
-  // Do not reuse deleted request ID: 68,
-  // Do not reuse deleted request ID: 69,
-  // Do not reuse deleted request ID: 70,
-  // Do not reuse deleted request ID: 71,
-  // Do not reuse deleted request ID: 72,
-  // Do not reuse deleted request ID: 73,
-  // Do not reuse deleted request ID: 74,
-  // Do not reuse deleted request ID: 75,
-  // Do not reuse deleted request ID: 76,
-  // Do not reuse deleted request ID: 77,
-  // Do not reuse deleted request ID: 78,
-  // Do not reuse deleted request ID: 80,
-  // Do not reuse deleted request ID: 81,
-  // Do not reuse deleted request ID: 82,
-  // Do not reuse deleted request ID: 83,
-  // Do not reuse deleted request ID: 84,
-  // Do not reuse deleted request ID: 85,
-  // Do not reuse deleted request ID: 86,
-  // Do not reuse deleted request ID: 87,
-  // Do not reuse deleted request ID: 88,
-  // Do not reuse deleted request ID: 89,
-  // Do not reuse deleted request ID: 90,
-  // Do not reuse deleted request ID: 91,
-  // Do not reuse deleted request ID: 92,
-  // Do not reuse deleted request ID: 93,
-  // Do not reuse deleted request ID: 94,
-  // Do not reuse deleted request ID: 95,
-  // Do not reuse deleted request ID: 96,
-  // Do not reuse deleted request ID: 97,
-  // Do not reuse deleted request ID: 98,
-  // Do not reuse deleted request ID: 99,
-  // Do not reuse deleted request ID: 100,
-  GetImageBytesFromTab: 101,
-  // Do not reuse deleted request ID: 102,
-  // Do not reuse deleted request ID: 103,
-  // Do not reuse deleted request ID: 104,
-  // Do not reuse deleted request ID: 105,
-  // Do not reuse deleted request ID: 106,
-  // Do not reuse deleted request ID: 107,
-} as const satisfies InterfaceHistogramIds<WebClientHost>;
-export const MAX_REQUEST_ID = Math.max(...Object.values(RECORDED_REQUEST_IDS));
 
 // Provides metrics histogram information for a host request type.
 export interface HostRequestHistogramInfo {
@@ -315,11 +142,6 @@ export declare interface ResumeActorTaskResultPrivate extends Omit<
   screenshotInfo?: ArrayBuffer;
   pdfDocumentData?: PdfDocumentDataPrivate;
   annotatedPageData?: AnnotatedPageDataPrivate;
-}
-
-export declare interface UserProfileInfoPrivate extends
-    Omit<UserProfileInfo, 'avatarIcon'> {
-  avatarIcon?: RgbaImage;
 }
 
 export declare interface PdfDocumentDataPrivate extends

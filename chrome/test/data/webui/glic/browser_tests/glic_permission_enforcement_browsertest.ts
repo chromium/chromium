@@ -32,7 +32,7 @@ class GlicPermissionEnforcementApiTest extends ApiTestFixtureBase {
 
   async testTabContextPermissionTestDeny() {
     await assertRejects(this.host.getContextFromFocusedTab!({}), {
-      withErrorMessage: 'tabContext failed: permission denied',
+      withErrorMessage: 'getContextFromFocusedTab failed: permission denied',
     });
   }
 

@@ -3614,12 +3614,8 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testGetUserProfileInfo) {
       "Glic.Api.RequestCounts.GetUserProfileInfo",
       glic::mojom::GlicRequestEvent::kRequestReceived, 1);
   histogram_tester.ExpectBucketCount(
-      "Glic.Api.RequestCounts.GetUserProfileInfo",
-      glic::mojom::GlicRequestEvent::kResponseSent, 1);
-  histogram_tester.ExpectBucketCount(
       "Glic.Api.StatusCounts.Received",
       glic::GlicHostApiRequestId::kGetUserProfileInfo, 1);
-  // Confirm that this response-receiving request gets latency metrics recorded.
   histogram_tester.ExpectTotalCount(
       "Glic.Api.RequestHostLatency.GetUserProfileInfo", 1);
 }
