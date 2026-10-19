@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/debug/stack_trace.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -91,10 +92,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,
                    });)"));
 
   // An argument that isn't a string should cause a failure, not a hang.
-  EXPECT_NONFATAL_FAILURE(
-      ExecuteScriptInBackgroundPageDeprecated(
-          extension()->id(), "window.domAutomationController.send(3);"),
-      "send(3)");
+  // Suppress stack traces during the expected failure to avoid slow symbol
+  // resolution on Windows bots timing out the test.
+  {
+    base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+        base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
+    EXPECT_NONFATAL_FAILURE(
+        ExecuteScriptInBackgroundPageDeprecated(
+            extension()->id(), "window.domAutomationController.send(3);"),
+        "send(3)");
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,
@@ -110,10 +117,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowsertestUtilTest,
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Specifying a non-existent extension should add a non-fatal failure.
-  EXPECT_NONFATAL_FAILURE(
-      EXPECT_FALSE(ExecuteScriptInBackgroundPageNoWait(
-          "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "")),
-      "No enabled extension with id: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  // Suppress stack traces during the expected failure to avoid slow symbol
+  // resolution on Windows bots timing out the test.
+  {
+    base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+        base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
+    EXPECT_NONFATAL_FAILURE(
+        EXPECT_FALSE(ExecuteScriptInBackgroundPageNoWait(
+            "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "")),
+        "No enabled extension with id: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  }
 }
 
 }  // namespace
