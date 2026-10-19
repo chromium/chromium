@@ -748,6 +748,7 @@ TEST_F(CrostiniManagerRestartTest, CrostiniNotAllowed) {
 
   EXPECT_EQ(result_future.Get(), CrostiniResult::NOT_ALLOWED);
 
+  EXPECT_EQ(uninitialized_id_, restart_id);
   EXPECT_FALSE(crostini_manager()->IsRestartPending(restart_id));
   histogram_tester_.ExpectBucketCount("Crostini.RestarterResult",
                                       CrostiniResult::NOT_ALLOWED, 1);

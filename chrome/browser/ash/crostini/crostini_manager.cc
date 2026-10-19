@@ -2564,6 +2564,10 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
     it->second->AddRequest(std::move(request));
   }
 
+  if (!IsRestartPending(restart_id)) {
+    return kUninitializedRestartId;
+  }
+
   return restart_id;
 }
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/crostini/crostini_installer_ui_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
+#include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -336,6 +337,33 @@ TEST_F(CrostiniInstallerTest, InstallerError) {
       "Crostini.SetupResult",
       static_cast<base::HistogramBase::Sample32>(
           CrostiniInstaller::SetupResult::kErrorStartingTermina),
+      1);
+  histogram_tester_.ExpectTotalCount("Crostini.Setup.Started", 1);
+  histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 0);
+
+  EXPECT_TRUE(crostini_installer_->CanInstall())
+      << "Installer should recover to installable state";
+}
+
+TEST_F(CrostiniInstallerTest, InstallerErrorNotAllowed) {
+  Expectation expect_progresses =
+      EXPECT_CALL(mock_callbacks_, OnProgress(_, _)).Times(AnyNumber());
+  // |OnProgress()| should not happen after |OnFinished()|
+  EXPECT_CALL(mock_callbacks_, OnFinished(InstallerError::kErrorLoadingTermina))
+      .After(expect_progresses);
+
+  // IsAllowedNow() is only checked once RestartCrostiniWithOptions() runs;
+  // CanInstall() below only checks that state_ recovered to State::ERROR.
+  FakeCrostiniFeatures crostini_features;
+  crostini_features.set_is_allowed_now(false);
+
+  Install();
+  task_environment_.RunUntilIdle();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Crostini.SetupResult",
+      static_cast<base::HistogramBase::Sample32>(
+          CrostiniInstaller::SetupResult::kErrorLoadingTermina),
       1);
   histogram_tester_.ExpectTotalCount("Crostini.Setup.Started", 1);
   histogram_tester_.ExpectTotalCount("Crostini.Restarter.Started", 0);
