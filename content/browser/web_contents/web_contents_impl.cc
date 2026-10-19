@@ -11581,6 +11581,10 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
       "content", "WebContentsImpl::CreateRenderWidgetHostViewForRenderManager",
       "render_view_host", render_view_host);
 
+  // Creating the view can run a nested message loop, and callers keep using
+  // `this` and the new view afterwards, so `this` must not be destroyed here.
+  base::AutoReset<bool> scope(&prevent_destruction_, true);
+
   bool is_inner_frame_tree = [&]() {
     FrameTree* frame_tree =
         static_cast<RenderViewHostImpl*>(render_view_host)->frame_tree();

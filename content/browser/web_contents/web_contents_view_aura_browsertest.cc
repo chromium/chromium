@@ -20,12 +20,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/gtest_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -114,7 +116,99 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
   base::OnceClosure drop_callback_;
 };
 
+// If set, the next view created closes this Shell from within InitAsChild().
+Shell* g_shell_to_close_during_init = nullptr;
+
+// A view that simulates a nested message loop running during InitAsChild() (as
+// can happen on Windows when a synchronous TSF lock session is started) in
+// which the tab is closed.
+class SelfDestructingRenderWidgetHostViewAura
+    : public RenderWidgetHostViewAura {
+ public:
+  explicit SelfDestructingRenderWidgetHostViewAura(RenderWidgetHost* host)
+      : RenderWidgetHostViewAura(host) {}
+  ~SelfDestructingRenderWidgetHostViewAura() override = default;
+
+  void InitAsChild(gfx::NativeView parent_view) override {
+    RenderWidgetHostViewAura::InitAsChild(parent_view);
+    if (!g_shell_to_close_during_init) {
+      return;
+    }
+    Shell* shell_to_close = g_shell_to_close_during_init;
+    g_shell_to_close_during_init = nullptr;
+
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](Shell* shell, base::OnceClosure quit) {
+                         shell->Close();
+                         std::move(quit).Run();
+                       },
+                       shell_to_close, run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+};
+
+void InstallSelfDestructingRenderWidgetHostViewCreateHook() {
+  WebContentsViewAura::InstallCreateHookForTests(
+      [](RenderWidgetHost* host) -> RenderWidgetHostViewAura* {
+        return new SelfDestructingRenderWidgetHostViewAura(host);
+      });
+}
+
 }  // namespace
+
+class WebContentsViewAuraReentrantDestructionTest : public ContentBrowserTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    InstallSelfDestructingRenderWidgetHostViewCreateHook();
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+};
+
+// WebContentsViewAura::CreateViewForWidget() runs InitAsChild(), which can pump
+// a nested message loop, and then keeps using the view and the
+// WebContentsViewAura. Closing the tab inside that loop destroys both, so this
+// verifies that destroying the WebContents re-entrantly there fails a CHECK
+// instead of using freed memory.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
+                       WebContentsDestroyedDuringInitAsChild) {
+  Shell* tab = CreateBrowser();
+
+  // The embedded b.com subframe gives this tab a live RenderViewHost for b.com
+  // that has no view yet. A same-BrowsingInstance main-frame navigation to
+  // b.com reuses it and creates its view during the navigation, rather than
+  // when a new RenderViewHost is created.
+  const GURL initial_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)");
+  ASSERT_TRUE(NavigateToURL(tab, initial_url));
+
+  // Stay in the same BrowsingInstance so the navigation reuses that
+  // RenderViewHost.
+  static_cast<WebContentsImpl*>(tab->web_contents())
+      ->GetPrimaryMainFrame()
+      ->DisableProactiveBrowsingInstanceSwapForTesting();
+
+  const GURL target_url =
+      embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  // Destroying the WebContents while its view is being created is not
+  // supported, so it must fail a CHECK rather than touch freed memory.
+  EXPECT_CHECK_DEATH_WITH(
+      {
+        g_shell_to_close_during_init = tab;
+        // Not NavigateToURL(), which would use the Shell after it is
+        // destroyed.
+        tab->web_contents()->GetController().LoadURLWithParams(
+            NavigationController::LoadURLParams(target_url));
+      },
+      "prevent_destruction_");
+}
 
 class WebContentsViewAuraTest : public ContentBrowserTest {
  public:
