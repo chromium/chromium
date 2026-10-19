@@ -56,16 +56,12 @@ void SessionsGlobalIdMapper::TrackNavigationId(const base::Time& timestamp,
 
   global_to_unique_.emplace(global_id, unique_id);
 
-  auto u2g_iter = unique_to_current_global_.find(unique_id);
-  if (u2g_iter == unique_to_current_global_.end()) {
-    unique_to_current_global_.insert(u2g_iter,
-                                     std::make_pair(unique_id, global_id));
-  } else if (u2g_iter->second != global_id) {
-    // Remember the old_global_id before we insert and invalidate out iter.
+  auto [u2g_iter, inserted] =
+      unique_to_current_global_.try_emplace(unique_id, global_id);
+  if (!inserted && u2g_iter->second != global_id) {
+    // Remember the old_global_id before we update.
     int64_t old_global_id = u2g_iter->second;
-
-    // TODO(skym): Use insert_or_assign with hint once on C++17.
-    unique_to_current_global_[unique_id] = global_id;
+    u2g_iter->second = global_id;
 
     // This should be done after updating unique_to_current_global_ in case one
     // of our observers calls into GetLatestGlobalId().
