@@ -328,7 +328,9 @@ void SVGSMILElement::BuildPendingResource() {
   ClearResourceAndEventBaseReferences();
   DisconnectConditions();
 
-  if (!isConnected()) {
+  // Ignore timed elements that are inserted into a <use> shadow tree. This is
+  // currently possible via a cloned event handler.
+  if (!isConnected() || InUseShadowTree()) {
     // Reset the target element if we are no longer in the document.
     SetTargetElement(nullptr);
     return;
