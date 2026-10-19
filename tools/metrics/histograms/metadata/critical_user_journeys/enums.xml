@@ -78,6 +78,65 @@ This file defines enums used in Critical User Journey histograms.
 
 <!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:ReadAnythingJourneySteps) -->
 
+<!-- LINT.IfChange(SettingsAppearanceThemesJourneySteps) -->
+
+<enum name="SettingsAppearanceThemesJourneySteps">
+  <int value="1" label="Appearance nav menu item clicked"/>
+  <int value="2" label="Appearance color tile selected"/>
+  <int value="3" label="Appearance theme changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SettingsAppearanceThemesJourneySteps) -->
+
+<!-- LINT.IfChange(SettingsClearBrowsingDataJourneySteps) -->
+
+<enum name="SettingsClearBrowsingDataJourneySteps">
+  <int value="1" label="Clear browsing data row clicked"/>
+  <int value="2" label="Clear browsing data confirm button clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SettingsClearBrowsingDataJourneySteps) -->
+
+<!-- LINT.IfChange(SettingsNavIAJourneySteps) -->
+
+<enum name="SettingsNavIAJourneySteps">
+  <int value="1" label="Settings page loaded"/>
+  <int value="2" label="Settings nav category clicked"/>
+  <int value="3" label="Setting state changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SettingsNavIAJourneySteps) -->
+
+<!-- LINT.IfChange(SettingsSearchEngineJourneySteps) -->
+
+<enum name="SettingsSearchEngineJourneySteps">
+  <int value="1" label="Search engine nav menu item clicked"/>
+  <int value="2" label="Default search engine changed"/>
+  <int value="3" label="Search shortcuts toggled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SettingsSearchEngineJourneySteps) -->
+
+<!-- LINT.IfChange(SettingsSitesDashboardJourneySteps) -->
+
+<enum name="SettingsSitesDashboardJourneySteps">
+  <int value="1" label="Sites nav menu item clicked"/>
+  <int value="2" label="Site permission category clicked"/>
+  <int value="3" label="Site permission changed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SettingsSitesDashboardJourneySteps) -->
+
+<!-- LINT.IfChange(SettingsSuperchargedSearchJourneySteps) -->
+
+<enum name="SettingsSuperchargedSearchJourneySteps">
+  <int value="1" label="Settings search box shown"/>
+  <int value="2" label="Settings search query entered"/>
+  <int value="3" label="Settings search result clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h:SettingsSuperchargedSearchJourneySteps) -->
+
 <!-- LINT.IfChange(TabSearchJourneySteps) -->
 
 <enum name="TabSearchJourneySteps">

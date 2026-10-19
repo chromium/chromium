@@ -83,6 +83,65 @@ enum class TabSearchJourneySteps {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:TabSearchJourneySteps)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SettingsAppearanceThemesJourneySteps)
+enum class SettingsAppearanceThemesJourneySteps {
+  kAppearanceNavClicked = 1,
+  kColorTileSelected = 2,
+  kThemeChanged = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:SettingsAppearanceThemesJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SettingsClearBrowsingDataJourneySteps)
+enum class SettingsClearBrowsingDataJourneySteps {
+  kClearBrowsingDataClicked = 1,
+  kConfirmButtonClicked = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:SettingsClearBrowsingDataJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SettingsNavIAJourneySteps)
+enum class SettingsNavIAJourneySteps {
+  kSettingsPageLoaded = 1,
+  kNavCategoryClicked = 2,
+  kSettingStateChanged = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:SettingsNavIAJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SettingsSearchEngineJourneySteps)
+enum class SettingsSearchEngineJourneySteps {
+  kSearchEngineNavClicked = 1,
+  kDefaultSearchEngineChanged = 2,
+  kSearchShortcutsToggled = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:SettingsSearchEngineJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SettingsSitesDashboardJourneySteps)
+enum class SettingsSitesDashboardJourneySteps {
+  kSitesNavClicked = 1,
+  kPermissionCategoryClicked = 2,
+  kSitePermissionChanged = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:SettingsSitesDashboardJourneySteps)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SettingsSuperchargedSearchJourneySteps)
+enum class SettingsSuperchargedSearchJourneySteps {
+  kSearchBoxShown = 1,
+  kSearchQueryEntered = 2,
+  kSearchResultClicked = 3,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:SettingsSuperchargedSearchJourneySteps)
+
 // Registry for all defined Critical User Journeys.
 // Used to store and retrieve journey definitions by their starting element.
 class CriticalUserJourneyRegistry {

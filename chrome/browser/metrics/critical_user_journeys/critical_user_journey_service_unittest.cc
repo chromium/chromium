@@ -186,4 +186,31 @@ TEST_F(CriticalUserJourneyServiceTest, HaTSSurveyAbandonedExitBranchPSD) {
       CriticalUserJourneySession::JourneyResult::kAbandoned, 1);
 }
 
+TEST_F(CriticalUserJourneyServiceTest,
+       SettingsGlowupJourneysHaveDistinctNamesAndOneBasedSteps) {
+  CriticalUserJourneyRegistry registry;
+  registry.AddJourneys();
+
+  std::vector<std::string> settings_journey_names;
+  for (const auto& journey : registry.journeys()) {
+    const std::string name(journey->name());
+    if (name.starts_with("Settings")) {
+      settings_journey_names.push_back(name);
+      ASSERT_FALSE(journey->steps().empty());
+      for (size_t i = 0; i < journey->steps().size(); ++i) {
+        EXPECT_EQ(journey->steps()[i]->metric_id, static_cast<int>(i + 1))
+            << "Journey " << name << " step " << i << " must be 1-based";
+      }
+    }
+  }
+
+  EXPECT_THAT(settings_journey_names,
+              testing::UnorderedElementsAre("SettingsNavIAJourney",
+                                            "SettingsSuperchargedSearchJourney",
+                                            "SettingsSearchEngineJourney",
+                                            "SettingsSitesDashboardJourney",
+                                            "SettingsClearBrowsingDataJourney",
+                                            "SettingsAppearanceThemesJourney"));
+}
+
 }  // namespace metrics

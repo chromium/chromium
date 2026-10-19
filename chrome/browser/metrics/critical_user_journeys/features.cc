@@ -17,6 +17,15 @@ BASE_FEATURE(kViewDownloadedFileFromAppMenuJourney,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kPinExtensionJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSettingsGlowupJourneys, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsAppearanceThemesJourney,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsClearBrowsingDataJourney,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsNavIAJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsSearchEngineJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsSitesDashboardJourney, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSettingsSuperchargedSearchJourney,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCustomizeChromeJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kReadAnythingJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabSearchJourney, base::FEATURE_ENABLED_BY_DEFAULT);
