@@ -10733,6 +10733,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ORGANIZER_PANEL_NO_RECENTLY_CLOSED_TABS" desc="Text shown in the recently closed tabs section of the organizer panel when there are no recently closed tabs.">
         No recently closed tabs
       </message>
+      <message name="IDS_ORGANIZER_PANEL_COLLAPSE" desc="The tooltip for an organizer panel section header when it is expanded.">
+        Collapse
+      </message>
+      <message name="IDS_ORGANIZER_PANEL_EXPAND" desc="The tooltip for an organizer panel section header when it is collapsed.">
+        Expand
+      </message>
       <message name="IDS_ORGANIZER_PANEL_SHOW_ALL" desc="The label for the menu item in an organizer panel list section header that shows all items in the section.">
         Show all
       </message>

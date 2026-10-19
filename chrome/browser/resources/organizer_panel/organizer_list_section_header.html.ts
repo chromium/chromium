@@ -10,7 +10,8 @@ export function getHtml(this: OrganizerListSectionHeaderElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <cr-expand-button id="expandButton" no-hover ?expanded="${this.expanded}"
-    ?disabled="${this.disabled}" @expanded-changed="${this.onExpandedChanged_}">
+    ?disabled="${this.disabled}" @expanded-changed="${this.onExpandedChanged_}"
+    expand-title="$i18n{expand}" collapse-title="$i18n{collapse}">
   <slot></slot>
 </cr-expand-button>
 <cr-icon-button id="menuButton" iron-icon="cr:more-vert"

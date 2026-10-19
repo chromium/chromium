@@ -26,6 +26,19 @@ suite('OrganizerListSectionHeaderTest', () => {
     assertEquals('Options', menuButton.getAttribute('aria-label'));
   });
 
+  test('has expand/collapse tooltip on expand button', async () => {
+    const expandButton = header.$.expandButton;
+    assertEquals('Collapse', expandButton.title);
+
+    header.expanded = false;
+    await microtasksFinished();
+    assertEquals('Expand', expandButton.title);
+
+    header.expanded = true;
+    await microtasksFinished();
+    assertEquals('Collapse', expandButton.title);
+  });
+
   test('toggles expanded state when expand button is clicked', async () => {
     const expandButton = header.$.expandButton;
     const expandIcon = expandButton.$.icon;
