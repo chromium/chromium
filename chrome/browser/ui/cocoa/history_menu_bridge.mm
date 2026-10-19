@@ -135,7 +135,13 @@ HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
 // Note that all requests sent to either the history service or the favicon
 // service will be automatically cancelled by their respective Consumers, so
 // task cancellation is not done manually here in the dtor.
-HistoryMenuBridge::~HistoryMenuBridge() = default;
+HistoryMenuBridge::~HistoryMenuBridge() {
+  NSMenu* historyMenu = HistoryMenu();
+  if ([historyMenu delegate] == controller_) {
+    [historyMenu setDelegate:nil];
+  }
+  [controller_ clearBridge];
+}
 
 void HistoryMenuBridge::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {

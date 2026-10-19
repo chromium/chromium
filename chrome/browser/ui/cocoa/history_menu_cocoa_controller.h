@@ -17,6 +17,10 @@
 
 - (instancetype)initWithBridge:(HistoryMenuBridge*)bridge;
 
+// Called when the bridge is being destroyed to invalidate the weak bridge
+// pointer.
+- (void)clearBridge;
+
 // Called by any history menu item.
 - (IBAction)openHistoryMenuItem:(id)sender;
 

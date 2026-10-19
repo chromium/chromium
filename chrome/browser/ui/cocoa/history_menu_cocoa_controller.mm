@@ -82,6 +82,10 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
   return self;
 }
 
+- (void)clearBridge {
+  _bridge = nullptr;
+}
+
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
   return ![AppController.sharedController keyWindowIsModal];
 }
@@ -104,6 +108,10 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
 }
 
 - (IBAction)openHistoryMenuItem:(id)sender {
+  if (!_bridge) {
+    return;
+  }
+
   const HistoryMenuBridge::HistoryItem* item =
       _bridge->HistoryItemForMenuItem(sender);
 
@@ -121,11 +129,15 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
 // NSMenuDelegate:
 
 - (void)menuWillOpen:(NSMenu*)menu {
-  _bridge->SetIsMenuOpen(true);
+  if (_bridge) {
+    _bridge->SetIsMenuOpen(true);
+  }
 }
 
 - (void)menuDidClose:(NSMenu*)menu {
-  _bridge->SetIsMenuOpen(false);
+  if (_bridge) {
+    _bridge->SetIsMenuOpen(false);
+  }
 }
 
 @end  // HistoryMenuCocoaController

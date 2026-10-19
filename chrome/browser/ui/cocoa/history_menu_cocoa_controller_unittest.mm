@@ -94,3 +94,21 @@ TEST_F(HistoryMenuCocoaControllerTest, OpenURLForItem) {
     EXPECT_TRUE(controller()->_opened.count(item->session_id.id()));
   }
 }
+
+// Verifies that menu delegate callbacks (e.g., menuDidClose:) and item
+// actions safely no-op after HistoryMenuBridge is destroyed
+// (https://crbug.com/573702454).
+TEST_F(HistoryMenuCocoaControllerTest, MenuCallbacksAfterBridgeDestroyed) {
+  NSMenu* menu = [[NSMenu alloc] initWithTitle:@"History"];
+  FakeHistoryMenuController* ctrl = controller();
+  [ctrl clearBridge];
+
+  // These should safely no-op when the bridge pointer is cleared.
+  [ctrl menuWillOpen:menu];
+  [ctrl menuDidClose:menu];
+  NSMenuItem* item =
+      [[NSMenuItem alloc] initWithTitle:@"Item"
+                                 action:@selector(openHistoryMenuItem:)
+                          keyEquivalent:@""];
+  [ctrl openHistoryMenuItem:item];
+}
