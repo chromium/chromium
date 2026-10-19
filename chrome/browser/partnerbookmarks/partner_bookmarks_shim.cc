@@ -158,7 +158,9 @@ void PartnerBookmarksShim::RemoveObserver(
 }
 
 const BookmarkNode* PartnerBookmarksShim::GetNodeByID(int64_t id) const {
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/574650747): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
   if (!HasPartnerBookmarks()) {
     return NULL;
   }
