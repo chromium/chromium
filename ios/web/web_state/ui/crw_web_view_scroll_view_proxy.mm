@@ -176,6 +176,7 @@ static int gAnyContext = 0;
 }
 
 - (void)dealloc {
+  [self.underlyingScrollView setDelegate:nil];
   [self.class stopObservingScrollView:self.underlyingScrollView proxy:self];
 }
 
