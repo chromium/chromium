@@ -1093,7 +1093,6 @@ try_.builder(
     cores = 32,
     ssd = True,
     execution_timeout = 5 * time.hour,
-    notifies = ["chrome-rust-toolchain"],
     properties = {
         "disable_tbi": True,
         "$build/chromium_toolchain": {
@@ -1115,7 +1114,6 @@ try_.builder(
     cores = 32,
     ssd = True,
     execution_timeout = 5 * time.hour,
-    notifies = ["chrome-rust-toolchain"],
 )
 
 try_.builder(
