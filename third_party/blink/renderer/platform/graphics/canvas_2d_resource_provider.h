@@ -188,6 +188,9 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
+  // Notifies before any unaccelerated drawing will be done on the resource used
+  // by this provider.
+  void WillDrawUnaccelerated();
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
@@ -258,10 +261,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   void EnsureResourceReadyForDraw();
-
-  // Notifies before any unaccelerated drawing will be done on the resource used
-  // by this provider.
-  void WillDrawUnaccelerated();
 
   base::WeakPtr<Canvas2DResourceProvider> CreateWeakPtr();
 

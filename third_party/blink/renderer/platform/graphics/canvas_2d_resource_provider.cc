@@ -263,13 +263,7 @@ bool Canvas2DResourceProvider::WritePixels(const SkImageInfo& orig_info,
                                            int x,
                                            int y) {
   TRACE_EVENT0("blink", "Canvas2DResourceProvider::WritePixels");
-  if (!is_accelerated_) {
-    WillDrawUnaccelerated();
-    DCHECK(IsValid());
-
-    return GetSkSurface()->getCanvas()->writePixels(orig_info, pixels,
-                                                    row_bytes, x, y);
-  }
+  CHECK(is_accelerated_);
   if (IsGpuContextLost()) {
     return false;
   }

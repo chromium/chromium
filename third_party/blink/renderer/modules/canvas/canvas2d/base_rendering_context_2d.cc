@@ -484,11 +484,14 @@ bool BaseRenderingContext2D::WritePixelsToBacking(const SkImageInfo& orig_info,
                                                   size_t row_bytes,
                                                   int x,
                                                   int y) {
-  if (shared_image_provider_) {
+  if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
     return shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x,
                                                y);
   }
   if (surface_) {
+    if (shared_image_provider_) {
+      shared_image_provider_->WillDrawUnaccelerated();
+    }
     return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x,
                                               y);
   }
