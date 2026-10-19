@@ -187,12 +187,26 @@ void ExpectAssistantButtonMenuUserActionCounts(
             tester.GetActionCount(kAssistantButtonMenuAccountUserAction));
 }
 
+// A FakeNavigationManager that records calls to `GoToIndex`.
+class TestNavigationManager : public web::FakeNavigationManager {
+ public:
+  void GoToIndex(int index) override {
+    last_navigated_index_ = index;
+    SetLastCommittedItemIndex(index);
+  }
+  int last_navigated_index() const { return last_navigated_index_; }
+
+ private:
+  int last_navigated_index_ = -1;
+};
+
 }  // namespace
 
 @interface AppBarMediator (Test)
 - (void)updateConsumer;
 - (void)updateAssistantButton;
 - (void)addNewTabInCurrentTabGroup;
+- (void)navigateToPageForItem:(web::NavigationItem*)item;
 @end
 
 class AppBarMediatorTest : public PlatformTest,
@@ -3360,6 +3374,149 @@ TEST_F(AppBarMediatorTest, TestDisableLongPress_FlagEnabled) {
   [tab_grid_state_ setCurrentPage:TabGridPageTabGroups];
   [tab_grid_state_ setTabGridVisible:YES];
   EXPECT_OCMOCK_VERIFY(tab_groups_consumer);
+}
+
+// Tests that when `kFiveButtonAppBarLayout` is enabled and there is no active
+// WebState, updating the consumer does not crash trying to access the
+// navigation manager on a null WebState (crbug.com/574867690).
+TEST_F(AppBarMediatorTest,
+       TestFiveButtonAppBarLayout_NoActiveWebState_DoesNotCrash) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kNextOldDesign, kFiveButtonAppBarLayout}, {});
+  RecreateMediator();
+
+  // Initially there is no active WebState in the WebStateList.
+  ASSERT_EQ(nullptr, regular_browser_->GetWebStateList()->GetActiveWebState());
+
+  // Back and forward menus should not be pushed to the consumer when there is
+  // no active WebState.
+  id empty_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
+  OCMReject([empty_consumer setMenu:[OCMArg any]
+                      forButtonType:AppBarButtonTypeBack]);
+  OCMReject([empty_consumer setMenu:[OCMArg any]
+                      forButtonType:AppBarButtonTypeForward]);
+  mediator_.consumer = empty_consumer;
+
+  // Updating the consumer with no active WebState must not crash.
+  [mediator_ updateConsumer];
+  EXPECT_OCMOCK_VERIFY(empty_consumer);
+
+  // Insert an active WebState with navigation history.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  auto nav_manager = std::make_unique<TestNavigationManager>();
+  constexpr char kTestURL1[] = "https://example.com/1";
+  constexpr char kTestURL2[] = "https://example.com/2";
+  nav_manager->AddItem(GURL(kTestURL1), ui::PAGE_TRANSITION_LINK);
+  nav_manager->AddItem(GURL(kTestURL2), ui::PAGE_TRANSITION_LINK);
+  constexpr int kCommittedIndex = 1;
+  nav_manager->SetLastCommittedItemIndex(kCommittedIndex);
+  web_state->SetNavigationManager(std::move(nav_manager));
+
+  id active_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
+  OCMExpect([active_consumer setMenu:[OCMArg isNotNil]
+                       forButtonType:AppBarButtonTypeBack]);
+  OCMExpect([active_consumer setMenu:[OCMArg isNotNil]
+                       forButtonType:AppBarButtonTypeForward]);
+  mediator_.consumer = active_consumer;
+  regular_browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_OCMOCK_VERIFY(active_consumer);
+
+  // Closing all WebStates enters a state with no active WebState; this must
+  // update the consumer without crashing (crbug.com/574867690).
+  CloseAllWebStates(*regular_browser_->GetWebStateList(),
+                    WebStateList::ClosingReason::kDefault);
+  EXPECT_EQ(nullptr, regular_browser_->GetWebStateList()->GetActiveWebState());
+
+  id closed_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
+  OCMReject([closed_consumer setMenu:[OCMArg any]
+                       forButtonType:AppBarButtonTypeBack]);
+  OCMReject([closed_consumer setMenu:[OCMArg any]
+                       forButtonType:AppBarButtonTypeForward]);
+  mediator_.consumer = closed_consumer;
+  [mediator_ updateConsumer];
+  EXPECT_OCMOCK_VERIFY(closed_consumer);
+}
+
+// Tests that when `kFiveButtonAppBarLayout` is enabled and there is an active
+// WebState, `navigateToPageForItem:` navigates to the selected item rather than
+// hitting `NOTREACHED()`.
+TEST_F(AppBarMediatorTest, TestNavigateToPageForItem_NavigatesToItemIndex) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kNextOldDesign, kFiveButtonAppBarLayout}, {});
+  RecreateMediator();
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  auto nav_manager = std::make_unique<TestNavigationManager>();
+  TestNavigationManager* raw_nav_manager = nav_manager.get();
+
+  constexpr char kTestURL0[] = "https://example.com/0";
+  constexpr char kTestURL1[] = "https://example.com/1";
+  constexpr char kTestURL2[] = "https://example.com/2";
+  nav_manager->AddItem(GURL(kTestURL0), ui::PAGE_TRANSITION_LINK);
+  nav_manager->AddItem(GURL(kTestURL1), ui::PAGE_TRANSITION_LINK);
+  nav_manager->AddItem(GURL(kTestURL2), ui::PAGE_TRANSITION_LINK);
+  constexpr int kInitialIndex = 2;
+  constexpr int kTargetIndex = 0;
+  nav_manager->SetLastCommittedItemIndex(kInitialIndex);
+
+  web::NavigationItem* target_item =
+      raw_nav_manager->GetItemAtIndex(kTargetIndex);
+  web_state->SetNavigationManager(std::move(nav_manager));
+  regular_browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+
+  // Navigate to item at index 0 and verify `GoToIndex` was called.
+  [mediator_ navigateToPageForItem:target_item];
+  EXPECT_EQ(kTargetIndex, raw_nav_manager->last_navigated_index());
+  EXPECT_EQ(kTargetIndex, raw_nav_manager->GetLastCommittedItemIndex());
+}
+
+// Tests that `navigateToPageForItem:` safely handles the absence of an active
+// WebState or the feature flag being disabled without crashing.
+TEST_F(AppBarMediatorTest,
+       TestNavigateToPageForItem_SafeWhenNoActiveWebStateOrDisabled) {
+  // Verify that calling `navigateToPageForItem:` when `kFiveButtonAppBarLayout`
+  // is enabled but there is no active WebState does not crash.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kNextOldDesign, kFiveButtonAppBarLayout}, {});
+    RecreateMediator();
+    ASSERT_EQ(nullptr,
+              regular_browser_->GetWebStateList()->GetActiveWebState());
+
+    std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
+    [mediator_ navigateToPageForItem:item.get()];
+  }
+
+  // Verify that calling `navigateToPageForItem:` when `kFiveButtonAppBarLayout`
+  // is disabled safely returns without navigating or hitting `NOTREACHED()`.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kFiveButtonAppBarLayout);
+    RecreateMediator();
+
+    auto web_state = std::make_unique<web::FakeWebState>();
+    auto nav_manager = std::make_unique<TestNavigationManager>();
+    TestNavigationManager* raw_nav_manager = nav_manager.get();
+    constexpr char kTestURL[] = "https://example.com/0";
+    nav_manager->AddItem(GURL(kTestURL), ui::PAGE_TRANSITION_LINK);
+    constexpr int kIndex = 0;
+    web::NavigationItem* item = raw_nav_manager->GetItemAtIndex(kIndex);
+    web_state->SetNavigationManager(std::move(nav_manager));
+    regular_browser_->GetWebStateList()->InsertWebState(
+        std::move(web_state),
+        WebStateList::InsertionParams::AtIndex(0).Activate());
+
+    [mediator_ navigateToPageForItem:item];
+    constexpr int kInvalidIndex = -1;
+    EXPECT_EQ(kInvalidIndex, raw_nav_manager->last_navigated_index());
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(AppBarMediatorTest,
