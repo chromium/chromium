@@ -97,6 +97,17 @@ extern const base::FeatureParam<bool> kContextManagementInComposeboxTooltips;
 // Helper to check if context menu tooltips are enabled in the composebox.
 bool IsContextMenuTooltipsInComposeboxEnabled();
 
+// If enabled, the current/recent tab is shown as a standalone menu item at the
+// top of the composebox context menu, above the "Add tabs" flyout entry on
+// Realbox, Omnibox, and SiC Side Panel.
+extern const base::FeatureParam<bool>
+    kContextManagementInComposeboxSingleTabMenuItem;
+
+// Helper to check if the single tab menu item is enabled, which requires the
+// parent feature kContextManagementInComposebox to be enabled and the param to
+// be true.
+bool IsSingleTabMenuItemInComposeboxEnabled();
+
 }  // namespace omnibox
 
 #endif  // COMPONENTS_OMNIBOX_COMMON_COMPOSEBOX_FEATURES_H_

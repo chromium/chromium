@@ -1413,6 +1413,11 @@ const FeatureEntry::FeatureParam
         {"enable_context_menu_tooltips", "true"},
         {"enable_tab_deselection", "true"}};
 
+const FeatureEntry::FeatureParam
+    kContextManagementEnableSingleTabMenuItemParams[] = {
+        {"enable_single_tab_menu_item", "true"},
+        {"enable_tab_deselection", "true"}};
+
 // Normal 'Enabled' option is just the flag enabled with param 'realbox closes
 // menu on tab select' enabled by default. 'Disabled' option disables the flag,
 // and thus the context menu and 'realbox closes menu on tab select'.
@@ -1424,7 +1429,9 @@ const FeatureEntry::FeatureVariation
          "deselection)",
          kContextManagementKeepMenuOpenAndTabDeselectionParams, nullptr},
         {"Context Management in composebox (with tooltips and tab deselection)",
-         kContextManagementEnableContextMenuTooltipsParams, nullptr}};
+         kContextManagementEnableContextMenuTooltipsParams, nullptr},
+        {"With single tab above tab flyout",
+         kContextManagementEnableSingleTabMenuItemParams, nullptr}};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
