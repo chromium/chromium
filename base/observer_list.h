@@ -111,24 +111,13 @@ enum class ObserverListReentrancyPolicy {
   kAllowReentrancyUntriaged,
 };
 
-// TODO(oshima): Change the default to non reentrant. https://crbug.com/812109
-namespace internal {
-#if BUILDFLAG(IS_IOS)
-inline constexpr ObserverListReentrancyPolicy kDefaultReentrancy =
-    ObserverListReentrancyPolicy::kAllowReentrancy;
-#else
-inline constexpr ObserverListReentrancyPolicy kDefaultReentrancy =
-    ObserverListReentrancyPolicy::kDisallowReentrancy;
-#endif
-}  // namespace internal
-
 // When `check_empty` is true, assert that the list is empty on destruction.
 // When `reentrancy` is kDisallowReentrancy, iterating through the list while
 // already in the iteration loop will result in DCHECK failure.
 template <class ObserverType,
           bool check_empty = false,
           ObserverListReentrancyPolicy reentrancy =
-              internal::kDefaultReentrancy,
+              ObserverListReentrancyPolicy::kDisallowReentrancy,
           class ObserverStorageType = internal::CheckedObserverAdapter>
 class ObserverList {
  public:
