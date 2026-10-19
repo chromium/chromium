@@ -11,18 +11,13 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/base64.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/url_constants.h"
 
 namespace ash {
 
 namespace {
-
-base::FilePath GetDownloadDirectoryForProfile(Profile* profile) {
-  return DownloadPrefs::FromBrowserContext(profile)
-      ->GetDefaultDownloadDirectoryForProfile();
-}
 
 bool IsUrlAllowed(const GURL& url) {
   return url.SchemeIs(url::kHttpsScheme) ||
@@ -49,9 +44,9 @@ void LobsterPageHandler::BindInterface(
 void LobsterPageHandler::DownloadCandidate(uint32_t candidate_id,
                                            DownloadCandidateCallback callback) {
   // TODO: b:359361699 - Implements smarter file naming
-  session_->DownloadCandidate(candidate_id,
-                              GetDownloadDirectoryForProfile(profile_),
-                              std::move(callback));
+  session_->DownloadCandidate(
+      candidate_id, file_manager::util::GetDownloadsFolderForProfile(profile_),
+      std::move(callback));
 }
 
 void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
@@ -62,9 +57,9 @@ void LobsterPageHandler::CommitAsInsert(uint32_t candidate_id,
 void LobsterPageHandler::CommitAsDownload(uint32_t candidate_id,
                                           CommitAsDownloadCallback callback) {
   // TODO: b:359361699 - Implements smarter file naming
-  session_->CommitAsDownload(candidate_id,
-                             GetDownloadDirectoryForProfile(profile_),
-                             std::move(callback));
+  session_->CommitAsDownload(
+      candidate_id, file_manager::util::GetDownloadsFolderForProfile(profile_),
+      std::move(callback));
 }
 
 void LobsterPageHandler::RequestCandidates(const std::string& query,

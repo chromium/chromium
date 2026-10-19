@@ -8,18 +8,19 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/lobster",
 
   # Other ash directories in //chrome.
+  "+chrome/browser/ash/file_manager",
   "+chrome/browser/ui/webui/ash/mako/draggable_bubble_dialog_view.h",
 
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/download",
   "+chrome/browser/profiles/profile.h",
 ]
 
 specific_include_rules = {
   # Only tests need these //chrome dependencies.
   "lobster_page_handler_unittest\\.cc": [
+    "+chrome/browser/download",
     "+chrome/test",
   ],
 }
