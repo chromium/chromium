@@ -36,11 +36,14 @@ SVGDocumentResourceTracker::SVGDocumentResourceTracker(
       cache_identifier_(cache_identifier) {}
 
 void SVGDocumentResourceTracker::Dispose() {
-  for (const auto& resource : tracked_resources_) {
+  is_disposed_ = true;
+
+  HeapHashSet<Member<SVGDocumentResource>> to_dispose;
+  to_dispose.swap(tracked_resources_);
+  for (const auto& resource : to_dispose) {
     resource->GetContent()->Dispose();
   }
   MemoryCache::Get()->EvictResourcesForCacheIdentifier(cache_identifier_);
-  tracked_resources_.clear();
 }
 
 void SVGDocumentResourceTracker::DisposeUnobserved() {
@@ -49,12 +52,17 @@ void SVGDocumentResourceTracker::DisposeUnobserved() {
   HeapVector<Member<SVGDocumentResource>> to_remove;
   for (const auto& resource : tracked_resources_) {
     if (!resource->GetContent()->HasObservers()) {
-      resource->GetContent()->Dispose();
       to_remove.push_back(resource);
       MemoryCache::Get()->Remove(resource);
     }
   }
   tracked_resources_.RemoveAll(to_remove);
+
+  // Perform disposal from `to_remove` since Dispose() may cause additional
+  // resources to be added (i.e mutate `tracked_resources_`).
+  for (const auto& resource : to_remove) {
+    resource->GetContent()->Dispose();
+  }
 }
 
 void SVGDocumentResourceTracker::ProcessCustomWeakness(
@@ -86,6 +94,7 @@ void SVGDocumentResourceTracker::Trace(Visitor* visitor) const {
 }
 
 void SVGDocumentResourceTracker::AddResource(SVGDocumentResource* resource) {
+  CHECK(!is_disposed_);
   tracked_resources_.insert(resource);
 }
 

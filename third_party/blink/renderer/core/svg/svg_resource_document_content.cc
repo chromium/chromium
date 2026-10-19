@@ -290,6 +290,9 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
 
   Page* page = document.GetPage();
   auto& cache = page->GetSVGDocumentResourceTracker();
+  if (cache.IsDisposed()) {
+    return nullptr;
+  }
 
   SVGDocumentResource* resource = SVGDocumentResource::Fetch(
       params, document.Fetcher(), page->GetAgentGroupScheduler());
