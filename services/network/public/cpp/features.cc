@@ -560,4 +560,6 @@ BASE_FEATURE(kEnforceIsolatedWorldOriginLock, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForwardProxyAuthWithoutPrompt, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrewarmCryptbase, base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features
