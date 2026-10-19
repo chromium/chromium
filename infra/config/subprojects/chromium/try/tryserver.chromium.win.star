@@ -437,6 +437,7 @@ try_.builder(
     ),
     builderless = True,
     os = os.WINDOWS_10,
+    ssd = None,
     contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
