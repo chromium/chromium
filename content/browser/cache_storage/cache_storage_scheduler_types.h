@@ -42,7 +42,6 @@ enum class CacheStorageSchedulerOp {
   kOpen,
   kPut,
   kSize,
-  kSizeThenClose,
   kTest,
   kWriteIndex,
   kWriteSideData,

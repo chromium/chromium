@@ -147,9 +147,7 @@ class CONTENT_EXPORT CacheStorageManager {
   void DeleteBucketDidClose(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
-      std::unique_ptr<CacheStorage> cache_storage,
-      int64_t bucket_size);
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback);
 
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner() const {
     return cache_task_runner_;

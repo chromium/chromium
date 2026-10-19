@@ -836,8 +836,7 @@ void CacheStorageCache::MatchAll(
     ResponsesCallback callback) {
   if (backend_state_ == BACKEND_CLOSED) {
     std::move(callback).Run(
-        MakeErrorStorage(ErrorStorageType::kMatchAllBackendClosed),
-        std::vector<blink::mojom::FetchAPIResponsePtr>());
+        MakeErrorStorage(ErrorStorageType::kMatchAllBackendClosed), {});
     return;
   }
 
@@ -889,8 +888,7 @@ void CacheStorageCache::BatchOperation(
 
   if (backend_state_ == BACKEND_CLOSED) {
     std::move(callback).Run(CacheStorageVerboseError::New(
-        MakeErrorStorage(ErrorStorageType::kBatchBackendClosed),
-        std::move(message)));
+        MakeErrorStorage(ErrorStorageType::kBatchBackendClosed), std::nullopt));
     return;
   }
 
@@ -1092,26 +1090,6 @@ void CacheStorageCache::Size(SizeCallback callback) {
           scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
 }
 
-void CacheStorageCache::GetSizeThenClose(SizeCallback callback) {
-  if (backend_state_ == BACKEND_CLOSED) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), 0));
-    return;
-  }
-
-  auto id = scheduler_->CreateId();
-  scheduler_->ScheduleOperation(
-      id, CacheStorageSchedulerMode::kExclusive,
-      CacheStorageSchedulerOp::kSizeThenClose,
-      CacheStorageSchedulerPriority::kNormal,
-      base::BindOnce(
-          &CacheStorageCache::SizeImpl, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(
-              &CacheStorageCache::GetSizeThenCloseDidGetSize,
-              weak_ptr_factory_.GetWeakPtr(),
-              scheduler_->WrapCallbackToRunNext(id, std::move(callback)))));
-}
-
 void CacheStorageCache::SetObserver(CacheStorageCacheObserver* observer) {
   CHECK((observer == nullptr) ^ (cache_observer_ == nullptr),
         base::NotFatalUntil::M158);
@@ -1166,7 +1144,8 @@ CacheStorageCache::CacheStorageCache(
           CacheStorageCacheEntryHandler::CreateCacheEntryHandler(
               owner,
               std::move(blob_storage_context))),
-      memory_only_(path.empty()) {
+      memory_only_(path.empty()),
+      post_backend_closed_callback_(base::DoNothing()) {
   CHECK(!bucket_locator_.storage_key.origin().opaque(),
         base::NotFatalUntil::M158);
   CHECK(quota_manager_proxy_.get(), base::NotFatalUntil::M158);
@@ -2325,8 +2304,9 @@ void CacheStorageCache::CalculateCacheSize(
 
 void CacheStorageCache::UpdateCacheSize(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (backend_state_ != BACKEND_OPEN)
+  if (backend_state_ != BACKEND_OPEN) {
     return;
+  }
 
   // Note that the callback holds a cache handle to keep the cache alive during
   // the operation since this UpdateCacheSize is often run after an operation
@@ -2575,13 +2555,7 @@ void CacheStorageCache::KeysDidQueryCache(
 }
 
 void CacheStorageCache::DeleteBackendCompletedIO() {
-  if (!post_backend_closed_callback_.is_null()) {
-    // TODO(crbug.com/555074520): CHECK-exclusion: Convert to a CHECK once we
-    // are confident it won't be triggered.
-    DCHECK_NE(BACKEND_CLOSED, backend_state_);
-    backend_state_ = BACKEND_CLOSED;
-    std::move(post_backend_closed_callback_).Run();
-  }
+  std::move(post_backend_closed_callback_).Run();
 }
 
 void CacheStorageCache::SizeImpl(SizeCallback callback) {
@@ -2592,18 +2566,26 @@ void CacheStorageCache::SizeImpl(SizeCallback callback) {
                                                          : 0);
 }
 
-void CacheStorageCache::GetSizeThenCloseDidGetSize(SizeCallback callback,
-                                                   int64_t cache_size) {
+void CacheStorageCache::ForceClose(base::OnceClosure callback) {
+  // The backend guarantees that it will call `DeleteBackendCompletedIO` when
+  // it's closed or when initialization fails. If that's already happened, we
+  // need to invoke `callback` directly, otherwise we close the backend and wait
+  // for that to happen. In the case where the backend is still initializing,
+  // invalidating the weak pointers leads to the backend being
+  // dropped/destroyed, which still leads to the callback being invoked.
+  bool backend_already_closed = post_backend_closed_callback_.is_null();
+  post_backend_closed_callback_ = WrapCallbackWithHandle(std::move(callback));
   cache_entry_handler_->InvalidateDiskCacheBlobEntrys();
   InvalidateSideDataWriters();
-
-  if (backend_state_ != BACKEND_OPEN) {
-    std::move(callback).Run(cache_size);
-    return;
-  }
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  backend_state_ = BACKEND_CLOSED;
+  active_blob_to_disk_cache_writers_.Clear();
   backend_.reset();
-  post_backend_closed_callback_ =
-      base::BindOnce(std::move(callback), cache_size);
+  scheduler_.reset();
+
+  if (backend_already_closed) {
+    std::move(post_backend_closed_callback_).Run();
+  }
 }
 
 void CacheStorageCache::CreateBackend(ErrorCallback callback) {
@@ -2627,7 +2609,7 @@ void CacheStorageCache::CreateBackend(ErrorCallback callback) {
       max_bytes, disk_cache::ResetHandling::kNeverReset, /*net_log=*/nullptr,
       /*cache_encryption_delegate=*/nullptr,
       base::BindOnce(&CacheStorageCache::DeleteBackendCompletedIO,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     backend_shutdown_weak_ptr_factory_.GetWeakPtr()),
       std::move(split_callback.first));
   if (result.net_error != net::ERR_IO_PENDING)
     std::move(split_callback.second).Run(std::move(result));
@@ -2659,10 +2641,10 @@ void CacheStorageCache::InitBackend() {
       CacheStorageSchedulerPriority::kNormal,
       base::BindOnce(
           &CacheStorageCache::CreateBackend, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(
-              &CacheStorageCache::InitDidCreateBackend,
-              weak_ptr_factory_.GetWeakPtr(),
-              scheduler_->WrapCallbackToRunNext(id, base::BindOnce([] {})))));
+          base::BindOnce(&CacheStorageCache::InitDidCreateBackend,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         scheduler_->WrapCallbackToRunNext(
+                             id, base::OnceClosure(base::DoNothing())))));
 }
 
 void CacheStorageCache::InitDidCreateBackend(

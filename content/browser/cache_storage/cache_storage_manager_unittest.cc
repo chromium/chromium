@@ -777,18 +777,6 @@ class CacheStorageManagerTest : public testing::Test {
     return future.Get();
   }
 
-  int64_t GetSizeThenCloseAllCaches(
-      const storage::BucketLocator& bucket_locator) {
-    base::RunLoop loop;
-    CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator);
-    CacheStorage::From(cache_storage)
-        ->GetSizeThenCloseAllCaches(
-            base::BindOnce(&CacheStorageManagerTest::UsageCallback,
-                           base::Unretained(this), &loop));
-    loop.Run();
-    return callback_usage_;
-  }
-
   int64_t Size(const storage::BucketLocator& bucket_locator) {
     base::RunLoop loop;
     CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator);
@@ -2090,7 +2078,7 @@ TEST_F(CacheStorageManagerTest, GetKeySizeWithOldIndex) {
   EXPECT_EQ(cache_size_v2, Size(bucket_locator1_));
 }
 
-TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCaches) {
+TEST_P(CacheStorageManagerTestP, DeleteBucketDataClosesAllCaches) {
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -2103,12 +2091,16 @@ TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCaches) {
   int64_t origin_size = GetBucketUsage(bucket_locator1_);
   EXPECT_LT(0, origin_size);
 
-  EXPECT_EQ(origin_size, GetSizeThenCloseAllCaches(bucket_locator1_));
-  EXPECT_FALSE(
-      CachePut(callback_cache_handle_.value(), GURL("http://example.com/baz")));
+  EXPECT_EQ(DeleteBucketData(bucket_locator1_),
+            blink::mojom::QuotaStatusCode::kOk);
+  // No need to update QuotaManager when it's deleting the whole bucket, so the
+  // last update should come from the put.
+  EXPECT_GT(quota_manager_proxy_->last_notified_bucket_delta(), 0);
+  EXPECT_EQ(nullptr, callback_cache_handle_.value());
+  EXPECT_EQ(0, GetBucketUsage(bucket_locator1_));
 }
 
-TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesTwoOwners) {
+TEST_P(CacheStorageManagerTestP, DeleteBucketDataClosesOneOwner) {
   EXPECT_TRUE(Open(bucket_locator1_, u"foo",
                    storage::mojom::CacheStorageOwner::kCacheAPI));
   CacheStorageCacheHandle public_handle = std::move(callback_cache_handle_);
@@ -2120,15 +2112,26 @@ TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesTwoOwners) {
       CachePut(public_handle.value(), GURL("http://example.com/public")));
   EXPECT_TRUE(CachePut(bgf_handle.value(), GURL("http://example.com/bgf")));
 
-  int64_t origin_size = GetBucketUsage(bucket_locator1_);
-  EXPECT_LT(0, origin_size);
+  int64_t public_size = GetBucketUsage(
+      bucket_locator1_, storage::mojom::CacheStorageOwner::kCacheAPI);
+  int64_t bgf_size = GetBucketUsage(
+      bucket_locator1_, storage::mojom::CacheStorageOwner::kBackgroundFetch);
+  EXPECT_LT(0, public_size);
+  EXPECT_LT(0, bgf_size);
 
-  EXPECT_EQ(origin_size, GetSizeThenCloseAllCaches(bucket_locator1_));
-  EXPECT_FALSE(CachePut(public_handle.value(), GURL("http://example.com/baz")));
+  EXPECT_EQ(DeleteBucketData(bucket_locator1_,
+                             storage::mojom::CacheStorageOwner::kCacheAPI),
+            blink::mojom::QuotaStatusCode::kOk);
+  EXPECT_EQ(nullptr, public_handle.value());
+  EXPECT_NE(nullptr, bgf_handle.value());
+  EXPECT_EQ(0, GetBucketUsage(bucket_locator1_,
+                              storage::mojom::CacheStorageOwner::kCacheAPI));
+  EXPECT_EQ(bgf_size, GetBucketUsage(
+                          bucket_locator1_,
+                          storage::mojom::CacheStorageOwner::kBackgroundFetch));
 }
 
-TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesAfterDelete) {
-  // Tests that doomed caches are also deleted by GetSizeThenCloseAllCaches.
+TEST_P(CacheStorageManagerTestP, DeleteBucketDataClosesDoomedCaches) {
   EXPECT_TRUE(Open(bucket_locator1_, u"foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -2143,9 +2146,9 @@ TEST_P(CacheStorageManagerTestP, GetSizeThenCloseAllCachesAfterDelete) {
   // referencing an open cache.
   EXPECT_TRUE(Delete(bucket_locator1_, u"foo"));
 
-  // GetSizeThenCloseAllCaches should close the cache (which is then deleted)
-  // even though there is still an open handle.
-  EXPECT_EQ(size_after_put, GetSizeThenCloseAllCaches(bucket_locator1_));
+  EXPECT_EQ(DeleteBucketData(bucket_locator1_),
+            blink::mojom::QuotaStatusCode::kOk);
+  EXPECT_EQ(nullptr, saved_cache_handle.value());
   EXPECT_EQ(0, GetBucketUsage(bucket_locator1_));
 }
 
@@ -2223,10 +2226,20 @@ TEST_P(CacheStorageManagerTestP, SizeStorageAccessed) {
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_accessed_count());
 }
 
-TEST_P(CacheStorageManagerTestP, SizeThenCloseStorageAccessed) {
-  EXPECT_EQ(0, GetSizeThenCloseAllCaches(bucket_locator1_));
-  // GetSizeThenCloseAllCaches is not part of the web API and should not notify
-  // the quota manager of an access.
+TEST_P(CacheStorageManagerTestP, DeleteEmptyBucketDataStorageAccessed) {
+  if (!MemoryOnly()) {
+    base::FilePath bucket_path = CacheStorageManager::ConstructBucketPath(
+        cache_manager_->profile_path(), bucket_locator1_,
+        storage::mojom::CacheStorageOwner::kCacheAPI);
+    ASSERT_TRUE(base::CreateDirectory(bucket_path));
+  }
+  CacheStorageHandle cache_storage = CacheStorageForBucket(bucket_locator1_);
+  EXPECT_NE(nullptr, cache_storage.value());
+
+  EXPECT_EQ(DeleteBucketData(bucket_locator1_),
+            blink::mojom::QuotaStatusCode::kOk);
+  EXPECT_EQ(nullptr, cache_storage.value());
+  // Bucket deletion should not notify the quota manager of an access.
   EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_accessed_count());
 }
 
@@ -2835,6 +2848,10 @@ TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
 
   EXPECT_TRUE(QuotaDeleteBucketData(bucket_locator1_));
 
+  // No need to update QuotaManager when it's deleting the whole bucket, so the
+  // last update should come from the put.
+  EXPECT_EQ(storage_key1_size,
+            quota_manager_proxy_->last_notified_bucket_delta());
   EXPECT_EQ(notify_bucket_modified_count,
             quota_manager_proxy_->notify_bucket_modified_count());
   EXPECT_EQ(0, QuotaGetBucketUsage(bucket_locator1_));
@@ -2861,11 +2878,10 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
-  // Close the cache backend so that it writes out its index to disk.
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> closed;
   CacheStorageCache::From(callback_cache_handle_)
-      ->GetSizeThenClose(base::IgnoreArgs<int64_t>(run_loop.QuitClosure()));
-  run_loop.Run();
+      ->ForceClose(closed.GetCallback());
+  ASSERT_TRUE(closed.Wait());
 
   // Create a new CacheStorageManager that hasn't yet loaded the origin.
   RecreateStorageManager();

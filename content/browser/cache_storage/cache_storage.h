@@ -156,10 +156,10 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                       int64_t trace_id,
                       CacheStorageCache::ResponseCallback callback);
 
-  // Sums the sizes of each cache and closes them. Runs |callback| with the
-  // size. The sizes include any doomed caches and will also force close all
-  // caches even if there are existing handles to them.
-  void GetSizeThenCloseAllCaches(SizeCallback callback);
+  // Immediately initiates shutdown without using the scheduler. It is an error
+  // to call any other method after this.
+  void ForceClose(base::OnceClosure callback,
+                  std::unique_ptr<CacheStorage> owned_this);
 
   // The size of all of the storage key's contents. This value should be used as
   // an estimate only since the cache may be modified at any time.
@@ -285,8 +285,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       std::unique_ptr<std::vector<CacheMatchResponse>> match_responses,
       int64_t trace_id,
       CacheStorageCache::ResponseCallback callback);
-
-  void GetSizeThenCloseAllCachesImpl(SizeCallback callback);
 
   void SizeImpl(SizeCallback callback);
   void SizeRetrievedFromCache(CacheStorageCacheHandle cache_handle,

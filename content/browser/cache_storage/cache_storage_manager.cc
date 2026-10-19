@@ -50,19 +50,9 @@ namespace content {
 
 namespace {
 
-bool DeleteDir(const base::FilePath& path) {
-  return base::DeletePathRecursively(path);
-}
-
-void DeleteBucketDidDeleteDir(
-    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
-    bool rv) {
-  // On scheduler sequence.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback),
-                     rv ? blink::mojom::QuotaStatusCode::kOk
-                        : blink::mojom::QuotaStatusCode::kErrorAbort));
+blink::mojom::QuotaStatusCode BoolToQuotaStatusCode(bool rv) {
+  return rv ? blink::mojom::QuotaStatusCode::kOk
+            : blink::mojom::QuotaStatusCode::kErrorAbort;
 }
 
 void DidDeleteAllBuckets(
@@ -564,9 +554,10 @@ void CacheStorageManager::DeleteOriginsDataGotAllBucketInfo(
       // path, so just directly delete the directory.
       cache_task_runner_->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&DeleteDir, CacheStorageManager::ConstructBucketPath(
-                                         profile_path_, bucket_locator, owner)),
-          base::BindOnce(&DeleteBucketDidDeleteDir, barrier_callback));
+          base::BindOnce(&base::DeletePathRecursively,
+                         CacheStorageManager::ConstructBucketPath(
+                             profile_path_, bucket_locator, owner)),
+          base::BindOnce(&BoolToQuotaStatusCode).Then(barrier_callback));
     }
   }
 }
@@ -656,26 +647,27 @@ void CacheStorageManager::DeleteBucketDataDidGetExists(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!exists || ConflictingInstanceExistsInMap(owner, bucket_locator)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  blink::mojom::QuotaStatusCode::kOk));
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
 
-  // Create the CacheStorage for the bucket if it hasn't been loaded yet.
-  CacheStorageHandle handle = OpenCacheStorage(bucket_locator, owner);
-
+  // If the Cache is not loaded, go ahead and delete the folder directly.
   auto it = cache_storage_map_.find({bucket_locator, owner});
-  CHECK(it != cache_storage_map_.end());
+  if (it == cache_storage_map_.end()) {
+    DeleteBucketDidClose(bucket_locator, owner, std::move(callback));
+    return;
+  }
 
+  // Otherwise force close and wait for the backend to shut down before
+  // deleting.
   CacheStorage* cache_storage = it->second.release();
   cache_storage->ResetManager();
-  cache_storage_map_.erase({bucket_locator, owner});
-
-  cache_storage->GetSizeThenCloseAllCaches(
+  cache_storage_map_.erase(it);
+  cache_storage->ForceClose(
       base::BindOnce(&CacheStorageManager::DeleteBucketDidClose,
                      weak_ptr_factory_.GetWeakPtr(), bucket_locator, owner,
-                     std::move(callback), base::WrapUnique(cache_storage)));
+                     std::move(callback)),
+      base::WrapUnique(cache_storage));
 }
 
 void CacheStorageManager::AddObserver(
@@ -686,31 +678,24 @@ void CacheStorageManager::AddObserver(
 void CacheStorageManager::DeleteBucketDidClose(
     const storage::BucketLocator& bucket_locator,
     storage::mojom::CacheStorageOwner owner,
-    storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
-    std::unique_ptr<CacheStorage> cache_storage,
-    int64_t bucket_size) {
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(jkarlin): Deleting the storage leaves any unfinished operations
-  // hanging, resulting in unresolved promises. Fix this by returning early from
-  // CacheStorage operations posted after GetSizeThenCloseAllCaches is called.
-  cache_storage.reset();
 
   if (owner == storage::mojom::CacheStorageOwner::kCacheAPI) {
     NotifyCacheListChanged(bucket_locator);
   }
 
   if (IsMemoryBacked()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  blink::mojom::QuotaStatusCode::kOk));
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
 
   cache_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&DeleteDir, CacheStorageManager::ConstructBucketPath(
-                                     profile_path_, bucket_locator, owner)),
-      base::BindOnce(&DeleteBucketDidDeleteDir, std::move(callback)));
+      base::BindOnce(&base::DeletePathRecursively,
+                     CacheStorageManager::ConstructBucketPath(
+                         profile_path_, bucket_locator, owner)),
+      base::BindOnce(&BoolToQuotaStatusCode).Then(std::move(callback)));
 }
 
 CacheStorageManager::CacheStorageManager(

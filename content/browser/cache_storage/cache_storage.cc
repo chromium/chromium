@@ -19,6 +19,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/concurrent_closures.h"
 #include "base/hash/sha1.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -855,26 +856,6 @@ void CacheStorage::MatchAllCaches(
           scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
 }
 
-void CacheStorage::GetSizeThenCloseAllCaches(SizeCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!initialized_)
-    LazyInit();
-
-  // Note, this is a shared operation since it only reads CacheStorage data.
-  // The CacheStorageCache is responsible for making its close operation
-  // exclusive.
-  auto id = scheduler_->CreateId();
-  scheduler_->ScheduleOperation(
-      id, CacheStorageSchedulerMode::kShared,
-      CacheStorageSchedulerOp::kSizeThenClose,
-      CacheStorageSchedulerPriority::kNormal,
-      base::BindOnce(
-          &CacheStorage::GetSizeThenCloseAllCachesImpl,
-          weak_factory_.GetWeakPtr(),
-          scheduler_->WrapCallbackToRunNext(id, std::move(callback))));
-}
-
 void CacheStorage::Size(CacheStorage::SizeCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -901,6 +882,11 @@ void CacheStorage::NotifyCacheContentChanged(const std::u16string& cache_name) {
 }
 
 void CacheStorage::ScheduleWriteIndex() {
+  // No-op when force closing.
+  if (!scheduler_) {
+    return;
+  }
+
   // These values are chosen to be equal or greater than the simple disk_cache
   // index write delays.  We want the cache_storage index to be written last.
   static const int64_t kWriteIndexDelayMilliseconds = 20050;
@@ -1378,32 +1364,35 @@ void CacheStorage::SizeRetrievedFromCache(CacheStorageCacheHandle cache_handle,
   std::move(closure).Run();
 }
 
-void CacheStorage::GetSizeThenCloseAllCachesImpl(SizeCallback callback) {
+void CacheStorage::ForceClose(base::OnceClosure callback,
+                              std::unique_ptr<CacheStorage> owned_this) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(initialized_, base::NotFatalUntil::M158);
+  CHECK_EQ(this, owned_this.get());
 
-  std::unique_ptr<int64_t> accumulator(new int64_t(0));
-  int64_t* accumulator_ptr = accumulator.get();
-
-  base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      cache_index_->num_entries() + doomed_caches_.size(),
-      base::BindOnce(&SizeRetrievedFromAllCaches, std::move(accumulator),
-                     std::move(callback)));
-
-  for (const auto& cache_metadata : cache_index_->ordered_cache_metadata()) {
-    auto cache_handle = GetLoadedCache(cache_metadata.name);
-    CacheStorageCache* cache = CacheStorageCache::From(cache_handle);
-    cache->GetSizeThenClose(base::BindOnce(
-        &CacheStorage::SizeRetrievedFromCache, weak_factory_.GetWeakPtr(),
-        std::move(cache_handle), barrier_closure, accumulator_ptr));
+  if (!initialized_) {
+    std::move(callback).Run();
+    return;
   }
 
-  for (const auto& cache_it : doomed_caches_) {
-    CacheStorageCache* cache = cache_it.first;
-    cache->GetSizeThenClose(base::BindOnce(
-        &CacheStorage::SizeRetrievedFromCache, weak_factory_.GetWeakPtr(),
-        cache->CreateHandle(), barrier_closure, accumulator_ptr));
+  weak_factory_.InvalidateWeakPtrs();
+  scheduler_.reset();
+  index_write_task_.Cancel();
+  base::ConcurrentClosures barrier;
+
+  // Only close already-open Caches.
+  for (auto& [_, cache] : cache_map_) {
+    if (cache) {
+      cache->ForceClose(barrier.CreateClosure());
+    }
   }
+
+  for (auto& [cache, _] : doomed_caches_) {
+    cache->ForceClose(barrier.CreateClosure());
+  }
+
+  std::move(barrier).Done(
+      base::OnceClosure(base::DoNothingWithBoundArgs(std::move(owned_this)))
+          .Then(std::move(callback)));
 }
 
 void CacheStorage::SizeImpl(SizeCallback callback) {
