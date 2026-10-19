@@ -2140,11 +2140,6 @@ public class ImeAdapterImpl
         }
         if (!(text instanceof SpannableString)) return;
 
-        final boolean blockGrammarInComposition =
-                ContentFeatureMap.isEnabled(
-                        ContentFeatureList
-                                .ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE);
-
         SpannableString spannableString = ((SpannableString) text);
         CharacterStyle[] spans = spannableString.getSpans(0, text.length(), CharacterStyle.class);
 
@@ -2200,10 +2195,6 @@ public class ImeAdapterImpl
                         && !isMisspellingSpan
                         && !isGrammarSpan
                         && !isAutoCorrectionSpan) {
-                    continue;
-                }
-
-                if (!isEasyCorrectSpan && isGrammarSpan && blockGrammarInComposition) {
                     continue;
                 }
 
