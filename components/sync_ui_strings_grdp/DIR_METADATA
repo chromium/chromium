@@ -1,6 +1,1 @@
-monorail: {
-  component: "Services>Sync"
-}
-buganizer_public: {
-  component_id: 1457192
-}
+mixins: "//components/sync/COMMON_METADATA"

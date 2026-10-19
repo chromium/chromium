@@ -1,6 +1,7 @@
 monorail: {
   component: "Services>Sync"
 }
+team_email: "chrome-sync-client-team@google.com"
 buganizer_public: {
   component_id: 1457192
 }
