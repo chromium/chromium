@@ -56,6 +56,7 @@ source_set("actor") {
     "tools/navigate_tool_request.h",
     "tools/observation_delay_controller.h",
     "tools/one_time_token/attempt_otp_filling_tool_request.h",
+    "tools/open_known_page_tool_request.h",
     "tools/page_tool_request.h",
     "tools/password_manager/attempt_login/attempt_login_tool_request.h",
     "tools/password_manager/change_password/change_password_tool_request.h",
@@ -117,10 +118,7 @@ source_set("actor") {
       ":unit_tests",
       ":browser_tests",
     ]
-    public += [
-      "tools/load_and_extract_content_tool_request.h",
-      "tools/open_known_page_tool_request.h",
-    ]
+    public += [ "tools/load_and_extract_content_tool_request.h" ]
     public_deps += [
       "//chrome/browser/actor/resources:browser_resources",
       "//chrome/browser/actor/ui:states",
@@ -203,6 +201,9 @@ source_set("impl") {
     "tools/one_time_token/attempt_otp_filling_tool.cc",
     "tools/one_time_token/attempt_otp_filling_tool.h",
     "tools/one_time_token/attempt_otp_filling_tool_request.cc",
+    "tools/open_known_page_tool.cc",
+    "tools/open_known_page_tool.h",
+    "tools/open_known_page_tool_request.cc",
     "tools/page_search_utils.cc",
     "tools/page_search_utils.h",
     "tools/page_target_util.cc",
@@ -348,9 +349,6 @@ source_set("impl") {
       "tools/load_and_extract_content_tool.cc",
       "tools/load_and_extract_content_tool.h",
       "tools/load_and_extract_content_tool_request.cc",
-      "tools/open_known_page_tool.cc",
-      "tools/open_known_page_tool.h",
-      "tools/open_known_page_tool_request.cc",
     ]
     deps += [
       "//chrome/browser/ui:browser_tabstrip",
@@ -595,6 +593,7 @@ source_set("browser_tests") {
     "actor_keyed_service_browsertest.cc",
     "actor_keyed_service_browsertest.h",
     "actor_util_browsertest.cc",
+    "tools/open_known_page_tool_browsertest.cc",
     "tools/password_manager/attempt_login/attempt_login_tool_browsertest.cc",
     "tools/switch_tab_tool_browsertest.cc",
     "tools/tab_management_tool_browsertest.cc",
@@ -614,10 +613,12 @@ source_set("browser_tests") {
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/affiliations",
     "//chrome/browser/autofill/actor",
+    "//chrome/browser/bookmarks",
     "//chrome/browser/glic",
     "//chrome/browser/glic/actor",
     "//chrome/browser/glic/actor:browser_tests",
     "//chrome/browser/glic/test_support",
+    "//chrome/browser/history",
     "//chrome/browser/lookalikes:test_support",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
@@ -630,7 +631,11 @@ source_set("browser_tests") {
     "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:testing_browser_process",
     "//components/affiliations/core/browser:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
     "//components/favicon/core/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/javascript_dialogs",
     "//components/optimization_guide/core:bloomfilter",
     "//components/optimization_guide/core:model_execution_test_support",
@@ -684,7 +689,6 @@ source_set("browser_tests") {
       "tools/observation_delay_controller_browsertest.cc",
       "tools/observation_delay_metrics_browsertest.cc",
       "tools/one_time_token/attempt_otp_filling_tool_browsertest.cc",
-      "tools/open_known_page_tool_browsertest.cc",
       "tools/page_stability_browsertest.cc",
       "tools/page_stability_metrics_browsertest.cc",
       "tools/page_target_util_browsertest.cc",
@@ -703,7 +707,6 @@ source_set("browser_tests") {
     ]
     deps += [
       "//chrome/browser/autofill",
-      "//chrome/browser/bookmarks",
       "//chrome/browser/download:test_support",
       "//chrome/browser/glic",
       "//chrome/browser/page_content_annotations:extraction_service",
@@ -711,7 +714,6 @@ source_set("browser_tests") {
       "//chrome/browser/ui/views:file_system_access_test_support",
       "//components/autofill/core/browser:test_support",
       "//components/autofill/core/browser/actor:test_support",
-      "//components/bookmarks/test",
       "//components/page_content_annotations/content",
       "//components/translate/core/browser",
       "//components/translate/core/common",

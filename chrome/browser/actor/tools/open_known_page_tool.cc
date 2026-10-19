@@ -23,8 +23,8 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/browser/actor/tools/validate_url_util.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/tabs/public/tab_interface.h"
@@ -154,9 +154,9 @@ void OpenKnownPageTool::OnHistoryMatches(
     return;
   }
 
-  TabStripModel* tab_strip_model = browser->GetTabStripModel();
+  TabListInterface* tab_list = TabListInterface::From(browser);
   tabs::TabInterface* active_tab =
-      tab_strip_model ? tab_strip_model->GetActiveTab() : nullptr;
+      tab_list ? tab_list->GetActiveTab() : nullptr;
   if (!active_tab || !active_tab->GetContents()) {
     PostResponseTask(std::move(callback),
                      MakeResult(mojom::ActionResultCode::kTabWentAway,
@@ -185,8 +185,7 @@ void OpenKnownPageTool::OnHistoryMatches(
     return;
   }
 
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
     if (tab == active_tab) {
       continue;
     }
@@ -321,7 +320,7 @@ ActorSurfaceHandle OpenKnownPageTool::GetTargetActorSurface() const {
 }
 
 BrowserWindowInterface* OpenKnownPageTool::GetBrowser() const {
-  return BrowserWindowInterface::FromSessionID(window_id_);
+  return FindBrowserWindow(window_id_);
 }
 
 }  // namespace actor

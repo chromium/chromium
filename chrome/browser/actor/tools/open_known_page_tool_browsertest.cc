@@ -5,8 +5,10 @@
 #include <memory>
 #include <string>
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
@@ -16,9 +18,8 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -26,11 +27,15 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif
 
 namespace actor {
 
@@ -46,6 +51,13 @@ class ActorOpenKnownPageToolBrowserTest : public ActorToolsTest {
   ~ActorOpenKnownPageToolBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/517619366): Decouple test from Glic eligibility criteria.
+    if (base::android::android_info::sdk_int() <
+        base::android::android_info::SDK_VERSION_S) {
+      GTEST_SKIP() << "Actor requires Android S+ to run";
+    }
+#endif
     ActorToolsTest::SetUpOnMainThread();
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(embedded_https_test_server().Start());
@@ -54,7 +66,7 @@ class ActorOpenKnownPageToolBrowserTest : public ActorToolsTest {
   void AddHistoryEntry(const GURL& url, const std::u16string& title) {
     history::HistoryService* history_service =
         HistoryServiceFactory::GetForProfile(
-            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
+            GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
     ASSERT_TRUE(history_service);
     history::HistoryAddPageArgs args;
     args.url = url;
@@ -66,10 +78,38 @@ class ActorOpenKnownPageToolBrowserTest : public ActorToolsTest {
 
   void AddBookmarkEntry(const GURL& url, const std::u16string& title) {
     bookmarks::BookmarkModel* bookmark_model =
-        BookmarkModelFactory::GetForBrowserContext(browser()->GetProfile());
+        BookmarkModelFactory::GetForBrowserContext(GetProfile());
     ASSERT_TRUE(bookmark_model);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
     bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url);
+  }
+
+ protected:
+  TabListInterface* tab_list() {
+    return TabListInterface::From(active_tab()->GetBrowserWindowInterface());
+  }
+
+  // Opens `url` in a new tab and makes it the active tab.
+  void OpenForegroundTab(const GURL& url) {
+    // Open in the background and activate explicitly rather than opening in
+    // the foreground. On Android, a foreground open runs the new tab
+    // animation, which re-selects the new tab again when the animation
+    // finishes. That deferred selection can land after the tool under test
+    // has switched tabs and undo the switch.
+    tabs::TabInterface* tab =
+        tab_list()->OpenTab(url, /*index=*/-1, /*foreground=*/false);
+    ASSERT_TRUE(tab);
+    ASSERT_TRUE(content::WaitForLoadStop(tab->GetContents()));
+    tab_list()->ActivateTab(tab->GetHandle());
+    ASSERT_TRUE(base::test::RunUntil([tab]() { return tab->IsActivated(); }));
+  }
+
+  int active_index() { return tab_list()->GetActiveIndex(); }
+
+  int tab_count() { return tab_list()->GetTabCount(); }
+
+  GURL active_tab_url() {
+    return tab_list()->GetActiveTab()->GetContents()->GetURL();
   }
 
  private:
@@ -97,10 +137,8 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest, TestCascadeTab) {
   // "example.com/title1.html").
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
+  ASSERT_EQ(active_index(), 1);
 
   std::unique_ptr<ToolRequest> action =
       std::make_unique<OpenKnownPageToolRequest>("Awesomeness");
@@ -108,9 +146,8 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest, TestCascadeTab) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            tab_url);
+  EXPECT_EQ(active_index(), 0);
+  EXPECT_EQ(active_tab_url(), tab_url);
 }
 
 // Ensures that if no open tab matches, but a history entry matches, the cascade
@@ -136,9 +173,8 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest, TestCascadeHistory) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            history_url);
+  EXPECT_EQ(active_index(), 0);
+  EXPECT_EQ(active_tab_url(), history_url);
 }
 
 // Ensures that if neither open tabs nor history match, the cascade falls back
@@ -159,9 +195,8 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest, TestCascadeBookmark) {
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            bookmark_url);
+  EXPECT_EQ(active_index(), 0);
+  EXPECT_EQ(active_tab_url(), bookmark_url);
 }
 
 // Ensures that when all three stages (Tabs, History, Bookmarks) return empty,
@@ -218,18 +253,14 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
   // Tab 1 (background): title is also "Title Of Awesomeness".
   const GURL background_url2 =
       embedded_https_test_server().GetURL("example.com", "/title2.html?bg2");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), background_url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(background_url2));
 
   // Tab 2 (foreground/active): has no <title> (defaults to URL
   // "example.com/title1.html").
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 2);
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
+  ASSERT_EQ(active_index(), 2);
 
   std::unique_ptr<ToolRequest> action =
       std::make_unique<OpenKnownPageToolRequest>("Awesomeness");
@@ -237,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kPageSearchAmbiguousMatch);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 2);
+  EXPECT_EQ(active_index(), 2);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
@@ -278,10 +309,8 @@ IN_PROC_BROWSER_TEST_F(
   // Tab 1 (foreground/active): also has title "Title Of Awesomeness".
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title2.html?fg");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
+  ASSERT_EQ(active_index(), 1);
 
   // Use leading and trailing whitespace to also verify that trimmed queries
   // match properly.
@@ -291,9 +320,8 @@ IN_PROC_BROWSER_TEST_F(
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            background_url);
+  EXPECT_EQ(active_index(), 0);
+  EXPECT_EQ(active_tab_url(), background_url);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
@@ -313,8 +341,7 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            start_url);
+  EXPECT_EQ(active_tab_url(), start_url);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
@@ -322,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
   // Create a task configured with kRequireHttpsOrHttpOrNtp so that NTP
   // navigation is permitted by origin gating.
   task_id_ =
-      ActorKeyedService::Get(browser()->GetProfile())
+      ActorKeyedService::Get(GetProfile())
           ->CreateTask(
               TaskSourceInfo(TaskSourceInfo::Client::kTtc, "ttc"),
               NoEnterprisePolicyChecker(),
@@ -341,8 +368,7 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            ntp_url);
+  EXPECT_EQ(active_tab_url(), ntp_url);
 }
 
 // Ensures that when a query misses Stage 1 (Open Tabs) by title/URL substring
@@ -366,10 +392,8 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
   // Tab 1 (foreground/active): open at a different page.
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title2.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
+  ASSERT_EQ(active_index(), 1);
 
   std::unique_ptr<ToolRequest> action =
       std::make_unique<OpenKnownPageToolRequest>("DocumentationPortal");
@@ -378,10 +402,9 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
   ExpectOkResult(result);
 
   // Should have switched to Tab 0 without reloading it or navigating Tab 1.
-  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            open_tab_url);
+  EXPECT_EQ(tab_count(), 2);
+  EXPECT_EQ(active_index(), 0);
+  EXPECT_EQ(active_tab_url(), open_tab_url);
 }
 
 // Ensures that when a query resolves via History/Bookmarks to a URL that is
@@ -408,8 +431,7 @@ IN_PROC_BROWSER_TEST_F(
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab);
 
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            active_url);
+  EXPECT_EQ(active_tab_url(), active_url);
 }
 
 // Ensures that when both the active tab and one or more background tabs match
@@ -424,23 +446,18 @@ IN_PROC_BROWSER_TEST_F(
       "example.com", "/title1.html#section-1");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), background_url_1));
 
-  // Tab 1 (active): also open at `example.com/title1.html` (whose title does
+  // Tab 1 (background): open at `example.com/title1.html#section-3`.
+  const GURL background_url_2 = embedded_https_test_server().GetURL(
+      "example.com", "/title1.html#section-3");
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(background_url_2));
+
+  // Tab 2 (active): also open at `example.com/title1.html` (whose title does
   // not contain "DocumentationPortal").
   const GURL active_url =
       embedded_https_test_server().GetURL("example.com", "/title1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
-
-  // Tab 2 (background): open at `example.com/title1.html#section-3`.
-  const GURL background_url_2 = embedded_https_test_server().GetURL(
-      "example.com", "/title1.html#section-3");
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), background_url_2, WindowOpenDisposition::NEW_BACKGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
-  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+  ASSERT_NO_FATAL_FAILURE(OpenForegroundTab(active_url));
+  ASSERT_EQ(tab_count(), 3);
+  ASSERT_EQ(active_index(), 2);
 
   const GURL history_url = embedded_https_test_server().GetURL(
       "example.com", "/title1.html#section-2");
@@ -453,11 +470,10 @@ IN_PROC_BROWSER_TEST_F(
   ExpectErrorResult(result,
                     mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab);
 
-  // Active tab must remain Tab 1 and its URL must remain untouched.
-  EXPECT_EQ(browser()->GetTabStripModel()->count(), 3);
-  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 1);
-  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
-            active_url);
+  // Active tab must remain Tab 2 and its URL must remain untouched.
+  EXPECT_EQ(tab_count(), 3);
+  EXPECT_EQ(active_index(), 2);
+  EXPECT_EQ(active_tab_url(), active_url);
 }
 
 }  // namespace

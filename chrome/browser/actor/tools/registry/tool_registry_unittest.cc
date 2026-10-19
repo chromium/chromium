@@ -28,6 +28,7 @@
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/one_time_token/attempt_otp_filling_tool_request.h"
+#include "chrome/browser/actor/tools/open_known_page_tool_request.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
@@ -52,7 +53,6 @@
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
-#include "chrome/browser/actor/tools/open_known_page_tool_request.h"
 #endif
 
 namespace actor {
@@ -783,7 +783,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsExitFullscreenTool) {
                                     &ToolDefinition::id));
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 TEST(ToolRegistryTest, OpenKnownPageToolDefinition) {
   const std::optional<ToolDefinition> definition =
       OpenKnownPageToolRequest::GetToolDefinition();
@@ -808,7 +807,6 @@ TEST(ToolRegistryTest, GetAllToolsContainsOpenKnownPageTool) {
                                     &ToolDefinition::id));
 }
 
-#endif
 
 TEST(ToolRegistryTest, GetAllToolsContainsEnterFullscreenTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);

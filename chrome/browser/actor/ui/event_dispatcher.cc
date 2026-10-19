@@ -115,9 +115,7 @@ constexpr absl::Overload PreToolEventsFn{
       return EventSequence<AsyncUiEvent>{MouseMove(*tab, pt, source)};
     },
     NoUiEvents<NavigateToolRequest>,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<OpenKnownPageToolRequest>,
-#endif
     NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<PlayMediaToolRequest>,
@@ -171,9 +169,7 @@ constexpr absl::Overload PostToolEventsFn{
 #endif
     NoUiEvents<MoveMouseToolRequest>,
     NoUiEvents<NavigateToolRequest>,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<OpenKnownPageToolRequest>,
-#endif
     NoUiEvents<PauseMediaToolRequest>,
     NoUiEvents<PerformSearchToolRequest>,
     NoUiEvents<PlayMediaToolRequest>,

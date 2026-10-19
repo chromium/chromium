@@ -44,9 +44,7 @@ using ToolRequestVariant = std::variant<ActivateTabToolRequest,
 #endif
                                         MoveMouseToolRequest,
                                         NavigateToolRequest,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
                                         OpenKnownPageToolRequest,
-#endif
                                         PauseMediaToolRequest,
                                         PerformSearchToolRequest,
                                         PlayMediaToolRequest,
