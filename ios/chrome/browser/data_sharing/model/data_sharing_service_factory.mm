@@ -42,27 +42,14 @@ std::unique_ptr<KeyedService> BuildDataSharingService(ProfileIOS* profile) {
 
 }  // namespace
 
-// static
-DataSharingService* DataSharingServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<DataSharingService>(
-      profile, /*create=*/true);
-}
-
-// static
-DataSharingServiceFactory* DataSharingServiceFactory::GetInstance() {
-  static base::NoDestructor<DataSharingServiceFactory> instance;
-  return instance.get();
-}
-
-DataSharingServiceFactory::DataSharingServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("DataSharingService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+DataSharingServiceFactory::DataSharingServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "DataSharingService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-DataSharingServiceFactory::~DataSharingServiceFactory() = default;
 
 // static
 DataSharingServiceFactory::TestingFactory

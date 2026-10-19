@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/data_sharing/model/personal_collaboration_data/personal_collaboration_data_service_factory.h"
 
 #import "base/feature_list.h"
-#import "base/no_destructor.h"
 #import "components/data_sharing/internal/personal_collaboration_data/personal_collaboration_data_service_impl.h"
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/personal_collaboration_data/personal_collaboration_data_service.h"
@@ -20,30 +19,14 @@
 
 namespace data_sharing::personal_collaboration_data {
 
-// static
-PersonalCollaborationDataService*
-PersonalCollaborationDataServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<PersonalCollaborationDataService>(
-          profile, /*create=*/true);
-}
-
-// static
-PersonalCollaborationDataServiceFactory*
-PersonalCollaborationDataServiceFactory::GetInstance() {
-  static base::NoDestructor<PersonalCollaborationDataServiceFactory> instance;
-  return instance.get();
-}
-
 PersonalCollaborationDataServiceFactory::
-    PersonalCollaborationDataServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("PersonalCollaborationDataService",
-                                    ProfileSelection::kNoInstanceInIncognito) {
+    PersonalCollaborationDataServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "PersonalCollaborationDataService",
+          ProfileSelection::kNoInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
-
-PersonalCollaborationDataServiceFactory::
-    ~PersonalCollaborationDataServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PersonalCollaborationDataServiceFactory::BuildServiceInstanceFor(

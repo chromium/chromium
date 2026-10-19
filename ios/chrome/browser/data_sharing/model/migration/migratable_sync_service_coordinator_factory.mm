@@ -9,28 +9,12 @@
 
 namespace data_sharing {
 
-// static
-MigratableSyncServiceCoordinator*
-MigratableSyncServiceCoordinatorFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<MigratableSyncServiceCoordinator>(
-          profile, /*create=*/true);
-}
-
-// static
-MigratableSyncServiceCoordinatorFactory*
-MigratableSyncServiceCoordinatorFactory::GetInstance() {
-  static base::NoDestructor<MigratableSyncServiceCoordinatorFactory> instance;
-  return instance.get();
-}
-
 MigratableSyncServiceCoordinatorFactory::
-    MigratableSyncServiceCoordinatorFactory()
-    : ProfileKeyedServiceFactoryIOS("MigratableSyncServiceCoordinator",
-                                    ProfileSelection::kNoInstanceInIncognito) {}
-
-MigratableSyncServiceCoordinatorFactory::
-    ~MigratableSyncServiceCoordinatorFactory() = default;
+    MigratableSyncServiceCoordinatorFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "MigratableSyncServiceCoordinator",
+          ProfileSelection::kNoInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 MigratableSyncServiceCoordinatorFactory::BuildServiceInstanceFor(

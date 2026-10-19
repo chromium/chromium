@@ -5,35 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_DATA_SHARING_MODEL_MIGRATION_MIGRATABLE_SYNC_SERVICE_COORDINATOR_FACTORY_H_
 #define IOS_CHROME_BROWSER_DATA_SHARING_MODEL_MIGRATION_MIGRATABLE_SYNC_SERVICE_COORDINATOR_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "components/data_sharing/public/migration/migratable_sync_service_coordinator.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace data_sharing {
-class MigratableSyncServiceCoordinator;
 
 // A factory to create a MigratableSyncServiceCoordinator.
 class MigratableSyncServiceCoordinatorFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          MigratableSyncServiceCoordinatorFactory,
+          MigratableSyncServiceCoordinator> {
  public:
-  // Gets the MigratableSyncServiceCoordinator for the profile. Returns null
-  // for incognito.
-  static MigratableSyncServiceCoordinator* GetForProfile(ProfileIOS* profile);
-
-  // Gets the lazy singleton instance of the
-  // MigratableSyncServiceCoordinatorFactory.
-  static MigratableSyncServiceCoordinatorFactory* GetInstance();
-
-  // Disallow copy/assign.
-  MigratableSyncServiceCoordinatorFactory(
-      const MigratableSyncServiceCoordinatorFactory&) = delete;
-  void operator=(const MigratableSyncServiceCoordinatorFactory&) = delete;
+  explicit MigratableSyncServiceCoordinatorFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<MigratableSyncServiceCoordinatorFactory>;
-
-  MigratableSyncServiceCoordinatorFactory();
-  ~MigratableSyncServiceCoordinatorFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
