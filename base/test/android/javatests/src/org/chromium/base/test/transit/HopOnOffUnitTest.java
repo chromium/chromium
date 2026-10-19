@@ -6,13 +6,14 @@ package org.chromium.base.test.transit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 
-import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
@@ -22,11 +23,11 @@ import org.chromium.base.test.transit.ConditionalState.Phase;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit tests for hopping on and off Public Transit. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HopOnOffUnitTest {
+    @Rule public final PublicTransitUnitTestRule mTransitRule = new PublicTransitUnitTestRule();
 
     /** An Activity subclass, to check hop-on matches by instance rather than by exact class. */
     public static class SubActivity extends Activity {}
@@ -80,35 +81,14 @@ public class HopOnOffUnitTest {
         }
     }
 
-    @After
-    public void tearDown() {
-        TrafficControl.hopOffPublicTransit();
-    }
-
     /** Create a RESUMED Activity, tracked by ApplicationStatus. */
     private static <T extends Activity> T resumeActivity(Class<T> activityClass) {
         return Robolectric.buildActivity(activityClass).setup().get();
     }
 
-    /**
-     * Transitions must not run on the UI thread, which is the thread Robolectric runs tests on, so
-     * run them in a separate thread and propagate any failure to the test thread.
-     */
-    private static void runTransition(Runnable transition) throws Throwable {
-        AtomicReference<Throwable> maybeException = new AtomicReference<>();
-        Thread transitionThread = new Thread(transition);
-        transitionThread.setUncaughtExceptionHandler((thread, ex) -> maybeException.set(ex));
-        transitionThread.start();
-        transitionThread.join();
-        Throwable exception = maybeException.get();
-        if (exception != null) {
-            throw exception;
-        }
-    }
-
-    private static <T extends Station<?>> T hopOnTo(
+    private <T extends Station<?>> T hopOnTo(
             Activity activity, T station, Facility<?>... facilities) throws Throwable {
-        runTransition(() -> TrafficControl.hopOnAt(activity, station, facilities));
+        mTransitRule.runTransition(() -> TrafficControl.hopOnAt(activity, station, facilities));
         return station;
     }
 
@@ -133,7 +113,7 @@ public class HopOnOffUnitTest {
         TestStation station = hopOnTo(secondWindow, new TestStation());
 
         assertSame(secondWindow, station.getActivity());
-        assertFalse(firstWindow == station.getActivity());
+        assertNotSame(firstWindow, station.getActivity());
     }
 
     @Test
@@ -257,7 +237,8 @@ public class HopOnOffUnitTest {
         TestStation hoppedOn = hopOnTo(activity, new TestStation());
 
         TestStation destination = new TestStation();
-        runTransition(() -> Triggers.noopTo().withContext(hoppedOn).arriveAt(destination));
+        mTransitRule.runTransition(
+                () -> Triggers.noopTo().withContext(hoppedOn).arriveAt(destination));
 
         assertEquals(Phase.FINISHED, hoppedOn.getPhase());
         assertEquals(Phase.ACTIVE, destination.getPhase());

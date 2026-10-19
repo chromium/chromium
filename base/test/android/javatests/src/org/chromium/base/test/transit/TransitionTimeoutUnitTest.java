@@ -7,8 +7,6 @@ package org.chromium.base.test.transit;
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import static org.junit.Assert.assertThrows;
-
 import static org.chromium.base.test.transit.Triggers.runTo;
 import static org.chromium.build.NullUtil.assertNonNull;
 
@@ -17,6 +15,7 @@ import android.app.Activity;
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -26,17 +25,17 @@ import org.chromium.build.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit Tests for per-Condition/Transition timeouts. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TransitionTimeoutUnitTest {
+    @Rule public final PublicTransitUnitTestRule mTransitRule = new PublicTransitUnitTestRule();
+
     private static final List<Thread> sCreatedThreads =
             Collections.synchronizedList(new ArrayList<>());
 
     @After
     public void tearDown() {
-        TrafficControl.hopOffPublicTransit();
         synchronized (sCreatedThreads) {
             for (Thread thread : sCreatedThreads) {
                 if (thread.isAlive()) {
@@ -406,69 +405,21 @@ public class TransitionTimeoutUnitTest {
         }
     }
 
-    private static TravelException expectTransitionFailure(
-            TripBuilder builder, Condition... conditions) throws Throwable {
+    private TravelException expectTransitionFailure(TripBuilder builder, Condition... conditions) {
         State destinationState = new State("destination state");
         for (Condition c : conditions) {
             destinationState.declareEnterCondition(c);
         }
-        AtomicReference<TravelException> exceptionRef = new AtomicReference<>();
-        AsyncTransition transition =
-                new AsyncTransition(
-                        () -> {
-                            TravelException e =
-                                    assertThrows(
-                                            TravelException.class,
-                                            () -> {
-                                                builder.enterState(destinationState);
-                                            });
-                            exceptionRef.set(e);
-                        });
-        transition.joinAndVerify();
-        return exceptionRef.get();
+        return mTransitRule.runTransitionExpectingThrow(
+                TravelException.class, () -> builder.enterState(destinationState));
     }
 
-    private static void expectTransitionSuccess(TripBuilder builder, Condition... conditions)
+    private void expectTransitionSuccess(TripBuilder builder, Condition... conditions)
             throws Throwable {
         State destinationState = new State("destination state");
         for (Condition c : conditions) {
             destinationState.declareEnterCondition(c);
         }
-        AsyncTransition transition =
-                new AsyncTransition(
-                        () -> {
-                            builder.enterState(destinationState);
-                        });
-        transition.joinAndVerify();
-    }
-
-    /**
-     * Runs a transition in a background thread to allow manipulating conditions concurrently during
-     * transition polling.
-     */
-    private static class AsyncTransition {
-        private final Thread mThread;
-        private final AtomicReference<Throwable> mException = new AtomicReference<>();
-
-        AsyncTransition(Runnable transitionBlock) {
-            mThread =
-                    new Thread(
-                            () -> {
-                                try {
-                                    transitionBlock.run();
-                                } catch (Throwable t) {
-                                    mException.set(t);
-                                }
-                            });
-            mThread.start();
-        }
-
-        public void joinAndVerify() throws Throwable {
-            mThread.join();
-            Throwable t = mException.get();
-            if (t != null) {
-                throw t;
-            }
-        }
+        mTransitRule.runTransition(() -> builder.enterState(destinationState));
     }
 }

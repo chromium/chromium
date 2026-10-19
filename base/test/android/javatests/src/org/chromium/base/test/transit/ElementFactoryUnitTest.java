@@ -9,21 +9,18 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 
-import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.transit.PublicTransitUnitTestRule.AsyncTransition;
 import org.chromium.base.test.util.CallbackHelper;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Unit Tests for {@link ElementFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ElementFactoryUnitTest {
-
-    private static final String TAG = "TransitUnitTest";
+    @Rule public final PublicTransitUnitTestRule mTransitRule = new PublicTransitUnitTestRule();
 
     private static class NestedFactoryStation extends Station<Activity> {
         public final CallbackHelper mDeclareElementsCallbackHelper = new CallbackHelper();
@@ -116,11 +113,6 @@ public class ElementFactoryUnitTest {
         }
     }
 
-    @After
-    public void tearDown() {
-        TrafficControl.hopOffPublicTransit();
-    }
-
     @Test
     public void testTransitionWithNestedElementFactory() throws Throwable {
         TestCondition outerCondition = new TestCondition("outer condition");
@@ -156,50 +148,26 @@ public class ElementFactoryUnitTest {
                 new NestedFactoryStation(alwaysTrueCondition, alwaysTrueCondition);
         sourceStation.setStateActiveWithoutTransition();
 
-        Thread transitionThread =
-                new Thread(
-                        () -> {
-                            Triggers.noopTo()
-                                    .withContext(sourceStation)
-                                    .arriveAt(destinationStation);
-                        });
-        final AtomicReference<Throwable> maybeException = new AtomicReference<>();
+        AsyncTransition transition =
+                mTransitRule.startTransition(
+                        () ->
+                                Triggers.noopTo()
+                                        .withContext(sourceStation)
+                                        .arriveAt(destinationStation));
+        destinationStation.mDeclareElementsCallbackHelper.waitForNext();
+        assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+        assertEquals(0, destinationStation.mOuterCallbackHelper.getCallCount());
+        assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
 
-        // Exceptions in background threads are ignored by default, must set
-        // UnCaughtExceptionHandler.
-        transitionThread.setUncaughtExceptionHandler(
-                new Thread.UncaughtExceptionHandler() {
-                    @Override
-                    public void uncaughtException(Thread thread, Throwable ex) {
-                        Log.e(TAG, "uncaughtException ", ex);
-                        maybeException.set(ex);
-                    }
-                });
+        outerCondition.setConditionStatus(Condition.fulfilled());
+        destinationStation.mOuterCallbackHelper.waitForNext();
+        assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+        assertEquals(1, destinationStation.mOuterCallbackHelper.getCallCount());
+        assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
 
-        try {
-            transitionThread.start();
-            destinationStation.mDeclareElementsCallbackHelper.waitForNext();
-            assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
-            assertEquals(0, destinationStation.mOuterCallbackHelper.getCallCount());
-            assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
-
-            outerCondition.setConditionStatus(Condition.fulfilled());
-            destinationStation.mOuterCallbackHelper.waitForNext();
-            assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
-            assertEquals(1, destinationStation.mOuterCallbackHelper.getCallCount());
-            assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
-
-            innerCondition.setConditionStatus(Condition.fulfilled());
-            destinationStation.mInnerCallbackHelper.waitForNext();
-        } finally {
-            // Wait for transition to finish to ensure it succeeds.
-            transitionThread.join();
-        }
-        // Rethrow exceptions inside the transition thread.
-        Throwable exception = maybeException.get();
-        if (exception != null) {
-            throw exception;
-        }
+        innerCondition.setConditionStatus(Condition.fulfilled());
+        destinationStation.mInnerCallbackHelper.waitForNext();
+        transition.join();
 
         // All elements from nested factories added to the destination elements.
 
