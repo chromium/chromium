@@ -80,18 +80,7 @@ bool CheckFlag(const volatile std::atomic<uint32_t>* flags, uint32_t flag) {
 }
 
 void SetFlag(volatile std::atomic<uint32_t>* flags, uint32_t flag) {
-  uint32_t loaded_flags = flags->load(std::memory_order_relaxed);
-  for (;;) {
-    uint32_t new_flags = (loaded_flags & ~flag) | flag;
-    // In the failue case, actual "flags" value stored in loaded_flags.
-    // These access are "relaxed" because they are completely independent
-    // of all other values.
-    if (flags->compare_exchange_weak(loaded_flags, new_flags,
-                                     std::memory_order_relaxed,
-                                     std::memory_order_relaxed)) {
-      break;
-    }
-  }
+  flags->fetch_or(flag, std::memory_order_relaxed);
 }
 
 }  // namespace
