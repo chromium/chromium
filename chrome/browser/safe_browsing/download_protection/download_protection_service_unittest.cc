@@ -143,6 +143,12 @@
 #include "extensions/browser/test_event_router.h"
 #endif
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/downloads/downloads_api.h"
+#include "components/enterprise/connectors/core/features.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
@@ -916,6 +922,12 @@ class DownloadProtectionServiceTestBase
 
   // Verify that corrupted ZIP/DMGs do send a ping.
   void CheckClientDownloadReportCorruptArchive(ArchiveType type);
+
+  // Exposes the service's observer so tests can drive its
+  // DownloadItem::Observer callbacks directly.
+  DownloadProtectionObserver& download_protection_observer() {
+    return download_service_->download_protection_observer_;
+  }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -3482,6 +3494,224 @@ TEST_F(DownloadProtectionServiceTest,
       &item, download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING);
   run_loop.Run();
 }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// Covers the Safe Browsing verdict paths in download_protection_observer.cc
+// and download_protection_service.cc that forward the extension initiator to
+// ReportingEventRouter, as opposed to the deep scanning path covered by
+// DeepScanningRequest tests.
+class DownloadProtectionServiceExtensionInitiatorTest
+    : public DownloadProtectionServiceTest {
+ public:
+  static constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+  static constexpr char kExtensionName[] = "Initiator Test";
+
+  void SetUp() override {
+    DownloadProtectionServiceTest::SetUp();
+    // Initialized after the base fixture's feature list so it is torn down
+    // first.
+    initiator_feature_list_.InitAndEnableFeature(
+        enterprise_connectors::kEnterpriseExtensionActorAttribution);
+    enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
+        profile())
+        ->SetBrowserCloudPolicyClientForTesting(client_.get());
+    enterprise_connectors::test::SetOnSecurityEventReporting(
+        profile()->GetPrefs(), true);
+  }
+
+  // Prepares `item` as a download started by the test extension through the
+  // chrome.downloads API, with a Safe Browsing token attached.
+  void PrepareExtensionDownload(NiceMockDownloadItem* item) {
+    PrepareBasicDownloadItem(item,
+                             std::vector<std::string>(),   // empty url_chain
+                             "http://www.google.com/",     // referrer
+                             FILE_PATH_LITERAL("a.tmp"),   // tmp_path
+                             FILE_PATH_LITERAL("a.exe"));  // final_path
+    content::DownloadItemUtils::AttachInfoForTesting(item, profile(), nullptr);
+    DownloadProtectionService::SetDownloadProtectionData(
+        item, "token", ClientDownloadResponse::SAFE,
+        ClientDownloadResponse::TailoredVerdict());
+    SetExtendedReportingPreference(true);
+    // `DownloadedByExtension` attaches itself to the item as user data.
+    new extensions::DownloadedByExtension(item, kExtensionId, kExtensionName);
+  }
+
+  // Expects exactly one uploaded event satisfying `has_expected_event`, and
+  // asserts that its initiator is the test extension iff `expect_initiator`.
+  template <typename Predicate>
+  void ExpectEvent(Predicate has_expected_event,
+                   bool expect_initiator,
+                   base::OnceClosure done) {
+    EXPECT_CALL(*client_, UploadSecurityEvent)
+        .WillOnce(
+            [has_expected_event, expect_initiator, done = std::move(done)](
+                bool include_device_info,
+                ::chrome::cros::reporting::proto::UploadEventsRequest request,
+                policy::CloudPolicyClient::ResultCallback callback) mutable {
+              ASSERT_EQ(1, request.events_size());
+              const auto& event = request.events(0);
+              EXPECT_TRUE(has_expected_event(event));
+              if (expect_initiator) {
+                ASSERT_TRUE(event.has_initiator());
+                EXPECT_EQ(kExtensionId,
+                          event.initiator().chrome_extension().id());
+                EXPECT_EQ(kExtensionName,
+                          event.initiator().chrome_extension().name());
+              } else {
+                EXPECT_FALSE(event.has_initiator());
+              }
+              std::move(done).Run();
+            });
+  }
+
+  static bool IsDangerousDownloadEvent(
+      const ::chrome::cros::reporting::proto::Event& event) {
+    return event.has_dangerous_download_event();
+  }
+  static bool IsSensitiveDataEvent(
+      const ::chrome::cros::reporting::proto::Event& event) {
+    return event.has_sensitive_data_event();
+  }
+
+ private:
+  base::test::ScopedFeatureList initiator_feature_list_;
+};
+
+// download_protection_observer.cc: a verdict turning the download dangerous
+// reports a WARNED event.
+TEST_F(DownloadProtectionServiceExtensionInitiatorTest,
+       DangerousDownloadWarning) {
+  NiceMockDownloadItem item;
+  PrepareExtensionDownload(&item);
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+
+  base::RunLoop run_loop;
+  ExpectEvent(&IsDangerousDownloadEvent, /*expect_initiator=*/true,
+              run_loop.QuitClosure());
+
+  // The observer tracks the last seen danger type per item (initially
+  // NOT_DANGEROUS), so this update is a transition to dangerous.
+  download_protection_observer().OnDownloadUpdated(&item);
+  run_loop.Run();
+}
+
+// download_protection_observer.cc: bypassing a dangerous warning after the
+// verdict arrived reports a BYPASSED event.
+TEST_F(DownloadProtectionServiceExtensionInitiatorTest, DelayedBypass) {
+  NiceMockDownloadItem item;
+  PrepareExtensionDownload(&item);
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(false));
+  EXPECT_CALL(item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+
+  base::RunLoop run_loop;
+  ExpectEvent(&IsDangerousDownloadEvent, /*expect_initiator=*/true,
+              run_loop.QuitClosure());
+
+  download_service_->ReportDelayedBypassEvent(
+      &item, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE);
+  run_loop.Run();
+}
+
+// download_protection_service.cc: opening a dangerous download that has no
+// deep scanning result reports a BYPASSED event.
+TEST_F(DownloadProtectionServiceExtensionInitiatorTest,
+       DangerousDownloadOpened) {
+  NiceMockDownloadItem item;
+  PrepareExtensionDownload(&item);
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+
+  base::RunLoop run_loop;
+  ExpectEvent(&IsDangerousDownloadEvent, /*expect_initiator=*/true,
+              run_loop.QuitClosure());
+
+  download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
+  run_loop.Run();
+}
+
+// download_protection_service.cc: opening a dangerous download that has a
+// deep scanning result reports a BYPASSED event per scanned file.
+TEST_F(DownloadProtectionServiceExtensionInitiatorTest,
+       DangerousDownloadOpenedWithScanResult) {
+  NiceMockDownloadItem item;
+  PrepareExtensionDownload(&item);
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* result = response.add_results();
+  result->set_tag("malware");
+  result->add_triggered_rules()->set_action(
+      enterprise_connectors::
+          ContentAnalysisResponse_Result_TriggeredRule_Action_WARN);
+  enterprise_connectors::FileMetadata file_metadata(
+      final_path_.AsUTF8Unsafe(), "68617368", "fake/mimetype", 1234, response);
+  item.SetUserData(enterprise_connectors::ScanResult::kKey,
+                   std::make_unique<enterprise_connectors::ScanResult>(
+                       std::move(file_metadata)));
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+
+  base::RunLoop run_loop;
+  ExpectEvent(&IsDangerousDownloadEvent, /*expect_initiator=*/true,
+              run_loop.QuitClosure());
+
+  download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
+  run_loop.Run();
+}
+
+// download_protection_service.cc: bypassing a DLP warning reports a BYPASSED
+// sensitive data event.
+TEST_F(DownloadProtectionServiceExtensionInitiatorTest, SensitiveFileBypass) {
+  NiceMockDownloadItem item;
+  PrepareExtensionDownload(&item);
+  enterprise_connectors::ContentAnalysisResponse response;
+  auto* result = response.add_results();
+  result->set_tag("dlp");
+  result->add_triggered_rules()->set_action(
+      enterprise_connectors::
+          ContentAnalysisResponse_Result_TriggeredRule_Action_WARN);
+  enterprise_connectors::FileMetadata file_metadata(
+      final_path_.AsUTF8Unsafe(), "68617368", "fake/mimetype", 1234, response);
+  item.SetUserData(enterprise_connectors::ScanResult::kKey,
+                   std::make_unique<enterprise_connectors::ScanResult>(
+                       std::move(file_metadata)));
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item, GetDangerType())
+      .WillRepeatedly(
+          Return(download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING));
+
+  base::RunLoop run_loop;
+  ExpectEvent(&IsSensitiveDataEvent, /*expect_initiator=*/true,
+              run_loop.QuitClosure());
+
+  download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
+  run_loop.Run();
+}
+
+// With the feature disabled the event is still reported, without initiator.
+TEST_F(DownloadProtectionServiceExtensionInitiatorTest, FeatureDisabled) {
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(
+      enterprise_connectors::kEnterpriseExtensionActorAttribution);
+  NiceMockDownloadItem item;
+  PrepareExtensionDownload(&item);
+  EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  EXPECT_CALL(item, GetDangerType())
+      .WillRepeatedly(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+
+  base::RunLoop run_loop;
+  ExpectEvent(&IsDangerousDownloadEvent, /*expect_initiator=*/false,
+              run_loop.QuitClosure());
+
+  download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyBypassReportSentAfterDlpBlockVerdictReceived) {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DEEP_SCANNING_METADATA_H_
 #define CHROME_BROWSER_SAFE_BROWSING_DOWNLOAD_PROTECTION_DEEP_SCANNING_METADATA_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,6 +16,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "url/gurl.h"
 
@@ -121,6 +124,11 @@ class DeepScanningMetadata {
   // nullptr, for example in cases when the tab that opened the download was
   // closed.
   virtual content::WebContents* web_contents() const = 0;
+
+  // Returns info about the extension that initiated the download, if known.
+  // Defaults to `std::nullopt`.
+  virtual std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+  extension_initiator() const;
 
  protected:
   // Potentially overrides the deep scan result based on verdict reason and

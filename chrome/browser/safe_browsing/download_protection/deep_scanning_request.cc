@@ -992,6 +992,11 @@ DeepScanningRequest::frame_url_chain() const {
   return metadata_->CollectFrameUrls();
 }
 
+std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+DeepScanningRequest::extension_initiator() const {
+  return metadata_->extension_initiator();
+}
+
 content::WebContents* DeepScanningRequest::web_contents() const {
   return metadata_->web_contents();
 }

@@ -22,6 +22,7 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
+#include "chrome/browser/enterprise/connectors/reporting/event_initiator_utils.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -533,7 +534,8 @@ void DownloadProtectionService::ReportSensitiveFileBypassEnterpriseEvent(
       /*content_transfer_method=*/"", /*source_email=*/"",
       info.GetContentAreaAccountEmail(),
       /*user_justification=*/std::nullopt, result, metadata.size,
-      referrer_chain, frame_urls, enterprise_connectors::EventResult::BYPASSED);
+      referrer_chain, frame_urls, enterprise_connectors::EventResult::BYPASSED,
+      info.extension_initiator());
 }
 
 void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
@@ -555,7 +557,8 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
       item->GetDangerType(), metadata.mime_type,
       enterprise_connectors::DataTransferEventTrigger::FILE_DOWNLOAD,
       metadata.scan_response.request_token(), metadata.size, referrer_chain,
-      frame_urls, enterprise_connectors::EventResult::BYPASSED);
+      frame_urls, enterprise_connectors::EventResult::BYPASSED,
+      enterprise_connectors::GetExtensionInitiatorInfo(item));
 }
 
 void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
@@ -578,7 +581,8 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
       item->GetMimeType(),
       enterprise_connectors::DataTransferEventTrigger::FILE_DOWNLOAD,
       /*scan_id*/ "", item->GetTotalBytes(), referrer_chain, frame_urls,
-      enterprise_connectors::EventResult::BYPASSED);
+      enterprise_connectors::EventResult::BYPASSED,
+      enterprise_connectors::GetExtensionInitiatorInfo(item));
 }
 
 void DownloadProtectionService::ReportDangerousDownloadOpenedSafeBrowsingEvent(

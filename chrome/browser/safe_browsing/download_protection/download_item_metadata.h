@@ -56,6 +56,8 @@ class DownloadItemMetadata : public DeepScanningMetadata {
   google::protobuf::RepeatedPtrField<std::string> CollectFrameUrls()
       const override;
   content::WebContents* web_contents() const override;
+  std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+  extension_initiator() const override;
   base::WeakPtr<DownloadItemMetadata> GetWeakPtr();
 
  private:

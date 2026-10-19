@@ -180,6 +180,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/reporting/event_initiator_utils.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"  // nogncheck crbug.com/40147906
 #include "components/enterprise/connectors/core/reporting_constants.h"  // nogncheck crbug.com/40147906
 #include "components/enterprise/connectors/core/reporting_event_router.h"  // nogncheck crbug.com/40147906
@@ -591,7 +592,8 @@ void MaybeReportDangerousDownloadBlocked(
             enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
             std::make_optional(
                 content::DownloadItemUtils::GetRenderFrameHostId(download))),
-        enterprise_connectors::EventResult::BLOCKED);
+        enterprise_connectors::EventResult::BLOCKED,
+        enterprise_connectors::GetExtensionInitiatorInfo(download));
   }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)

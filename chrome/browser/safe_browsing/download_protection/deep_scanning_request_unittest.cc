@@ -45,6 +45,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -67,6 +68,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "crypto/sha2.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/mime_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -78,6 +80,11 @@
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #endif
 
 namespace safe_browsing {
@@ -2099,6 +2106,164 @@ TEST_F(DeepScanningReportingTest, ReportForceSaveToGDrive) {
 
   EXPECT_EQ(DownloadCheckResult::FORCE_SAVE_TO_GDRIVE, last_result_);
 }
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+// Covers the path from `DeepScanningRequest::extension_initiator()` through
+// `MaybeReportDeepScanningVerdict` to `Event.initiator` on the uploaded event.
+class DeepScanningReportingInitiatorTest : public DeepScanningReportingTest {
+ public:
+  static constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+  static constexpr char kExtensionName[] = "Test Extension";
+
+  void SetUp() override {
+    DeepScanningReportingTest::SetUp();
+    // Initialized after the base fixture's feature list so it is torn down
+    // first.
+    initiator_feature_list_.InitAndEnableFeature(
+        enterprise_connectors::kEnterpriseExtensionActorAttribution);
+    // Marks `item_` as initiated by an extension via the chrome.downloads API.
+    // `DownloadedByExtension` attaches itself to the item as user data.
+    new extensions::DownloadedByExtension(&item_, kExtensionId, kExtensionName);
+  }
+
+  // Expects exactly one uploaded event, satisfying `has_expected_event`, whose
+  // initiator is the extension set up above.
+  template <typename Predicate>
+  void ExpectEventWithExtensionInitiator(Predicate has_expected_event,
+                                         base::OnceClosure done) {
+    EXPECT_CALL(*client_, UploadSecurityEvent)
+        .WillOnce(
+            [has_expected_event, done = std::move(done)](
+                bool include_device_info,
+                ::chrome::cros::reporting::proto::UploadEventsRequest request,
+                policy::CloudPolicyClient::ResultCallback callback) mutable {
+              ASSERT_EQ(1, request.events_size());
+              const auto& event = request.events(0);
+              EXPECT_TRUE(has_expected_event(event));
+              ASSERT_TRUE(event.has_initiator());
+              ASSERT_TRUE(event.initiator().has_chrome_extension());
+              EXPECT_EQ(kExtensionId,
+                        event.initiator().chrome_extension().id());
+              EXPECT_EQ(kExtensionName,
+                        event.initiator().chrome_extension().name());
+              std::move(done).Run();
+            });
+  }
+
+  void RunRequestWithResponse(
+      const enterprise_connectors::ContentAnalysisResponse& response,
+      enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
+          expected_final_action) {
+    base::RunLoop run_loop;
+    DeepScanningRequest request(
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE,
+        base::BindRepeating(
+            [](DeepScanningRequestTest* test,
+               base::RepeatingClosure quit_closure,
+               DownloadCheckResult result) {
+              test->SetLastResult(result);
+              if (result != DownloadCheckResult::ASYNC_SCANNING) {
+                quit_closure.Run();
+              }
+            },
+            base::Unretained(this), run_loop.QuitClosure()),
+        &download_protection_service_, settings().value(),
+        /*password=*/std::nullopt);
+
+    download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
+    download_protection_service_.GetFakeBinaryUploadService()
+        ->SetExpectedFinalAction(expected_final_action);
+
+    request.Start();
+    run_loop.Run();
+  }
+
+ private:
+  base::test::ScopedFeatureList initiator_feature_list_;
+};
+
+TEST_F(DeepScanningReportingInitiatorTest, DangerousDownloadEvent) {
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+  auto* malware_result = response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* malware_rule = malware_result->add_triggered_rules();
+  malware_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  malware_rule->set_rule_name("malware");
+
+  base::RunLoop event_run_loop;
+  ExpectEventWithExtensionInitiator(
+      [](const ::chrome::cros::reporting::proto::Event& event) {
+        return event.has_dangerous_download_event();
+      },
+      event_run_loop.QuitClosure());
+
+  RunRequestWithResponse(
+      response, enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
+  event_run_loop.Run();
+
+  EXPECT_EQ(DownloadCheckResult::DANGEROUS, last_result_);
+}
+
+TEST_F(DeepScanningReportingInitiatorTest, SensitiveDataEvent) {
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+  auto* dlp_result = response.add_results();
+  dlp_result->set_tag("dlp");
+  dlp_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
+  auto* dlp_rule = dlp_result->add_triggered_rules();
+  dlp_rule->set_action(enterprise_connectors::TriggeredRule::BLOCK);
+  dlp_rule->set_rule_name("dlp_rule");
+  dlp_rule->set_rule_id("0");
+
+  base::RunLoop event_run_loop;
+  ExpectEventWithExtensionInitiator(
+      [](const ::chrome::cros::reporting::proto::Event& event) {
+        return event.has_sensitive_data_event();
+      },
+      event_run_loop.QuitClosure());
+
+  RunRequestWithResponse(
+      response, enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
+  event_run_loop.Run();
+
+  EXPECT_EQ(DownloadCheckResult::SENSITIVE_CONTENT_BLOCK, last_result_);
+}
+
+TEST_F(DeepScanningReportingInitiatorTest, UnscannedFileEvent) {
+  enterprise_connectors::ContentAnalysisResponse response;
+  response.set_request_token(kScanId);
+  auto* malware_result = response.add_results();
+  malware_result->set_tag("malware");
+  malware_result->set_status(
+      enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
+
+  base::RunLoop event_run_loop;
+  ExpectEventWithExtensionInitiator(
+      [](const ::chrome::cros::reporting::proto::Event& event) {
+        return event.has_unscanned_file_event() &&
+               event.unscanned_file_event().unscanned_reason() ==
+                   chrome::cros::reporting::proto::UnscannedFileEvent::
+                       MALWARE_SCAN_FAILED;
+      },
+      event_run_loop.QuitClosure());
+
+  RunRequestWithResponse(
+      response, enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
+  event_run_loop.Run();
+
+  EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 class TestDialogObserver

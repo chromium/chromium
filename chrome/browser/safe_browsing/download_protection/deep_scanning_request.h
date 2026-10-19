@@ -123,6 +123,8 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   referrer_chain() const override;
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const override;
+  std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+  extension_initiator() const override;
   content::WebContents* web_contents() const override;
 
  private:

@@ -8,6 +8,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/enterprise/connectors/reporting/event_initiator_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -250,6 +251,11 @@ DownloadItemMetadata::CollectFrameUrls() const {
 
 content::WebContents* DownloadItemMetadata::web_contents() const {
   return content::DownloadItemUtils::GetOriginalWebContents(item_.get());
+}
+
+std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+DownloadItemMetadata::extension_initiator() const {
+  return enterprise_connectors::GetExtensionInitiatorInfo(item_);
 }
 
 base::WeakPtr<DownloadItemMetadata> DownloadItemMetadata::GetWeakPtr() {

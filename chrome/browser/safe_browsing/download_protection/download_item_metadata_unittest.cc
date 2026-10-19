@@ -4,15 +4,26 @@
 
 #include "chrome/browser/safe_browsing/download_protection/download_item_metadata.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "content/public/browser/download_item_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/api/downloads/downloads_api.h"
+#endif
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -138,6 +149,32 @@ TEST_F(DownloadItemMetadataTest, AddScanResultMetadata) {
   ASSERT_EQ(scan_result->file_metadata.size(), 2u);
   EXPECT_EQ(scan_result->file_metadata[1].filename, "test2.txt");
 }
+
+TEST_F(DownloadItemMetadataTest, ExtensionInitiator_NotFromExtension) {
+  EXPECT_FALSE(metadata_->extension_initiator().has_value());
+}
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+TEST_F(DownloadItemMetadataTest, ExtensionInitiator_FromExtension) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnterpriseExtensionActorAttribution);
+  constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
+  constexpr char kExtensionName[] = "Test Extension";
+  // `DownloadedByExtension` attaches itself to the item as user data.
+  new extensions::DownloadedByExtension(mock_item_.get(), kExtensionId,
+                                        kExtensionName);
+
+  std::optional<ExtensionTelemetryReportRequest::ExtensionInfo> info =
+      metadata_->extension_initiator();
+
+  ASSERT_TRUE(info.has_value());
+  EXPECT_EQ(kExtensionId, info->id());
+  EXPECT_EQ(kExtensionName, info->name());
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) &&
+        // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Simple test observer that tracks the number of times `DownloadItem` is
 // updated.

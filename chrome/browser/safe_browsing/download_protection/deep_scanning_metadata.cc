@@ -90,4 +90,9 @@ DownloadCheckResult DeepScanningMetadata::MaybeOverrideScanResult(
   return result;
 }
 
+std::optional<ExtensionTelemetryReportRequest::ExtensionInfo>
+DeepScanningMetadata::extension_initiator() const {
+  return std::nullopt;
+}
+
 }  // namespace safe_browsing
