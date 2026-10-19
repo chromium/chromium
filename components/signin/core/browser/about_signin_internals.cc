@@ -169,6 +169,8 @@ std::string SigninStatusFieldToLabel(
       return "Gaia Authentication Result";
     case signin_internals_util::REFRESH_TOKEN_RECEIVED:
       return "RefreshToken Received";
+    case signin_internals_util::LAST_REFRESH_TOKEN_ACCOUNT_ID:
+      return "RefreshToken Account Id";
     case signin_internals_util::LAST_SIGNIN_ACCESS_POINT:
       return "Sign-in Access Point";
     case signin_internals_util::LAST_SIGNOUT_SOURCE:
@@ -354,6 +356,8 @@ void AboutSigninInternals::NotifyTimedSigninFieldValueChanged(
   if (field == signin_internals_util::AUTHENTICATION_RESULT_RECEIVED) {
     ClearPref(client_->GetPrefs(),
               signin_internals_util::REFRESH_TOKEN_RECEIVED);
+    ClearPref(client_->GetPrefs(),
+              signin_internals_util::LAST_REFRESH_TOKEN_ACCOUNT_ID);
   }
 
   NotifyObservers();
@@ -534,9 +538,14 @@ void AboutSigninInternals::OnAccessTokenRemovedFromCache(
   NotifyObservers();
 }
 
-void AboutSigninInternals::OnRefreshTokenReceived(const std::string& status) {
+void AboutSigninInternals::OnRefreshTokenReceived(
+    const std::string& status,
+    const CoreAccountId& account_id) {
   NotifyTimedSigninFieldValueChanged(
       signin_internals_util::REFRESH_TOKEN_RECEIVED, status);
+  NotifyTimedSigninFieldValueChanged(
+      signin_internals_util::LAST_REFRESH_TOKEN_ACCOUNT_ID,
+      account_id.ToString());
 }
 
 void AboutSigninInternals::OnAuthenticationResultReceived(

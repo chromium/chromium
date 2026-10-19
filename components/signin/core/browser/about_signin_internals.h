@@ -89,7 +89,8 @@ class AboutSigninInternals
   // Pulls all signin values that have been persisted in the user prefs.
   void RefreshSigninPrefs();
 
-  void OnRefreshTokenReceived(const std::string& status);
+  void OnRefreshTokenReceived(const std::string& status,
+                              const CoreAccountId& account_id);
   void OnAuthenticationResultReceived(const std::string& status);
 
   // KeyedService implementation.

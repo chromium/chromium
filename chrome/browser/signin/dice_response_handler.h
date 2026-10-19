@@ -291,7 +291,7 @@ class DiceResponseHandler : public KeyedService {
           account_infos);
 
   // Called when an account has no authorization code due to an outage.
-  void OnNoAuthorizationCode();
+  void OnNoAuthorizationCode(const CoreAccountId& account_id);
   // Called to unlock the reconcilor after a SLO outage.
   void OnTimeoutUnlockReconcilor();
 

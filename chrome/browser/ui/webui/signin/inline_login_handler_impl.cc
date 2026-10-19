@@ -33,6 +33,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -221,7 +222,8 @@ void InlineSigninHelper::OnClientOAuthFailure(
 
   AboutSigninInternals* about_signin_internals =
       AboutSigninInternalsFactory::GetForProfile(profile_);
-  about_signin_internals->OnRefreshTokenReceived("Failure");
+  about_signin_internals->OnRefreshTokenReceived(
+      "Failure", CoreAccountId::FromGaiaId(gaia_id_));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
                                                                 this);

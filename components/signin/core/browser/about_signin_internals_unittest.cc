@@ -176,6 +176,8 @@ TEST_F(AboutSigninInternalsTest, ResetSigninPrefs) {
       "google.services.signin.AUTHENTICATION_RESULT_RECEIVED.time",
       "google.services.signin.REFRESH_TOKEN_RECEIVED.value",
       "google.services.signin.REFRESH_TOKEN_RECEIVED.time",
+      "google.services.signin.LAST_REFRESH_TOKEN_ACCOUNT_ID.value",
+      "google.services.signin.LAST_REFRESH_TOKEN_ACCOUNT_ID.time",
       "google.services.signin.LAST_SIGNIN_ACCESS_POINT.value",
       "google.services.signin.LAST_SIGNIN_ACCESS_POINT.time",
       "google.services.signin.LAST_SIGNOUT_SOURCE.value",

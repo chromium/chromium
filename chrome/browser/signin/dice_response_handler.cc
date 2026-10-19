@@ -17,7 +17,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -342,8 +341,12 @@ void DiceResponseHandler::DiceSigninSession::FetchTokenForAccount(
     return;
   }
 
+  CoreAccountId account_id =
+      handler_->identity_manager_->PickAccountIdForAccount(
+          account.account_info.gaia_id, account.account_info.email);
+
   if (account.no_authorization_code) {
-    handler_->OnNoAuthorizationCode();
+    handler_->OnNoAuthorizationCode(account_id);
     return;
   }
 
@@ -351,9 +354,6 @@ void DiceResponseHandler::DiceSigninSession::FetchTokenForAccount(
       supported_algorithms_or_error = handler_->CheckTokenBindingEligibility(
           account.supported_algorithms_for_token_binding);
 
-  CoreAccountId account_id =
-      handler_->identity_manager_->PickAccountIdForAccount(
-          account.account_info.gaia_id, account.account_info.email);
   // Cancel any in-flight token fetchers for this account in other sessions.
   // Note: `DiceHeaderHelper` deduplicates accounts in the DICE SIGNIN header,
   // guaranteeing that all accounts within a single `DiceSigninSession` have
@@ -407,8 +407,8 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
   bool is_initiator =
       (fetcher->gaia_id() == signin_info_.GetInitiator()->account_info.gaia_id);
 
-  handler_->about_signin_internals_->OnRefreshTokenReceived(
-      base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
+  handler_->about_signin_internals_->OnRefreshTokenReceived("Successful",
+                                                            account_id);
 
   if (is_initiator) {
     if (IsMultiAccount() && !session_start_time_.is_null()) {
@@ -448,8 +448,8 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeFailure(
   CoreAccountId account_id =
       handler_->identity_manager_->PickAccountIdForAccount(fetcher->gaia_id(),
                                                            email);
-  handler_->about_signin_internals_->OnRefreshTokenReceived(
-      base::StringPrintf("Failure (%s)", account_id.ToString().c_str()));
+  handler_->about_signin_internals_->OnRefreshTokenReceived("Failure",
+                                                            account_id);
 
   bool is_initiator =
       (fetcher->gaia_id() == signin_info_.GetInitiator()->account_info.gaia_id);
@@ -615,11 +615,12 @@ size_t DiceResponseHandler::GetPendingDiceTokenFetchersCountForTesting() const {
   return count;
 }
 
-void DiceResponseHandler::OnNoAuthorizationCode() {
+void DiceResponseHandler::OnNoAuthorizationCode(
+    const CoreAccountId& account_id) {
   if (!lock_) {
     lock_ = std::make_unique<AccountReconcilor::Lock>(account_reconcilor_);
     about_signin_internals_->OnRefreshTokenReceived(
-        "Missing authorization code due to OAuth outage in Dice.");
+        "Missing authorization code due to OAuth outage in Dice.", account_id);
   }
   if (!timer_) {
     timer_ = std::make_unique<base::OneShotTimer>();
