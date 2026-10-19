@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/services/storage/public/cpp/quota_client_callback_wrapper.h"
+#include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -1184,6 +1185,10 @@ void ServiceWorkerContextCore::NotifyAllRegistrationsDeletedForStorageKey(
 }
 
 void ServiceWorkerContextCore::OnStorageWiped() {
+  // Version IDs restart from 0 in the wiped storage, while `wrapper_` stays the
+  // same. Drop the DevTools agent hosts of the old versions, which are keyed by
+  // `wrapper_` and version ID, before any new version can reuse their IDs.
+  ServiceWorkerDevToolsManager::GetInstance()->StorageWiped(wrapper_);
   observer_list_->Notify(FROM_HERE,
                          &ServiceWorkerContextCoreObserver::OnStorageWiped);
   for (auto& observer : sync_observer_list_->observers) {

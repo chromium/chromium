@@ -117,6 +117,13 @@ class CONTENT_EXPORT ServiceWorkerDevToolsManager {
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       int64_t version_id);
   void WorkerStopped(ChildProcessId worker_process_id, int worker_route_id);
+
+  // Called when the storage of `context_wrapper` was wiped and started over.
+  // Version IDs restart from 0 afterwards while `context_wrapper` survives, so
+  // hosts for versions from before the wipe are dropped to ensure they are
+  // never matched against new versions with the same version ID.
+  void StorageWiped(const ServiceWorkerContextWrapper* context_wrapper);
+
   void NavigationPreloadRequestSent(ChildProcessId worker_process_id,
                                     int worker_route_id,
                                     const std::string& request_id,

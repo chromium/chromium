@@ -34,6 +34,7 @@
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 namespace content {
 
@@ -239,7 +240,16 @@ void ServiceWorkerDevToolsAgentHost::WorkerVersionDoomed() {
   version_doomed_time_ = base::Time::Now();
 }
 
-void ServiceWorkerDevToolsAgentHost::WorkerMainScriptFetchingFailed() {
+void ServiceWorkerDevToolsAgentHost::StorageWiped() {
+  WorkerVersionDoomed();
+  DiscardPendingMessages();
+  // Version IDs restart from 0 in the wiped storage. Make sure this host is
+  // never matched against, and never acts on, a new version that happens to
+  // get the same version ID.
+  version_id_ = blink::mojom::kInvalidServiceWorkerVersionId;
+}
+
+void ServiceWorkerDevToolsAgentHost::DiscardPendingMessages() {
   for (DevToolsSession* session : sessions()) {
     session->ClearPendingMessages(/*did_crash=*/false);
   }
@@ -464,6 +474,8 @@ ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
   RenderProcessHost* rph = RenderProcessHost::FromID(worker_process_id_);
   const auto* version = context_wrapper_->GetLiveVersion(version_id_);
   if (!rph || !version) {
+    // The worker is not running, or its version is gone (e.g. because the
+    // storage was wiped, see StorageWiped()).
     return {};
   }
   const url::Origin origin = url::Origin::Create(url_);

@@ -132,7 +132,7 @@ void ServiceWorkerDevToolsManager::WorkerMainScriptFetchingFailed(
   // before finishing and will loop until they get an answer. This call makes
   // sure all pending messages are answered with an error when we fail the
   // main script fetch.
-  host->WorkerMainScriptFetchingFailed();
+  host->DiscardPendingMessages();
 
   // This observer call should trigger the destruction of the
   // ServiceWorkerDevToolsAgentHost by removing the scoped_ptr references held
@@ -272,6 +272,55 @@ void ServiceWorkerDevToolsManager::WorkerStopped(
     // The worker version has been doomed, it will never restart.
     for (auto& observer : observer_list_)
       observer.WorkerDestroyed(agent_host.get());
+  }
+}
+
+void ServiceWorkerDevToolsManager::StorageWiped(
+    const ServiceWorkerContextWrapper* context_wrapper) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  // Take the hosts of stopped and new installing workers of `context_wrapper`
+  // out of the manager. Stopped workers will never restart, and the
+  // registration jobs of the new installing workers were aborted.
+  ServiceWorkerDevToolsAgentHost::List inactive_hosts;
+  base::EraseIf(stopped_hosts_,
+                [&](ServiceWorkerDevToolsAgentHost* agent_host) {
+                  if (agent_host->context_wrapper() != context_wrapper) {
+                    return false;
+                  }
+                  inactive_hosts.push_back(base::WrapRefCounted(agent_host));
+                  return true;
+                });
+  base::EraseIf(
+      new_installing_hosts_,
+      [&](const scoped_refptr<ServiceWorkerDevToolsAgentHost>& agent_host) {
+        if (agent_host->context_wrapper() != context_wrapper) {
+          return false;
+        }
+        inactive_hosts.push_back(agent_host);
+        return true;
+      });
+
+  // Update the state of all affected hosts before notifying any observers,
+  // since observers might query the manager for all hosts and detach from
+  // the ones that are gone (e.g. FrameAutoAttacher).
+  //
+  // Workers that are still running keep their hosts until they stop, but
+  // since their hosts are doomed, WorkerStopped() destroys them rather than
+  // keeping them around in `stopped_hosts_`.
+  for (auto& [worker_id, agent_host] : live_hosts_) {
+    if (agent_host->context_wrapper() == context_wrapper) {
+      agent_host->StorageWiped();
+    }
+  }
+  for (const auto& agent_host : inactive_hosts) {
+    agent_host->StorageWiped();
+  }
+
+  for (const auto& agent_host : inactive_hosts) {
+    for (auto& observer : observer_list_) {
+      observer.WorkerDestroyed(agent_host.get());
+    }
   }
 }
 

@@ -99,11 +99,16 @@ class ServiceWorkerDevToolsAgentHost : public DevToolsAgentHostImpl,
   void WorkerVersionInstalled();
   void WorkerVersionDoomed();
 
-  // This a niche function used when failing a ServiceWorker main script fetch
-  // with PlzServiceWorker. Since the worker did not have the opportunity to
-  // boot up, some messages will be left unanswered. This makes sure they are
-  // answered with an error message, avoid time outs in WPTs.
-  void WorkerMainScriptFetchingFailed();
+  // Called when the storage of `context_wrapper()` was wiped. The version of
+  // this host no longer exists and its version ID can be reused by unrelated
+  // versions, so the host is doomed, pending messages are discarded, and its
+  // version ID is reset to `blink::mojom::kInvalidServiceWorkerVersionId`.
+  void StorageWiped();
+
+  // Used when failing a ServiceWorker main script fetch with PlzServiceWorker
+  // or when storage is wiped. Since the worker will not boot up, pending
+  // messages are answered with an error message to avoid timeouts in WPTs.
+  void DiscardPendingMessages();
 
   const GURL& scope() const { return scope_; }
   const base::UnguessableToken& devtools_worker_token() const {
