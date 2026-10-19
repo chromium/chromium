@@ -13,6 +13,9 @@
 // and height being the maximum of the width and height of its parent.
 @interface PreviewOverlayView : UIView
 
+// Current size of the scanner viewport.
+@property(nonatomic, assign) CGSize viewportSize;
+
 // Initialises using viewport size.
 - (instancetype)initWithFrame:(CGRect)frame
                  viewportSize:(CGSize)viewportSize NS_DESIGNATED_INITIALIZER;

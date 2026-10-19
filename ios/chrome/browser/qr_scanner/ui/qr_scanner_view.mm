@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/qr_scanner/ui/qr_scanner_view.h"
 
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -22,9 +22,8 @@ constexpr CGSize kViewportSizeIPad = CGSize{.width = 300, .height = 300};
 #pragma mark - ScannerView
 
 - (CGSize)viewportSize {
-  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-             ? kViewportSizeIPad
-             : kViewportSizeIPhone;
+  return IsRegularXRegularSizeClass(self) ? kViewportSizeIPad
+                                          : kViewportSizeIPhone;
 }
 
 - (NSString*)caption {

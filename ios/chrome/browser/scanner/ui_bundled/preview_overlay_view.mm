@@ -80,6 +80,14 @@ const CGFloat kViewportBorderShadowRadius = 10.0;
   return self;
 }
 
+- (void)setViewportSize:(CGSize)viewportSize {
+  if (CGSizeEqualToSize(_viewportSize, viewportSize)) {
+    return;
+  }
+  _viewportSize = viewportSize;
+  [self setNeedsLayout];
+}
+
 - (void)layoutSubviews {
   [super layoutSubviews];
   CGSize frameSize = self.frame.size;
@@ -122,9 +130,8 @@ const CGFloat kViewportBorderShadowRadius = 10.0;
 // Creates a mask to only draw the corners of the viewport border.
 - (CAShapeLayer*)viewportBorderMaskWithFrameSize:(CGSize)frameSize {
   CGFloat viewportBorderCornerLength =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
-          ? kViewportBorderLengthFromCornerIPad
-          : kViewportBorderLengthFromCornerIPhone;
+      IsRegularXRegularSizeClass(self) ? kViewportBorderLengthFromCornerIPad
+                                       : kViewportBorderLengthFromCornerIPhone;
   CGRect maskRect = CGRectMakeCenteredRectInFrame(
       frameSize,
       CGSizeMake(_viewportSize.width - 2 * viewportBorderCornerLength,

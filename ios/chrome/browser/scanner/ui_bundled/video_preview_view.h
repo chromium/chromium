@@ -12,6 +12,9 @@
 // AVCaptureVideoPreviewLayer. Contains the video preview for the QR scanner.
 @interface VideoPreviewView : UIView
 
+// Current size of the scanner viewport.
+@property(nonatomic, assign) CGSize viewportSize;
+
 - (instancetype)initWithFrame:(CGRect)frame
                  viewportSize:(CGSize)previewViewportSize
     NS_DESIGNATED_INITIALIZER;
