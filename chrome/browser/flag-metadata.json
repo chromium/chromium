@@ -6821,6 +6821,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "lens-use-separate-request-id-for-viewport-images",
+    "owners": ["hujasonx@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 165
+  },
+  {
     "name": "lens-video-citations",
     "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 152

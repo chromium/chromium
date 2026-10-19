@@ -3358,6 +3358,12 @@ inline constexpr char kLensUpdatedFeedbackEntrypointName[] =
 inline constexpr char kLensUpdatedFeedbackEntrypointDescription[] =
     "Enables an updated feedback entry point in the Lens side panel.";
 
+inline constexpr char kLensUseSeparateRequestIdForViewportImagesName[] =
+    "Lens Use Separate Request ID for Viewport Images";
+inline constexpr char kLensUseSeparateRequestIdForViewportImagesDescription[] =
+    "Enables using separate request IDs for page contents vs page viewport "
+    "uploads.";
+
 inline constexpr char kLensSidePanelUnificationName[] =
     "Lens Side Panel Unification";
 inline constexpr char kLensSidePanelUnificationDescription[] =

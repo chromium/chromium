@@ -1358,6 +1358,12 @@ inline constexpr char kLensTripleCameraEnabledName[] =
 inline constexpr char kLensTripleCameraEnabledDescription[] =
     "When enabled, Lens LVF uses virtual triple camera.";
 
+inline constexpr char kLensUseSeparateRequestIdForViewportImagesName[] =
+    "Lens Use Separate Request ID for Viewport Images";
+inline constexpr char kLensUseSeparateRequestIdForViewportImagesDescription[] =
+    "Enables using separate request IDs for page contents vs page viewport "
+    "uploads.";
+
 inline constexpr char kLightAppBarName[] = "Light App Bar";
 inline constexpr char kLightAppBarDescription[] =
     "When enabled, the App Bar adapts its appearance to follow the user's "

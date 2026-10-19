@@ -2113,6 +2113,12 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kLensTripleCameraEnabledName,
      flag_descriptions::kLensTripleCameraEnabledDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kLensTripleCameraEnabled)},
+    {"lens-use-separate-request-id-for-viewport-images",
+     flag_descriptions::kLensUseSeparateRequestIdForViewportImagesName,
+     flag_descriptions::kLensUseSeparateRequestIdForViewportImagesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         lens::features::kLensUseSeparateRequestIdForViewportImages)},
     // LINT.IfChange(DataSharingVersioning)
     {"shared-data-types-kill-switch",
      flag_descriptions::kDataSharingVersioningStatesName,

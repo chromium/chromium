@@ -9128,6 +9128,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensComposeboxIdentityDelegationDescription, kOsAll,
      FEATURE_VALUE_TYPE(lens::features::kLensComposeboxIdentityDelegation)},
 
+    {"lens-use-separate-request-id-for-viewport-images",
+     flag_descriptions::kLensUseSeparateRequestIdForViewportImagesName,
+     flag_descriptions::kLensUseSeparateRequestIdForViewportImagesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         lens::features::kLensUseSeparateRequestIdForViewportImages)},
+
     {"lens-bypass-compression-for-c2pa",
      flag_descriptions::kLensBypassCompressionForC2paName,
      flag_descriptions::kLensBypassCompressionForC2paDescription, kOsAll,

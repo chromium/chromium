@@ -10174,6 +10174,8 @@ from previous Chrome versions.
   <int value="-1455559065"
       label="OmniboxUIExperimentShowPlaceholderWhenCaretShowing:disabled"/>
   <int value="-1454859000" label="ChromeNativeUrlOverriding:enabled"/>
+  <int value="-1454500197"
+      label="LensUseSeparateRequestIdForViewportImages:enabled"/>
   <int value="-1454479680" label="FileHandlingAPI:enabled"/>
   <int value="-1454397907" label="OptimizationHints:disabled"/>
   <int value="-1454368758" label="PaymentHandlerCameraAccessUx:disabled"/>
@@ -11382,6 +11384,8 @@ from previous Chrome versions.
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
   <int value="-1092514142" label="JourneysKeywordFiltering:disabled"/>
   <int value="-1092426506" label="DevToolsPlusButton:enabled"/>
+  <int value="-1092365817"
+      label="LensUseSeparateRequestIdForViewportImages:disabled"/>
   <int value="-1092340892" label="VCTrayMicIndicator:disabled"/>
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
   <int value="-1092165602"
