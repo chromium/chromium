@@ -284,7 +284,9 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
     const UtteranceContinuousParameters& params,
     base::OnceCallback<void(bool)> on_speak_finished,
     const std::string& parsed_utterance) {
-  CHECK(speech_synthesizer_.Get(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/573439945): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(speech_synthesizer_.Get());
 
   SetVoiceFromName(voice.name);
 
