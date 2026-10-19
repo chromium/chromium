@@ -454,7 +454,7 @@ class Profile : public content::BrowserContext {
   }
 
   void ResumeAccessibilityEvents() {
-    DCHECK_GT(accessibility_pause_level_, 0);
+    CHECK_GT(accessibility_pause_level_, 0, base::NotFatalUntil::M162);
     accessibility_pause_level_--;
   }
 

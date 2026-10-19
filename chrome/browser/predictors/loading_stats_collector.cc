@@ -199,7 +199,7 @@ void LoadingStatsCollector::RecordPageRequestSummary(
     recorded_ukm = true;
   }
   if (summary.first_prefetch_initiated) {
-    DCHECK(!summary.prefetch_urls.empty());
+    CHECK(!summary.prefetch_urls.empty(), base::NotFatalUntil::M162);
     builder.SetNavigationStartToFirstSubresourcePrefetchInitiated(
         (summary.first_prefetch_initiated.value() - summary.navigation_started)
             .InMilliseconds());

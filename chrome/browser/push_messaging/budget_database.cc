@@ -217,6 +217,7 @@ void BudgetDatabase::SpendBudgetAfterSync(const url::Origin& origin,
   }
 
   // There should have been enough budget to cover the entire bill.
+  // CHECK-exclusion: Floating-point equality on `bill` can fail due to rounding.
   DCHECK_EQ(0, bill);
 
   // Now that the cache is updated, write the data to the database.

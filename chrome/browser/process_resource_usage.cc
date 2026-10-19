@@ -21,11 +21,11 @@ ProcessResourceUsage::ProcessResourceUsage(
 }
 
 ProcessResourceUsage::~ProcessResourceUsage() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
 }
 
 void ProcessResourceUsage::RunPendingRefreshCallbacks() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   auto task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   base::circular_deque<base::OnceClosure> callbacks;
   std::swap(callbacks, refresh_callbacks_);
@@ -34,7 +34,7 @@ void ProcessResourceUsage::RunPendingRefreshCallbacks() {
 }
 
 void ProcessResourceUsage::Refresh(base::OnceClosure callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   if (!service_ || !service_.is_connected()) {
     if (!callback.is_null())
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -54,21 +54,21 @@ void ProcessResourceUsage::Refresh(base::OnceClosure callback) {
 
 void ProcessResourceUsage::OnRefreshDone(
     content::mojom::ResourceUsageDataPtr data) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   update_in_progress_ = false;
   stats_ = std::move(data);
   RunPendingRefreshCallbacks();
 }
 
 size_t ProcessResourceUsage::GetV8MemoryAllocated() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   if (stats_ && stats_->reports_v8_stats)
     return stats_->v8_bytes_allocated;
   return 0;
 }
 
 size_t ProcessResourceUsage::GetV8MemoryUsed() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   if (stats_ && stats_->reports_v8_stats)
     return stats_->v8_bytes_used;
   return 0;
@@ -76,14 +76,14 @@ size_t ProcessResourceUsage::GetV8MemoryUsed() const {
 
 blink::WebCacheResourceTypeStats
 ProcessResourceUsage::GetBlinkMemoryCacheStats() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   if (stats_ && stats_->web_cache_stats)
     return stats_->web_cache_stats->To<blink::WebCacheResourceTypeStats>();
   return {};
 }
 
 size_t ProcessResourceUsage::GetCppGCMemoryAllocated() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   if (stats_ && stats_->reports_cppgc_stats) {
     return stats_->cppgc_bytes_allocated;
   }
@@ -91,7 +91,7 @@ size_t ProcessResourceUsage::GetCppGCMemoryAllocated() const {
 }
 
 size_t ProcessResourceUsage::GetCppGCMemoryUsed() const {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M162);
   if (stats_ && stats_->reports_cppgc_stats) {
     return stats_->cppgc_bytes_used;
   }

@@ -43,6 +43,8 @@ AppIdentifier PushMessagingAppIdentifier::FindByAppId(
 
   // Since we now know this is a Push Messaging app_id, check the case hasn't
   // been mangled (crbug.com/40407250).
+  // CHECK-exclusion: Untrusted GCM app_id length/case checks; substr below
+  // would throw std::out_of_range if length check fails non-fatally.
   DCHECK_EQ(push_messaging::kAppIdentifierPrefix,
             app_id.substr(0, push_messaging::kPrefixLength));
   DCHECK_GE(app_id.size(),

@@ -195,7 +195,8 @@ void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
   // classes could probably share a common implementation wrapping
   // sql::MetaTable.
 
-  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
   if (CantAccessDatabase())
     return;
 
@@ -223,7 +224,8 @@ void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
 }
 
 void ResourcePrefetchPredictorTables::LogDatabaseStats() {
-  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
   if (CantAccessDatabase())
     return;
 

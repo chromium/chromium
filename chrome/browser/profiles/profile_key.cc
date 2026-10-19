@@ -25,17 +25,17 @@ ProfileKey* ProfileKey::GetOriginalKey() {
 }
 
 PrefService* ProfileKey::GetPrefs() {
-  DCHECK(prefs_);
+  CHECK(prefs_, base::NotFatalUntil::M162);
   return prefs_;
 }
 
 void ProfileKey::SetPrefs(PrefService* prefs) {
-  DCHECK(!prefs_);
+  CHECK(!prefs_, base::NotFatalUntil::M162);
   prefs_ = prefs;
 }
 
 leveldb_proto::ProtoDatabaseProvider* ProfileKey::GetProtoDatabaseProvider() {
-  DCHECK(db_provider_);
+  CHECK(db_provider_, base::NotFatalUntil::M162);
   return db_provider_;
 }
 
@@ -43,7 +43,8 @@ void ProfileKey::SetProtoDatabaseProvider(
     leveldb_proto::ProtoDatabaseProvider* db_provider) {
   // If started from reduced mode on Android, the db provider is set by
   // both StartupData and ProfileImpl.
-  DCHECK(!db_provider_ || db_provider_ == db_provider);
+  CHECK(!db_provider_ || db_provider_ == db_provider,
+        base::NotFatalUntil::M162);
   db_provider_ = db_provider;
 }
 

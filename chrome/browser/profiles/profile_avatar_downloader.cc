@@ -26,7 +26,7 @@ const char kHighResAvatarDownloadUrlPrefix[] =
 ProfileAvatarDownloader::ProfileAvatarDownloader(size_t icon_index,
                                                  FetchCompleteCallback callback)
     : icon_index_(icon_index), callback_(std::move(callback)) {
-  DCHECK(!callback_.is_null());
+  CHECK(!callback_.is_null(), base::NotFatalUntil::M162);
   GURL url(std::string(kHighResAvatarDownloadUrlPrefix) +
            profiles::GetDefaultAvatarIconFileNameAtIndex(icon_index));
   net::NetworkTrafficAnnotationTag traffic_annotation =

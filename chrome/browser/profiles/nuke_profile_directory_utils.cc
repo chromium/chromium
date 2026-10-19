@@ -63,12 +63,13 @@ ProfileDeletionMap& ProfilesToDelete() {
 }
 
 NukeProfileResult GetNukeProfileResult(size_t retry_count, bool success) {
-  DCHECK_LT(retry_count, kNukeProfileMaxRetryCount);
+  CHECK_LT(retry_count, kNukeProfileMaxRetryCount, base::NotFatalUntil::M162);
   const size_t value =
       retry_count +
       static_cast<size_t>(success ? NukeProfileResult::kSuccessFirstAttempt
                                   : NukeProfileResult::kFailureFirstAttempt);
-  DCHECK_LE(value, static_cast<size_t>(NukeProfileResult::kMaxValue));
+  CHECK_LE(value, static_cast<size_t>(NukeProfileResult::kMaxValue),
+           base::NotFatalUntil::M162);
   return static_cast<NukeProfileResult>(value);
 }
 
@@ -138,8 +139,9 @@ bool IsProfileDirectoryMarkedForDeletion(const base::FilePath& profile_path) {
 }
 
 void CancelProfileDeletion(const base::FilePath& path) {
-  DCHECK(!ProfilesToDelete().contains(path) ||
-         ProfilesToDelete()[path] == ProfileDeletionStage::SCHEDULING);
+  CHECK(!ProfilesToDelete().contains(path) ||
+            ProfilesToDelete()[path] == ProfileDeletionStage::SCHEDULING,
+        base::NotFatalUntil::M162);
   ProfilesToDelete().erase(path);
   ProfileMetrics::LogProfileDeleteUser(ProfileMetrics::DELETE_PROFILE_ABORTED);
 }
@@ -155,8 +157,9 @@ bool ScheduleProfileDirectoryForDeletion(const base::FilePath& path) {
 }
 
 void MarkProfileDirectoryForDeletion(const base::FilePath& path) {
-  DCHECK(!ProfilesToDelete().contains(path) ||
-         ProfilesToDelete()[path] == ProfileDeletionStage::SCHEDULING);
+  CHECK(!ProfilesToDelete().contains(path) ||
+            ProfilesToDelete()[path] == ProfileDeletionStage::SCHEDULING,
+        base::NotFatalUntil::M162);
   ProfilesToDelete()[path] = ProfileDeletionStage::MARKED;
   // Remember that this profile was deleted and files should have been deleted
   // on shutdown. In case of a crash remaining files are removed on next start.

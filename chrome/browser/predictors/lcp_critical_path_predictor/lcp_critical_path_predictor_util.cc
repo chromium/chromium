@@ -343,6 +343,7 @@ class LcppFrequencyStatDataUpdater {
     // Now we have one free space to store a new lcp_script_url.
     // (`SumOfFrequency()` takes time. Hence `DCHECK_LE` is used.)
     // Adds `1e-5` to avoid floating point errors.
+    // CHECK-exclusion: SumOfFrequency() takes time.
     DCHECK_LE(1 + SumOfFrequency(histogram_, other_bucket_frequency_),
               sliding_window_size_ + 1e-5);
 
@@ -1327,7 +1328,7 @@ bool LcppDataMap::LearnLcpp(const std::optional<url::Origin>& initiator_origin,
       lcpp_stat->clear_fetched_font_url_stat();
       data_updated = true;
     }
-    DCHECK(IsValidLcppStat(*lcpp_stat));
+    CHECK(IsValidLcppStat(*lcpp_stat), base::NotFatalUntil::M162);
   }
   if (use_origin_map) {
     // `origin_map` needs always update due to updating the frequency stat.

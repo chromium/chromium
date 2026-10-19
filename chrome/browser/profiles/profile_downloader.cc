@@ -45,7 +45,7 @@ constexpr char kAuthorizationHeader[] = "Bearer %s";
 
 ProfileDownloader::ProfileDownloader(ProfileDownloaderDelegate* delegate)
     : delegate_(delegate), identity_manager_(delegate_->GetIdentityManager()) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   identity_manager_observation_.Observe(identity_manager_.get());
 }
 
@@ -132,12 +132,13 @@ void ProfileDownloader::StartFetchingOAuth2AccessToken() {
 
 ProfileDownloader::~ProfileDownloader() {
   oauth2_access_token_fetcher_.reset();
-  DCHECK(
-      identity_manager_observation_.IsObservingSource(identity_manager_.get()));
+  CHECK(
+      identity_manager_observation_.IsObservingSource(identity_manager_.get()),
+      base::NotFatalUntil::M162);
 }
 
 void ProfileDownloader::FetchImageData() {
-  DCHECK(account_info_.IsValid());
+  CHECK(account_info_.IsValid(), base::NotFatalUntil::M162);
 
   if (!delegate_->NeedsProfilePicture()) {
     VLOG(1) << "Skipping profile picture download";

@@ -48,7 +48,7 @@ base::FilePath GetRelativeProfilePath(const base::FilePath& profile_path) {
   base::FilePath relative_path;
   bool success =
       GetUserDataDir().AppendRelativePath(profile_path, &relative_path);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   return relative_path;
 }
 
@@ -166,7 +166,7 @@ std::string TokenizeProfileKey(ProfileKey* profile_key) {
 
   // TODO(crbug.com/40753680): Does not currently support tokenization of
   // OTR ProfileKeys. They don't hold a OTRProfileID value.
-  DCHECK(!profile_key->IsOffTheRecord());
+  CHECK(!profile_key->IsOffTheRecord(), base::NotFatalUntil::M162);
 
   ProfileToken token_proto;
   token_proto.set_relative_path(

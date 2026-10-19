@@ -122,8 +122,9 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
   }
   ProfileMetrics::LogProfileDeleteUser(deletion_source);
 
-  DCHECK(profiles::IsMultipleProfilesEnabled());
-  DCHECK(!IsProfileDirectoryMarkedForDeletion(profile_dir));
+  CHECK(profiles::IsMultipleProfilesEnabled(), base::NotFatalUntil::M162);
+  CHECK(!IsProfileDirectoryMarkedForDeletion(profile_dir),
+        base::NotFatalUntil::M162);
 
   // When this is called all browser windows may be about to be destroyed
   // (but still exist in BrowserList), which means shutdown may be about to
@@ -141,7 +142,7 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
         DownloadCoreServiceFactory::GetForBrowserContext(profile);
     service->CancelDownloads(
         DownloadCoreService::CancelDownloadsTrigger::kProfileDeletion);
-    DCHECK_EQ(0, service->BlockingShutdownCount());
+    CHECK_EQ(0, service->BlockingShutdownCount(), base::NotFatalUntil::M162);
 
     // Take a ScopedProfileKeepAlive for the the deletion process to avoid the
     // profile from being randomly unloaded.
@@ -171,11 +172,13 @@ void DeleteProfileHelper::MaybeScheduleProfileForDeletion(
 void DeleteProfileHelper::ScheduleEphemeralProfileForDeletion(
     const base::FilePath& profile_dir,
     std::unique_ptr<ScopedProfileKeepAlive> keep_alive) {
-  DCHECK(IsRegisteredAsEphemeral(
-      &profile_manager_->GetProfileAttributesStorage(), profile_dir));
+  CHECK(IsRegisteredAsEphemeral(
+            &profile_manager_->GetProfileAttributesStorage(), profile_dir),
+        base::NotFatalUntil::M162);
   auto* browser_collection = ProfileBrowserCollection::GetForProfile(
       profile_manager_->GetProfileByPath(profile_dir));
-  DCHECK_EQ(0u, browser_collection ? browser_collection->GetSize() : 0u);
+  CHECK_EQ(0u, browser_collection ? browser_collection->GetSize() : 0u,
+           base::NotFatalUntil::M162);
   std::optional<base::FilePath> new_active_profile_dir =
       profile_manager_->FindLastActiveProfile(base::BindRepeating(
           [](const base::FilePath& profile_dir, ProfileAttributesEntry* entry) {
@@ -185,7 +188,7 @@ void DeleteProfileHelper::ScheduleEphemeralProfileForDeletion(
   if (!new_active_profile_dir.has_value())
     new_active_profile_dir =
         profile_manager_->GenerateNextProfileDirectoryPath();
-  DCHECK(!new_active_profile_dir->empty());
+  CHECK(!new_active_profile_dir->empty(), base::NotFatalUntil::M162);
   RemoveFromLastActiveProfilesPrefList(profile_dir);
 
   FinishDeletingProfile(profile_dir, new_active_profile_dir.value(),
@@ -226,7 +229,8 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
   }
 
   for (const base::FilePath& profile_path : profiles_to_delete) {
-    DCHECK(!profile_manager_->GetProfileByPath(profile_path));
+    CHECK(!profile_manager_->GetProfileByPath(profile_path),
+          base::NotFatalUntil::M162);
     base::ThreadPool::PostTask(
         FROM_HERE,
         {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -246,7 +250,7 @@ void DeleteProfileHelper::CleanUpEphemeralProfiles() {
 
 void DeleteProfileHelper::CleanUpDeletedProfiles() {
   PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M162);
 
   // Clone the list because calling `ProfileCleanedUp()` inside the loop will
   // modify the preference, which would invalidate an iterator over the
@@ -265,7 +269,8 @@ void DeleteProfileHelper::CleanUpDeletedProfiles() {
     }
 
     if (is_valid_path) {
-      DCHECK(!profile_manager_->GetProfileByPath(*profile_path));
+      CHECK(!profile_manager_->GetProfileByPath(*profile_path),
+            base::NotFatalUntil::M162);
       base::ThreadPool::PostTask(
           FROM_HERE,
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -297,7 +302,7 @@ void DeleteProfileHelper::EnsureActiveProfileExistsBeforeDeletion(
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     ProfileLoadedCallback callback,
     const base::FilePath& profile_dir) {
-  DCHECK(keep_alive);
+  CHECK(keep_alive, base::NotFatalUntil::M162);
   // In case we delete non-active profile and current profile is valid, proceed.
   const base::FilePath last_used_profile_path =
       profile_manager_->GetLastUsedProfileDir();
@@ -451,8 +456,8 @@ void DeleteProfileHelper::OnNewActiveProfileInitialized(
     std::unique_ptr<ScopedKeepAlive> keep_alive,
     std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
     Profile* loaded_profile) {
-  DCHECK(keep_alive);
-  DCHECK(loaded_profile);
+  CHECK(keep_alive, base::NotFatalUntil::M162);
+  CHECK(loaded_profile, base::NotFatalUntil::M162);
   if (IsProfileDirectoryMarkedForDeletion(new_active_profile_path)) {
     // If the profile we tried to load as the next active profile has been
     // deleted, then retry deleting this profile to redo the logic to load

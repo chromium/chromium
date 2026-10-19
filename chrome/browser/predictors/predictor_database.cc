@@ -125,7 +125,8 @@ PredictorDatabaseInternal::~PredictorDatabaseInternal() {
 }
 
 void PredictorDatabaseInternal::Initialize() {
-  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(db_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
   if (autocomplete_table_->IsCancelled() ||
       resource_prefetch_tables_->IsCancelled()) {
     return;
@@ -147,15 +148,17 @@ void PredictorDatabaseInternal::Initialize() {
 }
 
 void PredictorDatabaseInternal::SetCancelled() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
+  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+            !BrowserThread::IsThreadInitialized(BrowserThread::UI),
+        base::NotFatalUntil::M162);
 
   autocomplete_table_->SetCancelled();
   resource_prefetch_tables_->SetCancelled();
 }
 
 void PredictorDatabaseInternal::LogDatabaseStats() {
-  DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
+  CHECK(db_task_runner_->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M162);
 
   autocomplete_table_->LogDatabaseStats();
   if (is_loading_predictor_enabled_) {

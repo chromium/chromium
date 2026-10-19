@@ -120,7 +120,7 @@ AutocompleteActionPredictor::AutocompleteActionPredictor(Profile* profile)
   if (profile_->IsOffTheRecord()) {
     main_profile_predictor_ = AutocompleteActionPredictorFactory::GetForProfile(
         profile_->GetOriginalProfile());
-    DCHECK(main_profile_predictor_);
+    CHECK(main_profile_predictor_, base::NotFatalUntil::M162);
     main_profile_predictor_->incognito_predictor_ = this;
     if (main_profile_predictor_->initialized_) {
       CopyFromMainProfile();
@@ -208,7 +208,7 @@ AutocompleteActionPredictor::TakeTransitionalMatches() {
 void AutocompleteActionPredictor::StartPrerendering(
     const GURL& url,
     content::WebContents& web_contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Helpers to create content::PreloadingAttempt.
   auto* preloading_data =
@@ -250,7 +250,7 @@ AutocompleteActionPredictor::RecommendAction(
     const AutocompleteMatch& match,
     content::WebContents* web_contents) const {
   const double confidence = CalculateConfidence(user_text, match);
-  DCHECK(confidence >= 0.0 && confidence <= 1.0);
+  CHECK(confidence >= 0.0 && confidence <= 1.0, base::NotFatalUntil::M162);
 
   // Map the confidence to an action.
   Action action = DecideActionByConfidence(confidence);
@@ -359,11 +359,14 @@ void AutocompleteActionPredictor::UpdateDatabaseFromTransitionalMatchesInternal(
   std::vector<AutocompleteActionPredictorTable::Row> rows_to_add;
   std::vector<AutocompleteActionPredictorTable::Row> rows_to_update;
   for (const TransitionalMatch& transitional_match : transitional_matches) {
-    DCHECK_GE(transitional_match.user_text.length(), kMinimumUserTextLength);
-    DCHECK_LE(transitional_match.user_text.length(), kMaximumStringLength);
+    CHECK_GE(transitional_match.user_text.length(), kMinimumUserTextLength,
+             base::NotFatalUntil::M162);
+    CHECK_LE(transitional_match.user_text.length(), kMaximumStringLength,
+             base::NotFatalUntil::M162);
     // Add entries to the database for those matches.
     for (const GURL& url : transitional_match.urls) {
-      DCHECK_LE(url.spec().length(), kMaximumStringLength);
+      CHECK_LE(url.spec().length(), kMaximumStringLength,
+               base::NotFatalUntil::M162);
 
       const DBCacheKey key = {transitional_match.user_text, url};
       const bool is_hit = !opened_url.is_empty() && (url == opened_url);

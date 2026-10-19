@@ -80,7 +80,7 @@ AvatarMenu::AvatarMenu(ProfileAttributesStorage* profile_storage,
       profile_storage_(profile_storage->AsWeakPtr()),
       observer_(observer),
       browser_(browser) {
-  DCHECK(profile_storage_);
+  CHECK(profile_storage_, base::NotFatalUntil::M162);
   // Don't DCHECK(browser_) so that unit tests can reuse this ctor.
 
   ActiveBrowserChanged(browser_);
@@ -111,8 +111,9 @@ AvatarMenu::Item::Item(const Item& other) = default;
 AvatarMenu::Item::~Item() = default;
 
 void AvatarMenu::SwitchToProfile(size_t index, bool always_create) {
-  DCHECK(profiles::IsMultipleProfilesEnabled() ||
-         index == GetActiveProfileIndex());
+  CHECK(
+      profiles::IsMultipleProfilesEnabled() || index == GetActiveProfileIndex(),
+      base::NotFatalUntil::M162);
   const Item& item = GetItemAt(index);
 
   if (item.signin_required) {
@@ -141,7 +142,7 @@ void AvatarMenu::EditProfile(size_t index) {
 
   Profile* profile =
       g_browser_process->profile_manager()->GetProfileByPath(item.profile_path);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   chrome::ShowSettingsSubPageForProfile(profile, chrome::kManageProfileSubPage);
 }
@@ -161,7 +162,7 @@ const AvatarMenu::Item& AvatarMenu::GetItemAt(size_t index) const {
 size_t AvatarMenu::GetIndexOfItemWithProfilePathForTesting(
     const base::FilePath& path) const {
   std::optional<size_t> index = profile_list_->MenuIndexFromProfilePath(path);
-  DCHECK(index.has_value());
+  CHECK(index.has_value(), base::NotFatalUntil::M162);
   return index.value();
 }
 
@@ -194,8 +195,8 @@ std::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
   std::optional<size_t> index =
       profile_list_->MenuIndexFromProfilePath(active_profile->GetPath());
 
-  DCHECK(!index.has_value() ||
-         index.value() < profile_list_->GetNumberOfItems());
+  CHECK(!index.has_value() || index.value() < profile_list_->GetNumberOfItems(),
+        base::NotFatalUntil::M162);
   return index;
 }
 
@@ -213,7 +214,7 @@ void AvatarMenu::ActiveBrowserChanged(BrowserWindowInterface* browser) {
 
 bool AvatarMenu::ShouldShowAddNewProfileLink() const {
   PrefService* service = g_browser_process->local_state();
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M162);
   return service->GetBoolean(prefs::kBrowserAddPersonEnabled);
 }
 

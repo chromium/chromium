@@ -72,7 +72,7 @@ PrewarmHttpDiskCacheManager::PrewarmHttpDiskCacheManager(
           blink::features::kHttpDiskCachePrewarmingUseReadAndDiscardBodyOption
               .Get()),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   TRACE_EVENT("loading",
               "PrewarmHttpDiskCacheManager::PrewarmHttpDiskCacheManager",
               perfetto::Flow::FromPointer(this));
@@ -88,7 +88,7 @@ void PrewarmHttpDiskCacheManager::MaybePrewarmResources(
     const std::optional<url::Origin>& initiator_origin,
     const GURL& top_frame_main_resource_url,
     const std::vector<GURL>& top_frame_subresource_urls) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   TRACE_EVENT(
       "loading",
       "PrewarmHttpDiskCacheManager::MaybePrewarmMainResourceAndSubresources",
@@ -183,7 +183,7 @@ auto PrewarmHttpDiskCacheManager::PrewarmJob::operator<=>(
 
 void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
     const PrewarmJob& prewarm_job) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(prewarm_job.url.is_valid() && prewarm_job.url.SchemeIsHTTPOrHTTPS());
   TRACE_EVENT("loading", "PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob",
               perfetto::Flow::FromPointer(this), "url", prewarm_job.url);
@@ -203,7 +203,7 @@ void PrewarmHttpDiskCacheManager::MaybeAddPrewarmJob(
 }
 
 void PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (queued_jobs_.empty()) {
     return;
   }
@@ -266,7 +266,7 @@ void PrewarmHttpDiskCacheManager::MaybeProcessNextQueuedJob() {
 
 void PrewarmHttpDiskCacheManager::OnDataReceived(std::string_view string_piece,
                                                  base::OnceClosure resume) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   TRACE_EVENT("loading", "PrewarmHttpDiskCacheManager::OnDataReceived",
               perfetto::Flow::FromPointer(this), "received_data_size",
               string_piece.size());
@@ -275,7 +275,7 @@ void PrewarmHttpDiskCacheManager::OnDataReceived(std::string_view string_piece,
 }
 
 void PrewarmHttpDiskCacheManager::OnComplete(bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   TRACE_EVENT("loading", "PrewarmHttpDiskCacheManager::OnComplete",
               perfetto::Flow::FromPointer(this), "success", success);
   CHECK(!use_read_and_discard_body_option_);
@@ -290,7 +290,7 @@ void PrewarmHttpDiskCacheManager::OnRetry(base::OnceClosure start_retry) {
 
 void PrewarmHttpDiskCacheManager::OnHeadersOnly(
     scoped_refptr<net::HttpResponseHeaders> headers) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   TRACE_EVENT("loading", "PrewarmHttpDiskCacheManager::OnHeadersOnly",
               perfetto::Flow::FromPointer(this));
   CHECK(use_read_and_discard_body_option_);

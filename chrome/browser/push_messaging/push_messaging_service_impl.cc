@@ -146,7 +146,7 @@ void RecordUnsubscribeReason(blink::mojom::PushUnregistrationReason reason) {
 void UnregisterCallbackToClosure(
     base::OnceClosure closure,
     blink::mojom::PushUnregistrationStatus status) {
-  DCHECK(closure);
+  CHECK(closure, base::NotFatalUntil::M162);
   std::move(closure).Run();
 }
 
@@ -270,7 +270,7 @@ PushMessagingServiceImpl::PushMessagingServiceImpl(
       pending_push_subscription_count_(0),
       notification_manager_(profile),
       database_manager_(database_manager) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   HostContentSettingsMapFactory::GetForProfile(profile_)->AddObserver(this);
 
   on_app_terminating_subscription_ =
@@ -290,7 +290,7 @@ PushMessagingServiceImpl::~PushMessagingServiceImpl() = default;
 
 void PushMessagingServiceImpl::IncreasePushSubscriptionCount(int add,
                                                              bool is_pending) {
-  DCHECK_GT(add, 0);
+  CHECK_GT(add, 0, base::NotFatalUntil::M162);
   if (push_subscription_count_ + pending_push_subscription_count_ == 0)
     GetGCMDriver()->AddAppHandler(push_messaging::kAppIdentifierPrefix, this);
 
@@ -302,13 +302,13 @@ void PushMessagingServiceImpl::IncreasePushSubscriptionCount(int add,
 
 void PushMessagingServiceImpl::DecreasePushSubscriptionCount(int subtract,
                                                              bool was_pending) {
-  DCHECK_GT(subtract, 0);
+  CHECK_GT(subtract, 0, base::NotFatalUntil::M162);
   if (was_pending) {
     pending_push_subscription_count_ -= subtract;
-    DCHECK_GE(pending_push_subscription_count_, 0);
+    CHECK_GE(pending_push_subscription_count_, 0, base::NotFatalUntil::M162);
   } else {
     push_subscription_count_ -= subtract;
-    DCHECK_GE(push_subscription_count_, 0);
+    CHECK_GE(push_subscription_count_, 0, base::NotFatalUntil::M162);
   }
 
   if (push_subscription_count_ + pending_push_subscription_count_ == 0)
@@ -945,7 +945,7 @@ JNI_PushMessagingServiceBridge_VerifyAndRevokeNotificationsPermission(
     const std::string& profile_id,
     bool app_level_notifications_enabled) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M162);
 
   profile_manager->LoadProfile(
       NotificationPlatformBridge::GetProfileBaseNameFromProfileId(profile_id),
@@ -1052,7 +1052,7 @@ void PushMessagingServiceImpl::DoSubscribe(
           features::kPushSubscriptionWithExpirationTime)) {
     app_identifier.set_expiration_time(
         base::Time::Now() + kPushSubscriptionExpirationPeriodTimeDelta);
-    DCHECK(app_identifier.expiration_time());
+    CHECK(app_identifier.expiration_time(), base::NotFatalUntil::M162);
     ttl = kPushSubscriptionExpirationPeriodTimeDelta;
   }
 
@@ -1494,7 +1494,7 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  DCHECK(primary_pattern.IsValid());
+  CHECK(primary_pattern.IsValid(), base::NotFatalUntil::M162);
   if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }

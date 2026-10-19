@@ -28,7 +28,7 @@
 
 // static
 bool ProfileIOData::IsHandledProtocol(std::string_view scheme) {
-  DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
+  CHECK_EQ(scheme, base::ToLowerASCII(scheme), base::NotFatalUntil::M162);
 
   constexpr auto kProtocolList = base::MakeFixedFlatSet<std::string_view>({
       url::kHttpScheme,

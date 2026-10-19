@@ -268,7 +268,7 @@ std::optional<std::string> GetMGSUserClientId() {
   // The policy broker is null if the active user does not belong to an existing
   // device-local account, which should never be the case when calling this
   // function.
-  DCHECK(policy_broker);
+  CHECK(policy_broker, base::NotFatalUntil::M162);
 
   const enterprise_management::PolicyData* policy_data =
       policy_broker->core()->store()->policy();

@@ -152,7 +152,7 @@ constexpr auto kProfileAvatarIconResources2x = std::to_array<int>({
 // Returns a copied SkBitmap for the given image that can be safely passed to
 // another thread.
 SkBitmap GetSkBitmapCopy(const gfx::Image& image) {
-  DCHECK(!image.IsEmpty());
+  CHECK(!image.IsEmpty(), base::NotFatalUntil::M162);
   const SkBitmap* image_bitmap = image.ToSkBitmap();
   SkBitmap bitmap_copy;
   if (bitmap_copy.tryAllocPixels(image_bitmap->info()))
@@ -252,7 +252,7 @@ void AvatarImageSource::Draw(gfx::Canvas* canvas) {
 
 #if BUILDFLAG(IS_ANDROID)
   // Circular shape is only available on desktop platforms.
-  DCHECK(shape_ != profiles::SHAPE_CIRCLE);
+  CHECK(shape_ != profiles::SHAPE_CIRCLE, base::NotFatalUntil::M162);
 #else
   if (shape_ == profiles::SHAPE_CIRCLE) {
     // Draw the avatar on the bottom center of the canvas; overrides the
@@ -618,7 +618,8 @@ gfx::Image GetSizedAvatarIcon(const gfx::Image& image, int width, int height) {
 }
 
 ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size) {
-  DCHECK(!image.IsImageGenerator());  // Not prepared to handle these.
+  CHECK(!image.IsImageGenerator(),
+        base::NotFatalUntil::M162);  // Not prepared to handle these.
   if (image.Size() == gfx::Size(size, size)) {
     return image;
   }
@@ -641,7 +642,7 @@ gfx::ImageSkia GetAvatarWithDottedRing(
     bool has_padding,
     bool has_background,
     const ui::ColorProvider& color_provider) {
-  DCHECK(!image.IsEmpty());
+  CHECK(!image.IsEmpty(), base::NotFatalUntil::M162);
 
   const AvatarWithDottedRingParams& params =
       has_padding ? kAvatarWithDottedRingParamsWithPadding
@@ -994,7 +995,7 @@ size_t GetSanitizedAvatarIndex(int icon_index) {
 }
 
 bool IsDefaultAvatarIconUrl(std::string_view url, size_t* icon_index) {
-  DCHECK(icon_index);
+  CHECK(icon_index, base::NotFatalUntil::M162);
   if (!base::StartsWith(url, kDefaultUrlPrefix, base::CompareCase::SENSITIVE))
     return false;
 
@@ -1077,7 +1078,7 @@ base::ListValue GetIconsAndLabelsForProfileAvatarSelector(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile_path);
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M162);
 
   bool using_gaia = entry->IsUsingGAIAPicture();
   size_t selected_avatar_idx =
@@ -1138,7 +1139,8 @@ SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap) {
   if ((source_bitmap.width() != kIconScaleFactor * kOldAvatarIconWidth) ||
       (source_bitmap.height() != kIconScaleFactor * kOldAvatarIconHeight)) {
     // It's not an old avatar icon, the image should be square.
-    DCHECK_EQ(source_bitmap.width(), source_bitmap.height());
+    CHECK_EQ(source_bitmap.width(), source_bitmap.height(),
+             base::NotFatalUntil::M162);
     return source_bitmap;
   }
 
@@ -1176,7 +1178,7 @@ SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
       avatar_badge_width, avatar_badge_height);
 
   // Sanity check - avatars shouldn't be taller than they are wide.
-  DCHECK_GE(sk_icon.width(), sk_icon.height());
+  CHECK_GE(sk_icon.width(), sk_icon.height(), base::NotFatalUntil::M162);
 
   // Overlay the avatar on the icon, anchoring it to the bottom-right of the
   // icon on Win 10 and earlier, and the top right on Win 11. Win 11 moved the
@@ -1238,7 +1240,7 @@ gfx::ImageSkia AddLinearGradientRingToAvatar(
     int avatar_size,
     int gap_width,
     int ring_thickness) {
-  DCHECK(!avatar_image.IsEmpty());
+  CHECK(!avatar_image.IsEmpty(), base::NotFatalUntil::M162);
 
   AvatarRingGeometry geom(avatar_size, gap_width, ring_thickness);
 

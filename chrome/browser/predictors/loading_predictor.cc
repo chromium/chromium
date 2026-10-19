@@ -181,7 +181,7 @@ LoadingPredictor::LoadingPredictor(const LoadingPredictorConfig& config,
           config)) {}
 
 LoadingPredictor::~LoadingPredictor() {
-  DCHECK(shutdown_);
+  CHECK(shutdown_, base::NotFatalUntil::M162);
 }
 
 bool LoadingPredictor::PrepareForPageLoad(
@@ -317,7 +317,7 @@ PrefetchManager* LoadingPredictor::prefetch_manager() {
 }
 
 void LoadingPredictor::Shutdown() {
-  DCHECK(!shutdown_);
+  CHECK(!shutdown_, base::NotFatalUntil::M162);
   resource_prefetch_predictor_->Shutdown();
   preconnect_manager_.reset();
   shutdown_ = true;
@@ -417,7 +417,7 @@ void LoadingPredictor::MaybeAddPreconnect(const GURL& url,
 }
 
 void LoadingPredictor::MaybeRemovePreconnect(const GURL& url) {
-  DCHECK(!shutdown_);
+  CHECK(!shutdown_, base::NotFatalUntil::M162);
   if (preconnect_manager_)
     preconnect_manager_->Stop(url);
   if (prefetch_manager_)
@@ -482,7 +482,7 @@ bool LoadingPredictor::HandleHintByOrigin(
 
 void LoadingPredictor::PreconnectInitiated(const GURL& url,
                                            const GURL& preconnect_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (shutdown_)
     return;
 
@@ -496,11 +496,11 @@ void LoadingPredictor::PreconnectInitiated(const GURL& url,
 
 void LoadingPredictor::PreconnectFinished(
     std::unique_ptr<content::PreconnectStats> stats) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (shutdown_)
     return;
 
-  DCHECK(stats);
+  CHECK(stats, base::NotFatalUntil::M162);
   active_hints_.erase(stats->url);
 }
 
@@ -510,7 +510,7 @@ bool LoadingPredictor::IsPreconnectEnabled() {
 
 void LoadingPredictor::PrefetchInitiated(const GURL& url,
                                          const GURL& prefetch_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (shutdown_)
     return;
 
@@ -523,7 +523,7 @@ void LoadingPredictor::PrefetchInitiated(const GURL& url,
 }
 
 void LoadingPredictor::PrefetchFinished(std::unique_ptr<PrefetchStats> stats) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (shutdown_)
     return;
 

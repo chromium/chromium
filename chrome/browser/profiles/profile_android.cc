@@ -61,7 +61,7 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetOriginalProfile(JNIEnv* env,
                                                                   int64_t ptr) {
   Profile* self = reinterpret_cast<Profile*>(ptr);
   Profile* original_profile = self->GetOriginalProfile();
-  DCHECK(original_profile);
+  CHECK(original_profile, base::NotFatalUntil::M162);
   return original_profile->GetJavaObject();
 }
 
@@ -88,7 +88,7 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetOffTheRecordProfile(
   if (!j_create_if_needed && !otr_profile) {
     return nullptr;
   }
-  DCHECK(otr_profile);
+  CHECK(otr_profile, base::NotFatalUntil::M162);
   return otr_profile->GetJavaObject();
 }
 
@@ -101,7 +101,7 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetPrimaryOtrProfile(
   if (!j_create_if_needed && !otr_profile) {
     return nullptr;
   }
-  DCHECK(otr_profile);
+  CHECK(otr_profile, base::NotFatalUntil::M162);
   return otr_profile->GetJavaObject();
 }
 
@@ -125,7 +125,7 @@ static ScopedJavaLocalRef<jobject> JNI_Profile_GetProfileKey(JNIEnv* env,
   Profile* self = reinterpret_cast<Profile*>(ptr);
   ProfileKeyAndroid* profile_key =
       self->GetProfileKey()->GetProfileKeyAndroid();
-  DCHECK(profile_key);
+  CHECK(profile_key, base::NotFatalUntil::M162);
   return profile_key->GetJavaObject();
 }
 

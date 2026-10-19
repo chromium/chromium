@@ -126,9 +126,10 @@ void PushMessagingUnsubscribedEntry::DeleteFromPrefs(Profile* profile) const {
 
 void PushMessagingUnsubscribedEntry::DCheckValid() const {
 #if DCHECK_IS_ON()
-  DCHECK_GE(service_worker_registration_id_, 0);
+  CHECK_GE(service_worker_registration_id_, 0, base::NotFatalUntil::M162);
 
-  DCHECK(origin_.is_valid());
-  DCHECK_EQ(origin_.DeprecatedGetOriginAsURL(), origin_);
+  CHECK(origin_.is_valid(), base::NotFatalUntil::M162);
+  CHECK_EQ(origin_.DeprecatedGetOriginAsURL(), origin_,
+           base::NotFatalUntil::M162);
 #endif  // DCHECK_IS_ON()
 }

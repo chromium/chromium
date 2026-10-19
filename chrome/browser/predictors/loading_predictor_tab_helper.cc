@@ -167,7 +167,8 @@ class ScopedOptimizationHintsReceiveStatusRecorder {
   ScopedOptimizationHintsReceiveStatusRecorder()
       : status_(OptimizationHintsReceiveStatus::kUnknown) {}
   ~ScopedOptimizationHintsReceiveStatusRecorder() {
-    DCHECK_NE(status_, OptimizationHintsReceiveStatus::kUnknown);
+    CHECK_NE(status_, OptimizationHintsReceiveStatus::kUnknown,
+             base::NotFatalUntil::M162);
     UMA_HISTOGRAM_ENUMERATION(
         kLoadingPredictorOptimizationHintsReceiveStatusHistogram, status_);
   }
@@ -298,7 +299,7 @@ void LoadingPredictorTabHelper::PageData::
         content::RenderFrameHost& render_frame_host) {
   auto* navigation_holder =
       NavigationPageDataHolder::GetForNavigationHandle(navigation_handle);
-  DCHECK(navigation_holder);
+  CHECK(navigation_holder, base::NotFatalUntil::M162);
 
   auto* document_holder =
       DocumentPageDataHolder::GetOrCreateForCurrentDocument(&render_frame_host);
@@ -371,7 +372,7 @@ LoadingPredictorTabHelper* LoadingPredictorTabHelper::FromWebContents(
 
 void LoadingPredictorTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   TRACE_EVENT("navigation", "LoadingPredictorTabHelper::DidStartNavigation");
 
   if (!predictor_ || predictor_->WasShutdown()) {
@@ -477,7 +478,7 @@ void LoadingPredictorTabHelper::PrepareForPageLoad(
 
 void LoadingPredictorTabHelper::DidRedirectNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!predictor_)
     return;
 
@@ -529,7 +530,7 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
 
 void LoadingPredictorTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!predictor_)
     return;
 
@@ -560,7 +561,7 @@ void LoadingPredictorTabHelper::ResourceLoadComplete(
     const content::GlobalRequestID& request_id,
     const GURL& original_url,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!predictor_)
     return;
 
@@ -581,7 +582,7 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
     const GURL& url,
     const std::string& mime_type,
     network::mojom::RequestDestination request_destination) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!predictor_)
     return;
 
@@ -604,7 +605,7 @@ void LoadingPredictorTabHelper::DidLoadResourceFromMemoryCache(
 }
 
 void LoadingPredictorTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!predictor_)
     return;
 
@@ -626,7 +627,7 @@ void LoadingPredictorTabHelper::OnOptimizationGuideDecision(
     content::GlobalRenderFrameHostId initiator_frame_id,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!predictor_)
     return;

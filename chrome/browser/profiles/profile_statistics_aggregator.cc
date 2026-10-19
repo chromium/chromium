@@ -65,7 +65,7 @@ void ProfileStatisticsAggregator::AddCounter(
 }
 
 void ProfileStatisticsAggregator::StartAggregator() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   profile_category_stats_.clear();
 
   // Cancel tasks.
@@ -140,13 +140,13 @@ void ProfileStatisticsAggregator::StatisticsCallback(const char* category,
   datum.count = count;
   profile_category_stats_.push_back(datum);
   for (const auto& stats_callback : stats_callbacks_) {
-    DCHECK(stats_callback);
+    CHECK(stats_callback, base::NotFatalUntil::M162);
     stats_callback.Run(profile_category_stats_);
   }
 
   if (profile_category_stats_.size() ==
       profiles::kProfileStatisticsCategories.size()) {
-    DCHECK(done_callback_);
+    CHECK(done_callback_, base::NotFatalUntil::M162);
     std::move(done_callback_).Run();
   }
 }

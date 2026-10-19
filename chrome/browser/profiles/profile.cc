@@ -444,8 +444,9 @@ PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
 
 bool Profile::IsSystemProfile() const {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  DCHECK_NE(profile_metrics::GetBrowserProfileType(this),
-            profile_metrics::BrowserProfileType::kSystem);
+  CHECK_NE(profile_metrics::GetBrowserProfileType(this),
+           profile_metrics::BrowserProfileType::kSystem,
+           base::NotFatalUntil::M162);
   return false;
 #else  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return profile_metrics::GetBrowserProfileType(this) ==
@@ -515,7 +516,7 @@ scoped_refptr<PrefStore> Profile::CreateExtensionPrefStore(
 }
 
 bool ProfileCompare::operator()(Profile* a, Profile* b) const {
-  DCHECK(a && b);
+  CHECK(a && b, base::NotFatalUntil::M162);
   if (a->IsSameOrParent(b))
     return false;
   return a->GetOriginalProfile() < b->GetOriginalProfile();
@@ -533,14 +534,15 @@ void Profile::Wipe() {
 }
 
 void Profile::NotifyOffTheRecordProfileCreated(Profile* off_the_record) {
-  DCHECK_EQ(off_the_record->GetOriginalProfile(), this);
-  DCHECK(off_the_record->IsOffTheRecord());
+  CHECK_EQ(off_the_record->GetOriginalProfile(), this,
+           base::NotFatalUntil::M162);
+  CHECK(off_the_record->IsOffTheRecord(), base::NotFatalUntil::M162);
   for (auto& observer : observers_)
     observer.OnOffTheRecordProfileCreated(off_the_record);
 }
 
 void Profile::NotifyProfileInitializationComplete() {
-  DCHECK(!IsOffTheRecord());
+  CHECK(!IsOffTheRecord(), base::NotFatalUntil::M162);
   for (auto& observer : observers_) {
     observer.OnProfileInitializationComplete(this);
   }
@@ -551,7 +553,7 @@ Profile* Profile::GetPrimaryOTRProfile(bool create_if_needed) {
 }
 
 const Profile::OTRProfileID& Profile::GetOTRProfileID() const {
-  DCHECK(IsOffTheRecord());
+  CHECK(IsOffTheRecord(), base::NotFatalUntil::M162);
   return otr_profile_id_.value();
 }
 
