@@ -5,31 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_SUBSCRIPTION_ELIGIBILITY_MODEL_SUBSCRIPTION_ELIGIBILITY_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SUBSCRIPTION_ELIGIBILITY_MODEL_SUBSCRIPTION_ELIGIBILITY_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace subscription_eligibility {
-class SubscriptionEligibilityService;
-}  // namespace subscription_eligibility
+#import "components/subscription_eligibility/subscription_eligibility_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all SubscriptionEligibilityServices and associates them
 // with ProfileIOS.
 class SubscriptionEligibilityServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SubscriptionEligibilityServiceFactory,
+          subscription_eligibility::SubscriptionEligibilityService> {
  public:
-  static subscription_eligibility::SubscriptionEligibilityService*
-  GetForProfile(ProfileIOS* profile);
-
-  static SubscriptionEligibilityServiceFactory* GetInstance();
+  explicit SubscriptionEligibilityServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SubscriptionEligibilityServiceFactory>;
-
-  SubscriptionEligibilityServiceFactory();
-  ~SubscriptionEligibilityServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
