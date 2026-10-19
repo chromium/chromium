@@ -101,6 +101,8 @@ class GlicActorTaskManager {
 
   GlicActorClientSessionInterface* GetClientSessionForTesting();
 
+  void NotifyActuatingChangedForTesting(bool is_actuating);
+
   // TODO(b/561944228): CriticalActionService needs conversation_id, this is a
   // temporary solution while b/494212836 is in place; remove once fixed.
   void OnConversationRegistered(const std::string& conversation_id);

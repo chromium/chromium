@@ -921,6 +921,10 @@ GlicActorTaskManager::GetClientSessionForTesting() {
   return session_.get();
 }
 
+void GlicActorTaskManager::NotifyActuatingChangedForTesting(bool is_actuating) {
+  actuating_changed_callbacks_.Notify(is_actuating);
+}
+
 base::WeakPtr<GlicActorClientSession> GlicActorClientSession::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

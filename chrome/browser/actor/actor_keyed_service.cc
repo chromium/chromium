@@ -603,11 +603,6 @@ TaskId ActorKeyedService::CreateTaskImpl(
 
   NotifyTaskStateChanged(*active_tasks_[task_id]);
 
-  if (source_info.type == TaskSourceInfo::Client::kExperimentalActor &&
-      source_info.id.has_value()) {
-    RemovePendingTask(*source_info.id);
-  }
-
   return task_id;
 }
 
