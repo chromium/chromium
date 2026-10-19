@@ -149,6 +149,10 @@ export const SearchboxMixin = <T extends Constructor<CrLitElement>>(
       return this.keywordModeManager_;
     }
 
+    override get inKeywordMode(): boolean {
+      return this.keywordModeManager_.isInKeywordMode;
+    }
+
     initialInputScrollHeight: number = 0;
 
     // Tracks the Ctrl key across a keydown sequence so that a Ctrl press

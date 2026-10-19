@@ -26,6 +26,7 @@ class TestSearchboxSelectionMixinElement extends TestElementBase {
     return 'test-searchbox-selection-mixin';
   }
   isAimVisible: boolean = false;
+  inKeywordModeValue: boolean = false;
   showEntrypoint: boolean = false;
   dropdownIsVisible: boolean = true;
   result: AutocompleteResult|null = null;
@@ -39,6 +40,10 @@ class TestSearchboxSelectionMixinElement extends TestElementBase {
 
   override get isAimButtonVisible() {
     return this.isAimVisible;
+  }
+
+  override get inKeywordMode() {
+    return this.inKeywordModeValue;
   }
 
   override get showContextEntrypoint() {
@@ -199,6 +204,34 @@ suite('CrComponentsSearchboxSelectionMixinTest', () => {
         selections[0]);
     assertDeepEquals(
         {line: 1, state: SelectionLineState.kKeywordMode, actionIndex: 0},
+        selections[1]);
+
+    // In keyword mode, kFocusedButtonAim is excluded.
+    element.inKeywordModeValue = true;
+    result = createAutocompleteResultForTesting({
+      matches: [defaultMatch],
+    });
+    selections = element.getAvailableSelections(result);
+    assertEquals(1, selections.length);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+        selections[0]);
+    element.inKeywordModeValue = false;
+
+    // Second match having pedal type excludes kFocusedButtonAim.
+    const secondMatchPedal = createAutocompleteMatch({
+      type: 'pedal',
+    });
+    result = createAutocompleteResultForTesting({
+      matches: [defaultMatch, secondMatchPedal],
+    });
+    selections = element.getAvailableSelections(result);
+    assertEquals(2, selections.length);
+    assertDeepEquals(
+        {line: 0, state: SelectionLineState.kNormal, actionIndex: 0},
+        selections[0]);
+    assertDeepEquals(
+        {line: 1, state: SelectionLineState.kNormal, actionIndex: 0},
         selections[1]);
   });
 
