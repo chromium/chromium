@@ -53,14 +53,35 @@ chromium-metrics-reviews@google.com.
   <variant name=".Video" summary="The context menu was shown for a video"/>
 </variants>
 
+<!-- LINT.IfChange(CreationSource) -->
+
 <variants name="CreationSource">
   <variant name=".AllSources" summary="Aggregated across all sources"/>
-  <variant name=".BrowserInitiated"
-      summary="Triggered by browser action, e.g. shortcut or menu"/>
   <variant name=".DragToNewWindow"
       summary="Triggered by dragging a tab to a new window"/>
+  <variant name=".Launch"
+      summary="Triggered by a browser launch that opens a new window (e.g. an
+               OS/shell shortcut or --new-window handled by an already
+               running browser, or opening a window for another profile or
+               Guest mode). As with other sources, the first window of the
+               browser process is recorded under InitialWebUI.Startup instead"/>
+  <variant name=".MoveTabsToNewWindow"
+      summary="Triggered by moving tab(s) to a new window (e.g. via tab
+               context menu)"/>
+  <variant name=".NewEmptyWindow"
+      summary="Triggered by opening a new window that usually starts with a
+               single New Tab Page (e.g. keyboard shortcut, app menu, macOS
+               Dock click, or a feature such as Glic or background mode
+               opening a window when the profile has none)"/>
   <variant name=".SessionRestore" summary="Triggered by session restore"/>
+  <variant name=".SessionRestoreFallback"
+      summary="Triggered by session restore opening a fallback window when
+               the restored session has no tabbed browser windows; the window
+               restores no tabs and only opens the startup pages or the New
+               Tab Page"/>
 </variants>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/waap/waap_utils.h:NewWindowCreationSource, //chrome/browser/ui/waap/waap_ui_metrics_service.cc:CreationSourceToString) -->
 
 <!-- LINT.IfChange(DefaultBrowserEntrypointType) -->
 

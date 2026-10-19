@@ -362,8 +362,8 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
         CreateBrowserWindow(std::move(params));
     if (auto* manager =
             InitialWebUIWindowMetricsManager::From(browser_window)) {
-      manager->SetWindowCreationInfo(
-          waap::NewWindowCreationSource::kBrowserInitiated, now);
+      manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kLaunch,
+                                     now);
     }
     browser = browser_window;
   }

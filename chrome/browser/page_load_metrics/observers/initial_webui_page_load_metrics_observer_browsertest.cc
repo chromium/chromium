@@ -764,8 +764,8 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIPageLoadMetricsObserverBrowserTest,
   auto* manager = InitialWebUIWindowMetricsManager::From(new_browser);
   ASSERT_TRUE(manager);
   manager->SkipStartupForTesting();
-  manager->SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, base::TimeTicks::Now());
+  manager->SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                 base::TimeTicks::Now());
 
   // Define expected metrics
   const std::string first_paint_metric =

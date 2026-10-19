@@ -93,6 +93,10 @@ class InitialWebUIWindowMetricsManager {
     return &unpainted_10s_timer_;
   }
 
+  waap::NewWindowCreationSource GetCreationSourceForTesting() const {
+    return creation_source_;
+  }
+
  private:
   enum class UnpaintedTerminationReason {
     kWindowClosed,

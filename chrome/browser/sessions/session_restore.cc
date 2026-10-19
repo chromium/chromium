@@ -581,7 +581,7 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
       browser = CreateBrowserWindow(BrowserWindowCreateParams(profile_, false));
       if (auto* manager = InitialWebUIWindowMetricsManager::From(browser)) {
         manager->SetWindowCreationInfo(
-            waap::NewWindowCreationSource::kBrowserInitiated, now);
+            waap::NewWindowCreationSource::kSessionRestoreFallback, now);
       }
       if (startup_tabs_.empty() ||
           (startup_tabs_.size() == 1 && whats_new::IsEnabled() &&

@@ -30,19 +30,28 @@ bool g_is_browser_window_first_paint_recorded = false;
 bool g_is_first_paint_recorded = false;
 bool g_is_first_contentful_paint_recorded = false;
 
+// Returns the `CreationSource` histogram variant for `source`.
+// LINT.IfChange(CreationSourceToString)
 std::string_view CreationSourceToString(waap::NewWindowCreationSource source) {
   switch (source) {
     case waap::NewWindowCreationSource::kSessionRestore:
       return ".SessionRestore";
+    case waap::NewWindowCreationSource::kSessionRestoreFallback:
+      return ".SessionRestoreFallback";
     case waap::NewWindowCreationSource::kDragToNewWindow:
       return ".DragToNewWindow";
-    case waap::NewWindowCreationSource::kBrowserInitiated:
-      return ".BrowserInitiated";
+    case waap::NewWindowCreationSource::kNewEmptyWindow:
+      return ".NewEmptyWindow";
+    case waap::NewWindowCreationSource::kMoveTabsToNewWindow:
+      return ".MoveTabsToNewWindow";
+    case waap::NewWindowCreationSource::kLaunch:
+      return ".Launch";
     case waap::NewWindowCreationSource::kUnknown:
       NOTREACHED();
   }
   NOTREACHED();
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ui/histograms.xml:CreationSource)
 
 std::string_view ReloadButtonInputTypeToString(
     WaapUIMetricsRecorder::ReloadButtonInputType type) {

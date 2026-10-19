@@ -6,6 +6,8 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -26,6 +29,8 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -71,7 +76,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace waap {
 namespace {
@@ -590,8 +597,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
     manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kBrowserInitiated,
-        base::TimeTicks::Now());
+        waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
 
     base::TimeTicks t1 = base::TimeTicks::Now();
     manager->OnBrowserWindowFirstPresentation(t1);
@@ -606,9 +612,85 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
       "BrowserWindowToReloadButton.FirstPaintGap2",
       1);
   histogram_tester.ExpectTotalCount(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithExistingWindow."
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithExistingWindow."
       "BrowserWindowToReloadButton.FirstPaintGap2",
       1);
+}
+
+// Verifies the `NewWindowCreationSource` that each window creation entry point
+// assigns to the window it creates.
+class InitialWebUIWindowCreationSourceBrowserTest
+    : public InitialWebUIBrowserTestBase {
+ protected:
+  static waap::NewWindowCreationSource GetCreationSource(
+      BrowserWindowInterface* browser) {
+    auto* manager = InitialWebUIWindowMetricsManager::From(browser);
+    CHECK(manager);
+    return manager->GetCreationSourceForTesting();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
+                       NewEmptyWindow) {
+  chrome::NewEmptyWindow(browser()->GetProfile(),
+                         /*should_trigger_session_restore=*/false);
+
+  BrowserWindowInterface* const new_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(GetCreationSource(new_browser),
+            waap::NewWindowCreationSource::kNewEmptyWindow);
+}
+
+IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
+                       MoveTabsToNewWindow) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  chrome::MoveTabsToNewWindow(browser(), {1});
+
+  BrowserWindowInterface* const new_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(GetCreationSource(new_browser),
+            waap::NewWindowCreationSource::kMoveTabsToNewWindow);
+}
+
+// Non-process-startup browser launches don't happen on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest, Launch) {
+  // Simulate a launch handled by the already running browser process, e.g.
+  // from an OS shortcut.
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  StartupBrowserCreatorImpl launch(base::FilePath(), command_line,
+                                   chrome::startup::IsFirstRun::kNo);
+  launch.Launch(browser()->GetProfile(), chrome::startup::IsProcessStartup::kNo,
+                /*restore_tabbed_browser=*/true);
+
+  BrowserWindowInterface* const new_browser =
+      ui_test_utils::GetBrowserNotInSet({browser()});
+  ASSERT_TRUE(new_browser);
+  EXPECT_EQ(GetCreationSource(new_browser),
+            waap::NewWindowCreationSource::kLaunch);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(InitialWebUIWindowCreationSourceBrowserTest,
+                       SessionRestoreFallback) {
+  // Nothing has been saved for this profile yet, so the restore finds no
+  // tabbed window and opens a fallback window instead.
+  BrowserWindowInterface* const new_browser = SessionRestore::RestoreSession(
+      browser()->GetProfile(), /*browser=*/nullptr,
+      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER |
+          SessionRestore::ALWAYS_CREATE_TABBED_BROWSER,
+      /*startup_tabs=*/{});
+  ASSERT_TRUE(new_browser);
+  ASSERT_NE(new_browser, browser());
+  EXPECT_EQ(GetCreationSource(new_browser),
+            waap::NewWindowCreationSource::kSessionRestoreFallback);
 }
 
 // TODO(crbug.com/490810407): Verify that `NavigationTimeline` UKM is recorded.
@@ -868,8 +950,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUISurfaceSyncBrowserTest,
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
     manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kBrowserInitiated,
-        base::TimeTicks::Now());
+        waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
   }
 
   AddBlankTabAndShow(new_browser);
@@ -910,8 +991,7 @@ IN_PROC_BROWSER_TEST_F(InitialWebUIMinimizedWindowBrowserTest,
   if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
     manager->SkipStartupForTesting();
     manager->SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kBrowserInitiated,
-        base::TimeTicks::Now());
+        waap::NewWindowCreationSource::kNewEmptyWindow, base::TimeTicks::Now());
   }
 
   // Show the window which should be shown minimized, and verify it.

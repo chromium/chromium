@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
@@ -162,22 +163,41 @@ TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstPaint) {
       WaapUIMetricsServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
 
-  base::HistogramTester histogram_tester;
   const auto start_ticks = base::TimeTicks::Now();
 
-  // Test BrowserInitiated
-  service->OnNewWindowReloadButtonFirstPaint(
-      waap::NewWindowCreationSource::kBrowserInitiated,
-      /*with_existing_window=*/false, start_ticks, start_ticks + kTestLatency);
+  // Every source should record both the aggregated metric and the metric
+  // sliced by its `CreationSource` variant.
+  const struct {
+    waap::NewWindowCreationSource source;
+    const char* variant;
+  } kTestCases[] = {
+      {waap::NewWindowCreationSource::kNewEmptyWindow, "NewEmptyWindow"},
+      {waap::NewWindowCreationSource::kMoveTabsToNewWindow,
+       "MoveTabsToNewWindow"},
+      {waap::NewWindowCreationSource::kLaunch, "Launch"},
+      {waap::NewWindowCreationSource::kDragToNewWindow, "DragToNewWindow"},
+      {waap::NewWindowCreationSource::kSessionRestore, "SessionRestore"},
+      {waap::NewWindowCreationSource::kSessionRestoreFallback,
+       "SessionRestoreFallback"},
+  };
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.variant);
+    base::HistogramTester histogram_tester;
 
-  histogram_tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.ReloadButton."
-      "FirstPaint.FromConstructor2",
-      kTestLatency, 1);
-  histogram_tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
-      "ReloadButton.FirstPaint.FromConstructor2",
-      kTestLatency, 1);
+    service->OnNewWindowReloadButtonFirstPaint(
+        test_case.source, /*with_existing_window=*/false, start_ticks,
+        start_ticks + kTestLatency);
+
+    histogram_tester.ExpectUniqueTimeSample(
+        "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.ReloadButton."
+        "FirstPaint.FromConstructor2",
+        kTestLatency, 1);
+    histogram_tester.ExpectUniqueTimeSample(
+        base::StrCat({"InitialWebUI.NewWindow.", test_case.variant,
+                      ".WithoutExistingWindow.ReloadButton.FirstPaint."
+                      "FromConstructor2"}),
+        kTestLatency, 1);
+  }
 }
 
 TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstContentfulPaint) {
@@ -188,9 +208,9 @@ TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstContentfulPaint) {
   base::HistogramTester histogram_tester;
   const auto start_ticks = base::TimeTicks::Now();
 
-  // Test BrowserInitiated
+  // Test NewEmptyWindow
   service->OnNewWindowReloadButtonFirstContentfulPaint(
-      waap::NewWindowCreationSource::kBrowserInitiated,
+      waap::NewWindowCreationSource::kNewEmptyWindow,
       /*with_existing_window=*/false, start_ticks, start_ticks + kTestLatency);
 
   histogram_tester.ExpectUniqueTimeSample(
@@ -198,7 +218,7 @@ TEST_F(WaapUIMetricsServiceTest, OnNewWindowReloadButtonFirstContentfulPaint) {
       "FirstContentfulPaint.FromConstructor2",
       kTestLatency, 1);
   histogram_tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "ReloadButton.FirstContentfulPaint.FromConstructor2",
       kTestLatency, 1);
 }

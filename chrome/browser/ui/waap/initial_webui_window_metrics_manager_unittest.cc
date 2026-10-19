@@ -82,15 +82,15 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
        OnBrowserWindowFirstPresentationForNewWindow) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                start_time);
   base::HistogramTester tester;
   tester.ExpectUniqueTimeSample(
       "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow.BrowserWindow."
       "FirstPaint.FromConstructor2",
       kTestLatency, 0);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "BrowserWindow.FirstPaint.FromConstructor2",
       kTestLatency, 0);
 
@@ -104,7 +104,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "FirstPaint.FromConstructor2",
       kTestLatency, 1);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "BrowserWindow.FirstPaint.FromConstructor2",
       kTestLatency, 1);
 }
@@ -112,8 +112,8 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
 TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                start_time);
   manager.SkipStartupForTesting();
 
   base::HistogramTester tester;
@@ -139,7 +139,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
       "BrowserWindowToReloadButton.FirstPaintGap2",
       webui_delay, 1);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "BrowserWindowToReloadButton.FirstPaintGap2",
       webui_delay, 1);
 }
@@ -147,8 +147,8 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
 TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                start_time);
   manager.SkipStartupForTesting();
 
   base::HistogramTester tester;
@@ -178,7 +178,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsShowRequestedToFirstPaint) {
       "ShowRequestedToFirstPaint2",
       expected_delta, 1);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "BrowserWindow."
       "ShowRequestedToFirstPaint2",
       expected_delta, 1);
@@ -188,8 +188,8 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
        ShowRequestedToFirstPaintIsIdempotent) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                start_time);
   manager.SkipStartupForTesting();
 
   base::HistogramTester tester;
@@ -254,7 +254,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
     const base::TimeTicks start_time2 = base::TimeTicks::Now();
     InitialWebUIWindowMetricsManager new_window_manager(&browser_window_);
     new_window_manager.SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kBrowserInitiated, start_time2);
+        waap::NewWindowCreationSource::kNewEmptyWindow, start_time2);
 
     // Simulate presentation of native window.
     base::TimeTicks browser_window_time2 = start_time2 + kTestLatency;
@@ -284,7 +284,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   {
     InitialWebUIWindowMetricsManager manager(&browser_window_);
     manager.SetWindowCreationInfo(
-        waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+        waap::NewWindowCreationSource::kNewEmptyWindow, start_time);
     manager.SkipStartupForTesting();
 
     // Simulate show request.
@@ -303,7 +303,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
       "ClosedBeforeFirstPaint2",
       base::Milliseconds(50), 1);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "InitialWebUI.NewWindow.NewEmptyWindow.WithoutExistingWindow."
       "BrowserWindow.ClosedBeforeFirstPaint2",
       base::Milliseconds(50), 1);
 }
@@ -559,8 +559,8 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, IgnoresNullPresentationTimestamp) {
   base::HistogramTester tester;
 
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                start_time);
   manager.SkipStartupForTesting();
 
   // Null timestamp presentation is ignored and does not start the 10s timer.
@@ -679,8 +679,8 @@ TEST_P(InitialWebUIWindowMetricsManagerSurfaceSyncTest,
   InitialWebUIWindowMetricsManager::ResetForTesting();
   const base::TimeTicks start_time = base::TimeTicks::Now();
   InitialWebUIWindowMetricsManager manager(&browser_window_);
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, start_time);
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                start_time);
   manager.SkipStartupForTesting();
   base::HistogramTester tester;
 

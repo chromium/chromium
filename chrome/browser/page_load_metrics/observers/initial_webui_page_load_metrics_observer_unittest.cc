@@ -382,8 +382,8 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
 
   InitialWebUIWindowMetricsManager manager(&mock_browser);
   manager.SkipStartupForTesting();
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, base::TimeTicks::Now());
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                base::TimeTicks::Now());
 
   // Associate the WebContents with the BrowserWindowInterface before FCP
   webui::SetBrowserWindowInterface(web_contents(), &mock_browser);
@@ -425,8 +425,8 @@ TEST_F(InitialWebUIPageLoadMetricsObserverTest,
 
   InitialWebUIWindowMetricsManager manager(&mock_browser);
   manager.SkipStartupForTesting();
-  manager.SetWindowCreationInfo(
-      waap::NewWindowCreationSource::kBrowserInitiated, base::TimeTicks::Now());
+  manager.SetWindowCreationInfo(waap::NewWindowCreationSource::kNewEmptyWindow,
+                                base::TimeTicks::Now());
 
   // Navigate and emit FCP while prewarmed (no BrowserWindowInterface yet)
   NavigateAndCommit(GURL(kTestWebUIUrl));
