@@ -141,7 +141,6 @@ glic_api_ts_files = [
   "glic_api_impl/glic_api_injected_client.ts",
   "glic_api_impl/guest_load_time_data.ts",
   "glic_api_impl/host/conversions.ts",
-  "glic_api_impl/host/glic_api_host.ts",
   "glic_api_impl/host/types.ts",
   "glic_api_impl/mojo_bindings_stub.ts",
   "glic_api_impl/mojo_logging.ts",

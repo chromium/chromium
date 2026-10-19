@@ -16,6 +16,7 @@ import {                                       //
   SettingsPageField as SettingsPageFieldMojo,  //
   TabDataHandlerReceiver,                      //
   TabFaviconHandlerReceiver,                   //
+  WebClientHandlerRemote,                      //
   WebClientReceiver,                           //
 } from '../../glic.mojom-webui.js';
 import type {                                                          //
@@ -35,7 +36,6 @@ import type {                                                          //
              TabData as TabDataMojo,                                   //
              TabDataHandlerInterface,                                  //
              TabFaviconHandlerInterface,                               //
-             WebClientHandlerRemote,                                   //
              WebClientInterface,                                       //
 } from '../../glic.mojom-webui.js';
 import {                     //
@@ -131,8 +131,8 @@ import {                              //
   urlToClient,                        //
   webClientModeToMojo,                //
 } from '../host/conversions.js';
-import type {GlicApiHost} from '../host/glic_api_host.js';
 import {PanelOpenState} from '../host/types.js';
+import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever, ResponseExtras} from '../transport/messaging.js';
@@ -157,16 +157,24 @@ import {rgbaImageToBlob} from './image_utils.js';
 import {TabObservable, TabObservableSet} from './observable_set_by_tab_id.js';
 
 // Web client side of the Glic API.
-// Communicates with the Chrome-WebUI-side in glic_api_host.ts
 
 export class GlicHostRegistryImpl implements GlicHostRegistry {
   private host: GlicBrowserHostImpl|undefined;
-  constructor(
-      private hostApi: GlicApiHost,
-  ) {}
 
   async registerWebClient(webClient: GlicWebClient): Promise<void> {
-    this.host = new GlicBrowserHostImpl(webClient, this.hostApi);
+    this.host = new GlicBrowserHostImpl(webClient);
+
+    window.addEventListener('click', (e: MouseEvent) => {
+      const target = (e.target as HTMLElement)?.closest?.('a');
+      if (target && target.getAttribute('target') === '_blank' && target.href) {
+        e.preventDefault();
+        this.host?.getHandler().createTab(urlFromClient(target.href), {
+          openInBackground: false,
+          windowId: null,
+        });
+      }
+    }, true);
+
     const clientCapabilities = webClient.getClientCapabilities?.() ?? new Set();
     await this.host.webClientCreated(clientCapabilities);
     let success = false;
@@ -243,12 +251,21 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   private panelOpenState = PanelOpenState.CLOSED;
 
   private handler: WebClientHandlerRemote;
+  private isDestroyed = false;
 
   constructor(
       public webClient: GlicWebClient,
-      private hostApi: GlicApiHost,
   ) {
-    this.handler = hostApi.handler;
+    this.handler = maybeWrapWithLogging(
+        new WebClientHandlerRemote(), {prefix: 'WebClientHandler'});
+    this.handler.onConnectionError.addListener(() => {
+      if (this.isDestroyed) {
+        return;
+      }
+      console.warn(`Mojo connection error in glic host`);
+    });
+    const receiver = this.handler.$.bindNewPipeAndPassReceiver();
+    receiver.bindInBrowser();
 
     this.actorClient = new GlicBrowserHostActor();
     this.annotationClient = new GlicBrowserHostAnnotation();
@@ -295,6 +312,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   }
 
   destroy() {
+    this.isDestroyed = true;
     this.pinCandidates?.setObsolete();
     this.actorClient.destroyActor();
     this.skillsClient.destroySkills();
@@ -315,7 +333,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     this.webClientReceiver = new WebClientReceiver(this);
     const {initialState} = await this.handler.webClientCreated(
         this.webClientReceiver.$.bindNewPipeAndPassRemote());
-    this.hostApi.setInitialState(initialState, clientCapabilities);
+    conversionSettings.platform = enumToClient(initialState.platform);
     this.actorClient.initialize(initialState, this.handler);
     this.annotationClient.initialize(initialState, this.handler);
     this.skillsClient.initialize(initialState, this.handler);
@@ -593,9 +611,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     this.isBrowserOpenValue.assignAndSignal(browserIsOpen);
   }
 
-  notifyInstanceActivationChanged(instanceIsActive: boolean): void {
-    this.hostApi.setInstanceIsActive(instanceIsActive);
-  }
+  notifyInstanceActivationChanged(_instanceIsActive: boolean): void {}
 
   notifyOsHotkeyStateChanged(hotkey: string): void {
     this.osHotkeyState.assignAndSignal({hotkey});
