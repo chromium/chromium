@@ -138,6 +138,8 @@
 
 namespace {
 
+using ::testing::_;
+
 class ActionAppMenuTest : public ActionAppMenuTestBase {
  public:
   ActionAppMenuTest() = default;
@@ -3068,6 +3070,90 @@ TEST_F(ActionAppMenuTest, MultipleNotificationsSeparatedBySpacingSeparator) {
   EXPECT_EQ(submenu->children()[2], global_error_item);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
+  menu.CloseMenu();
+}
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(ActionAppMenuTest,
+       UpgradeAndScheduledRestartGroupedInSingleNotificationCard) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(
+          kActionUpgradeDialog, browser_actions_->root_action_item());
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  actions::ActionItem* scheduled_restart_action =
+      actions::ActionManager::Get().FindAction(
+          kActionScheduledRestartDialog, browser_actions_->root_action_item());
+  ASSERT_NE(scheduled_restart_action, nullptr);
+  scheduled_restart_action->SetVisible(true);
+
+  actions::ActionItem* global_error_action =
+      actions::ActionManager::Get().FindAction(
+          kActionGlobalError, browser_actions_->root_action_item());
+  ASSERT_NE(global_error_action, nullptr);
+  global_error_action->SetVisible(true);
+
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_TRUE(root);
+  views::SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_TRUE(submenu);
+
+  // "Relaunch to update" and "Relaunch later..." share a single rounded card
+  // (top corners rounded on upgrade_item, bottom corners rounded on
+  // scheduled_restart_item, with no separator between them).
+  views::MenuItemView* upgrade_item =
+      root->GetMenuItemByID(kActionUpgradeDialog);
+  ASSERT_TRUE(upgrade_item);
+  ASSERT_TRUE(upgrade_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(upgrade_item->GetMenuItemBackground()->bottom_radius, 0);
+
+  views::MenuItemView* scheduled_restart_item =
+      root->GetMenuItemByID(kActionScheduledRestartDialog);
+  ASSERT_TRUE(scheduled_restart_item);
+  EXPECT_EQ(scheduled_restart_item->GetProperty(views::kElementIdentifierKey),
+            AppMenuModel::kScheduledRestartMenuItem);
+  ASSERT_TRUE(scheduled_restart_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(scheduled_restart_item->GetMenuItemBackground()->top_radius, 0);
+  EXPECT_EQ(scheduled_restart_item->GetMenuItemBackground()->bottom_radius, 12);
+
+  // Subsequent non-upgrade notifications remain in a separate card after a
+  // spacing separator.
+  views::MenuItemView* global_error_item =
+      root->GetMenuItemByID(kActionGlobalError);
+  ASSERT_TRUE(global_error_item);
+  ASSERT_TRUE(global_error_item->GetMenuItemBackground().has_value());
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->top_radius, 12);
+  EXPECT_EQ(global_error_item->GetMenuItemBackground()->bottom_radius, 12);
+
+  ASSERT_GE(submenu->children().size(), 4u);
+  EXPECT_EQ(submenu->children()[0], upgrade_item);
+  EXPECT_EQ(submenu->children()[1], scheduled_restart_item);
+  auto* separator =
+      views::AsViewClass<views::MenuSeparator>(submenu->children()[2]);
+  ASSERT_NE(separator, nullptr);
+  EXPECT_EQ(separator->GetType(), ui::MenuSeparatorType::SPACING_SEPARATOR);
+  EXPECT_EQ(submenu->children()[3], global_error_item);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(mock_action_invoked_, Call(kActionScheduledRestartDialog, _, _));
+  menu.ExecuteCommand(kActionScheduledRestartDialog, /*mouse_event_flags=*/0);
+  histogram_tester.ExpectBucketCount("WrenchMenu.MenuAction",
+                                     MENU_ACTION_SCHEDULED_RESTART_DIALOG, 1);
+  histogram_tester.ExpectTotalCount(
+      "WrenchMenu.TimeToAction.ScheduledRestartDialog", 1);
+
+  EXPECT_CALL(on_menu_closed, Run());
   menu.CloseMenu();
 }
 #endif

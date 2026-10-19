@@ -191,6 +191,10 @@ source_set("impl") {
       "//chrome/browser/ui/webui/signin:signin_utils",
     ]
   }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/lifetime" ]
+  }
 }
 
 if (toolkit_views) {

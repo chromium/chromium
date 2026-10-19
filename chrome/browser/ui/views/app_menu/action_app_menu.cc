@@ -56,12 +56,24 @@ namespace {
 bool ShouldRoundBottomCorners(size_t index,
                               const actions::ActionListVector& items) {
   // An item rounds its bottom corners if it is the last non-divider item in
-  // its list, if it is a notification item, OR if it is or precedes the zoom
-  // submenu.
+  // its list, if it is the last notification item in a contiguous notification
+  // group, OR if it is or precedes the zoom submenu.
   actions::BaseAction* const base_item = items[index].get();
-  if (base_item->GetActionItem()->GetActionId() == kActionZoomSubmenu ||
-      base_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
-          AppMenuActionItem::DisplayType::kNotification) {
+  if (base_item->GetActionItem()->GetActionId() == kActionZoomSubmenu) {
+    return true;
+  }
+  if (base_item->GetProperty(AppMenuActionItem::kDisplayTypeKey) ==
+      AppMenuActionItem::DisplayType::kNotification) {
+    // Adjacent notification items without a spacing separator between them
+    // (such as "Relaunch to update" and "Relaunch later...") share a single
+    // rounded container, so only the last visible item in the contiguous group
+    // rounds its bottom corners.
+    for (size_t i = index + 1; i < items.size(); ++i) {
+      if (items[i]->GetActionItem()->GetVisible()) {
+        return items[i]->GetProperty(AppMenuActionItem::kDisplayTypeKey) !=
+               AppMenuActionItem::DisplayType::kNotification;
+      }
+    }
     return true;
   }
   for (size_t i = index + 1; i < items.size(); ++i) {

@@ -414,6 +414,10 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionSetBrowserAsDefault:
       RecordAction(MENU_ACTION_SET_BROWSER_AS_DEFAULT, "SetBrowserAsDefault");
       break;
+    case kActionScheduledRestartDialog:
+      RecordAction(MENU_ACTION_SCHEDULED_RESTART_DIALOG,
+                   "ScheduledRestartDialog");
+      break;
     case kActionSafetyHubShowPasswordCheckup:
       RecordAction(MENU_ACTION_SAFETY_HUB_SHOW_PASSWORD_CHECKUP,
                    "SafetyHubNotificationPasswordCheck");

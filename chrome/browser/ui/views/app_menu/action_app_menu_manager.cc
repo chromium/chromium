@@ -40,6 +40,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/menu_separator_types.h"
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/global_features.h"
+#include "chrome/browser/lifetime/scheduled_restart_manager.h"
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -544,9 +548,37 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
               return true;
             };
 
-        maybe_add_notification(
-            kActionUpgradeDialog,
-            {.minor_text = AppMenuModel::GetUpgradeDialogSubstringText()});
+        if (maybe_add_notification(
+                kActionUpgradeDialog,
+                {.minor_text =
+                     AppMenuModel::GetUpgradeDialogSubstringText()})) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+          actions::ActionItem* scheduled_restart_action =
+              actions::ActionManager::Get().FindAction(
+                  kActionScheduledRestartDialog, scope);
+          CHECK(scheduled_restart_action);
+          // Only update visibility when `ScheduledRestartManager` exists. In
+          // production the action starts hidden when the manager is absent; in
+          // unit tests without `GlobalFeatures`, tests set `ActionItem`
+          // visibility directly.
+          if (g_browser_process && g_browser_process->GetFeatures()) {
+            if (auto* srm = g_browser_process->GetFeatures()
+                                ->scheduled_restart_manager()) {
+              scheduled_restart_action->SetVisible(
+                  scheduled_restart::ScheduledRestartManager::
+                      IsAppMenuItemEnabled() &&
+                  srm->IsUpgradeAvailableForScheduling());
+            }
+          }
+          if (scheduled_restart_action->GetVisible()) {
+            section.AddAction(
+                kActionScheduledRestartDialog,
+                {.display_type = DisplayType::kNotification,
+                 .item_height = AppMenuActionItem::ItemHeight::kMedium,
+                 .element_id = AppMenuModel::kScheduledRestartMenuItem});
+          }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+        }
 
         // At most one non-upgrade notification item (Safety Hub, Global
         // Error, or Default Browser, which are ordered by priority) should

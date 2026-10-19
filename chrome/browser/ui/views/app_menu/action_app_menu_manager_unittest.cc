@@ -593,6 +593,82 @@ TEST_F(ActionAppMenuManagerTest, NotificationHeaderUpgradeNotification) {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(ActionAppMenuManagerTest,
+       NotificationHeaderUpgradeAndScheduledRestartNotifications) {
+  if (!browser_defaults::kShowUpgradeMenuItem) {
+    GTEST_SKIP() << "Upgrade menu item is not supported on this platform.";
+  }
+
+  actions::ActionItem* upgrade_action =
+      actions::ActionManager::Get().FindAction(kActionUpgradeDialog, nullptr);
+  ASSERT_NE(upgrade_action, nullptr);
+  upgrade_action->SetVisible(true);
+
+  actions::ActionItem* scheduled_restart_action =
+      actions::ActionManager::Get().FindAction(kActionScheduledRestartDialog,
+                                               nullptr);
+  ASSERT_NE(scheduled_restart_action, nullptr);
+  scheduled_restart_action->SetVisible(true);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+
+  const auto& children = root->GetChildren().children();
+  ASSERT_GE(children.size(), 2u);
+
+  actions::ActionItem* notification_section = children[0]->GetActionItem();
+  ASSERT_NE(notification_section, nullptr);
+  const auto& section_children = notification_section->GetChildren().children();
+  ASSERT_EQ(section_children.size(), 2u);
+
+  EXPECT_EQ(section_children[0]->GetActionItem()->GetActionId(),
+            kActionUpgradeDialog);
+  EXPECT_EQ(
+      section_children[0]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+      AppMenuActionItem::DisplayType::kNotification);
+  EXPECT_EQ(section_children[0]->GetProperty(AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kMedium);
+  EXPECT_EQ(
+      section_children[0]->GetProperty(AppMenuActionItem::kContainerColorKey),
+      ui::kColorAppMenuUpgradeRowBackground);
+
+  EXPECT_EQ(section_children[1]->GetActionItem()->GetActionId(),
+            kActionScheduledRestartDialog);
+  EXPECT_EQ(
+      section_children[1]->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+      AppMenuActionItem::DisplayType::kNotification);
+  EXPECT_EQ(section_children[1]->GetProperty(AppMenuActionItem::kItemHeightKey),
+            AppMenuActionItem::ItemHeight::kMedium);
+  EXPECT_EQ(
+      section_children[1]->GetProperty(AppMenuActionItem::kContainerColorKey),
+      ui::kColorAppMenuUpgradeRowBackground);
+  EXPECT_EQ(section_children[1]->GetProperty(views::kElementIdentifierKey),
+            AppMenuModel::kScheduledRestartMenuItem);
+}
+
+TEST_F(ActionAppMenuManagerTest,
+       NotificationHeaderScheduledRestartHiddenWithoutUpgrade) {
+  actions::ActionItem* scheduled_restart_action =
+      actions::ActionManager::Get().FindAction(kActionScheduledRestartDialog,
+                                               nullptr);
+  ASSERT_NE(scheduled_restart_action, nullptr);
+  scheduled_restart_action->SetVisible(true);
+
+  ActionAppMenuManager menu_manager(&mock_window_interface_,
+                                    &mock_drag_and_drop_host_);
+  menu_manager.CreateMenuHierarchy();
+
+  actions::ActionItem* root = menu_manager.GetAppMenuRoot();
+  ASSERT_NE(root, nullptr);
+  EXPECT_EQ(FindBaseAction(root, kActionScheduledRestartDialog), nullptr);
+}
+#endif
+
 TEST_F(ActionAppMenuManagerTest, NotificationHeaderSafetyHubNotification) {
   SafetyHubMenuNotificationServiceFactory::GetInstance()->SetTestingFactory(
       profile_.get(), base::BindRepeating([](content::BrowserContext* context)
