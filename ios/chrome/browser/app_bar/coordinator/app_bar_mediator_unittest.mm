@@ -3195,3 +3195,44 @@ TEST_F(AppBarMediatorTest, TestConsumerUpdatesDeferredUntilSceneUIEnabled) {
   scene_state.UIEnabled = YES;
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
+
+// Tests that when `kAppBarDisableLongPress` is enabled, long-press button menus
+// are not created or pushed to the consumer while browsing, whereas the New Tab
+// primary-action menu is still provided on the Tab Groups page.
+TEST_F(AppBarMediatorTest, TestDisableLongPress_FlagEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAppBarDisableLongPress, kAppBarAssistantCustomization}, {});
+
+  OCMReject([consumer_ setMenu:[OCMArg any]
+                 forButtonType:AppBarButtonTypeAssistant]);
+  OCMReject([consumer_ setMenu:[OCMArg any]
+                 forButtonType:AppBarButtonTypeNewTab]);
+  OCMReject([consumer_ setMenu:[OCMArg any]
+                 forButtonType:AppBarButtonTypeTabGrid]);
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
+  navigation_manager->AddItem(GURL("https://example.com/1"),
+                              ui::PAGE_TRANSITION_LINK);
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  regular_browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Switching to the Tab Groups page in the Tab Grid should still provide the
+  // New Tab button menu for primary-action tap.
+  id tab_groups_consumer = OCMProtocolMock(@protocol(TestAppBarConsumer));
+  OCMReject([tab_groups_consumer setMenu:[OCMArg any]
+                           forButtonType:AppBarButtonTypeAssistant]);
+  OCMReject([tab_groups_consumer setMenu:[OCMArg any]
+                           forButtonType:AppBarButtonTypeTabGrid]);
+  mediator_.consumer = tab_groups_consumer;
+  OCMExpect([tab_groups_consumer setMenu:[OCMArg isNotNil]
+                           forButtonType:AppBarButtonTypeNewTab]);
+  [tab_grid_state_ setCurrentPage:TabGridPageTabGroups];
+  [tab_grid_state_ setTabGridVisible:YES];
+  EXPECT_OCMOCK_VERIFY(tab_groups_consumer);
+}

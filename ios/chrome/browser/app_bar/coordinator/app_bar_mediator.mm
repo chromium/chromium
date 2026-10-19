@@ -280,8 +280,10 @@ inline LayoutStateAssistantPassKey PassKey() {
     _profile = profile;
     _prefService = prefService;
     _templateURLService = templateURLService;
-    _searchEngineObserver =
-        std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
+    if (!IsAppBarDisableLongPressEnabled()) {
+      _searchEngineObserver = std::make_unique<SearchEngineObserverBridge>(
+          self, _templateURLService);
+    }
 
     CHECK(authenticationService);
     _authenticationService = authenticationService;
@@ -344,9 +346,11 @@ inline LayoutStateAssistantPassKey PassKey() {
                       tabGridState:_tabGridState];
     _incognitoButtonMenuFactory.delegate = self;
 
-    _assistantButtonMenuFactory =
-        [[AppBarAssistantButtonMenuFactory alloc] init];
-    _assistantButtonMenuFactory.mutator = self;
+    if (!IsAppBarDisableLongPressEnabled()) {
+      _assistantButtonMenuFactory =
+          [[AppBarAssistantButtonMenuFactory alloc] init];
+      _assistantButtonMenuFactory.mutator = self;
+    }
 
     CHECK(_prefService);
     _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
@@ -669,7 +673,7 @@ inline LayoutStateAssistantPassKey PassKey() {
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
-  if (![self isUIEnabled]) {
+  if (![self isUIEnabled] || IsAppBarDisableLongPressEnabled()) {
     return;
   }
   BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
@@ -923,24 +927,45 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
 
   BOOL incognito = self.currentWebStateList == _incognitoWebStateList;
-  ToolbarButtonMenuFactory* buttonMenuFactory =
-      incognito ? _incognitoButtonMenuFactory : _regularButtonMenuFactory;
+  BOOL isTabGroupsPageVisible =
+      _tabGridState.currentPage == TabGridPageTabGroups;
+  BOOL isTabGroupVisible = self.currentTabGroup != nullptr;
 
-  [self.consumer setMenu:[buttonMenuFactory menuForNewTabButton]
-           forButtonType:AppBarButtonTypeNewTab];
-  [self.consumer setMenu:[buttonMenuFactory menuForTabGridButton]
-           forButtonType:AppBarButtonTypeTabGrid];
+  [self updateButtonMenusForIncognito:incognito
+               isTabGroupsPageVisible:isTabGroupsPageVisible
+                    isTabGroupVisible:isTabGroupVisible];
 
   [self.consumer updateTabCount:tabCount];
   [self.consumer setTabGridVisible:_tabGridState.tabGridVisible];
-  [self.consumer setTabGroupsPageVisible:_tabGridState.currentPage ==
-                                         TabGridPageTabGroups];
-  [self.consumer setTabGroupVisible:self.currentTabGroup != nullptr];
+  [self.consumer setTabGroupsPageVisible:isTabGroupsPageVisible];
+  [self.consumer setTabGroupVisible:isTabGroupVisible];
   [self.consumer
       setInTabGroup:GetGroupForActiveWebState(self.currentWebStateList)];
 
   [self updateAssistantButton];
   [self updateButtonsForCurrentTabGridPage];
+}
+
+// Updates the button menus on the consumer.
+- (void)updateButtonMenusForIncognito:(BOOL)incognito
+               isTabGroupsPageVisible:(BOOL)isTabGroupsPageVisible
+                    isTabGroupVisible:(BOOL)isTabGroupVisible {
+  ToolbarButtonMenuFactory* buttonMenuFactory =
+      incognito ? _incognitoButtonMenuFactory : _regularButtonMenuFactory;
+
+  if (IsAppBarDisableLongPressEnabled()) {
+    if (isTabGroupsPageVisible ||
+        (_tabGridState.tabGridVisible && isTabGroupVisible)) {
+      [self.consumer setMenu:[buttonMenuFactory menuForNewTabButton]
+               forButtonType:AppBarButtonTypeNewTab];
+    }
+    return;
+  }
+
+  [self.consumer setMenu:[buttonMenuFactory menuForNewTabButton]
+           forButtonType:AppBarButtonTypeNewTab];
+  [self.consumer setMenu:[buttonMenuFactory menuForTabGridButton]
+           forButtonType:AppBarButtonTypeTabGrid];
 }
 
 // Updates for entering tab grid `page`.
@@ -1148,8 +1173,10 @@ inline LayoutStateAssistantPassKey PassKey() {
   AppBarAssistantButtonState state = [self currentAssistantButtonState];
   [self recordAssistantButtonStateOnLoad:state];
   [self applyAssistantButtonState:state];
-  [self.consumer setMenu:[self assistantButtonMenuForDisplayedState:state]
-           forButtonType:AppBarButtonTypeAssistant];
+  if (!IsAppBarDisableLongPressEnabled()) {
+    [self.consumer setMenu:[self assistantButtonMenuForDisplayedState:state]
+             forButtonType:AppBarButtonTypeAssistant];
+  }
 }
 
 // Returns the state shown by the assistant button: the state chosen by the user
@@ -1215,7 +1242,8 @@ inline LayoutStateAssistantPassKey PassKey() {
 // the assistant button, is checked, even if the user chose another one.
 - (UIMenu*)assistantButtonMenuForDisplayedState:
     (AppBarAssistantButtonState)displayedState {
-  if ([self isIncognitoActive] || !IsAppBarAssistantCustomizationEnabled()) {
+  if ([self isIncognitoActive] || !IsAppBarAssistantCustomizationEnabled() ||
+      IsAppBarDisableLongPressEnabled()) {
     return nil;
   }
   // If Gemini is available, AI Mode is not shown in the menu. Otherwise, AI
