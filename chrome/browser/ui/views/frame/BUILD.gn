@@ -2290,7 +2290,19 @@ source_set("browser_tests") {
   }
 
   if (is_linux) {
-    deps += [ "//ui/linux:linux_ui_factory" ]
+    sources += [ "browser_desktop_window_tree_host_linux_browsertest.cc" ]
+
+    deps += [
+      ":browser_desktop_window_tree_host_linux",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/exclusive_access",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//ui/linux:linux_ui_factory",
+      "//ui/platform_window",
+      "//ui/views",
+    ]
   }
 
   if (is_mac) {
@@ -2603,6 +2615,7 @@ if (is_linux) {
       "//build:buildflag_header_h",
       "//build/config/linux/dbus:buildflags",
       "//chrome/browser/ui:browser_init_state",
+      "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/tabs:tab_strip",
