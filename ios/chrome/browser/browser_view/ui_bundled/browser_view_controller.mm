@@ -3154,6 +3154,9 @@ bool IsFullscreenNextIAEnabled() {
   // Return to required priority, otherwise UIKeyboardLayoutGuide would set the
   // toolbar minimum height to the bottom safe area.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
+  if (!IsSplitToolbarMode(self)) {
+    self.secondaryToolbarHeightConstraint.constant = 0;
+  }
 }
 
 - (void)adjustSecondaryToolbarForKeyboardHeight:(CGFloat)keyboardHeight

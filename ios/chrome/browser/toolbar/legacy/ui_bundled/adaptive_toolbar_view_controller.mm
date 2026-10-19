@@ -94,8 +94,8 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
 }
 
 - (void)triggerToolbarSlideInAnimationFromBelow:(BOOL)fromBelow {
-  // Toolbar slide-in animations are disabled on iPads.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  // Toolbar slide-in animations are disabled when the tab strip is visible.
+  if (CanShowTabStrip(self)) {
     return;
   }
 

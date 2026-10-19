@@ -366,6 +366,11 @@
   [super setLocationBarViewController:locationBarViewController];
   if (!self.hasOmnibox && self.locationIndicatorActive) {
     self.locationIndicatorActive = NO;
+    [self.toolbarHeightDelegate
+        adjustSecondaryToolbarForKeyboardHeight:0
+                                    isCollapsed:NO
+                                       duration:0
+                                          curve:UIViewAnimationCurveEaseInOut];
   }
 }
 

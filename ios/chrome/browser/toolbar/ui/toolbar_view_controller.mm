@@ -729,6 +729,9 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   if (!_hasOmnibox) {
     _hideProgressBarClosure.Cancel();
     _progressBar.hidden = YES;
+    if (_locationIndicatorActive) {
+      [self setLocationIndicatorVisible:NO forNotification:nil];
+    }
   }
   [self loadViewIfNeeded];
   [self updateToolbarElementsVisibility];
@@ -915,8 +918,8 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 }
 
 - (void)triggerToolbarSlideInAnimation {
-  // Toolbar slide-in animations are disabled on iPads.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  // Toolbar slide-in animations are disabled when the tab strip is visible.
+  if (CanShowTabStrip(self)) {
     return;
   }
 
@@ -2506,6 +2509,9 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
 
 // Called when the size class is updated.
 - (void)sizeClassDidChange {
+  if ((!_hasOmnibox || !IsSplitToolbarMode(self)) && _locationIndicatorActive) {
+    [self setLocationIndicatorVisible:NO forNotification:nil];
+  }
   [self updateForFullscreenProgress:_fullscreenProgress];
   [self updateLayoutConstraints];
   [self updateToolbarElementsVisibility];
