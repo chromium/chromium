@@ -15,9 +15,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_read_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_source_optimizer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_sender_source_optimizer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -192,6 +195,42 @@ TEST_F(RTCEncodedAudioUnderlyingSourceTest,
 
   source->OnSourceTransferStarted();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSourceTest,
+       ReceiverOptimizerAfterContextDestroyedDisconnectsAndReturnsNull) {
+  V8TestingScope v8_scope;
+  base::MockRepeatingCallback<void(RTCEncodedAudioUnderlyingSource*,
+                                   scoped_refptr<base::SingleThreadTaskRunner>)>
+      set_underlying_source;
+  RtcEncodedAudioReceiverSourceOptimizer optimizer(
+      CrossThreadBindRepeating(set_underlying_source.Get()),
+      CrossThreadBindOnce(disconnect_callback_.Get()));
+
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  EXPECT_CALL(set_underlying_source, Run(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(disconnect_callback_, Run()).Times(1);
+  EXPECT_EQ(optimizer.PerformInProcessOptimization(v8_scope.GetScriptState()),
+            nullptr);
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSourceTest,
+       SenderOptimizerAfterContextDestroyedDisconnectsAndReturnsNull) {
+  V8TestingScope v8_scope;
+  base::MockRepeatingCallback<void(RTCEncodedAudioUnderlyingSource*,
+                                   scoped_refptr<base::SingleThreadTaskRunner>)>
+      set_underlying_source;
+  RtcEncodedAudioSenderSourceOptimizer optimizer(
+      CrossThreadBindRepeating(set_underlying_source.Get()),
+      CrossThreadBindOnce(disconnect_callback_.Get()));
+
+  v8_scope.GetExecutionContext()->NotifyContextDestroyed();
+
+  EXPECT_CALL(set_underlying_source, Run(testing::_, testing::_)).Times(0);
+  EXPECT_CALL(disconnect_callback_, Run()).Times(1);
+  EXPECT_EQ(optimizer.PerformInProcessOptimization(v8_scope.GetScriptState()),
+            nullptr);
 }
 
 }  // namespace blink
