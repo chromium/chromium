@@ -49,12 +49,17 @@ HRESULT GetElevationType(PTOKEN_ELEVATION_TYPE elevation) {
 namespace rlz_lib {
 
 bool ProcessInfo::IsRunningAsSystem() {
-  static std::wstring user_sid;
-  if (user_sid.empty()) {
+  // Only a successful lookup is cached; a failure is retried next call.
+  static bool evaluated = false;
+  static bool is_system = false;
+  if (!evaluated) {
+    std::wstring user_sid;
     if (!base::win::GetUserSidString(&user_sid))
       return false;
+    is_system = (user_sid == L"S-1-5-18");
+    evaluated = true;
   }
-  return (user_sid == L"S-1-5-18");
+  return is_system;
 }
 
 bool ProcessInfo::HasAdminRights() {

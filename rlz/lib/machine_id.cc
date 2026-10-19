@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/hash/sha1.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -45,10 +46,11 @@ bool GetMachineId(std::string* machine_id) {
 
 #else
 
-  static std::string calculated_id;
+  // Process-lifetime cache of a value computed at runtime.
+  static base::NoDestructor<std::string> calculated_id;
   static bool calculated = false;
   if (calculated) {
-    *machine_id = calculated_id;
+    *machine_id = *calculated_id;
     return true;
   }
 
@@ -61,7 +63,7 @@ bool GetMachineId(std::string* machine_id) {
     return false;
 
   calculated = true;
-  calculated_id = *machine_id;
+  *calculated_id = *machine_id;
   return true;
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
