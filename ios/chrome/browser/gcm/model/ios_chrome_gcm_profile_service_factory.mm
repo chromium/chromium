@@ -8,7 +8,6 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/ref_counted.h"
-#import "base/no_destructor.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
@@ -26,20 +25,6 @@
 #import "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
 // static
-gcm::GCMProfileService* IOSChromeGCMProfileServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<gcm::GCMProfileService>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSChromeGCMProfileServiceFactory*
-IOSChromeGCMProfileServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeGCMProfileServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 std::string IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "com.chrome.ios";
@@ -48,10 +33,9 @@ std::string IOSChromeGCMProfileServiceFactory::GetProductCategoryForSubtypes() {
 #endif
 }
 
-IOSChromeGCMProfileServiceFactory::IOSChromeGCMProfileServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("GCMProfileService") {}
-
-IOSChromeGCMProfileServiceFactory::~IOSChromeGCMProfileServiceFactory() {}
+IOSChromeGCMProfileServiceFactory::IOSChromeGCMProfileServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "GCMProfileService") {}
 
 std::unique_ptr<KeyedService>
 IOSChromeGCMProfileServiceFactory::BuildServiceInstanceFor(
