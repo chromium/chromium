@@ -311,6 +311,10 @@ struct GlicButtonState {
   bool should_show = false;
   // Whether the context menu is currently visible.
   bool is_context_menu_visible = false;
+  // Whether the button background should match the toolbar instead of using
+  // the highlighted Glic chip background. Mirrors
+  // `glic::ToolbarGlicButton::UpdateStyle()`.
+  bool should_match_toolbar_style = false;
   // Dynamic nudge label to display in the button when a nudge is active, if
   // available. This string is for display only and must not be
   // programmatically parsed.

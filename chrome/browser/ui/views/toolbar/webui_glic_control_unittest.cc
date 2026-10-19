@@ -177,3 +177,24 @@ TEST_F(WebUIGlicControlTest, NudgeStateTrackedAndClearedOnClick) {
   control_->OnClicked();
   EXPECT_FALSE(control_->GetIsShowingNudge());
 }
+
+TEST_F(WebUIGlicControlTest, UpdateStyleNotifiesDelegate) {
+  EXPECT_CALL(
+      *delegate_,
+      OnGlicButtonStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::GlicButtonState::should_match_toolbar_style,
+          true))));
+  control_->UpdateStyle(true);
+
+  // Repeating the same style is a no-op.
+  EXPECT_CALL(*delegate_, OnGlicButtonStateChanged).Times(0);
+  control_->UpdateStyle(true);
+  testing::Mock::VerifyAndClearExpectations(delegate_.get());
+
+  EXPECT_CALL(
+      *delegate_,
+      OnGlicButtonStateChanged(testing::Pointee(testing::Field(
+          &toolbar_ui_api::mojom::GlicButtonState::should_match_toolbar_style,
+          false))));
+  control_->UpdateStyle(false);
+}

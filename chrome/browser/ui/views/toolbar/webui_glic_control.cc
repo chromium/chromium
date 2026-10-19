@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/notimplemented.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
@@ -149,8 +148,11 @@ void WebUIGlicControl::SetGlicPanelIsOpen(bool open) {
 }
 
 void WebUIGlicControl::UpdateStyle(bool should_match_toolbar) {
-  // TODO(crbug.com/510825665): Support non-matching background style in WebUI.
-  NOTIMPLEMENTED();
+  if (should_match_toolbar_style_ == should_match_toolbar) {
+    return;
+  }
+  should_match_toolbar_style_ = should_match_toolbar;
+  UpdateState();
 }
 
 bool WebUIGlicControl::IsContextMenuShowingForTesting() const {
@@ -197,6 +199,7 @@ void WebUIGlicControl::UpdateState() {
   state->open = is_panel_open_;
   state->should_show = IsVisible();
   state->is_context_menu_visible = menu_runner_ && menu_runner_->IsRunning();
+  state->should_match_toolbar_style = should_match_toolbar_style_;
   if (is_showing_nudge_ && !nudge_label_.empty()) {
     state->nudge_label = nudge_label_;
   }

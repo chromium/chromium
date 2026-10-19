@@ -73,6 +73,7 @@ suite('GlicButtonTest', function() {
       open: true,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -92,6 +93,7 @@ suite('GlicButtonTest', function() {
       open: true,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -113,6 +115,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -137,6 +140,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: true,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -151,6 +155,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -193,6 +198,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: 'Summarize this page',
     };
     await element.updateComplete;
@@ -213,6 +219,7 @@ suite('GlicButtonTest', function() {
       open: true,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: 'Summarize this page',
     };
     await element.updateComplete;
@@ -224,6 +231,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -317,6 +325,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -327,6 +336,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: false,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -377,6 +387,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -400,6 +411,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: 'Summarize this page',
     };
     await element.updateComplete;
@@ -421,6 +433,7 @@ suite('GlicButtonTest', function() {
       open: true,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -509,6 +522,7 @@ suite('GlicButtonTest', function() {
       open: false,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -519,6 +533,7 @@ suite('GlicButtonTest', function() {
       open: true,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: null,
     };
     await element.updateComplete;
@@ -529,6 +544,7 @@ suite('GlicButtonTest', function() {
       open: true,
       shouldShow: true,
       isContextMenuVisible: false,
+      shouldMatchToolbarStyle: false,
       nudgeLabel: 'Summarize',
     };
     await element.updateComplete;
@@ -538,5 +554,32 @@ suite('GlicButtonTest', function() {
     element.label = 'Ask Gemini';
     await element.updateComplete;
     assertEquals(3, requestLayoutCount);
+  });
+
+  test('ShouldMatchToolbarStyleTogglesChipBackground', async function() {
+    // Define the color variables explicitly so that a missing or misspelled
+    // variable name resolves to '' and fails the assertions below.
+    const glicBgColor = 'rgb(1, 2, 3)';
+    const toolbarColor = 'rgb(4, 5, 6)';
+    element.style.setProperty(
+        '--color-toolbar-glic-button-background-default', glicBgColor);
+    element.style.setProperty('--color-toolbar', toolbarColor);
+
+    const chip = element.$.button;
+    const bgColor = () => getComputedStyle(chip)
+                              .getPropertyValue('--toolbar-chip-bg-color')
+                              .trim();
+    assertFalse(chip.hasAttribute('match-toolbar-style'));
+    assertEquals(glicBgColor, bgColor());
+
+    element.state = {...element.state, shouldMatchToolbarStyle: true};
+    await element.updateComplete;
+    assertTrue(chip.hasAttribute('match-toolbar-style'));
+    assertEquals(toolbarColor, bgColor());
+
+    element.state = {...element.state, shouldMatchToolbarStyle: false};
+    await element.updateComplete;
+    assertFalse(chip.hasAttribute('match-toolbar-style'));
+    assertEquals(glicBgColor, bgColor());
   });
 });

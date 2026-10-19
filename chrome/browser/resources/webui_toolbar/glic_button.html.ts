@@ -11,6 +11,7 @@ export function getHtml(this: GlicButtonElement) {
 <toolbar-chip-button id="button"
     class="${this.hasHelpBubble ? 'help-anchor-highlight' : ''}"
     ?has-label="${this.shouldShowLabel_()}"
+    ?match-toolbar-style="${this.state.shouldMatchToolbarStyle}"
     ?is-menu-open="${this.state.open || this.state.isContextMenuVisible}"
     .disabled="${!this.enabled}" .tooltip="${this.getTooltip_()}"
     .ariaLabel="${this.getAriaLabel_()}"

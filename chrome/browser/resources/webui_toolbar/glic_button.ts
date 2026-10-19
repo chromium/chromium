@@ -56,6 +56,7 @@ export class GlicButtonElement extends GlicButtonElementBase {
     open: false,
     shouldShow: false,
     isContextMenuVisible: false,
+    shouldMatchToolbarStyle: false,
     nudgeLabel: null,
   };
   accessor label: string = loadTimeData.getString('glicButtonLabel');

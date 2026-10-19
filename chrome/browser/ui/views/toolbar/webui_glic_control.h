@@ -66,6 +66,7 @@ class WebUIGlicControl : public glic::ToolbarGlicButtonInterface,
   bool is_pinned_ = false;
   bool should_show_ = false;
   bool is_showing_nudge_ = false;
+  bool should_match_toolbar_style_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_GLIC_CONTROL_H_
