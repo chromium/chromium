@@ -9,9 +9,7 @@
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -226,15 +224,6 @@ void OrganizerPanelController::SetOrganizerVisible(bool visible,
         ->Start(OrganizerPanelAnimations::kOrganizerPanel,
                 is_visible_ ? OrganizerPanelAnimations::kShow
                             : OrganizerPanelAnimations::kHide);
-  }
-
-  if (is_visible_) {
-    last_opened_time_ = base::TimeTicks::Now();
-  } else {
-    base::TimeDelta open_duration = base::TimeTicks::Now() - last_opened_time_;
-    base::UmaHistogramCustomCounts("Projects.ProjectsPanel.TimeOpen",
-                                   open_duration.InSeconds(), 1,
-                                   base::Minutes(5).InSeconds(), 50);
   }
 
   NotifyStateChanged();

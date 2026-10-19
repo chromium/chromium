@@ -28,49 +28,6 @@ reviewer.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/animations/organizer_panel_animations.cc:OrganizerPanelAnimations) -->
 
-<histogram name="Projects.ProjectsPanel.OpenedToEmptyState" enum="Boolean"
-    expires_after="2026-12-01">
-  <owner>chazzy@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records whether the projects panel was opened to the empty state (no tab
-    groups or threads). Recorded upon opening the panel.
-  </summary>
-</histogram>
-
-<histogram name="Projects.ProjectsPanel.TabGroups.CountOnPanelOpen"
-    units="groups" expires_after="2026-12-01">
-  <owner>chazzy@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the number of tab groups displayed in the projects panel. Recorded
-    upon opening the panel.
-  </summary>
-</histogram>
-
-<histogram name="Projects.ProjectsPanel.Threads.CountOnPanelOpen"
-    units="threads" expires_after="2026-12-01">
-  <owner>chazzy@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the number of threads in the projects panel, if threads are enabled.
-    Up to 300 threads may be shown in the panel, and not all of these threads
-    may immediately be visible if the threads list is collapsed. Recorded upon
-    opening the panel.
-  </summary>
-</histogram>
-
-<histogram name="Projects.ProjectsPanel.TimeOpen" units="seconds"
-    expires_after="2027-02-07">
-  <owner>chazzy@chromium.org</owner>
-  <owner>top-chrome-desktop-ui@google.com</owner>
-  <summary>
-    Records the amount of time the projects panel was open. Recorded when the
-    panel is closed due to any reason (user action, closing the window, browser
-    shutdown, etc.).
-  </summary>
-</histogram>
-
 <histogram name="Projects.ProjectsPanel.{OrganizerPanelAnimation}.AnimationFPS"
     units="fps" expires_after="2027-02-07">
   <owner>dfried@chromium.org</owner>
