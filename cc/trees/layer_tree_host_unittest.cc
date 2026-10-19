@@ -23,8 +23,11 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/time/time.h"
 #include "base/timer/mock_timer.h"
+#include "base/trace_event/trace_config.h"
+#include "base/trace_event/trace_log.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
@@ -45,6 +48,7 @@
 #include "cc/resources/ui_resource_manager.h"
 #include "cc/test/fake_content_layer_client.h"
 #include "cc/test/fake_frame_info.h"
+#include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/fake_picture_layer.h"
@@ -62,6 +66,7 @@
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_input_handler_client.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
+#include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/effect_node.h"
@@ -91,6 +96,7 @@
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "components/viz/service/layers/layer_context_impl.h"
@@ -12349,6 +12355,45 @@ class LayerTreeHostTestTreesInVizSyncViewportDeltas : public LayerTreeHostTest {
 };
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTreesInVizSyncViewportDeltas);
+
+// A parent can send an invalid viz::LocalSurfaceId after a valid one, for
+// example when the browser resizes a hidden view that has no surface yet.
+// Hashing that id for the "viz.surface_id_flow" trace flows used to DCHECK
+// (https://crbug.com/548257127).
+TEST(LayerTreeHostLocalSurfaceIdTest,
+     InvalidLocalSurfaceIdFromParentWithSurfaceIdFlowTracing) {
+  base::test::TracingEnvironment tracing_environment;
+  base::trace_event::TraceLog::GetInstance()->SetEnabled(
+      base::trace_event::TraceConfig(
+          TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"), ""));
+
+  FakeLayerTreeHostDelegate delegate;
+  TestTaskGraphRunner task_graph_runner;
+  auto animation_host = AnimationHost::CreateForTesting(ThreadInstance::kMain);
+  std::unique_ptr<FakeLayerTreeHost> host = FakeLayerTreeHost::Create(
+      &delegate, &task_graph_runner, animation_host.get());
+  host->InitializeForTesting(
+      TaskRunnerProvider::Create(
+          base::SingleThreadTaskRunner::GetCurrentDefault(), nullptr),
+      std::make_unique<FakeProxy>());
+
+  const viz::LocalSurfaceId valid_id(
+      1u, base::UnguessableToken::CreateForTesting(2u, 3u));
+  host->SetLocalSurfaceIdFromParent(valid_id);
+  EXPECT_EQ(valid_id, host->local_surface_id_from_parent());
+
+  host->SetLocalSurfaceIdFromParent(viz::LocalSurfaceId());
+  EXPECT_FALSE(host->local_surface_id_from_parent().is_valid());
+
+  // Valid ids are still accepted, and traced, after the invalid one.
+  const viz::LocalSurfaceId next_valid_id(
+      2u, base::UnguessableToken::CreateForTesting(2u, 3u));
+  host->SetLocalSurfaceIdFromParent(next_valid_id);
+  EXPECT_EQ(next_valid_id, host->local_surface_id_from_parent());
+
+  // Disable tracing to avoid teardown failures.
+  base::trace_event::TraceLog::GetInstance()->SetDisabled();
+}
 
 }  // namespace
 }  // namespace cc

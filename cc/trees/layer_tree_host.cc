@@ -1721,11 +1721,11 @@ void LayerTreeHost::SetExternalPageScaleFactor(
 
 void LayerTreeHost::SetLocalSurfaceIdFromParent(
     const viz::LocalSurfaceId& local_surface_id_from_parent) {
-  // If the viz::LocalSurfaceId is invalid we will be hitting the early exit.
-  // However creating a hash for tracing of an invalid id throw an error. So
-  // exit here. This is either from unit testing where no ids are being setup,
-  // or from a disconnect in Renderer and Browser startup, in which Renderers
-  // have a partial state before the Browser sends the full visual properties.
+  // The viz::LocalSurfaceId can be invalid. This is either from unit testing
+  // where no ids are being setup, or from a disconnect in Renderer and Browser
+  // startup, in which Renderers have a partial state before the Browser sends
+  // the full visual properties. A hidden view that is resized before it has a
+  // surface also sends an invalid id.
   //
   // TODO(jonross): Untangle startup so that we don't have this invalid partial
   // state. (https://crbug.com/1185286) (https://crbug.com/419087)
@@ -1735,22 +1735,27 @@ void LayerTreeHost::SetLocalSurfaceIdFromParent(
   const viz::LocalSurfaceId current_local_surface_id_from_parent =
       pending_commit_state()->local_surface_id_from_parent;
 
+  // Creating a trace id hashes the viz::LocalSurfaceId, which is not allowed
+  // for an invalid id, so only trace valid ids.
+  //
   // These traces are split into two due to the usage of TRACE_ID_GLOBAL for the
   // incoming flow (it comes from a different process), and TRACE_ID_LOCAL for
   // the outgoing flow. The outgoing flow uses local to ensure that it doesn't
   // flow into the wrong trace in different process.
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-              "LocalSurfaceId.Submission.Flow",
-              perfetto::TerminatingFlow::Global(
-                  local_surface_id_from_parent.submission_trace_id()),
-              "step", "SetLocalSurfaceIdFromParent", "local_surface_id",
-              local_surface_id_from_parent.ToString());
-  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
-              "LocalSurfaceId.Submission.Flow",
-              perfetto::Flow::ProcessScoped(
-                  local_surface_id_from_parent.submission_trace_id()),
-              "step", "SetLocalSurfaceIdFromParent", "local_surface_id",
-              local_surface_id_from_parent.ToString());
+  if (local_surface_id_from_parent.is_valid()) {
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Submission.Flow",
+                perfetto::TerminatingFlow::Global(
+                    local_surface_id_from_parent.submission_trace_id()),
+                "step", "SetLocalSurfaceIdFromParent", "local_surface_id",
+                local_surface_id_from_parent.ToString());
+    TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"),
+                "LocalSurfaceId.Submission.Flow",
+                perfetto::Flow::ProcessScoped(
+                    local_surface_id_from_parent.submission_trace_id()),
+                "step", "SetLocalSurfaceIdFromParent", "local_surface_id",
+                local_surface_id_from_parent.ToString());
+  }
   // Always update the cached state of the viz::LocalSurfaceId to reflect the
   // latest value received from our parent.
   pending_commit_state()->local_surface_id_from_parent =
