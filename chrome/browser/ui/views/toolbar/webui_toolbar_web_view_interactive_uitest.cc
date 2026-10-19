@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabrestore.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -28,6 +29,7 @@
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/collaboration/public/features.h"
@@ -468,4 +470,36 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewInteractiveTest,
                         DeepQuery{"toolbar-app", "#location-bar", "#omnibox",
                                   "#textInput", "#input"},
                         "el => el.value.includes('chrome://version')", true));
+}
+
+class WebUIToolbarWebViewDeferStartupLayoutInteractiveTest
+    : public WebUIToolbarWebViewInteractiveTest {
+ public:
+  WebUIToolbarWebViewDeferStartupLayoutInteractiveTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kDeferLayoutDuringBrowserStartup);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for https://crbug.com/571806192: opening a new window should
+// focus the WebUI toolbar even when layout is deferred while the window is
+// invisible. On Mac, the window is activated (and initial focus is restored)
+// before it is reported as visible, so the toolbar must already be laid out by
+// then.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewDeferStartupLayoutInteractiveTest,
+                       NewWindowFocusesToolbar) {
+  ui_test_utils::BrowserCreatedObserver browser_created;
+  chrome::ExecuteCommand(browser(), IDC_NEW_WINDOW);
+  BrowserWindowInterface* const new_browser = browser_created.Wait();
+  ui_test_utils::WaitUntilBrowserBecomeActive(new_browser);
+
+  views::WebView* const toolbar_web_view =
+      BrowserView::GetBrowserViewForBrowser(new_browser)
+          ->toolbar()
+          ->GetWebUIToolbarViewForTesting()
+          ->GetWebViewForTesting();
+  EXPECT_TRUE(toolbar_web_view->HasFocus());
 }
