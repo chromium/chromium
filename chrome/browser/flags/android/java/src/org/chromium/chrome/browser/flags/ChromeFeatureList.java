@@ -873,6 +873,7 @@ public abstract class ChromeFeatureList {
     public static final String TOOLBAR_SNAPSHOT_REFACTOR = "ToolbarSnapshotRefactor";
     public static final String TOOLBAR_TABLET_RESIZE_REFACTOR = "ToolbarTabletResizeRefactor";
     public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
+    public static final String TRIM_MEMORY_BACKGROUND_IS_SEVERE = "TrimMemoryBackgroundIsSevere";
     public static final String TRUSTED_WEB_ACTIVITY_CONTACTS_DELEGATION =
             "TrustedWebActivityContactsDelegation";
     public static final String TTC = "Ttc";
@@ -1843,6 +1844,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TIPS_SELF_SERVICE, false);
     public static final MutableFlagWithSafeDefault sToolbarScrollAblation =
             newMutableFlagWithSafeDefault(TOOLBAR_SCROLL_ABLATION, false);
+    public static final MutableFlagWithSafeDefault sTrimMemoryBackgroundIsSevere =
+            newMutableFlagWithSafeDefault(TRIM_MEMORY_BACKGROUND_IS_SEVERE, false);
     public static final MutableFlagWithSafeDefault sUndoableTabClosureRework =
             newMutableFlagWithSafeDefault(UNDOABLE_TAB_CLOSURE_REWORK, false);
     public static final MutableFlagWithSafeDefault sXplatSyncedSetupThemes =

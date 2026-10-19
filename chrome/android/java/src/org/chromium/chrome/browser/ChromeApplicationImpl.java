@@ -6,6 +6,7 @@ package org.chromium.chrome.browser;
 
 import android.app.Application;
 import android.content.res.Configuration;
+import android.os.Build;
 
 import org.chromium.base.BinderCallsListener;
 import org.chromium.base.SysUtils;
@@ -116,13 +117,22 @@ public class ChromeApplicationImpl extends SplitCompatApplication.Impl {
 
     /**
      * Determines whether the given memory signal is considered severe.
+     *
      * @param level The type of signal as defined in {@link android.content.ComponentCallbacks2}.
      */
     public static boolean isSevereMemorySignal(int level) {
         // The conditions are expressed using ranges to capture intermediate levels possibly added
         // to the API in the future.
+        //
+        // Starting in Android U (API 34), ActivityManagerService deprecated and stopped sending
+        // TRIM_MEMORY_RUNNING_* and TRIM_MEMORY_MODERATE/COMPLETE, dispatching only
+        // TRIM_MEMORY_UI_HIDDEN and TRIM_MEMORY_BACKGROUND (before freezing via the Cached App
+        // Freezer). Treat TRIM_MEMORY_BACKGROUND as severe on Android U+ when enabled.
         return (level >= Application.TRIM_MEMORY_RUNNING_LOW
                         && level < Application.TRIM_MEMORY_UI_HIDDEN)
-                || level >= Application.TRIM_MEMORY_MODERATE;
+                || level >= Application.TRIM_MEMORY_MODERATE
+                || (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                        && level >= Application.TRIM_MEMORY_BACKGROUND
+                        && ChromeFeatureList.sTrimMemoryBackgroundIsSevere.isEnabled());
     }
 }
