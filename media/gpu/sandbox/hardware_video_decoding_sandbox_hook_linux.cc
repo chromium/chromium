@@ -7,6 +7,7 @@
 #include <dlfcn.h>
 #include <sys/stat.h>
 
+#include "base/logging.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
