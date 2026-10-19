@@ -2746,7 +2746,7 @@
       // See https://crbug.com/40943926 and
       // https://html.spec.whatwg.org/multipage/dnd.html#security-risks-in-the-drag-and-drop-model
       name: "DragThresholdRequiresMouseMovement",
-      status: "test"
+      status: "stable",
     },
     {
       // See: crrev.com/c/7874048
