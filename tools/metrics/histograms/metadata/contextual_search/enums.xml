@@ -128,6 +128,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchNoAcMatchState) -->
 
+<!-- LINT.IfChange(ContextualSearchSingleTabMenuItemAction) -->
+
+<enum name="ContextualSearchSingleTabMenuItemAction">
+  <int value="0" label="Recent tab selected"/>
+  <int value="1" label="Recent tab deselected"/>
+  <int value="2" label="Recent tab submitted"/>
+  <int value="3" label="Current tab selected"/>
+  <int value="4" label="Current tab deselected"/>
+  <int value="5" label="Current tab submitted"/>
+</enum>
+
+<!-- LINT.ThenChange(//ui/webui/resources/cr_components/composebox/common.ts:SingleTabMenuItemAction) -->
+
 <!-- LINT.IfChange(ContextualSearchSource) -->
 
 <enum name="ContextualSearchSource">

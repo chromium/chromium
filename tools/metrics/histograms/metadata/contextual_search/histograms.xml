@@ -995,6 +995,19 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram
+    name="ContextualSearch.SingleTabMenuItem.Action.{ContextualSearchSource}"
+    enum="ContextualSearchSingleTabMenuItemAction" expires_after="2027-07-16">
+  <owner>ananyaseelam@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Recorded when a user selects or deselects the standalone single tab menu
+    item in the contextual action menu, or submits a query with a tab attached
+    via the standalone single tab menu item on {ContextualSearchSource}.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram name="ContextualSearch.SmartTabSharing.MenuOptionClicked"
     enum="SmartTabSharingToggleState" expires_after="2027-07-22">
   <owner>kiehl@google.com</owner>

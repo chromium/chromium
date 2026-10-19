@@ -25,7 +25,7 @@ import type {InputState} from '//resources/mojo/components/omnibox/composebox/co
 import {InputType, ModelMode, ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 
-import {getLoadTimeBoolean, mapMetricsSourceToTabPickerSurface, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordTabPickerTabSelected, SmartTabSharingSurface} from './common.js';
+import {getLoadTimeBoolean, mapMetricsSourceToTabPickerSurface, recordBoolean, recordContextAdditionMethod, recordEnumerationValue, recordSingleTabMenuItemAction, recordTabPickerTabSelected, SingleTabMenuItemAction, SingleTabType, SmartTabSharingSurface} from './common.js';
 import {getCss} from './contextual_action_menu.css.js';
 import {getHtml} from './contextual_action_menu.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -910,6 +910,10 @@ export class ContextualActionMenuElement extends
     e.stopPropagation();
 
     const tabElement = e.currentTarget! as HTMLButtonElement;
+    const singleTabType = tabElement.id === 'singleTabItem' ?
+        (this.isSidePanel ? SingleTabType.CURRENT_TAB :
+                            SingleTabType.RECENT_TAB) :
+        undefined;
     const tabInfo = this.tabSuggestions[Number(tabElement.dataset['index'])];
 
     assert(tabInfo);
@@ -940,12 +944,26 @@ export class ContextualActionMenuElement extends
       // (non-restored) when multi-tab selection is enabled.
       if (this.enableTabDeselection_ ||
           (this.enableMultiTabSelection_ && !isRestored)) {
+        if (singleTabType) {
+          recordSingleTabMenuItemAction(
+              singleTabType === SingleTabType.CURRENT_TAB ?
+                  SingleTabMenuItemAction.CURRENT_TAB_DESELECTED :
+                  SingleTabMenuItemAction.RECENT_TAB_DESELECTED,
+              this.metricsSource_);
+        }
         this.deleteTabContext_(tabInfo.tabId);
         return;
       }
     }
+    if (singleTabType) {
+      recordSingleTabMenuItemAction(
+          singleTabType === SingleTabType.CURRENT_TAB ?
+              SingleTabMenuItemAction.CURRENT_TAB_SELECTED :
+              SingleTabMenuItemAction.RECENT_TAB_SELECTED,
+          this.metricsSource_);
+    }
     this.recordTabSelectedMetric_(tabInfo);
-    this.addTabContext_(tabInfo);
+    this.addTabContext_(tabInfo, singleTabType);
     recordContextAdditionMethod(
         ComposeboxContextAddedMethod.CONTEXT_MENU, this.metricsSource_);
   }
@@ -981,13 +999,14 @@ export class ContextualActionMenuElement extends
     this.maybeCloseMenuBasedOnEntrypoint_();
   }
 
-  protected addTabContext_(tabInfo: TabInfo) {
+  protected addTabContext_(tabInfo: TabInfo, singleTabType?: SingleTabType) {
     this.fire('add-tab-context', {
       id: tabInfo.tabId,
       title: tabInfo.title,
       url: tabInfo.url,
       delayUpload: false,
       origin: TabAttachmentSource.kContextMenu,
+      singleTabType,
     });
     this.maybeCloseMenuBasedOnEntrypoint_();
   }

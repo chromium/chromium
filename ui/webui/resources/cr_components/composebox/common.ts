@@ -135,6 +135,7 @@ export class ComposeboxFile {
   iconUrl?: Url|null;
   origin?: TabAttachmentSource;
   delayUpload?: boolean;
+  singleTabType?: SingleTabType;
   // True if this is a placeholder ("ghost") entry created from an upload
   // status update for a token the frontend does not know about yet. Its
   // metadata, including `inputType`, is not yet known and must not be relied
@@ -160,6 +161,7 @@ export class ComposeboxFile {
     this.iconUrl = options?.iconUrl ?? null;
     this.origin = options?.origin;
     this.delayUpload = options?.delayUpload ?? false;
+    this.singleTabType = options?.singleTabType;
     this.isGhost = options?.isGhost ?? false;
   }
 
@@ -364,12 +366,18 @@ export function hasOnlyAutoAddedTabAttachments(
   return true;
 }
 
+export enum SingleTabType {
+  RECENT_TAB = 'RecentTab',
+  CURRENT_TAB = 'CurrentTab',
+}
+
 export interface TabUpload {
   tabId: number;
   url: Url;
   title: string;
   delayUpload: boolean;
   origin: TabAttachmentSource;
+  singleTabType?: SingleTabType;
 }
 
 export interface BrowserFileUpload {
@@ -403,6 +411,29 @@ export enum ContextualSearchInputStateDeletionType {
   MAX_VALUE = 2,
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchInputStateDeletionType)
+
+// LINT.IfChange(SingleTabMenuItemAction)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+export enum SingleTabMenuItemAction {
+  RECENT_TAB_SELECTED = 0,
+  RECENT_TAB_DESELECTED = 1,
+  RECENT_TAB_SUBMITTED = 2,
+  CURRENT_TAB_SELECTED = 3,
+  CURRENT_TAB_DESELECTED = 4,
+  CURRENT_TAB_SUBMITTED = 5,
+  MAX_VALUE = CURRENT_TAB_SUBMITTED,
+}
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchSingleTabMenuItemAction)
+
+export function recordSingleTabMenuItemAction(
+    action: SingleTabMenuItemAction, composeboxSource: string) {
+  recordEnumerationValue(
+      `ContextualSearch.SingleTabMenuItem.Action.${composeboxSource}`, action,
+      SingleTabMenuItemAction.MAX_VALUE + 1);
+}
 
 export function recordEnumerationValue(
     metricName: string, value: number, enumSize: number) {

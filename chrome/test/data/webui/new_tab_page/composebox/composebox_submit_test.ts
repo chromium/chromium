@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {SubmitButtonIconType} from 'chrome://new-tab-page/lazy_load.js';
+import {SingleTabMenuItemAction, SingleTabType} from 'chrome://resources/cr_components/composebox/common.js';
 import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import type {ComposeboxSubmitElement} from 'chrome://resources/cr_components/composebox/composebox_submit.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -381,5 +382,142 @@ suite('ComposeboxDelayedTabSubmitTest', () => {
     await markSnapshotReady(FAKE_TOKEN_STRING);
     testProxy.element.submitQuery();
     assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+  });
+});
+
+suite('ComposeboxSingleTabMenuItemSubmitTest', () => {
+  const testProxy = setupComposeboxTest();
+
+  test(
+      'records Submitted when submitted with single tab menu item attached',
+      async () => {
+        createComposeboxElement(testProxy);
+        testProxy.element.composeboxSource = 'NewTabPage';
+        testProxy.element.input = 'summarize this tab';
+        await microtasksFinished();
+
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            'addTabContext', FAKE_TOKEN_STRING);
+        await testProxy.element.onAddTabContext(
+            new CustomEvent('add-tab-context', {
+              detail: {
+                id: 1,
+                title: 'Recent Tab',
+                url: 'https://example.com',
+                delayUpload: false,
+                origin: TabAttachmentSource.kContextMenu,
+                singleTabType: SingleTabType.RECENT_TAB,
+              },
+            }));
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        testProxy.element.submitQuery();
+        assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+        assertEquals(
+            1,
+            testProxy.metrics.count(
+                'ContextualSearch.SingleTabMenuItem.Action.NewTabPage',
+                SingleTabMenuItemAction.RECENT_TAB_SUBMITTED));
+      });
+
+  test(
+      'records CurrentTab Submitted when singleTabType is CurrentTab',
+      async () => {
+        createComposeboxElement(testProxy);
+        testProxy.element.composeboxSource = 'ContextualTasks';
+        testProxy.element.input = 'summarize current tab';
+        await microtasksFinished();
+
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            'addTabContext', FAKE_TOKEN_STRING);
+        await testProxy.element.onAddTabContext(
+            new CustomEvent('add-tab-context', {
+              detail: {
+                id: 1,
+                title: 'Current Tab',
+                url: 'https://example.com',
+                delayUpload: false,
+                origin: TabAttachmentSource.kContextMenu,
+                singleTabType: SingleTabType.CURRENT_TAB,
+              },
+            }));
+        testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+            FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        testProxy.element.submitQuery();
+        assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+        assertEquals(
+            1,
+            testProxy.metrics.count(
+                'ContextualSearch.SingleTabMenuItem.Action.ContextualTasks',
+                SingleTabMenuItemAction.CURRENT_TAB_SUBMITTED));
+      });
+
+  test(
+      'does not record Submitted when single tab item deselected before submit',
+      async () => {
+        createComposeboxElement(testProxy);
+        testProxy.element.composeboxSource = 'NewTabPage';
+        testProxy.element.input = 'summarize this tab';
+        await microtasksFinished();
+
+        testProxy.searchboxHandler.setPromiseResolveFor(
+            'addTabContext', FAKE_TOKEN_STRING);
+        await testProxy.element.onAddTabContext(
+            new CustomEvent('add-tab-context', {
+              detail: {
+                id: 1,
+                title: 'Recent Tab',
+                url: 'https://example.com',
+                delayUpload: false,
+                origin: TabAttachmentSource.kContextMenu,
+                singleTabType: SingleTabType.RECENT_TAB,
+              },
+            }));
+        await testProxy.element.onDeleteTabContext(new CustomEvent(
+            'delete-tab-context', {detail: {tabId: 1, fromUserAction: true}}));
+        await microtasksFinished();
+
+        testProxy.element.submitQuery();
+        assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+        assertEquals(
+            0,
+            testProxy.metrics.count(
+                'ContextualSearch.SingleTabMenuItem.Action.NewTabPage'));
+      });
+
+  test('does not record Submitted when tab was added from flyout', async () => {
+    createComposeboxElement(testProxy);
+    testProxy.element.composeboxSource = 'NewTabPage';
+    testProxy.element.input = 'summarize this tab';
+    await microtasksFinished();
+
+    testProxy.searchboxHandler.setPromiseResolveFor(
+        'addTabContext', FAKE_TOKEN_STRING);
+    await testProxy.element.onAddTabContext(new CustomEvent('add-tab-context', {
+      detail: {
+        id: 1,
+        title: 'Flyout Tab',
+        url: 'https://example.com',
+        delayUpload: false,
+        origin: TabAttachmentSource.kContextMenu,
+      },
+    }));
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    testProxy.element.submitQuery();
+    assertEquals(1, testProxy.searchboxHandler.getCallCount('submitQuery'));
+    assertEquals(
+        0,
+        testProxy.metrics.count(
+            'ContextualSearch.SingleTabMenuItem.Action.NewTabPage'));
   });
 });
