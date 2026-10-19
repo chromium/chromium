@@ -757,7 +757,7 @@ void PaintLayerPainter::PaintFragmentWithPhase(
     BoxFragmentPainter(*physical_fragment).Paint(paint_info);
   } else if (const auto* layout_inline =
                  DynamicTo<LayoutInline>(&paint_layer_.GetLayoutObject())) {
-    InlineBoxFragmentPainter::PaintAllFragments(*layout_inline, fragment_data,
+    InlineBoxFragmentPainter::PaintAllFragments(*layout_inline,
                                                 fragment_data_idx, paint_info);
   } else {
     // We are about to enter legacy paint code. Set the right FragmentData

@@ -540,7 +540,6 @@ void InlineBoxFragmentPainterBase::PaintFillLayer(
 // self-painting |LayoutInline|.
 void InlineBoxFragmentPainter::PaintAllFragments(
     const LayoutInline& layout_inline,
-    const FragmentData& fragment_data,
     wtf_size_t fragment_data_idx,
     const PaintInfo& paint_info) {
   // TODO(kojii): If the block flow is dirty, children of these fragments
@@ -550,6 +549,8 @@ void InlineBoxFragmentPainter::PaintAllFragments(
     return;
   }
 
+  const FragmentData& fragment_data =
+      layout_inline.FragmentList().at(fragment_data_idx);
   ScopedPaintState paint_state(layout_inline, paint_info, &fragment_data);
   PhysicalOffset paint_offset = paint_state.PaintOffset();
   const PaintInfo& local_paint_info = paint_state.GetPaintInfo();
