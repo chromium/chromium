@@ -166,9 +166,9 @@ ActiveInterpolationsMap EffectStack::ActiveInterpolations(
   if (effect_stack) {
     HeapVector<Member<SampledEffect>>& sampled_effects =
         effect_stack->sampled_effects_;
-    effect_stack->RemoveRedundantSampledEffects();
     std::sort(sampled_effects.begin(), sampled_effects.end(),
               CompareSampledEffects);
+    effect_stack->RemoveRedundantSampledEffects();
     bool reached_cuttoff = false;
     for (const auto& sampled_effect : sampled_effects) {
       if (reached_cuttoff)

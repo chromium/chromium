@@ -67,6 +67,7 @@ class AnimationEvent final : public Event {
   double elapsedTime() const;
   const String& pseudoElement() const;
   Animation* animation() const;
+  Animation* GetAnimation() const override { return animation(); }
 
   CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
 

@@ -346,4 +346,37 @@ TEST_F(AnimationEffectStackTest, AffectedPropertiesTransitionPriority) {
   EXPECT_TRUE(set.Contains(PropertyHandle(GetCSSPropertyColor())));
 }
 
+TEST_F(AnimationEffectStackTest,
+       ForwardsFillDiscardingOutOfOrderSampledEffects) {
+  Animation* anim1 = Animation::Create(
+      MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "1px")),
+      timeline, ASSERT_NO_EXCEPTION);
+  Animation* anim2 = Animation::Create(
+      MakeKeyframeEffect(MakeEffectModel(CSSPropertyID::kFontSize, "2px")),
+      timeline, ASSERT_NO_EXCEPTION);
+  // Sample anim2 before anim1 so that sampled_effects_ initially has anim2
+  // (higher composite order) before anim1 (lower composite order).
+  anim2->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0),
+                      ASSERT_NO_EXCEPTION);
+  anim2->Update(kTimingUpdateOnDemand);
+  anim1->setStartTime(MakeGarbageCollected<V8CSSNumberish>(0),
+                      ASSERT_NO_EXCEPTION);
+  anim1->Update(kTimingUpdateOnDemand);
+  GetDocument().GetPendingAnimations().Update(nullptr);
+
+  using ActiveInterpolationsMapHolder =
+      DisallowNewWrapper<ActiveInterpolationsMap>;
+  Persistent<ActiveInterpolationsMapHolder> interpolations =
+      MakeGarbageCollected<ActiveInterpolationsMapHolder>();
+
+  UpdateTimeline(base::Seconds(15));
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  interpolations->Value() = EffectStack::ActiveInterpolations(
+      &element->GetElementAnimations()->GetEffectStack(), nullptr, nullptr,
+      KeyframeEffect::kDefaultPriority);
+  EXPECT_EQ(1u, interpolations->Value().size());
+  EXPECT_EQ(GetFontSizeValue(interpolations->Value()), 2);
+  EXPECT_EQ(1u, SampledEffectCount());
+}
+
 }  // namespace blink

@@ -10,12 +10,15 @@
 #include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/frame_request_callback_collection.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/animation_playback_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -380,6 +383,44 @@ TEST_F(ScriptedAnimationControllerTest, CoarsenedFrameTimestamps) {
     previous_standard_time = standard_time;
     previous_legacy_time = legacy_time;
   }
+}
+
+TEST_F(ScriptedAnimationControllerTest, SortsAnimationEventsByCompositeOrder) {
+  TaskOrderObserver observer;
+
+  DocumentTimeline* timeline1 = &GetDocument().Timeline();
+  DocumentTimeline* timeline2 =
+      MakeGarbageCollected<DocumentTimeline>(&GetDocument());
+
+  Animation* anim1 = Animation::Create(nullptr, timeline1, ASSERT_NO_EXCEPTION);
+  Animation* anim2 = Animation::Create(nullptr, timeline2, ASSERT_NO_EXCEPTION);
+
+  anim1->addEventListener(
+      event_type_names::kFinish,
+      MakeGarbageCollected<RunTaskEventListener>(observer.CreateTask(1)));
+  anim2->addEventListener(
+      event_type_names::kFinish,
+      MakeGarbageCollected<RunTaskEventListener>(observer.CreateTask(2)));
+
+  auto* event2 = MakeGarbageCollected<AnimationPlaybackEvent>(
+      event_type_names::kFinish, nullptr, nullptr);
+  event2->SetTarget(anim2);
+  auto* event1 = MakeGarbageCollected<AnimationPlaybackEvent>(
+      event_type_names::kFinish, nullptr, nullptr);
+  event1->SetTarget(anim1);
+
+  // Enqueue in reverse composite order; SortAnimationEvents should sort
+  // anim1's finish event ahead of anim2's finish event.
+  wtf_size_t start_index = Controller().EventQueueSize();
+  Controller().EnqueueEvent(event2);
+  Controller().EnqueueEvent(event1);
+  Controller().SortAnimationEvents(start_index);
+
+  PageAnimator::ServiceScriptedAnimations(base::TimeTicks(),
+                                          {{Controller(), false}});
+  ASSERT_EQ(2u, observer.Order().size());
+  EXPECT_EQ(1, observer.Order()[0]);
+  EXPECT_EQ(2, observer.Order()[1]);
 }
 
 }  // namespace blink

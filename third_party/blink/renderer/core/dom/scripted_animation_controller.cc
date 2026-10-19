@@ -25,11 +25,18 @@
 
 #include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 
+#include <algorithm>
+
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/css/media_query_list_listener.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
@@ -41,6 +48,25 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
+
+namespace {
+
+bool CompareAnimationEvents(const Member<Event>& event1,
+                            const Member<Event>& event2) {
+  const Animation* animation1 = event1->GetAnimation();
+  const Animation* animation2 = event2->GetAnimation();
+  if (animation1 == animation2) {
+    return false;
+  }
+  if (!animation1 || !animation2) {
+    return !animation1;
+  }
+  return Animation::HasLowerCompositeOrdering(
+      animation1, animation2,
+      Animation::CompareAnimationsOrdering::kPointerOrder);
+}
+
+}  // namespace
 
 bool ScriptedAnimationController::InsertToPerFrameEventsMap(
     const Event* event) {
@@ -223,6 +249,32 @@ void ScriptedAnimationController::EnqueuePerFrameEvent(Event* event) {
   if (!InsertToPerFrameEventsMap(event))
     return;
   EnqueueEvent(event);
+}
+
+void ScriptedAnimationController::SortAnimationEvents(wtf_size_t start_index) {
+  if (event_queue_.size() <= start_index + 1 ||
+      !base::FeatureList::IsEnabled(kSortAnimationEvents)) {
+    return;
+  }
+  base::span<Member<Event>> events =
+      base::span(event_queue_).subspan(start_index);
+  // During the microtask checkpoint in
+  // DocumentAnimations::UpdateAnimationTimingForAnimationFrame(),
+  // AsyncFinishMicrotasks run first and enqueue `finish` events, followed by
+  // RemoveReplacedAnimation microtasks (which enqueue `remove` events that are
+  // already sorted in composite order) and any user `finished.then()` callbacks
+  // (which may synchronously call `cancel()`). Stop before `remove` and
+  // `cancel` events so they are not reordered ahead of `finish` events.
+  auto end = std::find_if(events.begin(), events.end(), [](const Event* event) {
+    const AtomicString& type = event->type();
+    return type == event_type_names::kRemove ||
+           type == event_type_names::kCancel ||
+           type == event_type_names::kAnimationcancel ||
+           type == event_type_names::kTransitioncancel;
+  });
+  if (end - events.begin() > 1) {
+    std::stable_sort(events.begin(), end, CompareAnimationEvents);
+  }
 }
 
 void ScriptedAnimationController::EnqueueMediaQueryChangeListeners(

@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
+#include "third_party/blink/renderer/core/dom/scripted_animation_controller.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -189,10 +190,14 @@ void DocumentAnimations::AddTimeline(AnimationTimeline& timeline) {
 
 void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
   // https://w3.org/TR/web-animations-1/#timelines
+  ScriptedAnimationController& controller =
+      document_->GetScriptedAnimationController();
 
   // 1. Update the current time of all timelines associated with doc passing now
   //    as the timestamp.
+  wtf_size_t start_index = controller.EventQueueSize();
   UpdateAnimationTiming(*document_, timelines_, kTimingUpdateForAnimationFrame);
+  controller.SortAnimationEvents(start_index);
 
   // 2. Remove replaced animations for doc.
   ReplaceableAnimationsMap replaceable_animations_map;
@@ -204,7 +209,9 @@ void DocumentAnimations::UpdateAnimationTimingForAnimationFrame() {
   // This is to ensure that any microtasks queued up as a result of resolving or
   // rejecting Promise objects as part of updating timelines run their callbacks
   // prior to dispatching animation events and generating the next main frame.
+  start_index = controller.EventQueueSize();
   document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+  controller.SortAnimationEvents(start_index);
 }
 
 bool DocumentAnimations::NeedsAnimationTimingUpdate() {

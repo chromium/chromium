@@ -21,6 +21,8 @@
 
 namespace blink {
 
+BASE_FEATURE(kSortAnimationEvents, base::FEATURE_ENABLED_BY_DEFAULT);
+
 AnimationTimeline::AnimationTimeline(Document* document)
     : document_(document), outdated_animation_count_(0) {
   document_->GetDocumentAnimations().AddTimeline(*this);
@@ -129,18 +131,38 @@ void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {
     }
   }
 
+  const bool sort_animation_events =
+      base::FeatureList::IsEnabled(kSortAnimationEvents);
+  const bool only_service_outdated = sort_animation_events &&
+                                     reason == kTimingUpdateOnDemand &&
+                                     current_time == last_current_time_;
   last_current_time_ = current_time;
 
-  HeapVector<Member<Animation>> animations;
-  animations.ReserveInitialCapacity(animations_needing_update_.size());
-  for (Animation* animation : animations_needing_update_)
-    animations.push_back(animation);
+  if (sort_animation_events) {
+    animations_needing_update_.erase_if([&](Animation* animation) {
+      if (only_service_outdated && !animation->Outdated() &&
+          !animation->EffectSuppressed()) {
+        return animation->Inactive() && !animation->TimeToEffectChange();
+      }
+      return !animation->Update(reason);
+    });
+  } else {
+    HeapVector<Member<Animation>> animations;
+    animations.ReserveInitialCapacity(animations_needing_update_.size());
+    for (Animation* animation : animations_needing_update_) {
+      animations.push_back(animation);
+    }
 
-  std::sort(animations.begin(), animations.end(), CompareAnimations);
+    std::sort(animations.begin(), animations.end(), CompareAnimations);
 
-  for (Animation* animation : animations) {
-    if (!animation->Update(reason))
-      animations_needing_update_.erase(animation);
+    for (Animation* animation : animations) {
+      if (!animation->Update(reason)) {
+        animations_needing_update_.erase(animation);
+      }
+    }
+    // Explicitly free the backing store to avoid memory regressions.
+    // TODO(bikineev): Revisit when young generation is done.
+    animations.clear();
   }
 
   DCHECK_EQ(outdated_animation_count_, 0U);
@@ -150,9 +172,6 @@ void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {
   for (const auto& animation : animations_needing_update_)
     DCHECK(!animation->Outdated());
 #endif
-  // Explicitly free the backing store to avoid memory regressions.
-  // TODO(bikineev): Revisit when young generation is done.
-  animations.clear();
 }
 
 // https://drafts.csswg.org/web-animations-1/#removing-replaced-animations

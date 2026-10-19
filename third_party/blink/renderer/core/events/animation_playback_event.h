@@ -9,13 +9,14 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 
 namespace blink {
 
 class AnimationPlaybackEventInit;
 
-class AnimationPlaybackEvent final : public Event {
+class CORE_EXPORT AnimationPlaybackEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -34,6 +35,7 @@ class AnimationPlaybackEvent final : public Event {
 
   V8CSSNumberish* currentTime() const { return current_time_.Get(); }
   V8CSSNumberish* timelineTime() const { return timeline_time_.Get(); }
+  Animation* GetAnimation() const override;
 
   const AtomicString& InterfaceName() const override;
 

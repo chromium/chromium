@@ -38,6 +38,7 @@
 
 namespace blink {
 
+class Animation;
 class DOMOrigin;
 class DOMWrapperWorld;
 class EventDispatcher;
@@ -171,6 +172,7 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
 
   virtual EventTarget* relatedTarget() const { return nullptr; }
   virtual void SetRelatedTarget(EventTarget*) {}
+  virtual Animation* GetAnimation() const { return nullptr; }
 
   PhaseType eventPhase() const { return event_phase_; }
   void SetEventPhase(PhaseType event_phase) { event_phase_ = event_phase; }

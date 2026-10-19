@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
@@ -57,6 +58,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -836,6 +838,13 @@ class CORE_EXPORT Animation : public EventTarget,
                            SameTriggerNameDifferentSource);
   FRIEND_TEST_ALL_PREFIXES(ScriptedTimelineTriggerTest,
                            ForbidScriptDuringActivation);
+};
+
+template <>
+struct DowncastTraits<Animation> {
+  static bool AllowFrom(const EventTarget& event_target) {
+    return event_target.InterfaceName() == event_target_names::kAnimation;
+  }
 };
 
 }  // namespace blink

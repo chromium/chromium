@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/events/animation_playback_event.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_animation_playback_event_init.h"
+#include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_values.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -26,6 +28,10 @@ AnimationPlaybackEvent::AnimationPlaybackEvent(
       timeline_time_(initializer->timelineTime()) {}
 
 AnimationPlaybackEvent::~AnimationPlaybackEvent() = default;
+
+Animation* AnimationPlaybackEvent::GetAnimation() const {
+  return DynamicTo<Animation>(RawTarget());
+}
 
 const AtomicString& AnimationPlaybackEvent::InterfaceName() const {
   return event_interface_names::kAnimationPlaybackEvent;

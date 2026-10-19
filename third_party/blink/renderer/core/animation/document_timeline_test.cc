@@ -484,4 +484,40 @@ TEST_F(AnimationDocumentTimelineRealTimeTest,
                    timeline->ZeroTime() - document->Timeline().ZeroTime());
 }
 
+TEST_F(AnimationDocumentTimelineTest,
+       CancelledAnimationRemovedFromAnimationsNeedingUpdate) {
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(2);
+  auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
+      element.Get(), CreateEmptyEffectModel(), timing);
+  Animation* animation = timeline->Play(keyframe_effect);
+  EXPECT_TRUE(timeline->HasPendingUpdates());
+  EXPECT_TRUE(timeline->HasOutdatedAnimation());
+
+  UpdateClockAndService(0);
+  EXPECT_TRUE(timeline->HasPendingUpdates());
+  EXPECT_FALSE(timeline->HasOutdatedAnimation());
+
+  animation->cancel();
+  EXPECT_FALSE(timeline->HasOutdatedAnimation());
+  timeline->ServiceAnimations(kTimingUpdateOnDemand);
+  EXPECT_FALSE(timeline->HasPendingUpdates());
+}
+
+TEST_F(AnimationDocumentTimelineTest, IdleOutdatedAnimationPrunedOnDemand) {
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(2);
+  auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
+      element.Get(), CreateEmptyEffectModel(), timing);
+  Animation::Create(keyframe_effect, timeline, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(timeline->HasPendingUpdates());
+
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(4);
+  keyframe_effect->UpdateSpecifiedTiming(timing);
+  EXPECT_TRUE(timeline->HasOutdatedAnimation());
+  EXPECT_TRUE(timeline->HasPendingUpdates());
+
+  timeline->ServiceAnimations(kTimingUpdateOnDemand);
+  EXPECT_FALSE(timeline->HasOutdatedAnimation());
+  EXPECT_FALSE(timeline->HasPendingUpdates());
+}
+
 }  // namespace blink

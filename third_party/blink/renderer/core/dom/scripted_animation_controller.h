@@ -83,6 +83,8 @@ class CORE_EXPORT ScriptedAnimationController
   // Animation frame events are used for resize events, scroll events, etc.
   void EnqueueEvent(Event*);
   void EnqueuePerFrameEvent(Event*);
+  wtf_size_t EventQueueSize() const { return event_queue_.size(); }
+  void SortAnimationEvents(wtf_size_t start_index);
 
   // Animation frame tasks are used for Fullscreen.
   void EnqueueTask(base::OnceClosure);
