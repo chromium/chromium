@@ -251,12 +251,12 @@ void DispatchOnCreatedNavigationTarget(
     const GURL& target_url) {
   // Check that the tab is already inserted into a tab strip model. This code
   // path is exercised by ExtensionApiTest.WebNavigationRequestOpenTab.
-  CHECK(
-      ExtensionTabUtil::GetTabById(
-          ExtensionTabUtil::GetTabId(target_web_contents),
-          Profile::FromBrowserContext(target_web_contents->GetBrowserContext()),
-          false, nullptr),
-      base::NotFatalUntil::M161);
+  // TODO(crbug.com/575114966): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(ExtensionTabUtil::GetTabById(
+      ExtensionTabUtil::GetTabId(target_web_contents),
+      Profile::FromBrowserContext(target_web_contents->GetBrowserContext()),
+      false, nullptr));
 
   web_navigation::OnCreatedNavigationTarget::Details details;
   details.source_tab_id = source_tab_id;
