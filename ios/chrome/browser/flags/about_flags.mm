@@ -3018,6 +3018,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAppBarStaticSymbolWhenHiddenName,
      flag_descriptions::kAppBarStaticSymbolWhenHiddenDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kAppBarStaticSymbolWhenHidden)},
+    {"app-bar-disable-long-press",
+     flag_descriptions::kAppBarDisableLongPressName,
+     flag_descriptions::kAppBarDisableLongPressDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kAppBarDisableLongPress)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
