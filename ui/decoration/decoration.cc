@@ -21,6 +21,7 @@
 #include "ui/decoration/highlight_border.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
@@ -54,24 +55,24 @@ std::string MakeLayerName(std::string_view debug_name) {
 using Appearance = decoration::DecorationSource::Appearance;
 
 // Returns the bounds of a decoration layer that frames `content_bounds` with
-// `margins`. Decoration margins are negative, so this expands outwards.
+// `margins`.
 gfx::Rect GetFramingBounds(const gfx::Rect& content_bounds,
-                           const gfx::Insets& margins) {
+                           const gfx::Outsets& margins) {
   gfx::Rect bounds = content_bounds;
-  bounds.Inset(margins);
+  bounds.Outset(margins);
   return bounds;
 }
 
 // Converts the content-relative `occlusion_rect` into the ninebox space of a
-// decoration layer with `margins`, where the content sits inset by `-margins`.
+// decoration layer with `margins`, where the content sits inset by `margins`.
 // See nine_patch_layer.h.
 gfx::Rect ToNineboxOcclusion(const gfx::Rect& occlusion_rect,
-                             const gfx::Insets& margins) {
+                             const gfx::Outsets& margins) {
   if (occlusion_rect.IsEmpty()) {
     return gfx::Rect();
   }
   gfx::Rect occlusion = occlusion_rect;
-  occlusion.Offset(-margins.left(), -margins.top());
+  occlusion.Offset(margins.left(), margins.top());
   return occlusion;
 }
 
@@ -261,14 +262,14 @@ void Decoration::UpdateAppearanceImmediately() {
     active_appearance_ = appearance;
   }
 
-  const gfx::Insets margins = appearance.value_or(Appearance()).margins;
+  const gfx::Outsets margins = appearance.value_or(Appearance()).margins;
   const gfx::Rect decoration_bounds =
       GetFramingBounds(content_bounds_, margins);
 
   // While cross-fading, also re-frame the old (fading) decoration around the
   // current content using the margins it was drawn with, so it doesn't stay
   // at a stale size if the content bounds change mid-fade.
-  const gfx::Insets fading_margins =
+  const gfx::Outsets fading_margins =
       fading_appearance_.value_or(Appearance()).margins;
   const gfx::Rect fading_bounds =
       fading_layer() && !content_bounds_.IsEmpty()

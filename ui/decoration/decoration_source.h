@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia.h"
@@ -55,10 +56,9 @@ class COMPONENT_EXPORT(UI_DECORATION) DecorationSource
     // aperture grid.
     gfx::Insets aperture_insets;
 
-    // Outset margins from the content bounds to the decoration layer bounds.
-    // Represents the exterior decoration region (values are typically
-    // negative to expand outward).
-    gfx::Insets margins;
+    // Outsets from the content bounds to the decoration layer bounds.
+    // Represents the exterior decoration region extending outward.
+    gfx::Outsets margins;
 
     bool operator==(const Appearance& other) const {
       return aperture_insets == other.aperture_insets &&

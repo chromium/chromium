@@ -13,6 +13,7 @@
 #include "ui/compositor/layer_nine_patch.h"
 #include "ui/decoration/decoration_source.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -28,7 +29,7 @@ DecorationSource::Details MakeDetails(int margin,
           {
               .nine_patch_image = gfx::ImageSkia(),
               .aperture_insets = gfx::Insets(margin),
-              .margins = gfx::Insets(-margin),
+              .margins = gfx::Outsets(margin),
           },
       .occlusion_rect = occlusion_rect,
   };
@@ -119,9 +120,9 @@ TEST_F(DecorationTest, SetContentBoundsAndAppearance) {
   EXPECT_EQ(content_bounds, decoration().content_bounds());
   EXPECT_EQ(content_bounds, last_content_bounds());
 
-  // Layer bounds are outset by margins (-10 -> +10 outwards).
+  // Layer bounds are outset by margins (10 outwards).
   gfx::Rect expected_layer_bounds = content_bounds;
-  expected_layer_bounds.Inset(gfx::Insets(-10));
+  expected_layer_bounds.Outset(gfx::Outsets(10));
   EXPECT_EQ(expected_layer_bounds, decoration().layer()->bounds());
 }
 
@@ -137,7 +138,7 @@ TEST_F(DecorationTest, EmptyContentBounds) {
   const gfx::Rect content_bounds(100, 100, 300, 300);
   decoration().SetContentBounds(content_bounds);
   gfx::Rect expected_layer_bounds = content_bounds;
-  expected_layer_bounds.Inset(gfx::Insets(-10));
+  expected_layer_bounds.Outset(gfx::Outsets(10));
   EXPECT_EQ(expected_layer_bounds, decoration().layer()->bounds());
   EXPECT_EQ(expected_layer_bounds.size(),
             decoration().decoration_layer_for_testing()->bounds().size());
@@ -213,7 +214,7 @@ TEST_F(DecorationTest, OcclusionRectTranslatedToLayerSpace) {
   set_details(MakeDetails(10, gfx::Rect(5, 5, 90, 90)));
   decoration().SetContentBounds(gfx::Rect(50, 50, 100, 100));
 
-  // Margins are -10, so the content sits at (10, 10) within the layer.
+  // Margins are 10, so the content sits at (10, 10) within the layer.
   EXPECT_EQ(gfx::Rect(15, 15, 90, 90),
             decoration().decoration_layer_for_testing()->occlusion());
 }
@@ -314,9 +315,9 @@ TEST_F(DecorationTest, NulloptDetailsHidesDecorationLayer) {
   const gfx::Rect aperture =
       decoration().decoration_layer_for_testing()->aperture();
 
-  // Layer bounds initially outset by margins (-10 -> +10 outwards).
+  // Layer bounds initially outset by margins (10 outwards).
   gfx::Rect expected_layer_bounds = content_bounds;
-  expected_layer_bounds.Inset(gfx::Insets(-10));
+  expected_layer_bounds.Outset(gfx::Outsets(10));
   EXPECT_EQ(expected_layer_bounds, decoration().layer()->bounds());
   EXPECT_TRUE(decoration().decoration_layer_for_testing()->visible());
 
@@ -367,7 +368,7 @@ TEST_F(DecorationTest, NotifyDecorationChanged) {
   source().TriggerChanged();
 
   gfx::Rect expected_layer_bounds = content_bounds;
-  expected_layer_bounds.Inset(gfx::Insets(-20));
+  expected_layer_bounds.Outset(gfx::Outsets(20));
   EXPECT_EQ(expected_layer_bounds, decoration().layer()->bounds());
 }
 

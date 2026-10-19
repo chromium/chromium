@@ -18,6 +18,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -29,8 +30,8 @@
 namespace ui::decoration {
 
 // static
-gfx::Insets ShadowGenerator::GetMargins(const gfx::ShadowValues& shadows) {
-  return gfx::ShadowValue::GetMargin(shadows);
+gfx::Outsets ShadowGenerator::GetMargins(const gfx::ShadowValues& shadows) {
+  return gfx::ShadowValue::GetMargin(shadows).ToOutsets();
 }
 
 // static
@@ -152,10 +153,10 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
 }
 
 // static
-gfx::Insets HighlightBorderGenerator::GetMargins(
+gfx::Outsets HighlightBorderGenerator::GetMargins(
     const HighlightBorderValue& value) {
   DCHECK_GT(value.thickness(), 0);
-  return gfx::Insets(-value.thickness());
+  return gfx::Outsets(value.thickness());
 }
 
 // static

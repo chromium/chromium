@@ -26,7 +26,7 @@ namespace ui::decoration {
 
 // Generator for shadow decoration rendering and insets.
 struct COMPONENT_EXPORT(UI_DECORATION) ShadowGenerator {
-  static gfx::Insets GetMargins(const gfx::ShadowValues& shadows);
+  static gfx::Outsets GetMargins(const gfx::ShadowValues& shadows);
 
   // Returns the insets for the ninebox aperture given the shadows and corner
   // radius. Represents the total space need to draw the full range of blur and
@@ -60,7 +60,7 @@ void DrawHighlightBorder(gfx::Canvas* canvas,
 // Generator for highlight border decoration rendering and insets. The outer
 // ring sits outside the content and the inner ring overlaps its edge.
 struct COMPONENT_EXPORT(UI_DECORATION) HighlightBorderGenerator {
-  static gfx::Insets GetMargins(const HighlightBorderValue& value);
+  static gfx::Outsets GetMargins(const HighlightBorderValue& value);
 
   // Returns the insets for the ninebox aperture given the border and corner
   // radii.

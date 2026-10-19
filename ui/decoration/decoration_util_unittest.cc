@@ -13,6 +13,7 @@
 #include "ui/decoration/highlight_border_value.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/shadow_value.h"
@@ -94,7 +95,7 @@ TEST(ShadowUtilTest, ShadowDetailsKey) {
 
 TEST(HighlightBorderGeneratorTest, Insets) {
   const HighlightBorderValue value(kHighlight, kBorder);
-  EXPECT_EQ(gfx::Insets(-1), HighlightBorderGenerator::GetMargins(value));
+  EXPECT_EQ(gfx::Outsets(1), HighlightBorderGenerator::GetMargins(value));
   EXPECT_EQ(gfx::Insets(2), HighlightBorderGenerator::GetNineboxApertureInsets(
                                 value, gfx::RoundedCornersF()));
   EXPECT_EQ(gfx::Insets(10), HighlightBorderGenerator::GetNineboxApertureInsets(
@@ -107,7 +108,7 @@ TEST(HighlightBorderGeneratorTest, Insets) {
                                             /*lower_left=*/16)));
 
   const HighlightBorderValue thick(kHighlight, kBorder, /*thickness=*/2);
-  EXPECT_EQ(gfx::Insets(-2), HighlightBorderGenerator::GetMargins(thick));
+  EXPECT_EQ(gfx::Outsets(2), HighlightBorderGenerator::GetMargins(thick));
   EXPECT_EQ(gfx::Insets(12), HighlightBorderGenerator::GetNineboxApertureInsets(
                                  thick, gfx::RoundedCornersF(8)));
 }
@@ -200,7 +201,7 @@ TEST(CompositeGeneratorTest, Insets) {
       Shadow::MakeShadowValues(/*elevation=*/1);
   const HighlightBorderValue thick_border(kHighlight, kBorder, /*thickness=*/3);
   const TestCompositeValue thick_combined(small_shadows, thick_border);
-  EXPECT_EQ(gfx::Insets::TLBR(-3, -3, -3, -3),
+  EXPECT_EQ(gfx::Outsets(3),
             TestCompositeGenerator::GetMargins(thick_combined));
   EXPECT_EQ(gfx::Insets(14), TestCompositeGenerator::GetNineboxApertureInsets(
                                  thick_combined, radii));

@@ -102,7 +102,7 @@ MessageView::MessageView(const Notification& notification)
     SetBorder(views::CreateBorderPainter(
         views::Painter::CreateImagePainter(shadow.nine_patch_image,
                                            shadow.aperture_insets),
-        -shadow.margins));
+        -shadow.margins.ToInsets()));
   }
 }
 

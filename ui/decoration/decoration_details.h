@@ -17,6 +17,7 @@
 #include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,8 +39,7 @@ concept DecorationSpec = requires(const Spec& a, const Spec& b) {
 
 // Defines the requirements for a generator used by DecorationDetails.
 //
-// - `GetMargins()`: Insets from content bounds to the decoration's outer edge
-//   (negative when extending outside content bounds).
+// - `GetMargins()`: Outsets from content bounds to the decoration's outer edge.
 // - `GetNineboxApertureInsets()`: Insets from the ninebox image edges to its
 //   stretchable center tile (total space needed for the decoration and corner
 //   rounding).
@@ -52,7 +52,7 @@ concept DecorationGenerator =
              const Spec& spec,
              const gfx::RoundedCornersF& rounded_corners,
              const gfx::Rect& content_rect) {
-      { Generator::GetMargins(spec) } -> std::same_as<gfx::Insets>;
+      { Generator::GetMargins(spec) } -> std::same_as<gfx::Outsets>;
       {
         Generator::GetNineboxApertureInsets(spec, rounded_corners)
       } -> std::same_as<gfx::Insets>;
@@ -75,7 +75,7 @@ class NineboxImageSource : public gfx::CanvasImageSource {
   NineboxImageSource(const Spec& spec,
                      const gfx::RoundedCornersF& rounded_corners,
                      const gfx::Insets& aperture_insets,
-                     const gfx::Insets& margins)
+                     const gfx::Outsets& margins)
       : gfx::CanvasImageSource(CalculateSize(aperture_insets)),
         spec_(spec),
         rounded_corners_(rounded_corners),
@@ -88,11 +88,10 @@ class NineboxImageSource : public gfx::CanvasImageSource {
 
   // gfx::CanvasImageSource:
   void Draw(gfx::Canvas* canvas) override {
-    // Margins are negative when the decoration paints outside the content, so
-    // insetting by their negation walks inwards from the image edge to the
+    // Outsetting by `-margins_` walks inwards from the image edge to the
     // content edge.
     gfx::Rect content_rect(size());
-    content_rect.Inset(-margins_);
+    content_rect.Outset(-margins_);
     Generator::Draw(canvas, spec_, rounded_corners_, content_rect);
   }
 
@@ -106,7 +105,7 @@ class NineboxImageSource : public gfx::CanvasImageSource {
 
   const Spec spec_;
   const gfx::RoundedCornersF rounded_corners_;
-  const gfx::Insets margins_;
+  const gfx::Outsets margins_;
 };
 
 // Generic cache for decoration details.
@@ -130,7 +129,7 @@ class DecorationCache {
 
     const gfx::Insets aperture_insets =
         Generator::GetNineboxApertureInsets(spec, rounded_corners);
-    const gfx::Insets margins = Generator::GetMargins(spec);
+    const gfx::Outsets margins = Generator::GetMargins(spec);
 
     auto source = std::make_unique<NineboxImageSource<Spec, Generator>>(
         spec, rounded_corners, aperture_insets, margins);
@@ -179,7 +178,7 @@ struct DecorationDetails {
   DecorationDetails(const Spec& spec,
                     const gfx::ImageSkia& nine_patch_image,
                     const gfx::Insets& aperture_insets,
-                    const gfx::Insets& margins)
+                    const gfx::Outsets& margins)
       : spec(spec),
         nine_patch_image(nine_patch_image),
         aperture_insets(aperture_insets),
@@ -218,25 +217,9 @@ struct DecorationDetails {
   gfx::ImageSkia nine_patch_image;
   // Insets for the stretchable center aperture grid.
   gfx::Insets aperture_insets;
-  // Margins for positioning the decoration around content bounds.
-  gfx::Insets margins;
+  // Outset margins for positioning the decoration around content bounds.
+  gfx::Outsets margins;
 };
-
-// Returns the per-side minimum of `a` and `b`. Margins are negative when they
-// extend outwards, so the smallest value is the one reaching furthest out.
-inline gfx::Insets MinInsets(const gfx::Insets& a, const gfx::Insets& b) {
-  return gfx::Insets::TLBR(
-      std::min(a.top(), b.top()), std::min(a.left(), b.left()),
-      std::min(a.bottom(), b.bottom()), std::min(a.right(), b.right()));
-}
-
-// Returns the per-side maximum of `a` and `b`. Insets that reach inwards
-// combine this way, since the largest one subsumes the others.
-inline gfx::Insets MaxInsets(const gfx::Insets& a, const gfx::Insets& b) {
-  return gfx::Insets::TLBR(
-      std::max(a.top(), b.top()), std::max(a.left(), b.left()),
-      std::max(a.bottom(), b.bottom()), std::max(a.right(), b.right()));
-}
 
 // Visual specification for several decorations rasterized into a single
 // ninebox image. Each specification is optional so a composite can omit any
@@ -288,9 +271,9 @@ template <typename... Specs, typename... Generators>
 struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
   using Value = CompositeValue<Specs...>;
 
-  static gfx::Insets GetMargins(const Value& value) {
+  static gfx::Outsets GetMargins(const Value& value) {
     DCHECK(!value.IsEmpty());
-    gfx::Insets margins;
+    gfx::Outsets margins;
     (AccumulateMargins<Specs, Generators>(value, margins), ...);
     return margins;
   }
@@ -318,9 +301,9 @@ struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
 
  private:
   template <DecorationSpec Spec, DecorationGenerator<Spec> Generator>
-  static void AccumulateMargins(const Value& value, gfx::Insets& margins) {
+  static void AccumulateMargins(const Value& value, gfx::Outsets& margins) {
     if (const auto& spec = value.template Get<Spec>()) {
-      margins = MinInsets(margins, Generator::GetMargins(*spec));
+      margins.SetToMax(Generator::GetMargins(*spec));
     }
   }
 
@@ -329,8 +312,8 @@ struct CompositeGenerator<DecorationDetails<Specs, Generators>...> {
                                  const gfx::RoundedCornersF& rounded_corners,
                                  gfx::Insets& aperture) {
     if (const auto& spec = value.template Get<Spec>()) {
-      aperture = MaxInsets(aperture, Generator::GetNineboxApertureInsets(
-                                         *spec, rounded_corners));
+      aperture.SetToMax(
+          Generator::GetNineboxApertureInsets(*spec, rounded_corners));
     }
   }
 

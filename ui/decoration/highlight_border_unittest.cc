@@ -21,6 +21,7 @@
 #include "ui/decoration/decoration_util.h"
 #include "ui/decoration/highlight_border_value.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -42,7 +43,7 @@ TEST(HighlightBorderTest, GetDetails) {
   const std::optional<DecorationSource::Details> details =
       border.GetDetails(content, radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Insets(-1), details->appearance.margins);
+  EXPECT_EQ(gfx::Outsets(1), details->appearance.margins);
   EXPECT_EQ(gfx::Insets(10), details->appearance.aperture_insets);
   EXPECT_EQ(gfx::Size(21, 21), details->appearance.nine_patch_image.size());
   EXPECT_TRUE(details->appearance.nine_patch_image.BackedBySameObjectAs(
@@ -78,13 +79,13 @@ TEST(HighlightBorderTest, ThicknessAdjustedToFitContent) {
   std::optional<DecorationSource::Details> details =
       border.GetDetails(gfx::Rect(10, 20), radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Insets(-3), details->appearance.margins);
+  EXPECT_EQ(gfx::Outsets(3), details->appearance.margins);
   EXPECT_EQ(gfx::Insets(8), details->appearance.aperture_insets);
 
   // 9 DIP only hold two-pixel rings; the image and occlusion follow suit.
   details = border.GetDetails(gfx::Rect(9, 20), radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Insets(-2), details->appearance.margins);
+  EXPECT_EQ(gfx::Outsets(2), details->appearance.margins);
   EXPECT_EQ(gfx::Insets(6), details->appearance.aperture_insets);
   EXPECT_TRUE(details->appearance.nine_patch_image.BackedBySameObjectAs(
       HighlightBorderDetails::Get(
@@ -95,7 +96,7 @@ TEST(HighlightBorderTest, ThicknessAdjustedToFitContent) {
   // 6 DIP are down to hairlines, and 5 DIP cannot even hold those.
   details = border.GetDetails(gfx::Rect(6, 20), radii);
   ASSERT_TRUE(details.has_value());
-  EXPECT_EQ(gfx::Insets(-1), details->appearance.margins);
+  EXPECT_EQ(gfx::Outsets(1), details->appearance.margins);
   EXPECT_FALSE(border.GetDetails(gfx::Rect(5, 20), radii).has_value());
 
   // The requested thickness is kept for when the content grows again.
