@@ -150,6 +150,17 @@ SigninUiDelegate* GetSigninUiDelegate() {
   return &delegate;
 }
 
+// Returns the promo action to record when the user signs in with a new
+// account.
+signin_metrics::PromoAction GetPromoActionForNewAccount(
+    const signin::IdentityManager& identity_manager) {
+  return identity_manager.GetAccountsWithRefreshTokens().empty()
+             ? signin_metrics::PromoAction::
+                   PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
+             : signin_metrics::PromoAction::
+                   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT;
+}
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace
@@ -240,15 +251,10 @@ void SignInFromSingleAccountPromo(Profile* profile,
 
   // No account with refresh tokens is present.
   if (account.IsEmpty()) {
-    signin_metrics::PromoAction new_account_promo_action =
-        identity_manager->GetAccountsWithRefreshTokens().empty()
-            ? signin_metrics::PromoAction::
-                  PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
-            : signin_metrics::PromoAction::
-                  PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT;
-    GetSigninUiDelegate()->ShowSigninUI(profile, /*enable_sync=*/false,
-                                        access_point, new_account_promo_action,
-                                        /*extension_name=*/"");
+    GetSigninUiDelegate()->ShowSigninUI(
+        profile, /*enable_sync=*/false, access_point,
+        GetPromoActionForNewAccount(*identity_manager),
+        /*extension_name=*/"");
     return;
   }
 
@@ -314,15 +320,10 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   }
 
   if (account.IsEmpty()) {
-    signin_metrics::PromoAction new_account_promo_action =
-        identity_manager->GetAccountsWithRefreshTokens().empty()
-            ? signin_metrics::PromoAction::
-                  PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
-            : signin_metrics::PromoAction::
-                  PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT;
-    GetSigninUiDelegate()->ShowSigninUI(profile, /*enable_sync=*/true,
-                                        access_point, new_account_promo_action,
-                                        /*extension_name=*/"");
+    GetSigninUiDelegate()->ShowSigninUI(
+        profile, /*enable_sync=*/true, access_point,
+        GetPromoActionForNewAccount(*identity_manager),
+        /*extension_name=*/"");
     return;
   }
 
@@ -585,12 +586,25 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
   // Try to sign in or open a sign in tab if user input is needed. If the user
   // is already signed in, this is a no-op. If the user is in auth error state,
   // this opens a reauth tab.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   const AccountInfo account_for_promos =
-      signin_ui_util::GetSingleAccountForPromos(
-          IdentityManagerFactory::GetForProfile(profile),
+      GetSingleAccountForPromos(
+          identity_manager,
           AccountPreviewDataServiceFactory::GetForProfile(profile));
-  signin_ui_util::SignInFromSingleAccountPromo(
-      profile, account_for_promos.GetCoreAccountInfo(), access_point);
+  if (account_for_promos.IsEmpty()) {
+    // Open a Chrome sign-in tab rather than an "add account" tab, so that the
+    // sign-in is handled as a Chrome sign-in and is not intercepted as a web
+    // sign-in. This does not turn on sync, as sync promos are replaced with
+    // sign-in promos.
+    GetSigninUiDelegate()->ShowSigninUI(
+        profile, /*enable_sync=*/true, access_point,
+        GetPromoActionForNewAccount(*identity_manager),
+        /*extension_name=*/"");
+  } else {
+    SignInFromSingleAccountPromo(
+        profile, account_for_promos.GetCoreAccountInfo(), access_point);
+  }
 
   // It is safe to pass pointers to the profile and sync service here because
   // the callback is then owned by a tab helper, which is guaranteed to be
@@ -605,8 +619,7 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
       },
       base::Unretained(profile), base::Unretained(sync_service), access_point);
 
-  switch (signin_util::GetSignedInState(
-      IdentityManagerFactory::GetForProfile(profile))) {
+  switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignInPending:
     case signin_util::SignedInState::kSignedIn:
       // If the sign in was already successful, enable history sync directly. In
@@ -626,10 +639,10 @@ void SignInAndEnableHistorySync(BrowserWindowInterface* browser,
   }
 
   content::WebContents* sign_in_tab_contents =
-      signin_ui_util::GetSignInTabWithAccessPoint(browser, access_point);
+      GetSignInTabWithAccessPoint(browser, access_point);
 
-  // SignInFromSingleAccountPromo may fail to open a tab. Do not wait for a
-  // sign in event in that case.
+  // Opening the sign in tab may fail. Do not wait for a sign in event in that
+  // case.
   if (!sign_in_tab_contents) {
     return;
   }

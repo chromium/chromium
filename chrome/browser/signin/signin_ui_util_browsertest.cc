@@ -40,6 +40,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
@@ -943,9 +944,22 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest_HistorySyncOptinTest,
 
   SignInAndEnableHistorySync(browser(), browser()->GetProfile(),
                              signin_metrics::AccessPoint::kRecentTabs);
-  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
-                  *browser()->GetTabStripModel()->GetActiveWebContents())
+  content::WebContents* active_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(*active_contents)
                   ->IsInitializedForTesting());
+  DiceTabHelper* dice_tab_helper =
+      DiceTabHelper::FromWebContents(active_contents);
+  ASSERT_TRUE(dice_tab_helper);
+  EXPECT_TRUE(dice_tab_helper->IsChromeSigninInProgress());
+  EXPECT_EQ(signin_metrics::Reason::kSigninPrimaryAccount,
+            dice_tab_helper->signin_reason());
+  EXPECT_EQ(signin_metrics::AccessPoint::kRecentTabs,
+            dice_tab_helper->signin_access_point());
+  EXPECT_EQ(
+      signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
+      dice_tab_helper->signin_promo_action());
+  EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), dice_tab_helper->redirect_url());
   histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Started",
                                       signin_metrics::AccessPoint::kRecentTabs,
                                       1);
