@@ -453,9 +453,8 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   ui::SimpleMenuModel* target_menu_model;
   size_t first_tab_index;
 
-  // Index of the tab that is labelled "Current tab" / "Recent tab" in the
-  // flyout and surfaced in the main menu when the single tab menu item arm is
-  // enabled.
+  // The index of the current or most recent tab which is surfaced in the main
+  // menu when the single tab menu item arm is enabled.
   const std::optional<size_t> single_tab_index = GetSingleTabIndex(tabs);
 
   // `target_menu_model` will either become the submenu, or a section in main
@@ -509,17 +508,9 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   }
 
   // Add tabs to the target destination in UI.
-  size_t tab_index = 0;
   for (const auto& tab : tabs) {
     target_menu_model->AddItemWithIcon(next_command_id_, tab.title,
                                        favicon::GetDefaultFaviconModel());
-    if (include_tabs_submenu && single_tab_index == tab_index) {
-      target_menu_model->SetMinorText(
-          target_menu_model->GetItemCount() - 1,
-          l10n_util::GetStringUTF16(
-              tab.is_active_tab ? IDS_COMPOSE_CURRENT_TAB
-                                : IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX));
-    }
     AddTabFavicon(next_command_id_, tab.url, tab.title);
     input_type_for_command_id_[next_command_id_] =
         omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
@@ -540,7 +531,6 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     }
 
     next_command_id_ += 1;
-    tab_index++;
   }
 
   // Add submenu name and icon.

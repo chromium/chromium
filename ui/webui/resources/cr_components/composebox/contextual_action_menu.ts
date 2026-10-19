@@ -868,10 +868,6 @@ export class ContextualActionMenuElement extends
     return activeRestoredTabs.concat(reversedRestored);
   }
 
-  protected isRecentTab_(tabId: number): boolean {
-    return this.recentTabId !== null && tabId === this.recentTabId;
-  }
-
   // The single tab menu item mirrors the tab the backend reports as most
   // recent, the current tab in the side panel, or the most recently active tab
   // on the NTP. Returns its index in `tabSuggestions`, or -1 if the arm is

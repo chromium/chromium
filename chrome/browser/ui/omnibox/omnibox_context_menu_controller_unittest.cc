@@ -1521,14 +1521,6 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
   ASSERT_TRUE(SingleTabIndex().has_value());
   EXPECT_EQ(menu->GetLabelAt(*SingleTabIndex()), u"Active");
   EXPECT_EQ(menu->GetMinorTextAt(*SingleTabIndex()), u"");
-
-  // The flyout labels the same tab, and only that tab.
-  ui::SimpleMenuModel* submenu = controller()->shared_tabs_menu_model();
-  ASSERT_TRUE(submenu);
-  ASSERT_EQ(submenu->GetItemCount(), 2u);
-  EXPECT_EQ(submenu->GetMinorTextAt(0), u"");
-  EXPECT_EQ(submenu->GetMinorTextAt(1),
-            l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
 }
 
 TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
@@ -1657,8 +1649,5 @@ TEST_F(OmniboxContextMenuControllerTest, SingleTabItem_HiddenWhenParamOff) {
                    ->menu_model()
                    ->GetIndexOfCommandId(IDC_OMNIBOX_CONTEXT_SINGLE_TAB)
                    .has_value());
-  // The flyout still labels the current tab.
   ASSERT_TRUE(controller()->shared_tabs_menu_model());
-  EXPECT_EQ(controller()->shared_tabs_menu_model()->GetMinorTextAt(0),
-            l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
 }

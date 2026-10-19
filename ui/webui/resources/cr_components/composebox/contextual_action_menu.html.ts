@@ -265,17 +265,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                   .tabId="${tab.tabId}"
                   .isSubmitted="${this.isTabSelected_(tab)}">
               </cr-composebox-tab-favicon>
-              <span class="tab-title-group">
-                <span class="tab-title">${tab.title}</span>
-                ${this.isRecentTab_(tab.tabId) ? html`
-                  <span class="recent-tabs-suffix"
-                      ?disabled="${this.isTabDisabled_(tab)}">
-                      · ${
-                      this.isSidePanel ?
-                      this.i18n('currentTabSuffix') :
-                      this.i18n('recentTabsSuffix')}</span>
-                ` : ''}
-              </span>
+              <span class="tab-title">${tab.title}</span>
               ${(this.enableMultiTabSelection_ &&
                   this.isTabSelected_(tab)) ? html`
                 <cr-icon class="share-tabs-check" icon="cr:check">
