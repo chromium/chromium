@@ -43,39 +43,28 @@ void LogFastPathParserTotalTime(base::TimeDelta parse_time) {
       base::Microseconds(1), base::Milliseconds(10), 100);
 }
 
-// ForceInertTemplate specifies whether the HTML parser should parse into an
-// inert (non-active) template document.
-enum class ForceInertTemplate { kDontForce, kForce };
-
 DocumentFragment* ParseHTMLFragmentInternal(
     const String& markup,
     Element* context_element,
     ParserContentPolicy parser_content_policy,
     FragmentParserConfig::ParseDeclarativeShadowRoots parse_declarative_shadows,
     FragmentParserConfig::ForceHtml force_html,
-    ForceInertTemplate force_inert,
     CustomElementRegistry* registry,
     ExceptionState& exception_state,
     StreamingSanitizer* sanitizer) {
   DCHECK(context_element);
   const HTMLTemplateElement* template_element =
       DynamicTo<HTMLTemplateElement>(*context_element);
-  if (template_element && !template_element->GetExecutionContext()) {
-    return nullptr;
-  }
-
-  // If an inert document is requested, we shouldn't run custom element
-  // callbacks. Those will be run whenever the result template will be inserted
-  // into the final document.
-  if (force_inert == ForceInertTemplate::kForce) {
+  if (template_element) {
+    if (!template_element->GetExecutionContext()) {
+      return nullptr;
+    }
     registry = nullptr;
   }
 
   Document& document =
-      (IsA<HTMLTemplateElement>(*context_element) ||
-       force_inert == ForceInertTemplate::kForce)
-          ? context_element->GetDocument().EnsureTemplateDocument()
-          : context_element->GetDocument();
+      template_element ? context_element->GetDocument().EnsureTemplateDocument()
+                       : context_element->GetDocument();
   DocumentFragment* fragment = DocumentFragment::Create(document);
   document.setAllowDeclarativeShadowRoots(
       parse_declarative_shadows ==
@@ -265,10 +254,8 @@ DocumentFragment* ParseHTMLFragment(const String& markup,
 
   DocumentFragment* fragment = ParseHTMLFragmentInternal(
       markup, config.context_element, content_policy,
-      config.parse_declarative_shadows, config.force_html,
-      streaming_sanitizer ? ForceInertTemplate::kForce
-                          : ForceInertTemplate::kDontForce,
-      config.registry, exception_state, streaming_sanitizer);
+      config.parse_declarative_shadows, config.force_html, config.registry,
+      exception_state, streaming_sanitizer);
 
   if (exception_state.HadException()) {
     return nullptr;
