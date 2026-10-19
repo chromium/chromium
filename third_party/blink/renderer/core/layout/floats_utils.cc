@@ -188,7 +188,7 @@ void LayoutFloatWithoutFragmentation(UnpositionedFloat* unpositioned_float) {
   // break token so that layout is resumed correctly. See
   // InvolvedInBlockFragmentation() in fragmentation_utils.h for more details.
   unpositioned_float->layout_result =
-      unpositioned_float->node.Layout(space, unpositioned_float->token);
+      unpositioned_float->node.Layout(space, unpositioned_float->fragmentation);
   unpositioned_float->margins =
       ComputeMarginsFor(space, unpositioned_float->node.Style(),
                         unpositioned_float->parent_space);
@@ -251,7 +251,8 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
     fragment_margins = ComputeMarginsFor(
         node.Style(), unpositioned_float->percentage_size.inline_size,
         parent_space.GetWritingDirection());
-    AdjustMarginsForFragmentation(unpositioned_float->token, &fragment_margins);
+    AdjustMarginsForFragmentation(unpositioned_float->fragmentation.break_token,
+                                  &fragment_margins);
 
     // When fragmenting, we need to set the block-offset of the node before
     // laying it out. This is a float, and in order to calculate its offset, we
@@ -290,7 +291,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
 
       is_at_fragmentainer_start = space.IsAtFragmentainerStart();
 
-      layout_result = node.Layout(space, unpositioned_float->token);
+      layout_result = node.Layout(space, unpositioned_float->fragmentation);
       DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
       // If we knew the right block-offset up front, we're done.
@@ -368,7 +369,7 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
                                      float_fragment.BlockSize() +
                                      fragment_margins.block_end;
         if (outer_block_end > fragmentainer_block_size &&
-            !IsBreakInside(unpositioned_float->token)) {
+            !IsBreakInside(unpositioned_float->fragmentation.break_token)) {
           // Avoid breaking inside the block-end margin of a float. They are not
           // to collapse with the fragmentainer boundary, unlike margins on
           // regular boxes.
@@ -393,10 +394,11 @@ PositionedFloat PositionFloat(UnpositionedFloat* unpositioned_float,
   }
 
   if (parent_space.HasBlockFragmentation() && !need_break_before &&
-      !IsBreakInside(unpositioned_float->token) &&
+      !IsBreakInside(unpositioned_float->fragmentation.break_token) &&
       exclusion_space->NeedsBreakBeforeFloat(
-          unpositioned_float->ClearType(parent_space.Direction())))
+          unpositioned_float->ClearType(parent_space.Direction()))) {
     need_break_before = true;
+  }
 
   // Add the float as an exclusion.
   const auto float_type = node.Style().Floating(parent_space.Direction());

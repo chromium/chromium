@@ -146,6 +146,7 @@ blink_core_sources_layout = [
   "fragment_builder.h",
   "fragment_repeater.cc",
   "fragment_repeater.h",
+  "fragmentation_layout_input.h",
   "fragmentation_utils.cc",
   "fragmentation_utils.h",
   "frame_set_layout_algorithm.cc",

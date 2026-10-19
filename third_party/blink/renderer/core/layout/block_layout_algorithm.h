@@ -337,6 +337,11 @@ class CORE_EXPORT BlockLayoutAlgorithm
       InlineChildLayoutContext*,
       const InlineBreakToken** previous_inline_break_token);
 
+  const LayoutResult* LayoutInflow(const ConstraintSpace& child_space,
+                                   LayoutInputNode child,
+                                   const BreakToken* child_break_token,
+                                   InlineChildLayoutContext*);
+
   // Update text box trim state after child layout.
   void UpdateTextBoxTrim(LayoutInputNode child,
                          const BreakToken* incoming_child_break_token,

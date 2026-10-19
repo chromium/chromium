@@ -2854,7 +2854,7 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   if (is_repeatable) {
     return node.LayoutRepeatableRoot(child_space, break_token);
   }
-  return node.Layout(child_space, break_token);
+  return node.Layout(child_space, FragmentationLayoutInput(break_token));
 }
 
 void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
@@ -2935,7 +2935,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node, /* break_token */ nullptr);
   LayoutAlgorithmParams params(node, fragment_geometry, space);
-  params.break_token = PreviousFragmentainerBreakToken(index);
+  params.fragmentation.break_token = PreviousFragmentainerBreakToken(index);
   // This algorithm will be used to add new OOFs. The existing fragment passed
   // is the last fragmentainer created so far.
   SimplifiedOofLayoutAlgorithm algorithm(params, *fragmentainer);

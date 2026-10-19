@@ -1791,8 +1791,11 @@ PositionedFloat InlineLayoutAlgorithm::PositionFloat(
       GetConstraintSpace().GetLineClampData().FloatState();
 
   BlockNode child(To<LayoutBox>(floating_object));
+  // TODO(crbug.com/40267498): Set this up properly, or verify that this will
+  // do.
+  FragmentationLayoutInput fragmentation;
   UnpositionedFloat unpositioned_float(
-      child, /* break_token */ nullptr, space.AvailableSize(),
+      child, fragmentation, space.AvailableSize(),
       child.IsReplaced() ? space.ReplacedChildPercentageResolutionSize()
                          : space.PercentageResolutionSize(),
       origin_bfc_offset, space, Style(), space.FragmentainerBlockSize(),

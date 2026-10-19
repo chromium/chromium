@@ -9,13 +9,13 @@
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_layout_input.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class ColumnSpannerPath;
 class ComputedStyle;
 class EarlyBreak;
 class LayoutResult;
@@ -33,9 +33,7 @@ struct LayoutAlgorithmParams {
   BlockNode node;
   const FragmentGeometry& fragment_geometry;
   const ConstraintSpace& space;
-  const BlockBreakToken* break_token = nullptr;
-  const EarlyBreak* early_break = nullptr;
-  const ColumnSpannerPath* column_spanner_path = nullptr;
+  FragmentationLayoutInput fragmentation;
   const LayoutResult* previous_result = nullptr;
   const HeapVector<Member<EarlyBreak>>* additional_early_breaks = nullptr;
 };
@@ -77,21 +75,22 @@ class CORE_EXPORT LayoutAlgorithm {
   // BlockBreakToken.
   explicit LayoutAlgorithm(const LayoutAlgorithmParams& params)
       : node_(To<InputNodeType>(params.node)),
-        early_break_(params.early_break),
+        early_break_(params.fragmentation.early_break),
         container_builder_(
             params.node,
             &params.node.Style(),
             params.space,
             {params.space.GetWritingMode(), params.space.Direction()},
-            params.break_token),
+            params.fragmentation.break_token),
         additional_early_breaks_(params.additional_early_breaks) {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
     if (params.space.HasBlockFragmentation() ||
-        IsBreakInside(params.break_token)) [[unlikely]] {
-      SetupFragmentBuilderForFragmentation(
-          params.space, params.node, params.break_token, &container_builder_);
+        IsBreakInside(params.fragmentation.break_token)) [[unlikely]] {
+      SetupFragmentBuilderForFragmentation(params.space, params.node,
+                                           params.fragmentation.break_token,
+                                           &container_builder_);
     }
   }
 
@@ -196,6 +195,17 @@ class CORE_EXPORT LayoutAlgorithm {
         FragmentainerCapacityForChildren(), appeal_before, &container_builder_);
   }
 
+  // Before layout of a child, set up fragmentation layout input.
+  FragmentationLayoutInput GetFragmentationLayoutInputForChild(
+      BlockNode child,
+      const BlockBreakToken* child_break_token) {
+    if (!InvolvedInBlockFragmentation(container_builder_)) {
+      return FragmentationLayoutInput();
+    }
+    return ::blink::GetFragmentationLayoutInputForChild(
+        child, child_break_token, early_break_, container_builder_);
+  }
+
   // Carry over any previous relayout data from the previous layout algorithm,
   // and set up any new relayout data for the additional relayout type.
   // Subclasses that have data to set up on their own should override this
@@ -253,8 +263,8 @@ class CORE_EXPORT LayoutAlgorithm {
     LayoutAlgorithmParams params(
         Node(), container_builder_.InitialFragmentGeometry(),
         new_space ? new_space.value() : GetConstraintSpace());
-    params.break_token = GetBreakToken();
-    params.early_break = breakpoint;
+    params.fragmentation.break_token = GetBreakToken();
+    params.fragmentation.early_break = breakpoint;
     params.additional_early_breaks = additional_early_breaks;
 
     Algorithm relayout_algorithm(params);

@@ -318,19 +318,12 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
     const BlockBreakToken* content_break_token,
     LogicalSize adjusted_padding_box_size,
     bool has_legend) {
-  const EarlyBreak* early_break_in_child = nullptr;
-  if (early_break_) [[unlikely]] {
-    if (IsEarlyBreakTarget(*early_break_, container_builder_,
-                           fieldset_content)) {
-      container_builder_.AddBreakBeforeChild(fieldset_content,
-                                             kBreakAppealPerfect,
-                                             /* is_forced_break */ false);
-      ConsumeRemainingFragmentainerSpace();
-      return BreakStatus::kContinue;
-    } else {
-      early_break_in_child =
-          EnterEarlyBreakInChild(fieldset_content, *early_break_);
-    }
+  if (early_break_ &&
+      IsEarlyBreakTarget(*early_break_, container_builder_, fieldset_content)) {
+    container_builder_.AddBreakBeforeChild(
+        fieldset_content, kBreakAppealPerfect, /*is_forced_break=*/false);
+    ConsumeRemainingFragmentainerSpace();
+    return BreakStatus::kContinue;
   }
 
   const LayoutResult* result = nullptr;
@@ -343,14 +336,16 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
         Style().LogicalMaxHeight());
   }
 
+  FragmentationLayoutInput fragmentation = GetFragmentationLayoutInputForChild(
+      fieldset_content, content_break_token);
+
   // If we are past the block-end and had previously laid out the content with a
   // block-size limitation, skip the normal layout call and apply the block-size
   // limitation for all future fragments.
   if (!is_past_end || max_content_block_size == LayoutUnit::Max()) {
     auto child_space = CreateConstraintSpaceForFieldsetContent(
         fieldset_content, adjusted_padding_box_size, intrinsic_block_size_);
-    result = fieldset_content.Layout(child_space, content_break_token,
-                                     early_break_in_child);
+    result = fieldset_content.Layout(child_space, fragmentation);
   }
 
   // If the following conditions meet, the content should be laid out with
@@ -387,8 +382,7 @@ BreakStatus FieldsetLayoutAlgorithm::LayoutFieldsetContent(
       adjusted_padding_box_size.block_size = max_content_block_size;
       auto adjusted_child_space = CreateConstraintSpaceForFieldsetContent(
           fieldset_content, adjusted_padding_box_size, intrinsic_block_size_);
-      result = fieldset_content.Layout(
-          adjusted_child_space, content_break_token, early_break_in_child);
+      result = fieldset_content.Layout(adjusted_child_space, fragmentation);
     }
   }
   DCHECK(result);

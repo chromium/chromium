@@ -542,6 +542,13 @@ bool AttemptSoftBreak(
     std::optional<LayoutUnit> block_size_override = std::nullopt,
     FlexColumnBreakInfo* flex_column_break_info = nullptr);
 
+// Before layout of a child, set up fragmentation layout input.
+FragmentationLayoutInput GetFragmentationLayoutInputForChild(
+    BlockNode child,
+    const BlockBreakToken* child_break_token,
+    const EarlyBreak*,
+    const BoxFragmentBuilder&);
+
 // If we have an previously found break point, and we're entering an ancestor of
 // the node we're going to break before, return the early break inside. This can
 // then be passed to child layout, so that child layout eventually can tell

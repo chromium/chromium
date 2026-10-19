@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/layout_box.h"
-
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_layout_input.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -71,9 +71,7 @@ bool LayoutBox::IsUserScrollable() const {
 
 const LayoutResult* LayoutBox::CachedLayoutResult(
     const ConstraintSpace& new_space,
-    const BlockBreakToken* break_token,
-    const EarlyBreak* early_break,
-    const ColumnSpannerPath* column_spanner_path,
+    const FragmentationLayoutInput& fragmentation,
     std::optional<FragmentGeometry>* initial_fragment_geometry,
     LayoutCacheStatus* out_cache_status) {
   NOT_DESTROYED();
@@ -87,9 +85,11 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
     return nullptr;
   }
 
-  if (early_break) {
+  if (fragmentation.early_break) {
     return nullptr;
   }
+
+  const BlockBreakToken* break_token = fragmentation.break_token;
 
   const bool use_layout_cache_slot =
       new_space.CacheSlot() == LayoutResultCacheSlot::kLayout &&
@@ -316,7 +316,8 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
       if (physical_fragment.HasOutOfFlowFragmentChild())
         return nullptr;
 
-      if (column_spanner_path || cached_layout_result->GetColumnSpannerPath()) {
+      if (fragmentation.column_spanner_path ||
+          cached_layout_result->GetColumnSpannerPath()) {
         return nullptr;
       }
 

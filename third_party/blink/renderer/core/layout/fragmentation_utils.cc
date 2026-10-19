@@ -1354,6 +1354,18 @@ bool AttemptSoftBreak(LayoutInputNode child,
   return true;
 }
 
+FragmentationLayoutInput GetFragmentationLayoutInputForChild(
+    BlockNode child,
+    const BlockBreakToken* child_break_token,
+    const EarlyBreak* early_break,
+    const BoxFragmentBuilder& builder) {
+  const EarlyBreak* early_break_in_child = nullptr;
+  if (early_break) {
+    early_break_in_child = EnterEarlyBreakInChild(child, *early_break);
+  }
+  return FragmentationLayoutInput(child_break_token, early_break_in_child);
+}
+
 const EarlyBreak* EnterEarlyBreakInChild(const BlockNode& child,
                                          const EarlyBreak& early_break) {
   if (early_break.Type() != EarlyBreak::kBlock ||

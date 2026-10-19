@@ -1860,6 +1860,8 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
       grid_area.offset.block_offset +=
           (*row_offset_adjustments)[item_row_set_index] +
           *cumulative_gap_offset_adjustment - *offset_in_stitched_container;
+      FragmentationLayoutInput fragmentation =
+          GetFragmentationLayoutInputForChild(grid_item.node, break_token);
 
       // Check to see if this child should be placed within this fragmentainer.
       // We base this calculation on the grid-area rather than the offset.
@@ -1879,7 +1881,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           // inside balanced multicol, so we need to figure out how much more
           // fragmentainer space we'd need to fit more content.
           DisableLayoutSideEffectsScope disable_side_effects;
-          auto* result = grid_item.node.Layout(space, break_token);
+          auto* result = grid_item.node.Layout(space, fragmentation);
           PropagateSpaceShortage(result, fragmentainer_block_offset,
                                  fragmentainer_block_size, &container_builder_);
         }
@@ -1899,7 +1901,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
         continue;
       }
 
-      auto* result = grid_item.node.Layout(space, break_token);
+      auto* result = grid_item.node.Layout(space, fragmentation);
       DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
       result_and_offsets.emplace_back(
           result,

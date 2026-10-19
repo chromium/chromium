@@ -548,7 +548,7 @@ const PhysicalBoxFragment& ColumnLayoutAlgorithm::CreateEmptyColumn(
   FragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(child_space, node, break_token);
   LayoutAlgorithmParams params(node, fragment_geometry, child_space);
-  params.break_token = break_token;
+  params.fragmentation.break_token = break_token;
   SimplifiedOofLayoutAlgorithm child_algorithm(params, previous_column);
   child_algorithm.ResumeColumnLayout(break_token);
   return To<PhysicalBoxFragment>(
@@ -986,8 +986,8 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
           child_space, Node(), GetBreakToken());
 
       LayoutAlgorithmParams params(Node(), fragment_geometry, child_space);
-      params.break_token = column_break_token;
-      params.column_spanner_path = spanner_path_;
+      params.fragmentation.break_token = column_break_token;
+      params.fragmentation.column_spanner_path = spanner_path_;
 
       BlockLayoutAlgorithm child_algorithm(params);
       child_algorithm.SetBoxType(PhysicalFragment::kColumnBox);
@@ -1394,18 +1394,14 @@ BreakStatus ColumnLayoutAlgorithm::LayoutSpanner(
   // of an immediately preceding spanner, if any.
   margin_strut->Append(margins.block_start, /* is_quirky */ false);
 
-  const EarlyBreak* early_break_in_child = nullptr;
-  if (early_break_) [[unlikely]] {
-    early_break_in_child = EnterEarlyBreakInChild(spanner_node, *early_break_);
-  }
-
   LayoutUnit block_offset;
   auto layout = [&]() {
     block_offset = intrinsic_block_size_ + margin_strut->Sum();
     auto spanner_space =
         CreateConstraintSpaceForSpanner(spanner_node, block_offset);
-    return spanner_node.Layout(spanner_space, break_token,
-                               early_break_in_child);
+    FragmentationLayoutInput fragmentation =
+        GetFragmentationLayoutInputForChild(spanner_node, break_token);
+    return spanner_node.Layout(spanner_space, fragmentation);
   };
   const LayoutResult* result = layout();
 
@@ -1681,8 +1677,8 @@ LayoutUnit ColumnLayoutAlgorithm::ResolveColumnAutoBlockSizeInternal(
       /*column_known_to_fit_in_outer_fragmentainer=*/false);
   do {
     LayoutAlgorithmParams params(Node(), fragment_geometry, space);
-    params.break_token = break_token;
-    params.column_spanner_path = spanner_path_;
+    params.fragmentation.break_token = break_token;
+    params.fragmentation.column_spanner_path = spanner_path_;
     BlockLayoutAlgorithm balancing_algorithm(params);
     balancing_algorithm.SetBoxType(PhysicalFragment::kColumnBox);
     const LayoutResult* result = balancing_algorithm.Layout();

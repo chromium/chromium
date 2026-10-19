@@ -406,9 +406,9 @@ void AttachScrollMarkers(LayoutObject& parent,
 
 const LayoutResult* BlockNode::Layout(
     const ConstraintSpace& constraint_space,
-    const BlockBreakToken* break_token,
-    const EarlyBreak* early_break,
-    const ColumnSpannerPath* column_spanner_path) const {
+    const FragmentationLayoutInput& fragmentation) const {
+  const BlockBreakToken* break_token = fragmentation.break_token;
+
   // The exclusion space internally is a pointer to a shared vector, and
   // equality of exclusion spaces is performed using pointer comparison on this
   // internal shared vector.
@@ -433,8 +433,7 @@ const LayoutResult* BlockNode::Layout(
     box_->GetFrameView()->IncBlockLayoutCount();
 
   const LayoutResult* layout_result = box_->CachedLayoutResult(
-      constraint_space, break_token, early_break, column_spanner_path,
-      &fragment_geometry, &cache_status);
+      constraint_space, fragmentation, &fragment_geometry, &cache_status);
 
   if ((cache_status == LayoutCacheStatus::kHit ||
        cache_status == LayoutCacheStatus::kNeedsSimplifiedLayout) &&
@@ -510,17 +509,14 @@ const LayoutResult* BlockNode::Layout(
       // elements in the subtree, so that we need full layout instead of
       // simplified layout, for instance.
       layout_result = box_->CachedLayoutResult(
-          constraint_space, break_token, early_break, column_spanner_path,
-          &fragment_geometry, &cache_status);
+          constraint_space, fragmentation, &fragment_geometry, &cache_status);
     }
   }
 
   PrepareForLayout();
 
   LayoutAlgorithmParams params(*this, *fragment_geometry, constraint_space);
-  params.break_token = break_token;
-  params.early_break = early_break;
-  params.column_spanner_path = column_spanner_path;
+  params.fragmentation = fragmentation;
 
   auto* block_flow = DynamicTo<LayoutBlockFlow>(box_.Get());
 
@@ -741,7 +737,7 @@ const LayoutResult* BlockNode::LayoutRepeatableRoot(
   if (is_first) {
     // We're generating the first fragment for repeated content. Perform regular
     // layout.
-    result = Layout(constraint_space, break_token);
+    result = Layout(constraint_space, FragmentationLayoutInput(break_token));
     DCHECK(!result->GetPhysicalFragment().GetBreakToken());
   } else {
     // We're repeating. Create a shallow clone of the first result. Once we're

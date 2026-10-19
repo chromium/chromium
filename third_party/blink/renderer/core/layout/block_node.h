@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_layout_input.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -16,9 +17,7 @@
 namespace blink {
 
 class BlockBreakToken;
-class ColumnSpannerPath;
 class ConstraintSpace;
-class EarlyBreak;
 class InlineNode;
 class LayoutBox;
 class LayoutResult;
@@ -38,9 +37,7 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   BlockNode(std::nullptr_t) : LayoutInputNode(nullptr) {}
 
   const LayoutResult* Layout(const ConstraintSpace& constraint_space,
-                             const BlockBreakToken* break_token = nullptr,
-                             const EarlyBreak* = nullptr,
-                             const ColumnSpannerPath* = nullptr) const;
+                             const FragmentationLayoutInput& = {}) const;
 
   // This method is just for use within the |SimplifiedLayoutAlgorithm|.
   //

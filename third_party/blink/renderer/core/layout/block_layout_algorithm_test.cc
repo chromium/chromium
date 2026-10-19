@@ -62,7 +62,7 @@ class BlockLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     LayoutCacheStatus cache_status;
     std::optional<FragmentGeometry> initial_fragment_geometry;
     return To<LayoutBlockFlow>(node.GetLayoutBox())
-        ->CachedLayoutResult(space, nullptr, nullptr, nullptr,
+        ->CachedLayoutResult(space, FragmentationLayoutInput(),
                              &initial_fragment_geometry, &cache_status);
   }
 

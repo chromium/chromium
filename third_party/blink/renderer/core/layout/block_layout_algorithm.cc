@@ -108,36 +108,6 @@ inline bool IsLastInflowChild(const LayoutBox& box) {
   return true;
 }
 
-inline const LayoutResult* LayoutBlockChild(
-    const ConstraintSpace& space,
-    const BreakToken* break_token,
-    const EarlyBreak* early_break,
-    const ColumnSpannerPath* column_spanner_path,
-    BlockNode* node) {
-  const EarlyBreak* early_break_in_child = nullptr;
-  if (early_break) [[unlikely]] {
-    early_break_in_child = EnterEarlyBreakInChild(*node, *early_break);
-  }
-  column_spanner_path = FollowColumnSpannerPath(column_spanner_path, *node);
-  return node->Layout(space, To<BlockBreakToken>(break_token),
-                      early_break_in_child, column_spanner_path);
-}
-
-inline const LayoutResult* LayoutInflow(
-    const ConstraintSpace& space,
-    const BreakToken* break_token,
-    const EarlyBreak* early_break,
-    const ColumnSpannerPath* column_spanner_path,
-    LayoutInputNode* node,
-    InlineChildLayoutContext* context) {
-  if (auto* inline_node = DynamicTo<InlineNode>(node)) {
-    return inline_node->Layout(space, break_token, column_spanner_path,
-                               context);
-  }
-  return LayoutBlockChild(space, break_token, early_break, column_spanner_path,
-                          To<BlockNode>(node));
-}
-
 AdjoiningObjectTypes ToAdjoiningObjectTypes(EClear clear) {
   switch (clear) {
     default:
@@ -308,10 +278,10 @@ LayoutUnit WebkitTextAlignAndJustifySelfOffset(
 BlockLayoutAlgorithm::BlockLayoutAlgorithm(const LayoutAlgorithmParams& params)
     : LayoutAlgorithm(params),
       previous_result_(params.previous_result),
-      column_spanner_path_(params.column_spanner_path),
+      column_spanner_path_(params.fragmentation.column_spanner_path),
       line_clamp_data_(params.space.GetLineClampData()),
       fit_all_lines_(false),
-      is_resuming_(IsBreakInside(params.break_token)),
+      is_resuming_(IsBreakInside(params.fragmentation.break_token)),
       abort_when_bfc_block_offset_updated_(false),
       has_break_opportunity_before_next_child_(false) {
   container_builder_.SetExclusionSpace(params.space.GetExclusionSpace());
@@ -1802,11 +1772,13 @@ void BlockLayoutAlgorithm::HandleFloat(
     }
   }
 
+  FragmentationLayoutInput fragmentation =
+      GetFragmentationLayoutInputForChild(child, child_break_token);
   UnpositionedFloat unpositioned_float(
-      child, child_break_token, ChildAvailableSize(),
-      PercentageSizeForChild(child), origin_bfc_offset, constraint_space,
-      Style(), FragmentainerCapacityForChildren(),
-      FragmentainerOffsetForChildren(), line_clamp_data_.data.FloatState());
+      child, fragmentation, ChildAvailableSize(), PercentageSizeForChild(child),
+      origin_bfc_offset, constraint_space, Style(),
+      FragmentainerCapacityForChildren(), FragmentainerOffsetForChildren(),
+      line_clamp_data_.data.FloatState());
 
   if (!container_builder_.BfcBlockOffset()) {
     container_builder_.AddAdjoiningObjectTypes(
@@ -2207,9 +2179,9 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
     // exclusion space.
     DCHECK(child_space.GetExclusionSpace().IsEmpty());
 
-    const LayoutResult* layout_result = LayoutBlockChild(
-        child_space, child_break_token, early_break_,
-        /* column_spanner_path */ nullptr, &To<BlockNode>(child));
+    const LayoutResult* layout_result = child.Layout(
+        child_space,
+        GetFragmentationLayoutInputForChild(child, child_break_token));
 
     // Since this child establishes a new formatting context, no exclusion space
     // should be returned.
@@ -2392,9 +2364,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleInflow(
       child.IsInline() ? previous_inflow_position->block_end_annotation_space
                        : previous_inflow_position
                              ->previous_sibling_block_end_annotation_space);
-  const LayoutResult* layout_result =
-      LayoutInflow(child_space, child_break_token, early_break_,
-                   column_spanner_path_, &child, inline_child_layout_context);
+  const LayoutResult* layout_result = LayoutInflow(
+      child_space, child, child_break_token, inline_child_layout_context);
 
   // To save space of the stack when we recurse into |BlockNode::Layout|
   // above, the rest of this function is continued within |FinishInflow|.
@@ -2606,9 +2577,8 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
         /* is_new_fc */ false, child_bfc_block_offset,
         /* has_clearance_past_adjoining_floats */ false,
         previous_inflow_position->previous_sibling_block_end_annotation_space);
-    layout_result =
-        LayoutInflow(new_child_space, child_break_token, early_break_,
-                     column_spanner_path_, &child, inline_child_layout_context);
+    layout_result = LayoutInflow(new_child_space, child, child_break_token,
+                                 inline_child_layout_context);
 
     if (layout_result->Status() == LayoutResult::kBfcBlockOffsetResolved) {
       // Even a second layout pass may abort, if the BFC block offset initially
@@ -2630,8 +2600,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
           /* has_clearance_past_adjoining_floats */ false,
           previous_inflow_position
               ->previous_sibling_block_end_annotation_space);
-      layout_result = LayoutInflow(final_child_space, child_break_token,
-                                   early_break_, column_spanner_path_, &child,
+      layout_result = LayoutInflow(final_child_space, child, child_break_token,
                                    inline_child_layout_context);
     }
 
@@ -2831,6 +2800,24 @@ LayoutResult::EStatus BlockLayoutAlgorithm::FinishInflow(
   }
 
   return LayoutResult::kSuccess;
+}
+
+const LayoutResult* BlockLayoutAlgorithm::LayoutInflow(
+    const ConstraintSpace& child_space,
+    LayoutInputNode child,
+    const BreakToken* child_break_token,
+    InlineChildLayoutContext* context) {
+  if (auto* inline_child = DynamicTo<InlineNode>(&child)) {
+    return inline_child->Layout(child_space, child_break_token,
+                                column_spanner_path_, context);
+  }
+
+  BlockNode block_child = To<BlockNode>(child);
+  FragmentationLayoutInput fragmentation = GetFragmentationLayoutInputForChild(
+      block_child, To<BlockBreakToken>(child_break_token));
+  fragmentation.column_spanner_path =
+      FollowColumnSpannerPath(column_spanner_path_, block_child);
+  return block_child.Layout(child_space, fragmentation);
 }
 
 void BlockLayoutAlgorithm::UpdateTextBoxTrim(

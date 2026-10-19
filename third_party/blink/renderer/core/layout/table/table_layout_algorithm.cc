@@ -127,10 +127,9 @@ TableLayoutAlgorithm::CaptionResult LayoutCaption(
     const ConstraintSpace& caption_constraint_space,
     const BlockNode& caption,
     BoxStrut margins,
-    const BlockBreakToken* break_token = nullptr,
-    const EarlyBreak* early_break = nullptr) {
+    const FragmentationLayoutInput& fragmentation = {}) {
   const LayoutResult* layout_result =
-      caption.Layout(caption_constraint_space, break_token, early_break);
+      caption.Layout(caption_constraint_space, fragmentation);
   DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
   LogicalFragment fragment(table_constraint_space.GetWritingDirection(),
@@ -1202,22 +1201,21 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
        BlockNode child = entry.GetNode(); entry = child_iterator.NextChild()) {
     DCHECK(child.IsTableCaption() || child.IsTableSection());
 
-    const EarlyBreak* early_break_in_child = nullptr;
-    if (early_break_) [[unlikely]] {
-      if (IsEarlyBreakTarget(*early_break_, container_builder_, child)) {
-        container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
-                                               /* is_forced_break */ false);
-        broke_inside = true;
+    if (early_break_ &&
+        IsEarlyBreakTarget(*early_break_, container_builder_, child)) {
+      container_builder_.AddBreakBeforeChild(child, kBreakAppealPerfect,
+                                             /*is_forced_break=*/false);
+      broke_inside = true;
 
-        if (child == grouped_children.footer)
-          has_pending_repeated_footer = false;
-
-        break;
+      if (child == grouped_children.footer) {
+        has_pending_repeated_footer = false;
       }
-      early_break_in_child = EnterEarlyBreakInChild(child, *early_break_);
+      break;
     }
 
     const BlockBreakToken* child_break_token = entry.GetBreakToken();
+    FragmentationLayoutInput fragmentation =
+        GetFragmentationLayoutInputForChild(child, child_break_token);
     const LayoutResult* child_result;
     std::optional<LayoutUnit> offset_before_repeated_header;
     LayoutUnit child_inline_offset;
@@ -1271,7 +1269,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
           child_block_offset + child_block_start_margin);
       CaptionResult caption = LayoutCaption(
           constraint_space, Style(), container_builder_.InlineSize(),
-          child_space, child, margins, child_break_token, early_break_in_child);
+          child_space, child, margins, fragmentation);
       DCHECK_EQ(caption.layout_result->Status(), LayoutResult::kSuccess);
       child_result = caption.layout_result;
       child_inline_offset = caption.margins.inline_start;
@@ -1368,8 +1366,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
         child_result =
             child.LayoutRepeatableRoot(child_space, child_break_token);
       } else {
-        child_result =
-            child.Layout(child_space, child_break_token, early_break_in_child);
+        child_result = child.Layout(child_space, fragmentation);
       }
       child_inline_offset = section_inline_offset;
 

@@ -1105,10 +1105,11 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
       }
     }
 
-    // TODO(almaher): We will eventually want to pass in `early_break_in_child`,
-    // too.
+    // TODO(almaher): Make early-breaks work.
+    FragmentationLayoutInput fragmentation =
+        GetFragmentationLayoutInputForChild(item.node, item_break_token);
     const LayoutResult* layout_result =
-        item.node.Layout(child_space, item_break_token);
+        item.node.Layout(child_space, fragmentation);
     DCHECK_EQ(layout_result->Status(), LayoutResult::kSuccess);
 
     // TODO(almaher): Handle break status, container separation calculation, and

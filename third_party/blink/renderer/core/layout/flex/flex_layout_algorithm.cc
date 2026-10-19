@@ -2318,7 +2318,6 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       }
     }
 
-    const EarlyBreak* early_break_in_child = nullptr;
     if (early_break_) [[unlikely]] {
       if (!is_column_)
         container_builder_.SetLineCount(flex_line_idx);
@@ -2345,9 +2344,6 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         }
         last_line_idx_to_process_first_child_ = flex_line_idx;
         continue;
-      } else {
-        early_break_in_child =
-            EnterEarlyBreakInChild(flex_item->block_node, *early_break_);
       }
     }
 
@@ -2393,8 +2389,11 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
         /* override_inline_size */ std::nullopt,
         flex_item->main_axis_final_size, line_cross_size, offset.block_offset,
         min_block_size_should_encompass_intrinsic_size);
-    const LayoutResult* layout_result = flex_item->block_node.Layout(
-        child_space, item_break_token, early_break_in_child);
+    FragmentationLayoutInput fragmentation =
+        GetFragmentationLayoutInputForChild(flex_item->block_node,
+                                            item_break_token);
+    const LayoutResult* layout_result =
+        flex_item->block_node.Layout(child_space, fragmentation);
 
     BreakStatus break_status = BreakStatus::kContinue;
     FlexColumnBreakInfo* current_column_break_info = nullptr;
@@ -3241,8 +3240,8 @@ const LayoutResult* FlexLayoutAlgorithm::RelayoutWithNewRowSizes() {
   LayoutAlgorithmParams params(Node(),
                                container_builder_.InitialFragmentGeometry(),
                                GetConstraintSpace());
-  params.break_token = GetBreakToken();
-  params.early_break = early_break_;
+  params.fragmentation.break_token = GetBreakToken();
+  params.fragmentation.early_break = early_break_;
   params.additional_early_breaks = additional_early_breaks_;
   FlexLayoutAlgorithm algorithm_with_row_cross_sizes(params,
                                                      &row_cross_size_updates_);

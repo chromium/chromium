@@ -47,10 +47,8 @@ namespace blink {
 
 class AnchorPositionScrollData;
 class BlockBreakToken;
-class ColumnSpannerPath;
 class ConstraintSpace;
 class CustomLayoutChild;
-class EarlyBreak;
 class Element;
 class GapGeometry;
 class LayoutResult;
@@ -60,6 +58,7 @@ class ShapeOutsideInfo;
 class WritingModeConverter;
 enum class LayoutCacheStatus;
 struct FragmentGeometry;
+struct FragmentationLayoutInput;
 struct NonOverflowingScrollRange;
 struct PaintInfo;
 struct PhysicalBoxStrut;
@@ -523,9 +522,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // TODO(ikilpatrick): Move this function into BlockNode.
   const LayoutResult* CachedLayoutResult(
       const ConstraintSpace&,
-      const BlockBreakToken*,
-      const EarlyBreak*,
-      const ColumnSpannerPath*,
+      const FragmentationLayoutInput&,
       std::optional<FragmentGeometry>* initial_fragment_geometry,
       LayoutCacheStatus* out_cache_status);
 

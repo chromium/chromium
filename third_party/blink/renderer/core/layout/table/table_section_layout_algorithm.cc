@@ -84,7 +84,9 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
     }
 
     ConstraintSpace row_space = row_space_builder.ToConstraintSpace();
-    const LayoutResult* row_result = row.Layout(row_space, row_break_token);
+    FragmentationLayoutInput fragmentation =
+        GetFragmentationLayoutInputForChild(row, row_break_token);
+    const LayoutResult* row_result = row.Layout(row_space, fragmentation);
 
     if (constraint_space.HasBlockFragmentation()) {
       LayoutUnit fragmentainer_block_offset =

@@ -27,8 +27,9 @@ class LayoutResultCachingTest : public RenderingTest {
       const BlockBreakToken* break_token) {
     std::optional<FragmentGeometry> fragment_geometry;
     LayoutCacheStatus cache_status;
-    return box->CachedLayoutResult(constraint_space, break_token, nullptr,
-                                   nullptr, &fragment_geometry, &cache_status);
+    return box->CachedLayoutResult(constraint_space,
+                                   FragmentationLayoutInput(break_token),
+                                   &fragment_geometry, &cache_status);
   }
 
   const LayoutResult* TestCachedLayoutResult(
@@ -39,7 +40,7 @@ class LayoutResultCachingTest : public RenderingTest {
     LayoutCacheStatus cache_status;
     const LayoutResult* result = test_box->CachedLayoutResult(
         src_box->GetCachedLayoutResult(nullptr)->GetConstraintSpaceForCaching(),
-        nullptr, nullptr, nullptr, &fragment_geometry, &cache_status);
+        FragmentationLayoutInput(), &fragment_geometry, &cache_status);
     if (out_cache_status) {
       *out_cache_status = cache_status;
     }

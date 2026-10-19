@@ -153,8 +153,9 @@ const LayoutResult* TableRowLayoutAlgorithm::Layout() {
       const auto cell_space = CreateCellConstraintSpace(
           cell, cell_break_token, cell_data, row_block_size, row_baseline,
           min_block_size_should_encompass_intrinsic_size);
-      const LayoutResult* cell_result =
-          cell.Layout(cell_space, cell_break_token);
+      FragmentationLayoutInput fragmentation =
+          GetFragmentationLayoutInputForChild(cell, cell_break_token);
+      const LayoutResult* cell_result = cell.Layout(cell_space, fragmentation);
       DCHECK_EQ(cell_result->Status(), LayoutResult::kSuccess);
 
       const LogicalOffset offset(

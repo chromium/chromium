@@ -3268,9 +3268,13 @@ void LineBreaker::HandleBlockInInline(const InlineItem& item,
         constraint_space_.CloneForBlockInInlineIfNeeded(modified_space);
     const ColumnSpannerPath* spanner_path_for_child =
         FollowColumnSpannerPath(column_spanner_path_, block_node);
+    // TODO(crbug.com/40267498): Should use
+    // GetFragmentationLayoutInputForChild() here.
+    FragmentationLayoutInput fragmentation;
+    fragmentation.break_token = block_break_token;
+    fragmentation.column_spanner_path = spanner_path_for_child;
     const LayoutResult* layout_result =
-        block_node.Layout(child_space, block_break_token,
-                          /* early_break */ nullptr, spanner_path_for_child);
+        block_node.Layout(child_space, fragmentation);
     // Ensure `NeedsCollectInlines` isn't set, or it may cause security risks.
     CHECK(!node_.GetLayoutBox()->NeedsCollectInlines());
     line_info->SetBlockInInlineLayoutResult(layout_result);
@@ -3702,7 +3706,7 @@ bool LineBreaker::CanBreakAfterRubyColumn(
 bool LineBreaker::ShouldPushFloatAfterLine(
     UnpositionedFloat* unpositioned_float,
     LineInfo* line_info) {
-  if (unpositioned_float->token) {
+  if (unpositioned_float->fragmentation.break_token) {
     return false;
   }
 
@@ -3810,8 +3814,11 @@ void LineBreaker::HandleFloat(const InlineItem& item,
       constraint_space_.GetLineClampData().FloatState();
 
   const BlockNode float_node(To<LayoutBox>(item.GetLayoutObject()));
+  // TODO(crbug.com/40267498): Should use GetFragmentationLayoutInputForChild()
+  // here.
+  FragmentationLayoutInput fragmentation(float_break_token);
   UnpositionedFloat unpositioned_float(
-      float_node, float_break_token, constraint_space_.AvailableSize(),
+      float_node, fragmentation, constraint_space_.AvailableSize(),
       float_node.IsReplaced()
           ? constraint_space_.ReplacedChildPercentageResolutionSize()
           : constraint_space_.PercentageResolutionSize(),
