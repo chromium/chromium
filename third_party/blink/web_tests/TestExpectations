@@ -7342,7 +7342,6 @@ crbug.com/455194902 [ Mac15-arm64 ] wpt_internal/speculation-rules/prefetch/no-v
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-ident.html [ Failure Pass ]
 [ Mac14 ] virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/pseudo-with-classes-match-multiple-wildcard.html [ Failure Pass ]
 
-[ Android ] external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
 [ Fuchsia ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
 [ Mac ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
 [ Win ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]

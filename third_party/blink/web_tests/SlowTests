@@ -1017,6 +1017,7 @@ crbug.com/517936094 external/wpt/wasm/core/simd/simd_f64x2_arith.wast.js.html [ 
 # Multi-case wdspec tests that exceed the 25s normal timeout on Chromium bots
 crbug.com/565447575 external/wpt/webdriver/tests/bidi/browser/create_user_context/invalid.py [ Slow ]
 crbug.com/565447575 external/wpt/webdriver/tests/bidi/browser/remove_user_context/user_context.py [ Slow ]
+crbug.com/565447575 external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Slow ]
 crbug.com/565447575 external/wpt/webdriver/tests/bidi/browsing_context/context_created/context_created.py [ Slow ]
 crbug.com/565447575 external/wpt/webdriver/tests/bidi/browsing_context/context_created/original_opener.py [ Slow ]
 crbug.com/565447575 external/wpt/webdriver/tests/bidi/browsing_context/context_created/subscribe_steps.py [ Slow ]
