@@ -348,9 +348,10 @@ void BaseRenderingContext2D::OnMemoryDump(
   CHECK(HasBacking());
   if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
     shared_image_provider_->OnMemoryDump(pmd);
+  }
+  if (!surface_) {
     return;
   }
-  CHECK(surface_);
   std::string dump_name =
       base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(surface_.get()));
