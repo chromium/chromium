@@ -7,33 +7,23 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "components/sessions/core/tab_restore_service.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace sessions {
-class TabRestoreService;
-}
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all TabRestoreServices and associates them with
 // ProfileIOS.
-class IOSChromeTabRestoreServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSChromeTabRestoreServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeTabRestoreServiceFactory,
+          sessions::TabRestoreService> {
  public:
-  static sessions::TabRestoreService* GetForProfile(ProfileIOS* profile);
-  static IOSChromeTabRestoreServiceFactory* GetInstance();
+  explicit IOSChromeTabRestoreServiceFactory(PassKey key);
 
   // Returns the default factory used to build TabRestoreServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<IOSChromeTabRestoreServiceFactory>;
-
-  IOSChromeTabRestoreServiceFactory();
-  ~IOSChromeTabRestoreServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

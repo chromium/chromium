@@ -7,27 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class SessionRestorationService;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all SessionRestorationService and associates them with
 // ProfileIOS.
 class SessionRestorationServiceFactory final
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SessionRestorationServiceFactory,
+          SessionRestorationService> {
  public:
-  static SessionRestorationService* GetForProfile(ProfileIOS* profile);
-  static SessionRestorationServiceFactory* GetInstance();
+  explicit SessionRestorationServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SessionRestorationServiceFactory>;
-
-  SessionRestorationServiceFactory();
-  ~SessionRestorationServiceFactory() final;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const final;

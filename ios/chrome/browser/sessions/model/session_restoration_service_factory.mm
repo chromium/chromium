@@ -18,26 +18,11 @@ constexpr base::TimeDelta kSaveDelay = base::Seconds(2.5);
 
 }  // namespace
 
-// static
-SessionRestorationService* SessionRestorationServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<SessionRestorationService>(
-      profile, /*create=*/true);
-}
-
-// static
-SessionRestorationServiceFactory*
-SessionRestorationServiceFactory::GetInstance() {
-  static base::NoDestructor<SessionRestorationServiceFactory> instance;
-  return instance.get();
-}
-
-SessionRestorationServiceFactory::SessionRestorationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SessionRestorationService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
-
-SessionRestorationServiceFactory::~SessionRestorationServiceFactory() = default;
+SessionRestorationServiceFactory::SessionRestorationServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "SessionRestorationService",
+          ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 SessionRestorationServiceFactory::BuildServiceInstanceFor(
