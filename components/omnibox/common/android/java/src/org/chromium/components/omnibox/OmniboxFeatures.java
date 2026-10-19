@@ -249,14 +249,12 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.AIM_SUPPRESS_VERBATIM_MATCH, FeatureState.ENABLED_IN_PROD);
 
     /**
-     * Gates the AI Mode entrypoint for third party search engines. Disabled in prod on Android,
-     * mirroring the native default, until the Android entrypoint UI is implemented; enabled in
-     * tests so that UI can be exercised without per-test opt-in. Even when enabled, the entrypoint
-     * is additionally gated per search engine on whether that engine declares an {@code
+     * Gates the AI Mode entrypoint for third party search engines. Even when enabled, the
+     * entrypoint is additionally gated per search engine on whether that engine declares an {@code
      * AiModeButtonUiConfig}.
      */
     public static final CachedFlag sAim3pEntrypoint =
-            newFlag(OmniboxFeatureList.AIM3P_ENTRYPOINT, FeatureState.ENABLED_IN_TEST);
+            newFlag(OmniboxFeatureList.AIM3P_ENTRYPOINT, FeatureState.ENABLED_IN_PROD);
 
     // Shows the preview match's favicon in the status view. Originally and incorrectly called exact
     // match. The feature string remains exact, but java code should be updated to the right name.
