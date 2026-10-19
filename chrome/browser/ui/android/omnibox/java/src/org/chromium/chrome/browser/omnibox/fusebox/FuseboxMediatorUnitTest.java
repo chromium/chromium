@@ -326,14 +326,15 @@ public class FuseboxMediatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
-        mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
+        mResourceProvider =
+                new OmniboxResourceProvider(
+                        mContext, BrandedColorScheme.APP_DEFAULT, mTabFaviconFactory);
         mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
         mModel.set(FuseboxProperties.FUSEBOX_LAYOUT_MODE, FuseboxLayoutMode.TOOLBAR);
 
         mAttachments = new FuseboxAttachmentModelList();
         mAttachments.setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
-        OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFactory);
         lenient().doReturn(BITMAP).when(mTabFaviconFactory).apply(any());
         lenient()
                 .when(mComposeboxQueryControllerBridge.getInputStateSupplier())

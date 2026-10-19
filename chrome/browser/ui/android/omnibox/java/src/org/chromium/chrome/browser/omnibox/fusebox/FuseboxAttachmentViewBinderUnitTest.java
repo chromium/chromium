@@ -58,6 +58,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     private View mView;
     private Context mContext;
     private FuseboxAttachmentViewBinder mBinder;
+    private Bitmap mTabFavicon;
 
     @Before
     public void setUp() {
@@ -69,7 +70,8 @@ public class FuseboxAttachmentViewBinderUnitTest {
                         .inflate(R.layout.fusebox_attachment_layout, /* root= */ null);
         mView.setLayoutParams(new LayoutParams(100, 100));
         var resourceProvider =
-                new OmniboxResourceProvider(activity, BrandedColorScheme.APP_DEFAULT);
+                new OmniboxResourceProvider(
+                        activity, BrandedColorScheme.APP_DEFAULT, tab -> mTabFavicon);
         mBinder = new FuseboxAttachmentViewBinder(resourceProvider);
         PropertyModelChangeProcessor.create(mModel, mView, mBinder::bind);
         mContext = mView.getContext();
@@ -78,7 +80,6 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @After
     public void tearDown() {
         mActivityController.close();
-        OmniboxResourceProvider.setTabFaviconFactory(null);
     }
 
     @Test
@@ -362,7 +363,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     public void testGetThumbnailDrawable_TabWithFavicon_ReturnsFavicon() {
         // Tab attachment with favicon.
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
-        OmniboxResourceProvider.setTabFaviconFactory(t -> bitmap);
+        mTabFavicon = bitmap;
         doReturn(1).when(mTab).getId();
         doReturn("Title").when(mTab).getTitle();
 
@@ -381,7 +382,7 @@ public class FuseboxAttachmentViewBinderUnitTest {
     @Test
     public void testGetThumbnailDrawable_TabNoFavicon_ReturnsGlobeIcon() {
         // Tab attachment without favicon (fallback).
-        OmniboxResourceProvider.setTabFaviconFactory(t -> null);
+        mTabFavicon = null;
 
         FuseboxAttachment attachment =
                 FuseboxAttachment.forTab(

@@ -640,16 +640,6 @@ public class OmniboxResourceProviderUnitTest {
                 OmniboxResourceProvider.getUrlBarPrimaryTextColor(
                         mContext, BrandedColorScheme.INCOGNITO),
                 provider.getUrlBarPrimaryTextColor());
-
-        // Test constructor that resolves scheme.
-        OmniboxResourceProvider provider2 =
-                new OmniboxResourceProvider(mContext, /* isIncognitoBranded= */ false, Color.WHITE);
-        @BrandedColorScheme
-        int expectedScheme =
-                OmniboxResourceProvider.getBrandedColorScheme(mContext, false, Color.WHITE);
-        assertEquals(
-                OmniboxResourceProvider.getUrlBarPrimaryTextColor(mContext, expectedScheme),
-                provider2.getUrlBarPrimaryTextColor());
     }
 
     @Test

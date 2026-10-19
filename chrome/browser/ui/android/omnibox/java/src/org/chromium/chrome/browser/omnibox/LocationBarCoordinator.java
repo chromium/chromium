@@ -298,8 +298,11 @@ public class LocationBarCoordinator
         mResourceProvider =
                 new OmniboxResourceProvider(
                         context,
-                        locationBarDataProvider.isIncognitoBranded(),
-                        locationBarDataProvider.getPrimaryColor());
+                        OmniboxResourceProvider.getBrandedColorScheme(
+                                context,
+                                locationBarDataProvider.isIncognitoBranded(),
+                                locationBarDataProvider.getPrimaryColor()),
+                        tabFaviconFunction);
 
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
@@ -314,7 +317,6 @@ public class LocationBarCoordinator
         mUrlBar = mLocationBarLayout.findViewById(R.id.url_bar);
         final boolean isIncognito =
                 incognitoStateProvider != null && incognitoStateProvider.isIncognitoSelected();
-        OmniboxResourceProvider.setTabFaviconFactory(tabFaviconFunction);
         mWindowFocusSupplier = new WindowFocusSupplier(activityLifecycleDispatcher, windowAndroid);
         mFuseboxCoordinator =
                 new FuseboxCoordinator(

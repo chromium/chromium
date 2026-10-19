@@ -90,7 +90,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     private static final String TAG = "OmniboxResourceProvider";
 
     private static SparseArray<String> sStringCache = new SparseArray<>();
-    private static @Nullable Function<Tab, @Nullable Bitmap> sTabFaviconFactory;
     private static @ColorInt @Nullable Integer sUrlBarPrimaryTextColorForTesting;
     private static @ColorInt @Nullable Integer sUrlBarHintTextColorForTesting;
 
@@ -105,10 +104,24 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     private ResourceCache mCache;
 
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
+    private final @Nullable Function<Tab, @Nullable Bitmap> mTabFaviconFactory;
 
     public OmniboxResourceProvider(Context context, @BrandedColorScheme int brandedColorScheme) {
+        this(context, brandedColorScheme, /* tabFaviconFactory= */ null);
+    }
+
+    /**
+     * @param context The context to resolve resources with.
+     * @param brandedColorScheme The initial {@link BrandedColorScheme}.
+     * @param tabFaviconFactory The function returning the favicon for a given tab.
+     */
+    public OmniboxResourceProvider(
+            Context context,
+            @BrandedColorScheme int brandedColorScheme,
+            @Nullable Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
         mContext = context;
         mBrandedColorScheme = brandedColorScheme;
+        mTabFaviconFactory = tabFaviconFactory;
         mContext.registerComponentCallbacks(this);
         updateStateAndCache(context.getResources().getConfiguration());
     }
@@ -116,14 +129,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     /** Unregisters context callbacks. */
     public void destroy() {
         mContext.unregisterComponentCallbacks(this);
-    }
-
-    /**
-     * Constructor that resolves the branded color scheme from incognito state and background color.
-     */
-    public OmniboxResourceProvider(
-            Context context, boolean isIncognitoBranded, @ColorInt int primaryBackgroundColor) {
-        this(context, getBrandedColorScheme(context, isIncognitoBranded, primaryBackgroundColor));
     }
 
     @Override
@@ -1080,12 +1085,8 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
      * @param tab The tab to retrieve the favicon for.
      */
     public @Nullable Bitmap getTabFavicon(Tab tab) {
-        if (sTabFaviconFactory == null) return null;
-        return sTabFaviconFactory.apply(tab);
-    }
-
-    public static void setTabFaviconFactory(Function<Tab, @Nullable Bitmap> tabFaviconFactory) {
-        sTabFaviconFactory = tabFaviconFactory;
+        if (mTabFaviconFactory == null) return null;
+        return mTabFaviconFactory.apply(tab);
     }
 
     public static void disableCachesForTesting() {

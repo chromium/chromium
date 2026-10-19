@@ -132,6 +132,7 @@ public class FuseboxCoordinatorUnitTest {
     private ActivityController<TestActivity> mActivityController;
     private ConstraintLayout mParent;
     private FuseboxCoordinator mCoordinator;
+    private OmniboxResourceProvider mResourceProvider;
     private SettableNonNullObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private SettableNonNullObservableSupplier<List<SuggestedTabInfo>> mSuggestedTabsSupplier;
     private SettableNonNullObservableSupplier<InputState> mInputStateSupplier;
@@ -178,7 +179,9 @@ public class FuseboxCoordinatorUnitTest {
         lenient().doReturn(mWindowInsetsCompat).when(mInsetObserver).getLastRawWindowInsets();
         lenient().doReturn(Insets.NONE).when(mWindowInsetsCompat).getInsets(anyInt());
 
-        OmniboxResourceProvider.setTabFaviconFactory(mTabFaviconFunction);
+        mResourceProvider =
+                new OmniboxResourceProvider(
+                        activity, BrandedColorScheme.APP_DEFAULT, mTabFaviconFunction);
 
         lenient().doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
         lenient().doReturn(Collections.emptyIterator()).when(mTabModel).iterator();
@@ -206,8 +209,7 @@ public class FuseboxCoordinatorUnitTest {
                         mActivityController.get(),
                         mWindowAndroid,
                         mParent,
-                        new OmniboxResourceProvider(
-                                mActivityController.get(), BrandedColorScheme.APP_DEFAULT),
+                        mResourceProvider,
                         mTabModelSelectorSupplier,
                         mTemplateUrlServiceSupplier,
                         mSnackbarManager,
@@ -221,6 +223,13 @@ public class FuseboxCoordinatorUnitTest {
     @After
     public void tearDown() {
         mActivityController.close();
+    }
+
+    /** Switches to the desktop platform and re-evaluates the shared resource provider's state. */
+    private void setIsDesktopPlatform() {
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        mResourceProvider.onConfigurationChanged(
+                mActivityController.get().getResources().getConfiguration());
     }
 
     @Test
@@ -549,7 +558,7 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     public void testGetFuseboxLayoutMode_normalStyleOnDesktop() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        setIsDesktopPlatform();
 
         FuseboxCoordinator desktopCoordinator =
                 createCoordinator(/* isForcedPhoneStyleOmnibox= */ false);
@@ -561,7 +570,7 @@ public class FuseboxCoordinatorUnitTest {
 
     @Test
     public void testGetFuseboxLayoutMode_forcedPhoneStyleOnDesktop() {
-        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        setIsDesktopPlatform();
 
         FuseboxCoordinator forcedCoordinator =
                 createCoordinator(/* isForcedPhoneStyleOmnibox= */ true);
