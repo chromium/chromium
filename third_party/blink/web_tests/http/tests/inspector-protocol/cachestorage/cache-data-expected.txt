@@ -1,5 +1,4 @@
-Tests that cache data is correctly populated in the Inspector.
-
+Tests that CacheStorage.requestCacheNames, CacheStorage.requestEntries, and CacheStorage.requestCachedResponse report cache entries, path filtering, and Vary header matching.
 Dumping CacheStorage tree:
     (empty)
 Dumping CacheStorage tree:
@@ -23,7 +22,7 @@ Dumping CacheStorage tree:
         4, /T, default, text/javascript, 0
         totalCount: 5
     cache: testCache3 - http://127.0.0.1:8000/
-        0, /devtools/resources/image.png, basic, image/png, 647
+        0, /inspector-protocol/resources/image.png, basic, image/png, 81
         1, /vars, default, text/plain, 0, Accept
         totalCount: 2
 Dumping CacheStorage tree with URL path filter string "2"
@@ -42,7 +41,7 @@ Dumping CacheStorage tree with URL path filter string "image"
     cache: testCache2 - http://127.0.0.1:8000/
         (no matching entries)
     cache: testCache3 - http://127.0.0.1:8000/
-        0, /devtools/resources/image.png, basic, image/png, 647
+        0, /inspector-protocol/resources/image.png, basic, image/png, 81
         totalCount: 1
 Dumping testCache2's entry with request URL: http://fake.request.com/1
         Y

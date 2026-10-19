@@ -107,8 +107,6 @@ crbug.com/420008 [ Mac13-arm64 ] virtual/threaded/http/tests/devtools/tracing/* 
 crbug.com/420008 [ Release Win ] virtual/threaded/http/tests/devtools/tracing/* [ Slow ]
 # Misc DevTools tests that are slow
 crbug.com/243492 inspector-protocol/injected-script-discard.js [ Slow ]
-crbug.com/678482 [ Linux ] http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
-crbug.com/678482 [ Release Win ] http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
 crbug.com/1451884 http/tests/inspector-protocol/fedcm/fedcm-confirm-idp-login.js [ Slow ]
 crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Slow ]
 crbug.com/1229701 [ Linux ] http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]

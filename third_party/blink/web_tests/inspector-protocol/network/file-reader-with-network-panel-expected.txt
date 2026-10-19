@@ -1,0 +1,4 @@
+Tests that FileReader's Blob read does not emit Network.requestWillBeSent events.
+requests in the network panel: 0
+file-reader-with-network-panel.js:6 done
+

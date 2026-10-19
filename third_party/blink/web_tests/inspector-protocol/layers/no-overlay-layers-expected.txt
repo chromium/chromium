@@ -1,0 +1,3 @@
+Tests that Overlay.highlightRect layers are not included in LayerTree.layerTreeDidChange.
+DONE
+

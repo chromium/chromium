@@ -1,3 +1,0 @@
-Tests overlay layers are not present in the layer tree
-DONE
-

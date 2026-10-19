@@ -1,20 +1,19 @@
-Tests fetch() breakpoints.
+Tests DOMDebugger.setXHRBreakpoint and DOMDebugger.removeXHRBreakpoint with fetch().
 
-
-Running: testFetchBreakpoint
+Running test: testFetchBreakpoint
 Script execution paused.
 Call stack:
-    0) sendRequest (fetch-breakpoints.js:18)
+    0) sendRequest (:4)
     1)  (:1)
 Script execution resumed.
 
-Running: testPauseOnAnyFetch
+Running test: testPauseOnAnyFetch
 Script execution paused.
 Script execution resumed.
 Script execution paused.
 Script execution resumed.
 
-Running: testDisableBreakpoint
+Running test: testDisableBreakpoint
 Script execution paused.
 Script execution resumed.
 

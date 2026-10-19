@@ -1,0 +1,7 @@
+Tests that ignored document.write() called from an external asynchronously loaded script is reported via Log.entryAdded as a warning with an async stack trace.
+external-script-with-document-write.js:2 Failed to execute 'write' on 'Document': It isn't possible to write into a document from an asynchronously-loaded external script unless it is explicitly opened.
+(anonymous) @ external-script-with-document-write.js:2
+PendingScript
+loadExternalScript @ console-document-write-from-external-script-logging.js:6
+(anonymous) @ console-document-write-from-external-script-logging.js:1
+
