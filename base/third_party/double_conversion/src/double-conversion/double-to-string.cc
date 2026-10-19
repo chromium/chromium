@@ -56,7 +56,7 @@ bool DoubleToStringConverter::HandleSpecialValues(
     StringBuilder* result_builder) const {
   Double double_inspect(value);
   if (double_inspect.IsInfinite()) {
-    if (infinity_symbol_ == NULL) return false;
+    if (infinity_symbol_ == DOUBLE_CONVERSION_NULLPTR) return false;
     if (value < 0) {
       result_builder->AddCharacter('-');
     }
@@ -64,7 +64,7 @@ bool DoubleToStringConverter::HandleSpecialValues(
     return true;
   }
   if (double_inspect.IsNan()) {
-    if (nan_symbol_ == NULL) return false;
+    if (nan_symbol_ == DOUBLE_CONVERSION_NULLPTR) return false;
     result_builder->AddString(nan_symbol_);
     return true;
   }
@@ -79,7 +79,14 @@ void DoubleToStringConverter::CreateExponentialRepresentation(
     StringBuilder* result_builder) const {
   DOUBLE_CONVERSION_ASSERT(length != 0);
   result_builder->AddCharacter(decimal_digits[0]);
-  if (length != 1) {
+  if (length == 1) {
+    if ((flags_ & EMIT_TRAILING_DECIMAL_POINT_IN_EXPONENTIAL) != 0) {
+      result_builder->AddCharacter('.');
+      if ((flags_ & EMIT_TRAILING_ZERO_AFTER_POINT_IN_EXPONENTIAL) != 0) {
+          result_builder->AddCharacter('0');
+      }
+    }
+  } else {
     result_builder->AddCharacter('.');
     result_builder->AddSubstring(&decimal_digits[1], length-1);
   }
@@ -173,7 +180,7 @@ bool DoubleToStringConverter::ToShortestIeeeNumber(
     return HandleSpecialValues(value, result_builder);
   }
 
-  int decimal_point;
+  int decimal_point = 0;
   bool sign;
   const int kDecimalRepCapacity = kBase10MaximalLength + 1;
   char decimal_rep[kDecimalRepCapacity];
@@ -398,6 +405,7 @@ void DoubleToStringConverter::DoubleToAscii(double v,
   if (mode == PRECISION && requested_digits == 0) {
     vector[0] = '\0';
     *length = 0;
+    *point = 0;
     return;
   }
 

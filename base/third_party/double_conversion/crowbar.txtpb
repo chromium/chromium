@@ -1,9 +1,9 @@
 upstream {
-  commit: "32bc443c60c860eb6b4843533a614766d611172e"
+  version: "v3.4.0"
   artifacts {
     git {
       repository: "https://github.com/google/double-conversion"
-      commit: "32bc443c60c860eb6b4843533a614766d611172e"
+      commit: "9dd6227ee3e29807183e56877f0282aeb40b8b1e"
     }
   }
 }
@@ -12,4 +12,11 @@ stages {
     patch { copybara {} }
   }
   publish { git {} }
+}
+latest {
+  semver {}
+  git {
+    repository: "https://github.com/google/double-conversion"
+    tags {}
+  }
 }

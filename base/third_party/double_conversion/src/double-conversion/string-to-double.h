@@ -86,7 +86,7 @@ class StringToDoubleConverter {
   //      This *must* start with "0x" and separate the exponent with "p".
   //      Examples: 0x1.2p3 == 9.0
   //                0x10.1p0 == 16.0625
-  //      ALLOW_HEX and ALLOW_HEX_FLOATS are indendent.
+  //      ALLOW_HEX and ALLOW_HEX_FLOATS are indented.
   //
   // empty_string_value is returned when an empty string is given as input.
   // If ALLOW_LEADING_SPACES or ALLOW_TRAILING_SPACES are set, then a string

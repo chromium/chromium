@@ -1,9 +1,7 @@
 Name: Google Double Conversion
 Short Name: double-conversion
 URL: https://github.com/google/double-conversion
-Version: N/A
-Date: 2021-05-19
-Revision: 32bc443c60c860eb6b4843533a614766d611172e
+Version: v3.4.0
 Update Mechanism: Manual
 License: BSD-3-Clause
 License File: src/LICENSE
@@ -15,7 +13,7 @@ Description:
 Provides binary-decimal and decimal-binary routines for IEEE doubles.
 
 Local Modifications:
-Added cast - https://github.com/google/double-conversion/pull/182
+None.
 
 Update instructions:
 Update commit hashes in crowbar.txtpb, then run from

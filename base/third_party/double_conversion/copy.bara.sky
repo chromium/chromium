@@ -11,7 +11,4 @@ crowbar_workflow(
             "double-conversion/SConscript",
         ],
     ),
-    transformations = [
-        patch.apply(patches = ["patches/0001-memmove_size_t_cast.patch"]),
-    ],
 )
