@@ -7921,6 +7921,7 @@ from previous Chrome versions.
   <int value="-2116440101" label="EnablePenetratingImageSelection:enabled"/>
   <int value="-2116136566" label="glic-daisy-chain-new-tabs:disabled"/>
   <int value="-2116063296" label="DesktopPartialTranslate:disabled"/>
+  <int value="-2115459648" label="GlicChromeStatusIconWin:enabled"/>
   <int value="-2115449643"
       label="ExtensionTelemetryEnterpriseShortReportingInterval:disabled"/>
   <int value="-2115078255" label="MobilePromoOnDesktopForcePromoType:disabled"/>
@@ -19663,6 +19664,7 @@ from previous Chrome versions.
   <int value="1399126464" label="DefaultBrowserPromptRefresh:disabled"/>
   <int value="1399386367" label="LocalHistoryZeroSuggestBeyondNTP:disabled"/>
   <int value="1399657075" label="IndexedDBCompressValuesWithSnappy:enabled"/>
+  <int value="1401069787" label="GlicChromeStatusIconWin:disabled"/>
   <int value="1401713551" label="glic-gemini-enterprise-settings-override"/>
   <int value="1401948539" label="TpcdSupportSettings:disabled"/>
   <int value="1402046854" label="DesktopUAOnConnectedDisplay:enabled"/>

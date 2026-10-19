@@ -1929,6 +1929,10 @@ inline constexpr char kActorTypeToolObservationStartDelayDescription[] =
 inline constexpr char kGlicCaptureRegionDescription[] =
     "Enables Glic to capture a region of the screen.";
 inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";
+inline constexpr char kGlicChromeStatusIconWinName[] =
+    "Glic Chrome Status Icon Windows";
+inline constexpr char kGlicChromeStatusIconWinDescription[] =
+    "Use an alt logo as glic OS status bar icon on Windows.";
 inline constexpr char kGlicOSIconVariantName[] = "Glic OS Status Icon Variant";
 inline constexpr char kGlicOSIconVariantDescription[] =
     "Select the variant of the Glic OS status bar icon on Mac.";
