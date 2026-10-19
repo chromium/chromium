@@ -97,28 +97,6 @@ import type {                            //
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {GlicBrowserHostActor} from '../actor/actor_client.js';
 import {GlicBrowserHostAnnotation} from '../annotation/annotation_client.js';
-import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
-import {GlicBrowserHostGeic} from '../geic/geic_client.js';
-import {maybeWrapWithLogging} from '../mojo_logging.js';
-import {GlicBrowserHostSkills} from '../skills/skills_client.js';
-import {GlicBrowserHostTools} from '../tools/tools_client.js';
-import {assertNever} from '../transport/messaging.js';
-import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
-
-import {replaceProperties} from './../conversions.js';
-import {ErrorWithReasonImpl} from './../request_types.js';
-import type {                              //
-             AdditionalContextPrivate,     //
-             AnnotatedPageDataPrivate,     //
-             FocusedTabDataPrivate,        //
-             ImageBytesResultPrivate,      //
-             ImageInfoPrivate,             //
-             InvokeOptionsPrivate,         //
-             PdfDocumentDataPrivate,       //
-             ResumeActorTaskResultPrivate, //
-             TabContextResultPrivate,      //
-             TabDataPrivate,               //
-} from './../request_types.js';
 import {                              //
   additionalContextToClient,          //
   bitmapN32ToRGBAImage,               //
@@ -142,6 +120,7 @@ import {                              //
   panelStateToClient,                 //
   pinCandidateToClient,               //
   pinTabsOptionsToMojo,               //
+  replaceProperties,                  //
   tabContextOptionsFromClient,        //
   tabContextToClient,                 //
   tabDataToClient,                    //
@@ -150,7 +129,28 @@ import {                              //
   urlFromClient,                      //
   urlToClient,                        //
   webClientModeToMojo,                //
-} from './conversions.js';
+} from '../conversions.js';
+import {GlicBrowserHostExperimentalTriggering} from '../experimental_triggering/experimental_triggering_client.js';
+import {GlicBrowserHostGeic} from '../geic/geic_client.js';
+import {maybeWrapWithLogging} from '../mojo_logging.js';
+import {ErrorWithReasonImpl} from '../request_types.js';
+import type {                              //
+             AdditionalContextPrivate,     //
+             AnnotatedPageDataPrivate,     //
+             FocusedTabDataPrivate,        //
+             ImageBytesResultPrivate,      //
+             ImageInfoPrivate,             //
+             InvokeOptionsPrivate,         //
+             PdfDocumentDataPrivate,       //
+             ResumeActorTaskResultPrivate, //
+             TabContextResultPrivate,      //
+             TabDataPrivate,               //
+} from '../request_types.js';
+import {GlicBrowserHostSkills} from '../skills/skills_client.js';
+import {GlicBrowserHostTools} from '../tools/tools_client.js';
+import {assertNever} from '../transport/messaging.js';
+import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
+
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
 import {TabObservable, TabObservableSet} from './observable_set_by_tab_id.js';

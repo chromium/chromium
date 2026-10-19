@@ -21,7 +21,7 @@ import type {                                                   //
              Subscriber,                                        //
 } from '../../glic_api/glic_api.js';
 import {Subject} from '../../observable.js';
-import {optionalFromClient, screenshotToClient} from '../client/conversions.js';
+import {optionalFromClient, screenshotToClient} from '../conversions.js';
 import {getGuestLoadTimeData} from '../guest_load_time_data.js';
 
 // How long to wait for the web client to report whether a confirmation

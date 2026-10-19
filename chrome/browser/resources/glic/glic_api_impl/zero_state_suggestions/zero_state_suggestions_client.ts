@@ -17,7 +17,7 @@ import type {                             //
              ZeroStateSuggestionsV2,      //
 } from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../../observable.js';
-import {zeroStateSuggestionsToClient} from '../client/conversions.js';
+import {zeroStateSuggestionsToClient} from '../conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 
 export class GlicBrowserHostZeroStateSuggestions implements

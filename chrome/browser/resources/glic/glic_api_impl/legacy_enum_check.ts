@@ -1,0 +1,74 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import type * as mojom from '../glic.mojom-webui.js';
+import type * as api from '../glic_api/glic_api.js';
+import type * as mojomEnums from '../glic_enums.mojom-webui.js';
+
+import {assertNever} from './transport/messaging.js';
+
+// LEGACY: New enums added to glic should usually be shared with Mojo and
+// their typescript entries in glic_api.ts are automatically generated.
+// These assertions ensure enum parity for enums that can't be generated.
+
+type CamelCaseToSnakeCase<S extends string> =
+    S extends `${infer First}${infer Rest}` ?
+    First extends Lowercase<First>?
+    `${First}${CamelCaseToSnakeCase < Rest >}` :
+    `${
+        CamelCaseToSnakeCase<Rest> extends '' ?
+            Uppercase<First>:
+            `_${Uppercase < First >}${CamelCaseToSnakeCase < Rest >}`}` :
+    S;
+
+type RemoveFirstK<S extends string> = S extends `k${infer Rest}` ? Rest : S;
+
+type RemoveFirstUnderscore<S extends string> =
+    S extends `_${infer Rest}` ? Rest : S;
+
+type ConvertKey<T extends string> =
+    RemoveFirstUnderscore<Uppercase<CamelCaseToSnakeCase<RemoveFirstK<T>>>>;
+
+type AllMojomEnumKeysAsUppercase<E> = keyof {
+  [K in Exclude<keyof E, 'MIN_VALUE'|'MAX_VALUE'>as
+       K extends string ? ConvertKey<K>: never]: void;
+};
+
+type AllEnumKeys<E> = keyof {
+  [K in keyof E as K extends string ? K : never]: void;
+};
+
+type AnnotateError<T, M> = T extends never ? never : [M, T];
+
+// Checks that both enums share the same keys.
+// Returns never on success, or an error message otherwise.
+export type CheckEnumCompatibility<MojoEnum, TsEnum> = AnnotateError<
+    Exclude<AllMojomEnumKeysAsUppercase<MojoEnum>, AllEnumKeys<TsEnum>>,
+    'typescript enum missing value'>|
+    AnnotateError<
+        Exclude<AllEnumKeys<TsEnum>, AllMojomEnumKeysAsUppercase<MojoEnum>>,
+        'mojo enum missing value'>;
+
+// Ignore FLOATING and DOCKED in the api, as they're just deprecated aliases.
+assertNever<CheckEnumCompatibility<
+    typeof mojomEnums.PanelStateKind,
+    Omit<typeof api.PanelStateKind, 'FLOATING'|'DOCKED'>>>();
+// kUnknown isn't in the public API because this is a closed enum, and will
+// not be expanded.
+assertNever<CheckEnumCompatibility<
+    Omit<typeof mojom.WebClientMode, 'kUnknown'>, typeof api.WebClientMode>>();
+assertNever<CheckEnumCompatibility<
+    Omit<typeof mojom.SettingsPageField, 'kNone'>,
+    typeof api.SettingsPageField>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.HostCapability, typeof api.HostCapability>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.ActorTaskState, typeof api.ActorTaskState>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.ActorTaskPauseReason, typeof api.ActorTaskPauseReason>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.ActorTaskStopReason, typeof api.ActorTaskStopReason>>();
+assertNever<CheckEnumCompatibility<
+    typeof mojom.MetricUserInputReactionType,
+    typeof api.MetricUserInputReactionType>>();
