@@ -21,8 +21,10 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -2179,6 +2181,52 @@ TEST_F(AccessibilityTest, WebAXObjectClearSelectionAnnotatesAction) {
     }
   }
   EXPECT_TRUE(found_selection_event);
+}
+
+TEST_F(AccessibilityTest,
+       UntrackedNodeRemovalAndTextChangeDoNotAllocateDOMNodeId) {
+  SetBodyInnerHTML(R"HTML(<div id="tracked">Tracked</div>)HTML");
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+
+  Element* tracked = GetElementById("tracked");
+  ASSERT_NE(nullptr, tracked);
+  ASSERT_NE(nullptr, cache.Get(tracked));
+  EXPECT_NE(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(tracked));
+
+  // Appending a text node, mutating its text, and removing it before an
+  // AXObject is created for it should not allocate a `DOMNodeId`.
+  Text* untracked_text = GetDocument().createTextNode("Hello");
+  GetDocument().body()->AppendChild(untracked_text);
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
+  ASSERT_NE(nullptr, untracked_text->GetLayoutObject());
+  ASSERT_EQ(nullptr, cache.Get(untracked_text));
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(untracked_text));
+
+  cache.TextChanged(untracked_text->GetLayoutObject());
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(untracked_text));
+
+  untracked_text->remove();
+  EXPECT_EQ(kInvalidDOMNodeId, DOMNodeIds::ExistingIdForNode(untracked_text));
+
+  // Updating text-related attributes or removing an untracked element should
+  // also avoid allocating a `DOMNodeId`.
+  Element* untracked_element =
+      GetDocument().CreateRawElement(html_names::kDivTag);
+  EXPECT_EQ(kInvalidDOMNodeId,
+            DOMNodeIds::ExistingIdForNode(untracked_element));
+
+  cache.HandleAttributeChanged(html_names::kAriaLabelAttr, untracked_element);
+  EXPECT_EQ(kInvalidDOMNodeId,
+            DOMNodeIds::ExistingIdForNode(untracked_element));
+
+  cache.Remove(untracked_element);
+  EXPECT_EQ(kInvalidDOMNodeId,
+            DOMNodeIds::ExistingIdForNode(untracked_element));
+
+  // Removing the tracked element must still clean up its cached `AXObject`.
+  tracked->remove();
+  EXPECT_EQ(nullptr, cache.Get(tracked));
 }
 
 }  // namespace blink
