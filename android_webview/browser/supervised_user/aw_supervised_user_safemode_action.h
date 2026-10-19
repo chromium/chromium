@@ -9,7 +9,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
-#include "url/gurl.h"
 
 namespace android_webview {
 

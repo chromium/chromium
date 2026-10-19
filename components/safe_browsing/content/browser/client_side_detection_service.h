@@ -40,7 +40,6 @@
 #include "net/base/ip_address.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
 
 namespace network {
 class SharedURLLoaderFactory;

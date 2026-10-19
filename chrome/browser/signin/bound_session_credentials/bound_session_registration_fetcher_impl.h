@@ -21,7 +21,6 @@
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
-#include "url/gurl.h"
 
 namespace network {
 class SimpleURLLoader;

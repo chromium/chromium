@@ -17,7 +17,6 @@
 #include "components/origin_gating/core/gateable_event.h"
 #include "components/origin_gating/core/gating_decision.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
-#include "url/gurl.h"
 
 namespace origin_gating {
 

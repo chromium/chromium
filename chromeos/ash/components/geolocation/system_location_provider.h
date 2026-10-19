@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/geolocation/location_provider.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
 
 namespace ash {
 

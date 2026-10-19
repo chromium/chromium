@@ -11,9 +11,8 @@
 #include <optional>
 #include <string>
 
-#include "net/base/pickle_traits.h"
 #include "net/base/pickle.h"
-#include "url/gurl.h"
+#include "net/base/pickle_traits.h"
 #include "url/origin.h"
 
 namespace net {

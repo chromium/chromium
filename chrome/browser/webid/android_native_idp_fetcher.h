@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/webid/verified_origin_resolver.h"
 #include "content/public/browser/webid/native_idp_fetcher.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content::webid {

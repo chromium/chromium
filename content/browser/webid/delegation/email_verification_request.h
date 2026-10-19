@@ -28,7 +28,6 @@
 #include "content/public/browser/webid/identity_request_account.h"
 #include "crypto/keypair.h"
 #include "third_party/blink/public/mojom/webid/email_verification_request.mojom-shared.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 // This class implements the Email Verification Protocol as described here:

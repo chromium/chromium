@@ -13,7 +13,6 @@
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scheduler/apply_pending_manifest_update_result.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "url/gurl.h"
 
 namespace web_app {
 

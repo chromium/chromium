@@ -17,7 +17,6 @@
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-#include "url/gurl.h"
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 #include "base/scoped_observation.h"

@@ -18,7 +18,6 @@
 #include "components/actor/public/mojom/actor_types.mojom-shared.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
 #include "ui/gfx/image/image.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace actor_login {

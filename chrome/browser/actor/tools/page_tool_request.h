@@ -16,7 +16,6 @@
 #include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_id.h"
 #include "ui/gfx/geometry/point.h"
-#include "url/gurl.h"
 
 namespace content {
 class RenderFrameHost;

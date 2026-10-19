@@ -20,7 +20,6 @@
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "url/gurl.h"
 
 namespace net {
 struct MutableNetworkTrafficAnnotationTag;

@@ -14,7 +14,6 @@
 #include "base/component_export.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback.h"
-#include "url/gurl.h"
 
 namespace url_session_test_util {
 

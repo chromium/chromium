@@ -28,7 +28,6 @@
 #include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "url/gurl.h"
 
 namespace android_webview {
 

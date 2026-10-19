@@ -12,7 +12,6 @@
 #include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/failed_request.h"
 #include "net/device_bound_sessions/refresh_result.h"
-#include "url/gurl.h"
 
 namespace net::device_bound_sessions {
 

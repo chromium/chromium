@@ -11,7 +11,6 @@
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 

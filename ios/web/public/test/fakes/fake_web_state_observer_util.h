@@ -11,7 +11,6 @@
 
 #import "base/memory/raw_ptr.h"
 #include "ios/web/public/favicon/favicon_url.h"
-#include "url/gurl.h"
 
 namespace web {
 

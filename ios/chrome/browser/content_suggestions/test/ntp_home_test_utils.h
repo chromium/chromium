@@ -7,8 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "url/gurl.h"
-
 @protocol GREYMatcher;
 @class SetUpListItemView;
 @class NewTabPageColorPalette;

@@ -16,7 +16,6 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "content/public/browser/process_selection_deferring_condition.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace site_protection {

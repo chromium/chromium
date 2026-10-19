@@ -32,7 +32,6 @@
 #include "net/spdy/spdy_session_key.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config.h"
-#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
 namespace net {

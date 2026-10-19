@@ -13,7 +13,6 @@
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/ui/mojom/ui_service.mojom.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "components/webapps/common/web_app_id.h"
-#include "url/gurl.h"
 
 namespace web_app {
 

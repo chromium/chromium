@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_
 
 #include "base/functional/callback_forward.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

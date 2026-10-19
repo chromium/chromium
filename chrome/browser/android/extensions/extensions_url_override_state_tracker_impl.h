@@ -19,7 +19,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/chrome_url_overrides_handler.h"
-#include "url/gurl.h"
 
 namespace extensions {
 

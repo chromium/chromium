@@ -17,7 +17,6 @@
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/menus/simple_menu_model.h"
-#include "url/gurl.h"
 
 class BrowserWindowInterface;
 

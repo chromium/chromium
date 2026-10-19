@@ -15,7 +15,6 @@
 #include "chrome/browser/actor/ui/states/tab_indicator_state.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "url/gurl.h"
 
 namespace actor::ui {
 #if !BUILDFLAG(IS_ANDROID)

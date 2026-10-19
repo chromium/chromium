@@ -11,7 +11,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "url/gurl.h"
 #include "v8/include/v8-forward.h"
 
 // This class adds the chrome.browser API to chrome://webui-browser.

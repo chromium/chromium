@@ -16,7 +16,6 @@
 #include "components/webapps/isolated_web_apps/types/url_loading_types.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;

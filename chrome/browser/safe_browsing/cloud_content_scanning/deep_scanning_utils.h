@@ -11,7 +11,6 @@
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/common.h"
-#include "url/gurl.h"
 
 namespace enterprise_connectors {
 class ContentAnalysisResponse;

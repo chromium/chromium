@@ -7,9 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
 #include <vector>
-
-#include "url/gurl.h"
 
 namespace web {
 

@@ -24,7 +24,6 @@
 #include "components/one_time_tokens/core/browser/sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/util/expiring_subscription.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace autofill {

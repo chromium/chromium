@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/passwords/credential_leak_dialog_controller.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "url/gurl.h"
 
 class CredentialLeakPrompt;
 class PasswordsLeakDialogDelegate;

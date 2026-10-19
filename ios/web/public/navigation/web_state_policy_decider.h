@@ -11,7 +11,6 @@
 #import "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
 
 namespace web {
 

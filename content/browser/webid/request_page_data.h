@@ -7,7 +7,6 @@
 
 #include "base/time/time.h"
 #include "content/public/browser/page_user_data.h"
-#include "url/gurl.h"
 
 namespace content {
 

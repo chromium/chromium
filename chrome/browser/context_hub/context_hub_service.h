@@ -37,7 +37,6 @@
 #include "components/personal_context/proto/features/smart_search.pb.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"

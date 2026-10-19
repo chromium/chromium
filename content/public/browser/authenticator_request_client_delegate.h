@@ -26,7 +26,6 @@
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
 #include "device/fido/public/public_key_credential_descriptor.h"
-#include "url/gurl.h"
 
 namespace device {
 class FidoAuthenticator;

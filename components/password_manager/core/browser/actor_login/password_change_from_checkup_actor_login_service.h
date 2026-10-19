@@ -11,7 +11,6 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_service.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace actor_login {

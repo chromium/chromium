@@ -15,7 +15,6 @@
 #include "net/base/proxy_chain.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_host_matching_rules.h"
-#include "url/gurl.h"
 
 namespace enterprise_net {
 

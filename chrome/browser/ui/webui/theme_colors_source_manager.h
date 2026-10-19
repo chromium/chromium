@@ -8,7 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom-forward.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 class Profile;

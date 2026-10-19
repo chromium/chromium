@@ -16,7 +16,6 @@
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
-#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;

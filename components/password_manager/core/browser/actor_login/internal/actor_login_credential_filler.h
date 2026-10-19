@@ -18,7 +18,6 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "url/gurl.h"
 
 namespace affiliations {
 struct Facet;

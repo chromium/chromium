@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {
