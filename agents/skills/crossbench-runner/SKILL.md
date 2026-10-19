@@ -99,26 +99,32 @@ environmental limitations:
 
 - **No Display / Headless Crash**: If the browser exits immediately
   (`Could not start WebDriver: session not created: Chrome instance exited`),
-  they are likely on a headless VM. Tell them to prepend `xvfb-run` to their
-  command or use `--browser=chrome-headless`.
+  they are likely on a headless VM or missing display environment variables.
+  Tell them to:
+  - Pass `--headless` (or `--browser=chrome-headless`), prepend `xvfb-run` to
+    their command, or
+  - When running headed on CloudTop/CRD with an active session, export
+    `WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/$(id -u)` (or `DISPLAY`
+    for X11).
 - **Unsupported `downloads` Probe**: The `downloads` probe is only supported on
   Android and ChromeOS. If running on local Linux/Mac, it will throw
   `NotImplementedError: Probe(DownloadsProbe): Unsupported browser`. Advise them
-  to use a custom `probe-config.hjson` that omits the `downloads` probe (or
-  override the template inheritance).
+  to pass `--no-probe=downloads` on the CLI or use a custom `probe-config.hjson`
+  that omits the `downloads` probe (or override the template inheritance).
 - **Hanging `screenshot` Probe**: If the test hangs indefinitely on a
   VM/CloudTop, the `screenshot` probe is likely waiting for `gnome-screenshot`
-  (which requires a physical GNOME desktop). Advise them to remove the
-  `screenshot` probe from their config.
+  (which requires a physical GNOME desktop). Advise them to pass
+  `--no-probe=screenshot` or remove the `screenshot` probe from their config.
 
 ### 3. Analyzing the Results
 
 When the developer asks where to find the data after a successful run, guide
-them to the `results/` directory generated at the end of the execution.
+them to the `third_party/crossbench/results/` directory generated at the end of
+the execution.
 
 **Aggregated Results (High Level)**
 
-- Located at `results/latest/cb.results.json`.
+- Located at `third_party/crossbench/results/latest/cb.results.json`.
 - This file contains merged statistical summaries (min, max, average).
 - *Warning*: The generic `trace_processor` probe strips story metadata
   (`cb_story`) during JSON aggregation. Do not rely on this file if you need
@@ -126,16 +132,22 @@ them to the `results/` directory generated at the end of the execution.
 
 **Unmerged Metrics (By Story)**
 
-- To see exact timings separated by story, look at the raw Trace Processor CSVs.
-- **Path**: `results/latest/output/trace_processor/<metric_name>.csv`.
-- This file retains the `cb_story` column, allowing developers to see exact
-  latencies for each scenario.
+- To see exact timings separated by story, look at the raw Trace Processor CSVs
+  (note that there is no `output/` intermediate directory).
+- **Path**:
+  `third_party/crossbench/results/latest/trace_processor/<metric_name>.csv`.
+- This file retains the `cb_story` and `cb_run` columns, allowing developers to
+  see exact latencies for each scenario and repetition.
 
 **Perfetto Traces (For UI Inspection)**
 
-- The raw `.pb.gz` traces are saved per-browser and per-story.
+- The raw `.pb.gz` traces are saved per-browser, per-story, per-repetition, and
+  per-cache-temperature (`0_default`).
 - **Path**:
-  `results/latest/<browser_dir>/stories/<story_name>/0/perfetto.trace.pb.gz`.
+  `third_party/crossbench/results/latest/<browser_dir>/stories/<story_name>/<repetition>/0_default/perfetto.trace.pb.gz`
+  (convenience symlinks `first_run/` and `last_run/` are also created alongside
+  the `<repetition>` directories, e.g.,
+  `.../stories/<story_name>/first_run/0_default/perfetto.trace.pb.gz`).
 - Advise the developer to download this file and open it in
   `https://ui.perfetto.dev/` to debug trace events manually.
 
@@ -145,12 +157,44 @@ them to the `results/` directory generated at the end of the execution.
   a `browser.config.hjson` file and pass it via `--browser-config`. Crossbench
   natively interleaves the runs and outputs a comparative JSON report. Note:
   `--browser` and `--browser-config` are mutually exclusive in the CLI.
-- **Instant Events in SQL**: When writing `trace_processor` SQL queries for
-  Instant Events (which have a duration of 0 in Perfetto), remind the developer
-  to query the delta between timestamps (`paint.ts - start.ts`) rather than
-  querying the `dur` column.
+- **Startup & Instant Events in SQL**: Avoid using `paint.ts - min(ts)` in
+  `trace_processor` SQL queries to measure startup latency, as `min(ts)`
+  reflects when tracing started rather than browser startup. Instead, prefer
+  recording Chromium UMA histograms via the `org.chromium.histogram_sample`
+  Perfetto data source and querying `chrome_histogram_sample.sample` from
+  `slice` + `args` (as done in
+  `third_party/crossbench/config/benchmark/browser_startup/probe.hjson`). Only
+  use timestamp deltas (`paint.ts - start.ts`) when an explicit start slice
+  exists in the trace rather than querying the `dur` column on instant events
+  (which have `dur = 0`).
 
-### 5. Chromium Infrastructure Integration (Shard Maps)
+### 5. `browser-startup` A/B Benchmarking Best Practices
+
+When running `browser-startup` locally to compare browser binaries or feature
+flags:
+
+- **Verify Release Build Settings**: Before benchmarking, check `gn args` in the
+  target output directory to ensure `is_debug = false` and
+  `dcheck_always_on = false`. Debug or DCHECK-enabled builds add significant
+  variance and overhead to startup paths.
+- **Isolate Stories with `--separate`**: By default, multi-story configs
+  (`story.hjson` defines `newtab_startup`, `blank_startup`, and
+  `google_startup`) run in a single browser session unless separated. Always
+  pass `--separate` so Crossbench launches a fresh browser process for each
+  story, or filter to a single story with `--stories=newtab_startup`.
+- **Bypass Local Environment Checks**: Pass `--env-validation=warn` when running
+  on local workstations or CloudTop VMs so Crossbench does not abort on running
+  background processes or CPU governors.
+- **Account for Startup Bimodality**: Local startup paint metrics exhibit a
+  bimodal distribution (`~9%` relative stddev). Run `--repeat=30` to `100` and
+  compare medians, Hodges-Lehmann estimators, or paired per-repetition diffs
+  matched by `cb_run` across interleaved runs rather than relying on small-N
+  means.
+- **Default ChromeDriver Isolation**: Note that ChromeDriver automatically
+  passes `--disable-extensions`, `--disable-sync`, and creates a fresh temporary
+  `--user-data-dir` per run by default.
+
+### 6. Chromium Infrastructure Integration (Shard Maps)
 
 When a Crossbench benchmark is added or modified in Chromium's
 `tools/perf/core/bot_platforms.py` or its `schedule` CSV files, the changes will
@@ -161,14 +205,14 @@ not reach the swarming bots automatically.
   Chromium root. The resulting JSON changes in `tools/perf/core/shard_maps/`
   must be included in the CL.
 
-### 6. Pinpoint & Trybot Executions
+### 7. Pinpoint & Trybot Executions
 
 - **Restricted Bots**: Some performance bots (e.g., `mac-m1-pro-perf`) are
   CI-only and will return a "No props found" or "Bot invalid" error if used for
   on-demand Pinpoint jobs. Advise users to test on equivalent capacity bots like
   `mac-m1_mini_2020-perf` or standard trybots like `linux-perf-rel`.
 
-### 7. Common Trace Processor Gotchas
+### 8. Common Trace Processor Gotchas
 
 - **Missing Trace Events (Empty CSVs)**: If a `trace_processor` SQL query
   returns empty results, the event was likely dropped by Perfetto. Verify that
