@@ -74,7 +74,8 @@ class GmailOtpOptInBubbleViewTest : public ChromeViewsTestBase {
         .WillByDefault(ReturnRef(user_data_host_));
     ON_CALL(mock_tab_, GetContents())
         .WillByDefault(Return(web_contents_.get()));
-    controller_ = std::make_unique<GmailOtpOptInBubbleController>(mock_tab_);
+    controller_ = std::make_unique<GmailOtpOptInBubbleController>(
+        mock_tab_, web_contents_.get());
 
     views::Widget::InitParams params =
         CreateParams(views::Widget::InitParams::CLIENT_OWNS_WIDGET,

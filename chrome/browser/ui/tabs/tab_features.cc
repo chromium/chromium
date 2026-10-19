@@ -797,7 +797,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   gmail_otp_opt_in_bubble_controller_ =
       GetUserDataFactory()
-          .CreateInstance<autofill::GmailOtpOptInBubbleController>(tab, tab);
+          .CreateInstance<autofill::GmailOtpOptInBubbleController>(
+              tab, tab, tab.GetContents());
 
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
@@ -1732,6 +1733,14 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     wallet_reminder_notice_bubble_controller_ =
         GetUserDataFactory()
             .CreateInstance<autofill::WalletReminderNoticeBubbleController>(
+                *tab, *tab, new_contents);
+  }
+
+  if (gmail_otp_opt_in_bubble_controller_) {
+    gmail_otp_opt_in_bubble_controller_.reset();
+    gmail_otp_opt_in_bubble_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<autofill::GmailOtpOptInBubbleController>(
                 *tab, *tab, new_contents);
   }
 

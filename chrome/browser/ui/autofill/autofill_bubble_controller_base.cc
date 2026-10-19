@@ -9,9 +9,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/tabs/public/tab_interface.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
@@ -110,17 +110,10 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
     return;
   }
 
-  tabs::TabFeatures* const tab_features = tab_interface->GetTabFeatures();
-  // `TabFeatures` could be a nullptr if this method is called when the tab is
-  // being closed.
-  if (!tab_features) {
-    return;
-  }
-
   // NOTE: Consider creating a separate page action view controller file
   // when the logic to show the page action become complex.
   page_actions::PageActionController* page_action_controller =
-      tab_features->page_action_controller();
+      page_actions::PageActionController::From(tab_interface);
   if (!page_action_controller) {
     return;
   }

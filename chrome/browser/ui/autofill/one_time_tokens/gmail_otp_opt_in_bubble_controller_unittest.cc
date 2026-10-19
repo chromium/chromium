@@ -19,6 +19,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,6 +87,7 @@ class FakeTabInterface : public tabs::MockTabInterface {
       web_contents_factory_ =
           std::make_unique<content::TestWebContentsFactory>();
       web_contents_ = web_contents_factory_->CreateWebContents(testing_profile);
+      tabs::TabLookupFromWebContents::CreateForWebContents(web_contents_, this);
     }
   }
   ~FakeTabInterface() override = default;
@@ -146,8 +148,8 @@ class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
         std::make_unique<BubbleManagerImpl>(tab_interface_.get()));
     tab_interface_->Activate();
 
-    controller_ =
-        std::make_unique<GmailOtpOptInBubbleController>(*tab_interface_);
+    controller_ = std::make_unique<GmailOtpOptInBubbleController>(
+        *tab_interface_, tab_interface_->GetContents());
     controller_->SetBubbleViewFactoryForTesting(base::BindRepeating(
         [](AutofillBubbleBase* bubble, content::WebContents*,
            GmailOtpOptInBubbleController*) { return bubble; },
@@ -236,26 +238,6 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
 
   EXPECT_FALSE(controller()->IsShowingBubble());
   EXPECT_TRUE(wallet_controller.IsShowingBubble());
-}
-
-TEST_F(GmailOtpOptInBubbleControllerTest,
-       HideBubble_InitiatedByBubbleManagerDoesNotInformBubbleManager) {
-  controller()->SetUpAndShowBubble(u"user@gmail.com", base::DoNothing());
-  ASSERT_TRUE(controller()->IsShowingBubble());
-
-  // Queue a lower-priority bubble while the Gmail OTP opt-in bubble is active.
-  NiceMock<MockOtherBubbleController> wallet_controller(
-      BubbleType::kWalletablePassConsent);
-  bubble_manager()->RequestShowController(wallet_controller,
-                                          /*force_show=*/false);
-  ASSERT_FALSE(wallet_controller.IsShowingBubble());
-
-  EXPECT_CALL(mock_bubble_, Hide());
-  EXPECT_CALL(wallet_controller, ShowBubble()).Times(0);
-  controller()->HideBubble(/*initiated_by_bubble_manager=*/true);
-
-  EXPECT_FALSE(controller()->IsShowingBubble());
-  EXPECT_FALSE(wallet_controller.IsShowingBubble());
 }
 
 TEST_F(GmailOtpOptInBubbleControllerTest,
