@@ -439,11 +439,10 @@ FieldTrialList::FieldTrialList() {
 
 FieldTrialList::~FieldTrialList() {
   AutoLock auto_lock(lock_);
-  while (!registered_.empty()) {
-    auto it = registered_.begin();
-    it->second->Release();
-    registered_.erase(it->first);
+  for (auto& [_, trial] : registered_) {
+    trial->Release();
   }
+  registered_.clear();
   // Note: If this DCHECK fires in a test that uses ScopedFeatureList, it is
   // likely caused by nested ScopedFeatureLists being destroyed in a different
   // order than they are initialized.
