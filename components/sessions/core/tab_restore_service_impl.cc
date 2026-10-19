@@ -1741,6 +1741,8 @@ bool TabRestoreServiceImpl::PersistenceDelegate::ConvertSessionWindowToWindow(
   window->bounds = session_window->bounds;
   window->show_state = session_window->show_state;
   window->workspace = session_window->workspace;
+  window->app_name = session_window->app_name;
+  window->user_title = session_window->user_title;
   return true;
 }
 

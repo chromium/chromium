@@ -1197,6 +1197,32 @@ TEST_F(TabRestoreServiceImplTest, LoadWindowBoundsAndWorkspace) {
   EXPECT_TRUE(url3_ == tab->navigations[2].virtual_url());
 }
 
+// Make sure window user title and app name are properly loaded from the session
+// service after a crash or forced shutdown (crbug.com/569565958).
+TEST_F(TabRestoreServiceImplTest, LoadWindowUserTitleAndAppName) {
+  constexpr char kUserTitle[] = "My Work Task Window";
+  constexpr char kAppName[] = "test-app";
+
+  CreateSessionServiceWithOneWindow(false);
+
+  SessionService* session_service =
+      SessionServiceFactory::GetForProfile(profile());
+  session_service->SetWindowUserTitle(window_id(), kUserTitle);
+  session_service->SetWindowAppName(window_id(), kAppName);
+
+  session_service->MoveCurrentSessionToLastSession();
+
+  RecreateService();
+
+  ASSERT_EQ(1U, service_->entries().size());
+  Entry* entry = service_->entries().front().get();
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+  sessions::tab_restore::Window* window =
+      static_cast<sessions::tab_restore::Window*>(entry);
+  EXPECT_EQ(kUserTitle, window->user_title);
+  EXPECT_EQ(kAppName, window->app_name);
+}
+
 // Make sure pinned state is correctly loaded from session service.
 TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabsPinned) {
   CreateSessionServiceWithOneWindow(true);
