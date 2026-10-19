@@ -7,25 +7,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class ShareKitService;
+#include "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all instances of ShareKitService and associates them with
 // instances of ProfileIOS.
-class ShareKitServiceFactory final : public ProfileKeyedServiceFactoryIOS {
+class ShareKitServiceFactory final
+    : public TypedProfileKeyedServiceFactoryIOS<ShareKitServiceFactory,
+                                                ShareKitService> {
  public:
-  static ShareKitService* GetForProfile(ProfileIOS* profile);
-  static ShareKitServiceFactory* GetInstance();
+  explicit ShareKitServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<ShareKitServiceFactory>;
-
-  ShareKitServiceFactory();
-  ~ShareKitServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

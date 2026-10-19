@@ -7,28 +7,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace page_info {
-class AboutThisSiteService;
-}
+#import "components/page_info/core/about_this_site_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // This factory helps construct and find the AboutThisSiteService instance for a
 // Profile.
-class AboutThisSiteServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class AboutThisSiteServiceFactory : public TypedProfileKeyedServiceFactoryIOS<
+                                        AboutThisSiteServiceFactory,
+                                        page_info::AboutThisSiteService> {
  public:
-  static page_info::AboutThisSiteService* GetForProfile(ProfileIOS* profile);
-  static AboutThisSiteServiceFactory* GetInstance();
+  explicit AboutThisSiteServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<AboutThisSiteServiceFactory>;
-
-  AboutThisSiteServiceFactory();
-  ~AboutThisSiteServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

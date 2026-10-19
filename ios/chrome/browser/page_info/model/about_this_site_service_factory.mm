@@ -14,28 +14,14 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-page_info::AboutThisSiteService* AboutThisSiteServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<page_info::AboutThisSiteService>(
-      profile, /*create=*/true);
-}
-
-// static
-AboutThisSiteServiceFactory* AboutThisSiteServiceFactory::GetInstance() {
-  static base::NoDestructor<AboutThisSiteServiceFactory> instance;
-  return instance.get();
-}
-
-AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AboutThisSiteServiceFactory",
-                                    TestingCreation::kNoServiceForTests,
-                                    ServiceCreation::kCreateWithProfile) {
+AboutThisSiteServiceFactory::AboutThisSiteServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "AboutThisSiteServiceFactory",
+                                         TestingCreation::kNoServiceForTests,
+                                         ServiceCreation::kCreateWithProfile) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
 }
-
-AboutThisSiteServiceFactory::~AboutThisSiteServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 AboutThisSiteServiceFactory::BuildServiceInstanceFor(

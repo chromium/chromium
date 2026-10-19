@@ -6,25 +6,14 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-BrowserList* BrowserListFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BrowserList>(profile,
-                                                            /*create=*/true);
-}
-
-// static
-BrowserListFactory* BrowserListFactory::GetInstance() {
-  static base::NoDestructor<BrowserListFactory> instance;
-  return instance.get();
-}
-
-BrowserListFactory::BrowserListFactory()
-    : ProfileKeyedServiceFactoryIOS("BrowserList",
-                                    ProfileSelection::kRedirectedInIncognito) {}
+BrowserListFactory::BrowserListFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "BrowserList",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService> BrowserListFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
