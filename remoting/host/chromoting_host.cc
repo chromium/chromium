@@ -188,16 +188,16 @@ void ChromotingHost::OnSessionAuthenticating(ClientSession* client) {
   // and clear the backoff when a connection successfully
   // authenticates. This allows the backoff to protect from parallel
   // connection attempts as well as sequential ones.
-  if (login_backoff_.ShouldRejectRequest()) {
+  bool should_reject = login_backoff_.ShouldRejectRequest();
+  login_backoff_.InformOfRequest(false);
+  if (should_reject) {
     client->DisconnectSession(
         ErrorCode::HOST_OVERLOAD,
         base::StringPrintf("Disconnecting client %s due to an overload of "
                            "failed login attempts.",
                            client->client_jid().c_str()),
         FROM_HERE);
-    return;
   }
-  login_backoff_.InformOfRequest(false);
 }
 
 void ChromotingHost::OnSessionAuthenticated(ClientSession* client) {

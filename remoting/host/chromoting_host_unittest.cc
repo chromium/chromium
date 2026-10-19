@@ -293,6 +293,10 @@ class ChromotingHostTest : public testing::Test {
     host_->per_session_policies_validator_ = validator;
   }
 
+  int GetBackoffFailureCount() const {
+    return host_->login_backoff_.failure_count();
+  }
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   mojo::Remote<mojom::ChromotingHostServices> BindChromotingHostServices() {
     mojo::Remote<mojom::ChromotingHostServices> remote;
@@ -535,6 +539,57 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
   EXPECT_EQ(host_->client_sessions_for_tests().size(), kNumFailuresIgnored + 1);
 
   // Shut down host while objects owned by this test are still in scope.
+  ShutdownHost();
+}
+
+TEST_F(ChromotingHostTest, LoginBackOffExtendsWhenRejectedWhileActive) {
+  StartHost();
+
+  protocol::SessionManager::IncomingSessionResponse response =
+      protocol::SessionManager::DECLINE;
+  std::string rejection_reason;
+  base::Location rejection_location;
+
+  // Admit kNumFailuresIgnored + 2 sessions before any of them start
+  // authenticating (simulating parked sessions).
+  std::array<protocol::Session::EventHandler*, kNumFailuresIgnored + 2>
+      session_event_handlers{};
+  for (auto& session_event_handler : session_event_handlers) {
+    auto session = std::make_unique<MockSession>();
+    EXPECT_CALL(*session, jid()).WillRepeatedly(ReturnRef(session_jid1_));
+    EXPECT_CALL(*session, SetEventHandler(_))
+        .Times(AnyNumber())
+        .WillRepeatedly(SaveArg<0>(&session_event_handler));
+    EXPECT_CALL(*session, Close(_, _, _))
+        .WillOnce(InvokeWithoutArgs([&session_event_handler]() {
+          if (session_event_handler) {
+            session_event_handler->OnSessionStateChange(Session::CLOSED);
+          }
+        }));
+    host_->OnIncomingSession(session.release(), &response, &rejection_reason,
+                             &rejection_location);
+    EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
+  }
+
+  // Trigger authentication on the first kNumFailuresIgnored + 1 sessions. This
+  // activates the backoff (6th failure sets failure_count to 6).
+  auto it = host_->client_sessions_for_tests().begin();
+  for (size_t i = 0; i < kNumFailuresIgnored + 1; ++i) {
+    ClientSession* client = (it++)->second.get();
+    host_->OnSessionAuthenticating(client);
+  }
+  EXPECT_EQ(GetBackoffFailureCount(),
+            static_cast<int>(kNumFailuresIgnored + 1));
+
+  // Trigger authentication on the remaining parked session while backoff is
+  // active. It should be disconnected with HOST_OVERLOAD and also increment the
+  // backoff failure count.
+  ClientSession* rejected_client = it->second.get();
+  host_->OnSessionAuthenticating(rejected_client);
+  EXPECT_EQ(GetBackoffFailureCount(),
+            static_cast<int>(kNumFailuresIgnored + 2));
+  EXPECT_EQ(host_->client_sessions_for_tests().size(), kNumFailuresIgnored + 1);
+
   ShutdownHost();
 }
 

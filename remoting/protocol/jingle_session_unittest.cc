@@ -514,6 +514,47 @@ TEST_F(JingleSessionTest, DeleteSessionOnAuth) {
   ConnectClient(auth_config);
 }
 
+TEST_F(JingleSessionTest, DeleteSessionOnAuthDoesNotSendSubsequentAuthMessage) {
+  // Set messages_till_started to 2 so that the session transitions to
+  // AUTHENTICATING on the second roundtrip (in ProcessAuthenticationStep).
+  // Verify that if the event handler destroys the session in
+  // OnSessionStateChange(AUTHENTICATING), no subsequent session-info message is
+  // sent by the host.
+  const int kMessagesTillStarted = 2;
+  const int kAuthRoundtrips = 2;
+  FakeAuthenticator::Config auth_config(kAuthRoundtrips,
+                                        FakeAuthenticator::ACCEPT, true);
+  CreateSessionManagers(auth_config, kMessagesTillStarted);
+
+  EXPECT_CALL(host_server_listener_, OnIncomingSession(_, _, _, _))
+      .WillOnce(
+          DoAll(WithArg<0>(Invoke(this, &JingleSessionTest::SetHostSession)),
+                SetArgPointee<1>(protocol::SessionManager::ACCEPT)));
+
+  EXPECT_CALL(host_session_event_handler_,
+              OnSessionStateChange(Session::ACCEPTED))
+      .Times(AtMost(1));
+
+  EXPECT_CALL(host_session_event_handler_,
+              OnSessionStateChange(Session::AUTHENTICATING))
+      .WillOnce(InvokeWithoutArgs(this, &JingleSessionTest::DeleteHostSession));
+
+  ConnectClient(auth_config);
+
+  // The client should only have received the initial session-accept message (1
+  // JingleMessage) and no subsequent session-info message containing the final
+  // auth message/key.
+  size_t session_info_count = 0;
+  for (const auto& packet : client_signal_strategy_->received_messages()) {
+    if (const auto* msg = std::get_if<JingleMessage>(&packet)) {
+      if (msg->action() == JingleMessage::ActionType::kSessionInfo) {
+        ++session_info_count;
+      }
+    }
+  }
+  EXPECT_EQ(session_info_count, 0U);
+}
+
 // Verify that incoming transport-info messages are handled correctly while in
 // AUTHENTICATING state.
 TEST_F(JingleSessionTest, TransportInfoDuringAuthentication) {
