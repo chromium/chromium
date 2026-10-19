@@ -24,7 +24,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -32,6 +31,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
+#import "ios/chrome/browser/signin/model/signin_test_util.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -89,24 +89,29 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
   return prefs;
 }
 
+TestProfileIOS::Builder CreateProfileBuilder() {
+  TestProfileIOS::Builder builder;
+  builder.SetPrefService(CreatePrefService());
+  builder.AddTestingFactory(AuthenticationServiceFactory::GetInstance(),
+                            AuthenticationServiceFactory::GetDefaultFactory());
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindRepeating(&CreateTestSyncService));
+  return builder;
+}
+
 }  // namespace
 
 class SigninDisabledBrowserAgentTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestProfileIOS::Builder builder;
-    builder.SetPrefService(CreatePrefService());
-    builder.AddTestingFactory(
-        AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&CreateTestSyncService));
-    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    personal_profile_ =
+        profile_manager_.AddProfileWithBuilder(CreateProfileBuilder());
 
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
     profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
-    scene_state_ = [[FakeSceneState alloc] initWithProfile:profile_.get()];
+    scene_state_ =
+        [[FakeSceneState alloc] initWithProfile:personal_profile_.get()];
     scene_state_.profileState = profile_state_;
   }
 
@@ -126,7 +131,7 @@ class SigninDisabledBrowserAgentTest : public PlatformTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
-    AuthenticationServiceFactory::GetForProfile(profile_.get())
+    AuthenticationServiceFactory::GetForProfile(personal_profile_.get())
         ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
   }
 
@@ -139,13 +144,13 @@ class SigninDisabledBrowserAgentTest : public PlatformTest {
   }
 
   AuthenticationService* authentication_service() {
-    return AuthenticationServiceFactory::GetForProfile(profile_.get());
+    return AuthenticationServiceFactory::GetForProfile(personal_profile_.get());
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<TestProfileIOS> profile_;
+  raw_ptr<TestProfileIOS> personal_profile_;
   FakeSceneState* scene_state_;
   AppState* app_state_;
   ProfileState* profile_state_;
@@ -179,17 +184,9 @@ TEST_F(SigninDisabledBrowserAgentTest, SignOutOnCreationWhenPrefAlreadyFalse) {
 // profile triggers switching to the personal profile.
 TEST_F(SigninDisabledBrowserAgentTest,
        SwitchToPersonalProfileOnManagedProfile) {
-  TestProfileIOS::Builder managed_builder;
-  managed_builder.SetName("managed");
-  managed_builder.SetPrefService(CreatePrefService());
-  managed_builder.AddTestingFactory(
-      AuthenticationServiceFactory::GetInstance(),
-      AuthenticationServiceFactory::GetDefaultFactory());
-  managed_builder.AddTestingFactory(
-      SyncServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateTestSyncService));
-  TestProfileIOS* managed_profile =
-      profile_manager_.AddProfileWithBuilder(std::move(managed_builder));
+  TestProfileIOS* managed_profile = AddManagedProfileWithBuilder(
+      profile_manager_, [FakeSystemIdentity fakeManagedIdentity],
+      CreateProfileBuilder());
 
   FakeSceneState* managed_scene_state =
       [[FakeSceneState alloc] initWithProfile:managed_profile];
@@ -208,9 +205,8 @@ TEST_F(SigninDisabledBrowserAgentTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return change_profile_handler.lastReason.has_value(); }));
 
-  std::string personal_profile_name =
-      profile_manager_.GetProfileAttributesStorage()->GetPersonalProfileName();
-  EXPECT_EQ(change_profile_handler.lastProfileName, personal_profile_name);
+  EXPECT_EQ(change_profile_handler.lastProfileName,
+            personal_profile_->GetProfileName());
   EXPECT_EQ(change_profile_handler.lastSceneState, managed_scene_state);
   EXPECT_EQ(change_profile_handler.lastReason,
             ChangeProfileReason::kManagedAccountSignOut);
