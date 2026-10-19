@@ -1114,7 +1114,7 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
       LayoutResult::EStatus status;
       if (child.CreatesNewFormattingContext()) {
         status = HandleNewFormattingContext(
-            child, To<BlockBreakToken>(child_break_token),
+            To<BlockNode>(child), To<BlockBreakToken>(child_break_token),
             &previous_inflow_position);
         previous_inline_break_token = nullptr;
       } else {
@@ -1866,14 +1866,13 @@ void BlockLayoutAlgorithm::HandleFloat(
 }
 
 LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
-    LayoutInputNode child,
+    BlockNode child,
     const BlockBreakToken* child_break_token,
     PreviousInflowPosition* previous_inflow_position) {
   DCHECK(child);
   DCHECK(!child.IsFloating());
   DCHECK(!child.IsOutOfFlowPositioned());
   DCHECK(child.CreatesNewFormattingContext());
-  DCHECK(child.IsBlock());
 
   const auto& constraint_space = GetConstraintSpace();
   const ComputedStyle& child_style = child.Style();
@@ -2105,7 +2104,7 @@ LayoutResult::EStatus BlockLayoutAlgorithm::HandleNewFormattingContext(
 }
 
 const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
-    LayoutInputNode child,
+    BlockNode child,
     const BlockBreakToken* child_break_token,
     const InflowChildData& child_data,
     BfcOffset origin_offset,
@@ -2244,8 +2243,8 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutNewFormattingContext(
                             *marker_fragment.Children().front())
                 .InlineSize();
       }
-      auto_margins.inline_start = UnpositionedListMarker(To<BlockNode>(child))
-                                      .InlineOffset(marker_inline_size);
+      auto_margins.inline_start =
+          UnpositionedListMarker(child).InlineOffset(marker_inline_size);
       auto_margins.inline_end = opportunity.rect.InlineSize() -
                                 fragment.InlineSize() -
                                 auto_margins.inline_start;

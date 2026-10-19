@@ -301,14 +301,14 @@ class CORE_EXPORT BlockLayoutAlgorithm
   // Returns false if we need to abort layout, because a previously unknown BFC
   // block offset has now been resolved.
   LayoutResult::EStatus HandleNewFormattingContext(
-      LayoutInputNode child,
+      BlockNode child,
       const BlockBreakToken* child_break_token,
       PreviousInflowPosition*);
 
   // Performs the actual layout of a new formatting context. This may be called
   // multiple times from HandleNewFormattingContext.
   const LayoutResult* LayoutNewFormattingContext(
-      LayoutInputNode child,
+      BlockNode child,
       const BlockBreakToken* child_break_token,
       const InflowChildData&,
       BfcOffset origin_offset,
