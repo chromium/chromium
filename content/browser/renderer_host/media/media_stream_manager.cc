@@ -126,7 +126,14 @@ using ::blink::mojom::StreamSelectionInfoPtr;
 // If enabled, the device name is also used when comparing devices in
 // FindExistingRequestedDevice.
 BASE_FEATURE(kEnumerateDevicesUseNameInDeviceComparison,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS)
+             // Disabled on ChromeOS as CRAS default streams automatically track
+             // the active input node (https://crbug.com/531681896).
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 namespace {
 enum class StopAudioEvent {
