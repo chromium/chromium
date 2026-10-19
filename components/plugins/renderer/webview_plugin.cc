@@ -125,6 +125,10 @@ bool WebViewPlugin::Initialize(WebPluginContainer* container) {
   return true;
 }
 
+void WebViewPlugin::DetachDelegate() {
+  delegate_ = nullptr;
+}
+
 void WebViewPlugin::Destroy() {
   weak_factory_.InvalidateWeakPtrs();
 

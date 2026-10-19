@@ -140,7 +140,19 @@ void PluginPlaceholderBase::NotifyPlaceholderReadyForTestingCallback() {
   plugin()->Container()->EnqueueMessageEvent(msg_event);
 }
 
-void PluginPlaceholderBase::OnDestruct() {}
+void PluginPlaceholderBase::OnDestruct() {
+  // The RenderFrame is going away and subclasses drop their cppgc::Persistent
+  // self-reference right after this, after which `this` is garbage. `plugin_`
+  // is owned by a WebPluginContainerImpl that can outlive the frame (a plugin
+  // persisted across a layout tree reattach that is still referenced from
+  // script), and it holds a raw pointer back to `this`, which it would use
+  // from its queued LoadHTML / UpdatePluginForNewGeometry tasks and from
+  // Destroy(). Sever that link now.
+  if (plugin_) {
+    plugin_->DetachDelegate();
+    plugin_ = nullptr;
+  }
+}
 
 PluginPlaceholder::PluginPlaceholder(content::RenderFrame* render_frame,
                                      const blink::WebPluginParams& params)
