@@ -7,28 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace language_detection {
-class LanguageDetectionModelService;
-}
+#import "components/language_detection/core/browser/language_detection_model_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Owns all LanguageDetectionModelService instances and associte them to
 // profiles.
 class LanguageDetectionModelServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          LanguageDetectionModelServiceFactory,
+          language_detection::LanguageDetectionModelService> {
  public:
-  static language_detection::LanguageDetectionModelService* GetForProfile(
-      ProfileIOS* profile);
-  static LanguageDetectionModelServiceFactory* GetInstance();
+  explicit LanguageDetectionModelServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<LanguageDetectionModelServiceFactory>;
-
-  LanguageDetectionModelServiceFactory();
-  ~LanguageDetectionModelServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

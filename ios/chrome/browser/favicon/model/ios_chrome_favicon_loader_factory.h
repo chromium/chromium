@@ -5,31 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_FAVICON_LOADER_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class FaviconLoader;
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all FaviconLoaders and associates them with
 // ProfileIOS.
-class IOSChromeFaviconLoaderFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSChromeFaviconLoaderFactory
+    : public TypedProfileKeyedServiceFactoryIOS<IOSChromeFaviconLoaderFactory,
+                                                FaviconLoader> {
  public:
-  static FaviconLoader* GetForProfile(ProfileIOS* profile);
-  static FaviconLoader* GetForProfileIfExists(ProfileIOS* profile);
-
-  static IOSChromeFaviconLoaderFactory* GetInstance();
+  explicit IOSChromeFaviconLoaderFactory(PassKey key);
   // Returns the default factory used to build FaviconLoader. Can be registered
   // with SetTestingFactory to use the FaviconService instance during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<IOSChromeFaviconLoaderFactory>;
-
-  IOSChromeFaviconLoaderFactory();
-  ~IOSChromeFaviconLoaderFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

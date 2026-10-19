@@ -7,32 +7,21 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace language_detection {
-class LanguageDetectionModelLoaderServiceIOS;
-}  // namespace language_detection
+#import "components/language_detection/ios/browser/language_detection_model_loader_service_ios.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // This is a workaround for crbug/1324530 on iOS where it is mandatory to have
 // LanguageDetectionModel scoped by Profile.
 // TODO(crbug.com/40225076): remove this class once
 // LanguageDetectionModelService does this.
 class LanguageDetectionModelLoaderServiceIOSFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          LanguageDetectionModelLoaderServiceIOSFactory,
+          language_detection::LanguageDetectionModelLoaderServiceIOS> {
  public:
-  static language_detection::LanguageDetectionModelLoaderServiceIOS*
-  GetForProfile(ProfileIOS* profile);
-
-  static LanguageDetectionModelLoaderServiceIOSFactory* GetInstance();
+  explicit LanguageDetectionModelLoaderServiceIOSFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<
-      LanguageDetectionModelLoaderServiceIOSFactory>;
-
-  LanguageDetectionModelLoaderServiceIOSFactory();
-  ~LanguageDetectionModelLoaderServiceIOSFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

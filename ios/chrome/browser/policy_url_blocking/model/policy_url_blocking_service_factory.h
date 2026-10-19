@@ -5,23 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_POLICY_URL_BLOCKING_MODEL_POLICY_URL_BLOCKING_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class PolicyBlocklistService;
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Owns all PolicyBlocklistService instances and associate them to profiles.
-class PolicyBlocklistServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class PolicyBlocklistServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<PolicyBlocklistServiceFactory,
+                                                PolicyBlocklistService> {
  public:
-  static PolicyBlocklistServiceFactory* GetInstance();
-  static PolicyBlocklistService* GetForProfile(ProfileIOS* profile);
+  explicit PolicyBlocklistServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<PolicyBlocklistServiceFactory>;
-
-  PolicyBlocklistServiceFactory();
-  ~PolicyBlocklistServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

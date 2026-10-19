@@ -11,25 +11,11 @@
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-ExternalFileRemover* ExternalFileRemoverFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ExternalFileRemover>(
-      profile, /*create=*/true);
-}
-
-// static
-ExternalFileRemoverFactory* ExternalFileRemoverFactory::GetInstance() {
-  static base::NoDestructor<ExternalFileRemoverFactory> instance;
-  return instance.get();
-}
-
-ExternalFileRemoverFactory::ExternalFileRemoverFactory()
-    : ProfileKeyedServiceFactoryIOS("ExternalFileRemoverService") {
+ExternalFileRemoverFactory::ExternalFileRemoverFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "ExternalFileRemoverService") {
   DependsOn(IOSChromeTabRestoreServiceFactory::GetInstance());
 }
-
-ExternalFileRemoverFactory::~ExternalFileRemoverFactory() = default;
 
 std::unique_ptr<KeyedService>
 ExternalFileRemoverFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

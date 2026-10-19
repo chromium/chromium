@@ -5,29 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_PRIVATE_AI_MODEL_PRIVATE_AI_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PRIVATE_AI_MODEL_PRIVATE_AI_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "components/private_ai/private_ai_service.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
-
-namespace private_ai {
-class PrivateAiService;
-}  // namespace private_ai
-
-class PrivateAiServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class PrivateAiServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<PrivateAiServiceFactory,
+                                                private_ai::PrivateAiService> {
  public:
-  static private_ai::PrivateAiService* GetForProfile(ProfileIOS* profile);
-  static PrivateAiServiceFactory* GetInstance();
-
-  PrivateAiServiceFactory(const PrivateAiServiceFactory&) = delete;
-  PrivateAiServiceFactory& operator=(const PrivateAiServiceFactory&) = delete;
+  explicit PrivateAiServiceFactory(PassKey key);
 
  private:
-  friend base::NoDestructor<PrivateAiServiceFactory>;
-
-  PrivateAiServiceFactory();
-  ~PrivateAiServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

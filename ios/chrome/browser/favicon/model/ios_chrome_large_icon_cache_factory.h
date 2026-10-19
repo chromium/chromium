@@ -7,25 +7,18 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class KeyedService;
-class LargeIconCache;
+#include "ios/chrome/browser/favicon/model/large_icon_cache.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all LargeIconCaches and associates them with
 // ProfileIOS.
-class IOSChromeLargeIconCacheFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSChromeLargeIconCacheFactory
+    : public TypedProfileKeyedServiceFactoryIOS<IOSChromeLargeIconCacheFactory,
+                                                LargeIconCache> {
  public:
-  static LargeIconCache* GetForProfile(ProfileIOS* profile);
-  static IOSChromeLargeIconCacheFactory* GetInstance();
+  explicit IOSChromeLargeIconCacheFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSChromeLargeIconCacheFactory>;
-
-  IOSChromeLargeIconCacheFactory();
-  ~IOSChromeLargeIconCacheFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

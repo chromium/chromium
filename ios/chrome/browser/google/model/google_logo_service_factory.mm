@@ -10,27 +10,14 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-GoogleLogoService* GoogleLogoServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<GoogleLogoService>(
-      profile, /*create=*/true);
-}
-
-// static
-GoogleLogoServiceFactory* GoogleLogoServiceFactory::GetInstance() {
-  static base::NoDestructor<GoogleLogoServiceFactory> instance;
-  return instance.get();
-}
-
-GoogleLogoServiceFactory::GoogleLogoServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("GoogleLogoService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+GoogleLogoServiceFactory::GoogleLogoServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "GoogleLogoService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(ios::TemplateURLServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-GoogleLogoServiceFactory::~GoogleLogoServiceFactory() = default;
 
 std::unique_ptr<KeyedService> GoogleLogoServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

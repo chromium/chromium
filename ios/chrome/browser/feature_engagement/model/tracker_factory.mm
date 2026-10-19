@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -19,25 +18,12 @@ std::unique_ptr<KeyedService> BuildServiceInstance(ProfileIOS* profile) {
 
 }  // namespace
 
-// static
-feature_engagement::Tracker* TrackerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<feature_engagement::Tracker>(
-      profile, /*create=*/true);
-}
-
-// static
-TrackerFactory* TrackerFactory::GetInstance() {
-  static base::NoDestructor<TrackerFactory> instance;
-  return instance.get();
-}
-
 // Use the same tracker for regular and off-the-record Profiles.
-TrackerFactory::TrackerFactory()
-    : ProfileKeyedServiceFactoryIOS("feature_engagement::Tracker",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-TrackerFactory::~TrackerFactory() = default;
+TrackerFactory::TrackerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "feature_engagement::Tracker",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 // static
 TrackerFactory::TestingFactory TrackerFactory::GetDefaultFactory() {

@@ -5,25 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_TABS_SEARCH_MODEL_TABS_SEARCH_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class TabsSearchService;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 
 // Singleton that owns all TabsSearchServices and associates them with
 // ProfileIOS.
-class TabsSearchServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class TabsSearchServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<TabsSearchServiceFactory,
+                                                TabsSearchService> {
  public:
-  static TabsSearchService* GetForProfile(ProfileIOS* profile);
-  static TabsSearchServiceFactory* GetInstance();
+  explicit TabsSearchServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<TabsSearchServiceFactory>;
-
-  TabsSearchServiceFactory();
-  ~TabsSearchServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

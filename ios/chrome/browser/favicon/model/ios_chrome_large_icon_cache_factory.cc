@@ -4,29 +4,14 @@
 
 #include "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
 
-#include "base/no_destructor.h"
 #include "ios/chrome/browser/favicon/model/large_icon_cache.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-LargeIconCache* IOSChromeLargeIconCacheFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<LargeIconCache>(profile,
-                                                               /*create=*/true);
-}
-
-// static
-IOSChromeLargeIconCacheFactory* IOSChromeLargeIconCacheFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeLargeIconCacheFactory> instance;
-  return instance.get();
-}
-
-IOSChromeLargeIconCacheFactory::IOSChromeLargeIconCacheFactory()
-    : ProfileKeyedServiceFactoryIOS("LargeIconCache",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
-
-IOSChromeLargeIconCacheFactory::~IOSChromeLargeIconCacheFactory() = default;
+IOSChromeLargeIconCacheFactory::IOSChromeLargeIconCacheFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "LargeIconCache",
+          ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 IOSChromeLargeIconCacheFactory::BuildServiceInstanceFor(

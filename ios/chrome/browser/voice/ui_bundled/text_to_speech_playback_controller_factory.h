@@ -5,26 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_VOICE_UI_BUNDLED_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_FACTORY_H_
 #define IOS_CHROME_BROWSER_VOICE_UI_BUNDLED_TEXT_TO_SPEECH_PLAYBACK_CONTROLLER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class TextToSpeechPlaybackController;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller.h"
 
 // TextToSpeechPlaybackControllerFactory attaches
 // TextToSpeechPlaybackControllers to ProfileIOSs.
 class TextToSpeechPlaybackControllerFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          TextToSpeechPlaybackControllerFactory,
+          TextToSpeechPlaybackController> {
  public:
-  static TextToSpeechPlaybackController* GetForProfile(ProfileIOS* profile);
-  // Getter for singleton instance.
-  static TextToSpeechPlaybackControllerFactory* GetInstance();
+  explicit TextToSpeechPlaybackControllerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<TextToSpeechPlaybackControllerFactory>;
-
-  TextToSpeechPlaybackControllerFactory();
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

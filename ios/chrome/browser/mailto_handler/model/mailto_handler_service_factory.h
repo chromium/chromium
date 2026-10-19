@@ -7,24 +7,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class MailtoHandlerService;
+#import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all MailtoHandlerServices and associates them with
 // profiles.
-class MailtoHandlerServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class MailtoHandlerServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<MailtoHandlerServiceFactory,
+                                                MailtoHandlerService> {
  public:
-  static MailtoHandlerService* GetForProfile(ProfileIOS* profile);
-  static MailtoHandlerServiceFactory* GetInstance();
+  explicit MailtoHandlerServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<MailtoHandlerServiceFactory>;
-
-  MailtoHandlerServiceFactory();
-  ~MailtoHandlerServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

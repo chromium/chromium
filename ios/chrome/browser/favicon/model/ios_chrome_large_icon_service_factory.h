@@ -5,35 +5,23 @@
 #ifndef IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_FAVICON_MODEL_IOS_CHROME_LARGE_ICON_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/favicon/core/large_icon_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class KeyedService;
-class ProfileIOS;
-
-namespace favicon {
-class LargeIconService;
-}
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all LargeIconService and associates them with
 // ProfileIOS.
-class IOSChromeLargeIconServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSChromeLargeIconServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSChromeLargeIconServiceFactory,
+          favicon::LargeIconService> {
  public:
-  static favicon::LargeIconService* GetForProfile(ProfileIOS* profile);
-
-  static IOSChromeLargeIconServiceFactory* GetInstance();
+  explicit IOSChromeLargeIconServiceFactory(PassKey key);
 
   // Returns the default factory used to build LargeIconServices. Can be
   // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<IOSChromeLargeIconServiceFactory>;
-
-  IOSChromeLargeIconServiceFactory();
-  ~IOSChromeLargeIconServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

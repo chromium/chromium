@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/language_detection/model/language_detection_model_service_factory.h"
 
 #import "base/memory/scoped_refptr.h"
-#import "base/no_destructor.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
@@ -17,30 +16,14 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-LanguageDetectionModelServiceFactory*
-LanguageDetectionModelServiceFactory::GetInstance() {
-  static base::NoDestructor<LanguageDetectionModelServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-language_detection::LanguageDetectionModelService*
-LanguageDetectionModelServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<
-          language_detection::LanguageDetectionModelService>(profile,
-                                                             /*create=*/true);
-}
-
-LanguageDetectionModelServiceFactory::LanguageDetectionModelServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("LanguageDetectionModelService",
-                                    ProfileSelection::kRedirectedInIncognito) {
+LanguageDetectionModelServiceFactory::LanguageDetectionModelServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "LanguageDetectionModelService",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
-
-LanguageDetectionModelServiceFactory::~LanguageDetectionModelServiceFactory() =
-    default;
 
 std::unique_ptr<KeyedService>
 LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(

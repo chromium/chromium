@@ -6,7 +6,6 @@
 
 #import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
-#import "base/no_destructor.h"
 #import "components/private_ai/features.h"
 #import "components/private_ai/ios/private_ai_network_driver_ios.h"
 #import "components/private_ai/ios/private_ai_oak_session_driver_ios.h"
@@ -16,25 +15,10 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/common/channel_info.h"
 
-// static
-private_ai::PrivateAiService* PrivateAiServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<private_ai::PrivateAiService>(
-      profile, /*create=*/true);
-}
-
-// static
-PrivateAiServiceFactory* PrivateAiServiceFactory::GetInstance() {
-  static base::NoDestructor<PrivateAiServiceFactory> instance;
-  return instance.get();
-}
-
-PrivateAiServiceFactory::PrivateAiServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("PrivateAiService") {
+PrivateAiServiceFactory::PrivateAiServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "PrivateAiService") {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-PrivateAiServiceFactory::~PrivateAiServiceFactory() = default;
 
 std::unique_ptr<KeyedService> PrivateAiServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

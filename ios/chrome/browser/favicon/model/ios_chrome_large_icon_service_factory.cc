@@ -34,33 +34,19 @@ std::unique_ptr<KeyedService> BuildLargeIconService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-favicon::LargeIconService* IOSChromeLargeIconServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<favicon::LargeIconService>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSChromeLargeIconServiceFactory*
-IOSChromeLargeIconServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSChromeLargeIconServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 IOSChromeLargeIconServiceFactory::TestingFactory
 IOSChromeLargeIconServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildLargeIconService);
 }
 
-IOSChromeLargeIconServiceFactory::IOSChromeLargeIconServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("LargeIconService",
-                                    ProfileSelection::kOwnInstanceInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+IOSChromeLargeIconServiceFactory::IOSChromeLargeIconServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "LargeIconService",
+          ProfileSelection::kOwnInstanceInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(ios::FaviconServiceFactory::GetInstance());
 }
-
-IOSChromeLargeIconServiceFactory::~IOSChromeLargeIconServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSChromeLargeIconServiceFactory::BuildServiceInstanceFor(

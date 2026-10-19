@@ -4,29 +4,14 @@
 
 #import "ios/chrome/browser/unit_conversion/model/unit_conversion_service_factory.h"
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/unit_conversion/model/unit_conversion_service.h"
 
-// static
-UnitConversionServiceFactory* UnitConversionServiceFactory::GetInstance() {
-  static base::NoDestructor<UnitConversionServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-UnitConversionService* UnitConversionServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<UnitConversionService>(
-      profile, /*create=*/true);
-}
-
-UnitConversionServiceFactory::UnitConversionServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("UnitConversionService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
-
-UnitConversionServiceFactory::~UnitConversionServiceFactory() {}
+UnitConversionServiceFactory::UnitConversionServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "UnitConversionService",
+          ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 UnitConversionServiceFactory::BuildServiceInstanceFor(

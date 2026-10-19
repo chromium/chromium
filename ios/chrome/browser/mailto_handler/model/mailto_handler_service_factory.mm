@@ -12,27 +12,14 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/mailto_handler/mailto_handler_api.h"
 
-// static
-MailtoHandlerService* MailtoHandlerServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<MailtoHandlerService>(
-      profile, /*create=*/true);
-}
-
-// static
-MailtoHandlerServiceFactory* MailtoHandlerServiceFactory::GetInstance() {
-  static base::NoDestructor<MailtoHandlerServiceFactory> instance;
-  return instance.get();
-}
-
-MailtoHandlerServiceFactory::MailtoHandlerServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("MailtoHandlerService",
-                                    ProfileSelection::kRedirectedInIncognito) {
+MailtoHandlerServiceFactory::MailtoHandlerServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "MailtoHandlerService",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-MailtoHandlerServiceFactory::~MailtoHandlerServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 MailtoHandlerServiceFactory::BuildServiceInstanceFor(

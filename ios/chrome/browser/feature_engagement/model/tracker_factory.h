@@ -5,33 +5,25 @@
 #ifndef IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_FACTORY_H_
 #define IOS_CHROME_BROWSER_FEATURE_ENGAGEMENT_MODEL_TRACKER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace feature_engagement {
-class Tracker;
 
 // TrackerFactory is the main class for interacting with the
 // feature_engagement component. It uses the KeyedService API to
 // expose functions to associate and retrieve a feature_engagement::Tracker
 // object with a given profile.
-class TrackerFactory : public ProfileKeyedServiceFactoryIOS {
+class TrackerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<TrackerFactory, Tracker> {
  public:
-  static Tracker* GetForProfile(ProfileIOS* profile);
-  static TrackerFactory* GetInstance();
+  explicit TrackerFactory(PassKey key);
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<TrackerFactory>;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
-
-  TrackerFactory();
-  ~TrackerFactory() override;
 };
 
 }  // namespace feature_engagement

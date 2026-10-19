@@ -33,32 +33,20 @@ std::unique_ptr<KeyedService> BuildPhotosService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-PhotosService* PhotosServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<PhotosService>(profile,
-                                                              /*create=*/true);
-}
-
-// static
-PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
-  static base::NoDestructor<PhotosServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 PhotosServiceFactory::TestingFactory PhotosServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildPhotosService);
 }
 
-PhotosServiceFactory::PhotosServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("PhotosService",
-                                    TestingCreation::kNoServiceForTests,
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    ServiceCreation::kCreateWithProfile) {
+PhotosServiceFactory::PhotosServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "PhotosService",
+          TestingCreation::kNoServiceForTests,
+          ProfileSelection::kRedirectedInIncognito,
+          ServiceCreation::kCreateWithProfile) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
 }
-
-PhotosServiceFactory::~PhotosServiceFactory() = default;
 
 std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
