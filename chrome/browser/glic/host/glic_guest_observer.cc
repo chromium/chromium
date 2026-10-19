@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/host/glic_guest_observer.h"
 
+#include <tuple>
+
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/glic/host/glic_theme_util.h"
@@ -11,13 +14,16 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace glic {
 
@@ -31,6 +37,9 @@ enum class WebViewAutoPlayProgress {
   kMaxValue = kAutoPlayGrantedForOtherRFH,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:WebViewAutoPlayProgress)
+
+BASE_FEATURE(kGlicUpdateHiddenScreenInfo,
+             FEATURE_ENABLED_BY_DEFAULT_NON_ANDROID);
 
 }  // namespace
 
@@ -113,7 +122,9 @@ GlicGuestObserver::GlicGuestObserver(content::WebContents& web_contents,
                                      GlicWebContentsManager& contents_manager)
     : content::WebContentsObserver(&web_contents),
       content::WebContentsUserData<GlicGuestObserver>(web_contents),
-      contents_manager_(contents_manager) {}
+      contents_manager_(contents_manager) {
+  MaybeUpdateTopLevelScreenInfo();
+}
 
 GlicGuestObserver::~GlicGuestObserver() = default;
 
@@ -125,6 +136,9 @@ void GlicGuestObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   GrantAutoplayPermissions(navigation_handle);
   MaybeEnableMojoJsBindings(navigation_handle);
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    MaybeUpdateTopLevelScreenInfo();
+  }
 }
 
 void GlicGuestObserver::DidFinishNavigation(
@@ -164,6 +178,26 @@ void GlicGuestObserver::MaybeSetBackgroundColor(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   render_frame_host->GetView()->SetBackgroundColor(
       GetGlicBackgroundColor(profile, web_contents()->GetColorProvider()));
+}
+
+void GlicGuestObserver::MaybeUpdateTopLevelScreenInfo() {
+  if (!web_contents() ||
+      !base::FeatureList::IsEnabled(kGlicUpdateHiddenScreenInfo)) {
+    return;
+  }
+  content::WebContents* top =
+      guest_view::GuestViewBase::GetTopLevelWebContents(web_contents());
+  if (top && top->GetVisibility() == content::Visibility::HIDDEN) {
+    // TODO(b/573268718): RenderWidgetHostViewAura::InitAsChild
+    // leaves screen_infos_ at 0x0 when a WebContents is created unattached
+    // and hidden, causing the guest's window.screen.height to be 0 during
+    // warmup. Pulsing IncrementCapturerCount(stay_hidden=true) triggers
+    // ShowWithVisibility(kHiddenButPainting) -> UpdateScreenInfo() ->
+    // Hide() while keeping the WebContents hidden.
+    std::ignore = top->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
+                                              /*stay_awake=*/false,
+                                              /*is_activity=*/false);
+  }
 }
 
 }  // namespace glic
