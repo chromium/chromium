@@ -15,6 +15,7 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -25,6 +26,9 @@
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 namespace blocked_content {
+
+DEFINE_USER_DATA(PopupBlockerTabHelper);
+
 const size_t kMaximumNumberOfPopups = 25;
 
 struct PopupBlockerTabHelper::BlockedRequest {
@@ -40,13 +44,27 @@ struct PopupBlockerTabHelper::BlockedRequest {
   PopupBlockType block_type;
 };
 
-PopupBlockerTabHelper::PopupBlockerTabHelper(content::WebContents* web_contents)
+PopupBlockerTabHelper::PopupBlockerTabHelper(tabs::TabInterface& tab,
+                                             content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<PopupBlockerTabHelper>(*web_contents) {
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   blocked_content::SafeBrowsingTriggeredPopupBlocker::MaybeCreate(web_contents);
 }
 
 PopupBlockerTabHelper::~PopupBlockerTabHelper() = default;
+
+// static
+PopupBlockerTabHelper* PopupBlockerTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+PopupBlockerTabHelper* PopupBlockerTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
 
 void PopupBlockerTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -170,7 +188,5 @@ PopupBlockerTabHelper::GetBlockedPopupRequests() {
 void PopupBlockerTabHelper::LogAction(Action action) {
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.Popups.BlockerActions", action);
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PopupBlockerTabHelper);
 
 }  // namespace blocked_content

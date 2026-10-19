@@ -15,10 +15,13 @@
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace blocked_content {
@@ -74,19 +77,23 @@ class PopupBlockerTabHelperTest : public content::RenderViewHostTestHarness {
             content_settings::TestPageSpecificContentSettingsDelegate>(
             /*prefs=*/nullptr, settings_map_.get()));
 
-    PopupBlockerTabHelper::CreateForWebContents(web_contents());
-    helper_ = PopupBlockerTabHelper::FromWebContents(web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+    ON_CALL(tab_, GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
+    helper_ = std::make_unique<PopupBlockerTabHelper>(tab_, web_contents());
   }
   void TearDown() override {
-    helper_ = nullptr;
+    helper_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  PopupBlockerTabHelper* helper() { return helper_; }
+  PopupBlockerTabHelper* helper() { return helper_.get(); }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<PopupBlockerTabHelper> helper_ = nullptr;
+  ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<PopupBlockerTabHelper> helper_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
 };

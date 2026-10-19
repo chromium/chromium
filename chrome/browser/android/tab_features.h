@@ -36,6 +36,7 @@ class ActorUiTabControllerInterface;
 }  // namespace actor::ui
 
 namespace blocked_content {
+class PopupBlockerTabHelper;
 class PopupOpenerTabHelper;
 }  // namespace blocked_content
 
@@ -347,6 +348,8 @@ class TabFeatures {
   std::unique_ptr<commerce::CommerceTabHelper> commerce_tab_helper_;
   std::unique_ptr<metrics::MetricsServicesWebContentsObserver>
       metrics_services_web_contents_observer_;
+  std::unique_ptr<blocked_content::PopupBlockerTabHelper>
+      popup_blocker_tab_helper_;
   std::unique_ptr<blocked_content::PopupOpenerTabHelper>
       popup_opener_tab_helper_;
   std::unique_ptr<

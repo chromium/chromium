@@ -164,6 +164,7 @@
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/payments/core/features.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/search/ntp_features.h"
@@ -806,15 +807,25 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
         web_contents, HistoryTabHelper::FromWebContents(web_contents));
   }
 
-  if (!blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents)) {
-    if (auto* pm_registry =
-            performance_manager::PerformanceManagerRegistry::GetInstance()) {
+  if (auto* pm_registry =
+          performance_manager::PerformanceManagerRegistry::GetInstance()) {
+    // A WebContents reparented into a new TabAndroid already has its PageType
+    // set to kTab, and PageNodeImpl::SetType CHECKs that SetPageType is only
+    // called once per WebContents.
+    base::WeakPtr<performance_manager::PageNode> page_node =
+        performance_manager::PerformanceManager::
+            GetPrimaryPageNodeForWebContents(web_contents);
+    if (page_node &&
+        page_node->GetType() != performance_manager::PageType::kTab) {
       pm_registry->SetPageType(web_contents,
                                performance_manager::PageType::kTab);
     }
   }
 
-  blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
+  popup_blocker_tab_helper_ =
+      GetUserDataFactory()
+          .CreateInstance<blocked_content::PopupBlockerTabHelper>(*tab, *tab,
+                                                                  web_contents);
 
   RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
       web_contents);

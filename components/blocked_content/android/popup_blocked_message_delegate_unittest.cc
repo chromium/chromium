@@ -16,10 +16,13 @@
 #include "components/messages/android/mock_message_dispatcher_bridge.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "url/gurl.h"
 
 namespace blocked_content {
@@ -35,8 +38,9 @@ class PopupBlockedMessageDelegateTest
 
   // content::RenderViewHostTestHarness:
   void SetUp() override;
+  void TearDown() override;
 
-  PopupBlockerTabHelper* helper() { return helper_; }
+  PopupBlockerTabHelper* helper() { return helper_.get(); }
 
   HostContentSettingsMap* settings_map() { return settings_map_.get(); }
 
@@ -53,7 +57,9 @@ class PopupBlockedMessageDelegateTest
   }
 
  private:
-  raw_ptr<PopupBlockerTabHelper> helper_ = nullptr;
+  ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<PopupBlockerTabHelper> helper_;
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
@@ -82,8 +88,10 @@ void PopupBlockedMessageDelegateTest::SetUp() {
           content_settings::TestPageSpecificContentSettingsDelegate>(
           /*prefs=*/nullptr, settings_map_.get()));
 
-  PopupBlockerTabHelper::CreateForWebContents(web_contents());
-  helper_ = PopupBlockerTabHelper::FromWebContents(web_contents());
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+  ON_CALL(tab_, GetUnownedUserDataHost())
+      .WillByDefault(::testing::ReturnRef(user_data_host_));
+  helper_ = std::make_unique<PopupBlockerTabHelper>(tab_, web_contents());
 
   PopupBlockedMessageDelegate::CreateForWebContents(web_contents());
   popup_blocked_message_delegate_ =
@@ -92,6 +100,12 @@ void PopupBlockedMessageDelegateTest::SetUp() {
   message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
+}
+
+void PopupBlockedMessageDelegateTest::TearDown() {
+  helper_.reset();
+  messages::MessageDispatcherBridge::SetInstanceForTesting(nullptr);
+  content::RenderViewHostTestHarness::TearDown();
 }
 
 messages::MessageWrapper* PopupBlockedMessageDelegateTest::GetMessageWrapper() {

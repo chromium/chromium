@@ -70,8 +70,9 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
-    blocked_content::PopupBlockerTabHelper::CreateForWebContents(
-        web_contents());
+    popup_blocker_tab_helper_ =
+        std::make_unique<blocked_content::PopupBlockerTabHelper>(
+            tab_, web_contents());
 #if BUILDFLAG(IS_ANDROID)
     message_dispatcher_bridge_.SetMessagesEnabledForEmbedder(true);
     messages::MessageDispatcherBridge::SetInstanceForTesting(
@@ -98,6 +99,7 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
 #if !BUILDFLAG(IS_ANDROID)
     framebust_block_tab_helper_.reset();
 #endif
+    popup_blocker_tab_helper_.reset();
     popup_opener_tab_helper_.reset();
     popups_.clear();
 #if BUILDFLAG(IS_ANDROID)
@@ -155,6 +157,8 @@ class PopupOpenerTabHelperTest : public ChromeRenderViewHostTestHarness {
   tabs::MockTabInterface tab_;
   std::unique_ptr<blocked_content::PopupOpenerTabHelper>
       popup_opener_tab_helper_;
+  std::unique_ptr<blocked_content::PopupBlockerTabHelper>
+      popup_blocker_tab_helper_;
 #if BUILDFLAG(IS_ANDROID)
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
   raw_ptr<blocked_content::FramebustBlockedMessageDelegate>

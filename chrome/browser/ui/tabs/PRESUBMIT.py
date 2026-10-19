@@ -21,11 +21,6 @@ _ALLOWED_CREATE_FOR_CALLS = (
   # extensions::BookmarkManagerPrivateDragEventRouter, so the WebContents
   # must own it.
   'BookmarkTabHelper::CreateForWebContents',
-  # PopupBlockerTabHelper lives in //components/blocked_content and is looked up
-  # from arbitrary WebContents by PopupBlocker,
-  # ChromeContentBrowserClient::CanCreateWindow, and PopupOpenerTabHelper, so
-  # the WebContents must own it.
-  'blocked_content::PopupBlockerTabHelper::CreateForWebContents',
   # CaptivePortalTabHelper lives in //components/captive_portal/content and
   # is also attached to non-tab GuestView WebContents in
   # ChromeGuestViewManagerDelegate, so the WebContents must own it.

@@ -27,6 +27,8 @@
 #include "components/subresource_filter/content/browser/utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/tabs/public/mock_tab_interface.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/browser_context.h"
@@ -39,11 +41,13 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
@@ -81,7 +85,11 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
 
     subresource_filter::SubresourceFilterObserverManager::CreateForWebContents(
         web_contents());
-    PopupBlockerTabHelper::CreateForWebContents(web_contents());
+    tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(), &tab_);
+    ON_CALL(tab_, GetUnownedUserDataHost())
+        .WillByDefault(::testing::ReturnRef(user_data_host_));
+    popup_blocker_tab_helper_ =
+        std::make_unique<PopupBlockerTabHelper>(tab_, web_contents());
     content_settings::PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
         std::make_unique<
@@ -98,6 +106,7 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
                 base::Unretained(this)));
   }
   void TearDown() override {
+    popup_blocker_tab_helper_.reset();
     popup_blocker_ = nullptr;
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -108,6 +117,7 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
   SafeBrowsingTriggeredPopupBlocker* popup_blocker() { return popup_blocker_; }
 
   void SimulateDeleteContents() {
+    popup_blocker_tab_helper_.reset();
     DeleteContents();
     popup_blocker_ = nullptr;
   }
@@ -157,6 +167,9 @@ class SafeBrowsingTriggeredPopupBlockerTestBase
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
+  ui::UnownedUserDataHost user_data_host_;
+  tabs::MockTabInterface tab_;
+  std::unique_ptr<PopupBlockerTabHelper> popup_blocker_tab_helper_;
   raw_ptr<SafeBrowsingTriggeredPopupBlocker> popup_blocker_ = nullptr;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;

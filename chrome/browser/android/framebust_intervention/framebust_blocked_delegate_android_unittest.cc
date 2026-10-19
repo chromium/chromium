@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/safe_browsing_triggered_popup_blocker.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
@@ -85,8 +84,6 @@ void FramebustBlockedMessageDelegateTest::SetUp() {
       std::make_unique<
           content_settings::TestPageSpecificContentSettingsDelegate>(
           /*prefs=*/nullptr, settings_map_.get()));
-
-  PopupBlockerTabHelper::CreateForWebContents(web_contents());
 
   FramebustBlockedMessageDelegate::CreateForWebContents(web_contents());
   framebust_blocked_message_delegate_ =
