@@ -1502,10 +1502,10 @@ ci.builder(
     ),
     builderless = True,
     cpu = cpu.ARM64,
-    tree_closing = False,
     console_view_entry = consoles.console_view_entry(
         category = "webdriver",
         short_name = "bidi",
     ),
+    cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-devtools@google.com",
 )

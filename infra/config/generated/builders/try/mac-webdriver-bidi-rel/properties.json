@@ -69,6 +69,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.mac",
-  "cq": "required",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }
