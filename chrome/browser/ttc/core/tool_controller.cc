@@ -39,16 +39,19 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
+#include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
 #include "chrome/browser/ttc/core/session_journal_impl.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -58,9 +61,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
-#include "chrome/browser/actor/tools/window_management_tool_request.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "components/sessions/core/session_id.h"
 #endif
 
 namespace ttc {
@@ -200,15 +200,15 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
       case actor::ToolId::kSwitchTab:
         SwitchTab(tool_request.arguments, std::move(callback));
         return;
-#if !BUILDFLAG(IS_ANDROID)
-      case actor::ToolId::kOpenKnownPage:
-        OpenKnownPage(tool_request.arguments, std::move(callback));
-        return;
       case actor::ToolId::kEnterFullscreen:
         SetFullscreen(/*fullscreen=*/true, std::move(callback));
         return;
       case actor::ToolId::kExitFullscreen:
         SetFullscreen(/*fullscreen=*/false, std::move(callback));
+        return;
+#if !BUILDFLAG(IS_ANDROID)
+      case actor::ToolId::kOpenKnownPage:
+        OpenKnownPage(tool_request.arguments, std::move(callback));
         return;
 #endif
       default:
@@ -271,10 +271,10 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kCloseGeminiPanel,
       actor::ToolId::kCloseTab,
       actor::ToolId::kSwitchTab,
-#if !BUILDFLAG(IS_ANDROID)
-      actor::ToolId::kOpenKnownPage,
       actor::ToolId::kEnterFullscreen,
       actor::ToolId::kExitFullscreen,
+#if !BUILDFLAG(IS_ANDROID)
+      actor::ToolId::kOpenKnownPage,
 #endif
   });
 
@@ -932,7 +932,6 @@ void ToolController::CloseGeminiPanel(ToolResponseCallback callback) {
       std::move(callback));
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ToolController::SetFullscreen(bool fullscreen,
                                    ToolResponseCallback callback) {
   PerformActionOnTrackedContents(
@@ -951,7 +950,6 @@ void ToolController::SetFullscreen(bool fullscreen,
       },
       std::move(callback));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ToolController::PerformActionOnTrackedContents(
     base::FunctionRef<std::unique_ptr<actor::ToolRequest>(
