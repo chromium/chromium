@@ -1267,9 +1267,11 @@ void GenerateResourceFromSharedImageVideoFrame(
     Microsoft::WRL::ComPtr<ID3D11Device> encoder_device,
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     ResourceAvailableCB sample_available_cb) {
-  gpu::SyncToken acquire_sync_token = frame->acquire_sync_token();
-  command_buffer_helper->WaitForSyncToken(
-      acquire_sync_token,
+  std::vector<gpu::SyncToken> acquire_sync_tokens =
+      frame->shared_image()->GetSyncTokensForVideoFrame(
+          frame->acquire_sync_token());
+  command_buffer_helper->WaitForSyncTokens(
+      std::move(acquire_sync_tokens),
       base::BindOnce(&GenerateResourceOnSyncTokenReleased, std::move(frame),
                      std::move(encoder_device),
                      std::move(command_buffer_helper),

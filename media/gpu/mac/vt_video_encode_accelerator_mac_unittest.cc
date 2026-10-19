@@ -282,6 +282,10 @@ class TestCommandBufferHelper : public CommandBufferHelper {
                         base::OnceClosure done_cb) override {
     std::move(done_cb).Run();
   }
+  void WaitForSyncTokens(std::vector<gpu::SyncToken> sync_tokens,
+                         base::OnceClosure done_cb) override {
+    std::move(done_cb).Run();
+  }
   gpu::SharedImageStub* GetSharedImageStub() override { return nullptr; }
   gpu::MemoryTypeTracker* GetMemoryTypeTracker() override { return &tracker_; }
   gpu::SharedImageManager* GetSharedImageManager() override {

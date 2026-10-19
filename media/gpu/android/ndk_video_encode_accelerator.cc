@@ -644,11 +644,12 @@ bool ProfileNeedsConfigDataInBitstream(VideoCodecProfile profile) {
   }
 }
 
-void WaitForSyncTokenOnGpuThread(
+void WaitForSyncTokensOnGpuThread(
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
-    gpu::SyncToken sync_token,
+    std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure done_cb) {
-  command_buffer_helper->WaitForSyncToken(sync_token, std::move(done_cb));
+  command_buffer_helper->WaitForSyncTokens(std::move(sync_tokens),
+                                           std::move(done_cb));
 }
 
 constexpr std::string_view kEncoderStatusHistogramPrefix =
@@ -1149,8 +1150,9 @@ void NdkVideoEncodeAccelerator::FeedInput() {
                          weak_ptr_factory_.GetWeakPtr(), frame->unique_id()));
       gpu_task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(&WaitForSyncTokenOnGpuThread, command_buffer_helper_,
-                         frame->acquire_sync_token(),
+          base::BindOnce(&WaitForSyncTokensOnGpuThread, command_buffer_helper_,
+                         frame->shared_image()->GetSyncTokensForVideoFrame(
+                             frame->acquire_sync_token()),
                          std::move(sync_done_callback)));
       return;
     }

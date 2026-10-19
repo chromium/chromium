@@ -85,6 +85,11 @@ class MockCommandBufferHelper : public CommandBufferHelper {
               WaitForSyncToken,
               (gpu::SyncToken sync_token, base::OnceClosure done_cb),
               (override));
+  MOCK_METHOD(void,
+              WaitForSyncTokens,
+              (std::vector<gpu::SyncToken> sync_tokens,
+               base::OnceClosure done_cb),
+              (override));
   MOCK_METHOD(gpu::SharedImageManager*, GetSharedImageManager, (), (override));
 
  protected:
@@ -542,10 +547,11 @@ class NdkVideoEncoderAcceleratorTest
     auto runner = task_environment_.GetMainThreadTaskRunner();
     auto command_buffer_helper =
         base::MakeRefCounted<MockCommandBufferHelper>(fake_gpu_runner_);
-    ON_CALL(*command_buffer_helper, WaitForSyncToken)
-        .WillByDefault([runner](gpu::SyncToken, base::OnceClosure done_cb) {
-          runner->PostTask(FROM_HERE, std::move(done_cb));
-        });
+    ON_CALL(*command_buffer_helper, WaitForSyncTokens)
+        .WillByDefault(
+            [runner](std::vector<gpu::SyncToken>, base::OnceClosure done_cb) {
+              runner->PostTask(FROM_HERE, std::move(done_cb));
+            });
     ON_CALL(*command_buffer_helper, GetSharedImageManager())
         .WillByDefault(Return(&shared_image_manager_));
     command_buffer_helper_ = command_buffer_helper;

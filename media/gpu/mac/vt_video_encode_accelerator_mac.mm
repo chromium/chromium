@@ -736,9 +736,11 @@ void ResolveSharedImageOnGpuThread(scoped_refptr<CommandBufferHelper> helper,
   DCHECK(frame);
   DCHECK(frame->HasSharedImage());
 
-  auto sync_token = frame->acquire_sync_token();
-  helper->WaitForSyncToken(
-      sync_token,
+  std::vector<gpu::SyncToken> sync_tokens =
+      frame->shared_image()->GetSyncTokensForVideoFrame(
+          frame->acquire_sync_token());
+  helper->WaitForSyncTokens(
+      std::move(sync_tokens),
       base::BindOnce(
           [](scoped_refptr<CommandBufferHelper> helper,
              scoped_refptr<VideoFrame> frame, PixelBufferResolvedCB callback,

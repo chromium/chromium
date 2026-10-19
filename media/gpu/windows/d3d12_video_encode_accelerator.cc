@@ -323,9 +323,11 @@ void D3D12GenerateResourceFromSharedImageVideoFrame(
     return;
   }
 
-  gpu::SyncToken acquire_sync_token = frame->acquire_sync_token();
-  command_buffer_helper->WaitForSyncToken(
-      acquire_sync_token,
+  std::vector<gpu::SyncToken> acquire_sync_tokens =
+      frame->shared_image()->GetSyncTokensForVideoFrame(
+          frame->acquire_sync_token());
+  command_buffer_helper->WaitForSyncTokens(
+      std::move(acquire_sync_tokens),
       base::BindOnce(&GenerateResourceOnSynTokenReleased, std::move(frame),
                      d3d11_device, fence_and_value, command_buffer_helper,
                      std::move(frame_available_cb)));
