@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -9,9 +10,11 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
 class CustomizeChromeSidePanelBrowserTest : public PlatformBrowserTest {
@@ -123,6 +126,25 @@ IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
   customize_chrome_side_panel_controller->CloseSidePanel();
   EXPECT_FALSE(
       customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(CustomizeChromeSidePanelBrowserTest,
+                       ExplicitlyCloseSidePanel) {
+  SidePanelUI::From(GetBrowserWindowInterface())->DisableAnimationsForTesting();
+  auto* customize_chrome_side_panel_controller = GetSidePanelController();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowserWindowInterface(),
+                                           chrome::ChromeUINewTabURLAsGURL()));
+  customize_chrome_side_panel_controller->OpenSidePanel(
+      SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome,
+      CustomizeChromeSection::kUnspecified);
+  EXPECT_TRUE(
+      customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing());
+  customize_chrome_side_panel_controller->CloseSidePanel();
+  EXPECT_FALSE(
+      customize_chrome_side_panel_controller->IsCustomizeChromeEntryShowing());
+
+  EXPECT_TRUE(GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kNtpCustomizeChromeExplicitlyClosed));
 }
 
 IN_PROC_BROWSER_TEST_F(UnsupportedCustomizeChromeSidePanelBrowserTest,

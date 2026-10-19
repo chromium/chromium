@@ -64,6 +64,7 @@ test_rules = [
   "+chrome/browser/ui/tabs/test_tab_strip_model_delegate.h",
   "+chrome/browser/ui/browser_element_identifiers.h",
   "+chrome/browser/ui/interaction/browser_elements.h",
+  "+chrome/browser/ui/side_panel/mock_side_panel_ui.h",
   "+chrome/browser/ui/side_panel/side_panel_entry_id.h",
   "+chrome/browser/ui/views/frame/browser_view.h",
   "+chrome/browser/ui/views/omnibox/omnibox_view_views.h",
