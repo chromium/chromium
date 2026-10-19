@@ -6192,22 +6192,6 @@ crbug.com/1407201 fast/css/pseudo-in-range-invalid-value.html [ Failure Pass ]
 # Sheriff 2023-01-05
 crbug.com/1354433 [ Win ] external/wpt/html/browsers/the-window-object/window-properties.https.html [ Failure Pass ]
 
-# These tests test aspects of document.domain setting, which will (& should)
-# fail once document.domain setting is default-disabled (by enabling
-# Origin-Agent-Cluster by default). The expected test result thus depends on
-# whether Origin-Agent-Cluster is default enabled or not.
-#
-# All of these tests are *also* run as part of the
-# virtual/no-auto-wpt-origin-isolation/ suite, which has document.domain
-# setting enabled. In the virtual suite, all of these tests need to pass.
-http/tests/security/cross-frame-access-callback-explicit-domain-ALLOW.html [ Failure Pass ]
-http/tests/security/cross-frame-access-callback-explicit-domain-DENY.html [ Failure Pass ]
-http/tests/security/cross-frame-access-child-explicit-domain.html [ Failure Pass ]
-http/tests/security/cross-frame-access-parent-explicit-domain.html [ Failure Pass ]
-http/tests/security/cross-frame-access-port-explicit-domain.html [ Failure Pass ]
-http/tests/security/cross-frame-access-protocol-explicit-domain.html [ Failure Pass ]
-http/tests/security/canvas-remote-read-remote-image-document-domain.html [ Failure Pass ]
-
 # Sheriff 2023-01-23
 crbug.com/1409463 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Failure Pass Timeout ]
 

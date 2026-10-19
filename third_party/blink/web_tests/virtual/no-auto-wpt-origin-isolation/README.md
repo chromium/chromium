@@ -7,4 +7,6 @@ This is separate from the `not-site-per-process` virtual test suite, which
 disables site isolation entirely. Tests running under this virtual test suite
 benefit from _site_ isolation (e.g. isolating `not-web-platform.test` from
 `web-platform.test`). They just do not get automatic origin isolation (e.g.
-isolating `web-platform.test` from `www.web-platform.test`).
+isolating `web-platform.test` from `www.web-platform.test`). Note that the
+document.domain setting is also enabled here, though disabled by default
+elsewhere, via Origian-Agent-Cluster being enabled by default.

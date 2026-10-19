@@ -1,3 +1,4 @@
+CONSOLE WARNING: document.domain mutation is ignored because the surrounding agent cluster is origin-keyed.
 The child frame will get a function from the parent frame, set the document.domain property and then try to use the function. The function should still be able to access parent frame properties. 
 
 PASS: canGet('window.location.href') should be 'true' and is.

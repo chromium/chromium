@@ -1,0 +1,9 @@
+This test currently fails because we check the port and protocol even if document.domain is explicitly set (rdar://problem/5366437).
+
+PASS: Cross frame access to https from http, after explicitly setting document.domain, was denied.
+
+
+--------
+Frame: 'aFrame'
+--------
+Inner iframe with explicit document.domain set.

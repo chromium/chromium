@@ -1,7 +1,10 @@
-PASS: Cross frame access from frame explicitly setting document.domain was denied.
+CONSOLE WARNING: document.domain mutation is ignored because the surrounding agent cluster is origin-keyed.
+Fail: Cross frame access from frame explicitly setting document.domain was allowed.
 
 
 --------
 Frame: 'aFrame'
 --------
+Fail: Cross frame access from frame explicitly setting document.domain was allowed.
+
 Inner iframe.

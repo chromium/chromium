@@ -1,0 +1,8 @@
+Test that a child frame can't define a function and the use it to access parent properties after document.domain write blocks the access. 
+
+--------
+Frame: '<!--framePath //<!--frame0-->-->'
+--------
+PASS: canGet('parentWindow.location.href') should be 'false' and is.
+PASS: accessThrowsException('parentWindow.location.href') should be 'true' and is.
+
