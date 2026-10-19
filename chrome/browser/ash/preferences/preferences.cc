@@ -1172,7 +1172,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
     if (ImeController::Get()) {  // Can be null in tests.
       ImeController::Get()->SetImesManagedByPolicy(
-          success && allowed_input_methods_force_enabled);
+          allowed_by_policy && success && allowed_input_methods_force_enabled);
     } else {
       CHECK_IS_TEST();
     }

@@ -112,6 +112,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/input_method:test_support",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/common:constants",
