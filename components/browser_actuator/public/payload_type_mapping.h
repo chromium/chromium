@@ -60,7 +60,8 @@ inline std::string_view ExpectedTypeUrl(PayloadType payload_type) {
       return "type.googleapis.com/"
              "components_sharing_message.GlicExperimentalTriggering";
     case PayloadType::kActuation:
-      return "type.googleapis.com/actor.proto.ActuationDownstreamMessage";
+      return "type.googleapis.com/"
+             "chrome.aix.autobrowse.proto.ServerToBrowserPayload";
     case PayloadType::kUnspecified:
       NOTREACHED();
   }

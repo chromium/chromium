@@ -21,10 +21,6 @@ class TransportSession;
 
 namespace actor {
 
-namespace proto {
-class StopTask;
-}  // namespace proto
-
 // Routes actuation commands from a transport session to an ActuationDelegate
 // and sends the results upstream.
 class ActuationTransportHandler : public browser_actuator::TransportHandler {
@@ -41,23 +37,11 @@ class ActuationTransportHandler : public browser_actuator::TransportHandler {
                  std::string_view serialized_payload) override;
 
  private:
-  void HandleStartTask(
-      const std::string& request_id,
-      const optimization_guide::proto::BrowserStartTask& request);
-  void OnStartTaskComplete(
-      const std::string& request_id,
-      optimization_guide::proto::BrowserStartTaskResult result);
-
-  void HandleStopTask(const std::string& request_id,
-                      const proto::StopTask& request);
-  void OnStopTaskComplete(const std::string& request_id,
-                          TaskId task_id,
-                          bool success);
-
-  void HandleAct(const std::string& request_id,
-                 const optimization_guide::proto::Actions& actions);
-  void OnActComplete(const std::string& request_id,
-                     optimization_guide::proto::ActionsResult result);
+  void HandleStartTask(const std::string& request_id,
+                       const proto::StartTaskRequest& request);
+  void OnStartTaskComplete(const std::string& request_id,
+                           TaskId task_id,
+                           proto::StartTaskResponse response);
 
   std::unique_ptr<ActuationDelegate> delegate_;
   base::flat_set<TaskId> active_tasks_;

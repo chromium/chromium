@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -29,12 +30,13 @@
 #include "components/browser_actuator/public/transport_handler.h"
 #include "components/browser_actuator/public/transport_handler_factory_registry.h"
 #include "components/browser_actuator/public/transport_session.h"
-#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor {
 namespace {
+
+namespace proto = ::chrome::aix::autobrowse::proto;
 
 class FakeTransportSession : public browser_actuator::TransportSession {
  public:
@@ -48,7 +50,7 @@ class FakeTransportSession : public browser_actuator::TransportSession {
   SendUpstreamMessage(browser_actuator::PayloadType payload_type,
                       const google::protobuf::MessageLite& message) override {
     sent_payload_types_.push_back(payload_type);
-    proto::ActuationUpstreamMessage upstream;
+    proto::BrowserToServerPayload upstream;
     EXPECT_TRUE(upstream.ParseFromString(message.SerializeAsString()));
     sent_messages_.push_back(std::move(upstream));
     return {};
@@ -61,14 +63,14 @@ class FakeTransportSession : public browser_actuator::TransportSession {
     return sent_payload_types_;
   }
 
-  const std::vector<proto::ActuationUpstreamMessage>& sent_messages() const {
+  const std::vector<proto::BrowserToServerPayload>& sent_messages() const {
     return sent_messages_;
   }
 
  private:
   std::string session_id_;
   std::vector<browser_actuator::PayloadType> sent_payload_types_;
-  std::vector<proto::ActuationUpstreamMessage> sent_messages_;
+  std::vector<proto::BrowserToServerPayload> sent_messages_;
 };
 
 class ChromeActuationTransportHandlerFactoryTest : public testing::Test {
@@ -118,9 +120,9 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
       factory_->OnNewSession(&session);
   ASSERT_TRUE(handler);
 
-  proto::ActuationDownstreamMessage downstream;
+  proto::ServerToBrowserPayload downstream;
   downstream.set_request_id("req_factory_start");
-  downstream.mutable_start_task()->set_tab_id(15);
+  downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(15);
 
   handler->OnMessage(browser_actuator::PayloadType::kActuation,
                      downstream.SerializeAsString());
@@ -130,17 +132,17 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
             browser_actuator::PayloadType::kActuation);
   const auto& upstream = session.sent_messages()[0];
   EXPECT_EQ(upstream.request_id(), "req_factory_start");
-  ASSERT_TRUE(upstream.has_start_task_result());
-  EXPECT_EQ(upstream.start_task_result().status(),
-            optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
-  EXPECT_EQ(upstream.start_task_result().tab_id(), 15);
+  ASSERT_TRUE(upstream.has_start_task());
+  EXPECT_EQ(upstream.start_task().status(),
+            proto::StartTaskResponse::STATUS_OK);
 
-  TaskId task_id(upstream.start_task_result().task_id());
+  int task_id_val = 0;
+  ASSERT_TRUE(base::StringToInt(upstream.task_id(), &task_id_val));
+  TaskId task_id(task_id_val);
   ActorTask* task = actor_keyed_service_->GetTask(task_id);
   ASSERT_TRUE(task);
   EXPECT_EQ(task->source_info().type, TaskSourceInfo::Client::kBrowserActuator);
-  ASSERT_TRUE(task->source_info().id.has_value());
-  EXPECT_EQ(*task->source_info().id, "session_factory_1");
+  EXPECT_FALSE(task->source_info().id.has_value());
   EXPECT_NE(&task->policy_checker(), GetNullEnterprisePolicyChecker());
 
   handler.reset();
@@ -166,9 +168,9 @@ TEST_F(ChromeActuationTransportHandlerFactoryTest,
   browser_actuator::TransportSession* session =
       actuator_service->GetOrCreateSession("enabled_session_1");
   ASSERT_TRUE(session);
-  proto::ActuationDownstreamMessage downstream;
+  proto::ServerToBrowserPayload downstream;
   downstream.set_request_id("req_enabled_start");
-  downstream.mutable_start_task()->set_tab_id(15);
+  downstream.mutable_start_task()->add_target_surfaces()->set_tab_id(15);
   session->OnMessage(browser_actuator::PayloadType::kActuation, downstream);
   EXPECT_EQ(actor_keyed_service_->GetActiveTasks().size(), 1u);
 

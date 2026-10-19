@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/transport/actor_keyed_service_adapter.h"
 
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace actor {
@@ -31,28 +33,21 @@ ActorKeyedServiceAdapter::ActorKeyedServiceAdapter(
 
 ActorKeyedServiceAdapter::~ActorKeyedServiceAdapter() = default;
 
-void ActorKeyedServiceAdapter::StartTask(
-    const std::string& session_id,
-    const optimization_guide::proto::BrowserStartTask& request,
-    StartTaskCallback callback) {
+void ActorKeyedServiceAdapter::StartTask(const proto::StartTaskRequest& request,
+                                         StartTaskCallback callback) {
   auto options = webui::mojom::TaskOptions::New();
-  if (request.tab_id() > 0) {
-    options->actuation_tab_id = request.tab_id();
-  }
 
   TaskId task_id = actor_service_->CreateTaskWithOptions(
-      TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator, session_id),
+      TaskSourceInfo(TaskSourceInfo::Client::kBrowserActuator,
+                     /*id=*/std::nullopt),
       enterprise_policy_checker_, std::move(options),
       weak_ptr_factory_.GetWeakPtr(),
       ui::ActorUiStateManager::Get(actor_service_->GetProfile()));
 
-  optimization_guide::proto::BrowserStartTaskResult result;
-  result.set_task_id(task_id.value());
-  if (request.tab_id() > 0) {
-    result.set_tab_id(request.tab_id());
-  }
-  result.set_status(optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
-  std::move(callback).Run(std::move(result));
+  // TODO(crbug.com/571106281): Bind target_surfaces on StartTask.
+  proto::StartTaskResponse response;
+  response.set_status(proto::StartTaskResponse::STATUS_OK);
+  std::move(callback).Run(task_id, std::move(response));
 }
 
 void ActorKeyedServiceAdapter::StopTask(TaskId task_id,

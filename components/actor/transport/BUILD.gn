@@ -30,6 +30,7 @@ source_set("unit_tests") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/actor/transport/proto:actuation_transport_proto",
     "//components/browser_actuator/public",
+    "//components/browser_actuator/public:payload_type_mapping",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gtest",
   ]

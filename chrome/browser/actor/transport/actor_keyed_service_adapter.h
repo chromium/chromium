@@ -40,8 +40,7 @@ class ActorKeyedServiceAdapter : public ActuationDelegate,
   ~ActorKeyedServiceAdapter() override;
 
   // ActuationDelegate:
-  void StartTask(const std::string& session_id,
-                 const optimization_guide::proto::BrowserStartTask& request,
+  void StartTask(const proto::StartTaskRequest& request,
                  StartTaskCallback callback) override;
   void StopTask(TaskId task_id, StopTaskCallback callback) override;
   void Act(const optimization_guide::proto::Actions& actions,

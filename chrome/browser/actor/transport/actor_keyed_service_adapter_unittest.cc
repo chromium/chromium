@@ -15,6 +15,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/core/task_source_info.h"
+#include "components/actor/transport/proto/actuation_transport.pb.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,48 +43,27 @@ class ActorKeyedServiceAdapterTest : public testing::Test {
 };
 
 TEST_F(ActorKeyedServiceAdapterTest, StartTaskCreatesBrowserActuatorTask) {
-  optimization_guide::proto::BrowserStartTask request;
-  base::test::TestFuture<optimization_guide::proto::BrowserStartTaskResult>
-      future;
+  proto::StartTaskRequest request;
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> future;
 
-  adapter_.StartTask("session_alpha", request, future.GetCallback());
+  adapter_.StartTask(request, future.GetCallback());
 
-  const auto& result = future.Get();
-  EXPECT_EQ(result.status(),
-            optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
-  EXPECT_GT(result.task_id(), 0);
-  EXPECT_EQ(result.tab_id(), 0);
+  const auto& [task_id, response] = future.Get();
+  EXPECT_EQ(response.status(), proto::StartTaskResponse::STATUS_OK);
+  EXPECT_TRUE(task_id);
 
-  ActorTask* task = actor_service_->GetTask(TaskId(result.task_id()));
+  ActorTask* task = actor_service_->GetTask(task_id);
   ASSERT_TRUE(task);
   EXPECT_EQ(task->source_info().type, TaskSourceInfo::Client::kBrowserActuator);
-  ASSERT_TRUE(task->source_info().id.has_value());
-  EXPECT_EQ(*task->source_info().id, "session_alpha");
+  EXPECT_FALSE(task->source_info().id.has_value());
   EXPECT_EQ(&task->policy_checker(), &enterprise_policy_checker_);
 }
 
-TEST_F(ActorKeyedServiceAdapterTest, StartTaskPropagatesTabId) {
-  optimization_guide::proto::BrowserStartTask request;
-  request.set_tab_id(99);
-  base::test::TestFuture<optimization_guide::proto::BrowserStartTaskResult>
-      future;
-
-  adapter_.StartTask("session_beta", request, future.GetCallback());
-
-  const auto& result = future.Get();
-  EXPECT_EQ(result.status(),
-            optimization_guide::proto::BrowserStartTaskResult::SUCCESS);
-  EXPECT_GT(result.task_id(), 0);
-  EXPECT_EQ(result.tab_id(), 99);
-}
-
 TEST_F(ActorKeyedServiceAdapterTest, StopTaskStopsExistingTaskAndReturnsTrue) {
-  optimization_guide::proto::BrowserStartTask start_request;
-  base::test::TestFuture<optimization_guide::proto::BrowserStartTaskResult>
-      start_future;
-  adapter_.StartTask("session_alpha", start_request,
-                     start_future.GetCallback());
-  TaskId task_id(start_future.Get().task_id());
+  proto::StartTaskRequest start_request;
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(start_request, start_future.GetCallback());
+  TaskId task_id = std::get<0>(start_future.Get());
   ASSERT_TRUE(actor_service_->GetTask(task_id));
 
   base::test::TestFuture<bool> stop_future;
@@ -111,12 +91,10 @@ TEST_F(ActorKeyedServiceAdapterTest, ActRejectsUnknownTask) {
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, ActRejectsInvalidActionArguments) {
-  optimization_guide::proto::BrowserStartTask start_request;
-  base::test::TestFuture<optimization_guide::proto::BrowserStartTaskResult>
-      start_future;
-  adapter_.StartTask("session_act_invalid", start_request,
-                     start_future.GetCallback());
-  TaskId task_id(start_future.Get().task_id());
+  proto::StartTaskRequest start_request;
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(start_request, start_future.GetCallback());
+  TaskId task_id = std::get<0>(start_future.Get());
 
   optimization_guide::proto::Actions actions;
   actions.set_task_id(task_id.value());
@@ -133,12 +111,10 @@ TEST_F(ActorKeyedServiceAdapterTest, ActRejectsInvalidActionArguments) {
 }
 
 TEST_F(ActorKeyedServiceAdapterTest, ActExecutesWaitActionAndBuildsResult) {
-  optimization_guide::proto::BrowserStartTask start_request;
-  base::test::TestFuture<optimization_guide::proto::BrowserStartTaskResult>
-      start_future;
-  adapter_.StartTask("session_act_wait", start_request,
-                     start_future.GetCallback());
-  TaskId task_id(start_future.Get().task_id());
+  proto::StartTaskRequest start_request;
+  base::test::TestFuture<TaskId, proto::StartTaskResponse> start_future;
+  adapter_.StartTask(start_request, start_future.GetCallback());
+  TaskId task_id = std::get<0>(start_future.Get());
 
   optimization_guide::proto::Actions actions;
   actions.set_task_id(task_id.value());
