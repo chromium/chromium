@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/debug/stack_trace.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
@@ -184,6 +185,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrect) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppInListIconCorrectFails) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   helper_.InstallMenuOption(Site::kStandalone);  // green icon
   EXPECT_NONFATAL_FAILURE(helper_.CheckAppInListIconCorrect(Site::kMinimalUi),
                           "expected_color");  // black icon
@@ -202,6 +205,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckAppNavigationFails) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   helper_.InstallMenuOption(Site::kStandalone);
   EXPECT_NONFATAL_FAILURE(helper_.CheckAppNavigation(Site::kStandaloneNestedB),
                           "webapps_integration/standalone/basic.html");
@@ -220,6 +225,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigation) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppIntegration, CheckBrowserNavigationFails) {
+  base::debug::OverrideStackTraceOutputForTesting suppress_stacks(
+      base::debug::OverrideStackTraceOutputForTesting::Mode::kSuppressOutput);
   helper_.InstallMenuOption(Site::kStandaloneNestedA);
   helper_.SetOpenInTabFromAppSettings(Site::kStandaloneNestedA);
   helper_.LaunchFromChromeApps(Site::kStandaloneNestedA);
