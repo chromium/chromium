@@ -75,11 +75,9 @@ class VcTileUiControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_
-        .InitWithFeatures(/*enabled_features=*/
-                          {features::kFeatureManagementVideoConference,
-                           features::kVcDlcUi},
-                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFeatureManagementVideoConference},
+        /*disabled_features=*/{});
     DlcserviceClient::InitializeFake();
 
     // Tests need to use a fake controller for the video conference tray, which

@@ -31,9 +31,7 @@ constexpr char kTestEffectHistogramName[] =
     "Ash.VideoConferenceTray.TestEffect.Click";
 }  // namespace
 
-class ToggleEffectsViewTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*IsVcDlcUiEnabled*/ bool> {
+class ToggleEffectsViewTest : public AshTestBase {
  public:
   ToggleEffectsViewTest() = default;
   ToggleEffectsViewTest(const ToggleEffectsViewTest&) = delete;
@@ -42,13 +40,10 @@ class ToggleEffectsViewTest
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kFeatureManagementVideoConference, true},
-         {features::kVcDlcUi, IsVcDlcUiEnabled()}});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
-    if (IsVcDlcUiEnabled()) {
-      DlcserviceClient::InitializeFake();
-    }
+    DlcserviceClient::InitializeFake();
 
     // Instantiates a fake controller (the real one is created in
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
@@ -68,12 +63,8 @@ class ToggleEffectsViewTest
     AshTestBase::TearDown();
     office_bunny_.reset();
     controller_.reset();
-    if (IsVcDlcUiEnabled()) {
-      DlcserviceClient::Shutdown();
-    }
+    DlcserviceClient::Shutdown();
   }
-
-  bool IsVcDlcUiEnabled() { return GetParam(); }
 
   VideoConferenceTray* video_conference_tray() {
     return StatusAreaWidgetTestHelper::GetStatusAreaWidget()
@@ -114,12 +105,8 @@ class ToggleEffectsViewTest
   std::unique_ptr<ash::fake_video_conference::OfficeBunnyEffect> office_bunny_;
 };
 
-INSTANTIATE_TEST_SUITE_P(IsVcDlcUiEnabled,
-                         ToggleEffectsViewTest,
-                         testing::Bool());
-
 // Tests that a toggle button records histograms when clicked.
-TEST_P(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
+TEST_F(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
   base::HistogramTester histogram_tester;
 
   // Add one toggle effect.
@@ -143,7 +130,7 @@ TEST_P(ToggleEffectsViewTest, ToggleButtonClickedRecordedHistogram) {
 }
 
 // Tests that a toggled ToggleButton's tooltip is updated.
-TEST_P(ToggleEffectsViewTest, TooltipIsUpdated) {
+TEST_F(ToggleEffectsViewTest, TooltipIsUpdated) {
   // Add one toggle effect.
   controller()->GetEffectsManager().RegisterDelegate(office_bunny());
   LeftClickOn(toggle_bubble_button());

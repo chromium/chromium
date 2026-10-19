@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -387,8 +386,7 @@ void FeatureTile::UpdateColors() {
   }
 
   SetBackground(
-      features::IsVcDlcUiEnabled() &&
-              download_state_ == DownloadState::kDownloading
+      download_state_ == DownloadState::kDownloading
           ? std::make_unique<ProgressBackground>(
                 /*progress_color_id=*/cros_tokens::kCrosSysHighlightShape,
                 /*background_color_id=*/background_color)
@@ -557,16 +555,14 @@ void FeatureTile::SetIconButtonTooltipText(const std::u16string& tooltip_text) {
 }
 
 void FeatureTile::SetLabel(const std::u16string& label) {
-  // If `VcDlcUi` is enabled and the tile is currently in a download state that
-  // requires a non-client-specified label to be shown then store the new
+  // If the tile is currently in a download state that requires a
+  // non-client-specified label to be shown then store the new
   // client-specified label but don't immediately update the UI. The UI will be
   // updated to show the new label when the download finishes.
-  if (features::IsVcDlcUiEnabled()) {
-    client_specified_label_text_ = label;
-    if (download_state_ == DownloadState::kPending ||
-        download_state_ == DownloadState::kDownloading) {
-      return;
-    }
+  client_specified_label_text_ = label;
+  if (download_state_ == DownloadState::kPending ||
+      download_state_ == DownloadState::kDownloading) {
+    return;
   }
 
   label_->SetText(label);
@@ -600,10 +596,6 @@ void FeatureTile::SetSubLabelVisibility(bool visible) {
 }
 
 void FeatureTile::SetDownloadState(DownloadState state, int progress) {
-  // Download state is only supported when `VcDlcUi` is enabled.
-  CHECK(features::IsVcDlcUiEnabled())
-      << "Download states are not supported when `VcDlcUi` is disabled";
-
   // Check if this tile is already in a download state such that we can bail out
   // without doing any updates.
   if (download_state_ == state) {
@@ -675,7 +667,7 @@ void FeatureTile::OnViewBoundsChanged(views::View* observed_view) {
 }
 
 void FeatureTile::OnSetTooltipText(const std::u16string& tooltip_text) {
-  if (!features::IsVcDlcUiEnabled() || updating_download_state_labels_) {
+  if (updating_download_state_labels_) {
     return;
   }
 
@@ -757,18 +749,11 @@ void FeatureTile::SetCompactTileLabelPreferences(bool has_sub_label) {
 
 void FeatureTile::SetDownloadLabel(const std::u16string& download_label,
                                    std::optional<std::u16string> tooltip) {
-  // Download state is only supported when `VcDlcUi` is enabled.
-  CHECK(features::IsVcDlcUiEnabled())
-      << "Download states are not supported when `VcDlcUi` is disabled";
   label_->SetText(download_label);
   SetTooltipText(tooltip.value_or(download_label));
 }
 
 void FeatureTile::UpdateLabelForDownloadState() {
-  // Download state is only supported when `VcDlcUi` is enabled.
-  CHECK(features::IsVcDlcUiEnabled())
-      << "Download states are not supported when `VcDlcUi` is disabled";
-
   base::AutoReset<bool> reset(&updating_download_state_labels_, true);
 
   switch (download_state_) {

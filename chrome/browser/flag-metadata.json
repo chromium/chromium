@@ -10172,14 +10172,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "vc-dlc-ui",
-    "owners": [
-      "etuck@google.com",
-      "cros-status-area-eng@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "vc-relighting-inference-backend",
     "owners": [
       "shik@chromium.org",

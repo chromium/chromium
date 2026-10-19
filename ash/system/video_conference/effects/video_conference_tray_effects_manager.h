@@ -56,8 +56,8 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Register/unregister a delegate that hosts one or more effects. When VcDlcUi
-  // is enabled, tile controllers will be added/removed for supported effects.
+  // Register/unregister a delegate that hosts one or more effects. Tile
+  // controllers will be added/removed for supported effects.
   // Note: `UnregisterDelegate()` should only be overridden for testing
   // purposes, and only by `FakeVideoConferenceTrayEffectsManager`.
   void RegisterDelegate(VcEffectsDelegate* delegate);
@@ -111,7 +111,6 @@ class ASH_EXPORT VideoConferenceTrayEffectsManager {
   // Returns a pointer to the UI controller of the tile associated with the
   // given `effect_id`. May return nullptr, for instance if there is no
   // associated UI controller for the given `effect_id`.
-  // Should only be called when `VcDlcUi` is enabled.
   // Note: This should only be overridden for testing purposes, and only by
   // `FakeVideoConferenceTrayEffectsManager`.
   virtual video_conference::VcTileUiController* GetUiControllerForEffectId(

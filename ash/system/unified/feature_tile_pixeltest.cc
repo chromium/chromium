@@ -257,17 +257,6 @@ class FeatureTileVcDlcUiEnabledPixelTest : public FeatureTilePixelTest {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_
-        .InitWithFeatures(/*enabled_features=*/
-                          {features::kFeatureManagementVideoConference,
-                           features::kVcDlcUi},
-                          /*disabled_features=*/{});
-    // Need to create a fake VC tray controller if VcDlcUi is enabled because
-    // this implies `features::IsVideoConferenceEnabled()` is true, and when
-    // that is true the VC tray is created (and the VC tray depends on the
-    // VC tray controller being available).
-    tray_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-
     FeatureTilePixelTest::SetUp();
 
     // Shrink the container's contents bounds slightly to give even padding
@@ -292,10 +281,6 @@ class FeatureTileVcDlcUiEnabledPixelTest : public FeatureTilePixelTest {
                              : vector_icons::kDogfoodOldIcon);
     tile_->SetLabel(u"One-line label");
   }
-  void TearDown() override {
-    FeatureTilePixelTest::TearDown();
-    tray_controller_.reset();
-  }
 
   void SetDownloadProgress(FeatureTile* tile, int progress) {
     tile->SetDownloadState(FeatureTile::DownloadState::kDownloading, progress);
@@ -304,9 +289,7 @@ class FeatureTileVcDlcUiEnabledPixelTest : public FeatureTilePixelTest {
   FeatureTile* tile() { return tile_.get(); }
 
  private:
-  std::unique_ptr<FakeVideoConferenceTrayController> tray_controller_ = nullptr;
   base::WeakPtr<FeatureTile> tile_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the UI of a compact tile that is allowed to fill the size of its

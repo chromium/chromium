@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager.h"
@@ -29,7 +28,6 @@ void FakeVideoConferenceTrayEffectsManager::SetDlcIdsForEffectId(
 video_conference::VcTileUiController*
 FakeVideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
     VcEffectId effect_id) {
-  CHECK(features::IsVcDlcUiEnabled());
   auto toggle_effects = GetToggleEffects();
   if (toggle_effects_index_ >= toggle_effects.size()) {
     // If we're out of bounds try starting from the beginning again.

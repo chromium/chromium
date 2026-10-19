@@ -8268,12 +8268,6 @@ inline constexpr char kUnicornChromeActivityReportingName[] =
 inline constexpr char kUnicornChromeActivityReportingDescription[] =
     "Enables reporting Chrome app activity for supervised users.";
 
-inline constexpr char kVcDlcUiName[] = "VC DLC UI";
-inline constexpr char kVcDlcUiDescription[] =
-    "Enable UI for video conference effect toggle tiles in the video "
-    "conference controls bubble that indicates when required DLC is "
-    "downloading.";
-
 inline constexpr char kVirtualKeyboardName[] = "Virtual Keyboard";
 inline constexpr char kVirtualKeyboardDescription[] =
     "Always show virtual keyboard regardless of having a physical keyboard "

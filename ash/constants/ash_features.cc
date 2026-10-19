@@ -1681,10 +1681,6 @@ BASE_FEATURE(kBirchVideoConferenceSuggestions,
 // Whether to resize thumbnail in VcBackgroundApp.
 BASE_FEATURE(kVcResizeThumbnail, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the DLC downloading UI for video conferencing tiles is
-// enabled.
-BASE_FEATURE(kVcDlcUi, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This is only used as a way to disable portrait relighting.
 BASE_FEATURE(kVcPortraitRelight, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -2837,10 +2833,6 @@ bool IsBirchVideoConferenceSuggestionsEnabled() {
 
 bool IsVcResizeThumbnailEnabled() {
   return base::FeatureList::IsEnabled(kVcResizeThumbnail);
-}
-
-bool IsVcDlcUiEnabled() {
-  return base::FeatureList::IsEnabled(kVcDlcUi) && IsVideoConferenceEnabled();
 }
 
 bool IsVcPortraitRelightEnabled() {

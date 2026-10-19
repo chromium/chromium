@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/video_conference/bubble/vc_tile_ui_controller.h"
@@ -49,11 +48,9 @@ void VideoConferenceTrayEffectsManager::RegisterDelegate(
   effect_delegates_.push_back(delegate);
   // TODO(b/345831029): Test that a VcTileUiController is reset when an effect
   // is removed.
-  if (features::IsVcDlcUiEnabled()) {
-    delegate->set_on_effect_will_be_removed_callback(base::BindRepeating(
-        &VideoConferenceTrayEffectsManager::RemoveTileControllers,
-        weak_factory_.GetWeakPtr()));
-  }
+  delegate->set_on_effect_will_be_removed_callback(base::BindRepeating(
+      &VideoConferenceTrayEffectsManager::RemoveTileControllers,
+      weak_factory_.GetWeakPtr()));
 }
 
 void VideoConferenceTrayEffectsManager::UnregisterDelegate(
@@ -64,11 +61,9 @@ void VideoConferenceTrayEffectsManager::UnregisterDelegate(
                     [delegate](VcEffectsDelegate* d) { return delegate == d; });
   DCHECK_EQ(num_items_erased, 1UL);
 
-  if (features::IsVcDlcUiEnabled()) {
-    // Remove tile controllers for effects hosted by the delegate being
-    // unregistered.
-    RemoveTileControllers(delegate);
-  }
+  // Remove tile controllers for effects hosted by the delegate being
+  // unregistered.
+  RemoveTileControllers(delegate);
 }
 
 bool VideoConferenceTrayEffectsManager::IsDelegateRegistered(
@@ -177,7 +172,6 @@ void VideoConferenceTrayEffectsManager::RecordInitialStates() {
 video_conference::VcTileUiController*
 VideoConferenceTrayEffectsManager::GetUiControllerForEffectId(
     VcEffectId effect_id) {
-  CHECK(features::IsVcDlcUiEnabled());
   if (!controller_for_effect_id_.contains(effect_id)) {
     for (auto* effect : GetToggleEffects()) {
       if (effect_id == effect->id()) {
@@ -244,9 +238,6 @@ VideoConferenceTrayEffectsManager::GetTotalToggleEffectButtons() {
 
 void VideoConferenceTrayEffectsManager::RemoveTileControllers(
     VcEffectsDelegate* delegate) {
-  if (!features::IsVcDlcUiEnabled()) {
-    return;
-  }
   for (auto* effect : delegate->GetAllEffects(VcEffectType::kToggle)) {
     const VcEffectId id = effect->id();
     if (controller_for_effect_id_.contains(id)) {

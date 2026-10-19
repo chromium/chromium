@@ -178,11 +178,11 @@ class ASH_EXPORT FeatureTile : public views::Button {
   // Sets the tooltip text of `icon_button_`.
   void SetIconButtonTooltipText(const std::u16string& text);
 
-  // Sets the text of `label_`. If `VcDlcUi` is enabled and there is an on-going
-  // download associated with this tile then the new label won't be reflected in
-  // the UI until the download finishes. Also note that download-related labels
-  // (like "Downloading 7%" or "Download pending") should not be specified using
-  // this method - those labels are automatically set when the download state
+  // Sets the text of `label_`. If there is an on-going download associated with
+  // this tile then the new label won't be reflected in the UI until the
+  // download finishes. Also note that download-related labels (like
+  // "Downloading 7%" or "Download pending") should not be specified using this
+  // method - those labels are automatically set when the download state
   // changes.
   void SetLabel(const std::u16string& label);
 

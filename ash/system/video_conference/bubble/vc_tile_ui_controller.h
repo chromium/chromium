@@ -26,8 +26,6 @@ namespace video_conference {
 // The controller for the UI of toggle tiles in the VC controls bubble. There is
 // one controller per tile. Non-UI logic for the tiles is handled by
 // `ash::VcEffectsDelegate`.
-//
-// Note: This class is only used when `VcDlcUi` is enabled.
 class ASH_EXPORT VcTileUiController
     : public DlcserviceClient::Observer,
       public VideoConferenceTrayEffectsManager::Observer {

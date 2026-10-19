@@ -54,9 +54,7 @@ class TestEffectDelegate : public VcEffectsDelegate {
                                 std::optional<int> state) override {}
 };
 
-class VideoConferenceTrayEffectsManagerTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*IsVcDlcUiEnabled*/ bool> {
+class VideoConferenceTrayEffectsManagerTest : public AshTestBase {
  public:
   VideoConferenceTrayEffectsManagerTest() = default;
   VideoConferenceTrayEffectsManagerTest(
@@ -67,37 +65,26 @@ class VideoConferenceTrayEffectsManagerTest
 
   // AshTestBase:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {};
-    if (IsVcDlcUiEnabled()) {
-      enabled_features.push_back(features::kFeatureManagementVideoConference);
-      enabled_features.push_back(features::kVcDlcUi);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
     effects_manager_ = std::make_unique<VideoConferenceTrayEffectsManager>();
-    if (IsVcDlcUiEnabled()) {
-      // Need to create a fake VC tray controller if VcDlcUi is enabled because
-      // this implies `features::IsVideoConferenceEnabled()` is true, and when
-      // that is true the VC tray is created (and the VC tray depends on the
-      // VC tray controller being available).
-      tray_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-      effect_delegate_ = std::make_unique<TestEffectDelegate>();
-      DlcserviceClient::InitializeFake();
-    }
+    // Need to create a fake VC tray controller because
+    // `features::IsVideoConferenceEnabled()` is true, and when that is true the
+    // VC tray is created (and the VC tray depends on the VC tray controller
+    // being available).
+    tray_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
+    effect_delegate_ = std::make_unique<TestEffectDelegate>();
+    DlcserviceClient::InitializeFake();
     AshTestBase::SetUp();
   }
 
   void TearDown() override {
     AshTestBase::TearDown();
-    if (IsVcDlcUiEnabled()) {
-      DlcserviceClient::Shutdown();
-      effect_delegate_.reset();
-      tray_controller_.reset();
-    }
+    DlcserviceClient::Shutdown();
+    effect_delegate_.reset();
+    tray_controller_.reset();
     effects_manager_.reset();
   }
-
-  bool IsVcDlcUiEnabled() { return GetParam(); }
 
   VideoConferenceTrayEffectsManager* effects_manager() {
     return effects_manager_.get();
@@ -113,11 +100,7 @@ class VideoConferenceTrayEffectsManagerTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(IsVcDlcUiEnabled,
-                         VideoConferenceTrayEffectsManagerTest,
-                         testing::Bool());
-
-TEST_P(VideoConferenceTrayEffectsManagerTest, GetToggleEffectButtonTable) {
+TEST_F(VideoConferenceTrayEffectsManagerTest, GetToggleEffectButtonTable) {
   VideoConferenceTrayEffectsManager::EffectDataTable buttons_table;
 
   // No effects registered, no buttons, empty table.
@@ -227,13 +210,8 @@ TEST_P(VideoConferenceTrayEffectsManagerTest, GetToggleEffectButtonTable) {
 
 // Tests that a tile UI controller is not created for an unsupported toggle
 // effect.
-TEST_P(VideoConferenceTrayEffectsManagerTest,
+TEST_F(VideoConferenceTrayEffectsManagerTest,
        NoTileUiControllerForUnsupportedToggleEffect) {
-  // Tile UI controllers are only used when `VcDlcUi` is enabled.
-  if (!IsVcDlcUiEnabled()) {
-    return;
-  }
-
   // Verify that there are no supported toggle effects.
   EXPECT_EQ(0u, effects_manager()->GetToggleEffects().size());
 
@@ -243,13 +221,8 @@ TEST_P(VideoConferenceTrayEffectsManagerTest,
 }
 
 // Tests that a tile UI controller is added the first time it is requested.
-TEST_P(VideoConferenceTrayEffectsManagerTest,
+TEST_F(VideoConferenceTrayEffectsManagerTest,
        TileUiControllerAddedWhenFirstRequested) {
-  // Tile UI controllers are only used when `VcDlcUi` is enabled.
-  if (!IsVcDlcUiEnabled()) {
-    return;
-  }
-
   // Register the test "Live caption" effect.
   effects_manager()->RegisterDelegate(effect_delegate());
 
@@ -264,13 +237,8 @@ TEST_P(VideoConferenceTrayEffectsManagerTest,
 
 // Tests that unregistering effects removes the tile UI controllers for those
 // effects.
-TEST_P(VideoConferenceTrayEffectsManagerTest,
+TEST_F(VideoConferenceTrayEffectsManagerTest,
        RemovesTileUiControllersForUnregisteredEffects) {
-  // Tile UI controllers are only used when `VcDlcUi` is enabled.
-  if (!IsVcDlcUiEnabled()) {
-    return;
-  }
-
   // Register the test "Live caption" effect.
   effects_manager()->RegisterDelegate(effect_delegate());
 

@@ -59,8 +59,7 @@ VideoConferenceMediaAppInfo CreateFakeMediaApp(
 
 class BubbleViewPixelTest
     : public AshTestBase,
-      public testing::WithParamInterface<
-          std::tuple</*IsVcDlcUiEnabled=*/bool, /*IsSystemBlurEnabled=*/bool>> {
+      public testing::WithParamInterface</*IsSystemBlurEnabled=*/bool> {
  public:
   BubbleViewPixelTest() = default;
   BubbleViewPixelTest(const BubbleViewPixelTest&) = delete;
@@ -69,19 +68,10 @@ class BubbleViewPixelTest
 
   // AshTestBase:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features{
-        features::kFeatureManagementVideoConference};
-    std::vector<base::test::FeatureRef> disabled_features;
-    if (IsVcDlcUiEnabled()) {
-      enabled_features.push_back(features::kVcDlcUi);
-    } else {
-      disabled_features.push_back(features::kVcDlcUi);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
 
-    if (IsVcDlcUiEnabled()) {
-      DlcserviceClient::InitializeFake();
-    }
+    DlcserviceClient::InitializeFake();
 
     office_bunny_ =
         std::make_unique<fake_video_conference::OfficeBunnyEffect>();
@@ -94,17 +84,14 @@ class BubbleViewPixelTest
     // `ChromeBrowserMainExtraPartsAsh::PreProfileInit()` which is not called in
     // ash unit tests).
     controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-    if (IsVcDlcUiEnabled()) {
-      // When `VcDlcUi` is enabled we also need to use a fake effects manager,
-      // since the toggle effects tiles in these tests all use the same
-      // `VcEffectId::kTestEffect` id; the real effects manager would only be
-      // able to return a unique tile UI controller for a given effect id, which
-      // would result in all the test tiles being identical (same icon, title,
-      // etc.).
-      fake_effects_manager_ =
-          std::make_unique<FakeVideoConferenceTrayEffectsManager>();
-      controller_->SetEffectsManager(fake_effects_manager_.get());
-    }
+    // We also need to use a fake effects manager, since the toggle effects
+    // tiles in these tests all use the same `VcEffectId::kTestEffect` id; the
+    // real effects manager would only be able to return a unique tile UI
+    // controller for a given effect id, which would result in all the test
+    // tiles being identical (same icon, title, etc.).
+    fake_effects_manager_ =
+        std::make_unique<FakeVideoConferenceTrayEffectsManager>();
+    controller_->SetEffectsManager(fake_effects_manager_.get());
 
     AshTestBase::SetUp();
 
@@ -115,16 +102,12 @@ class BubbleViewPixelTest
   void TearDown() override {
     AshTestBase::TearDown();
     controller_.reset();
-    if (IsVcDlcUiEnabled()) {
-      fake_effects_manager_.reset();
-    }
+    fake_effects_manager_.reset();
     shaggy_fur_.reset();
     long_text_effect_.reset();
     cat_ears_.reset();
     office_bunny_.reset();
-    if (IsVcDlcUiEnabled()) {
-      DlcserviceClient::Shutdown();
-    }
+    DlcserviceClient::Shutdown();
   }
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -134,8 +117,7 @@ class BubbleViewPixelTest
     return init_params;
   }
 
-  bool IsVcDlcUiEnabled() const { return std::get<0>(GetParam()); }
-  bool IsSystemBlurEnabled() const { return std::get<1>(GetParam()); }
+  bool IsSystemBlurEnabled() const { return GetParam(); }
 
   void ModifyDlcDownloadState(bool add_warning, std::u16string warning_label) {
     static_cast<video_conference::BubbleView*>(bubble_view())
@@ -213,9 +195,7 @@ class BubbleViewPixelTest
   std::unique_ptr<fake_video_conference::ShaggyFurEffect> shaggy_fur_;
 };
 
-INSTANTIATE_TEST_SUITE_P(IsVcDlcUiEnabled,
-                         BubbleViewPixelTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(SystemBlur, BubbleViewPixelTest, testing::Bool());
 
 // Captures the basic bubble view with one media app, 2 toggle effects and 1 set
 // value effects.
@@ -451,9 +431,6 @@ TEST_P(BubbleViewPixelTest, ThreeToggleEffects) {
 }
 
 TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
-  if (!IsVcDlcUiEnabled()) {
-    return;
-  }
   // Create a toggle effect so the warning label is available.
   controller()->GetEffectsManager().RegisterDelegate(office_bunny());
 
@@ -491,9 +468,6 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
 }
 
 TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
-  if (!IsVcDlcUiEnabled()) {
-    return;
-  }
   // Create a toggle effect so the warning label is available.
   controller()->GetEffectsManager().RegisterDelegate(office_bunny());
 

@@ -4,7 +4,6 @@
 
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
@@ -55,7 +54,7 @@ void VcEffectsDelegate::AddEffect(std::unique_ptr<VcHostedEffect> effect) {
 }
 
 void VcEffectsDelegate::RemoveEffect(VcEffectId effect_id) {
-  if (features::IsVcDlcUiEnabled()) {
+  if (on_effect_will_be_removed_callback_) {
     // Propagate effect removal to ensure dependant `VcUiTileController`'s
     // are reset, and DLC downloads are canceled if they are in progress.
     on_effect_will_be_removed_callback_.Run(this);

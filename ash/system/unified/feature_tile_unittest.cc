@@ -110,9 +110,7 @@ class MockFeaturePodController : public FeaturePodControllerBase {
 
 }  // namespace
 
-class FeatureTileTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*IsVcDlcUiEnabled*/ bool> {
+class FeatureTileTest : public AshTestBase {
  public:
   FeatureTileTest() = default;
   FeatureTileTest(const FeatureTileTest&) = delete;
@@ -121,18 +119,6 @@ class FeatureTileTest
 
   // AshTestBase:
   void SetUp() override {
-    if (IsVcDlcUiEnabled()) {
-      scoped_feature_list_
-          .InitWithFeatures(/*enabled_features=*/
-                            {features::kFeatureManagementVideoConference,
-                             features::kVcDlcUi},
-                            /*disabled_features=*/{});
-      // Need to create a fake VC tray controller if VcDlcUi is enabled because
-      // this implies `features::IsVideoConferenceEnabled()` is true, and when
-      // that is true the VC tray is created (and the VC tray depends on the
-      // VC tray controller being available).
-      tray_controller_ = std::make_unique<FakeVideoConferenceTrayController>();
-    }
     AshTestBase::SetUp();
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
@@ -141,17 +127,12 @@ class FeatureTileTest
   void TearDown() override {
     widget_.reset();
     AshTestBase::TearDown();
-    if (IsVcDlcUiEnabled()) {
-      tray_controller_.reset();
-    }
   }
 
   void PressTab() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
   }
-
-  bool IsVcDlcUiEnabled() { return GetParam(); }
 
   std::u16string GetExpectedDownloadPendingLabel() {
     return l10n_util::GetStringUTF16(
@@ -165,13 +146,9 @@ class FeatureTileTest
   }
 
   std::unique_ptr<views::Widget> widget_;
-  std::unique_ptr<FakeVideoConferenceTrayController> tray_controller_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(IsVcDlcUiEnabled, FeatureTileTest, testing::Bool());
-
-TEST_P(FeatureTileTest, PrimaryTile_LaunchSurface) {
+TEST_F(FeatureTileTest, PrimaryTile_LaunchSurface) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/false);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
@@ -190,7 +167,7 @@ TEST_P(FeatureTileTest, PrimaryTile_LaunchSurface) {
   EXPECT_FALSE(tile->IsToggled());
 }
 
-TEST_P(FeatureTileTest, PrimaryTile_Toggle) {
+TEST_F(FeatureTileTest, PrimaryTile_Toggle) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
@@ -214,7 +191,7 @@ TEST_P(FeatureTileTest, PrimaryTile_Toggle) {
   EXPECT_FALSE(tile->IsToggled());
 }
 
-TEST_P(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
+TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
@@ -243,7 +220,7 @@ TEST_P(FeatureTileTest, PrimaryTile_ToggleWithDrillIn) {
   EXPECT_TRUE(tile->IsToggled());
 }
 
-TEST_P(FeatureTileTest, PrimaryTile_SetIconClickable) {
+TEST_F(FeatureTileTest, PrimaryTile_SetIconClickable) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
@@ -276,7 +253,7 @@ TEST_P(FeatureTileTest, PrimaryTile_SetIconClickable) {
   EXPECT_EQ(tile, focus_manager->GetFocusedView());
 }
 
-TEST_P(FeatureTileTest, PrimaryTile_DecorativeDrillIn) {
+TEST_F(FeatureTileTest, PrimaryTile_DecorativeDrillIn) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/false);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
@@ -310,7 +287,7 @@ TEST_P(FeatureTileTest, PrimaryTile_DecorativeDrillIn) {
 // which toggles the button state (e.g. selecting a VPN network).
 // Since this test uses mock feature tiles and cannot easily create detailed
 // views, this toggle behavior will be omitted.
-TEST_P(FeatureTileTest, PrimaryTile_ToggleWithDecorativeDrillIn) {
+TEST_F(FeatureTileTest, PrimaryTile_ToggleWithDecorativeDrillIn) {
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
@@ -343,7 +320,7 @@ TEST_P(FeatureTileTest, PrimaryTile_ToggleWithDecorativeDrillIn) {
   EXPECT_EQ(tile, focus_manager->GetFocusedView());
 }
 
-TEST_P(FeatureTileTest, PrimaryTile_WithSubLabel) {
+TEST_F(FeatureTileTest, PrimaryTile_WithSubLabel) {
   FeatureTile primary_tile_with_sub_label(views::Button::PressedCallback(),
                                           /*is_togglable=*/true,
                                           FeatureTile::TileType::kPrimary);
@@ -356,7 +333,7 @@ TEST_P(FeatureTileTest, PrimaryTile_WithSubLabel) {
   EXPECT_EQ((int)primary_tile_with_sub_label.label()->GetMaxLines(), 0);
 }
 
-TEST_P(FeatureTileTest, PrimaryTile_UpdatedCornerRadius) {
+TEST_F(FeatureTileTest, PrimaryTile_UpdatedCornerRadius) {
   int updated_radius = 10;
   auto mock_controller =
       std::make_unique<MockFeaturePodController>(/*togglable=*/false);
@@ -380,7 +357,7 @@ TEST_P(FeatureTileTest, PrimaryTile_UpdatedCornerRadius) {
             gfx::RRectF(bounds, updated_radius));
 }
 
-TEST_P(FeatureTileTest, CompactTile_AddedAndRemoveSubLabel) {
+TEST_F(FeatureTileTest, CompactTile_AddedAndRemoveSubLabel) {
   // Create initial compact `FeatureTile` without a sub-label and verify default
   // parameters.
   FeatureTile compact_tile_with_sub_label(views::Button::PressedCallback(),
@@ -415,7 +392,7 @@ TEST_P(FeatureTileTest, CompactTile_AddedAndRemoveSubLabel) {
   EXPECT_EQ((int)compact_tile_with_sub_label.label()->GetMaxLines(), 2);
 }
 
-TEST_P(FeatureTileTest, CompactTile_LaunchSurface) {
+TEST_F(FeatureTileTest, CompactTile_LaunchSurface) {
   auto mock_controller = std::make_unique<MockFeaturePodController>(
       /*togglable=*/false);
   auto* tile =
@@ -433,7 +410,7 @@ TEST_P(FeatureTileTest, CompactTile_LaunchSurface) {
   EXPECT_FALSE(tile->IsToggled());
 }
 
-TEST_P(FeatureTileTest, CompactTile_Toggle) {
+TEST_F(FeatureTileTest, CompactTile_Toggle) {
   auto mock_controller = std::make_unique<MockFeaturePodController>(
       /*togglable=*/true);
   auto* tile =
@@ -455,7 +432,7 @@ TEST_P(FeatureTileTest, CompactTile_Toggle) {
   EXPECT_FALSE(tile->IsToggled());
 }
 
-TEST_P(FeatureTileTest, TogglingTileUpdatesInkDropColor) {
+TEST_F(FeatureTileTest, TogglingTileUpdatesInkDropColor) {
   auto* tile = widget_->SetContentsView(
       std::make_unique<FeatureTile>(views::Button::PressedCallback()));
   auto* color_provider = tile->GetColorProvider();
@@ -471,7 +448,7 @@ TEST_P(FeatureTileTest, TogglingTileUpdatesInkDropColor) {
 }
 
 // Regression test for http://b/284318391
-TEST_P(FeatureTileTest, TogglingTileHidesInkDrop) {
+TEST_F(FeatureTileTest, TogglingTileHidesInkDrop) {
   auto mock_controller = std::make_unique<MockFeaturePodController>(
       /*togglable=*/true);
   auto* tile = widget_->SetContentsView(mock_controller->CreateTile());
@@ -482,7 +459,7 @@ TEST_P(FeatureTileTest, TogglingTileHidesInkDrop) {
             views::InkDropState::HIDDEN);
 }
 
-TEST_P(FeatureTileTest, AccessibilityRoles) {
+TEST_F(FeatureTileTest, AccessibilityRoles) {
   // Togglable feature tiles (like Do Not Disturb) have role "toggle button".
   FeatureTile togglable_tile(views::Button::PressedCallback(),
                              /*is_togglable=*/true);
@@ -516,12 +493,7 @@ TEST_P(FeatureTileTest, AccessibilityRoles) {
 
 // Tests that the tile's label and tooltip are set according to the feature tile
 // DLC's download state.
-TEST_P(FeatureTileTest, DownloadLabelAndTooltip) {
-  // Download states are only supported when `VcDlcUi` is enabled.
-  if (!IsVcDlcUiEnabled()) {
-    return;
-  }
-
+TEST_F(FeatureTileTest, DownloadLabelAndTooltip) {
   // Create a tile and verify that it has its client-specified label by default.
   std::u16string client_specified_label(u"Client Specified Label");
   std::u16string client_specified_tooltip(u"Client Specified Tooltip");
@@ -574,12 +546,7 @@ TEST_P(FeatureTileTest, DownloadLabelAndTooltip) {
 
 // Tests that updates to the tile's client-specified label and tooltip are
 // delayed until the current download is finished.
-TEST_P(FeatureTileTest, LabelAndTooltipUpdatesDelayedDuringDownload) {
-  // Download states are only supported when `VcDlcUi` is enabled.
-  if (!IsVcDlcUiEnabled()) {
-    return;
-  }
-
+TEST_F(FeatureTileTest, LabelAndTooltipUpdatesDelayedDuringDownload) {
   // Create a tile and set it to have an in-progress download.
   std::u16string label_1(u"Client Specified Label");
   std::u16string tooltip_1(u"Client Specified Tooltip");
