@@ -5,6 +5,7 @@
 import './app.js';
 
 export {browserProxyFactory as foreignSessionBrowserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+export type {ForeignSession, ForeignSessionTab, ForeignSessionWindow} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 export {CriticalActionType} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 export type {CriticalAction, HistoryEntry, QueryResult} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 export {browserProxyFactory as historyClustersBrowserProxyFactory, ClusterAction, PageCallbackRouter, PageHandlerRemote, RelatedSearchAction, VisitAction, VisitType} from 'chrome://resources/cr_components/history_clusters/history_clusters.mojom-webui.js';
@@ -24,10 +25,9 @@ export {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 // This is used to ensure that the same proxy factory is used in tests.
 export {browserProxyFactory as userEducationProxyFactory} from 'chrome://resources/mojo/components/user_education/webui/user_education.mojom-webui.js';
 export {HistoryAppElement} from './app.js';
-export type {BrowserProxy, RemoveVisitsRequest} from './browser_proxy.js';
+export type {BrowserProxy, HistoryIdentityState, RemoveVisitsRequest} from './browser_proxy.js';
 export {BrowserProxyImpl} from './browser_proxy.js';
 export {HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState, VisitContextMenuAction} from './constants.js';
-export type {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryIdentityState} from './externs.js';
 // <if expr="not is_chromeos">
 export {HistoryCrossDeviceSigninPromoElement} from './history_cross_device_signin_promo.js';
 export {HistoryCrossDeviceSigninPromoBrowserProxy} from './history_cross_device_signin_promo_browser_proxy.js';

@@ -32,7 +32,6 @@ build_webui("build") {
     "app.ts",
     "browser_proxy.ts",
     "constants.ts",
-    "externs.ts",
     "history_filter_chips.html.ts",
     "history_filter_chips.ts",
     "history.ts",

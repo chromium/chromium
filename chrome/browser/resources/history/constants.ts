@@ -33,7 +33,6 @@ export enum SyncState {
 }
 // LINT.ThenChange(/chrome/browser/ui/webui/history/history_identity_state_watcher.h:HistoryIdentityState.SyncState)
 
-
 /**
  * Histogram buckets for UMA tracking of which view is being shown to the user.
  * Keep this in sync with the HistoryPageView enum in histograms.xml.

@@ -9,6 +9,7 @@ import './searched_label.js';
 import '/strings.m.js';
 
 import {browserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
+import type {ForeignSessionTab} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import {FocusRow} from 'chrome://resources/js/focus_row.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
@@ -19,7 +20,6 @@ import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
-import type {ForeignSessionTab} from './externs.js';
 import {getCss} from './synced_device_card.css.js';
 import {getHtml} from './synced_device_card.html.js';
 

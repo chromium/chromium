@@ -149,4 +149,4 @@ base::DictValue HistoryLoginHandler::GetHistoryIdentityStateDict() {
            static_cast<int>(history_identity_state.history_sync));
   return dict;
 }
-// LINT.ThenChange(/chrome/browser/resources/history/externs.ts:HistoryIdentityState)
+// LINT.ThenChange(/chrome/browser/resources/history/browser_proxy.ts:HistoryIdentityState)

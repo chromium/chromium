@@ -6,12 +6,24 @@ import type {AccessPoint, Device, PageHandlerRemote} from 'chrome://resources/cr
 import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import type {HistoryIdentityState} from './externs.js';
+import type {HistorySignInState, SyncState} from './constants.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
   timestamps: number[],
 }>;
+
+/**
+ * The type of the history identity state object. This definition is based on
+ * chrome/browser/ui/webui/history/history_identity_state_watcher.h:
+ */
+// LINT.IfChange(HistoryIdentityState)
+export interface HistoryIdentityState {
+  signIn: HistorySignInState;
+  tabsSync: SyncState;
+  historySync: SyncState;
+}
+// LINT.ThenChange(/chrome/browser/ui/webui/history/history_login_handler.cc:GetHistoryIdentityStateDict)
 
 export interface BrowserProxy {
   handler: PageHandlerRemote;

@@ -12,8 +12,8 @@ import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_liste
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import type {HistoryIdentityState} from './browser_proxy.js';
 import {HistorySignInState, SyncState} from './constants.js';
-import type {HistoryIdentityState} from './externs.js';
 import {getCss} from './history_sync_promo.css.js';
 import {getHtml} from './history_sync_promo.html.js';
 
