@@ -93,7 +93,11 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
     //    *     * line 5              *     * line 3
     //    line 6                      line 4
     //    line 7                      line 5
-    *initial_letter_block_start_adjust = line_height * (size - sink);
+    // Shift by the specified size to keep a non-integer one under aligned.
+    *initial_letter_block_start_adjust =
+        RuntimeEnabledFeatures::InitialLetterBlockPositioningEnabled()
+            ? LayoutUnit(line_height * (initial_letter.Size() - sink))
+            : line_height * (size - sink);
   }
 
   if (paragraph_style.IsHorizontalTypographicMode() ||
@@ -119,6 +123,9 @@ LayoutUnit ComputeInitialLetterBoxBlockOffset(
 
   // In vertical writing mode, `block_offset` will be physical offset x.
   // Align initial letter box in center.
+  if (RuntimeEnabledFeatures::InitialLetterBlockPositioningEnabled()) {
+    return (LayoutUnit(line_height * initial_letter.Size()) - block_size) / 2;
+  }
   return (line_height * size - block_size) / 2;
 }
 
