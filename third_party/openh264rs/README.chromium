@@ -1,0 +1,17 @@
+Name: OpenH264rs
+Short Name: openh264rs
+URL: https://chromium.googlesource.com/chromium/third_party/openh264rs
+Version: N/A
+Revision: DEPS
+Update Mechanism: Autoroll
+License: BSD-3-Clause, BSD-2-Clause
+License File: src/LICENSE_CHROMIUM, src/LICENSE_CISCO
+Security Critical: yes
+Shipped: no
+CPEPrefix: unknown
+
+Description:
+Rust port of Cisco OpenH264 (H.264/AVC encoder and decoder).
+
+Local Modifications:
+None

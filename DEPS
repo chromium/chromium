@@ -486,6 +486,10 @@ vars = {
   # and whatever else without interference from each other.
   'crabbyavif_revision': '50530dc32b281c73c85ebb79bf8d223753af646a',
   # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling openh264rs
+  # and whatever else without interference from each other.
+  'openh264rs_revision': '8893d61aeb20b7e1784fe995a70d4b52f691b87f',
+  # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Speedometer main
   # and whatever else without interference from each other.
   'speedometer_main_revision': 'f866d2b077038bc85bea5edb7bff8e05cadef0b2',
@@ -2859,6 +2863,9 @@ deps = {
 
   'src/third_party/openh264/src':
     Var('chromium_git') + '/external/github.com/cisco/openh264' + '@' + '9547f96ea5c47f4d465d97b07264b997ecc4b4b6',
+
+  'src/third_party/openh264rs/src':
+    Var('chromium_git') + '/chromium/third_party/openh264rs.git' + '@' + Var('openh264rs_revision'),
 
   'src/third_party/openscreen/src':
     Var('chromium_git') + '/openscreen' + '@' + '5627a2f4b33e6ecbec61ff067fe29b30c4a8dbdf',

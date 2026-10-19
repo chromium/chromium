@@ -255,6 +255,7 @@ per-file third_party/netty4/src=*
 per-file third_party/nlohmann_json/src=*
 per-file third_party/oak/src=*
 per-file third_party/openh264/src=*
+per-file third_party/openh264rs/src=*
 per-file third_party/openscreen/src=*
 per-file third_party/openxr/src=*
 per-file third_party/ots/src=*

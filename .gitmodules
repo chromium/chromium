@@ -473,6 +473,9 @@
 [submodule "third_party/openh264/src"]
 	path = third_party/openh264/src
 	url = https://chromium.googlesource.com/external/github.com/cisco/openh264
+[submodule "third_party/openh264rs/src"]
+	path = third_party/openh264rs/src
+	url = https://chromium.googlesource.com/chromium/third_party/openh264rs
 [submodule "third_party/openscreen/src"]
 	path = third_party/openscreen/src
 	url = https://chromium.googlesource.com/openscreen
