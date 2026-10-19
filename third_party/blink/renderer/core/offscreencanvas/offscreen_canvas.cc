@@ -320,14 +320,26 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
   if (!context_) {
     return;
   }
-  // Setting size of a canvas also resets it.
-  if (size_ == old_size) {
-    if (context_->IsRenderingContext2D()) {
+  if (context_->IsRenderingContext2D()) {
+    // Setting size of a canvas also resets it.
+    if (size_ == old_size) {
       context_->Reset();
       origin_clean_ = true;
       // We need to trigger the draw, because we did reset the context.
       context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+      return;
     }
+    if (context_->isContextLost()) {
+      context_->RestoreFromInvalidSizeIfNeeded();
+    }
+
+    context_->Reset();
+    origin_clean_ = true;
+    context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+    return;
+  }
+
+  if (size_ == old_size) {
     return;
   }
 
@@ -337,12 +349,8 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
 
   if (context_->IsWebGL() || IsWebGPU()) {
     context_->Reshape(Size().width(), Size().height());
-  } else if (context_->IsRenderingContext2D() ||
-             context_->IsImageBitmapRenderingContext()) {
+  } else if (context_->IsImageBitmapRenderingContext()) {
     context_->Reset();
-    if (context_->IsRenderingContext2D()) {
-      origin_clean_ = true;
-    }
   }
   context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 }
