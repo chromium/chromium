@@ -13,6 +13,7 @@
 #include "base/apple/scoped_mach_port.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace crash_reporter::internal {
@@ -80,9 +81,7 @@ TEST(SharedMemoryUserStreamMachPortTest, Success) {
 
   base::ReadOnlySharedMemoryMapping mapping = received[0].Map();
   ASSERT_TRUE(mapping.IsValid());
-  std::string_view mapped_str(reinterpret_cast<const char*>(mapping.memory()),
-                              mapping.size());
-  EXPECT_EQ(mapped_str, kPayload);
+  EXPECT_EQ(base::as_string_view(mapping), kPayload);
 }
 
 // Multiple shared-memory user streams should be shared successfully.
@@ -109,16 +108,12 @@ TEST(SharedMemoryUserStreamMachPortTest, SuccessMultipleRegions) {
   EXPECT_TRUE(received[0].IsValid());
   EXPECT_EQ(received[0].GetSize(), kPayload1.size());
   base::ReadOnlySharedMemoryMapping mapping = received[0].Map();
-  std::string_view mapped_str(reinterpret_cast<const char*>(mapping.memory()),
-                              mapping.size());
-  EXPECT_EQ(mapped_str, kPayload1);
+  EXPECT_EQ(base::as_string_view(mapping), kPayload1);
 
   EXPECT_TRUE(received[1].IsValid());
   EXPECT_EQ(received[1].GetSize(), kPayload2.size());
   mapping = received[1].Map();
-  mapped_str = std::string_view(reinterpret_cast<const char*>(mapping.memory()),
-                                mapping.size());
-  EXPECT_EQ(mapped_str, kPayload2);
+  EXPECT_EQ(base::as_string_view(mapping), kPayload2);
 }
 
 }  // namespace crash_reporter::internal
