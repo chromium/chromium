@@ -21,13 +21,16 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -50,10 +53,13 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
+import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsIntentUtil;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncSettingsUtils;
@@ -78,10 +84,6 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
-})
 public class SyncErrorMessageTest {
 
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
@@ -450,10 +452,7 @@ public class SyncErrorMessageTest {
 
         Intents.init();
         onViewWaiting(allOf(withText("Enter"), isDisplayed())).perform(click());
-        intended(
-                IntentMatchers.hasExtra(
-                        SettingsIntentUtil.EXTRA_SHOW_FRAGMENT,
-                        ManageSyncSettings.class.getName()));
+        intended(isSettingsIntentFor(ManageSyncSettings.class));
         Intents.release();
 
         histogramWatcher.assertExpected();
@@ -520,6 +519,22 @@ public class SyncErrorMessageTest {
                                 "Message should be dismissed when sync error has been resolved."))
                 .dismissMessage(any(), anyInt());
         Assert.assertNull(getSyncErrorMessage());
+    }
+
+    /**
+     * Matches the intent fired to show the given settings fragment. Settings in a tab goes through
+     * ChromeLauncherActivity, which re-dispatches the intent to ChromeTabbedActivity, so match the
+     * target component too to avoid matching twice.
+     */
+    private static Matcher<Intent> isSettingsIntentFor(Class<? extends Fragment> fragmentClass) {
+        Class<?> expectedActivityClass =
+                SettingsInTab.shouldOpenSettingsInTab()
+                        ? ChromeLauncherActivity.class
+                        : SettingsActivity.class;
+        return allOf(
+                IntentMatchers.hasComponent(expectedActivityClass.getName()),
+                IntentMatchers.hasExtra(
+                        SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, fragmentClass.getName()));
     }
 
     private @Nullable SyncErrorMessage getSyncErrorMessage() {
