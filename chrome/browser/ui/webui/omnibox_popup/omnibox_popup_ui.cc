@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/omnibox_popup_resources.h"
@@ -293,6 +294,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   int default_resource = IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_HTML;
   if (omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
     default_resource = IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_FULL_HTML;
+    // Serves layout_constants_v<N>.css, which the full popup links from its
+    // <head>.
+    WebUIToolbarLayoutCssHelper::SetAsRequestFilter(source);
   }
   webui::SetupWebUIDataSource(source, kOmniboxPopupResources, default_resource);
   source->OverrideContentSecurityPolicy(
@@ -314,11 +318,17 @@ OmniboxPopupUI::~OmniboxPopupUI() = default;
 
 WEB_UI_CONTROLLER_TYPE_IMPL(OmniboxPopupUI)
 
-// The popup's render-blocking chrome://theme/colors.css is served from the
-// renderer without a browser round-trip, like the WebUI toolbar.
+// The popup's chrome://theme/colors.css and layout_constants_v0.css are
+// render-blocking stylesheets in <head>. Serve them from the renderer without
+// a browser round-trip, like the WebUI toolbar's.
 void OmniboxPopupUI::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin) {
+  // Only the full popup links the layout CSS.
+  if (omnibox::internal::IsWebUIOmniboxFullPopupEnabled()) {
+    WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
+        config, requesting_origin);
+  }
   auto* theme_colors_manager =
       ThemeColorsSourceManagerFactory::GetForProfile(profile_);
   // Without a manager the stylesheet is still fetched over the network.

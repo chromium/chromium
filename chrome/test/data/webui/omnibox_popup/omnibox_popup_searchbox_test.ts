@@ -6192,32 +6192,20 @@ suite('OmniboxPopupSearchboxTest', function() {
      alignmentInsetHorizontal:
          loadTimeData.getInteger('alignmentInsetHorizontal'),
      alignmentInsetBottom: loadTimeData.getInteger('alignmentInsetBottom'),
-     locationBarHeight: loadTimeData.getInteger('locationBarHeight'),
-     locationBarFontSize: loadTimeData.getInteger('locationBarFontSize'),
-     locationBarIconSize: loadTimeData.getInteger('locationBarIconSize'),
-     locationBarPageInfoIconVerticalPadding:
-         loadTimeData.getInteger('locationBarPageInfoIconVerticalPadding'),
    };
 
    // Verify searchbox in `setup()` initialized its inline styles with the
-   // C++ layout constants provided by `OmniboxPopupUI`.
+   // C++ alignment insets provided by `OmniboxPopupUI`.
    assertEquals(
        `${originalConstants.alignmentInsetTop}px`,
        searchbox.style.getPropertyValue('--alignment-inset-top'));
-   assertEquals(
-       `${originalConstants.locationBarHeight}px`,
-       searchbox.style.getPropertyValue('--cr-searchbox-height'));
 
-   // Override `loadTimeData` with custom layout constants and verify a newly
+   // Override `loadTimeData` with custom alignment insets and verify a newly
    // connected searchbox applies them as inline style custom properties.
    loadTimeData.overrideValues({
      alignmentInsetTop: 10,
      alignmentInsetHorizontal: 12,
      alignmentInsetBottom: 8,
-     locationBarHeight: 40,
-     locationBarFontSize: 16,
-     locationBarIconSize: 22,
-     locationBarPageInfoIconVerticalPadding: 6,
    });
 
    const testSearchbox = document.createElement('omnibox-popup-searchbox');
@@ -6231,19 +6219,27 @@ suite('OmniboxPopupSearchboxTest', function() {
        testSearchbox.style.getPropertyValue('--alignment-inset-horizontal'));
    assertEquals(
        '8px', testSearchbox.style.getPropertyValue('--alignment-inset-bottom'));
+
+   // Shared layout constants come from `layout_constants_v0.css` and map to
+   // `--cr-searchbox-*` variables on the host.
+   testSearchbox.style.setProperty('--location-bar-height', '40px');
+   testSearchbox.style.setProperty('--omnibox-primary-font-size', '16px');
+   testSearchbox.style.setProperty('--location-bar-icon-size', '22px');
+   testSearchbox.style.setProperty(
+       '--location-bar-page-info-icon-vertical-padding', '6px');
+   const hostStyle = getComputedStyle(testSearchbox);
    assertEquals(
-       '40px', testSearchbox.style.getPropertyValue('--cr-searchbox-height'));
+       '40px', hostStyle.getPropertyValue('--cr-searchbox-height').trim());
    assertEquals(
-       '16px',
-       testSearchbox.style.getPropertyValue('--cr-searchbox-font-size'));
+       '16px', hostStyle.getPropertyValue('--cr-searchbox-font-size').trim());
    assertEquals(
        '22px',
-       testSearchbox.style.getPropertyValue(
-           '--cr-searchbox-icon-size-in-searchbox'));
+       hostStyle.getPropertyValue('--cr-searchbox-icon-size-in-searchbox')
+           .trim());
+   assertEquals('40px', hostStyle.height);
+   assertEquals('16px', hostStyle.fontSize);
    assertEquals(
-       '6px',
-       testSearchbox.style.getPropertyValue(
-           '--location-bar-page-info-icon-vertical-padding'));
+       '28px', getComputedStyle(testSearchbox.$.input.inputElement).height);
 
    testSearchbox.remove();
    // Restore original values so `loadTimeData` does not leak into other tests.

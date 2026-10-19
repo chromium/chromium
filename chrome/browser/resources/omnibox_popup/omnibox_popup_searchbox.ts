@@ -399,6 +399,8 @@ export class OmniboxPopupSearchboxElement extends
     if (!loadTimeData.valueExists('alignmentInsetTop')) {
       return;
     }
+    // Shared layout constants and fonts come from layout_constants_v0.css,
+    // linked in omnibox_popup_full.html.
     this.style.setProperty(
         '--alignment-inset-top',
         `${loadTimeData.getInteger('alignmentInsetTop')}px`);
@@ -408,20 +410,6 @@ export class OmniboxPopupSearchboxElement extends
     this.style.setProperty(
         '--alignment-inset-bottom',
         `${loadTimeData.getInteger('alignmentInsetBottom')}px`);
-    this.style.setProperty(
-        '--cr-searchbox-height',
-        `${loadTimeData.getInteger('locationBarHeight')}px`);
-    this.style.setProperty(
-        '--cr-searchbox-font-size',
-        `${loadTimeData.getInteger('locationBarFontSize')}px`);
-    this.style.setProperty(
-        '--cr-searchbox-icon-size-in-searchbox',
-        `${loadTimeData.getInteger('locationBarIconSize')}px`);
-    this.style.setProperty(
-        '--location-bar-page-info-icon-vertical-padding',
-        `${
-            loadTimeData.getInteger(
-                'locationBarPageInfoIconVerticalPadding')}px`);
   }
 
   override connectedCallback() {

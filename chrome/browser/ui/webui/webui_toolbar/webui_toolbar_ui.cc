@@ -531,7 +531,8 @@ void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
   theme_colors_manager->PopulateLocalResourceLoaderConfig(
       config, requesting_origin, web_ui()->GetWebContents());
 
-  WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(config);
+  WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
+      config, requesting_origin);
 }
 
 void WebUIToolbarUI::CreateHelpBubbleHandler(

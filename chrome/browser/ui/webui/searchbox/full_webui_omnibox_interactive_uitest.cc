@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
@@ -945,6 +946,23 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
         EXPECT_EQ(std::round(rect[3].GetDouble()),
                   location_bar_bounds.height());
       }));
+}
+
+// Verifies that the full WebUI omnibox popup loads layout_constants_v0.css and
+// applies the generated `--location-bar-height` variable on the searchbox.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       LoadsLayoutConstantsStylesheet) {
+  const std::string expected_height = base::StringPrintf(
+      "%dpx", GetLayoutConstant(LayoutConstant::kLocationBarHeight));
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InAnyContext(WaitForJsConditionAt(
+          kPopupWebView, kPopupSearchbox,
+          base::StringPrintf(
+              "(el) => !!el && "
+              "window.getComputedStyle(el)"
+              ".getPropertyValue('--location-bar-height').trim() === '%s'",
+              expected_height.c_str()))));
 }
 
 // Verifies the draft, selection range, and focus are restored after typing an

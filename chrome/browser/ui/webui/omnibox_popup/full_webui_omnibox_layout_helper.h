@@ -11,8 +11,8 @@ namespace content {
 class WebUIDataSource;
 }
 
-// Single source of truth for full WebUI Omnibox layout constants, font sizes,
-// and alignment insets, injecting them dynamically into the WebUI data source.
+// Injects the full WebUI Omnibox popup's alignment insets into the WebUI data
+// source.
 class FullWebUIOmniboxLayoutHelper {
  public:
   FullWebUIOmniboxLayoutHelper() = delete;
@@ -20,20 +20,9 @@ class FullWebUIOmniboxLayoutHelper {
   // Returns the alignment insets for the full WebUI Omnibox popup.
   static gfx::Insets GetLocationBarAlignmentInsets();
 
-  // Returns the location bar height in DIPs.
-  static int GetLocationBarHeight();
-
-  // Returns the page info icon vertical padding in DIPs.
-  static int GetLocationBarPageInfoIconVerticalPadding();
-
-  // Returns the location bar icon size in DIPs.
-  static int GetLocationBarIconSize();
-
-  // Returns the font size for the Omnibox input text.
-  static int GetFontSize();
-
-  // Injects layout constants, font sizes, and alignment insets into the WebUI
-  // data source.
+  // Injects the popup-only alignment insets into the WebUI data source. The
+  // location bar's layout constants and fonts come from
+  // WebUIToolbarLayoutCssHelper's layout_constants_v0.css.
   static void PopulateLoadTimeData(content::WebUIDataSource* source);
 };
 

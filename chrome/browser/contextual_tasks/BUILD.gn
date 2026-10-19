@@ -537,7 +537,7 @@ source_set("ui_impl") {
       "//chrome/browser/ui/views/page_info",
       "//chrome/browser/ui/views/user_education",
       "//chrome/browser/ui/webui",
-      "//chrome/browser/ui/webui/webui_toolbar:impl",
+      "//chrome/browser/ui/webui/webui_toolbar:layout_css_helper",
       "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support:user_agent",
       "//services/network/public/cpp",

@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
-#include "chrome/common/webui_url_constants.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/style/typography_provider.h"
@@ -212,7 +211,10 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
       "  initial-value: 0;\n"
       "}\n");
 
-  css_string.append(":host{");
+  // `:host` serves a `<link>` in a shadow root (toolbar, contextual tasks).
+  // `:root` serves a `<link>` in a document `<head>` (the omnibox popup).
+  // Neither matches in the other context.
+  css_string.append(":host,:root{");
 
   if (ui::TouchUiController::Get()->touch_ui()) {
     css_string.append("--touch-mode: 1;");
@@ -329,11 +331,10 @@ void WebUIToolbarLayoutCssHelper::SetAsRequestFilter(
 
 // static
 void WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
-    blink::mojom::LocalResourceLoaderConfig* config) {
+    blink::mojom::LocalResourceLoaderConfig* config,
+    const url::Origin& origin) {
   std::string layout_css = GenerateLayoutConstantsCss();
-  url::Origin layout_css_origin =
-      url::Origin::Create(GURL(chrome::kChromeUIWebUIToolbarURL));
-  auto& source = config->sources[layout_css_origin];
+  auto& source = config->sources[origin];
   if (source.is_null()) {
     source = blink::mojom::LocalResourceSource::New();
   }
