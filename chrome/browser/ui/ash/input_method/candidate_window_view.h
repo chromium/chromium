@@ -40,9 +40,6 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   ~CandidateWindowView() override;
   std::unique_ptr<views::Widget> InitWidget();
 
-  // views::BubbleDialogDelegateView:
-  void OnThemeChanged() override;
-
   // Adds the given observer. The ownership is not transferred.
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 

@@ -211,6 +211,8 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
   // with what CandidateWindowView expects.
   set_use_round_corners(false);
 
+  SetBorder(views::CreateSolidBorder(/*thickness=*/1, ui::kColorMenuBorder));
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   auxiliary_text_ = new InformationTextArea(gfx::ALIGN_RIGHT, 0);
@@ -251,12 +253,6 @@ std::unique_ptr<views::Widget> CandidateWindowView::InitWidget() {
       std::make_unique<CandidateWindowBorder>());
   GetBubbleFrameView()->OnThemeChanged();
   return widget;
-}
-
-void CandidateWindowView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  SetBorder(views::CreateSolidBorder(
-      1, GetColorProvider()->GetColor(ui::kColorMenuBorder)));
 }
 
 void CandidateWindowView::UpdateVisibility() {
