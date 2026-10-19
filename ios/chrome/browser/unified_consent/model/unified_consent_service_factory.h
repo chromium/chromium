@@ -5,31 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_UNIFIED_CONSENT_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_UNIFIED_CONSENT_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#import "components/unified_consent/unified_consent_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
-class ProfileIOS;
-
-namespace unified_consent {
-class UnifiedConsentService;
-}
-
-class UnifiedConsentServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class UnifiedConsentServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          UnifiedConsentServiceFactory,
+          unified_consent::UnifiedConsentService> {
  public:
-  static unified_consent::UnifiedConsentService* GetForProfile(
-      ProfileIOS* profile);
-
-  static unified_consent::UnifiedConsentService* GetForProfileIfExists(
-      ProfileIOS* profile);
-
-  static UnifiedConsentServiceFactory* GetInstance();
+  explicit UnifiedConsentServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<UnifiedConsentServiceFactory>;
-
-  UnifiedConsentServiceFactory();
-  ~UnifiedConsentServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

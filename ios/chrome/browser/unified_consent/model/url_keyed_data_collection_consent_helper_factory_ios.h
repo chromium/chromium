@@ -5,30 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_URL_KEYED_DATA_COLLECTION_CONSENT_HELPER_FACTORY_IOS_H_
 #define IOS_CHROME_BROWSER_UNIFIED_CONSENT_MODEL_URL_KEYED_DATA_COLLECTION_CONSENT_HELPER_FACTORY_IOS_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class UrlKeyedDataCollectionConsentHelperIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/unified_consent/model/url_keyed_data_collection_consent_helper_ios.h"
 
 class UrlKeyedDataCollectionConsentHelperFactoryIOS
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          UrlKeyedDataCollectionConsentHelperFactoryIOS,
+          UrlKeyedDataCollectionConsentHelperIOS> {
  public:
-  static UrlKeyedDataCollectionConsentHelperIOS* GetForProfile(
-      ProfileIOS* profile);
-
-  static UrlKeyedDataCollectionConsentHelperIOS* GetForProfileIfExists(
-      ProfileIOS* profile);
-
-  static UrlKeyedDataCollectionConsentHelperFactoryIOS* GetInstance();
+  explicit UrlKeyedDataCollectionConsentHelperFactoryIOS(PassKey key);
 
  private:
-  friend class base::NoDestructor<
-      UrlKeyedDataCollectionConsentHelperFactoryIOS>;
-
-  UrlKeyedDataCollectionConsentHelperFactoryIOS();
-  ~UrlKeyedDataCollectionConsentHelperFactoryIOS() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
