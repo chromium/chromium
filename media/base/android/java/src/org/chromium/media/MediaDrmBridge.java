@@ -1190,7 +1190,7 @@ public class MediaDrmBridge {
         } catch (android.media.NotProvisionedException e) {
             // If device isn't provisioned, storage loading should fail.
             onPersistentLicenseLoadFail(sessionId, promiseId, e);
-        } catch (java.lang.IllegalStateException e) {
+        } catch (java.lang.IllegalStateException | java.lang.IllegalArgumentException e) {
             assert sessionId.drmId() != null;
             onPersistentLicenseLoadFail(sessionId, promiseId, e);
         }
@@ -1208,6 +1208,7 @@ public class MediaDrmBridge {
     private void onPersistentLicenseLoadFail(
             SessionId sessionId, final long promiseId, Exception e) {
         Log.w(TAG, "Persistent license load failed for session %s", sessionId, e);
+        mSessionEventDeferrer = null;
         closeSessionNoException(sessionId);
         mSessionManager.clearPersistentSessionInfo(
                 sessionId,
