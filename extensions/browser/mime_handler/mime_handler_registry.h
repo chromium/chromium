@@ -110,6 +110,10 @@ class MimeHandlerRegistry : public KeyedService,
 
  private:
   // ExtensionRegistryObserver:
+  void OnExtensionWillBeInstalled(content::BrowserContext* browser_context,
+                                  const Extension* extension,
+                                  bool is_update,
+                                  const std::string& old_name) override;
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const Extension* extension) override;
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
