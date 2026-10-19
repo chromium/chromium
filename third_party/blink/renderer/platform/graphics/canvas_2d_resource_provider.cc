@@ -489,12 +489,12 @@ void Canvas2DResourceProvider::OnFlushForImage(
 
 void Canvas2DResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  CHECK(!IsSoftware());
-
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                         reinterpret_cast<uintptr_t>(this));
 
-  resource()->OnMemoryDump(pmd, path);
+  if (resource()) {
+    resource()->OnMemoryDump(pmd, path);
+  }
 
   std::string cached_path = path + "/cached";
   image_pool_->OnMemoryDump(pmd, cached_path);

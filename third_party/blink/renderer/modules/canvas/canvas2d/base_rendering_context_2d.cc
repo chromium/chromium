@@ -346,7 +346,7 @@ void BaseRenderingContext2D::OnMemoryDump(
   // BaseRenderingContext2D is only registered with CanvasMemoryDumpProvider
   // while `HasBacking()` is true.
   CHECK(HasBacking());
-  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+  if (shared_image_provider_) {
     shared_image_provider_->OnMemoryDump(pmd);
   }
   if (!surface_) {
