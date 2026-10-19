@@ -1448,11 +1448,6 @@ const FeatureEntry::FeatureParam
         {"enable_tab_deselection", "true"}};
 
 const FeatureEntry::FeatureParam
-    kContextManagementEnableContextMenuTooltipsParams[] = {
-        {"enable_context_menu_tooltips", "true"},
-        {"enable_tab_deselection", "true"}};
-
-const FeatureEntry::FeatureParam
     kContextManagementEnableSingleTabMenuItemParams[] = {
         {"enable_single_tab_menu_item", "true"},
         {"enable_tab_deselection", "true"}};
@@ -1467,8 +1462,6 @@ const FeatureEntry::FeatureVariation
         {"Context Management in composebox (keeps menu open, with tab "
          "deselection)",
          kContextManagementKeepMenuOpenAndTabDeselectionParams, nullptr},
-        {"Context Management in composebox (with tooltips and tab deselection)",
-         kContextManagementEnableContextMenuTooltipsParams, nullptr},
         {"With single tab above tab flyout",
          kContextManagementEnableSingleTabMenuItemParams, nullptr}};
 
