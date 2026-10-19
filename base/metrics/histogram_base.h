@@ -341,20 +341,6 @@ class BASE_EXPORT HistogramBase {
   // to |sum|.
   CountAndBucketData GetCountAndBucketData() const;
 
-  // Produces an actual graph (set of blank vs non blank char's) for a bucket.
-  void WriteAsciiBucketGraph(double x_count,
-                             int line_length,
-                             std::string* output) const;
-
-  // Return a string description of what goes in a given bucket.
-  const std::string GetSimpleAsciiBucketRange(Sample32 sample) const;
-
-  // Write textual description of the bucket contents (relative to histogram).
-  // Output is the count in the buckets, as well as the percentage.
-  void WriteAsciiBucketValue(Count32 current,
-                             double scaled_sum,
-                             std::string* output) const;
-
   // Retrieves the registered callbacks for this histogram, if any, and runs
   // them passing |sample| as the parameter.
   void FindAndRunCallbacks(Sample32 sample) const;
