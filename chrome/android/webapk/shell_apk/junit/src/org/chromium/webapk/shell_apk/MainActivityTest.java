@@ -44,7 +44,7 @@ public final class MainActivityTest {
 
     @Before
     public void setUp() {
-        mPackageManager = RuntimeEnvironment.application.getPackageManager();
+        mPackageManager = RuntimeEnvironment.getApplication().getPackageManager();
         mBrowserInstaller.installModernBrowser(BROWSER_PACKAGE_NAME);
     }
 

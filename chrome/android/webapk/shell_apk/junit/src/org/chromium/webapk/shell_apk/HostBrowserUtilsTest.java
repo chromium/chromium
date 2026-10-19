@@ -74,7 +74,7 @@ public class HostBrowserUtilsTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
     }
 
     /**

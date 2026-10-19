@@ -90,7 +90,7 @@ public class WebApkValidatorTest {
 
     @Before
     public void setUp() {
-        mPackageManager = Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+        mPackageManager = Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
         WebApkValidator.init(EXPECTED_SIGNATURE, PUBLIC_KEY);
     }
 
@@ -121,7 +121,7 @@ public class WebApkValidatorTest {
             assertEquals(
                     WEBAPK_PACKAGE_NAME,
                     WebApkValidator.queryFirstWebApkPackage(
-                            RuntimeEnvironment.application, URL_OF_WEBAPK));
+                            RuntimeEnvironment.getApplication(), URL_OF_WEBAPK));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -146,7 +146,7 @@ public class WebApkValidatorTest {
 
             assertNull(
                     WebApkValidator.queryFirstWebApkPackage(
-                            RuntimeEnvironment.application, URL_OF_WEBAPK));
+                            RuntimeEnvironment.getApplication(), URL_OF_WEBAPK));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -172,7 +172,7 @@ public class WebApkValidatorTest {
 
             assertNull(
                     WebApkValidator.queryFirstWebApkPackage(
-                            RuntimeEnvironment.application, URL_WITHOUT_WEBAPK));
+                            RuntimeEnvironment.getApplication(), URL_WITHOUT_WEBAPK));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -199,7 +199,10 @@ public class WebApkValidatorTest {
 
             assertTrue(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
+                            RuntimeEnvironment.getApplication(),
+                            WEBAPK_PACKAGE_NAME,
+                            URL_OF_WEBAPK,
+                            0));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -223,7 +226,10 @@ public class WebApkValidatorTest {
 
             assertFalse(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
+                            RuntimeEnvironment.getApplication(),
+                            WEBAPK_PACKAGE_NAME,
+                            URL_OF_WEBAPK,
+                            0));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -246,7 +252,10 @@ public class WebApkValidatorTest {
 
             assertFalse(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
+                            RuntimeEnvironment.getApplication(),
+                            WEBAPK_PACKAGE_NAME,
+                            URL_OF_WEBAPK,
+                            0));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -273,7 +282,7 @@ public class WebApkValidatorTest {
 
             assertFalse(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application,
+                            RuntimeEnvironment.getApplication(),
                             WEBAPK_PACKAGE_NAME,
                             URL_WITHOUT_WEBAPK,
                             0));
@@ -296,7 +305,8 @@ public class WebApkValidatorTest {
                         null));
 
         assertTrue(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -314,7 +324,7 @@ public class WebApkValidatorTest {
 
         assertFalse(
                 WebApkValidator.isValidWebApk(
-                        RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
+                        RuntimeEnvironment.getApplication(), INVALID_WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -328,7 +338,7 @@ public class WebApkValidatorTest {
         // Current Shell Version larger than min_version, can handle URL.
         assertTrue(
                 WebApkValidator.canWebApkHandleUrl(
-                        RuntimeEnvironment.application,
+                        RuntimeEnvironment.getApplication(),
                         WEBAPK_PACKAGE_NAME,
                         URL_OF_WEBAPK,
                         SHELL_VERSION - 1));
@@ -338,7 +348,7 @@ public class WebApkValidatorTest {
         // a toast.
         assertFalse(
                 WebApkValidator.canWebApkHandleUrl(
-                        RuntimeEnvironment.application,
+                        RuntimeEnvironment.getApplication(),
                         WEBAPK_PACKAGE_NAME,
                         URL_OF_WEBAPK,
                         SHELL_VERSION + 1));
@@ -368,7 +378,8 @@ public class WebApkValidatorTest {
                 newPackageInfo(WEBAPK_PACKAGE_NAME, signatures, null, TEST_STARTURL, null));
 
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -383,7 +394,8 @@ public class WebApkValidatorTest {
                 newPackageInfo(WEBAPK_PACKAGE_NAME, signatures, null, TEST_STARTURL, null));
 
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /** Tests {@link WebApkValidator#isValidWebApk()} for valid comment signed webapks. */
@@ -400,7 +412,8 @@ public class WebApkValidatorTest {
                             packageName, signature, testFilePath(filename), TEST_STARTURL, null));
             assertTrue(
                     filename + " did not verify",
-                    WebApkValidator.isValidWebApk(RuntimeEnvironment.application, packageName));
+                    WebApkValidator.isValidWebApk(
+                            RuntimeEnvironment.getApplication(), packageName));
         }
     }
 
@@ -442,7 +455,8 @@ public class WebApkValidatorTest {
                             packageName, signature, testFilePath(filename), TEST_STARTURL, null));
             assertFalse(
                     filename,
-                    WebApkValidator.isValidWebApk(RuntimeEnvironment.application, packageName));
+                    WebApkValidator.isValidWebApk(
+                            RuntimeEnvironment.getApplication(), packageName));
         }
     }
 
@@ -461,7 +475,7 @@ public class WebApkValidatorTest {
 
         assertTrue(
                 WebApkValidator.isValidV1WebApk(
-                        RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -479,7 +493,7 @@ public class WebApkValidatorTest {
 
         assertFalse(
                 WebApkValidator.isValidV1WebApk(
-                        RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
+                        RuntimeEnvironment.getApplication(), INVALID_WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -497,7 +511,7 @@ public class WebApkValidatorTest {
         assertEquals(
                 WEBAPK_PACKAGE_NAME,
                 WebApkValidator.queryBoundWebApkForManifestUrl(
-                        RuntimeEnvironment.application, MANIFEST_URL));
+                        RuntimeEnvironment.getApplication(), MANIFEST_URL));
     }
 
     /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid package name. */
@@ -512,7 +526,7 @@ public class WebApkValidatorTest {
 
         assertNull(
                 WebApkValidator.queryBoundWebApkForManifestUrl(
-                        RuntimeEnvironment.application, MANIFEST_URL));
+                        RuntimeEnvironment.getApplication(), MANIFEST_URL));
     }
 
     /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid signature. */
@@ -524,7 +538,7 @@ public class WebApkValidatorTest {
 
         assertNull(
                 WebApkValidator.queryBoundWebApkForManifestUrl(
-                        RuntimeEnvironment.application, MANIFEST_URL));
+                        RuntimeEnvironment.getApplication(), MANIFEST_URL));
     }
 
     /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl()} with an invalid manifest URL. */
@@ -536,7 +550,7 @@ public class WebApkValidatorTest {
 
         assertNull(
                 WebApkValidator.queryBoundWebApkForManifestUrl(
-                        RuntimeEnvironment.application, "https://evil.com/manifest.json"));
+                        RuntimeEnvironment.getApplication(), "https://evil.com/manifest.json"));
     }
 
     /**
@@ -550,11 +564,13 @@ public class WebApkValidatorTest {
                         WEBAPK_PACKAGE_NAME, new Signature(SIGNATURE_1), TEST_STARTURL, null));
 
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
 
         WebApkValidator.setDisableValidationForTesting(true);
         assertTrue(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -574,7 +590,8 @@ public class WebApkValidatorTest {
 
         WebApkValidator.setDisableValidationForTesting(true);
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -587,7 +604,7 @@ public class WebApkValidatorTest {
 
         assertFalse(
                 WebApkValidator.isValidWebApk(
-                        RuntimeEnvironment.application, INVALID_WEBAPK_PACKAGE_NAME));
+                        RuntimeEnvironment.getApplication(), INVALID_WEBAPK_PACKAGE_NAME));
     }
 
     @Test
@@ -596,7 +613,7 @@ public class WebApkValidatorTest {
 
         ResolveInfo resolveInfo =
                 WebApkValidator.queryFirstWebApkResolveInfo(
-                        RuntimeEnvironment.application, URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME);
+                        RuntimeEnvironment.getApplication(), URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME);
 
         assertNotNull(resolveInfo);
         assertEquals(WEBAPK_PACKAGE_NAME, resolveInfo.activityInfo.packageName);
@@ -609,7 +626,9 @@ public class WebApkValidatorTest {
 
         ResolveInfo resolveInfo =
                 WebApkValidator.queryFirstWebApkResolveInfo(
-                        RuntimeEnvironment.application, URL_OF_WEBAPK, INVALID_WEBAPK_PACKAGE_NAME);
+                        RuntimeEnvironment.getApplication(),
+                        URL_OF_WEBAPK,
+                        INVALID_WEBAPK_PACKAGE_NAME);
 
         assertNull(resolveInfo);
     }
@@ -620,7 +639,7 @@ public class WebApkValidatorTest {
 
         ResolveInfo resolveInfo =
                 WebApkValidator.queryFirstWebApkResolveInfo(
-                        RuntimeEnvironment.application, URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME);
+                        RuntimeEnvironment.getApplication(), URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME);
 
         assertNull(resolveInfo);
     }
@@ -734,7 +753,10 @@ public class WebApkValidatorTest {
 
             assertFalse(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
+                            RuntimeEnvironment.getApplication(),
+                            WEBAPK_PACKAGE_NAME,
+                            URL_OF_WEBAPK,
+                            0));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -753,7 +775,8 @@ public class WebApkValidatorTest {
         mPackageManager.addPackage(packageInfo);
 
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -772,7 +795,8 @@ public class WebApkValidatorTest {
         mPackageManager.addPackage(packageInfo);
 
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -791,7 +815,8 @@ public class WebApkValidatorTest {
         mPackageManager.addPackage(packageInfo);
 
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /**
@@ -810,7 +835,8 @@ public class WebApkValidatorTest {
         mPackageManager.addPackage(packageInfo);
 
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /** Tests {@link WebApkValidator#isValidV1WebApk} returns false if the APK has splits. */
@@ -827,7 +853,7 @@ public class WebApkValidatorTest {
 
         assertFalse(
                 WebApkValidator.isValidV1WebApk(
-                        RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 
     /** Tests {@link WebApkValidator#isValidWebApk} returns false for comment signed split APK. */
@@ -842,7 +868,8 @@ public class WebApkValidatorTest {
         packageInfo.splitNames = new String[] {"split_feature"};
         mPackageManager.addPackage(packageInfo);
 
-        assertFalse(WebApkValidator.isValidWebApk(RuntimeEnvironment.application, packageName));
+        assertFalse(
+                WebApkValidator.isValidWebApk(RuntimeEnvironment.getApplication(), packageName));
     }
 
     /** Tests {@link WebApkValidator#queryBoundWebApkForManifestUrl} returns null for split APK. */
@@ -856,7 +883,7 @@ public class WebApkValidatorTest {
 
         assertNull(
                 WebApkValidator.queryBoundWebApkForManifestUrl(
-                        RuntimeEnvironment.application, MANIFEST_URL));
+                        RuntimeEnvironment.getApplication(), MANIFEST_URL));
     }
 
     /** Tests {@link WebApkValidator#canWebApkHandleUrl} returns false for split APK. */
@@ -879,7 +906,10 @@ public class WebApkValidatorTest {
 
             assertFalse(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
+                            RuntimeEnvironment.getApplication(),
+                            WEBAPK_PACKAGE_NAME,
+                            URL_OF_WEBAPK,
+                            0));
         } catch (URISyntaxException e) {
             throw new AssertionError("URI is invalid.", e);
         }
@@ -902,6 +932,7 @@ public class WebApkValidatorTest {
 
         WebApkValidator.setDisableValidationForTesting(true);
         assertFalse(
-                WebApkValidator.isValidWebApk(RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME));
+                WebApkValidator.isValidWebApk(
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME));
     }
 }

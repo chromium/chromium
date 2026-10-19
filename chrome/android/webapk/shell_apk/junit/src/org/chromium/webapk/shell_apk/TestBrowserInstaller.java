@@ -81,7 +81,7 @@ public class TestBrowserInstaller {
     }
 
     private static ShadowPackageManager getShadowPackageManager() {
-        return Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+        return Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
     }
 
     private static ResolveInfo newResolveInfo(String packageName) {

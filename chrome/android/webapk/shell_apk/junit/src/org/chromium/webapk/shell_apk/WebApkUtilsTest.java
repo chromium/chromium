@@ -53,7 +53,7 @@ public class WebApkUtilsTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mPackageManager = Shadows.shadowOf(mContext.getPackageManager());
     }
 

@@ -61,13 +61,13 @@ public class WebApkIdentityServiceClientTest {
 
     @Before
     public void setUp() {
-        mShadowApplication = Shadows.shadowOf(RuntimeEnvironment.application);
+        mShadowApplication = Shadows.shadowOf(RuntimeEnvironment.getApplication());
         WebApkIdentityServiceClient.resetForTesting();
     }
 
     @After
     public void tearDown() {
-        WebApkIdentityServiceClient.disconnectAll(RuntimeEnvironment.application);
+        WebApkIdentityServiceClient.disconnectAll(RuntimeEnvironment.getApplication());
     }
 
     /**
@@ -173,7 +173,7 @@ public class WebApkIdentityServiceClientTest {
         TestCheckBacksWebApkCallback callback = new TestCheckBacksWebApkCallback();
         WebApkIdentityServiceClient.getInstance(TaskTraits.BEST_EFFORT_MAY_BLOCK)
                 .checkBrowserBacksWebApkAsync(
-                        RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, callback);
+                        RuntimeEnvironment.getApplication(), WEBAPK_PACKAGE_NAME, callback);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
         Assert.assertTrue(callback.mIsCalled);

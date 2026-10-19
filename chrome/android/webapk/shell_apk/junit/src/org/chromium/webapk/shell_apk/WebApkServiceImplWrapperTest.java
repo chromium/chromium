@@ -88,7 +88,7 @@ public class WebApkServiceImplWrapperTest {
 
     @Before
     public void setUp() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         Bundle bundle = new Bundle();
         bundle.putInt(WebApkServiceFactory.KEY_HOST_BROWSER_UID, HOST_BROWSER_UID);
         mMockWebApkServiceImpl = new MockWebApkServiceImpl(context, bundle);
@@ -136,7 +136,7 @@ public class WebApkServiceImplWrapperTest {
 
     @Test
     public void testEnsureNotificationChannelExists_importanceDefault() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         WebApkServiceImplWrapper wrapper =
                 new MockWebApkServiceImplWrapper(context, null, HOST_BROWSER_UID);
         Notification notification =
@@ -157,7 +157,7 @@ public class WebApkServiceImplWrapperTest {
     @Test
     public void
             testEnsureNotificationChannelExists_trustsExplicitHighPriorityChannelIdEvenWithoutPriority() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         WebApkServiceImplWrapper wrapper =
                 new MockWebApkServiceImplWrapper(context, null, HOST_BROWSER_UID);
         Notification notification =
@@ -180,7 +180,7 @@ public class WebApkServiceImplWrapperTest {
     @Test
     @SuppressWarnings("NewApi")
     public void testNotifyNotification_nullChannelIdFallback() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         WebApkServiceImplWrapper wrapper =
                 new WebApkServiceImplWrapper(context, mMockWebApkServiceImpl, HOST_BROWSER_UID);
         Notification notification = new Notification.Builder(context).build();

@@ -755,10 +755,10 @@ public final class LaunchTest {
                 PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
         Assert.assertFalse(
                 H2OOpaqueMainActivity.checkComponentEnabled(
-                        RuntimeEnvironment.application, /* isNewStyleWebApk= */ false));
+                        RuntimeEnvironment.getApplication(), /* isNewStyleWebApk= */ false));
         Assert.assertTrue(
                 H2OOpaqueMainActivity.checkComponentEnabled(
-                        RuntimeEnvironment.application, /* isNewStyleWebApk= */ true));
+                        RuntimeEnvironment.getApplication(), /* isNewStyleWebApk= */ true));
     }
 
     /**
@@ -773,10 +773,10 @@ public final class LaunchTest {
                 PackageManager.COMPONENT_ENABLED_STATE_DEFAULT);
         Assert.assertTrue(
                 H2OMainActivity.checkComponentEnabled(
-                        RuntimeEnvironment.application, /* isNewStyleWebApk= */ false));
+                        RuntimeEnvironment.getApplication(), /* isNewStyleWebApk= */ false));
         Assert.assertFalse(
                 H2OMainActivity.checkComponentEnabled(
-                        RuntimeEnvironment.application, /* isNewStyleWebApk= */ true));
+                        RuntimeEnvironment.getApplication(), /* isNewStyleWebApk= */ true));
     }
 
     public static class TestH2OOpaqueMainActivity extends H2OOpaqueMainActivity {
@@ -1267,7 +1267,8 @@ public final class LaunchTest {
 
         ActivityManager activityManager =
                 (ActivityManager)
-                        RuntimeEnvironment.application.getSystemService(Context.ACTIVITY_SERVICE);
+                        RuntimeEnvironment.getApplication()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
         ShadowActivityManager shadowActivityManager = Shadows.shadowOf(activityManager);
         shadowActivityManager.setAppTasks(appTasks);
     }

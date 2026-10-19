@@ -30,7 +30,7 @@ public class WebApkTestHelper {
     /** Returns the simplest intent for launching a WebAPK. */
     public static Intent createMinimalWebApkIntent(String webApkPackageName, String url) {
         Intent intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, webApkPackageName);
         intent.putExtra(WebApkConstants.EXTRA_URL, url);
         return intent;
@@ -47,7 +47,7 @@ public class WebApkTestHelper {
     public static void registerWebApkWithMetaData(
             String packageName, Bundle metaData, Bundle[] shareTargetMetaData) {
         ShadowPackageManager packageManager =
-                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
         Resources res = Mockito.mock(Resources.class);
         ShadowPackageManager.resources.put(packageName, res);
 
@@ -85,7 +85,7 @@ public class WebApkTestHelper {
     /** Registers intent filter for the passed-in package name and URL. */
     public static void addIntentFilterForUrl(String packageName, String url) {
         ShadowPackageManager packageManager =
-                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
         try {
             Intent deepLinkIntent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
             deepLinkIntent.addCategory(Intent.CATEGORY_BROWSABLE);
