@@ -6308,6 +6308,7 @@ void NavigationRequest::OnStartChecksComplete(
   // before actually loading resource.
   bool report_raw_headers = false;
   GURL devtools_referrer_override;
+  headers_before_devtools_overrides_ = begin_params_->headers;
   devtools_instrumentation::ApplyNetworkRequestOverrides(
       frame_tree_node_, common_params_->url, begin_params_.get(),
       &report_raw_headers, &devtools_user_agent_override_,
@@ -6639,6 +6640,34 @@ void NavigationRequest::OnRedirectChecksComplete(
     // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
     // has destroyed the NavigationRequest.
     return;
+  }
+
+  // DevTools overrides were applied in OnStartChecksComplete() for the
+  // original URL. Revert those that must not apply to the redirect URL because
+  // the session that set them may not attach to it, before
+  // OnNavigationRequestWillBeSent() detaches such sessions.
+  net::HttpRequestHeaders headers_before_devtools_overrides;
+  headers_before_devtools_overrides.AddHeadersFromString(
+      headers_before_devtools_overrides_);
+  net::HttpRequestHeaders current_headers;
+  current_headers.AddHeadersFromString(begin_params_->headers);
+  bool headers_reverted = false;
+  if (!devtools_instrumentation::RevertDisallowedNetworkOverridesOnRedirect(
+          frame_tree_node_, common_params_->url,
+          headers_before_devtools_overrides, &current_headers,
+          &headers_update_params_, &headers_reverted)) {
+    // Requests with an overridden Referer are canceled on redirect.
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT),
+        true /* skip_throttles */, std::nullopt /* error_page_content */,
+        false /* collapse_frame */);
+    // DO NOT ADD CODE after this. The previous call to OnRequestFailedInternal
+    // has destroyed the NavigationRequest.
+    return;
+  }
+  if (headers_reverted) {
+    begin_params_->headers = current_headers.ToString();
+    request_headers_.reset();
   }
 
   devtools_instrumentation::OnNavigationRequestWillBeSent(*this);

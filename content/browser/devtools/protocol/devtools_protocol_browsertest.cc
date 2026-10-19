@@ -2661,6 +2661,155 @@ IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
   EXPECT_EQ("page", headers->at("Content-Language"));
 }
 
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       ExtraHeadersRemovedOnRedirectToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall?redirected");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  base::DictValue extra_headers;
+  extra_headers.Set("X-Test", "1");
+  AttachRestrictedSessionWithExtraHeaders(std::move(extra_headers));
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders(redirect_path);
+  ASSERT_TRUE(headers);
+  EXPECT_TRUE(headers->contains("X-Test"));
+  headers = GetRequestHeaders("/echoall?redirected");
+  ASSERT_TRUE(headers);
+  EXPECT_FALSE(headers->contains("X-Test"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       ReferrerOverrideBlocksRedirectToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall?blocked");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  TestNavigationObserver observer(shell()->web_contents());
+  EXPECT_FALSE(NavigateToURL(shell(), redirect_url));
+  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, observer.last_net_error_code());
+  EXPECT_TRUE(GetRequestHeaders(redirect_path));
+  EXPECT_FALSE(GetRequestHeaders("/echoall?blocked"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       ExtraHeadersKeptOnRedirectToAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL injected_referrer =
+      embedded_test_server()->GetURL("a.test", "/injected-referrer");
+  const GURL allowed_url =
+      embedded_test_server()->GetURL("b.test", "/echoall?redirected");
+  const GURL redirect_url = embedded_test_server()->GetURL(
+      "a.test", "/server-redirect-307?" + allowed_url.spec());
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSessionWithExtraHeaders(injected_referrer);
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, allowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall?redirected");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("X-Test"));
+  EXPECT_EQ("1", headers->at("X-Test"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       OverriddenHeaderRevertedOnRedirectToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall?reverted");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  base::DictValue extra_headers;
+  extra_headers.Set("Accept", "devtools/accept");
+  extra_headers.Set("Upgrade-Insecure-Requests", "devtools");
+  AttachRestrictedSessionWithExtraHeaders(std::move(extra_headers));
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders(redirect_path);
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("Upgrade-Insecure-Requests"));
+  EXPECT_EQ("devtools", headers->at("Upgrade-Insecure-Requests"));
+  headers = GetRequestHeaders("/echoall?reverted");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("Upgrade-Insecure-Requests"));
+  EXPECT_EQ("1", headers->at("Upgrade-Insecure-Requests"));
+  ASSERT_TRUE(headers->contains("Accept"));
+  EXPECT_NE("devtools/accept", headers->at("Accept"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       OtherSessionHeaderKeptOnRedirectToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall?sessions");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  TestDevToolsProtocolClient allowed_client;
+  allowed_client.AttachToWebContents(shell()->web_contents());
+  base::ScopedClosureRunner detach_allowed_client(base::BindLambdaForTesting(
+      [&allowed_client] { allowed_client.DetachProtocolClient(); }));
+  allowed_client.SendCommandSync("Network.enable");
+  base::DictValue allowed_params;
+  allowed_params.SetByDottedPath("headers.X-Test", "allowed");
+  allowed_client.SendCommandSync("Network.setExtraHTTPHeaders",
+                                 std::move(allowed_params));
+  base::DictValue extra_headers;
+  extra_headers.Set("X-Test", "restricted");
+  AttachRestrictedSessionWithExtraHeaders(std::move(extra_headers));
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders(redirect_path);
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("X-Test"));
+  EXPECT_EQ("restricted", headers->at("X-Test"));
+  headers = GetRequestHeaders("/echoall?sessions");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("X-Test"));
+  EXPECT_EQ("allowed", headers->at("X-Test"));
+
+  base::DictValue request_will_be_sent =
+      allowed_client.WaitForMatchingNotification(
+          "Network.requestWillBeSent",
+          base::BindRepeating(
+              [](const GURL& url, const base::DictValue& params) {
+                const std::string* request_url =
+                    params.FindStringByDottedPath("request.url");
+                return request_url && *request_url == url.spec();
+              },
+              disallowed_url));
+  const std::string* reported_header =
+      request_will_be_sent.FindStringByDottedPath("request.headers.X-Test");
+  ASSERT_TRUE(reported_header);
+  EXPECT_EQ("allowed", *reported_header);
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        NavigateToHistoryEntryWithFileUrlRequiresFileAccess) {
   ASSERT_TRUE(embedded_test_server()->Start());

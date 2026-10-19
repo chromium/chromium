@@ -3011,6 +3011,10 @@ class CONTENT_EXPORT NavigationRequest
   // header.
   bool devtools_accept_language_override_ = false;
 
+  // The request headers before devtools overrides were applied, used to revert
+  // them on redirects to URLs the overriding session may not attach to.
+  std::string headers_before_devtools_overrides_;
+
   // The type of RenderFrameHost associated with this navigation.
   AssociatedRenderFrameHostType associated_rfh_type_ =
       AssociatedRenderFrameHostType::NONE;

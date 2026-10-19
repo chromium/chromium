@@ -29,6 +29,7 @@
 #include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/headers_matcher.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
@@ -128,6 +129,21 @@ void ApplyNetworkRequestOverrides(
     bool* devtools_user_agent_overridden,
     bool* devtools_accept_language_overridden,
     GURL* referrer_override);
+
+// Called on a navigation redirect to `redirect_url`. In `headers`, reverts the
+// extra headers set by sessions whose client may not attach to `redirect_url`
+// to the value set by a session that may, or else to `original_headers`, and
+// records the changes in `headers_update_params`. Sets `headers_reverted` to
+// whether `headers` changed. Returns false if the navigation must be blocked
+// because such a session overrode the `Referer`, which can't be reverted on
+// redirect.
+bool RevertDisallowedNetworkOverridesOnRedirect(
+    FrameTreeNode* frame_tree_node,
+    const GURL& redirect_url,
+    const net::HttpRequestHeaders& original_headers,
+    net::HttpRequestHeaders* headers,
+    network::HttpRequestHeadersUpdateParams* headers_update_params,
+    bool* headers_reverted);
 
 // If this function overrides the `User-Agent` header, it sets the returned
 // `user_agent_overridden` to true; otherwise, false. If this function overrides

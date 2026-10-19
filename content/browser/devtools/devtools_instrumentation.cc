@@ -9,6 +9,7 @@
 #include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
@@ -1807,6 +1808,66 @@ void ApplyNetworkRequestOverrides(
   }
 
   begin_params->headers = headers.ToString();
+}
+
+bool RevertDisallowedNetworkOverridesOnRedirect(
+    FrameTreeNode* frame_tree_node,
+    const GURL& redirect_url,
+    const net::HttpRequestHeaders& original_headers,
+    net::HttpRequestHeaders* headers,
+    network::HttpRequestHeadersUpdateParams* headers_update_params,
+    bool* headers_reverted) {
+  *headers_reverted = false;
+  DevToolsAgentHostImpl* agent_host =
+      GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
+  if (!agent_host) {
+    return true;
+  }
+  std::vector<protocol::NetworkHandler*> networks =
+      protocol::NetworkHandler::ForAgentHost(agent_host);
+  for (auto* network : networks) {
+    if (!network->enabled() || network->MayApplyOverridesTo(redirect_url)) {
+      continue;
+    }
+    for (const auto& [name, value] : network->extra_headers()) {
+      if (base::EqualsCaseInsensitiveASCII(name,
+                                           net::HttpRequestHeaders::kReferer) &&
+          GURL(value).is_valid()) {
+        return false;
+      }
+      // A value set by a navigation throttle on this redirect replaces it, and
+      // NavigationURLLoaderImpl sets the Accept header itself.
+      if (headers_update_params->modified_headers.HasHeader(name) ||
+          base::EqualsCaseInsensitiveASCII(name,
+                                           net::HttpRequestHeaders::kAccept)) {
+        continue;
+      }
+      // Sessions apply overrides in order, so the last one that may still
+      // apply them wins.
+      std::optional<std::string> reverted_value =
+          original_headers.GetHeader(name);
+      for (auto* other : networks) {
+        if (!other->enabled() || !other->MayApplyOverridesTo(redirect_url)) {
+          continue;
+        }
+        for (const auto& [other_name, other_value] : other->extra_headers()) {
+          if (base::EqualsCaseInsensitiveASCII(other_name, name)) {
+            reverted_value = other_value;
+          }
+        }
+      }
+      if (reverted_value) {
+        headers->SetHeader(name, *reverted_value);
+        headers_update_params->modified_headers.SetHeader(name,
+                                                          *reverted_value);
+      } else {
+        headers->RemoveHeader(name);
+        headers_update_params->removed_headers.push_back(name);
+      }
+      *headers_reverted = true;
+    }
+  }
+  return true;
 }
 
 bool ApplyUserAgentMetadataOverrides(

@@ -337,6 +337,10 @@ class NetworkHandler : public DevToolsDomainHandler,
   // (extra headers, Referer override, cache / service worker bypass). Mirrors
   // the attach policy enforced by ForceDetachRestrictedSessions().
   bool MayApplyOverridesTo(const GURL& url) const;
+  const std::vector<std::pair<std::string, std::string>>& extra_headers()
+      const {
+    return extra_headers_;
+  }
 
   Network::Frontend* frontend() const { return frontend_.get(); }
 
