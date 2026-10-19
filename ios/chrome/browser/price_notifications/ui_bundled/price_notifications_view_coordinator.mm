@@ -31,11 +31,11 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -53,7 +53,8 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
 
 }  // namespace
 
-@interface PriceNotificationsViewCoordinator ()
+@interface PriceNotificationsViewCoordinator () <
+    UIAdaptivePresentationControllerDelegate>
 
 // The navigation controller displaying self.tableViewController.
 @property(nonatomic, strong)
@@ -69,6 +70,8 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
 @implementation PriceNotificationsViewCoordinator {
   // Coordinator for displaying alerts.
   AlertCoordinator* _alertCoordinator;
+  // Registration for size-class trait changes on `baseViewController`.
+  id<UITraitChangeRegistration> _traitChangeRegistration;
 }
 
 #pragma mark - ChromeCoordinator
@@ -129,6 +132,7 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
 
   [self.navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
+  self.navigationController.presentationController.delegate = self;
 
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
@@ -139,13 +143,20 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
     sheetPresentationController
         .widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
 
-    sheetPresentationController.detents =
-        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-            ? @[ [UISheetPresentationControllerDetent largeDetent] ]
-            : @[
-                [UISheetPresentationControllerDetent mediumDetent],
-                [UISheetPresentationControllerDetent largeDetent]
-              ];
+    sheetPresentationController.detents = [self sheetDetents];
+
+    __weak __typeof(self) weakSelf = self;
+    _traitChangeRegistration = [self.baseViewController
+        registerForTraitChanges:@[
+          UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
+        ]
+                    withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                  UITraitCollection* previousCollection) {
+                      if (IsRegularXRegularSizeClass(traitEnvironment) !=
+                          IsRegularXRegularSizeClass(previousCollection)) {
+                        [weakSelf updateSheetDetents];
+                      }
+                    }];
   }
 
   [self.baseViewController presentViewController:self.navigationController
@@ -156,6 +167,12 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
 }
 
 - (void)stop {
+  if (_traitChangeRegistration) {
+    [self.baseViewController
+        unregisterForTraitChanges:_traitChangeRegistration];
+    _traitChangeRegistration = nil;
+  }
+  self.navigationController.presentationController.delegate = nil;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -164,6 +181,13 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
   [self dismissAlertCoordinator];
 
   [super stop];
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self dismissButtonTapped];
 }
 
 #pragma mark - PriceNotificationsAlertPresenter
@@ -289,6 +313,23 @@ GaiaId GetGaiaIdForProfile(ProfileIOS* profile) {
 - (void)dismissAlertCoordinator {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
+}
+
+// Returns the sheet presentation controller detents for the current size class.
+- (NSArray<UISheetPresentationControllerDetent*>*)sheetDetents {
+  return IsRegularXRegularSizeClass(self.baseViewController)
+             ? @[ [UISheetPresentationControllerDetent largeDetent] ]
+             : @[
+                 [UISheetPresentationControllerDetent mediumDetent],
+                 [UISheetPresentationControllerDetent largeDetent]
+               ];
+}
+
+// Updates the sheet presentation controller's detents for the current size
+// class.
+- (void)updateSheetDetents {
+  self.navigationController.sheetPresentationController.detents =
+      [self sheetDetents];
 }
 
 @end

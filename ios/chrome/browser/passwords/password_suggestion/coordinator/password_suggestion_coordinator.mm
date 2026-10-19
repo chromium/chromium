@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -60,6 +61,9 @@ constexpr char kUmaActionPrefix[] =
 
   // Frame from which the bottom sheet for password genration was triggered.
   base::WeakPtr<web::WebFrame> _frame;
+
+  // Registration for size-class trait changes on `baseViewController`.
+  id<UITraitChangeRegistration> _traitChangeRegistration;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -104,6 +108,18 @@ constexpr char kUmaActionPrefix[] =
 
   presentationController.preferredCornerRadius = preferredCornerRadius;
 
+  __weak __typeof(self) weakSelf = self;
+  _traitChangeRegistration = [self.baseViewController
+      registerForTraitChanges:
+          @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]
+                  withHandler:^(id<UITraitEnvironment> traitEnvironment,
+                                UITraitCollection* previousCollection) {
+                    if (IsRegularXRegularSizeClass(traitEnvironment) !=
+                        IsRegularXRegularSizeClass(previousCollection)) {
+                      [weakSelf updateSheetDetents];
+                    }
+                  }];
+
   // Immediately dismiss the keyboard (only on tablet) because the
   // PasswordSuggestion view controller is incorrectly being displayed behind
   // the keyboard. This issue does not happen on mobile devices.
@@ -140,6 +156,11 @@ constexpr char kUmaActionPrefix[] =
 }
 
 - (void)stop {
+  if (_traitChangeRegistration) {
+    [self.baseViewController
+        unregisterForTraitChanges:_traitChangeRegistration];
+    _traitChangeRegistration = nil;
+  }
   // Dismiss the view controller if -stop is called directly without
   // going through -dismissWithRefocus:.
   [self.viewController.presentingViewController
@@ -357,12 +378,13 @@ constexpr char kUmaActionPrefix[] =
                         resolver:resolver];
 }
 
+// Returns the sheet presentation controller detents for the current size class.
 - (NSArray<UISheetPresentationControllerDetent*>*)detents {
   // Custom sized detents for modals are available from iOS 16.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // As of iOS 18, the modal on iPad no longer appears near the bottom
-    // edge and should not be expandable (i.e. large detent should not
-    // be an option).
+  if (IsRegularXRegularSizeClass(self.baseViewController)) {
+    // As of iOS 18, the modal in regular-x-regular layouts no longer appears
+    // near the bottom edge and should not be expandable (i.e. large detent
+    // should not be an option).
     return @[ [self preferredHeightDetent] ];
   }
   // Having the large detent as an option makes the modal expandable to
@@ -371,6 +393,12 @@ constexpr char kUmaActionPrefix[] =
     [self preferredHeightDetent],
     [UISheetPresentationControllerDetent largeDetent]
   ];
+}
+
+// Updates the sheet presentation controller's detents for the current size
+// class.
+- (void)updateSheetDetents {
+  self.viewController.sheetPresentationController.detents = [self detents];
 }
 
 - (BOOL)isEdgeAttachedInCompactHeight {

@@ -44,6 +44,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/welcome_back/model:features",
+    "//ios/chrome/common/ui/util",
     "//ios/web/public",
     "//url",
   ]

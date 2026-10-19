@@ -26,6 +26,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/util",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ui/base",
