@@ -26,6 +26,8 @@ specific_include_rules = {
     "+ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h",
     "+ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h",
     "+ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h",
+    "+ios/chrome/browser/enterprise/data_protection/model/data_protection_browser_agent.h",
+    "+ios/chrome/browser/enterprise/data_protection/public/features.h",
     "+ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h",
     "+ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h",
     "+ios/chrome/browser/infobars/model/overlays/browser_agent/infobar_overlay_browser_agent_util.h",

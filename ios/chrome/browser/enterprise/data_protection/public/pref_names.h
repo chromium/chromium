@@ -9,8 +9,8 @@ class PrefRegistrySimple;
 
 namespace enterprise_data_protection {
 
-// Dictionary preference that maps WebStateIDs to a boolean indicating if
-// a watermark should be shown.
+// Dictionary preference that maps WebStateIDs to the watermark text string to
+// display for the tab.
 extern const char kDataProtectionWatermarkedTabs[];
 
 // Registers the profile prefs for the data protection component.

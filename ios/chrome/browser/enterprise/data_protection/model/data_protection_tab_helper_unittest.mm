@@ -382,6 +382,10 @@ TEST_F(DataProtectionTabHelperTest, RealTimeLookupWatermark) {
       overlay_request->GetConfig<WatermarkRequestConfig>();
   ASSERT_TRUE(config);
   EXPECT_THAT(config->watermark_text(), ::testing::HasSubstr("Test Watermark"));
+
+  // Verify that the observer was notified with the watermark text.
+  EXPECT_THAT(observer_.watermark_text(),
+              ::testing::HasSubstr("Test Watermark"));
 }
 
 // Tests that watermarking lookups occur even if screenshot protection is
@@ -808,9 +812,30 @@ TEST_F(DataProtectionTabHelperTest, WatermarkOverlayRequest) {
   ASSERT_TRUE(config);
   EXPECT_EQ(config->watermark_text(), "Top Secret");
 
-  // Clear the watermark text to verify it cancels all requests.
   SetCommittedProtectionState(DataProtectionTabHelper::ProtectionState(
                                   DataProtectionTabHelper::Enabled{}),
                               "");
   EXPECT_EQ(queue->size(), 0u);
+}
+
+// Tests that SetCommittedProtectionState notifies observers when the watermark
+// text changes.
+TEST_F(DataProtectionTabHelperTest, WatermarkObserverNotifiedOnStateChange) {
+  EXPECT_TRUE(observer_.watermark_text().empty());
+
+  SetCommittedProtectionState(DataProtectionTabHelper::ProtectionState(
+                                  DataProtectionTabHelper::Enabled{}),
+                              "Confidential");
+  EXPECT_EQ(observer_.watermark_text(), "Confidential");
+
+  // Change the watermark text to verify observer is notified with new text.
+  SetCommittedProtectionState(DataProtectionTabHelper::ProtectionState(
+                                  DataProtectionTabHelper::Enabled{}),
+                              "Top Secret");
+  EXPECT_EQ(observer_.watermark_text(), "Top Secret");
+
+  SetCommittedProtectionState(DataProtectionTabHelper::ProtectionState(
+                                  DataProtectionTabHelper::Enabled{}),
+                              "");
+  EXPECT_TRUE(observer_.watermark_text().empty());
 }

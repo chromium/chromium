@@ -360,8 +360,10 @@ void DataProtectionTabHelper::SetCommittedProtectionState(
           std::move(request),
           std::make_unique<WatermarkRequestCancelHandler>(request_ptr, queue));
     }
-    // TODO(crbug.com/533013176): Record the webstate_id to the prefs map
-    // kDataProtectionWatermarkedTabs for tab-grid.
+
+    for (auto& observer : observers_) {
+      observer.WatermarkTextDidChange(web_state_, watermark_text);
+    }
   }
 }
 

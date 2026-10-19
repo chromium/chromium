@@ -29,6 +29,8 @@ source_set("model") {
     "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/device_sharing/model",
     "//ios/chrome/browser/discover_feed/model:discover_feed_visibility_browser_agent",
+    "//ios/chrome/browser/enterprise/data_protection/model",
+    "//ios/chrome/browser/enterprise/data_protection/public:features",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",

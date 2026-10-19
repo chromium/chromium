@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public/overlay_request_config.h",
   "+ios/chrome/browser/overlays/model/public/overlay_request_queue.h",
   "+ios/chrome/browser/safe_browsing/model",
+  "+ios/chrome/browser/tabs/model",
   "+net/base/url_util.h",
   # keep-sorted end
 ]

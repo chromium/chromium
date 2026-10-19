@@ -4,6 +4,8 @@
 
 source_set("model") {
   sources = [
+    "data_protection_browser_agent.h",
+    "data_protection_browser_agent.mm",
     "data_protection_tab_helper.h",
     "data_protection_tab_helper.mm",
     "data_protection_tab_helper_observer.h",
@@ -28,9 +30,11 @@ source_set("model") {
     "//ios/chrome/browser/enterprise/data_protection/public:pref_names",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/safe_browsing/model",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//url",
@@ -40,6 +44,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "data_protection_browser_agent_unittest.mm",
     "data_protection_tab_helper_observer_bridge_unittest.mm",
     "data_protection_tab_helper_unittest.mm",
   ]
@@ -66,13 +71,16 @@ source_set("unit_tests") {
     "//ios/chrome/browser/enterprise/connectors",
     "//ios/chrome/browser/enterprise/data_controls/model:ios_rules_service",
     "//ios/chrome/browser/enterprise/data_protection/public:features",
+    "//ios/chrome/browser/enterprise/data_protection/public:pref_names",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/web/public/test",

@@ -21,6 +21,8 @@
 #import "ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h"
 #import "ios/chrome/browser/device_sharing/model/device_sharing_manager_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/enterprise/data_protection/model/data_protection_browser_agent.h"
+#import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/favicon/model/favicon_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -211,6 +213,10 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
 
   if (!browser_is_off_record && !browser_is_inactive) {
     DiscoverFeedVisibilityBrowserAgent::CreateForBrowser(browser);
+  }
+
+  if (!browser_is_off_record && IsEnableEnterpriseWatermarkingIOS()) {
+    DataProtectionBrowserAgent::CreateForBrowser(browser);
   }
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
