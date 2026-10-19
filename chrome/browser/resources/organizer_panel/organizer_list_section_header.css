@@ -61,11 +61,7 @@
   margin-block: -4px;
 }
 
-:host([expanded]:not([disabled]):hover) #menuButton,
-:host([expanded]:not([disabled]).hovered) #menuButton,
-:host([expanded][menu-open_]:not([disabled])) #menuButton,
-:host-context(html.focus-outline-visible):host(
-    [expanded]:not([disabled]):focus-within) #menuButton {
+:host([expanded]:not([disabled])) #menuButton {
   display: inline-flex;
 }
 
