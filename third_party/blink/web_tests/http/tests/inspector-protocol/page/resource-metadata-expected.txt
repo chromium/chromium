@@ -1,0 +1,4 @@
+Verifies that Page.getResourceTree reports lastModified and contentSize for a dynamically added resource.
+Last modified: 1989-12-01T08:00:00.000Z
+Content size: 21
+

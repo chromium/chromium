@@ -1,5 +1,0 @@
-Verify that dynamically added resource has metadata.
-
-Last modified: 1989-12-01T08:00:00.000Z
-Content size: 21
-

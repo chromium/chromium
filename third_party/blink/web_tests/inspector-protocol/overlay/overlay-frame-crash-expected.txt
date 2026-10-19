@@ -1,0 +1,3 @@
+Regression test for crbug.com/1058718: inspecting and highlighting a node and then running GC must not crash.
+Did not crash.
+

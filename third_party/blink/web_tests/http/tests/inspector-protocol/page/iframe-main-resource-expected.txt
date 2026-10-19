@@ -1,0 +1,5 @@
+Verifies that Page.getResourceTree reports an iframe's main resource only once.
+Reported resources:
+  http://127.0.0.1:8000/inspector-protocol/resources/empty.html
+  http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+
