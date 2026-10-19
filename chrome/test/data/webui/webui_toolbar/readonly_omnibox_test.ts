@@ -1448,4 +1448,80 @@ suite('ReadonlyOmnibox', function() {
     assertTrue(!!lastArgs.key);
     assertEquals('Enter', lastArgs.key.key);
   });
+
+  test('Dragging plain text allows copy and move', async () => {
+    const input = getTextInput();
+    input.focus();
+    input.value = 'hello world';
+    input.setSelectionRange(0, input.value.length);
+    omnibox.adjustedCopyResult = {
+      adjustedText: 'hello world',
+      adjustedUrl: null,
+      pageTitle: null,
+    };
+    await microtasksFinished();
+
+    // Blink ignores writes to `effectAllowed` on a DataTransfer created with
+    // `new DataTransfer()`, since it is not tied to a drag; it always reads
+    // back 'none'. Use a fake instead, so that the test can check the
+    // `effectAllowed` set by the dragstart handler.
+    const data = new Map<string, string>();
+    const dataTransfer = {
+      effectAllowed: 'uninitialized',
+      setData: (type: string, value: string) => data.set(type, value),
+      getData: (type: string) => data.get(type) ?? '',
+      setDragImage: () => {},
+    };
+    const dragStartEvent =
+        new DragEvent('dragstart', {bubbles: true, cancelable: true});
+    Object.defineProperty(
+        dragStartEvent, 'dataTransfer', {value: dataTransfer});
+    omnibox.dispatchEvent(dragStartEvent);
+
+    // Matches the native omnibox, which allows both copy and move for a plain
+    // text drag and writes no URL.
+    assertEquals('copyMove', dataTransfer.effectAllowed);
+    assertEquals('hello world', dataTransfer.getData('text/plain'));
+    assertEquals('', dataTransfer.getData('text/uri-list'));
+  });
+
+  test('Dragging a URL writes the displayed text and the URL', async () => {
+    const input = getTextInput();
+    input.focus();
+    input.value = 'example.com';
+    input.setSelectionRange(0, input.value.length);
+    // Let the selection change trigger its own copy result refresh first, so
+    // it does not overwrite the result set below.
+    await uiHandler.whenCalled('adjustOmniboxTextForCopy');
+    await microtasksFinished();
+    omnibox.adjustedCopyResult = {
+      adjustedText: 'https://example.com/',
+      adjustedUrl: 'https://example.com/',
+      pageTitle: 'Example Domain',
+    };
+    await microtasksFinished();
+
+    // Blink ignores writes to `effectAllowed` on a DataTransfer created with
+    // `new DataTransfer()`, since it is not tied to a drag; it always reads
+    // back 'none'. Use a fake instead, so that the test can check the
+    // `effectAllowed` set by the dragstart handler.
+    const data = new Map<string, string>();
+    const dataTransfer = {
+      effectAllowed: 'uninitialized',
+      setData: (type: string, value: string) => data.set(type, value),
+      getData: (type: string) => data.get(type) ?? '',
+      setDragImage: () => {},
+    };
+    const dragStartEvent =
+        new DragEvent('dragstart', {bubbles: true, cancelable: true});
+    Object.defineProperty(
+        dragStartEvent, 'dataTransfer', {value: dataTransfer});
+    omnibox.dispatchEvent(dragStartEvent);
+
+    // Matches the native omnibox: the plain text is the selected text as
+    // displayed, while the URL is the adjusted, canonical URL.
+    assertEquals('copyMove', dataTransfer.effectAllowed);
+    assertEquals('example.com', dataTransfer.getData('text/plain'));
+    assertEquals('https://example.com/', dataTransfer.getData('text/uri-list'));
+  });
 });

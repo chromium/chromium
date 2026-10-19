@@ -1032,7 +1032,12 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     const selectionEnd = input.selectionEnd!;
 
     if (selectionStart !== selectionEnd && this.adjustedCopyResult) {
-      dataTransfer.setData('text/plain', this.adjustedCopyResult.adjustedText);
+      // Like the native omnibox, a copy writes the adjusted text, while a drag
+      // writes the selected text as displayed.
+      const plainText = forClipboard ?
+          this.adjustedCopyResult.adjustedText :
+          input.value.substring(selectionStart, selectionEnd);
+      dataTransfer.setData('text/plain', plainText);
 
       if (this.adjustedCopyResult.adjustedUrl && !forClipboard) {
         dataTransfer.setData(
@@ -1048,7 +1053,7 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
     if (e.dataTransfer &&
         this.populateDataTransfer_(e.dataTransfer, /*forClipboard=*/ false)) {
-      e.dataTransfer.effectAllowed = 'copy';
+      e.dataTransfer.effectAllowed = 'copyMove';
 
       if (this.adjustedCopyResult?.adjustedUrl) {
         const template = this.$.dragTemplate;
