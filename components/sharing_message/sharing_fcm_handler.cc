@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -43,9 +42,8 @@ const char kMessageIdRegexPattern[] = "(0:[0-9]+%)([0-9]+#)?([a-f0-9]+)";
 // confined to the format.
 std::string GetStrippedMessageId(const std::string& message_id) {
   std::string stripped_message_id, type_timestamp, hashcode;
-  static const base::NoDestructor<re2::RE2> kMessageIdRegex(
-      kMessageIdRegexPattern);
-  if (!re2::RE2::FullMatch(message_id, *kMessageIdRegex, &type_timestamp,
+  static constexpr re2::LazyRE2 message_id_regex = {kMessageIdRegexPattern};
+  if (!re2::RE2::FullMatch(message_id, *message_id_regex, &type_timestamp,
                            nullptr, &hashcode)) {
     return message_id;
   }
