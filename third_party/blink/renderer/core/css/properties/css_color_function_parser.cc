@@ -442,16 +442,11 @@ static bool ChannelIsResolvable(const CSSValue* channel,
     return true;
   }
 
-  // Lab/OkLab/Lch/OkLch preserve calc().
-  if (color_space == Color::ColorSpace::kLab ||
-      color_space == Color::ColorSpace::kOklab ||
-      color_space == Color::ColorSpace::kLch ||
-      color_space == Color::ColorSpace::kOklch) {
-    return false;
-  }
-
-  const CSSMathFunctionValue* calc = DynamicTo<CSSMathFunctionValue>(channel);
-  if (calc && calc->ExpressionNode()->IsNumericLiteral()) {
+  // Fold single-value calc() for rgb(), hsl() and hwb().
+  // https://drafts.csswg.org/css-color-4/#resolving-sRGB-values
+  if (const auto* calc = DynamicTo<CSSMathFunctionValue>(channel);
+      calc && calc->ExpressionNode()->IsNumericLiteral() &&
+      Color::IsLegacyColorSpace(color_space)) {
     // calc() of a single value. We wouldn't technically need
     // to accept this as a special case, but it _is_ resolvable,
     // and doing this allows us to hit the less-compliant code
