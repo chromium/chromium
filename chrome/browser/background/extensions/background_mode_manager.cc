@@ -521,7 +521,9 @@ void BackgroundModeManager::OnApplicationListChanged(const Profile* profile) {
 void BackgroundModeManager::OnProfileAdded(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       profile_storage_->GetProfileAttributesWithPath(profile_path);
-  CHECK(entry, base::NotFatalUntil::M161);
+  // TODO(crbug.com/572741000): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(entry);
   std::u16string profile_name = entry->GetName();
   // At this point, the profile should be registered with the background mode
   // manager, but when it's actually added to the ProfileAttributesStorage is
