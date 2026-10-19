@@ -113,6 +113,12 @@ void av1_build_compound_diffwtd_mask_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask_typ
 void av1_build_compound_diffwtd_mask_d16_c(uint8_t *mask, DIFFWTD_MASK_TYPE mask_type, const CONV_BUF_TYPE *src0, int src0_stride, const CONV_BUF_TYPE *src1, int src1_stride, int h, int w, ConvolveParams *conv_params, int bd);
 #define av1_build_compound_diffwtd_mask_d16 av1_build_compound_diffwtd_mask_d16_c
 
+void av1_calc_centroids_dim1_c(const int16_t *data, int16_t *centroids, const uint8_t *indices, int n, int k);
+#define av1_calc_centroids_dim1 av1_calc_centroids_dim1_c
+
+void av1_calc_centroids_dim2_c(const int16_t *data, int16_t *centroids, const uint8_t *indices, int n, int k);
+#define av1_calc_centroids_dim2 av1_calc_centroids_dim2_c
+
 void av1_calc_indices_dim1_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
 #define av1_calc_indices_dim1 av1_calc_indices_dim1_c
 
