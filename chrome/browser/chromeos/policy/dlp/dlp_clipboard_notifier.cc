@@ -318,6 +318,7 @@ void DlpClipboardNotifier::OnClipboardDataChanged() {
     return;
   }
   ResetUserWarnSelection();
+  CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
 }
 
 void DlpClipboardNotifier::OnWidgetDestroying(views::Widget* widget) {

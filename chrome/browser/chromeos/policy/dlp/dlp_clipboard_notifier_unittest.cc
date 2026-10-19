@@ -25,7 +25,10 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
@@ -204,6 +207,10 @@ class DlpClipboardNotifierTest : public testing::Test {
   DlpClipboardNotifierTest& operator=(const DlpClipboardNotifierTest&) = delete;
   ~DlpClipboardNotifierTest() override = default;
 
+  void TearDown() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;
@@ -363,6 +370,28 @@ TEST_F(DlpClipboardNotifierTest, CancelSavedHistoryVMs) {
 
   EXPECT_FALSE(notifier.DidUserCancelDst(&arc_dst));
   EXPECT_FALSE(notifier.DidUserCancelDst(&crostini_dst));
+}
+
+TEST_F(DlpClipboardNotifierTest, ClipboardChangeClosesWarningBubble) {
+  ::testing::StrictMock<MockDlpClipboardNotifier> notifier;
+  const ui::DataTransferEndpoint data_src((GURL(kExampleUrl)));
+  const ui::DataTransferEndpoint data_dst(ui::EndpointType::kDefault);
+
+  EXPECT_CALL(notifier, CloseWidget(testing::_,
+                                    views::Widget::ClosedReason::kUnspecified));
+  EXPECT_CALL(notifier, ShowWarningBubble);
+  notifier.WarnOnPaste(data_src, data_dst, base::DoNothing());
+  testing::Mock::VerifyAndClearExpectations(&notifier);
+
+  EXPECT_CALL(notifier, CloseWidget(testing::_,
+                                    views::Widget::ClosedReason::kUnspecified));
+  {
+    ui::ScopedClipboardWriter writer(
+        ui::ClipboardBuffer::kCopyPaste,
+        std::make_unique<ui::DataTransferEndpoint>(GURL(kExample2Url)));
+    writer.WriteText(u"Updated clipboard text");
+  }
+  testing::Mock::VerifyAndClearExpectations(&notifier);
 }
 
 class ToastTestWithParam : public ::testing::TestWithParam<ToastTest> {
