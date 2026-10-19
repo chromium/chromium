@@ -49,6 +49,9 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   virtual std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SkStream>,
                                                    SkCodec::Result* result) = 0;
 
+  // Called after the codec size and common metadata are available.
+  virtual void OnSkCodecCreated() {}
+
   const SkCodec* codec() const { return codec_.get(); }
 
  private:

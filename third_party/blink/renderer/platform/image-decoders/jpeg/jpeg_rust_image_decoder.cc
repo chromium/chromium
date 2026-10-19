@@ -59,4 +59,18 @@ std::unique_ptr<SkCodec> JpegRustImageDecoder::OnCreateSkCodec(
   return codec;
 }
 
+void JpegRustImageDecoder::OnSkCodecCreated() {
+  DCHECK(data_);
+  sk_sp<const SkData> encoded_data = data_->GetAsSkData();
+  DCHECK(encoded_data);
+
+  auto metadata_decoder = SkJpegMetadataDecoder::Make(encoded_data);
+  DCHECK(metadata_decoder);
+  // The base already applied SkCodec's EXIF orientation. Reuse the legacy JPEG
+  // helper to also compute Blink's density-corrected size; assigning the same
+  // orientation again is harmless.
+  ApplyExifMetadata(metadata_decoder->getExifMetadata(/*copyData=*/false).get(),
+                    Size());
+}
+
 }  // namespace blink

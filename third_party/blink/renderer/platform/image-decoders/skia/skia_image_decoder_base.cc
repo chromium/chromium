@@ -107,6 +107,7 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
         }
         segment_stream_ = segment_stream_ptr;
         orientation_ = static_cast<ImageOrientationEnum>(codec_->getOrigin());
+        OnSkCodecCreated();
         return;
       }
 

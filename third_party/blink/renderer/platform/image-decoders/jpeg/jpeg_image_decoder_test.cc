@@ -769,6 +769,20 @@ TEST(JPEGImageDecoderTest, exifWithInitialIfdLast) {
   EXPECT_EQ(test_decoder->DensityCorrectedSize(), gfx::Size(32, 32));
 }
 
+TEST(JPEGImageDecoderTest, ExifDensityWithRustEnabled) {
+  base::test::ScopedFeatureList features(skia::kRustyJpegFeature);
+  scoped_refptr<SharedBuffer> test_data =
+      ReadFileToSharedBuffer(kDecodersTestingDir, "green-exif-ifd-last.jpg");
+  ASSERT_TRUE(test_data);
+
+  std::unique_ptr<ImageDecoder> test_decoder = CreateFactoryJPEGDecoder();
+  test_decoder->SetData(test_data.get(), true);
+  EXPECT_EQ(1u, test_decoder->FrameCount());
+  ASSERT_TRUE(test_decoder->DecodeFrameBufferAtIndex(0));
+  EXPECT_EQ(test_decoder->Orientation(), ImageOrientationEnum::kOriginTopRight);
+  EXPECT_EQ(test_decoder->DensityCorrectedSize(), gfx::Size(32, 32));
+}
+
 TEST(JPEGImageDecoderTest, SupportedSizesSquare) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";  // 256x256
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(jpeg_file);

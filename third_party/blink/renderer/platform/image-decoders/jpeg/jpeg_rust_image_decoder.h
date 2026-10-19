@@ -30,6 +30,7 @@ class PLATFORM_EXPORT JpegRustImageDecoder final : public SkiaImageDecoderBase {
   // SkiaImageDecoderBase:
   std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SkStream>,
                                            SkCodec::Result* result) override;
+  void OnSkCodecCreated() override;
 };
 
 }  // namespace blink
