@@ -15,8 +15,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kMemoryReclaimerTraits{
     // Reclaims thread caches (megabytes).
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Loops through active thread allocation buckets.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Purging walks free lists, which are stored in the memory being released.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Frees unused pages back to OS.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Tasks are posted to the main thread runner.

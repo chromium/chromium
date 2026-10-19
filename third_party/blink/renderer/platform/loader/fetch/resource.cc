@@ -194,8 +194,8 @@ const base::Clock* g_clock_for_testing = nullptr;
 constexpr base::MemoryConsumerTraits kResourceTraits(
     // Encoded and decoded data size varies widely, can reach tens of MBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Pruning destroys decoded data without traversing complex structures.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    // Pruning frees the decoded data buffers without reading them.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     // Data can be re-decoded from the encoded payload.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Pruning runs synchronously on the renderer thread.

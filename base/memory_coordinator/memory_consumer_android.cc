@@ -30,9 +30,9 @@ base::MemoryConsumerTraits TraitsFromJava(
   const auto estimated_memory_usage =
       static_cast<base::MemoryConsumerTraits::EstimatedMemoryUsage>(
           (packed >> 1) & 0x3);
-  const auto release_memory_cost =
-      static_cast<base::MemoryConsumerTraits::ReleaseMemoryCost>((packed >> 3) &
-                                                                 0x3);
+  const auto release_memory_data_access =
+      static_cast<base::MemoryConsumerTraits::ReleaseMemoryDataAccess>(
+          (packed >> 3) & 0x3);
   const auto information_retention =
       static_cast<base::MemoryConsumerTraits::InformationRetention>(
           (packed >> 5) & 0x3);
@@ -55,6 +55,9 @@ base::MemoryConsumerTraits TraitsFromJava(
           (packed >> 14) & 0x1);
   const auto is_stateful =
       static_cast<base::MemoryConsumerTraits::IsStateful>((packed >> 15) & 0x1);
+  const auto release_memory_cpu_cost =
+      static_cast<base::MemoryConsumerTraits::ReleaseMemoryCpuCost>(
+          (packed >> 16) & 0x3);
 
   if (consumer_type == base::MemoryConsumerTraits::ConsumerType::kPassive) {
     return base::MemoryConsumerTraits(consumer_type, supports_memory_limit,
@@ -62,9 +65,10 @@ base::MemoryConsumerTraits TraitsFromJava(
   }
 
   return base::MemoryConsumerTraits(
-      estimated_memory_usage, release_memory_cost, information_retention,
+      estimated_memory_usage, release_memory_data_access, information_retention,
       execution_type, supports_memory_limit, in_process, recreate_memory_cost,
-      release_gc_references, garbage_collects_v8_heap, is_stateful);
+      release_gc_references, garbage_collects_v8_heap, is_stateful,
+      release_memory_cpu_cost);
 }
 // LINT.ThenChange(//base/android/java/src/org/chromium/base/memory_coordinator/MemoryConsumerTraits.java)
 

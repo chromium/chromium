@@ -23,8 +23,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kPlainTextPainterTraits{
     // Shape caches are capped; complex pages up to tens of MBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Clearing maps requires traversing and dropping nested references.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Clearing the maps reads the nested entries being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Shape results can be recalculated.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Map clearing is synchronous.

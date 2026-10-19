@@ -37,8 +37,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kFontGlobalContextTraits(
     // Platform font metadata cache; footprint under 10MB.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    // Invalidation requires traversing maps and notifying clients.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Invalidation walks the maps, reading the entries being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Data structures can be reconstructed from descriptions.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Synchronously clears maps inline.

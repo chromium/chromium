@@ -19,23 +19,24 @@ public class MemoryConsumerTraitsTest {
         MemoryConsumerTraits traits =
                 new MemoryConsumerTraits.Builder(
                                 EstimatedMemoryUsage.SMALL,
-                                ReleaseMemoryCost.FREES_PAGES_WITHOUT_TRAVERSAL,
+                                ReleaseMemoryDataAccess.NONE,
                                 InformationRetention.LOSSLESS,
                                 ExecutionType.SYNCHRONOUS)
                         .setSupportsMemoryLimit(SupportsMemoryLimit.YES)
                         .setInProcess(InProcess.YES)
                         .setIsStateful(IsStateful.YES)
+                        .setReleaseMemoryCpuCost(ReleaseMemoryCpuCost.EXPENSIVE)
                         .build();
 
         assertEquals(ConsumerType.ACTIVE, traits.getConsumerType());
         assertEquals(EstimatedMemoryUsage.SMALL, traits.getEstimatedMemoryUsage());
-        assertEquals(
-                ReleaseMemoryCost.FREES_PAGES_WITHOUT_TRAVERSAL, traits.getReleaseMemoryCost());
+        assertEquals(ReleaseMemoryDataAccess.NONE, traits.getReleaseMemoryDataAccess());
         assertEquals(InformationRetention.LOSSLESS, traits.getInformationRetention());
         assertEquals(ExecutionType.SYNCHRONOUS, traits.getExecutionType());
         assertEquals(SupportsMemoryLimit.YES, traits.getSupportsMemoryLimit());
         assertEquals(InProcess.YES, traits.getInProcess());
         assertEquals(IsStateful.YES, traits.getIsStateful());
+        assertEquals(ReleaseMemoryCpuCost.EXPENSIVE, traits.getReleaseMemoryCpuCost());
     }
 
     @Test
@@ -44,12 +45,13 @@ public class MemoryConsumerTraitsTest {
 
         assertEquals(ConsumerType.PASSIVE, passive.getConsumerType());
         assertEquals(EstimatedMemoryUsage.NA, passive.getEstimatedMemoryUsage());
-        assertEquals(ReleaseMemoryCost.NA, passive.getReleaseMemoryCost());
+        assertEquals(ReleaseMemoryDataAccess.NA, passive.getReleaseMemoryDataAccess());
         assertEquals(InformationRetention.NA, passive.getInformationRetention());
         assertEquals(ExecutionType.SYNCHRONOUS, passive.getExecutionType());
         assertEquals(SupportsMemoryLimit.YES, passive.getSupportsMemoryLimit());
         assertEquals(InProcess.NA, passive.getInProcess());
         assertEquals(ReleaseGCReferences.NO, passive.getReleaseGCReferences());
+        assertEquals(ReleaseMemoryCpuCost.NA, passive.getReleaseMemoryCpuCost());
     }
 
     @Test
@@ -57,7 +59,7 @@ public class MemoryConsumerTraitsTest {
         MemoryConsumerTraits traitsA =
                 new MemoryConsumerTraits.Builder(
                                 EstimatedMemoryUsage.SMALL,
-                                ReleaseMemoryCost.FREES_PAGES_WITHOUT_TRAVERSAL,
+                                ReleaseMemoryDataAccess.NONE,
                                 InformationRetention.LOSSLESS,
                                 ExecutionType.SYNCHRONOUS)
                         .build();
@@ -65,7 +67,7 @@ public class MemoryConsumerTraitsTest {
         MemoryConsumerTraits traitsB =
                 new MemoryConsumerTraits.Builder(
                                 EstimatedMemoryUsage.SMALL,
-                                ReleaseMemoryCost.FREES_PAGES_WITHOUT_TRAVERSAL,
+                                ReleaseMemoryDataAccess.NONE,
                                 InformationRetention.LOSSLESS,
                                 ExecutionType.SYNCHRONOUS)
                         .build();
@@ -73,7 +75,7 @@ public class MemoryConsumerTraitsTest {
         MemoryConsumerTraits traitsC =
                 new MemoryConsumerTraits.Builder(
                                 EstimatedMemoryUsage.LARGE,
-                                ReleaseMemoryCost.REQUIRES_TRAVERSAL,
+                                ReleaseMemoryDataAccess.READS,
                                 InformationRetention.LOSSY,
                                 ExecutionType.ASYNCHRONOUS)
                         .build();
@@ -89,18 +91,19 @@ public class MemoryConsumerTraitsTest {
         MemoryConsumerTraits traits =
                 new MemoryConsumerTraits.Builder(
                                 EstimatedMemoryUsage.SMALL,
-                                ReleaseMemoryCost.FREES_PAGES_WITHOUT_TRAVERSAL,
+                                ReleaseMemoryDataAccess.NONE,
                                 InformationRetention.LOSSLESS,
                                 ExecutionType.SYNCHRONOUS)
                         .setSupportsMemoryLimit(SupportsMemoryLimit.YES)
                         .setInProcess(InProcess.YES)
                         .setIsStateful(IsStateful.YES)
+                        .setReleaseMemoryCpuCost(ReleaseMemoryCpuCost.EXPENSIVE)
                         .build();
 
         int packed = traits.getPackedTraits();
         assertEquals(ConsumerType.ACTIVE, packed & 0x1);
         assertEquals(EstimatedMemoryUsage.SMALL, (packed >> 1) & 0x3);
-        assertEquals(ReleaseMemoryCost.FREES_PAGES_WITHOUT_TRAVERSAL, (packed >> 3) & 0x3);
+        assertEquals(ReleaseMemoryDataAccess.NONE, (packed >> 3) & 0x3);
         assertEquals(InformationRetention.LOSSLESS, (packed >> 5) & 0x3);
         assertEquals(ExecutionType.SYNCHRONOUS, (packed >> 7) & 0x1);
         assertEquals(SupportsMemoryLimit.YES, (packed >> 8) & 0x1);
@@ -109,5 +112,6 @@ public class MemoryConsumerTraitsTest {
         assertEquals(ReleaseGCReferences.NO, (packed >> 13) & 0x1);
         assertEquals(GarbageCollectsV8Heap.NO, (packed >> 14) & 0x1);
         assertEquals(IsStateful.YES, (packed >> 15) & 0x1);
+        assertEquals(ReleaseMemoryCpuCost.EXPENSIVE, (packed >> 16) & 0x3);
     }
 }

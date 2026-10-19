@@ -46,8 +46,8 @@ bool g_blob_cache_funcs_set = false;
 constexpr base::MemoryConsumerTraits kPassthroughProgramCacheTraits(
     // Default capacity is small, under 10MB.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    // Evicting entries requires traversing the LRU cache.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Eviction walks the LRU cache, reading the entries being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Shaders can be re-compiled and re-linked if evicted.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Asynchronous since AsyncMemoryConsumerRegistration is used.

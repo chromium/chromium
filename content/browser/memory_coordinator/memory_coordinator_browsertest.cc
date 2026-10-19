@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, DuplicateHostBind) {
       "DuplicateBindConsumer",
       base::MemoryConsumerTraits(
           base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-          base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+          base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
           base::MemoryConsumerTraits::InformationRetention::kLossless,
           base::MemoryConsumerTraits::ExecutionType::kSynchronous));
   ASSERT_TRUE(policy.WaitUntilRegistered("DuplicateBindConsumer"));
@@ -165,14 +165,14 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
   // 1. Register two consumers with different traits in the renderer process.
   base::MemoryConsumerTraits traits_a(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
 
   base::MemoryConsumerTraits traits_b(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
 
   base::MemoryConsumerTraits traits(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
@@ -307,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
 
   base::MemoryConsumerTraits traits(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
 
   base::MemoryConsumerTraits traits(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::ReleaseGCReferences::kYes);

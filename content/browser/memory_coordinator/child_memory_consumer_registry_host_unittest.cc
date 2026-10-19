@@ -66,7 +66,7 @@ class MockChildMemoryCoordinator : public mojom::ChildMemoryCoordinator {
 
 constexpr base::MemoryConsumerTraits kTestTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 

@@ -26,7 +26,7 @@ namespace {
 
 constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::IsStateful::kYes);

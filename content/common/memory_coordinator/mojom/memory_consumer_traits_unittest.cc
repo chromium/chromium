@@ -18,7 +18,8 @@ namespace content {
 namespace {
 
 using EstimatedMemoryUsage = base::MemoryConsumerTraits::EstimatedMemoryUsage;
-using ReleaseMemoryCost = base::MemoryConsumerTraits::ReleaseMemoryCost;
+using ReleaseMemoryDataAccess =
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess;
 using InformationRetention = base::MemoryConsumerTraits::InformationRetention;
 using ExecutionType = base::MemoryConsumerTraits::ExecutionType;
 using SupportsMemoryLimit = base::MemoryConsumerTraits::SupportsMemoryLimit;
@@ -28,6 +29,7 @@ using ReleaseGCReferences = base::MemoryConsumerTraits::ReleaseGCReferences;
 using GarbageCollectsV8Heap = base::MemoryConsumerTraits::GarbageCollectsV8Heap;
 using IsStateful = base::MemoryConsumerTraits::IsStateful;
 using RecoveryBehavior = base::MemoryConsumerTraits::RecoveryBehavior;
+using ReleaseMemoryCpuCost = base::MemoryConsumerTraits::ReleaseMemoryCpuCost;
 
 // Helper to determine the maximum value among all trait enums in a
 // ParameterPack.
@@ -95,13 +97,14 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
   for (int i = 0; i <= kMaxValue; ++i) {
     base::MemoryConsumerTraits test_case(
         GenerateValue<EstimatedMemoryUsage>(i),
-        GenerateValue<ReleaseMemoryCost>(i),
+        GenerateValue<ReleaseMemoryDataAccess>(i),
         GenerateValue<InformationRetention>(i), GenerateValue<ExecutionType>(i),
         GenerateValue<SupportsMemoryLimit>(i), GenerateValue<InProcess>(i),
         GenerateValue<RecreateMemoryCost>(i),
         GenerateValue<ReleaseGCReferences>(i),
         GenerateValue<GarbageCollectsV8Heap>(i), GenerateValue<IsStateful>(i),
-        GenerateValue<RecoveryBehavior>(i));
+        GenerateValue<RecoveryBehavior>(i),
+        GenerateValue<ReleaseMemoryCpuCost>(i));
 
     base::test::TestFuture<base::MemoryConsumerTraits> future;
     remote()->EchoMemoryConsumerTraits(test_case, future.GetCallback());
@@ -111,7 +114,7 @@ TEST_F(MemoryConsumerTraitsTest, EchoAllTraits) {
 
 TEST_F(MemoryConsumerTraitsTest, OutOfRange) {
   static constexpr base::MemoryConsumerTraits kTestCase(
-      EstimatedMemoryUsage::kSmall, ReleaseMemoryCost::kRequiresTraversal,
+      EstimatedMemoryUsage::kSmall, ReleaseMemoryDataAccess::kReads,
       InformationRetention::kLossless, ExecutionType::kSynchronous,
       static_cast<SupportsMemoryLimit>(22));
 

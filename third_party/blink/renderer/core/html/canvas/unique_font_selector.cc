@@ -20,8 +20,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kUniqueFontSelectorTraits{
     // Bounded by CanvasFontCache::MaxFonts(), keeping footprint under 10MB.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    // Iterates hash map and list to erase keys.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Iterates hash map and list, reading the entries being erased.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Evicted elements can be reconstructed.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Synchronous capacity trimming.

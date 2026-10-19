@@ -31,13 +31,13 @@ class MockMultiMemoryConsumer : public MultiMemoryConsumer {
 
 constexpr MemoryConsumerTraits kTestTraits(
     MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     MemoryConsumerTraits::InformationRetention::kLossless,
     MemoryConsumerTraits::ExecutionType::kSynchronous);
 
 constexpr MemoryConsumerTraits kActiveTraits(
     MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     MemoryConsumerTraits::InformationRetention::kLossless,
     MemoryConsumerTraits::ExecutionType::kAsynchronous);
 

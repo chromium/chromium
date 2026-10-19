@@ -41,7 +41,7 @@ class MockMemoryConsumerRegistry : public MemoryConsumerRegistry {
 
 constexpr MemoryConsumerTraits kTestTraits(
     MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     MemoryConsumerTraits::InformationRetention::kLossless,
     MemoryConsumerTraits::ExecutionType::kSynchronous);
 

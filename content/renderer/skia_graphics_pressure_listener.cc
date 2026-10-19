@@ -15,8 +15,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kSkiaGraphicsTraits(
     // Skia resource caches typically consume tens of MBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Purging requires traversing hash maps/queues.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Purging walks hash maps/queues, reading the entries being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Resources can be regenerated.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Asynchronous since AsyncMemoryConsumerRegistration is used.

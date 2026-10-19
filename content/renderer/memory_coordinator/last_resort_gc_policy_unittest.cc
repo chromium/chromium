@@ -25,14 +25,14 @@ namespace {
 
 constexpr base::MemoryConsumerTraits kTraitsWithReleaseGC(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossy,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
 
 constexpr base::MemoryConsumerTraits kTraitsWithoutReleaseGC(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossy,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::ReleaseGCReferences::kNo);

@@ -70,8 +70,8 @@ base::LinkNode<MemEntryImpl>* NextSkippingChildren(
 constexpr base::MemoryConsumerTraits kMemBackendImplTraits(
     // Scales with system RAM up to a cap in the tens of MBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Eviction traverses linked list and erases map entries.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Eviction walks the linked list, reading the entries being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Evicted entries can be re-fetched from network.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Eviction runs inline synchronously.

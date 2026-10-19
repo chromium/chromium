@@ -218,7 +218,7 @@ const int kEnforceMemoryPolicyDelayMs = 1000;
 
 constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::IsStateful::kYes);

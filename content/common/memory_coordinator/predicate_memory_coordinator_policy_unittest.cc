@@ -30,7 +30,7 @@ using ::testing::UnorderedElementsAre;
 
 constexpr base::MemoryConsumerTraits kTestTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
@@ -289,14 +289,14 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest,
   // Define traits for stateful and stateless consumers.
   constexpr base::MemoryConsumerTraits kStatefulTraits(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::
           kSynchronous);  // Default is stateful (kYes)
 
   constexpr base::MemoryConsumerTraits kStatelessTraits(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::IsStateful::kNo);
@@ -391,7 +391,7 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest,
 
   constexpr base::MemoryConsumerTraits kStatefulTraits(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 

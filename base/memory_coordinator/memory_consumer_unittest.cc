@@ -16,7 +16,7 @@ namespace {
 
 constexpr MemoryConsumerTraits kTestTraits(
     MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     MemoryConsumerTraits::InformationRetention::kLossless,
     MemoryConsumerTraits::ExecutionType::kSynchronous);
 
@@ -78,7 +78,7 @@ TEST(MemoryConsumerTraitsTest, ActiveConsumerWithActiveTraits) {
   MockMemoryConsumer consumer;
   constexpr MemoryConsumerTraits kActiveTraits(
       MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+      MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
       MemoryConsumerTraits::InformationRetention::kLossless,
       MemoryConsumerTraits::ExecutionType::kSynchronous);
   MemoryConsumerRegistration registration("consumer", kActiveTraits, &consumer);
@@ -108,8 +108,8 @@ TEST(MemoryConsumerTraitsTest, PassiveConsumerTraitsValidation) {
   // Non-customizable traits for passive should have default passive values
   EXPECT_EQ(kDefaultPassive.estimated_memory_usage,
             MemoryConsumerTraits::EstimatedMemoryUsage::kNA);
-  EXPECT_EQ(kDefaultPassive.release_memory_cost,
-            MemoryConsumerTraits::ReleaseMemoryCost::kNA);
+  EXPECT_EQ(kDefaultPassive.release_memory_data_access,
+            MemoryConsumerTraits::ReleaseMemoryDataAccess::kNA);
   EXPECT_EQ(kDefaultPassive.information_retention,
             MemoryConsumerTraits::InformationRetention::kNA);
   EXPECT_EQ(kDefaultPassive.execution_type,
@@ -122,6 +122,8 @@ TEST(MemoryConsumerTraitsTest, PassiveConsumerTraitsValidation) {
             MemoryConsumerTraits::IsStateful::kYes);
   EXPECT_EQ(kDefaultPassive.recovery_behavior,
             MemoryConsumerTraits::RecoveryBehavior::kNA);
+  EXPECT_EQ(kDefaultPassive.release_memory_cpu_cost,
+            MemoryConsumerTraits::ReleaseMemoryCpuCost::kNA);
 
   // 2. Custom passive traits
   constexpr MemoryConsumerTraits kCustomPassive(
@@ -140,8 +142,8 @@ TEST(MemoryConsumerTraitsTest, PassiveConsumerTraitsValidation) {
   // Non-customizable traits should still be default passive values
   EXPECT_EQ(kCustomPassive.estimated_memory_usage,
             MemoryConsumerTraits::EstimatedMemoryUsage::kNA);
-  EXPECT_EQ(kCustomPassive.release_memory_cost,
-            MemoryConsumerTraits::ReleaseMemoryCost::kNA);
+  EXPECT_EQ(kCustomPassive.release_memory_data_access,
+            MemoryConsumerTraits::ReleaseMemoryDataAccess::kNA);
   EXPECT_EQ(kCustomPassive.information_retention,
             MemoryConsumerTraits::InformationRetention::kNA);
   EXPECT_EQ(kCustomPassive.execution_type,
@@ -153,6 +155,8 @@ TEST(MemoryConsumerTraitsTest, PassiveConsumerTraitsValidation) {
   EXPECT_EQ(kCustomPassive.is_stateful, MemoryConsumerTraits::IsStateful::kYes);
   EXPECT_EQ(kCustomPassive.recovery_behavior,
             MemoryConsumerTraits::RecoveryBehavior::kNA);
+  EXPECT_EQ(kCustomPassive.release_memory_cpu_cost,
+            MemoryConsumerTraits::ReleaseMemoryCpuCost::kNA);
 }
 
 #if defined(GTEST_HAS_DEATH_TEST)

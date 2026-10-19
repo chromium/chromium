@@ -24,7 +24,7 @@ constexpr base::MemoryConsumerTraits kLRURendererCacheTraits(
     // Pools pre-launched renderer processes (tens of MBs each).
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
     // Process termination lets the OS to reclaim memory pages directly.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     // Eviction results in a cold start, but no user state is lost.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Cleans up host objects synchronously on the browser main thread.

@@ -19,8 +19,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kBlinkIsolatesTraits(
     // V8 GC across isolates can free tens or hundreds of MBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-    // V8 heap traversal cost.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Garbage collection reads the live objects of the V8 heaps.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Reclaimable V8 objects and caches are lossless.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Asynchronous since AsyncMemoryConsumerRegistration is used.
@@ -34,7 +34,9 @@ constexpr base::MemoryConsumerTraits kBlinkIsolatesTraits(
     // Triggers V8 GC across isolates.
     base::MemoryConsumerTraits::GarbageCollectsV8Heap::kYes,
     // Stateless consumer. Performs one-shot notifications.
-    base::MemoryConsumerTraits::IsStateful::kNo);
+    base::MemoryConsumerTraits::IsStateful::kNo,
+    // Garbage collecting V8 heaps is CPU intensive.
+    base::MemoryConsumerTraits::ReleaseMemoryCpuCost::kExpensive);
 
 }  // namespace
 

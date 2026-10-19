@@ -85,7 +85,7 @@ constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
     // Releasing free segments unmaps shared memory regions, letting the OS
     // reclaim pages directly without traversing memory contents.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     // Unlocked discardable memory is a cache and can be regenerated on demand.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Asynchronous because this class sometimes doesn't live on the main thread

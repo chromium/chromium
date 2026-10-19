@@ -31,8 +31,8 @@ auto TieKeyFields(const SSLClientSessionCache::Key& key) {
 constexpr base::MemoryConsumerTraits kSSLClientSessionCacheTraits(
     // Bounded capacity of sessions; way under 10MB.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    // Iterates base::LRUCache and triggers BoringSSL session frees.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Iterates base::LRUCache, reading the BoringSSL sessions being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Full handshake can be done if not cached.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Cache trimming runs synchronously on the calling thread.

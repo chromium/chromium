@@ -64,7 +64,14 @@ BASE_FEATURE(kPrerenderCancelOnCrossDocumentRestart,
 
 constexpr base::MemoryConsumerTraits kPrerenderHostRegistryTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // The released memory is mostly the prerendered page's renderer, freed by
+    // the OS when the process exits.
+    // TODO(crbug.com/441951621): When the renderer is shared (e.g.
+    // prerender-until-script reuses the initiator's process), cancelling
+    // doesn't end the process. The renderer tears down the Document instead,
+    // reading memory that may be swapped out, which kNone doesn't account for.
+    // Find a way to always release this memory by ending the process.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossy,
     base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
     base::MemoryConsumerTraits::IsStateful::kNo);

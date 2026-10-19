@@ -56,8 +56,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kMemoryCacheTraits(
     // Strong reference budget is platform-specific; frees tens of MBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Pruning requires sorting or traversing HeapLinkedHashSet of resources.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Pruning walks the HeapLinkedHashSet, reading the resources being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Cached resources reload from network/disk cache.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Synchronously prunes the references inline.

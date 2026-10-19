@@ -43,8 +43,8 @@ constexpr uint32_t kSyncCpuMemoryLimitAtMemoryPressureCritical = 0;
 constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     // Deferred Vulkan resources can accumulate to a moderate amount of memory.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    // Callback only updates atomics without traversing structures.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    // Callback only updates atomics; the deferred resources are not read.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     // Syncing GPU work does not lose user state or cached data.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Pre-determined by AsyncMemoryConsumerRegistration on the GPU thread.

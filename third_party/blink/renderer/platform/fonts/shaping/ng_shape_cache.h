@@ -191,8 +191,8 @@ class NGShapeCache : public GarbageCollected<NGShapeCache>,
   static constexpr base::MemoryConsumerTraits kNGShapeCacheTraits{
       // Bounded entries of short strings; footprint under 10MB.
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      // Clearing maps requires traversing hash map structures.
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      // Clearing the maps reads the entries being freed.
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       // Results can be shaped again if cleared.
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       // Synchronously clears maps.

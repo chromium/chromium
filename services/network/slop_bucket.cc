@@ -228,7 +228,7 @@ class SlopBucket::Configuration {
 
 constexpr base::MemoryConsumerTraits kSlopBucketTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // This class uses AsyncMemoryConsumerRegistration, and must thus be marked
     // as asynchronous, even though the actual code in OnReleaseMemory is

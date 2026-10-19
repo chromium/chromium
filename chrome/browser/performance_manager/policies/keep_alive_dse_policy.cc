@@ -43,8 +43,7 @@ KeepAliveDSEPolicy::KeepAliveDSEPolicy()
               base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
               // Releasing the keep-alive may terminate the renderer process,
               // freeing pages directly via the OS.
-              base::MemoryConsumerTraits::ReleaseMemoryCost::
-                  kFreesPagesWithoutTraversal,
+              base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
               // Releasing the keep-alive does not discard user state.
               base::MemoryConsumerTraits::InformationRetention::kLossless,
               // Releasing the keep-alive is performed synchronously.

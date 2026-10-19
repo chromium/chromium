@@ -94,8 +94,8 @@ const int kMaxKeepAliveTimeMs = 200;
 constexpr base::MemoryConsumerTraits kGpuChannelManagerTraits(
     // Can free hundreds of MB via Skia, Dawn, and persistent cache purges.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-    // Purging requires iterating caches and invoking GPU resource cleanup.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Purging iterates caches, reading the entries being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Freed resources are caches or scratch buffers that can be recreated.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Asynchronous since AsyncMemoryConsumerRegistration is used.

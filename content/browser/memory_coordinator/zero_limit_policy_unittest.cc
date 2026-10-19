@@ -33,14 +33,14 @@ using ::testing::UnorderedElementsAre;
 
 constexpr base::MemoryConsumerTraits kStatefulTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::IsStateful::kYes);
 
 constexpr base::MemoryConsumerTraits kStatelessTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::IsStateful::kNo);

@@ -34,7 +34,7 @@ using ::testing::Test;
 
 constexpr base::MemoryConsumerTraits kTestTraits1(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     base::MemoryConsumerTraits::InformationRetention::kLossy,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
@@ -482,13 +482,13 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_Filter) {
   // 2 test traits that differ by their SupportsMemoryLimit value.
   const base::MemoryConsumerTraits kTraits1(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossy,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::SupportsMemoryLimit::kYes);
   const base::MemoryConsumerTraits kTraits2(
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
       base::MemoryConsumerTraits::InformationRetention::kLossy,
       base::MemoryConsumerTraits::ExecutionType::kSynchronous,
       base::MemoryConsumerTraits::SupportsMemoryLimit::kNo);

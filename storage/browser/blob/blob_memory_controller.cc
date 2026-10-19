@@ -313,8 +313,9 @@ base::MemoryConsumerTraits GetBlobMemoryControllerTraits() {
   return base::MemoryConsumerTraits(
       // Can hold up to ~2GB of blob data in memory (platform-dependent).
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-      // Eviction requires traversing LRU cache and paging items to disk.
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      // Paging items to disk reads their data and writes it to files.
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::
+          kReadsAndWritesToDisk,
       // Paged items can be read back from disk.
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       // Eviction is asynchronous, and it uses AsyncMemoryConsumerRegistration.

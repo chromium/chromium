@@ -38,7 +38,7 @@ constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     // Hosts TFLite model and runtime tensors; under 10MB.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
     // Unloading unmaps model files and frees memory in bulk.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     // Model is stateless and can be reloaded.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // The unload task is posted to a background thread runner.

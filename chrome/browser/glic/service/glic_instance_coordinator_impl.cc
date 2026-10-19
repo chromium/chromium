@@ -109,9 +109,10 @@ bool CanLiveModeBehaviorTakeEffect(const Target& target) {
 constexpr base::MemoryConsumerTraits kGlicInstanceCoordinatorTraits(
     // Each awake Glic instance can use up to a hundred megabytes.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-    // Iterates active instances to identify and hibernate background
-    // candidates.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // The released memory isn't accessed directly: it's mostly the renderer's,
+    // freed by the OS when the process exits. Only instance metadata is walked
+    // to pick which ones to hibernate.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     // Hibernating a background Glic instance preserves session state.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Releases memory synchronously.

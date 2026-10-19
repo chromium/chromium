@@ -348,7 +348,7 @@ namespace {
 
 constexpr base::MemoryConsumerTraits kStatefulTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,
@@ -356,7 +356,7 @@ constexpr base::MemoryConsumerTraits kStatefulTraits(
 
 constexpr base::MemoryConsumerTraits kStatelessTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::SupportsMemoryLimit::kYes,

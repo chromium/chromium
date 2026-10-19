@@ -514,8 +514,10 @@ void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
   constexpr base::MemoryConsumerTraits traits(
       // Trimming renderers and ARCVM can save hundreds of MBs.
       base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
-      // Requires walking the graph to find eligible nodes.
-      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      // The trimmed memory isn't read. Only the performance manager graph is
+      // walked to pick which processes to trim, and many components access it
+      // frequently, so it's unlikely to be swapped out.
+      base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
       // Trimming working sets does not lose user state.
       base::MemoryConsumerTraits::InformationRetention::kLossless,
       // Trimming processes is an asynchronous OS/VM operation.
@@ -524,7 +526,9 @@ void WorkingSetTrimmerPolicyChromeOS::OnPassedToGraph(Graph* graph) {
       // persists.
       base::MemoryConsumerTraits::IsStateful::kNo,
       // Frees memory in external processes, not in the Browser process.
-      base::MemoryConsumerTraits::InProcess::kNo);
+      base::MemoryConsumerTraits::InProcess::kNo,
+      // The OS compresses the trimmed pages into zram.
+      base::MemoryConsumerTraits::ReleaseMemoryCpuCost::kExpensive);
 
   memory_consumer_registration_.emplace("WorkingSetTrimmerPolicyChromeOS",
                                         traits, this);

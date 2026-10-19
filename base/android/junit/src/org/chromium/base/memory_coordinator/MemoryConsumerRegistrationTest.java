@@ -41,7 +41,7 @@ public class MemoryConsumerRegistrationTest {
         mTraits =
                 new MemoryConsumerTraits.Builder(
                                 EstimatedMemoryUsage.SMALL,
-                                ReleaseMemoryCost.FREES_PAGES_WITHOUT_TRAVERSAL,
+                                ReleaseMemoryDataAccess.NONE,
                                 InformationRetention.LOSSLESS,
                                 ExecutionType.SYNCHRONOUS)
                         .build();

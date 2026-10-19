@@ -45,8 +45,8 @@ sk_sp<SkData> MakeData(const std::string& str) {
 constexpr base::MemoryConsumerTraits kGrShaderCacheTraits(
     // Default capacity is small; footprint under 10MB.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    // Eviction requires map and LRU list updates.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Eviction reads the LRU list and the entries being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Shaders are recoverable from disk or source recompilation.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Asynchronous since AsyncMemoryConsumerRegistration is used.

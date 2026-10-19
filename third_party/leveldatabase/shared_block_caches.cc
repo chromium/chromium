@@ -22,8 +22,8 @@ namespace {
 constexpr base::MemoryConsumerTraits kSharedBlockCachesTraits(
     // At most two block caches of a few MBs each.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
-    // Eviction walks the LRU list and frees the cached blocks one by one.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    // Eviction walks the LRU list, reading the blocks being freed.
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     // Evicted blocks are read again from disk when needed.
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     // Registered with AsyncMemoryConsumerRegistration.

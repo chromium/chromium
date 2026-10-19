@@ -42,7 +42,7 @@ constexpr base::MemoryConsumerTraits kUrgentPageDiscardingPolicyTraits(
     // Discarding a tab's process typically frees hundreds of MBs to GBs.
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kLarge,
     // Freeing is done at the OS level, requiring no browser-side traversal.
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kFreesPagesWithoutTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kNone,
     // Discarding a tab results in the loss of user-visible state.
     base::MemoryConsumerTraits::InformationRetention::kLossy,
     // Teardown involves asynchronous IPCs and OS-level process termination.

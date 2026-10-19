@@ -53,7 +53,7 @@ std::string ToCommaSeparatedString(
 
 constexpr base::MemoryConsumerTraits kOnDiskTraits(
     base::MemoryConsumerTraits::EstimatedMemoryUsage::kMedium,
-    base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+    base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReads,
     base::MemoryConsumerTraits::InformationRetention::kLossless,
     base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
     base::MemoryConsumerTraits::IsStateful::kYes);

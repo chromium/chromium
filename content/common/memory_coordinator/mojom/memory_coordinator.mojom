@@ -43,7 +43,7 @@ interface ChildMemoryCoordinator {
 struct MemoryConsumerTraits {
   uint8 consumer_type;
   uint8 estimated_memory_usage;
-  uint8 release_memory_cost;
+  uint8 release_memory_data_access;
   uint8 information_retention;
   uint8 execution_type;
   uint8 supports_memory_limit;
@@ -53,6 +53,7 @@ struct MemoryConsumerTraits {
   uint8 garbage_collects_v8_heap;
   uint8 is_stateful;
   uint8 recovery_behavior;
+  uint8 release_memory_cpu_cost;
 };
 
 // The registration of a single MemoryConsumer. Used by RegisterMany().
