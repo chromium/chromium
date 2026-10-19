@@ -654,6 +654,9 @@ BASE_FEATURE(kIPHTabGroupSyncOnStripFeature,
 BASE_FEATURE(kIPHTabSwitcherAddToGroup,
              "IPH_TabSwitcherAddToGroup",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTabPickerSelectTabsFeature,
+             "IPH_TabPickerSelectTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTabSwitcherButtonFeature,
              "IPH_TabSwitcherButton",
              base::FEATURE_ENABLED_BY_DEFAULT);

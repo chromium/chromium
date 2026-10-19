@@ -1657,6 +1657,21 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                               Comparator(EQUAL, 0), 360, 360);
     return config;
   }
+  if (kIPHTabPickerSelectTabsFeature.name == feature->name) {
+    // Shows an educational callout inside the Tab Picker prompting first-time
+    // users to select one or more tabs to attach to their query.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("tab_picker_select_tabs_iph_triggered",
+                                 Comparator(LESS_THAN, 3), kMaxStoragePeriod,
+                                 kMaxStoragePeriod);
+    config.used =
+        EventConfig("fusebox_tab_picker_tab_attached", Comparator(EQUAL, 0),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    return config;
+  }
   if (kIPHTabSwitcherButtonFeature.name == feature->name) {
     // Adjusted to be less spammy for users that may know what the tab switcher
     // is. Show after 14 days of Chrome being installed, once every 90 days,

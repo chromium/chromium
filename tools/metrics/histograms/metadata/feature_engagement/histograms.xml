@@ -818,6 +818,8 @@ chromium-metrics-reviews@google.com.
       summary="tab switcher cards with multiple tab thumbnails"/>
   <variant name="IPH_TabOrganizationSuccess"
       summary="(obsolete) tab organization success"/>
+  <variant name="IPH_TabPickerSelectTabs"
+      summary="prompting users to select tabs in the tab picker"/>
   <variant name="IPH_TabScrollButtonFeature"
       summary="IPH for tab horizontal scroll buttons"/>
   <variant name="IPH_TabSearch" summary="tab search discovery"/>

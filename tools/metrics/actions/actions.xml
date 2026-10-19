@@ -954,6 +954,8 @@ should be able to be added at any place in this file.
       summary="For tab switcher with tab groups."/>
   <variant name="_TabOrganizationSuccess"
       summary="For the tab organization feature. (obsolete)"/>
+  <variant name="_TabPickerSelectTabs"
+      summary="For the first-time tab selection IPH in the tab picker."/>
   <variant name="_TabPinnedFeature" summary="For tab pinned overflow hint."/>
   <variant name="_TabScrollButtonFeature"
       summary="For the tab scroll button feature."/>

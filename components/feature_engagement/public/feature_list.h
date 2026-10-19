@@ -219,6 +219,8 @@ DEFINE_VARIATION_PARAM(kIPHTabGroupsSurfaceOnHideFeature,
 DEFINE_VARIATION_PARAM(kIPHTabGroupSyncOnStripFeature,
                        "IPH_TabGroupSyncOnStrip");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherAddToGroup, "IPH_TabSwitcherAddToGroup");
+DEFINE_VARIATION_PARAM(kIPHTabPickerSelectTabsFeature,
+                       "IPH_TabPickerSelectTabs");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonFeature, "IPH_TabSwitcherButton");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherButtonSwitchIncognitoFeature,
                        "IPH_TabSwitcherButtonSwitchIncognito");

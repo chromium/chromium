@@ -139,6 +139,7 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.TAB_GROUP_SHARE_UPDATE_FEATURE,
     FeatureConstants.TAB_GROUP_SHARE_VERSION_UPDATE_FEATURE,
     FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
+    FeatureConstants.TAB_PICKER_SELECT_TABS_FEATURE,
     FeatureConstants.TAB_SWITCHER_ADD_TO_GROUP,
     FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
     FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
@@ -511,6 +512,9 @@ public @interface FeatureConstants {
 
     /** An IPH feature to show when tab group is synced across devices. */
     String TAB_GROUP_SYNC_ON_STRIP_FEATURE = "IPH_TabGroupSyncOnStrip";
+
+    /** An IPH feature to prompt users in the Tab Picker to select tabs for search. */
+    String TAB_PICKER_SELECT_TABS_FEATURE = "IPH_TabPickerSelectTabs";
 
     /**
      * An IPH feature to prompt users to select the 'Add to group' option in the Tab Switcher 3-Dot
