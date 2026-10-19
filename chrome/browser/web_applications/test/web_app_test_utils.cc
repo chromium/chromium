@@ -117,9 +117,6 @@
 
 namespace {
 
-std::vector<std::string> test_features = {
-    "default_on_feature", "default_self_feature", "default_disabled_feature"};
-
 constexpr std::string_view kEd25519PublicKeyBase64 =
     "3QrKLntnXWmBkrbLLoobC0uh7u0ahMcKQSqsbX4q7MM=";
 constexpr std::string_view kEd25519SignatureHex =

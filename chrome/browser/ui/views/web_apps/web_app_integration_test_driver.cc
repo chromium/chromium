@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 
+#include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstring>
 #include <ios>
+#include <iterator>
 #include <map>
 #include <optional>
 #include <ostream>
@@ -299,19 +302,27 @@ void FlushShortcutTasks() {
   }
 }
 
+// Literal types only, so the table below is constexpr and has no exit-time
+// destructor.
 struct SiteConfig {
-  std::string relative_url;
-  std::string relative_manifest_id;
-  std::string app_name;
-  std::u16string wco_not_enabled_title;
+  std::string_view relative_url;
+  std::string_view relative_manifest_id;
+  std::string_view app_name;
+  std::u16string_view wco_not_enabled_title;
   SkColor icon_color;
-  base::flat_set<std::string> alternate_titles;
-  std::string base_url;  // if not specified, use GetTestServerForSiteMode
+  std::array<std::string_view, 2> alternate_titles = {};
+  // If set, the base URL is this WebUI host instead of the test server.
+  std::string_view webui_host;
   std::optional<Site> parent_site;
   bool is_isolated = false;
 };
 
-base::flat_map<Site, SiteConfig> g_site_configs = {
+struct SiteConfigEntry {
+  Site site;
+  SiteConfig config;
+};
+
+constexpr SiteConfigEntry kSiteConfigs[] = {
     {Site::kStandalone,
      {.relative_url = "/webapps_integration/standalone/basic.html",
       .relative_manifest_id = "webapps_integration/standalone/basic.html",
@@ -456,7 +467,7 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .wco_not_enabled_title = u"Site A",
       .icon_color = SK_ColorGREEN,
       .alternate_titles = {"Site A - Updated name"},
-      .base_url = content::GetWebUIURLString("webapps_integration_tests")}},
+      .webui_host = "webapps_integration_tests"}},
     {Site::kStandaloneMigratedSuggested,
      {.relative_url =
           "/webapps_integration/standalone/migrated_suggested/basic.html",
@@ -481,69 +492,55 @@ base::flat_map<Site, SiteConfig> g_site_configs = {
       .alternate_titles = {"Site A Forced"}}},
 };
 
-SiteConfig GetSiteConfiguration(Site site) {
-  CHECK(g_site_configs.contains(site));
-  return g_site_configs.find(site)->second;
+const SiteConfig& GetSiteConfiguration(Site site) {
+  const SiteConfigEntry* entry =
+      std::ranges::find(kSiteConfigs, site, &SiteConfigEntry::site);
+  CHECK(entry != std::end(kSiteConfigs));
+  return entry->config;
 }
 
-struct DisplayConfig {
-  std::string manifest_url_param;
-};
-
-base::flat_map<Display, DisplayConfig> g_display_configs = {
-    {Display::kBrowser,
-     {.manifest_url_param = "?manifest=manifest_browser.json"}},
-    {Display::kMinimalUi,
-     {.manifest_url_param = "?manifest=manifest_minimal_ui.json"}},
-    {Display::kTabbed,
-     {.manifest_url_param = "?manifest=manifest_tabbed.json"}},
-    {Display::kStandalone, {.manifest_url_param = "?manifest=basic.json"}},
-    {Display::kWco,
-     {.manifest_url_param =
-          "?manifest=manifest_window_controls_overlay.json"}}};
-
-DisplayConfig GetDisplayUpdateConfiguration(Display display) {
-  CHECK(g_display_configs.contains(display));
-  return g_display_configs.find(display)->second;
+// The manifest URL parameters used to update an app's display mode, scope or
+// migration target.
+std::string_view GetDisplayUpdateManifestParam(Display display) {
+  switch (display) {
+    case Display::kBrowser:
+      return "?manifest=manifest_browser.json";
+    case Display::kMinimalUi:
+      return "?manifest=manifest_minimal_ui.json";
+    case Display::kTabbed:
+      return "?manifest=manifest_tabbed.json";
+    case Display::kStandalone:
+      return "?manifest=basic.json";
+    case Display::kWco:
+      return "?manifest=manifest_window_controls_overlay.json";
+  }
+  NOTREACHED();
 }
 
-struct ScopeConfig {
-  std::string manifest_url_param;
-};
-
-base::flat_map<Site, ScopeConfig> g_scope_configs = {
-    {Site::kStandalone,
-     {.manifest_url_param = "?manifest=manifest_scope_Standalone.json"}}};
-
-ScopeConfig GetScopeUpdateConfiguration(Site scope) {
-  CHECK(g_scope_configs.contains(scope));
-  return g_scope_configs.find(scope)->second;
+std::string_view GetScopeUpdateManifestParam(Site scope) {
+  CHECK(scope == Site::kStandalone);
+  return "?manifest=manifest_scope_Standalone.json";
 }
 
-struct MigrateToConfig {
-  std::string manifest_url_param;
-};
-
-base::flat_map<Site, MigrateToConfig> g_migrate_to_configs = {
-    {Site::kStandaloneMigratedSuggested,
-     {.manifest_url_param = "?manifest=manifest_migrate_suggested.json"}},
-    {Site::kStandaloneMigratedForced,
-     {.manifest_url_param = "?manifest=manifest_migrate_forced.json"}},
-};
-
-MigrateToConfig GetMigrateToConfiguration(Site site) {
-  CHECK(g_migrate_to_configs.contains(site));
-  return g_migrate_to_configs.find(site)->second;
+std::string_view GetMigrateToManifestParam(Site site) {
+  switch (site) {
+    case Site::kStandaloneMigratedSuggested:
+      return "?manifest=manifest_migrate_suggested.json";
+    case Site::kStandaloneMigratedForced:
+      return "?manifest=manifest_migrate_forced.json";
+    default:
+      NOTREACHED();
+  }
 }
 
 std::string GetRelativeSubAppPath(Site sub_app) {
-  SiteConfig sub_app_config = GetSiteConfiguration(sub_app);
+  const SiteConfig& sub_app_config = GetSiteConfiguration(sub_app);
   std::optional<Site> parent_site = sub_app_config.parent_site;
   CHECK(parent_site);
-  std::string parent_app_path =
-      GetSiteConfiguration(parent_site.value()).relative_url;
+  std::string parent_app_path(
+      GetSiteConfiguration(parent_site.value()).relative_url);
   parent_app_path.erase(parent_app_path.find_last_of("/"));
-  std::string sub_app_path = sub_app_config.relative_url;
+  std::string sub_app_path(sub_app_config.relative_url);
   sub_app_path.erase(0, parent_app_path.length());
   return sub_app_path;
 }
@@ -575,19 +572,14 @@ std::string GetFileExtension(FileExtension file_extension) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-SiteConfig GetSiteConfigurationFromAppName(const std::string& app_name) {
-  SiteConfig config;
-  bool is_app_found = false;
-  for (auto const& [site, check_config] : g_site_configs) {
-    if (check_config.app_name == app_name ||
-        check_config.alternate_titles.contains(app_name)) {
-      config = check_config;
-      is_app_found = true;
-      break;
+const SiteConfig& GetSiteConfigurationFromAppName(const std::string& app_name) {
+  for (const SiteConfigEntry& entry : kSiteConfigs) {
+    if (entry.config.app_name == app_name ||
+        std::ranges::contains(entry.config.alternate_titles, app_name)) {
+      return entry.config;
     }
   }
-  CHECK(is_app_found) << "Could not find " << app_name;
-  return config;
+  NOTREACHED() << "Could not find " << app_name;
 }
 #endif
 
@@ -792,15 +784,26 @@ std::optional<AppState> GetStateForAppId(StateSnapshot* state_snapshot,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-WebAppSettingsPageHandler CreateAppManagementPageHandler(Profile* profile) {
-  mojo::PendingReceiver<app_management::mojom::Page> page;
-  mojo::Remote<app_management::mojom::PageHandler> handler;
-  static auto delegate =
-      WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile);
-  return WebAppSettingsPageHandler(handler.BindNewPipeAndPassReceiver(),
-                                   page.InitWithNewPipeAndPassRemote(), profile,
-                                   *delegate);
-}
+// An app management page handler together with the delegate it keeps a
+// reference to. The delegate is declared first, so it outlives the handler.
+class AppManagementPageHandlerForTesting {
+ public:
+  explicit AppManagementPageHandlerForTesting(Profile* profile)
+      : delegate_(
+            WebAppSettingsUI::CreateAppManagementPageHandlerDelegate(profile)),
+        handler_(mojo::Remote<app_management::mojom::PageHandler>()
+                     .BindNewPipeAndPassReceiver(),
+                 mojo::PendingReceiver<app_management::mojom::Page>()
+                     .InitWithNewPipeAndPassRemote(),
+                 profile,
+                 *delegate_) {}
+
+  WebAppSettingsPageHandler* operator->() { return &handler_; }
+
+ private:
+  std::unique_ptr<AppManagementPageHandlerBase::Delegate> delegate_;
+  WebAppSettingsPageHandler handler_;
+};
 #endif
 
 // Determines whether, when attempting to load a path, we want to, instead of
@@ -1327,8 +1330,8 @@ void WebAppIntegrationTestDriver::DisableRunOnOsLoginFromAppSettings(
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetRunOnOsLoginMode(
+  AppManagementPageHandlerForTesting app_management_page_handler(profile());
+  app_management_page_handler->SetRunOnOsLoginMode(
       app_id, apps::RunOnOsLoginMode::kNotRun);
 #endif
   AfterStateChangeAction();
@@ -1362,8 +1365,8 @@ void WebAppIntegrationTestDriver::EnableRunOnOsLoginFromAppSettings(Site site) {
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetRunOnOsLoginMode(
+  AppManagementPageHandlerForTesting app_management_page_handler(profile());
+  app_management_page_handler->SetRunOnOsLoginMode(
       app_id, apps::RunOnOsLoginMode::kWindowed);
 #endif
   AfterStateChangeAction();
@@ -1760,7 +1763,8 @@ void WebAppIntegrationTestDriver::EnableWindowControlsOverlay(Site site) {
   ASSERT_FALSE(app_view->IsWindowControlsOverlayEnabled());
   content::TitleWatcher title_watcher(
       app_view->GetActiveWebContents(),
-      GetSiteConfiguration(site).wco_not_enabled_title + u": WCO Enabled");
+      base::StrCat({GetSiteConfiguration(site).wco_not_enabled_title,
+                    u": WCO Enabled"}));
   base::test::TestFuture<void> future;
   app_view->ToggleWindowControlsOverlayEnabled(future.GetCallback());
   EXPECT_TRUE(future.Wait());
@@ -1779,7 +1783,7 @@ void WebAppIntegrationTestDriver::DisableWindowControlsOverlay(Site site) {
   ASSERT_TRUE(app_view->IsWindowControlsOverlayEnabled());
   content::TitleWatcher title_watcher(
       app_view->GetActiveWebContents(),
-      GetSiteConfiguration(site).wco_not_enabled_title);
+      std::u16string(GetSiteConfiguration(site).wco_not_enabled_title));
   base::test::TestFuture<void> future;
   app_view->ToggleWindowControlsOverlayEnabled(future.GetCallback());
   EXPECT_TRUE(future.Wait());
@@ -1950,7 +1954,7 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
   }
   ASSERT_TRUE(target_contents);
   bool is_denied = site_remember_deny_open_file_.contains(site);
-  std::string expected_fallback_path = GetSiteConfiguration(site).relative_url;
+  std::string expected_fallback_path(GetSiteConfiguration(site).relative_url);
 
   base::flat_set<GURL> valid_urls;
   if (is_denied) {
@@ -2370,10 +2374,10 @@ void WebAppIntegrationTestDriver::CheckAppSettingsAppState(
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED() << "Not implemented on Chrome OS.";
 #else
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile);
+  AppManagementPageHandlerForTesting app_management_page_handler(profile);
 
   app_management::mojom::AppPtr app;
-  app_management_page_handler.GetApp(
+  app_management_page_handler->GetApp(
       app_state.id,
       base::BindLambdaForTesting([&](app_management::mojom::AppPtr result) {
         app = std::move(result);
@@ -2600,10 +2604,8 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplay(Site site,
     return;
   }
 
-  std::string relative_url_path = GetSiteConfiguration(site).relative_url;
-  std::string manifest_url_param =
-      GetDisplayUpdateConfiguration(display).manifest_url_param;
-  GURL url = GetUrlForSite(site, manifest_url_param);
+  std::string_view manifest_url_param = GetDisplayUpdateManifestParam(display);
+  GURL url = GetUrlForSite(site, std::string(manifest_url_param));
 
   ForceUpdateManifestContents(site, url,
                               /*wait_for_pending_updates_to_arrive=*/false);
@@ -2618,9 +2620,8 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeTo(Site app, Site scope) {
   // The `scope_mode` would be changing the scope set in the manifest file. For
   // simplicity, right now only Standalone is supported, so that is just
   // hardcoded in manifest_scope_Standalone.json, which is specified in the URL.
-  auto relative_url_path = GetSiteConfiguration(app).relative_url;
   GURL url =
-      GetUrlForSite(app, GetScopeUpdateConfiguration(scope).manifest_url_param);
+      GetUrlForSite(app, std::string(GetScopeUpdateManifestParam(scope)));
   ForceUpdateManifestContents(app, url,
                               /*wait_for_pending_updates_to_arrive=*/false);
   AfterStateChangeAction();
@@ -2633,8 +2634,7 @@ void WebAppIntegrationTestDriver::ManifestUpdateAddMigrateTo(Site app,
   }
 
   webapps::AppId app_id = GetAppIdBySiteMode(app);
-  GURL url =
-      GetUrlForSite(app, GetMigrateToConfiguration(to).manifest_url_param);
+  GURL url = GetUrlForSite(app, std::string(GetMigrateToManifestParam(to)));
   ForceUpdateManifestContents(
       app, url,
       /*wait_for_pending_updates_to_arrive=*/
@@ -2704,8 +2704,9 @@ void WebAppIntegrationTestDriver::SetOpenInTabFromAppSettings(Site site) {
   apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kBrowser)
       .Await();
 #else
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kBrowser);
+  AppManagementPageHandlerForTesting app_management_page_handler(profile());
+  app_management_page_handler->SetWindowMode(app_id,
+                                             apps::WindowMode::kBrowser);
 #endif
   AfterStateChangeAction();
 }
@@ -2754,8 +2755,8 @@ void WebAppIntegrationTestDriver::SetOpenInWindowFromAppSettings(Site site) {
   apps::AppWindowModeWaiter(profile(), app_id, apps::WindowMode::kWindow)
       .Await();
 #else
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetWindowMode(app_id, apps::WindowMode::kWindow);
+  AppManagementPageHandlerForTesting app_management_page_handler(profile());
+  app_management_page_handler->SetWindowMode(app_id, apps::WindowMode::kWindow);
 #endif
   AfterStateChangeAction();
 }
@@ -2905,8 +2906,8 @@ void WebAppIntegrationTestDriver::UninstallFromAppSettings(Site site) {
 
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.Uninstall(app_id);
+  AppManagementPageHandlerForTesting app_management_page_handler(profile());
+  app_management_page_handler->Uninstall(app_id);
 
   uninstall_waiter.Wait();
 
@@ -3036,7 +3037,7 @@ void WebAppIntegrationTestDriver::CorruptAppShim(Site site,
   }
   base::ScopedAllowBlockingForTesting allow_blocking;
   webapps::AppId app_id = GetAppIdBySiteMode(site);
-  std::string app_name = GetSiteConfiguration(site).app_name;
+  std::string app_name(GetSiteConfiguration(site).app_name);
   base::FilePath app_path = GetShortcutPath(
       override_registration_->test_override().chrome_apps_folder(), app_name,
       app_id);
@@ -3078,7 +3079,7 @@ void WebAppIntegrationTestDriver::QuitAppShim(Site site) {
     return;
   }
   webapps::AppId app_id = GetAppIdBySiteMode(site);
-  std::string app_name = GetSiteConfiguration(site).app_name;
+  std::string app_name(GetSiteConfiguration(site).app_name);
   base::FilePath app_path = GetShortcutPath(
       override_registration_->test_override().chrome_apps_folder(), app_name,
       app_id);
@@ -3605,7 +3606,6 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
         const TabStripModel* const tab_strip_model =
             browser->GetTabStripModel();
         for (int i = 0; i < tab_strip_model->count(); i++) {
-          auto site_config = GetSiteConfiguration(site);
           content::WebContents* const web_contents =
               tab_strip_model->GetWebContentsAt(i);
 
@@ -3613,8 +3613,8 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
             continue;
           }
 
-          static const std::string kFooHandler = "foo_handler.html";
-          static const std::string kBarHandler = "bar_handler.html";
+          static constexpr std::string_view kFooHandler = "foo_handler.html";
+          static constexpr std::string_view kBarHandler = "bar_handler.html";
           const webapps::AppId app_id =
               *WebAppTabHelper::GetAppId(web_contents);
           const std::string url_str = web_contents->GetURL().spec();
@@ -3828,7 +3828,7 @@ void WebAppIntegrationTestDriver::CheckSiteHandlesFile(
     return;
   }
   webapps::AppId app_id = GetAppIdBySiteMode(site);
-  std::string app_name = GetSiteConfiguration(site).app_name;
+  std::string app_name(GetSiteConfiguration(site).app_name);
   std::string file_extension_str = "." + GetFileExtension(file_extension);
   ASSERT_TRUE(override_registration_->test_override().IsFileExtensionHandled(
       profile(), app_id, app_name, file_extension_str));
@@ -3844,7 +3844,7 @@ void WebAppIntegrationTestDriver::CheckSiteNotHandlesFile(
     return;
   }
   webapps::AppId app_id = GetAppIdBySiteMode(site);
-  std::string app_name = GetSiteConfiguration(site).app_name;
+  std::string app_name(GetSiteConfiguration(site).app_name);
   std::string file_extension_str = "." + GetFileExtension(file_extension);
   ASSERT_FALSE(override_registration_->test_override().IsFileExtensionHandled(
       profile(), app_id, app_name, file_extension_str));
@@ -3863,10 +3863,10 @@ void WebAppIntegrationTestDriver::CheckUserCannotSetRunOnOsLoginAppSettings(
   std::optional<AppState> app_state =
       GetAppBySiteMode(after_state_change_action_state_.get(), profile(), site);
   ASSERT_TRUE(app_state);
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
+  AppManagementPageHandlerForTesting app_management_page_handler(profile());
 
   app_management::mojom::AppPtr app;
-  app_management_page_handler.GetApp(
+  app_management_page_handler->GetApp(
       app_state->id,
       base::BindLambdaForTesting([&](app_management::mojom::AppPtr result) {
         app = std::move(result);
@@ -4476,12 +4476,11 @@ webapps::AppId WebAppIntegrationTestDriver::GetAppIdBySiteMode(Site site) {
     return GetAppIdForIsolatedSite(site);
   }
 
-  std::string manifest_id = site_config.relative_manifest_id;
+  std::string manifest_id(site_config.relative_manifest_id);
   GURL start_url = GetUrlForSite(site);
   CHECK(start_url.is_valid());
 
   if (site_config.parent_site) {
-    auto parent_site = GetSiteConfiguration(site_config.parent_site.value());
     return GenerateAppId(manifest_id, start_url);
   } else {
     return GenerateAppId(manifest_id, start_url);
@@ -4497,13 +4496,14 @@ GURL WebAppIntegrationTestDriver::GetUrlForSite(Site site,
     return it->second;
   }
 
-  auto site_config = GetSiteConfiguration(site);
-  if (site_config.base_url.empty()) {
+  const SiteConfig& site_config = GetSiteConfiguration(site);
+  if (site_config.webui_host.empty()) {
     return GetTestServerForSiteMode(site).GetURL(
         base::StrCat({site_config.relative_url, suffix}));
   }
-  return GURL(
-      base::StrCat({site_config.base_url, site_config.relative_url, suffix}));
+  return GURL(base::StrCat(
+      {content::GetWebUIURLString(std::string(site_config.webui_host)),
+       site_config.relative_url, suffix}));
 }
 
 std::optional<AppState> WebAppIntegrationTestDriver::GetAppBySiteMode(
@@ -4921,8 +4921,8 @@ void WebAppIntegrationTestDriver::SetFileHandlingEnabled(Site site,
   webapps::AppId app_id = GetAppIdBySiteMode(site);
   ASSERT_TRUE(provider()->registrar_unsafe().GetAppById(app_id))
       << "No app installed for site: " << static_cast<int>(site);
-  auto app_management_page_handler = CreateAppManagementPageHandler(profile());
-  app_management_page_handler.SetFileHandlingEnabled(app_id, enabled);
+  AppManagementPageHandlerForTesting app_management_page_handler(profile());
+  app_management_page_handler->SetFileHandlingEnabled(app_id, enabled);
 #endif
 }
 
@@ -5047,7 +5047,7 @@ bool WebAppIntegrationTestDriver::LaunchFromAppShim(
     const std::vector<GURL>& urls,
     bool wait_for_complete_launch) {
   webapps::AppId app_id = GetAppIdBySiteMode(site);
-  std::string app_name = GetSiteConfiguration(site).app_name;
+  std::string app_name(GetSiteConfiguration(site).app_name);
   base::FilePath app_path = GetShortcutPath(
       override_registration_->test_override().chrome_apps_folder(), app_name,
       app_id);
