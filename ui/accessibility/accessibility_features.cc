@@ -407,7 +407,7 @@ bool IsReadAnythingReadAloudPhraseHighlightingEnabled() {
       ::features::kReadAnythingReadAloudPhraseHighlighting);
 }
 
-BASE_FEATURE(kReadAnythingOmniboxChip, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kReadAnythingOmniboxChip, base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsReadAnythingOmniboxChipEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingOmniboxChip);
 }
