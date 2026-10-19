@@ -84,6 +84,9 @@
 // called.
 @property(nonatomic, assign) CGRect lastDrawnRect;
 
+// YES if `-setDelegate:` was last called with `nil`.
+@property(nonatomic, assign) BOOL delegateExplicitlyCleared;
+
 @end
 
 @implementation CRWFakeScrollView
@@ -99,6 +102,11 @@
     _lastDrawnRect = CGRectNull;
   }
   return self;
+}
+
+- (void)setDelegate:(id<UIScrollViewDelegate>)delegate {
+  [super setDelegate:delegate];
+  self.delegateExplicitlyCleared = (delegate == nil);
 }
 
 - (UIViewPrintFormatter*)viewPrintFormatter {
@@ -158,6 +166,18 @@ TEST_F(CRWWebViewScrollViewProxyTest, DelegateClearingUp) {
             [mock_scroll_view1 delegate]);
   [web_view_scroll_view_proxy_ setScrollView:nil];
   EXPECT_FALSE([mock_scroll_view1 delegate]);
+}
+
+// Tests that deallocating `CRWWebViewScrollViewProxy` explicitly clears the
+// underlying `UIScrollView`'s delegate via `-setDelegate:nil`.
+TEST_F(CRWWebViewScrollViewProxyTest, DelegateClearedOnDealloc) {
+  [web_view_scroll_view_proxy_ setScrollView:fake_underlying_scroll_view_];
+  EXPECT_EQ(web_view_scroll_view_proxy_.delegateProxy,
+            fake_underlying_scroll_view_.delegate);
+  EXPECT_FALSE(fake_underlying_scroll_view_.delegateExplicitlyCleared);
+  web_view_scroll_view_proxy_ = nil;
+  EXPECT_TRUE(fake_underlying_scroll_view_.delegateExplicitlyCleared);
+  EXPECT_FALSE(fake_underlying_scroll_view_.delegate);
 }
 
 // Tests that CRWWebViewScrollViewProxy returns the correct property values from

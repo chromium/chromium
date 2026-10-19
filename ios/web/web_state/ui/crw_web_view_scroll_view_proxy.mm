@@ -8,11 +8,18 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/auto_reset.h"
+#import "base/feature_list.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
+
+namespace {
+// Kill switch for clearing `underlyingScrollView.delegate` in `-dealloc`.
+BASE_FEATURE(kClearScrollViewDelegateOnDealloc,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 // *Address of* this variable is used as a marker to specify that it matches any
 // context.
@@ -176,6 +183,9 @@ static int gAnyContext = 0;
 }
 
 - (void)dealloc {
+  if (base::FeatureList::IsEnabled(kClearScrollViewDelegateOnDealloc)) {
+    [self.underlyingScrollView setDelegate:nil];
+  }
   [self.class stopObservingScrollView:self.underlyingScrollView proxy:self];
 }
 
