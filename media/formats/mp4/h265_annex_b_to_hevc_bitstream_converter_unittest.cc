@@ -63,7 +63,7 @@ TEST(H265AnnexBToHevcBitstreamConverterTest, Success) {
       output.resize(desired_size);
 
       status = converter.ConvertChunk(input, output, &config_changed, nullptr);
-      EXPECT_TRUE(status.is_ok()) << status.message();
+      EXPECT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
 
       // Convert HEVC bitstream back to Annex-B bitstream, and validate if
       // parameter set are write to the output or not.
@@ -222,7 +222,7 @@ TEST(H265AnnexBToHevcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
 
     auto status =
         converter.ConvertChunk(first_chunk, output, &config_changed, nullptr);
-    EXPECT_TRUE(status.is_ok()) << status.message();
+    EXPECT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
     EXPECT_TRUE(config_changed);
 
     // Convert HEVC bitstream back to Annex-B bitstream, and validate if
@@ -288,7 +288,7 @@ TEST(H265AnnexBToHevcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
     EXPECT_EQ(config.arrays[2].units.size(), 2ul);
     status = converter.ConvertChunk(second_non_idr_chunk, output,
                                     &config_changed, nullptr);
-    EXPECT_TRUE(status.is_ok()) << status.message();
+    EXPECT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
     EXPECT_FALSE(config_changed);
   }
 }

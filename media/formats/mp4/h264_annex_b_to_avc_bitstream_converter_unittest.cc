@@ -62,7 +62,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Success) {
       output.resize(desired_size);
 
       status = converter.ConvertChunk(input, output, &config_changed, nullptr);
-      EXPECT_TRUE(status.is_ok()) << status.message();
+      EXPECT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
 
       // Convert AVC bitstream back to Annex-B bitstream, and validate if
       // parameter set are write to the output or not.
@@ -165,7 +165,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
 
     auto status =
         converter.ConvertChunk(first_chunk, output, &config_changed, nullptr);
-    EXPECT_TRUE(status.is_ok()) << status.message();
+    EXPECT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
     EXPECT_TRUE(config_changed);
 
     // Convert AVC bitstream back to Annex-B bitstream, and validate if
@@ -214,7 +214,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
 
     status = converter.ConvertChunk(second_non_idr_chunk, output,
                                     &config_changed, nullptr);
-    EXPECT_TRUE(status.is_ok()) << status.message();
+    EXPECT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
     EXPECT_FALSE(config_changed);
   }
 }
@@ -244,7 +244,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, REXT) {
 
     auto status =
         converter.ConvertChunk(chunk, output, &config_changed, nullptr);
-    EXPECT_TRUE(status.is_ok()) << status.message();
+    EXPECT_TRUE(status.is_ok()) << MediaSerializeForTesting(status);
     EXPECT_TRUE(config_changed);
 
     // Convert AVC bitstream back to Annex-B bitstream, and validate if
