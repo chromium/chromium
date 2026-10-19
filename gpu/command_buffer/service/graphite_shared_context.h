@@ -19,6 +19,10 @@
 
 class SkTraceMemoryDump;
 
+namespace skgpu {
+class MutableTextureState;
+}  // namespace skgpu
+
 namespace skgpu ::graphite {
 class BackendTexture;
 struct InsertRecordingInfo;
@@ -225,6 +229,9 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
   void checkAsyncWorkCompletion();
 
   void deleteBackendTexture(const skgpu::graphite::BackendTexture&);
+
+  bool setMutableState(const skgpu::graphite::BackendTexture& texture,
+                       const skgpu::MutableTextureState& state);
 
   void freeGpuResources();
 

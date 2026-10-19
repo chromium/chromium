@@ -271,6 +271,7 @@ class SharedImageProviderImpl final : public cc::SharedImageProvider {
       ERRORSTATE_SET_GL_ERROR(error_state_, GL_INVALID_OPERATION,
                               "SharedImageProviderImpl::OpenSharedImageForRead",
                               "Couldn't create output SkImage.");
+      scoped_read_access->ApplyBackendSurfaceEndState();
       error = Error::kSkImageCreationFailed;
       return nullptr;
     }
@@ -2041,6 +2042,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
     if (!result) {
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                          "Unable to obtain write access to dest shared image.");
+      dest_scoped_access->ApplyBackendSurfaceEndState();
       return;
     }
   }
@@ -2051,6 +2053,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   if (!written) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                        "Failed to write pixels to SkCanvas");
+    dest_scoped_access->ApplyBackendSurfaceEndState();
     return;
   }
 

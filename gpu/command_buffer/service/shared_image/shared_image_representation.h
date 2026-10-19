@@ -72,6 +72,7 @@ class NativePixmap;
 }  // namespace gfx
 
 namespace gpu {
+class GraphiteSharedContext;
 class SharedImageManager;
 class TextureBase;
 
@@ -682,14 +683,22 @@ class GPU_GLES2_EXPORT SkiaGraphiteImageRepresentation
   class GPU_GLES2_EXPORT EndAccessState {
    public:
     EndAccessState();
+    EndAccessState(GraphiteSharedContext* context,
+                   skgpu::graphite::BackendTexture texture,
+                   std::unique_ptr<skgpu::MutableTextureState> end_state);
     EndAccessState(EndAccessState&& other);
     EndAccessState& operator=(EndAccessState&& other);
     ~EndAccessState();
 
     // Returns true if Apply() needs to be called.
-    bool NeedsApply() const { return false; }
+    bool NeedsApply() const { return context_ != nullptr; }
 
     void Apply();
+
+   private:
+    raw_ptr<GraphiteSharedContext> context_ = nullptr;
+    skgpu::graphite::BackendTexture texture_;
+    std::unique_ptr<skgpu::MutableTextureState> end_state_;
   };
 
   class GPU_GLES2_EXPORT ScopedGraphiteWriteAccess : public ScopedWriteAccess {

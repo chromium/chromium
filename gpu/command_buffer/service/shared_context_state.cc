@@ -905,6 +905,7 @@ bool SharedContextState::FlushWriteAccess(
     // access since we want the Dawn texture to be alive on submit, but that's
     // handled in SubmitIfNecessary.
     success = FlushGraphiteRecorder();
+    access->ApplyBackendSurfaceEndState();
   } else {
     if (access->HasBackendSurfaceEndState()) {
       access->ApplyBackendSurfaceEndState();

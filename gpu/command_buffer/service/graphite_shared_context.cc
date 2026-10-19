@@ -902,6 +902,13 @@ void GraphiteSharedContext::deleteBackendTexture(
   return graphite_context_->deleteBackendTexture(texture);
 }
 
+bool GraphiteSharedContext::setMutableState(
+    const skgpu::graphite::BackendTexture& texture,
+    const skgpu::MutableTextureState& state) {
+  AutoLock auto_lock(this);
+  return graphite_context_->setMutableState(texture, state);
+}
+
 void GraphiteSharedContext::freeGpuResources() {
   AutoLock auto_lock(this);
   return graphite_context_->freeGpuResources();

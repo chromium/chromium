@@ -63,6 +63,7 @@ class GPU_GLES2_EXPORT SkiaGraphiteVkAndroidImageRepresentation
 
  private:
   scoped_refptr<GraphiteTextureHolder> CreateGraphiteTextureHolder();
+  EndAccessState GenerateEndAccessState();
 
   const scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<VulkanImage> vulkan_image_;

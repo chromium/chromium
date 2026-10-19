@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -23,10 +24,12 @@
 #include "gpu/vulkan/vulkan_util.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/gpu/MutableTextureState.h"
 #include "third_party/skia/include/gpu/graphite/BackendSemaphore.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 #include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/gpu/graphite/vk/VulkanGraphiteTypes.h"
+#include "third_party/skia/include/gpu/vk/VulkanMutableTextureState.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_utils.h"
@@ -48,6 +51,8 @@ SkiaGraphiteVkAndroidImageRepresentation::
 SkiaGraphiteVkAndroidImageRepresentation::
     ~SkiaGraphiteVkAndroidImageRepresentation() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
+
+  graphite_texture_holder_.reset();
   if (vulkan_image_) {
     VulkanFenceHelper* fence_helper = context_state_->vk_context_provider()
                                           ->GetDeviceQueue()
@@ -62,12 +67,10 @@ SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess(
     const SkSurfaceProps& surface_props,
     const gfx::Rect& update_rect,
     EndAccessState& end_access_state) {
+  CHECK(graphite_texture_holder_);
+
   if (!BeginAccessInternal(/*readonly=*/false)) {
     return {};
-  }
-
-  if (!graphite_texture_holder_) {
-    graphite_texture_holder_ = CreateGraphiteTextureHolder();
   }
 
   SkColorType sk_color_type = viz::ToClosestSkColorType(format());
@@ -83,6 +86,7 @@ SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess(
     return {};
   }
 
+  end_access_state = GenerateEndAccessState();
   return {write_surface_};
 }
 
@@ -90,20 +94,18 @@ std::vector<
     scoped_refptr<SkiaGraphiteImageRepresentation::GraphiteTextureHolder>>
 SkiaGraphiteVkAndroidImageRepresentation::BeginWriteAccess(
     EndAccessState& end_access_state) {
+  CHECK(graphite_texture_holder_);
+
   if (!BeginAccessInternal(/*readonly=*/false)) {
     return {};
   }
 
-  if (!graphite_texture_holder_) {
-    graphite_texture_holder_ = CreateGraphiteTextureHolder();
-  }
-
+  end_access_state = GenerateEndAccessState();
   return {graphite_texture_holder_};
 }
 
 void SkiaGraphiteVkAndroidImageRepresentation::EndWriteAccess() {
   write_surface_ = nullptr;
-  graphite_texture_holder_.reset();
   EndAccessInternal(/*readonly=*/false);
 }
 
@@ -111,19 +113,17 @@ std::vector<
     scoped_refptr<SkiaGraphiteImageRepresentation::GraphiteTextureHolder>>
 SkiaGraphiteVkAndroidImageRepresentation::BeginReadAccess(
     EndAccessState& end_access_state) {
+  CHECK(graphite_texture_holder_);
+
   if (!BeginAccessInternal(/*readonly=*/true)) {
     return {};
   }
 
-  if (!graphite_texture_holder_) {
-    graphite_texture_holder_ = CreateGraphiteTextureHolder();
-  }
-
+  end_access_state = GenerateEndAccessState();
   return {graphite_texture_holder_};
 }
 
 void SkiaGraphiteVkAndroidImageRepresentation::EndReadAccess() {
-  graphite_texture_holder_.reset();
   EndAccessInternal(/*readonly=*/true);
 }
 
@@ -143,6 +143,7 @@ void SkiaGraphiteVkAndroidImageRepresentation::SetVulkanImage(
   CHECK(vulkan_image);
   CHECK(!vulkan_image_);
   vulkan_image_ = std::move(vulkan_image);
+  graphite_texture_holder_ = CreateGraphiteTextureHolder();
 }
 
 void SkiaGraphiteVkAndroidImageRepresentation::SetInitialFence(
@@ -272,6 +273,35 @@ SkiaGraphiteVkAndroidImageRepresentation::CreateGraphiteTextureHolder() {
 
   return base::MakeRefCounted<GraphiteTextureHolder>(
       std::move(backend_texture));
+}
+
+SkiaGraphiteImageRepresentation::EndAccessState
+SkiaGraphiteVkAndroidImageRepresentation::GenerateEndAccessState() {
+  // `kSingleDeviceUsage` defines the set of usages for which only the Vulkan
+  // device from SharedContextState is used. If the SI has any usages outside
+  // this set (e.g., if it has any GLES2 usage), then it will be accessed
+  // beyond the Vulkan device from SharedContextState and hence does not have
+  // single-device usage.
+  static constexpr SharedImageUsageSet kSingleDeviceUsage =
+      SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE |
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+
+  // If SharedImage is used outside of current VkDeviceQueue we need to transfer
+  // image back to it's original queue. Note, that for multithreading we use
+  // same vkDevice, so technically we could transfer between queues instead of
+  // jumping to external queue. But currently it's not possible because we
+  // create new vkImage each time.
+  if (kSingleDeviceUsage.HasAll(android_backing()->usage()) &&
+      !android_backing()->is_thread_safe()) {
+    return {};
+  }
+
+  return EndAccessState(
+      context_state_->graphite_shared_context(),
+      graphite_texture_holder_->texture(),
+      std::make_unique<skgpu::MutableTextureState>(
+          skgpu::MutableTextureStates::MakeVulkan(
+              VK_IMAGE_LAYOUT_UNDEFINED, vulkan_image_->queue_family_index())));
 }
 
 }  // namespace gpu

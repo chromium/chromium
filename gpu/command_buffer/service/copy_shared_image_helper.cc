@@ -994,7 +994,8 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
                         /*numLevels=*/1, release_proc, graphite_texture_ptr);
     }
     if (!written) {
-      dest_scoped_access->ApplyBackendSurfaceEndState();
+      // Ensure that any recorded work for planes is inserted.
+      shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
       shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
                                                need_graphite_submit);
       return base::unexpected(

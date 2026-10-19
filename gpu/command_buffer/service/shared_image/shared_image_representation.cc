@@ -5,11 +5,13 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
@@ -624,11 +626,34 @@ SkiaGraphiteImageRepresentation::SkiaGraphiteImageRepresentation(
 SkiaGraphiteImageRepresentation::EndAccessState::EndAccessState() = default;
 
 SkiaGraphiteImageRepresentation::EndAccessState::EndAccessState(
-    EndAccessState&& other) = default;
+    GraphiteSharedContext* context,
+    skgpu::graphite::BackendTexture texture,
+    std::unique_ptr<skgpu::MutableTextureState> end_state)
+    : context_(context),
+      texture_(std::move(texture)),
+      end_state_(std::move(end_state)) {
+  CHECK(context_);
+  CHECK(texture_.isValid());
+  CHECK(end_state_->isValid());
+}
+
+SkiaGraphiteImageRepresentation::EndAccessState::EndAccessState(
+    EndAccessState&& other)
+    : context_(std::exchange(other.context_, nullptr)),
+      texture_(std::exchange(other.texture_, {})),
+      end_state_(std::move(other.end_state_)) {}
 
 SkiaGraphiteImageRepresentation::EndAccessState&
 SkiaGraphiteImageRepresentation::EndAccessState::operator=(
-    EndAccessState&& other) = default;
+    EndAccessState&& other) {
+  if (this != &other) {
+    CHECK(!NeedsApply());
+    context_ = std::exchange(other.context_, nullptr);
+    texture_ = std::exchange(other.texture_, {});
+    end_state_ = std::move(other.end_state_);
+  }
+  return *this;
+}
 
 SkiaGraphiteImageRepresentation::EndAccessState::~EndAccessState() {
   CHECK(!NeedsApply());
@@ -638,7 +663,10 @@ void SkiaGraphiteImageRepresentation::EndAccessState::Apply() {
   if (!NeedsApply()) {
     return;
   }
-  // TODO(crbug.com/40945084): Implement.
+  if (!context_->setMutableState(texture_, *end_state_)) {
+    LOG(ERROR) << "setMutableState() failed.";
+  }
+  context_ = nullptr;
 }
 
 SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::

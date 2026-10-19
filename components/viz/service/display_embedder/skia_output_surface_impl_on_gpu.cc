@@ -720,6 +720,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     }
     bool insert_success = graphite_shared_context()->insertRecording(info);
     RecordInsertRenderPassRecording(insert_success);
+    scoped_access->ApplyBackendSurfaceEndState();
     if (local_scoped_access &&
         local_scoped_access->NeedGraphiteContextSubmit()) {
       graphite_shared_context()->submit();
@@ -1190,15 +1191,19 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
 
   CHECK(graphite_recorder());
   auto recording = graphite_recorder()->snap();
+  bool success = false;
   if (recording) {
     skgpu::graphite::InsertRecordingInfo info = {};
     info.fRecording = recording.get();
     info.fTargetSurface = surface;
     info.fFinishedContext = finished_context;
     info.fFinishedProc = graphite_finished_proc;
-    return graphite_shared_context()->insertRecording(info);
+    success = graphite_shared_context()->insertRecording(info);
   }
-  return false;
+  if (scoped_write_access) {
+    scoped_write_access->ApplyBackendSurfaceEndState();
+  }
+  return success;
 }
 
 bool SkiaOutputSurfaceImplOnGpu::FlushAndSubmitCopyOutput(
@@ -1421,6 +1426,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
   if (!intermediate_surface) {
     DVLOG(1) << "failed to create surface for the intermediate texture";
+    mailbox_access_data.scoped_write->ApplyBackendSurfaceEndState();
     // Send empty result.
     return;
   }
@@ -1449,6 +1455,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   auto intermediate_image = intermediate_surface->makeImageSnapshot();
   if (!intermediate_image) {
     DLOG(ERROR) << "failed to retrieve `intermediate_image`.";
+    mailbox_access_data.scoped_write->ApplyBackendSurfaceEndState();
     return;
   }
 

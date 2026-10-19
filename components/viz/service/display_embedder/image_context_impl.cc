@@ -400,6 +400,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   graphite_ycbcr_info_mismatch_ = false;
   if (!ValidateYCbCrInfo(context_state)) {
     graphite_ycbcr_info_mismatch_ = true;
+    representation_scoped_read_access_->ApplyBackendSurfaceEndState();
     representation_scoped_read_access_.reset();
     return false;
   }
