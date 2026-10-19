@@ -101,7 +101,7 @@ bool VulkanInstance::BindUnassignedFunctionPointers(
 
   VulkanFunctionPointers* vulkan_function_pointers =
       gpu::GetVulkanFunctionPointers();
-  if (vulkan_function_pointers->vkGetInstanceProcAddr) {
+  if (vulkan_function_pointers->BindSucceeded()) {
     return true;
   }
 

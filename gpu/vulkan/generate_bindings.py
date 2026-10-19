@@ -559,6 +559,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
       uint32_t api_version,
       const gfx::ExtensionSet& enabled_extensions);
 
+  bool BindSucceeded();
+
   void ResetForTesting();
 
   // This is used to allow thread safe access to a given vulkan queue when
@@ -809,6 +811,11 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   out_file.write("""\
 
   return true;
+}
+
+bool VulkanFunctionPointers::BindSucceeded() {
+  base::AutoLock lock(write_lock_);
+  return !!vkGetInstanceProcAddr;
 }
 
 void VulkanFunctionPointers::ResetForTesting() {

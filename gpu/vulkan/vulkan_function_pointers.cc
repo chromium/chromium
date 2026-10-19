@@ -1316,6 +1316,11 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   return true;
 }
 
+bool VulkanFunctionPointers::BindSucceeded() {
+  base::AutoLock lock(write_lock_);
+  return !!vkGetInstanceProcAddr;
+}
+
 void VulkanFunctionPointers::ResetForTesting() {
   base::AutoLock lock(write_lock_);
 
