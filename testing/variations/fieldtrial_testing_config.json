@@ -1661,26 +1661,6 @@
             ]
         }
     ],
-    "AutofillAiM5": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAiWalletShopping"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillAiUsePrivateAi": [
         {
             "platforms": [
