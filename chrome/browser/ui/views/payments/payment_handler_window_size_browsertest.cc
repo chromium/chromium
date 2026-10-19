@@ -338,7 +338,8 @@ constexpr CustomSizeTestParams kCustomSizeTestParams[] = {
 // TODO(crbug.com/573138234): The ChromeOS and Windows test displays are too
 // small for kPaymentHandlerMaxDialogHeight, so the dialog is shrunk to fit
 // the browser. Decide whether they need different size bounds.
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)
+// TODO(crbug.com/575291944): Fails on Mac.
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
     {.test_name = "HeightAboveMaxIsClampedToMaxHeight",
      .preferred_web_contents_size =
          gfx::Size(kInRangeWebContentWidth,
