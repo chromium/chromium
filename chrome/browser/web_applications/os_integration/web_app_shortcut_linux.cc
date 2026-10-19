@@ -214,7 +214,8 @@ bool CreateShortcutAtLocation(const base::FilePath location_path,
                               const base::FilePath& shortcut_filename,
                               const std::string& contents) {
   // Make sure that we will later call openat in a secure way.
-  DCHECK_EQ(shortcut_filename.BaseName().value(), shortcut_filename.value());
+  CHECK_EQ(shortcut_filename.BaseName().value(), shortcut_filename.value(),
+           base::NotFatalUntil::M162);
 
   int location_fd = open(location_path.value().c_str(), O_RDONLY | O_DIRECTORY);
   if (location_fd < 0) {
@@ -369,7 +370,8 @@ DesktopActionInfo::DesktopActionInfo(const std::string& id,
   auto is_character_allowed = [](auto c) {
     return base::IsAsciiAlpha(c) || base::IsAsciiDigit(c) || c == '-';
   };
-  DCHECK(std::all_of(id.begin() + 1, id.end(), is_character_allowed));
+  CHECK(std::all_of(id.begin() + 1, id.end(), is_character_allowed),
+        base::NotFatalUntil::M162);
 #endif  // DCHECK_IS_ON()
 }
 
@@ -651,7 +653,7 @@ ShortcutLocations GetExistingShortcutLocations(
 
   base::FilePath shortcut_filename =
       GetAppDesktopShortcutFilename(profile_path, extension_id);
-  DCHECK(!shortcut_filename.empty());
+  CHECK(!shortcut_filename.empty(), base::NotFatalUntil::M162);
   ShortcutLocations locations;
 
   // Determine whether there is a shortcut on desktop.
@@ -701,7 +703,7 @@ bool DeleteDesktopShortcuts(base::Environment* env,
 
   base::FilePath shortcut_filename =
       GetAppDesktopShortcutFilename(profile_path, extension_id);
-  DCHECK(!shortcut_filename.empty());
+  CHECK(!shortcut_filename.empty(), base::NotFatalUntil::M162);
 
   bool deleted_from_desktop = DeleteShortcutOnDesktop(shortcut_filename);
   // Delete shortcuts from |kDirectoryFilename|.
@@ -866,7 +868,7 @@ std::vector<base::FilePath> GetShortcutLocations(
   std::vector<base::FilePath> shortcut_locations;
   base::FilePath shortcut_filename =
       GetAppDesktopShortcutFilename(profile_path, app_id);
-  DCHECK(!shortcut_filename.empty());
+  CHECK(!shortcut_filename.empty(), base::NotFatalUntil::M162);
 
   if (locations.on_desktop) {
     base::FilePath desktop_path = GetDesktopPath();
@@ -891,7 +893,7 @@ std::vector<base::FilePath> GetShortcutLocations(
   }
 
   // Can't retrieve file name for applications menu location.
-  DCHECK(!locations.applications_menu_location);
+  CHECK(!locations.applications_menu_location, base::NotFatalUntil::M162);
   return shortcut_locations;
 }
 

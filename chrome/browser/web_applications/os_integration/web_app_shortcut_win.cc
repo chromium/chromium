@@ -754,7 +754,7 @@ std::vector<base::FilePath> FindAppShortcutsByProfileAppIdAndTitle(
 void OnShortcutInfoLoadedForSetRelaunchDetails(
     HWND hwnd,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Set window's icon to the one we're about to create/update in the web app
   // path. The icon cache will refresh on icon creation.

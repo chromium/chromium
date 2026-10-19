@@ -66,7 +66,8 @@ bool ShouldTriggerRunOnOsLoginRegistration(
   if (!state.has_run_on_os_login()) {
     return false;
   }
-  DCHECK(state.run_on_os_login().has_run_on_os_login_mode());
+  CHECK(state.run_on_os_login().has_run_on_os_login_mode(),
+        base::NotFatalUntil::M162);
   return (state.run_on_os_login().run_on_os_login_mode() ==
           proto::os_state::RunOnOsLogin::MODE_WINDOWED);
 }
@@ -83,7 +84,7 @@ void RunOnOsLoginSubManager::Configure(
     const webapps::AppId& app_id,
     proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
-  DCHECK(!desired_state.has_run_on_os_login());
+  CHECK(!desired_state.has_run_on_os_login(), base::NotFatalUntil::M162);
 
   if (provider_->registrar_unsafe().GetInstallState(app_id) !=
       proto::INSTALLED_WITH_OS_INTEGRATION) {
@@ -108,7 +109,7 @@ void RunOnOsLoginSubManager::Execute(
     const proto::os_state::WebAppOsIntegration& desired_state,
     const proto::os_state::WebAppOsIntegration& current_state,
     base::OnceClosure execute_done) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!DoesRunOnOsLoginRequireExecution()) {
     std::move(execute_done).Run();
     return;
@@ -193,7 +194,7 @@ void RunOnOsLoginSubManager::CreateShortcutInfoWithFavicons(
   }
 
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
-  DCHECK(web_app);
+  CHECK(web_app, base::NotFatalUntil::M162);
   PopulateFaviconForShortcutInfo(
       web_app, provider_->icon_manager(),
       BuildShortcutInfoWithoutFavicon(
@@ -211,7 +212,8 @@ void RunOnOsLoginSubManager::OnShortcutInfoCreatedStartRegistration(
     const proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure execute_done,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  DCHECK(ShouldTriggerRunOnOsLoginRegistration(desired_state));
+  CHECK(ShouldTriggerRunOnOsLoginRegistration(desired_state),
+        base::NotFatalUntil::M162);
 
   ResultCallback record_metric_and_complete =
       base::BindOnce([](Result result) {

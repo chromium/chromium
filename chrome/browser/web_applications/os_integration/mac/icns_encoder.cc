@@ -103,7 +103,7 @@ bool IcnsEncoder::AddImage(const gfx::Image& image) {
     // If there is a legacy image type for this size we should use that rather
     // than the png format, as many places in Mac OS do not properly support png
     // icons for sizes that also support a legacy format.
-    DCHECK(block_types->mask_type != 0);
+    CHECK(block_types->mask_type != 0, base::NotFatalUntil::M162);
     ImageBytes bytes = ExtractImageBytes(bitmap);
     std::vector<uint8_t> image_data;
     AppendRLEImageData(bytes.r, &image_data);
@@ -112,7 +112,7 @@ bool IcnsEncoder::AddImage(const gfx::Image& image) {
     AppendBlock(block_types->image_type, std::move(image_data));
     AppendBlock(block_types->mask_type, std::move(bytes.a));
   } else {
-    DCHECK(block_types->png_type != 0);
+    CHECK(block_types->png_type != 0, base::NotFatalUntil::M162);
     std::optional<std::vector<uint8_t>> png_data =
         gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
                                           /*discard_transparency=*/false);

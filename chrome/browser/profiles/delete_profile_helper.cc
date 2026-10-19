@@ -63,7 +63,7 @@ void ProfileCleanedUp(base::Value profile_path_value) {
 // It is called when every ephemeral profile is handled.
 void RemoveFromLastActiveProfilesPrefList(const base::FilePath& path) {
   PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M162);
   ScopedListPrefUpdate update(local_state, prefs::kProfilesLastActive);
   base::ListValue& profile_list = update.Get();
   base::Value entry_value = base::Value(path.BaseName().AsUTF8Unsafe());

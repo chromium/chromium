@@ -59,7 +59,7 @@ void ProtocolHandlingSubManager::Configure(
     const webapps::AppId& app_id,
     proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
-  DCHECK(!desired_state.has_protocols_handled());
+  CHECK(!desired_state.has_protocols_handled(), base::NotFatalUntil::M162);
   if (provider_->registrar_unsafe().GetInstallState(app_id) !=
       proto::INSTALLED_WITH_OS_INTEGRATION) {
     std::move(configure_done).Run();
@@ -67,7 +67,7 @@ void ProtocolHandlingSubManager::Configure(
   }
 
   const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
-  DCHECK(web_app);
+  CHECK(web_app, base::NotFatalUntil::M162);
 
   for (const auto& protocol_handler : web_app->protocol_handlers()) {
     if (web_app->disallowed_launch_protocols().contains(
@@ -123,8 +123,8 @@ void ProtocolHandlingSubManager::Execute(
 
   // If an update is required, then both states should have protocol handling
   // information.
-  DCHECK(desired_state.has_protocols_handled());
-  DCHECK(current_state.has_protocols_handled());
+  CHECK(desired_state.has_protocols_handled(), base::NotFatalUntil::M162);
+  CHECK(current_state.has_protocols_handled(), base::NotFatalUntil::M162);
 
   // Protocol Handling Diff detection.
   if (desired_state.protocols_handled() == current_state.protocols_handled()) {

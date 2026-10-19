@@ -38,7 +38,7 @@ apps::FileHandlers ConvertFileHandlingProtoToFileHandlers(
   for (const auto& file_handler_proto : file_handling_proto.file_handlers()) {
     apps::FileHandler file_handler;
     file_handler.action = GURL(file_handler_proto.action());
-    DCHECK(file_handler.action.is_valid());
+    CHECK(file_handler.action.is_valid(), base::NotFatalUntil::M162);
     file_handler.display_name =
         base::UTF8ToUTF16(file_handler_proto.display_name());
     for (const auto& accept_entry_proto : file_handler_proto.accept()) {
@@ -109,7 +109,7 @@ void FileHandlingSubManager::Configure(
     const webapps::AppId& app_id,
     proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
-  DCHECK(!desired_state.has_file_handling());
+  CHECK(!desired_state.has_file_handling(), base::NotFatalUntil::M162);
   const bool is_user_disallowed =
       provider_->registrar_unsafe().GetAppFileHandlerUserApprovalState(
           app_id) == ApiApprovalState::kDisallowed;
@@ -135,7 +135,7 @@ void FileHandlingSubManager::Configure(
   for (const auto& file_handler :
        *provider_->registrar_unsafe().GetAppFileHandlers(app_id)) {
     proto::os_state::FileHandling::FileHandler file_handler_proto;
-    DCHECK(file_handler.action.is_valid());
+    CHECK(file_handler.action.is_valid(), base::NotFatalUntil::M162);
     file_handler_proto.set_action(file_handler.action.spec());
     file_handler_proto.set_display_name(
         base::UTF16ToUTF8(file_handler.display_name));

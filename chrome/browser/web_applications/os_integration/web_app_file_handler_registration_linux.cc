@@ -118,8 +118,8 @@ void RefreshMimeInfoCache() {
 bool UpdateMimeInfoDatabase(bool install,
                             base::FilePath filename,
                             std::string file_contents) {
-  DCHECK(!filename.empty());
-  DCHECK_NE(install, file_contents.empty());
+  CHECK(!filename.empty(), base::NotFatalUntil::M162);
+  CHECK_NE(install, file_contents.empty(), base::NotFatalUntil::M162);
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
@@ -187,7 +187,7 @@ void RegisterFileHandlersWithOs(const webapps::AppId& app_id,
                                 const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback) {
-  DCHECK(!file_handlers.empty());
+  CHECK(!file_handlers.empty(), base::NotFatalUntil::M162);
   InstallMimeInfoOnLinux(app_id, profile_path, file_handlers,
                          std::move(callback));
 }
@@ -202,7 +202,7 @@ void InstallMimeInfoOnLinux(const webapps::AppId& app_id,
                             const base::FilePath& profile_path,
                             const apps::FileHandlers& file_handlers,
                             ResultCallback done_callback) {
-  DCHECK(!app_id.empty() && !file_handlers.empty());
+  CHECK(!app_id.empty() && !file_handlers.empty(), base::NotFatalUntil::M162);
 
   base::FilePath filename =
       shell_integration_linux::GetMimeTypesRegistrationFilename(profile_path,

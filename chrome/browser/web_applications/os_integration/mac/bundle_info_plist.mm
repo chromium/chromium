@@ -94,7 +94,7 @@ BundleInfoPlist::~BundleInfoPlist() = default;
 bool BundleInfoPlist::IsForCurrentUserDataDir() const {
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(!user_data_dir.empty());
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M162);
   return base::StartsWith(
       base::SysNSStringToUTF8(
           objc_storage_->plist[app_mode::kCrAppModeUserDataDirKey]),

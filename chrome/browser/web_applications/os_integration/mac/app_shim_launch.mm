@@ -47,8 +47,8 @@ void RunAppLaunchCallbacks(
     NSRunningApplication* app,
     base::OnceCallback<void(base::Process)> launch_callback,
     base::OnceClosure termination_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(app);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(app, base::NotFatalUntil::M162);
 
   // If the app doesn't have a valid pid, or if the application has been
   // terminated, then indicate failure in |launch_callback|.

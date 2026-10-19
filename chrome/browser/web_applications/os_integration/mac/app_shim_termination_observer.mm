@@ -34,7 +34,7 @@
 
 - (instancetype)initWithRunningApplication:(NSRunningApplication*)app
                                   callback:(base::OnceClosure)callback {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (self = [super init]) {
     _callback = std::move(callback);
     _app = app;
@@ -64,7 +64,7 @@
 }
 
 - (void)onTerminated {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // If |onTerminated| is called repeatedly (which in theory it should not),
   // then ensure that we only call removeObserver and release once by doing an
   // early-out if |callback_| has already been made.
@@ -72,7 +72,7 @@
     return;
   }
   std::move(_callback).Run();
-  DCHECK(!_callback);
+  CHECK(!_callback, base::NotFatalUntil::M162);
 
   [_app removeObserver:self forKeyPath:@"isTerminated" context:nullptr];
 

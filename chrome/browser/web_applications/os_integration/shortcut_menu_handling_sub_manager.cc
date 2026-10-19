@@ -70,7 +70,7 @@ void ShortcutMenuHandlingSubManager::Configure(
     const webapps::AppId& app_id,
     proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
-  DCHECK(!desired_state.has_shortcut_menus());
+  CHECK(!desired_state.has_shortcut_menus(), base::NotFatalUntil::M162);
 
   if (provider_->registrar_unsafe().GetInstallState(app_id) !=
       proto::INSTALLED_WITH_OS_INTEGRATION) {

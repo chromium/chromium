@@ -276,9 +276,9 @@ gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon) {
 }
 
 NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
-  DCHECK(background);
+  CHECK(background, base::NotFatalUntil::M162);
   NSInteger dimension = overlay.pixelsWide;
-  DCHECK_EQ(dimension, overlay.pixelsHigh);
+  CHECK_EQ(dimension, overlay.pixelsHigh, base::NotFatalUntil::M162);
   NSBitmapImageRep* canvas = [[NSBitmapImageRep alloc]
       initWithBitmapDataPlanes:nullptr
                     pixelsWide:dimension
@@ -344,14 +344,14 @@ NSImageRep* GetImageRepFromResourceBundle(int resource_id) {
   ui::ResourceBundle& resource_bundle = ui::ResourceBundle::GetSharedInstance();
   gfx::Image image = resource_bundle.GetNativeImageNamed(resource_id);
   NSArray* image_reps = image.AsNSImage().representations;
-  DCHECK_EQ(1u, image_reps.count);
+  CHECK_EQ(1u, image_reps.count, base::NotFatalUntil::M162);
   return image_reps[0];
 }
 
 }  // namespace
 
 ResourceIDToImage GetImageResourcesOnUIThread() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   ResourceIDToImage result;
   for (int id : {IDR_APPS_FOLDER_16, IDR_APPS_FOLDER_32,
@@ -379,7 +379,7 @@ NSImage* CreateMacAppsFolderIcon(const ResourceIDToImage& images) {
   const auto& img_128 = images.find(IDR_APPS_FOLDER_OVERLAY_128);
   if (img_128 != images.end() && img_128->second) {
     NSImageRep* with_overlay = OverlayImageRep(base_image, img_128->second);
-    DCHECK(with_overlay);
+    CHECK(with_overlay, base::NotFatalUntil::M162);
     if (with_overlay) {
       [folder_icon_image addRepresentation:with_overlay];
     }
@@ -387,7 +387,7 @@ NSImage* CreateMacAppsFolderIcon(const ResourceIDToImage& images) {
   const auto& img_512 = images.find(IDR_APPS_FOLDER_OVERLAY_512);
   if (img_512 != images.end() && img_512->second) {
     NSImageRep* with_overlay = OverlayImageRep(base_image, img_512->second);
-    DCHECK(with_overlay);
+    CHECK(with_overlay, base::NotFatalUntil::M162);
     if (with_overlay) {
       [folder_icon_image addRepresentation:with_overlay];
     }
@@ -398,7 +398,7 @@ NSImage* CreateMacAppsFolderIcon(const ResourceIDToImage& images) {
 
 void GetMacAppsFolderImageAsync(int size,
                                 base::OnceCallback<void(gfx::Image)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   ResourceIDToImage images = GetImageResourcesOnUIThread();
 

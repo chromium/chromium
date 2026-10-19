@@ -38,7 +38,7 @@ void UserUninstalledPreinstalledWebAppPrefs::RegisterProfilePrefs(
 void UserUninstalledPreinstalledWebAppPrefs::Add(
     const webapps::AppId& app_id,
     base::flat_set<GURL> install_urls) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   base::ListValue url_list;
 
   AppendExistingInstallUrlsPerAppId(app_id, install_urls);
@@ -59,7 +59,7 @@ void UserUninstalledPreinstalledWebAppPrefs::Add(
 std::optional<webapps::AppId>
 UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
     const GURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
@@ -72,6 +72,7 @@ UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
       continue;
     for (const base::Value& link : *urls) {
       GURL install_url(link.GetString());
+      // CHECK-exclusion: URLs are read from on-disk Preferences.
       DCHECK(install_url.is_valid());
       if (install_url == url)
         return it.first;
@@ -82,7 +83,7 @@ UserUninstalledPreinstalledWebAppPrefs::LookUpAppIdByInstallUrl(
 
 bool UserUninstalledPreinstalledWebAppPrefs::DoesAppIdExist(
     const webapps::AppId& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
@@ -92,7 +93,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::DoesAppIdExist(
 void UserUninstalledPreinstalledWebAppPrefs::AppendExistingInstallUrlsPerAppId(
     const webapps::AppId& app_id,
     base::flat_set<GURL>& urls) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
@@ -106,13 +107,14 @@ void UserUninstalledPreinstalledWebAppPrefs::AppendExistingInstallUrlsPerAppId(
   for (const base::Value& url : *current_list) {
     // This is being done so as to remove duplicate urls from being
     // added to the list.
+    // CHECK-exclusion: URLs are read from on-disk Preferences.
     DCHECK(GURL(url.GetString()).is_valid());
     urls.emplace(url.GetString());
   }
 }
 
 int UserUninstalledPreinstalledWebAppPrefs::Size() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
@@ -122,7 +124,7 @@ int UserUninstalledPreinstalledWebAppPrefs::Size() {
 bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
     const webapps::AppId& app_id,
     const GURL& install_url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
@@ -160,7 +162,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::RemoveByInstallUrl(
 
 bool UserUninstalledPreinstalledWebAppPrefs::RemoveByAppId(
     const webapps::AppId& app_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   const base::DictValue& ids_to_urls =
       pref_service_->GetDict(prefs::kUserUninstalledPreinstalledWebAppPref);
 
@@ -177,7 +179,7 @@ bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
     const base::flat_map<WebAppManagement::Type,
                          WebApp::ExternalManagementConfig>& url_map,
     const bool only_default) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (url_map.empty())
     return false;
 

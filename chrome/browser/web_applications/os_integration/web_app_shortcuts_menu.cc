@@ -23,7 +23,7 @@ void RegisterShortcutsMenuWithOs(
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
     RegisterShortcutsMenuCallback callback) {
   NOTIMPLEMENTED();
-  DCHECK(ShouldRegisterShortcutsMenuWithOs());
+  CHECK(ShouldRegisterShortcutsMenuWithOs(), base::NotFatalUntil::M162);
   std::move(callback).Run(Result::kOk);
 }
 
@@ -31,7 +31,7 @@ bool UnregisterShortcutsMenuWithOs(const webapps::AppId& app_id,
                                    const base::FilePath& profile_path,
                                    RegisterShortcutsMenuCallback callback) {
   NOTIMPLEMENTED();
-  DCHECK(ShouldRegisterShortcutsMenuWithOs());
+  CHECK(ShouldRegisterShortcutsMenuWithOs(), base::NotFatalUntil::M162);
 
   std::move(callback).Run(Result::kOk);
   return true;

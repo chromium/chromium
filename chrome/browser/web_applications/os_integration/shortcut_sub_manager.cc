@@ -56,7 +56,7 @@ void ShortcutSubManager::Configure(
     const webapps::AppId& app_id,
     proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
-  DCHECK(!desired_state.has_shortcut());
+  CHECK(!desired_state.has_shortcut(), base::NotFatalUntil::M162);
 
   desired_state.clear_shortcut();
 
@@ -87,7 +87,7 @@ void ShortcutSubManager::Execute(
       provider_->registrar_unsafe().GetAppStartUrl(app_id));
 
   const WebApp* app = provider_->registrar_unsafe().GetAppById(app_id);
-  DCHECK(app);
+  CHECK(app, base::NotFatalUntil::M162);
 
   const bool force_update_shortcuts =
       synchronize_options.has_value() &&
@@ -176,8 +176,8 @@ void ShortcutSubManager::Execute(
   auto [callback_for_update, callback_for_no_update] =
       base::SplitOnceCallback(std::move(callback));
 
-  DCHECK(desired_state.has_shortcut());
-  DCHECK(current_state.has_shortcut());
+  CHECK(desired_state.has_shortcut(), base::NotFatalUntil::M162);
+  CHECK(current_state.has_shortcut(), base::NotFatalUntil::M162);
 
   // Note: This callback is either called immediately (and synchronously), or
   // not at all. This is why the usage of `std::ref` and `app` is safe.

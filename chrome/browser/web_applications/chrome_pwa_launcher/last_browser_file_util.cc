@@ -36,13 +36,13 @@ base::FilePath ReadChromePathFromLastBrowserFile(
 }
 
 void WriteChromePathToLastBrowserFile(const base::FilePath& user_data_dir) {
-  DCHECK(!user_data_dir.empty());
+  CHECK(!user_data_dir.empty(), base::NotFatalUntil::M162);
   base::FilePath chrome_path;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_path))
     return;
 
   const base::FilePath::StringType& chrome_path_str = chrome_path.value();
-  DCHECK(!chrome_path_str.empty());
+  CHECK(!chrome_path_str.empty(), base::NotFatalUntil::M162);
   base::WriteFile(user_data_dir.Append(kLastBrowserFilename),
                   base::as_byte_span(chrome_path_str));
 }

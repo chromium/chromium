@@ -25,33 +25,35 @@ bool RegistryUpdateData::IsEmpty() const {
 WebAppRegistryUpdate::WebAppRegistryUpdate(const WebAppRegistrar* registrar,
                                            base::PassKey<WebAppSyncBridge>)
     : registrar_(registrar) {
-  DCHECK(registrar_);
+  CHECK(registrar_, base::NotFatalUntil::M162);
   update_data_ = std::make_unique<RegistryUpdateData>();
 }
 
 WebAppRegistryUpdate::~WebAppRegistryUpdate() = default;
 
 void WebAppRegistryUpdate::CreateApp(std::unique_ptr<WebApp> web_app) {
-  DCHECK(update_data_);
+  CHECK(update_data_, base::NotFatalUntil::M162);
   CHECK(web_app->manifest_id().is_valid());
-  DCHECK(!web_app->app_id().empty());
-  DCHECK(!registrar_->GetAppById(web_app->app_id()));
-  DCHECK(!std::ranges::contains(update_data_->apps_to_create, web_app));
+  CHECK(!web_app->app_id().empty(), base::NotFatalUntil::M162);
+  CHECK(!registrar_->GetAppById(web_app->app_id()), base::NotFatalUntil::M162);
+  CHECK(!std::ranges::contains(update_data_->apps_to_create, web_app),
+        base::NotFatalUntil::M162);
 
   update_data_->apps_to_create.push_back(std::move(web_app));
 }
 
 void WebAppRegistryUpdate::DeleteApp(const webapps::AppId& app_id) {
-  DCHECK(update_data_);
-  DCHECK(!app_id.empty());
-  DCHECK(registrar_->GetAppById(app_id));
-  DCHECK(!std::ranges::contains(update_data_->apps_to_delete, app_id));
+  CHECK(update_data_, base::NotFatalUntil::M162);
+  CHECK(!app_id.empty(), base::NotFatalUntil::M162);
+  CHECK(registrar_->GetAppById(app_id), base::NotFatalUntil::M162);
+  CHECK(!std::ranges::contains(update_data_->apps_to_delete, app_id),
+        base::NotFatalUntil::M162);
 
   update_data_->apps_to_delete.push_back(app_id);
 }
 
 WebApp* WebAppRegistryUpdate::UpdateApp(const webapps::AppId& app_id) {
-  DCHECK(update_data_);
+  CHECK(update_data_, base::NotFatalUntil::M162);
   const WebApp* original_app = registrar_->GetAppById(app_id);
   if (!original_app)
     return nullptr;

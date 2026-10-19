@@ -322,7 +322,7 @@ void IsolationDataLocationToProto(const IsolatedWebAppStorageLocation& location,
                 FilePathToProto(bundle.path()));
           },
           [&proto](const IwaStorageProxy& proxy) {
-            DCHECK(!proxy.proxy_url().opaque());
+            CHECK(!proxy.proxy_url().opaque(), base::NotFatalUntil::M162);
             proto->mutable_proxy()->set_proxy_url(
                 proxy.proxy_url().Serialize());
           },
@@ -1535,17 +1535,18 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   // Required fields:
   const GURL start_url = web_app.start_url();
-  DCHECK(start_url.is_valid());
+  CHECK(start_url.is_valid(), base::NotFatalUntil::M162);
 
-  DCHECK(!web_app.app_id().empty());
-  DCHECK(web_app.manifest_id().is_valid());
+  CHECK(!web_app.app_id().empty(), base::NotFatalUntil::M162);
+  CHECK(web_app.manifest_id().is_valid(), base::NotFatalUntil::M162);
 
   // Set sync data to sync proto.
   *(local_data->mutable_sync_data()) = web_app.sync_proto();
 
   local_data->set_name(web_app.untranslated_name());
 
-  DCHECK(!web_app.sources_.empty() || web_app.is_uninstalling());
+  CHECK(!web_app.sources_.empty() || web_app.is_uninstalling(),
+        base::NotFatalUntil::M162);
   local_data->mutable_sources()->set_system(
       web_app.sources_.Has(WebAppManagement::kSystem));
   local_data->mutable_sources()->set_policy(
@@ -1684,7 +1685,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
   for (const auto& file_handler : web_app.file_handlers()) {
     proto::WebAppFileHandler* file_handler_proto =
         local_data->add_file_handlers();
-    DCHECK(file_handler.action.is_valid());
+    CHECK(file_handler.action.is_valid(), base::NotFatalUntil::M162);
     file_handler_proto->set_action(file_handler.action.spec());
     file_handler_proto->set_display_name(
         base::UTF16ToUTF8(file_handler.display_name));
@@ -1758,7 +1759,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
             break;
         }
 
-        DCHECK(!icon_info.url.is_empty());
+        CHECK(!icon_info.url.is_empty(), base::NotFatalUntil::M162);
         shortcut_icon_info_proto->set_url(icon_info.url.spec());
         shortcut_icon_info_proto->set_size_in_px(icon_info.square_size_px);
       }
@@ -1783,7 +1784,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   for (const auto& additional_search_term : web_app.additional_search_terms()) {
     // Additional search terms should be sanitized before being added here.
-    DCHECK(!additional_search_term.empty());
+    CHECK(!additional_search_term.empty(), base::NotFatalUntil::M162);
     local_data->add_additional_search_terms(additional_search_term);
   }
 
@@ -1796,13 +1797,13 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   for (const auto& allowed_launch_protocols :
        web_app.allowed_launch_protocols()) {
-    DCHECK(!allowed_launch_protocols.empty());
+    CHECK(!allowed_launch_protocols.empty(), base::NotFatalUntil::M162);
     local_data->add_allowed_launch_protocols(allowed_launch_protocols);
   }
 
   for (const auto& disallowed_launch_protocols :
        web_app.disallowed_launch_protocols()) {
-    DCHECK(!disallowed_launch_protocols.empty());
+    CHECK(!disallowed_launch_protocols.empty(), base::NotFatalUntil::M162);
     local_data->add_disallowed_launch_protocols(disallowed_launch_protocols);
   }
 
@@ -1869,11 +1870,11 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       management_config_proto->set_is_placeholder(
           external_config.is_placeholder);
       for (const auto& url : external_config.install_urls) {
-        DCHECK(url.is_valid());
+        CHECK(url.is_valid(), base::NotFatalUntil::M162);
         management_config_proto->add_install_urls(url.spec());
       }
       for (const auto& policy_id : external_config.additional_policy_ids) {
-        DCHECK(!policy_id.empty());
+        CHECK(!policy_id.empty(), base::NotFatalUntil::M162);
         management_config_proto->add_additional_policy_ids(policy_id);
       }
     }

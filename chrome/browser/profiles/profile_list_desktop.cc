@@ -25,7 +25,7 @@ size_t ProfileListDesktop::GetNumberOfItems() const {
 }
 
 const AvatarMenu::Item& ProfileListDesktop::GetItemAt(size_t index) const {
-  DCHECK_LT(index, items_.size());
+  CHECK_LT(index, items_.size(), base::NotFatalUntil::M162);
   return *items_[index];
 }
 

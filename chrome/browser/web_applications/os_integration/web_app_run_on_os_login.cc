@@ -41,7 +41,7 @@ void RegisterRunOnOsLoginAndPostCallback(
 
 void ScheduleRegisterRunOnOsLogin(std::unique_ptr<ShortcutInfo> shortcut_info,
                                   ResultCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   internals::PostAsyncShortcutIOTask(
       base::BindOnce(&RegisterRunOnOsLoginAndPostCallback, std::move(callback)),
@@ -52,7 +52,7 @@ void ScheduleUnregisterRunOnOsLogin(const std::string& app_id,
                                     const base::FilePath& profile_path,
                                     const std::u16string& shortcut_title,
                                     ResultCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,

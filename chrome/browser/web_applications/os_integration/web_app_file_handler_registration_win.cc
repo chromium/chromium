@@ -95,7 +95,7 @@ void RegisterFileHandlersWithOs(const webapps::AppId& app_id,
                                 const base::FilePath& profile_path,
                                 const apps::FileHandlers& file_handlers,
                                 ResultCallback callback) {
-  DCHECK(!file_handlers.empty());
+  CHECK(!file_handlers.empty(), base::NotFatalUntil::M162);
 
   const std::wstring app_name_extension =
       GetAppNameExtensionForNextInstall(app_id, profile_path);

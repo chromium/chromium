@@ -31,8 +31,8 @@ std::string GetOriginName(ProfileKeepAliveOrigin origin) {
 std::unique_ptr<ScopedProfileKeepAlive> ScopedProfileKeepAlive::TryAcquire(
     Profile* profile,
     ProfileKeepAliveOrigin origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (AddKeepAlive(profile, origin)) {
     auto keep_alive = base::WrapUnique(new ScopedProfileKeepAlive());
     keep_alive->profile_ = profile->GetWeakPtr();
@@ -46,13 +46,13 @@ std::unique_ptr<ScopedProfileKeepAlive> ScopedProfileKeepAlive::TryAcquire(
 ScopedProfileKeepAlive::ScopedProfileKeepAlive(Profile* profile,
                                                ProfileKeepAliveOrigin origin)
     : profile_(profile->GetWeakPtr()), origin_(origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(profile_, base::NotFatalUntil::M162);
   AddKeepAlive(profile, origin);
 }
 
 ScopedProfileKeepAlive::~ScopedProfileKeepAlive() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!base::FeatureList::IsEnabled(features::kDestroyProfileOnBrowserClose)) {
     // Decrementing the refcount won't cause Profile destruction in this
     // configuration, so we don't need to post a task.
@@ -76,7 +76,7 @@ void ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread(
     ProfileKeepAliveOrigin origin) {
   SCOPED_CRASH_KEY_STRING32("ProfileKeepAlive", "origin",
                             GetOriginName(origin));
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // |g_browser_process| could be nullptr if this is called during shutdown,
   // e.g. in tests.
   if (!g_browser_process) {

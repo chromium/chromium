@@ -102,7 +102,8 @@ bool WriteShortcutsMenuIconsToIcoFiles(
         GetShortcutIconPath(shortcut_data_dir, icon_index);
     gfx::ImageFamily image_family;
     for (const auto& item : icon_bitmaps.any) {
-      DCHECK_NE(item.second.colorType(), kUnknown_SkColorType);
+      CHECK_NE(item.second.colorType(), kUnknown_SkColorType,
+               base::NotFatalUntil::M162);
       image_family.Add(gfx::Image::CreateFrom1xBitmap(item.second));
     }
     if (!IconUtil::CreateIconFileFromImageFamily(image_family, icon_file)) {

@@ -20,11 +20,12 @@ apps::AppLaunchParams WebAppUiManager::CreateAppLaunchParamsWithoutWindowConfig(
     const std::optional<GURL>& file_launch_url,
     const std::vector<base::FilePath>& launch_files) {
   // At most one of these parameters should be non-empty.
-  DCHECK_LE(protocol_handler_launch_url.has_value() + !launch_files.empty(), 1);
+  CHECK_LE(protocol_handler_launch_url.has_value() + !launch_files.empty(), 1,
+           base::NotFatalUntil::M162);
 
   apps::LaunchSource launch_source = apps::LaunchSource::kFromCommandLine;
   if (!launch_files.empty()) {
-    DCHECK(file_launch_url.has_value());
+    CHECK(file_launch_url.has_value(), base::NotFatalUntil::M162);
     launch_source = apps::LaunchSource::kFromFileManager;
   }
 

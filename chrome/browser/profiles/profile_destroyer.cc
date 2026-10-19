@@ -102,12 +102,12 @@ class OriginalProfileDestroyer : public ProfileDestroyer {
   Profile* GetProfile() override { return profile_.get(); }
 
   void DoDestroyUnderlyingProfile() override {
-    DCHECK(profile_);
+    CHECK(profile_, base::NotFatalUntil::M162);
     ProfileDestroyer::DestroyOriginalProfileNow(std::move(profile_));
   }
 
   void RetryDestroyUnderlyingProfile() override {
-    DCHECK(profile_);
+    CHECK(profile_, base::NotFatalUntil::M162);
     ProfileDestroyer::DestroyOriginalProfileWhenAppropriateWithTimeout(
         std::move(profile_), timeout());
   }
@@ -141,9 +141,11 @@ void ProfileDestroyer::DestroyOriginalProfileWhenAppropriate(
 void ProfileDestroyer::DestroyOriginalProfileWhenAppropriateWithTimeout(
     std::unique_ptr<Profile> profile,
     base::TimeDelta timeout) {
-  DCHECK(profile);
-  DCHECK_EQ(profile.get(), profile->GetOriginalProfile());
-  DCHECK(!GetPendingDestroyerForProfile(profile.get()));
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK_EQ(profile.get(), profile->GetOriginalProfile(),
+           base::NotFatalUntil::M162);
+  CHECK(!GetPendingDestroyerForProfile(profile.get()),
+        base::NotFatalUntil::M162);
 
   TRACE_EVENT(
       "shutdown",
@@ -196,8 +198,8 @@ void ProfileDestroyer::DestroyOTRProfileImmediately(Profile* profile) {
 void ProfileDestroyer::DestroyOTRProfileWhenAppropriateWithTimeout(
     Profile* profile,
     base::TimeDelta timeout) {
-  DCHECK(profile);
-  DCHECK_NE(profile, profile->GetOriginalProfile());
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK_NE(profile, profile->GetOriginalProfile(), base::NotFatalUntil::M162);
 
   if (GetPendingDestroyerForProfile(profile))
     return;
@@ -234,8 +236,8 @@ void ProfileDestroyer::DestroyPendingProfilesForShutdown() {
 
 // static
 void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* profile) {
-  DCHECK(profile);
-  DCHECK(profile->IsOffTheRecord());
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK(profile->IsOffTheRecord(), base::NotFatalUntil::M162);
   TRACE_EVENT(
       "shutdown", "ProfileDestroyer::DestroyOffTheRecordProfileNow",
       [&](perfetto::EventContext ctx) {
@@ -247,7 +249,7 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* profile) {
         proto->set_otr_profile_id(otr_id.str());
       });
 
-  DCHECK(profile->GetOriginalProfile());
+  CHECK(profile->GetOriginalProfile(), base::NotFatalUntil::M162);
   profile->GetOriginalProfile()->DestroyOffTheRecordProfile(profile);
   UMA_HISTOGRAM_ENUMERATION("Profile.Destroyer.OffTheRecord",
                             ProfileDestructionType::kImmediately);
@@ -256,8 +258,8 @@ void ProfileDestroyer::DestroyOffTheRecordProfileNow(Profile* profile) {
 // static
 void ProfileDestroyer::DestroyOriginalProfileNow(
     std::unique_ptr<Profile> profile) {
-  DCHECK(profile);
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(profile, base::NotFatalUntil::M162);
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M162);
   TRACE_EVENT("shutdown", "ProfileDestroyer::DestroyOriginalProfileNow",
               [&](perfetto::EventContext ctx) {
                 auto* proto =
@@ -309,11 +311,11 @@ void ProfileDestroyer::DestroyOriginalProfileNow(
   // The exception is that RenderProcessHostImpl::Release() avoids destroying
   // RenderProcessHosts in --single-process mode, to avoid race conditions.
   if (!content::RenderProcessHost::run_renderer_in_process()) {
-    DCHECK_EQ(profile_hosts_count, 0u);
+    CHECK_EQ(profile_hosts_count, 0u, base::NotFatalUntil::M162);
 #if !BUILDFLAG(IS_CHROMEOS)
     // ChromeOS' system profile can be outlived by its off-the-record profile
     // (see https://crbug.com/40569888).
-    DCHECK_EQ(off_the_record_profile_hosts_count, 0u);
+    CHECK_EQ(off_the_record_profile_hosts_count, 0u, base::NotFatalUntil::M162);
 #endif
   }
 #endif  // DCHECK_IS_ON()
@@ -419,7 +421,7 @@ void ProfileDestroyer::GetHostsForProfile(HostSet* out,
            content::RenderProcessHost::AllHostsIterator());
        !iter.IsAtEnd(); iter.Advance()) {
     content::RenderProcessHost* render_process_host = iter.GetCurrentValue();
-    DCHECK(render_process_host);
+    CHECK(render_process_host, base::NotFatalUntil::M162);
 
     if (render_process_host->GetBrowserContext() != profile_ptr)
       continue;
@@ -443,7 +445,7 @@ void ProfileDestroyer::GetHostsForProfile(HostSet* out,
 }
 
 void ProfileDestroyer::Timeout() {
-  DCHECK(!is_prepared_for_destruction_);
+  CHECK(!is_prepared_for_destruction_, base::NotFatalUntil::M162);
   is_prepared_for_destruction_ = true;
 
   // Destroying the profile destroys remote hosts, so it is important to keep
@@ -455,7 +457,7 @@ void ProfileDestroyer::Timeout() {
 }
 
 void ProfileDestroyer::ProfileDestroyer::Retry() {
-  DCHECK(!is_prepared_for_destruction_);
+  CHECK(!is_prepared_for_destruction_, base::NotFatalUntil::M162);
   is_prepared_for_destruction_ = true;
 
   RetryDestroyUnderlyingProfile();

@@ -1244,7 +1244,8 @@ void WebAppPublisherHelper::SetPermission(const std::string& app_id,
     return;
   }
 
-  DCHECK(std::holds_alternative<apps::TriState>(permission->value));
+  CHECK(std::holds_alternative<apps::TriState>(permission->value),
+        base::NotFatalUntil::M162);
   ContentSetting permission_value = CONTENT_SETTING_DEFAULT;
   switch (std::get<apps::TriState>(permission->value)) {
     case apps::TriState::kAllow:
@@ -1669,7 +1670,8 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(
     return;
   }
 
-  DCHECK_EQ(is_disabled, web_app->chromeos_data()->is_disabled);
+  CHECK_EQ(is_disabled, web_app->chromeos_data()->is_disabled,
+           base::NotFatalUntil::M162);
   apps::AppPtr app = CreateWebApp(web_app);
   app->icon_key = apps::IconKey(GetIconEffects(web_app));
 
@@ -1734,7 +1736,7 @@ void WebAppPublisherHelper::OnNotificationClosed(
   for (const auto& app_id : app_ids) {
     auto app = app_notifications_.CreateAppWithHasBadgeStatus(
         apps::AppType::kWeb, app_id);
-    DCHECK(app->has_badge.has_value());
+    CHECK(app->has_badge.has_value(), base::NotFatalUntil::M162);
     app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
     delegate_->PublishWebApp(std::move(app));
   }
@@ -1742,7 +1744,8 @@ void WebAppPublisherHelper::OnNotificationClosed(
 
 void WebAppPublisherHelper::OnNotificationDisplayServiceDestroyed(
     NotificationDisplayService* service) {
-  DCHECK(notification_display_service_.IsObservingSource(service));
+  CHECK(notification_display_service_.IsObservingSource(service),
+        base::NotFatalUntil::M162);
   notification_display_service_.Reset();
 }
 
@@ -1777,7 +1780,7 @@ void WebAppPublisherHelper::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  DCHECK(!IsShuttingDown());
+  CHECK(!IsShuttingDown(), base::NotFatalUntil::M162);
   // If content_type is not one of the supported permissions, do nothing.
   if (!content_type_set.ContainsAllTypes() &&
       !IsSupportedWebAppPermissionType(content_type_set.GetType())) {
@@ -1795,7 +1798,7 @@ void WebAppPublisherHelper::OnContentSettingChanged(
 }
 
 void WebAppPublisherHelper::OnWebAppSettingsPolicyChanged() {
-  DCHECK(!IsShuttingDown());
+  CHECK(!IsShuttingDown(), base::NotFatalUntil::M162);
 
   for (const WebApp& web_app : registrar().GetApps()) {
     delegate_->PublishWebApp(CreateWebApp(&web_app));
@@ -1959,7 +1962,7 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
 
   if (system_app_type.has_value()) {
     auto* system_app = swa_manager->GetSystemApp(*system_app_type);
-    DCHECK(system_app);
+    CHECK(system_app, base::NotFatalUntil::M162);
     app.show_in_launcher = system_app->ShouldShowInLauncher();
     app.show_in_shelf = system_app->ShouldShowInSearchAndShelf();
     app.show_in_search = system_app->ShouldShowInSearchAndShelf();
@@ -1977,7 +1980,7 @@ bool WebAppPublisherHelper::MaybeAddNotification(
   app_notifications_.AddNotification(app_id, notification_id);
   auto app = app_notifications_.CreateAppWithHasBadgeStatus(apps::AppType::kWeb,
                                                             app_id);
-  DCHECK(app->has_badge.has_value());
+  CHECK(app->has_badge.has_value(), base::NotFatalUntil::M162);
   app->has_badge = ShouldShowBadge(app_id, app->has_badge.value());
   delegate_->PublishWebApp(std::move(app));
   return true;

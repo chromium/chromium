@@ -232,7 +232,7 @@ SynchronizeDecision GetSynchronizeDecision(
     bool is_new_user,
     const std::string& user_type,
     size_t& corrupt_user_uninstall_prefs_count) {
-  DCHECK(registrar);
+  CHECK(registrar, base::NotFatalUntil::M162);
 
   // This function encodes the exceptions to the standard preinstalled web app
   // configs; situations in which the preinstall should be removed, added or be
@@ -254,7 +254,7 @@ SynchronizeDecision GetSynchronizeDecision(
   }
 
   // Remove if not applicable to current user type.
-  DCHECK_GT(options.user_type_allowlist.size(), 0u);
+  CHECK_GT(options.user_type_allowlist.size(), 0u, base::NotFatalUntil::M162);
   if (!std::ranges::contains(options.user_type_allowlist, user_type)) {
     return {.type = SynchronizeDecision::kUninstall,
             .reason = DisabledReason::kUninstallUserTypeNotAllowed,
@@ -629,7 +629,7 @@ void PreinstalledWebAppManager::DeviceDataInitializedEvent::Post(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                              std::move(task));
   } else {
-    DCHECK(!device_data_observation_.IsObserving());
+    CHECK(!device_data_observation_.IsObserving(), base::NotFatalUntil::M162);
     device_data_observation_.Observe(ui::DeviceDataManager::GetInstance());
     initialized_task_ = std::move(task);
   }
@@ -749,7 +749,7 @@ void PreinstalledWebAppManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void PreinstalledWebAppManager::Start(base::OnceClosure on_done) {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
   if (g_skip_startup_for_testing_ || skip_startup_for_testing_) {  // IN-TEST
     std::move(on_done).Run();                                      // IN-TEST
     return;                                                        // IN-TEST
@@ -929,7 +929,8 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 
   // Set common install options.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
-    DCHECK_EQ(options.install_source, ExternalInstallSource::kExternalDefault);
+    CHECK_EQ(options.install_source, ExternalInstallSource::kExternalDefault,
+             base::NotFatalUntil::M162);
 
     options.require_manifest = true;
 
@@ -942,7 +943,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     if (!g_bypass_offline_manifest_requirement_for_testing_) {
       // Non-Chrome OS platforms are not permitted to fetch the web app install
       // URLs during start up.
-      DCHECK(options.app_info_factory);
+      CHECK(options.app_info_factory, base::NotFatalUntil::M162);
       options.only_use_app_info_factory = true;
     }
 
@@ -1047,7 +1048,7 @@ void PreinstalledWebAppManager::PostProcessConfigs(
 void PreinstalledWebAppManager::Synchronize(
     ExternallyManagedAppManager::SynchronizeCallback callback,
     std::vector<ExternalInstallOptions> desired_apps_install_options) {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
 
   std::set<InstallUrl> desired_preferred_apps_for_supported_links;
   std::map<InstallUrl, std::vector<webapps::AppId>> desired_uninstalls;
@@ -1083,8 +1084,8 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       prefs::kWebAppsLastPreinstallSynchronizeVersion,
       version_info::GetMajorVersionNumber());
 
-  DCHECK(
-      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
+  CHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_),
+        base::NotFatalUntil::M162);
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   size_t uninstall_and_replace_count = 0;
@@ -1102,7 +1103,7 @@ void PreinstalledWebAppManager::OnExternalWebAppsSynchronized(
       continue;
     }
 
-    DCHECK(result.app_id.has_value());
+    CHECK(result.app_id.has_value(), base::NotFatalUntil::M162);
 
     // Do not set as the preferred app for supported links if the app is
     // already installed as the user may have already updated their preference.

@@ -126,9 +126,10 @@ bool RegisterUninstallationViaOsSettingsWithOs(
     const webapps::AppId& app_id,
     const std::string& app_name,
     const base::FilePath& profile_path) {
-  DCHECK(ShouldRegisterUninstallationViaOsSettingsWithOs());
+  CHECK(ShouldRegisterUninstallationViaOsSettingsWithOs(),
+        base::NotFatalUntil::M162);
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   UninstallationViaOsSettingsHelper uninstall_os_settings_helper(profile_path,
                                                                  app_id);
@@ -147,9 +148,10 @@ bool RegisterUninstallationViaOsSettingsWithOs(
 bool UnregisterUninstallationViaOsSettingsWithOs(
     const webapps::AppId& app_id,
     const base::FilePath& profile_path) {
-  DCHECK(ShouldRegisterUninstallationViaOsSettingsWithOs());
+  CHECK(ShouldRegisterUninstallationViaOsSettingsWithOs(),
+        base::NotFatalUntil::M162);
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   return ::UnregisterUninstallationViaOsSettings(
       GetUninstallStringKey(profile_path, app_id));

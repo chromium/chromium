@@ -47,8 +47,8 @@ class AnnouncementNotificationServiceImpl
         remote_version_(kInvalidVersion),
         require_signout_(false),
         show_one_(false) {
-    DCHECK(delegate_);
-    DCHECK(profile_);
+    CHECK(delegate_, base::NotFatalUntil::M162);
+    CHECK(profile_, base::NotFatalUntil::M162);
 
     if (!IsFeatureEnabled())
       return;
@@ -177,7 +177,7 @@ class AnnouncementNotificationServiceImpl
   }
 
   bool IsUserSignIn() {
-    DCHECK(g_browser_process);
+    CHECK(g_browser_process, base::NotFatalUntil::M162);
     // No browser process, assume the user is not signed in.
     if (!g_browser_process)
       return false;
@@ -186,7 +186,7 @@ class AnnouncementNotificationServiceImpl
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
 
     // Can't find the profile path, assume the user is not signed in.
-    DCHECK(profile_);
+    CHECK(profile_, base::NotFatalUntil::M162);
     ProfileAttributesEntry* entry =
         storage.GetProfileAttributesWithPath(profile_->GetPath());
     return entry && entry->GetSigninState() != SigninState::kNotSignedIn;
@@ -234,7 +234,7 @@ BASE_FEATURE(kAnnouncementNotification,
 // static
 void AnnouncementNotificationService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M162);
   registry->RegisterIntegerPref(kCurrentVersionPrefName, kInvalidVersion);
   registry->RegisterTimePref(kAnnouncementFirstRunTimePrefName, base::Time());
 }
@@ -262,7 +262,7 @@ GURL AnnouncementNotificationService::GetAnnouncementURL() {
 
 // static
 bool AnnouncementNotificationService::CanOpenAnnouncement(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (!profile)
     return false;
 

@@ -21,7 +21,7 @@
 AnnouncementNotificationDelegate::AnnouncementNotificationDelegate(
     NotificationDisplayService* display_service)
     : display_service_(display_service) {
-  DCHECK(display_service_);
+  CHECK(display_service_, base::NotFatalUntil::M162);
 }
 
 AnnouncementNotificationDelegate::~AnnouncementNotificationDelegate() = default;

@@ -229,7 +229,7 @@ void OsIntegrationManager::Synchronize(
     const webapps::AppId& app_id,
     base::OnceClosure callback,
     std::optional<SynchronizeOsOptions> options) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   first_synchronize_called_ = true;
 
   // This is usually called to clean up OS integration states on the OS,
@@ -323,7 +323,7 @@ void OsIntegrationManager::Synchronize(
 void OsIntegrationManager::GetAppExistingShortCutLocation(
     ShortcutLocationCallback callback,
     std::unique_ptr<ShortcutInfo> shortcut_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // Ownership of `shortcut_info` moves to the Reply, which is guaranteed to
   // outlive the const reference.
   const ShortcutInfo& shortcut_info_ref = *shortcut_info;
@@ -333,7 +333,8 @@ void OsIntegrationManager::GetAppExistingShortCutLocation(
                      std::cref(shortcut_info_ref)),
       base::BindOnce(
           [](ShortcutLocationCallback callback, ShortcutLocations locations) {
-            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+            CHECK_CURRENTLY_ON(content::BrowserThread::UI,
+                               base::NotFatalUntil::M162);
             std::move(callback).Run(locations);
           },
           std::move(callback).Then(base::OnceClosure(
@@ -553,7 +554,7 @@ void OsIntegrationManager::ForceUnregisterOsIntegrationOnSubManager(
 }
 
 void OsIntegrationManager::UpdateShortcutsForAllAppsIfNeeded() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Updating shortcuts writes to user home folders, which can not be done in
   // tests without exploding disk space usage on the bots.
@@ -588,7 +589,7 @@ void OsIntegrationManager::UpdateShortcutsForAllAppsIfNeeded() {
 }
 
 void OsIntegrationManager::UpdateShortcutsForAllAppsNow() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   base::ConcurrentClosures concurrent;
 
   SynchronizeOsOptions options;
@@ -690,7 +691,8 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfoForWebApp(
 #if BUILDFLAG(IS_LINUX)
   const std::vector<WebAppShortcutsMenuItemInfo>& shortcuts_menu_item_infos =
       app->shortcuts_menu_item_infos();
-  DCHECK_LE(shortcuts_menu_item_infos.size(), kMaxApplicationDockMenuItems);
+  CHECK_LE(shortcuts_menu_item_infos.size(), kMaxApplicationDockMenuItems,
+           base::NotFatalUntil::M162);
   for (const auto& shortcuts_menu_item_info : shortcuts_menu_item_infos) {
     if (!shortcuts_menu_item_info.name.empty() &&
         !shortcuts_menu_item_info.url.is_empty()) {

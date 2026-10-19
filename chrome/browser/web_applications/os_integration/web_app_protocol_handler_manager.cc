@@ -28,7 +28,7 @@ void WebAppProtocolHandlerManager::SetProvider(
 }
 
 void WebAppProtocolHandlerManager::Start() {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
 }
 
 std::optional<GURL> WebAppProtocolHandlerManager::TranslateProtocolUrl(

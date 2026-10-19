@@ -44,7 +44,7 @@ void ExternallyManagedAppRegistrationTask::Start() {
   content::StoragePartition* storage_partition =
       web_contents_->GetBrowserContext()->GetStoragePartition(
           web_contents_->GetSiteInstance());
-  DCHECK(storage_partition);
+  CHECK(storage_partition, base::NotFatalUntil::M162);
 
   service_worker_context_ = storage_partition->GetServiceWorkerContext();
   service_worker_context_->AddObserver(this);

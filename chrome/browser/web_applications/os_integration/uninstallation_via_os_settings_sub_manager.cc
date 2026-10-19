@@ -50,7 +50,7 @@ void UninstallationViaOsSettingsSubManager::Configure(
     const webapps::AppId& app_id,
     proto::os_state::WebAppOsIntegration& desired_state,
     base::OnceClosure configure_done) {
-  DCHECK(!desired_state.has_uninstall_registration());
+  CHECK(!desired_state.has_uninstall_registration(), base::NotFatalUntil::M162);
 
   bool should_register =
       IsOsUninstallationSupported() &&

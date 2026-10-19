@@ -109,7 +109,7 @@ void UpdatePwaLaunchers(std::vector<base::FilePath> launcher_paths) {
   const base::FilePath latest_version_path = GetChromePwaLauncherPath();
 
   for (const auto& path : launcher_paths) {
-    DCHECK(!path.empty());
+    CHECK(!path.empty(), base::NotFatalUntil::M162);
 
     const base::FilePath old_path =
         path.InsertBeforeExtension(kOldLauncherSuffix);

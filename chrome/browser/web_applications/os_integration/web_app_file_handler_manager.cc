@@ -42,7 +42,7 @@ void WebAppFileHandlerManager::SetProvider(base::PassKey<OsIntegrationManager>,
 }
 
 void WebAppFileHandlerManager::Start() {
-  DCHECK(provider_);
+  CHECK(provider_, base::NotFatalUntil::M162);
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(

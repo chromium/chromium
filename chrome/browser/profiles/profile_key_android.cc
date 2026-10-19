@@ -44,7 +44,7 @@ ProfileKey* ProfileKeyAndroid::FromProfileKeyAndroid(
 ScopedJavaLocalRef<jobject> ProfileKeyAndroid::GetOriginalKey(JNIEnv* env) {
   ProfileKeyAndroid* original_key =
       key_->GetOriginalKey()->GetProfileKeyAndroid();
-  DCHECK(original_key);
+  CHECK(original_key, base::NotFatalUntil::M162);
   return original_key->GetJavaObject();
 }
 

@@ -87,7 +87,7 @@ bool disable_oop_shortcut_update_or_create_for_unit_tests = false;
 // Updates the preferences with the current icon version on icon creation
 // success.
 void OnProfileIconCreateSuccess(base::FilePath profile_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (!g_browser_process->profile_manager())
     return;
   Profile* profile =
@@ -341,8 +341,8 @@ void RenameChromeDesktopShortcutForProfile(
     const std::u16string& new_profile_name,
     std::set<base::FilePath>* profile_shortcuts,
     std::set<base::FilePath>* desktop_contents) {
-  DCHECK(profile_shortcuts);
-  DCHECK(desktop_contents);
+  CHECK(profile_shortcuts, base::NotFatalUntil::M162);
+  CHECK(desktop_contents, base::NotFatalUntil::M162);
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -749,7 +749,8 @@ ShortcutFilenameMatcher::ShortcutFilenameMatcher(
     : profile_shortcut_filename_(GetShortcutFilenameForProfile(profile_name)),
       lnk_ext_(installer::kLnkExt),
       profile_shortcut_name_(profile_shortcut_filename_) {
-  DCHECK(base::EndsWith(profile_shortcut_name_, lnk_ext_));
+  CHECK(base::EndsWith(profile_shortcut_name_, lnk_ext_),
+        base::NotFatalUntil::M162);
   profile_shortcut_name_.remove_suffix(lnk_ext_.size());
 }
 
@@ -885,7 +886,7 @@ bool ProfileShortcutManager::IsFeatureEnabled() {
 
   base::FilePath user_data_dir;
   bool success = base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   return user_data_dir == policy_user_data_dir ||
          chrome::IsUsingDefaultDataDirectory().value_or(false);
 }
@@ -959,7 +960,7 @@ void ProfileShortcutManagerWin::GetShortcutProperties(
       profile_manager_->GetProfileAttributesStorage();
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(profile_path);
-  DCHECK(entry);
+  CHECK(entry, base::NotFatalUntil::M162);
 
   // The shortcut shouldn't include the profile name if there is only 1 profile.
   std::u16string shortcut_profile_name;
@@ -1073,7 +1074,7 @@ base::FilePath ProfileShortcutManagerWin::GetOtherProfilePath(
     const base::FilePath& profile_path) {
   const ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
-  DCHECK_EQ(2u, storage.GetNumberOfProfiles());
+  CHECK_EQ(2u, storage.GetNumberOfProfiles(), base::NotFatalUntil::M162);
   // Get the index of the current profile, in order to find the index of the
   // other profile.
   std::vector<ProfileAttributesEntry*> entries =
@@ -1093,8 +1094,9 @@ void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(
     CreateOrUpdateMode create_mode,
     NonProfileShortcutAction action,
     bool incognito) {
-  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
-         BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::IsThreadInitialized(BrowserThread::UI) ||
+            BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M162);
   ProfileAttributesStorage& storage =
       profile_manager_->GetProfileAttributesStorage();
   ProfileAttributesEntry* entry =

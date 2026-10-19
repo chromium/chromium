@@ -159,10 +159,10 @@ std::wstring GetProgId(const base::FilePath& profile_path,
     // Provided file extensions must have a leading period. This is enforced
     // to ensure that calls to this function have consistent syntax (and
     // therefore get the same prog_id for a given set of inputs).
-    DCHECK_EQ(iter->at(0), '.');
+    CHECK_EQ(iter->at(0), '.', base::NotFatalUntil::M162);
     string_to_hash += *iter;
     while (++iter != file_extensions->end()) {
-      DCHECK_EQ(iter->at(0), '.');
+      CHECK_EQ(iter->at(0), '.', base::NotFatalUntil::M162);
       string_to_hash += ";";
       string_to_hash += *iter;
     }
@@ -273,7 +273,7 @@ std::optional<base::FilePath> CreateAppLauncherFile(
 void CheckAndUpdateExternalInstallations(const base::FilePath& cur_profile_path,
                                          const webapps::AppId& app_id,
                                          ResultCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   std::wstring prog_id = GetProgIdForApp(cur_profile_path, app_id);
   bool cur_profile_has_installation =

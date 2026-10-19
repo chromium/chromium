@@ -159,7 +159,7 @@ void DynamicLauncherPortal::IsAvailable(
   const bool is_custom_bus = !is_shared_bus_;
 
   if (!is_custom_bus) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   }
 
   if (!is_custom_bus && g_cached_availability.has_value()) {
@@ -187,7 +187,7 @@ void DynamicLauncherPortal::PrepareInstall(
     const GURL& target_url,
     PrepareInstallCallback callback) {
   if (is_shared_bus_) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   }
 
   if (icon_bytes.empty()) {
@@ -233,7 +233,7 @@ void DynamicLauncherPortal::Install(const std::string& token,
                                     const std::string& desktop_entry,
                                     InstallCallback callback) {
   if (is_shared_bus_) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   }
 
   if (!bus_) {
@@ -265,7 +265,7 @@ void DynamicLauncherPortal::ResetAvailabilityCacheForTesting() {
 void DynamicLauncherPortal::Uninstall(const std::string& desktop_file_id,
                                       UninstallCallback callback) {
   if (is_shared_bus_) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   }
 
   if (!bus_) {
