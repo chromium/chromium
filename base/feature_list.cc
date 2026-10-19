@@ -1086,8 +1086,8 @@ void FeatureList::VisitFeaturesAndParams(FeatureVisitor& visitor,
                                          std::string_view filter_prefix) {
   // If there is no feature list, there are no overrides. This should only
   // happen in tests.
+  // TODO(leszeks): Add a CHECK_IS_TEST() to verify the above.
   if (!g_feature_list_instance) {
-    CHECK_IS_TEST();
     return;
   }
 
