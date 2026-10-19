@@ -9,7 +9,10 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.text.TextUtils;
+
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -426,7 +429,13 @@ public class AccountPickerBottomSheetMediator
     /** Implements {@link EnterpriseSignalsDisclaimerCoordinator.Delegate}. */
     @Override
     public void showInfoPage(String url) {
-        // TODO(b/553341908): Open the learn more page.
+        assert url.startsWith("https://") : "URL must start with https://";
+        // Open the page in a Chrome custom tab on top of the sign-in UI, so that the user can
+        // return to the management notice after reading it.
+        CustomTabsIntent customTabsIntent =
+                new CustomTabsIntent.Builder().setShowTitle(true).build();
+        customTabsIntent.intent.setPackage(mActivity.getPackageName());
+        customTabsIntent.launchUrl(mActivity, Uri.parse(url));
     }
 
     /** Implements {@link EnterpriseSignalsDisclaimerCoordinator.Delegate}. */

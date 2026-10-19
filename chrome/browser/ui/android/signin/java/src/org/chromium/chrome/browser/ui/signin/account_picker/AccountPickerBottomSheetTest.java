@@ -9,6 +9,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeDown;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasPackage;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
@@ -41,20 +46,26 @@ import static org.mockito.Mockito.when;
 import static org.chromium.base.test.transit.MoreViewMatchers.isDescendantOf;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
 import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.GeneralSwipeAction;
 import androidx.test.espresso.action.Press;
 import androidx.test.espresso.action.Swipe;
+import androidx.test.espresso.intent.rule.IntentsRule;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -136,6 +147,9 @@ public class AccountPickerBottomSheetTest {
     // Views of the new management notice, defined by the enterprise_signals_disclaimer module.
     private static final @IdRes int DISCLAIMER_TITLE_ID =
             org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id.disclaimer_title;
+    private static final @IdRes int DISCLAIMER_DESCRIPTION_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
+                    .disclaimer_description;
     private static final @IdRes int DISCLAIMER_ACCEPT_BUTTON_ID =
             org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
                     .disclaimer_accept_button;
@@ -164,6 +178,8 @@ public class AccountPickerBottomSheetTest {
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
+
+    @Rule public final IntentsRule mIntentsRule = new IntentsRule();
 
     @Mock private AccountPickerDelegate mAccountPickerDelegateMock;
 
@@ -1635,6 +1651,34 @@ public class AccountPickerBottomSheetTest {
 
         waitForBottomSheetView(withId(R.id.account_picker_general_error_title));
         verify(mSigninManagerMock, never()).setUserAcceptedAccountManagement(true);
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewManagementNotice_learnMoreOpensInfoPage() {
+        mIsAccountManaged = true;
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButtonAndClearDeviceLock(bottomSheetView);
+        checkNewManagementNoticeIsDisplayed(bottomSheetView);
+
+        // Stub the intent so that no custom tab is actually opened on top of the test activity.
+        Matcher<Intent> customTabIntentMatcher =
+                allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasPackage(mActivityTestRule.getActivity().getPackageName()),
+                        hasExtraWithKey(CustomTabsIntent.EXTRA_SESSION));
+        intending(customTabIntentMatcher)
+                .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
+
+        onView(withId(DISCLAIMER_DESCRIPTION_ID)).perform(clickOnClickableSpan(0));
+
+        intended(customTabIntentMatcher);
+        // The management notice is still displayed, so the user can proceed after reading the
+        // info page.
+        checkNewManagementNoticeIsDisplayed(bottomSheetView);
         verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
     }
 

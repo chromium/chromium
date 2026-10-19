@@ -9,6 +9,11 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.PositionAssertions.isCompletelyLeftOf;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasPackage;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -24,10 +29,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+import static org.chromium.ui.test.util.ViewUtils.clickOnClickableSpan;
+
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
 
 import androidx.annotation.IdRes;
+import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,7 +56,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -66,7 +80,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
 /** Tests for modal dialog presentation in {@link AccountPickerBottomSheetCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({
+@EnableFeatures({
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
     ChromeFeatureList.ACCOUNT_PICKER_DIALOG
 })
@@ -76,6 +90,9 @@ public class AccountPickerModalDialogTest {
     // Views of the new management notice, defined by the enterprise_signals_disclaimer module.
     private static final @IdRes int DISCLAIMER_TITLE_ID =
             org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id.disclaimer_title;
+    private static final @IdRes int DISCLAIMER_DESCRIPTION_ID =
+            org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
+                    .disclaimer_description;
     private static final @IdRes int DISCLAIMER_ACCEPT_BUTTON_ID =
             org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.R.id
                     .disclaimer_accept_button;
@@ -292,7 +309,7 @@ public class AccountPickerModalDialogTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    @DisableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testDialog_showsConfirmManagementForManagedAccount() {
         when(mSigninManagerMock.extractDomainName(any())).thenReturn("managed.com");
         doCallback(/* index= */ 1, (Callback<Boolean> callback) -> callback.onResult(true))
@@ -334,7 +351,7 @@ public class AccountPickerModalDialogTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testDialog_showsNewManagementNoticeForManagedAccount() {
         doCallback(/* index= */ 1, (Callback<Boolean> callback) -> callback.onResult(true))
                 .when(mSigninManagerMock)
@@ -370,6 +387,49 @@ public class AccountPickerModalDialogTest {
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
                 .inRoot(isDialog())
                 .check(matches(isDisplayed()));
+        verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testDialog_newManagementNoticeLearnMoreOpensInfoPage() {
+        doCallback(/* index= */ 1, (Callback<Boolean> callback) -> callback.onResult(true))
+                .when(mSigninManagerMock)
+                .isAccountManaged(any(), any());
+        buildAndShowDialog();
+
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_continue_as_button),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
+                .inRoot(isDialog())
+                .perform(click());
+        onView(withId(DISCLAIMER_TITLE_ID)).inRoot(isDialog()).check(matches(isDisplayed()));
+
+        Intents.init();
+        try {
+            // Stub the intent so that no custom tab is actually opened on top of the test
+            // activity.
+            Matcher<Intent> customTabIntentMatcher =
+                    allOf(
+                            hasAction(Intent.ACTION_VIEW),
+                            hasPackage(mActivityTestRule.getActivity().getPackageName()),
+                            hasExtraWithKey(CustomTabsIntent.EXTRA_SESSION));
+            intending(customTabIntentMatcher)
+                    .respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, null));
+
+            onView(withId(DISCLAIMER_DESCRIPTION_ID))
+                    .inRoot(isDialog())
+                    .perform(clickOnClickableSpan(0));
+
+            intended(customTabIntentMatcher);
+        } finally {
+            Intents.release();
+        }
+        // The management notice is still displayed, so the user can proceed after reading the
+        // info page.
+        onView(withId(DISCLAIMER_TITLE_ID)).inRoot(isDialog()).check(matches(isDisplayed()));
         verify(mSigninManagerMock, never()).signin(any(), anyInt(), any());
     }
 }
