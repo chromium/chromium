@@ -69,6 +69,7 @@ def GetScopedUnitTests(input_api, build_android_dir, *, is_upload):
         J('pylib', 'utils', 'device_dependencies_test.py'),
         J('pylib', 'utils', 'dexdump_test.py'),
         J('pylib', 'utils', 'gold_utils_test.py'),
+        J('pylib', 'utils', 'test_data_sync_test.py'),
         J('pylib', 'utils', 'test_filter_test.py'),
     ]
     root_tests = [

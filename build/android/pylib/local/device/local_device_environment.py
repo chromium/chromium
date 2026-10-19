@@ -106,6 +106,9 @@ class LocalDeviceEnvironment(environment.Environment):
         self._devices = None
         self._concurrent_adb = args.enable_concurrent_adb
         self._enable_device_cache = args.enable_device_cache
+        self._enable_test_data_cache = getattr(
+            args, 'enable_test_data_cache', False
+        )
         self._logcat_monitors = []
         self._logcat_output_dir = args.logcat_output_dir
         self._logcat_output_file = args.logcat_output_file
@@ -302,6 +305,10 @@ class LocalDeviceEnvironment(environment.Environment):
     @property
     def concurrent_adb(self):
         return self._concurrent_adb
+
+    @property
+    def enable_test_data_cache(self):
+        return self._enable_test_data_cache
 
     @property
     def devices(self):

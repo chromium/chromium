@@ -45,6 +45,7 @@ from pylib.utils import code_coverage_utils
 from pylib.utils import device_dependencies
 from pylib.utils import gold_utils
 from pylib.utils import instrumentation_tracing
+from pylib.utils import test_data_sync
 from py_trace_event import trace_event
 from py_trace_event import trace_time
 from py_utils import contextlib_ext
@@ -659,6 +660,9 @@ class LocalDeviceInstrumentationTestRun(
                 logging.info('Pushing data dependencies.')
                 for h, d in resolved_host_device_tuples:
                     logging.debug('  %r -> %r', h, d)
+                test_data_sync.InvalidateMarker(
+                    dev, device_root, as_root=self._env.force_main_user
+                )
                 dev.PlaceNomediaFile(device_root)
                 dev.PushChangedFiles(
                     resolved_host_device_tuples,

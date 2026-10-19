@@ -39,6 +39,7 @@ from pylib.symbols import stack_symbolizer
 from pylib.utils import code_coverage_utils
 from pylib.utils import device_dependencies
 from pylib.utils import logdog_helper
+from pylib.utils import test_data_sync
 from py_trace_event import trace_event
 from py_utils import contextlib_ext
 from py_utils import tempfile_ext
@@ -616,6 +617,16 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                         host_device_tuples, device_root
                     )
                 )
+                commit_sync = test_data_sync.PreparePush(
+                    dev,
+                    device_root,
+                    resolved_host_device_tuples,
+                    enabled=self._env.enable_test_data_cache,
+                    as_root=self._env.force_main_user,
+                )
+                # Cache up to date.
+                if not commit_sync:
+                    return
                 dev.PlaceNomediaFile(device_root)
                 dev.PushChangedFiles(
                     resolved_host_device_tuples,
@@ -650,6 +661,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                         check_return=True,
                         as_root=True,
                     )
+                # Commit the new stamp.
+                commit_sync()
 
             def bind_crash_handler(step, dev):
                 return lambda: crash_handler.RetryOnSystemCrash(step, dev)

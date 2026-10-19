@@ -412,6 +412,12 @@ def AddDeviceOptions(parser):
         help='Cache device state to disk between runs',
     )
     parser.add_argument(
+        '--enable-test-data-cache',
+        action='store_true',
+        help='Skip pushing gtest data dependencies when a stamp of the host '
+        'files matches the one recorded on the device by the last push',
+    )
+    parser.add_argument(
         '--list-data',
         action='store_true',
         help='List files pushed to device and exit.',
