@@ -21,15 +21,8 @@ class OverscrollControllerDelegate;
 class OverscrollControllerTest;
 class RenderWidgetHostViewAuraOverscrollTest;
 
-// Indicates the direction that the scroll is heading in relative to the screen,
-// with the top being NORTH.
-enum OverscrollMode {
-  OVERSCROLL_NONE,
-  OVERSCROLL_NORTH,
-  OVERSCROLL_SOUTH,
-  OVERSCROLL_WEST,
-  OVERSCROLL_EAST
-};
+// Indicates the direction that the scroll is heading in relative to the screen.
+enum OverscrollMode { OVERSCROLL_NONE, OVERSCROLL_WEST, OVERSCROLL_EAST };
 
 // Indicates the source device that was used to trigger the overscroll gesture.
 enum class OverscrollSource {
@@ -170,17 +163,6 @@ class CONTENT_EXPORT OverscrollController {
   // inertial scroll can continue to generate scroll-update events. These events
   // need to be ignored.
   bool ignore_following_inertial_events_ = false;
-
-  // Specifies whether last overscroll was ignored, either due to a command line
-  // flag or because cool off period had not passed.
-  bool overscroll_ignored_ = false;
-
-  // Timestamp for the end of the last ignored scroll sequence.
-  base::TimeTicks last_ignored_scroll_time_;
-
-  // Time between the end of the last ignored scroll sequence and the beginning
-  // of the current one.
-  base::TimeDelta time_since_last_ignored_scroll_;
 
   // On Windows, we don't generate the inertial events (fling) but receive them
   // from Win API. In some cases, we get a long tail of inertial events for a

@@ -32,7 +32,7 @@ class MockOverscrollControllerDelegateAura
   // OverscrollControllerDelegate:
   gfx::Size GetDisplaySize() const override;
   std::optional<float> GetMaxOverscrollDelta() const override;
-  bool OnOverscrollUpdate(float, float) override;
+  bool OnOverscrollUpdate(float) override;
   void OnOverscrollComplete(OverscrollMode) override;
   void OnOverscrollModeChange(OverscrollMode old_mode,
                               OverscrollMode new_mode,

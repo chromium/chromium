@@ -8520,11 +8520,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "pull-to-refresh",
-    "owners": [ "afakhry@chromium.org", "tclaiborne@chromium.org" ],
-    "expiry_milestone": 99
-  },
-  {
     "name": "pulseaudio-loopback-for-cast",
     "owners": [ "mfoltz@chromium.org", "olka@chromium.org", "takumif@chromium.org"],
     "expiry_milestone": 133

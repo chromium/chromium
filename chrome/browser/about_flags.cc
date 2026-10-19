@@ -448,15 +448,6 @@ const unsigned kOsDesktop = kOsMac | kOsWin | kOsLinux | kOsCrOS;
 const unsigned kOsAura = kOsWin | kOsLinux | kOsCrOS;
 #endif  // USE_AURA
 
-#if defined(USE_AURA)
-const FeatureEntry::Choice kPullToRefreshChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flags_ui::kGenericExperimentChoiceDisabled, switches::kPullToRefresh, "0"},
-    {flags_ui::kGenericExperimentChoiceEnabled, switches::kPullToRefresh, "1"},
-    {flag_descriptions::kPullToRefreshEnabledTouchscreen,
-     switches::kPullToRefresh, "2"}};
-#endif  // USE_AURA
-
 const FeatureEntry::FeatureParam kScrollbarModeOverlay[] = {
     {"mode", "overlay"}};
 const FeatureEntry::FeatureParam kScrollbarModeDevice[] = {{"mode", "device"}};
@@ -5919,9 +5910,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOverscrollHistoryNavigationName,
      flag_descriptions::kOverscrollHistoryNavigationDescription, kOsAura,
      FEATURE_VALUE_TYPE(features::kOverscrollHistoryNavigation)},
-    {"pull-to-refresh", flag_descriptions::kPullToRefreshName,
-     flag_descriptions::kPullToRefreshDescription, kOsAura,
-     MULTI_VALUE_TYPE(kPullToRefreshChoices)},
 #endif  // USE_AURA
     {"enable-touch-drag-drop", flag_descriptions::kTouchDragDropName,
      flag_descriptions::kTouchDragDropDescription, kOsLinux | kOsWin | kOsCrOS,

@@ -29270,16 +29270,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Overscroll_Cancelled.Reload">
-  <owner>jonross@chromium.org</owner>
-  <description>
-    When vertical overscroll corresponding to the RELOAD navigation is cancelled
-    - either because the user performed an interfering action such as pressing a
-    key, or because the user ended the drag before the navigation threshold was
-    passed.
-  </description>
-</action>
-
 <action name="Overscroll_Navigated.Back">
   <owner>mfomitchev@chromium.org</owner>
   <description>
@@ -29291,13 +29281,6 @@ should be able to be added at any place in this file.
   <owner>mfomitchev@chromium.org</owner>
   <description>
     When horizontal overscroll initiates a FORWARD navigation in the browser.
-  </description>
-</action>
-
-<action name="Overscroll_Navigated.Reload">
-  <owner>jonross@chromium.org</owner>
-  <description>
-    When vertical overscroll initiates a RELOAD navigation in the browser.
   </description>
 </action>
 

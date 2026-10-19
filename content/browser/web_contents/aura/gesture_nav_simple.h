@@ -36,7 +36,7 @@ class CONTENT_EXPORT GestureNavSimple : public OverscrollControllerDelegate {
 
   // OverscrollControllerDelegate:
   gfx::Size GetDisplaySize() const override;
-  bool OnOverscrollUpdate(float delta_x, float delta_y) override;
+  bool OnOverscrollUpdate(float delta_x) override;
   void OnOverscrollComplete(OverscrollMode overscroll_mode) override;
   void OnOverscrollModeChange(OverscrollMode old_mode,
                               OverscrollMode new_mode,
@@ -47,7 +47,6 @@ class CONTENT_EXPORT GestureNavSimple : public OverscrollControllerDelegate {
   raw_ptr<WebContentsImpl> web_contents_ = nullptr;
 
   OverscrollMode mode_ = OVERSCROLL_NONE;
-  OverscrollSource source_ = OverscrollSource::NONE;
   std::unique_ptr<Affordance> affordance_;
   float completion_threshold_ = 0.f;
 

@@ -576,13 +576,6 @@ const char kProcessType[]                   = "type";
 // child processes at launch. See https://crbug.com/40850085.
 const char kPseudonymizationSaltHandle[] = "pseudonymization-salt-handle";
 
-// Enables or disables pull-to-refresh gesture in response to vertical
-// overscroll.
-// Set the value to '0' to disable the feature, set to '1' to enable it for both
-// touchpad and touchscreen, and set to '2' to enable it only for touchscreen.
-// Defaults to disabled.
-const char kPullToRefresh[] = "pull-to-refresh";
-
 // Reduce the accept-language for HTTP header and JS navigator.languages, and
 // only most preferred language: https://github.com/Tanych/accept-language.
 const char kReduceAcceptLanguage[] = "reduce-accept-language";

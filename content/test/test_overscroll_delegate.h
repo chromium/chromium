@@ -40,14 +40,13 @@ class TestOverscrollDelegate : public OverscrollControllerDelegate {
     return historical_modes_;
   }
   float delta_x() const { return delta_x_; }
-  float delta_y() const { return delta_y_; }
 
   void Reset();
 
  private:
   // Overridden from OverscrollControllerDelegate:
   gfx::Size GetDisplaySize() const override;
-  bool OnOverscrollUpdate(float delta_x, float delta_y) override;
+  bool OnOverscrollUpdate(float delta_x) override;
   void OnOverscrollComplete(OverscrollMode overscroll_mode) override;
   void OnOverscrollModeChange(OverscrollMode old_mode,
                               OverscrollMode new_mode,
@@ -63,7 +62,6 @@ class TestOverscrollDelegate : public OverscrollControllerDelegate {
   std::vector<OverscrollMode> historical_modes_;
 
   float delta_x_;
-  float delta_y_;
 
   bool delete_controller_on_complete_ = false;
   base::OnceClosure on_complete_callback_;

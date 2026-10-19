@@ -4335,12 +4335,6 @@ inline constexpr char kOrganizerPanelForeignTabsName[] =
 inline constexpr char kOrganizerPanelForeignTabsDescription[] =
     "Enables cross-device tabs in the Organizer Panel.";
 
-inline constexpr char kPullToRefreshName[] = "Pull-to-refresh gesture";
-inline constexpr char kPullToRefreshDescription[] =
-    "Pull-to-refresh gesture in response to vertical overscroll.";
-inline constexpr char kPullToRefreshEnabledTouchscreen[] =
-    "Enabled for touchscreen only";
-
 inline constexpr char kPwaUpdateDialogForAppIconName[] =
     "Enable PWA install update dialog for icon changes";
 inline constexpr char kPwaUpdateDialogForAppIconDescription[] =

@@ -31,10 +31,11 @@ MockOverscrollControllerDelegateAura::GetMaxOverscrollDelta() const {
   return std::nullopt;
 }
 
-bool MockOverscrollControllerDelegateAura::OnOverscrollUpdate(float, float) {
+bool MockOverscrollControllerDelegateAura::OnOverscrollUpdate(float) {
   seen_update_ = true;
-  if (update_message_loop_runner_->loop_running())
+  if (update_message_loop_runner_->loop_running()) {
     update_message_loop_runner_->Quit();
+  }
   return true;
 }
 
@@ -48,18 +49,21 @@ void MockOverscrollControllerDelegateAura::OnOverscrollModeChange(
     OverscrollMode new_mode,
     OverscrollSource source,
     cc::OverscrollBehavior behavior) {
-  if (new_mode == OVERSCROLL_NONE)
+  if (new_mode == OVERSCROLL_NONE) {
     OnOverscrollEnd();
+  }
 }
 
 void MockOverscrollControllerDelegateAura::WaitForUpdate() {
-  if (!seen_update_)
+  if (!seen_update_) {
     update_message_loop_runner_->Run();
+  }
 }
 
 void MockOverscrollControllerDelegateAura::WaitForEnd() {
-  if (!overscroll_ended_)
+  if (!overscroll_ended_) {
     end_message_loop_runner_->Run();
+  }
 }
 
 void MockOverscrollControllerDelegateAura::Reset() {
@@ -71,8 +75,9 @@ void MockOverscrollControllerDelegateAura::Reset() {
 
 void MockOverscrollControllerDelegateAura::OnOverscrollEnd() {
   overscroll_ended_ = true;
-  if (end_message_loop_runner_->loop_running())
+  if (end_message_loop_runner_->loop_running()) {
     end_message_loop_runner_->Quit();
+  }
 }
 
 }  // namespace content

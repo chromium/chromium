@@ -12,7 +12,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
-#include "content/browser/web_contents/aura/types.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/overscroll_configuration.h"
 #include "content/public/browser/preloading.h"
@@ -94,38 +93,15 @@ bool ShouldNavigateBack(NavigationController* controller, OverscrollMode mode) {
          controller->CanGoBack();
 }
 
-bool ShouldReload(const NavigationController& controller, OverscrollMode mode) {
-  return mode == OVERSCROLL_SOUTH;
-}
-
-NavigationDirection GetDirectionFromMode(OverscrollMode mode) {
+// Records user action for the cancelled overscroll.
+void RecordGestureOverscrollCancelled(OverscrollMode mode) {
+  // TODO(crbug.com/561094257): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(mode == OVERSCROLL_EAST || mode == OVERSCROLL_WEST);
   if (mode == (base::i18n::IsRTL() ? OVERSCROLL_WEST : OVERSCROLL_EAST)) {
-    return NavigationDirection::BACK;
-  }
-  if (mode == (base::i18n::IsRTL() ? OVERSCROLL_EAST : OVERSCROLL_WEST)) {
-    return NavigationDirection::FORWARD;
-  }
-  if (mode == OVERSCROLL_SOUTH) {
-    return NavigationDirection::RELOAD;
-  }
-  return NavigationDirection::NONE;
-}
-
-// Records UMA histogram and also user action for the cancelled overscroll.
-void RecordGestureOverscrollCancelled(NavigationDirection direction,
-                                      OverscrollSource source) {
-  // TODO(crbug.com/561094257): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK_NE(direction, NavigationDirection::NONE);
-  // TODO(crbug.com/561094257): CHECK-exclusion: Convert to a CHECK once we are
-  // confident it won't be triggered.
-  DCHECK_NE(source, OverscrollSource::NONE);
-  if (direction == NavigationDirection::BACK) {
     RecordAction(base::UserMetricsAction("Overscroll_Cancelled.Back"));
-  } else if (direction == NavigationDirection::FORWARD) {
-    RecordAction(base::UserMetricsAction("Overscroll_Cancelled.Forward"));
   } else {
-    RecordAction(base::UserMetricsAction("Overscroll_Cancelled.Reload"));
+    RecordAction(base::UserMetricsAction("Overscroll_Cancelled.Forward"));
   }
 }
 
@@ -166,10 +142,6 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
 
  private:
   enum class State { DRAGGING, ABORTING, COMPLETING };
-
-  // Helper function that returns the origin for painted layer according to the
-  // overscroll mode.
-  gfx::Point GetPaintedLayerOrigin(const gfx::Rect& content_bounds) const;
 
   void UpdatePaintedLayer();
   void SchedulePaint();
@@ -223,30 +195,29 @@ Affordance::Affordance(GestureNavSimple* owner,
                        const gfx::Rect& content_bounds,
                        float max_drag_progress)
     : owner_(owner), mode_(mode), max_drag_progress_(max_drag_progress) {
-  CHECK(mode_ == OVERSCROLL_EAST || mode_ == OVERSCROLL_WEST ||
-            mode_ == OVERSCROLL_SOUTH,
+  CHECK(mode_ == OVERSCROLL_EAST || mode_ == OVERSCROLL_WEST,
         base::NotFatalUntil::M158);
   if (mode_ == OVERSCROLL_EAST) {
     arrow_icon_ =
         &(features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
                                             : vector_icons::kBackArrowOldIcon);
-  } else if (mode_ == OVERSCROLL_WEST) {
+  } else {
     arrow_icon_ = &(features::IsRoundedIconsEnabled()
                         ? vector_icons::kArrowForwardIcon
                         : vector_icons::kForwardArrowOldIcon);
-  } else if (mode_ == OVERSCROLL_SOUTH) {
-    arrow_icon_ = &vector_icons::kReloadCustomIcon;
   }
 
-  CHECK(arrow_icon_, base::NotFatalUntil::M158);
   root_layer_.SetBounds(content_bounds);
   root_layer_.SetMasksToBounds(true);
 
   painted_layer_.SetFillsBoundsOpaquely(false);
-  gfx::Rect painted_layer_bounds(2 * kMaxRippleBurstRadius,
-                                 2 * kMaxRippleBurstRadius);
-  painted_layer_bounds.set_origin(GetPaintedLayerOrigin(content_bounds));
-  painted_layer_.SetBounds(painted_layer_bounds);
+  int x = mode_ == OVERSCROLL_EAST
+              ? (-kMaxRippleBurstRadius - kBackgroundRadius)
+              : (content_bounds.width() - kMaxRippleBurstRadius +
+                 kBackgroundRadius);
+  int y = std::max(0, content_bounds.height() / 2 - kMaxRippleBurstRadius);
+  painted_layer_.SetBounds(
+      gfx::Rect(x, y, 2 * kMaxRippleBurstRadius, 2 * kMaxRippleBurstRadius));
   painted_layer_.set_delegate(this);
 
   root_layer_.Add(&painted_layer_);
@@ -292,37 +263,10 @@ void Affordance::Complete() {
   animation_->Start();
 }
 
-gfx::Point Affordance::GetPaintedLayerOrigin(
-    const gfx::Rect& content_bounds) const {
-  CHECK_NE(OVERSCROLL_NONE, mode_, base::NotFatalUntil::M158);
-  gfx::Point origin;
-  if (mode_ == OVERSCROLL_SOUTH) {
-    origin.set_x(
-        std::max(0, content_bounds.width() / 2 - kMaxRippleBurstRadius));
-    origin.set_y(-kMaxRippleBurstRadius - kBackgroundRadius);
-  } else {
-    origin.set_y(
-        std::max(0, content_bounds.height() / 2 - kMaxRippleBurstRadius));
-    if (mode_ == OVERSCROLL_EAST) {
-      origin.set_x(-kMaxRippleBurstRadius - kBackgroundRadius);
-    } else {
-      origin.set_x(content_bounds.width() - kMaxRippleBurstRadius +
-                   kBackgroundRadius);
-    }
-  }
-  return origin;
-}
-
 void Affordance::UpdatePaintedLayer() {
   const float offset = GetAffordanceProgress() * kAffordanceActivationOffset;
   gfx::Transform transform;
-  if (mode_ == OVERSCROLL_EAST) {
-    transform.Translate(offset, 0);
-  } else if (mode_ == OVERSCROLL_WEST) {
-    transform.Translate(-offset, 0);
-  } else {
-    transform.Translate(0, offset);
-  }
+  transform.Translate(mode_ == OVERSCROLL_EAST ? offset : -offset, 0);
   painted_layer_.SetTransform(transform);
 }
 
@@ -474,11 +418,11 @@ gfx::Size GestureNavSimple::GetDisplaySize() const {
       .size();
 }
 
-bool GestureNavSimple::OnOverscrollUpdate(float delta_x, float delta_y) {
+bool GestureNavSimple::OnOverscrollUpdate(float delta_x) {
   if (!affordance_ || affordance_->IsFinishing()) {
     return false;
   }
-  float delta = std::abs(mode_ == OVERSCROLL_SOUTH ? delta_y : delta_x);
+  float delta = std::abs(delta_x);
   // TODO(crbug.com/554386214): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK_LE(delta, max_delta_);
@@ -498,8 +442,6 @@ void GestureNavSimple::OnOverscrollComplete(OverscrollMode overscroll_mode) {
   DCHECK_EQ(mode_, overscroll_mode);
 
   mode_ = OVERSCROLL_NONE;
-  OverscrollSource overscroll_source = source_;
-  source_ = OverscrollSource::NONE;
   if (!affordance_ || affordance_->IsFinishing()) {
     return;
   }
@@ -507,29 +449,14 @@ void GestureNavSimple::OnOverscrollComplete(OverscrollMode overscroll_mode) {
   affordance_->Complete();
 
   NavigationControllerImpl& controller = web_contents_->GetController();
-  NavigationDirection direction = NavigationDirection::NONE;
   if (ShouldNavigateForward(&controller, overscroll_mode)) {
     controller.GoForward();
-    direction = NavigationDirection::FORWARD;
+    RecordAction(base::UserMetricsAction("Overscroll_Navigated.Forward"));
   } else if (ShouldNavigateBack(&controller, overscroll_mode)) {
     controller.GoBack();
-    direction = NavigationDirection::BACK;
-  } else if (ShouldReload(controller, overscroll_mode)) {
-    controller.Reload(ReloadType::NORMAL, true);
-    direction = NavigationDirection::RELOAD;
-  }
-
-  if (direction != NavigationDirection::NONE) {
-    if (direction == NavigationDirection::BACK) {
-      RecordAction(base::UserMetricsAction("Overscroll_Navigated.Back"));
-    } else if (direction == NavigationDirection::FORWARD) {
-      RecordAction(base::UserMetricsAction("Overscroll_Navigated.Forward"));
-    } else {
-      RecordAction(base::UserMetricsAction("Overscroll_Navigated.Reload"));
-    }
+    RecordAction(base::UserMetricsAction("Overscroll_Navigated.Back"));
   } else {
-    RecordGestureOverscrollCancelled(GetDirectionFromMode(overscroll_mode),
-                                     overscroll_source);
+    RecordGestureOverscrollCancelled(overscroll_mode);
   }
 }
 
@@ -542,15 +469,8 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
         base::NotFatalUntil::M158);
 
   // Do not start a new gesture-nav if overscroll-behavior-x is not auto.
-  if ((new_mode == OverscrollMode::OVERSCROLL_EAST ||
-       new_mode == OverscrollMode::OVERSCROLL_WEST) &&
+  if (new_mode != OverscrollMode::OVERSCROLL_NONE &&
       !behavior.PropagatesXScroll()) {
-    return;
-  }
-
-  // Do not start a new pull-to-refresh if overscroll-behavior-y is not auto.
-  if (new_mode == OverscrollMode::OVERSCROLL_SOUTH &&
-      !behavior.PropagatesYScroll()) {
     return;
   }
 
@@ -571,19 +491,16 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
 
   NavigationControllerImpl& controller = web_contents_->GetController();
   if (!ShouldNavigateForward(&controller, mode_) &&
-      !ShouldNavigateBack(&controller, mode_) &&
-      !ShouldReload(controller, mode_)) {
+      !ShouldNavigateBack(&controller, mode_)) {
     // If there is an overscroll in progress - record its cancellation.
     if (affordance_ && !affordance_->IsFinishing()) {
-      RecordGestureOverscrollCancelled(GetDirectionFromMode(old_mode), source_);
+      RecordGestureOverscrollCancelled(old_mode);
       affordance_->Abort();
     }
-    source_ = OverscrollSource::NONE;
     return;
   }
 
   CHECK_NE(OverscrollSource::NONE, source, base::NotFatalUntil::M158);
-  source_ = source;
 
   if (ShouldNavigateBack(&controller, mode_)) {
     web_contents_->BackNavigationLikely(
