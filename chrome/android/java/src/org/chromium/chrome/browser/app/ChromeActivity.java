@@ -2860,6 +2860,16 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 }
             }
 
+            // Recreate (rather than letting the OS do so) to apply the "Bold text" accessibility
+            // setting so that tabs and tab-scoped UI (e.g. the side panel) are retained. Unlike
+            // density / fontScale, this is not affected by window resizing, so also applies on
+            // automotive.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                    && newConfig.fontWeightAdjustment != mConfig.fontWeightAdjustment) {
+                doRecreateActivity();
+                return;
+            }
+
             // Maintain tab state by re-parenting tabs when a Chrome window is moved between
             // displays.
             if ((newConfig.touchscreen != mConfig.touchscreen

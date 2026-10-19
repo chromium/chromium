@@ -12,11 +12,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.fonts.FontStyle;
 import android.net.Uri;
 import android.os.Build.VERSION_CODES;
 import android.os.SystemClock;
 import android.provider.Browser;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -689,6 +692,43 @@ public class ChromeTabbedActivityTest {
                             Matchers.is(JUnitTestGURLs.URL_1.getSpec()));
                     Criteria.checkThat(
                             "The new tab should be pinned.", tab.getIsPinned(), Matchers.is(true));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @MinAndroidSdkLevel(VERSION_CODES.S)
+    @RequiresApi(VERSION_CODES.S)
+    @RequiresRestart("Recreates the ChromeTabbedActivity")
+    public void testFontWeightAdjustmentChange_ReparentsTabs() {
+        Tab tab = ThreadUtils.runOnUiThreadBlocking(mActivity::getActivityTab);
+        Configuration newConfig =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new Configuration(mActivity.getSavedConfigurationForTesting()));
+        // Simulate toggling the OS "Bold text" accessibility setting.
+        int boldAdjustment = FontStyle.FONT_WEIGHT_BOLD - FontStyle.FONT_WEIGHT_NORMAL;
+        newConfig.fontWeightAdjustment =
+                newConfig.fontWeightAdjustment == boldAdjustment ? 0 : boldAdjustment;
+
+        ChromeTabbedActivity newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () -> mActivity.onConfigurationChanged(newConfig));
+        mActivityTestRule.getActivityTestRule().setActivity(newActivity);
+
+        Assert.assertNotSame("Activity must be recreated", mActivity, newActivity);
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+        mActivity = newActivity;
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Tab instance must be reparented, not restored",
+                            newActivity
+                                    .getTabModelSelector()
+                                    .getModel(false)
+                                    .getTabById(tab.getId()),
+                            Matchers.sameInstance(tab));
                 });
     }
 
