@@ -422,7 +422,7 @@ import java.util.function.Supplier;
             return Collections.emptyList();
         }
         SavedTabGroup savedGroup = syncService.getGroup(tabGroup.syncId);
-        if (savedGroup == null || savedGroup.savedTabs == null) {
+        if (savedGroup == null) {
             return Collections.emptyList();
         }
         Profile profile = tabModel.getProfile();
