@@ -65,9 +65,10 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
   void RemoveObserver(Observer* observer);
 
   // Adds a suppression `entry`, generates a GUID, encrypts and persists it,
-  // and notifies Sync. Returns `false` if Sync is not tracking metadata or the
-  // `entry` was already suppressed. Returns `true` if suppression status was
-  // modified.
+  // and notifies Sync. If this exceeds the maximum number of suppressions, the
+  // oldest ones are deleted. Returns `false` if Sync is not tracking metadata
+  // or the `entry` was already suppressed. Returns `true` if suppression status
+  // was modified.
   bool Suppress(const EntitySuppressionEntry& entry);
 
   // Deletes all suppression records matching `entry`. Returns `false` if Sync
@@ -130,6 +131,14 @@ class EntitySuppressionSyncBridge : public syncer::DataTypeSyncBridge {
       const std::string& storage_key,
       const sync_pb::AutofillEntitySuppressionSpecifics& specifics,
       EntitySuppressionEntry entry,
+      syncer::DataTypeStore::WriteBatch& batch);
+
+  // Deletes the oldest suppressions from `metadata_by_entry_`, local storage
+  // (via `batch`) and Sync until at most `kMaxSuppressions` remain. Of
+  // suppressions with equal creation times, the one with the smaller GUID is
+  // kept, so that all clients delete the same suppressions. Returns whether any
+  // suppression was deleted.
+  bool DeleteOldestSuppressionsAboveLimit(
       syncer::DataTypeStore::WriteBatch& batch);
 
   void OnStoreCreated(base::RepeatingClosure barrier,
