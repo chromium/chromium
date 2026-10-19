@@ -362,7 +362,17 @@ class BottomSheetCoordinator
     }
 
     private void onInsetChanged() {
+        invalidateContentDesiredHeight();
         updateContentContainerHeight();
+    }
+
+    @VisibleForTesting
+    @Px
+    int getContentBottomPadding() {
+        return mMediator.calculateContentBottomPadding(
+                isLargeFormFactorUiEnabled(),
+                isFullHeightResizeContent(),
+                getEdgeToEdgeBottomInset());
     }
 
     @Px
@@ -401,6 +411,9 @@ class BottomSheetCoordinator
         }
 
         boolean insetOrHeightChanged = updateViewportAndBottomInset(previousHeight);
+        if (insetOrHeightChanged) {
+            invalidateContentDesiredHeight();
+        }
         if (!maybeRevertStateOnLayoutChange() && insetOrHeightChanged) {
             resettleSheetOnContainerChange(keyboardDelegate);
         }
@@ -1283,13 +1296,15 @@ class BottomSheetCoordinator
         }
         BottomSheetContent content = getCurrentSheetContent();
         View contentView = assumeNonNull(content).getContentView();
+        @Px int handlebarHeight = getHandlebarHeight();
+        @Px int bottomPadding = getContentBottomPadding();
+        @Px
+        int maxContentHeight = Math.max(0, getMaxSheetHeight() - handlebarHeight - bottomPadding);
         contentView.measure(
                 MeasureSpec.makeMeasureSpec(getMaxSheetWidth(), MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(getMaxSheetHeight(), MeasureSpec.AT_MOST));
-        mContentDesiredHeight = contentView.getMeasuredHeight();
-        if (content.showHandlebar()) {
-            mContentDesiredHeight += getHandlebarHeight();
-        }
+                MeasureSpec.makeMeasureSpec(maxContentHeight, MeasureSpec.AT_MOST));
+        mContentDesiredHeight =
+                Math.min(getMaxSheetHeight(), contentView.getMeasuredHeight() + handlebarHeight);
         if (content.coversBottomControls()) {
             mContentDesiredHeight = Math.max(0, mContentDesiredHeight - getEdgeToEdgeBottomInset());
         }
@@ -1463,8 +1478,12 @@ class BottomSheetCoordinator
         boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
         boolean isFullHeightResizeContent = isFullHeightResizeContent();
 
+        @Px
+        int layoutBottomInset =
+                isFullHeightWrapContent() ? e2eBottomInset : getViewportBottomInset(e2eBottomInset);
+
         mMediator.updateVerticalLayout(
-                getViewportBottomInset(e2eBottomInset),
+                layoutBottomInset,
                 mVisibleViewportRect,
                 mWindow.getDecorView().getHeight(),
                 getHandlebarHeight(),

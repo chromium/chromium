@@ -33,6 +33,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.PointerIcon;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
@@ -2946,14 +2947,21 @@ public class BottomSheetCoordinatorUnitTest {
         mBottomSheet.showContent(content);
 
         int navBarInset = 48;
-        WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(
+                                WindowInsetsCompat.Type.systemBars(),
+                                Insets.of(0, 0, 0, navBarInset))
+                        .build();
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
-        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, navBarInset));
+
+        // In non-E2E mode (edge-to-edge supplier returns 0), content bottom padding is 0.
+        assertEquals(0, mBottomSheet.getContentBottomPadding());
 
         float currentOffset = 150.0f;
         mBottomSheet.setSheetOffsetFromBottom(currentOffset, StateChangeReason.NONE);
-        // Landed baseline on origin/main: without edge-to-edge insets, wrap-content sheets
-        // calculate translation relative to container bottom without clearing the navigation bar.
+        // In non-E2E mode, edge-to-edge inset is 0 so translationY does not double-subtract
+        // navBarInset.
         float expectedTranslationY = SHEET_CONTAINER_HEIGHT - currentOffset;
         assertEquals(
                 expectedTranslationY, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
@@ -3061,5 +3069,157 @@ public class BottomSheetCoordinatorUnitTest {
 
         assertEquals(500, mBottomSheet.getVisibleViewportRectForTesting().bottom);
         assertEquals(470, contentContainer.getLayoutParams().height);
+    }
+
+    @Test
+    public void testWrapContentMeasure_DoesNotSubtractStatusBarFromContentHeight() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 800);
+        measureAndLayoutContainer(1080, 800);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 60, 0, 48))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        // Supply edge-to-edge bottom inset of 48px to test E2E bottom padding clearance.
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 48);
+
+        int[] measuredMaxContentHeight = new int[1];
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        measuredMaxContentHeight[0] = MeasureSpec.getSize(heightMeasureSpec);
+                        setMeasuredDimension(
+                                MeasureSpec.getSize(widthMeasureSpec),
+                                View.resolveSize(2000, heightMeasureSpec));
+                    }
+                };
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.WRAP_CONTENT);
+        when(content.showHandlebar()).thenReturn(true);
+        when(content.getContentView()).thenReturn(contentView);
+
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        ImageView handlebar = mBottomSheet.getView().getHandlebarForTesting();
+        int handlebarHeight = handlebar.getMeasuredHeight();
+        int bottomPadding = mBottomSheet.getContentBottomPadding();
+        assertEquals(48, bottomPadding);
+
+        int expectedMaxContentHeight = 800 - handlebarHeight - bottomPadding;
+        assertEquals(expectedMaxContentHeight, measuredMaxContentHeight[0]);
+
+        assertEquals(
+                800 - bottomPadding,
+                mBottomSheet.getSheetHeightForState(SheetState.FULL),
+                MathUtils.EPSILON);
+        assertEquals(0.0f, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // Now verify with edge-to-edge bottom inset 0 (non-E2E mode), status bar 60px is isolated.
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 0);
+        ViewUtils.requestLayout(
+                mSheetContainer,
+                "BottomSheetCoordinatorUnitTest.testWrapContentMeasure_DoesNotSubtractStatusBarFromContentHeight");
+        measureAndLayoutContainer(1080, 800);
+
+        assertEquals(0, mBottomSheet.getContentBottomPadding());
+        int expectedNonE2EMaxContentHeight = 800 - handlebarHeight;
+        assertEquals(expectedNonE2EMaxContentHeight, measuredMaxContentHeight[0]);
+    }
+
+    @Test
+    public void testWrapContentMeasure_NaturalHeightAccommodatedWithoutClipping() {
+        final int containerHeight = 800;
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, containerHeight);
+        measureAndLayoutContainer(1080, containerHeight);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 60, 0, 48))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 48);
+
+        final int naturalContentHeight = 150;
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        setMeasuredDimension(
+                                MeasureSpec.getSize(widthMeasureSpec), naturalContentHeight);
+                    }
+                };
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.WRAP_CONTENT);
+        when(content.showHandlebar()).thenReturn(true);
+        when(content.getContentView()).thenReturn(contentView);
+
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        ImageView handlebar = mBottomSheet.getView().getHandlebarForTesting();
+        int handlebarHeight = handlebar.getMeasuredHeight();
+        int bottomPadding = mBottomSheet.getContentBottomPadding();
+        assertEquals(48, bottomPadding);
+
+        int expectedDesiredHeight = naturalContentHeight + handlebarHeight;
+        assertEquals(
+                expectedDesiredHeight,
+                mBottomSheet.getSheetHeightForState(SheetState.FULL),
+                MathUtils.EPSILON);
+
+        float expectedTranslationY =
+                containerHeight - (naturalContentHeight + handlebarHeight) - bottomPadding;
+        assertEquals(
+                expectedTranslationY, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testWrapContentMeasure_LandscapeCompactViewportDoesNotCollapseToZero() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 800, 300);
+        measureAndLayoutContainer(800, 300);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 60, 0, 48))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 48);
+
+        int[] measuredMaxContentHeight = new int[1];
+        View contentView =
+                new View(mActivity) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        measuredMaxContentHeight[0] = MeasureSpec.getSize(heightMeasureSpec);
+                        setMeasuredDimension(
+                                MeasureSpec.getSize(widthMeasureSpec),
+                                View.resolveSize(100, heightMeasureSpec));
+                    }
+                };
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.WRAP_CONTENT);
+        when(content.showHandlebar()).thenReturn(true);
+        when(content.getContentView()).thenReturn(contentView);
+
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        int bottomPadding = mBottomSheet.getContentBottomPadding();
+        assertEquals(48, bottomPadding);
+
+        assertTrue("maxContentHeight should be greater than 0", measuredMaxContentHeight[0] > 0);
+        assertTrue(
+                "Sheet full height should be greater than 0",
+                mBottomSheet.getSheetHeightForState(SheetState.FULL) > 0);
+        assertTrue("Content height should be greater than 0", contentView.getMeasuredHeight() > 0);
     }
 }
