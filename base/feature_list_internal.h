@@ -48,8 +48,7 @@ enum class RuntimeMutabilityResult {
   // to be enabled for runtime mutability.
   kFailure = 2,
   // A runtime-update was rejected because the requested feature state is not
-  // supported. V0, for example, only supports the disabling of runtime-mutable
-  // features.
+  // supported (e.g., OVERRIDE_USE_DEFAULT).
   kFailure_StateNotSupported = 3,
   // The runtime-mutability of a feature has been disabled because the feature's
   // state was set via a command-line override. This is not an error, per se,
