@@ -4366,4 +4366,111 @@ TEST_F(ActionAppMenuTest,
       u"Restore split view");
 }
 
+TEST_F(ActionAppMenuTest, AllMenuItemsHandledInMetrics) {
+  FaviconServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(), base::BindRepeating([](content::BrowserContext* context)
+                                              -> std::unique_ptr<KeyedService> {
+        return std::make_unique<
+            testing::NiceMock<favicon::MockFaviconService>>();
+      }));
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<base::RepeatingClosure> on_menu_closed;
+
+  EXPECT_CALL(mock_action_invoked_, Call(testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+
+  // Populate dynamic menus with sample items so their child actions are
+  // created.
+  auto* sync_service = static_cast<tab_groups::FakeTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
+  ASSERT_TRUE(sync_service);
+
+  base::Uuid local_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab1(GURL("https://example.com/1"), u"Local Tab",
+                                    local_guid,
+                                    /*position=*/0);
+  tab_groups::SavedTabGroup local_group(
+      u"Local Group", tab_groups::TabGroupColorId::kBlue, {tab1},
+      /*position=*/std::nullopt, local_guid,
+      tab_groups::TabGroupId::GenerateNew());
+  sync_service->AddGroup(std::move(local_group));
+
+  base::Uuid remote_guid = base::Uuid::GenerateRandomV4();
+  tab_groups::SavedTabGroupTab tab2(GURL("https://example.com/2"),
+                                    u"Remote Tab", remote_guid,
+                                    /*position=*/0);
+  tab_groups::SavedTabGroup remote_group(
+      u"Remote Group", tab_groups::TabGroupColorId::kRed, {tab2},
+      /*position=*/std::nullopt, remote_guid);
+  sync_service->AddGroup(std::move(remote_group));
+
+  ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+  menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+  ASSERT_TRUE(menu.IsShowing());
+
+  views::MenuItemView* root = menu.root_menu_item_for_testing();
+  ASSERT_NE(root, nullptr);
+
+  // Recursively expand all submenus so dynamic items are generated.
+  auto expand_submenus = [&](this auto& self,
+                             views::MenuItemView* parent) -> void {
+    if (!parent || !parent->HasSubmenu()) {
+      return;
+    }
+    for (views::MenuItemView* child : parent->GetSubmenu()->GetMenuItems()) {
+      if (child->GetType() == views::MenuItemView::Type::kSubMenu) {
+        menu.WillShowMenu(child);
+        self(child);
+      }
+    }
+  };
+  expand_submenus(root);
+
+  // Collect all actionable menu items.
+  std::vector<views::MenuItemView*> actionable_items;
+  auto collect_items = [&](this auto& self,
+                           views::MenuItemView* parent) -> void {
+    if (!parent || !parent->HasSubmenu()) {
+      return;
+    }
+    for (views::MenuItemView* child : parent->GetSubmenu()->GetMenuItems()) {
+      if (child->GetType() == views::MenuItemView::Type::kNormal ||
+          child->GetType() == views::MenuItemView::Type::kCheckbox) {
+        actionable_items.push_back(child);
+      } else if (child->GetType() == views::MenuItemView::Type::kSubMenu) {
+        self(child);
+      }
+    }
+  };
+  collect_items(root);
+
+  EXPECT_FALSE(actionable_items.empty());
+
+  // Verify that each actionable menu item is handled in ActionAppMenuMetrics
+  // without hitting NOTREACHED().
+  for (views::MenuItemView* item : actionable_items) {
+    actions::BaseAction* action = menu.GetActionForMenuItemForTesting(item);
+    ASSERT_NE(action, nullptr);
+    const auto display_type =
+        action->GetProperty(AppMenuActionItem::kDisplayTypeKey);
+    if (display_type == AppMenuActionItem::DisplayType::kCustom) {
+      for (const auto& child_action : action->GetChildren().children()) {
+        actions::ActionItem* child_ptr = child_action->GetActionItem();
+        // Skip non-actionable labels like zoom percentage.
+        if (child_ptr->GetActionId() == kActionZoomNormal) {
+          continue;
+        }
+        ActionAppMenuMetrics metrics;
+        metrics.LogMenuAction(child_action.get());
+      }
+      continue;
+    }
+    ActionAppMenuMetrics metrics;
+    metrics.LogMenuAction(action);
+  }
+
+  menu.CloseMenu();
+}
+
 }  // namespace

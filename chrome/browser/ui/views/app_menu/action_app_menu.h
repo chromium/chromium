@@ -107,6 +107,14 @@ class ActionAppMenu : public views::MenuDelegate,
   AppMenuSearchController* search_controller_for_testing() {
     return search_controller_.get();
   }
+  const base::flat_map<int, raw_ptr<actions::BaseAction>>&
+  command_to_action_map_for_testing() const {
+    return command_to_action_map_;
+  }
+  actions::BaseAction* GetActionForMenuItemForTesting(
+      views::MenuItemView* menu) const {
+    return GetActionForMenuItem(menu);
+  }
   void SetTimerForTesting(base::ElapsedTimer timer);
   void ClearItemsBelowSearchBarForTesting();
 

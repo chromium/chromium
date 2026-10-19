@@ -469,6 +469,12 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
           "TabGroups_SavedTabGroups_OpenedFromAppMenu"));
       RecordAction(MENU_ACTION_SAVED_TAB_GROUP_PIN, "SavedTabGroupPin");
       break;
+    case kActionCloseTabGroup:
+    case kActionToggleTabGroupFocus:
+      base::RecordAction(base::UserMetricsAction(
+          "TabGroups_SavedTabGroups_OpenedFromAppMenu"));
+      RecordTimeToAction();
+      break;
 
     // Bookmark bar visibility submenu.
     case kActionBookmarkBarSubmenuAlwaysHide:
