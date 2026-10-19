@@ -1036,9 +1036,21 @@ void WebGLRenderingContextWebGPUBase::depthRange(GLfloat z_near,
   driver_gl_.fn.glDepthRangeFn(z_near, z_far);
 }
 
-void WebGLRenderingContextWebGPUBase::detachShader(WebGLProgram*,
-                                                   WebGLShader*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::detachShader(WebGLProgram* program,
+                                                   WebGLShader* shader) {
+  if (!ValidateProgramOrShader("detachShader", program) ||
+      !ValidateProgramOrShader("detachShader", shader)) {
+    return;
+  }
+
+  // ANGLE generates INVALID_OPERATION if the shader isn't attached.
+  RETURN_IF_GL_ERROR(
+      driver_gl_.fn.glDetachShaderFn(program->Object(), shader->Object()));
+
+  // Update the JS wrappers. This may delete a shader marked for deletion.
+  // ANGLE accepted the detach, so Blink must agree the shader was attached.
+  CHECK(program->DetachShader(shader));
+  shader->OnDetached(ContextGL());
 }
 
 void WebGLRenderingContextWebGPUBase::disable(GLenum cap) {
@@ -1198,9 +1210,20 @@ WebGLActiveInfo* WebGLRenderingContextWebGPUBase::getActiveUniform(
 }
 
 std::optional<HeapVector<Member<WebGLShader>>>
-WebGLRenderingContextWebGPUBase::getAttachedShaders(WebGLProgram*) {
-  NOTIMPLEMENTED();
-  return {};
+WebGLRenderingContextWebGPUBase::getAttachedShaders(WebGLProgram* program) {
+  if (!ValidateProgramOrShader("getAttachedShaders", program)) {
+    return std::nullopt;
+  }
+
+  // Must return the JS wrappers, so use Blink's tracking.
+  HeapVector<Member<WebGLShader>> shader_objects;
+  for (GLenum shader_type : {GL_VERTEX_SHADER, GL_FRAGMENT_SHADER}) {
+    WebGLShader* shader = program->GetAttachedShader(shader_type);
+    if (shader) {
+      shader_objects.push_back(shader);
+    }
+  }
+  return shader_objects;
 }
 
 GLint WebGLRenderingContextWebGPUBase::getAttribLocation(WebGLProgram* program,
@@ -1431,9 +1454,14 @@ WebGLRenderingContextWebGPUBase::getShaderPrecisionFormat(
   return nullptr;
 }
 
-String WebGLRenderingContextWebGPUBase::getShaderSource(WebGLShader*) {
-  NOTIMPLEMENTED();
-  return {};
+String WebGLRenderingContextWebGPUBase::getShaderSource(WebGLShader* shader) {
+  if (!ValidateProgramOrShader("getShaderSource", shader)) {
+    return String();
+  }
+
+  // ANGLE only has the ASCII-sanitized copy. Return the original source.
+  // A null String would become JS null, which WebGL reserves for errors.
+  return shader->Source().IsNull() ? g_empty_string : shader->Source();
 }
 
 std::optional<Vector<String>>
