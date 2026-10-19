@@ -139,6 +139,8 @@ TEST_F(StreamingRuntimeApplicationTest, LaunchWithExtendedInput) {
   std::string nav_url = web_contents()->GetVisibleURL().spec();
   EXPECT_THAT(nav_url, testing::HasSubstr("touch-action:none"));
   EXPECT_THAT(nav_url, testing::HasSubstr("user-scalable=no"));
+  EXPECT_THAT(nav_url, testing::HasSubstr("object-fit:contain"));
+  EXPECT_THAT(nav_url, testing::Not(testing::HasSubstr("object-fit:fill")));
 }
 
 TEST_F(StreamingRuntimeApplicationTest, LaunchWithExtendedInputNoDataManager) {
