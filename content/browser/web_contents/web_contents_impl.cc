@@ -5221,8 +5221,8 @@ bool WebContentsImpl::GetResizable() {
   return GetDelegate() && GetDelegate()->GetCanResize();
 }
 
-bool WebContentsImpl::GetIsAlwaysOnTop() {
-  return GetDelegate() && GetDelegate()->GetIsAlwaysOnTop();
+bool WebContentsImpl::GetIsAlwaysOnTopPopup() {
+  return GetDelegate() && GetDelegate()->GetIsAlwaysOnTopPopup();
 }
 
 void WebContentsImpl::FullscreenFrameSetUpdated() {

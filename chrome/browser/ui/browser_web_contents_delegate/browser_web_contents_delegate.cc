@@ -1134,7 +1134,7 @@ bool BrowserWebContentsDelegate::GetCanResize() {
   return window_->GetCanResize();
 }
 
-bool BrowserWebContentsDelegate::GetIsAlwaysOnTop() {
+bool BrowserWebContentsDelegate::GetIsAlwaysOnTopPopup() {
   return browser_->GetType() == BrowserWindowInterface::Type::TYPE_FLOATING &&
          !DesktopBrowserWindowCapabilities::IsDocumentPictureInPicture(
              &*browser_);

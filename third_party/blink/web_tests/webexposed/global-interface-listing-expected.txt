@@ -13866,7 +13866,7 @@ namespace console
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
-    getter alwaysOnTop
+    getter alwaysOnTopPopup
     getter caches
     getter clientInformation
     getter closed

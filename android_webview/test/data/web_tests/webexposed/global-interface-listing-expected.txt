@@ -12593,7 +12593,7 @@ namespace console
     attribute awConsole
     attribute globalThis
     attribute propertyNamesInGlobal
-    getter alwaysOnTop
+    getter alwaysOnTopPopup
     getter caches
     getter clientInformation
     getter closed

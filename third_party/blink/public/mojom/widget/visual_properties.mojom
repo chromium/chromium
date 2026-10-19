@@ -23,8 +23,8 @@ struct VisualProperties {
   // Whether or not the widget can be resized.
   bool resizable = true;
 
-  // Whether or not the window is pinned always-on-top.
-  bool always_on_top = false;
+  // Whether or not the window is an always-on-top popup.
+  bool always_on_top_popup = false;
 
   // The minimum size for Blink if auto-resize is enabled.
   gfx.mojom.Size min_size_for_auto_resize;

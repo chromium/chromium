@@ -125,7 +125,7 @@ bool RenderWidgetHostDelegate::GetResizable() {
 #endif
 }
 
-bool RenderWidgetHostDelegate::GetIsAlwaysOnTop() {
+bool RenderWidgetHostDelegate::GetIsAlwaysOnTopPopup() {
   return false;
 }
 

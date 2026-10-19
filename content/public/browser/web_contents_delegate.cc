@@ -191,7 +191,7 @@ bool WebContentsDelegate::GetCanResize() {
   return false;
 }
 
-bool WebContentsDelegate::GetIsAlwaysOnTop() {
+bool WebContentsDelegate::GetIsAlwaysOnTopPopup() {
   return false;
 }
 

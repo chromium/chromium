@@ -1224,7 +1224,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
         delegate_->GetVirtualKeyboardResizeHeight();
     visual_properties.window_show_state = delegate_->GetWindowShowState();
     visual_properties.resizable = delegate_->GetResizable();
-    visual_properties.always_on_top = delegate_->GetIsAlwaysOnTop();
+    visual_properties.always_on_top_popup = delegate_->GetIsAlwaysOnTopPopup();
   } else {
     visual_properties.compositor_viewport_pixel_rect =
         properties_from_parent_local_root_.compositor_viewport;
@@ -3416,8 +3416,8 @@ bool RenderWidgetHostImpl::StoredVisualPropertiesNeedsUpdate(
              new_visual_properties.root_widget_viewport_segments ||
          old_visual_properties->window_controls_overlay_rect !=
              new_visual_properties.window_controls_overlay_rect ||
-         old_visual_properties->always_on_top !=
-             new_visual_properties.always_on_top;
+         old_visual_properties->always_on_top_popup !=
+             new_visual_properties.always_on_top_popup;
 }
 
 void RenderWidgetHostImpl::UpdateFullscreenGrantCount() {

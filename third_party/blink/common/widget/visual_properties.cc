@@ -41,7 +41,8 @@ bool VisualProperties::operator==(const VisualProperties& other) const {
          is_pinch_gesture_active == other.is_pinch_gesture_active &&
          window_controls_overlay_rect == other.window_controls_overlay_rect &&
          window_show_state == other.window_show_state &&
-         resizable == other.resizable && always_on_top == other.always_on_top;
+         resizable == other.resizable &&
+         always_on_top_popup == other.always_on_top_popup;
 }
 
 }  // namespace blink

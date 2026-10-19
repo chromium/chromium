@@ -418,15 +418,15 @@ TEST_F(LocalDOMWindowTest, CanExecuteScriptsDuringDetach) {
       GetFrame().DomWindow()->CanExecuteScripts(kAboutToExecuteScript));
 }
 
-TEST_F(LocalDOMWindowTest, AlwaysOnTop) {
+TEST_F(LocalDOMWindowTest, AlwaysOnTopPopup) {
   LocalDOMWindow* window = GetFrame().DomWindow();
-  EXPECT_FALSE(window->alwaysOnTop());
+  EXPECT_FALSE(window->alwaysOnTopPopup());
 
-  GetFrame().GetPage()->SetAlwaysOnTop(true);
-  EXPECT_TRUE(window->alwaysOnTop());
+  GetFrame().GetPage()->SetAlwaysOnTopPopup(true);
+  EXPECT_TRUE(window->alwaysOnTopPopup());
 
-  GetFrame().GetPage()->SetAlwaysOnTop(false);
-  EXPECT_FALSE(window->alwaysOnTop());
+  GetFrame().GetPage()->SetAlwaysOnTopPopup(false);
+  EXPECT_FALSE(window->alwaysOnTopPopup());
 }
 
 TEST_F(LocalDOMWindowTest, OutgoingReferrerUrlCaching) {

@@ -2783,12 +2783,13 @@ class BrowserNavigatorTestAlwaysOnTop : public BrowserNavigatorTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop, AlwaysOnTopAttribute) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop,
+                       AlwaysOnTopPopupAttribute) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
 
-  // 1. Without permission, window.alwaysOnTop should return false.
+  // 1. Without permission, window.alwaysOnTopPopup should return false.
   {
     ui_test_utils::BrowserCreatedObserver observer;
     ASSERT_TRUE(content::ExecJs(
@@ -2803,10 +2804,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop, AlwaysOnTopAttribute) {
     content::WebContents* new_contents =
         popup_browser->GetActiveTabInterface()->GetContents();
     ASSERT_TRUE(new_contents);
-    EXPECT_EQ(false, content::EvalJs(new_contents, "window.alwaysOnTop"));
+    EXPECT_EQ(false, content::EvalJs(new_contents, "window.alwaysOnTopPopup"));
   }
 
-  // 2. With permission, window.alwaysOnTop should return true.
+  // 2. With permission, window.alwaysOnTopPopup should return true.
   HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
       ->SetContentSettingDefaultScope(opener_url, opener_url,
                                       ContentSettingsType::WINDOW_MANAGEMENT,
@@ -2826,7 +2827,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestAlwaysOnTop, AlwaysOnTopAttribute) {
     content::WebContents* new_contents =
         popup_browser->GetActiveTabInterface()->GetContents();
     ASSERT_TRUE(new_contents);
-    EXPECT_EQ(true, content::EvalJs(new_contents, "window.alwaysOnTop"));
+    EXPECT_EQ(true, content::EvalJs(new_contents, "window.alwaysOnTopPopup"));
   }
 }
 
