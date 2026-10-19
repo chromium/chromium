@@ -529,6 +529,7 @@ std::vector<FieldTrial::State> FieldTrialList::GetAllFieldTrialStates(
     entry.activated = trial.activated;
     entry.trial_name = *trial.trial_name;
     entry.group_name = *trial.group_name;
+    entry.is_overridden = trial.is_overridden;
     states.push_back(std::move(entry));
   }
   return states;

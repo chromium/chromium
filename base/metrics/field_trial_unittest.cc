@@ -1598,4 +1598,29 @@ TEST_F(FieldTrialTest, BuildFieldTrialStateString) {
             FieldTrial::BuildFieldTrialStateString({state1, state2}));
 }
 
+TEST_F(FieldTrialTest, GetAllFieldTrialStatesPreservesIsOverridden) {
+  FieldTrialList::CreateFieldTrial("NormalTrial", "Group1",
+                                   /*is_low_anonymity=*/false,
+                                   /*is_overridden=*/false);
+  FieldTrialList::CreateFieldTrial("OverriddenTrial", "Group2",
+                                   /*is_low_anonymity=*/false,
+                                   /*is_overridden=*/true)
+      ->Activate();
+
+  {
+    test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithEmptyFeatureAndFieldTrialLists();
+  }
+
+  FieldTrial* normal_trial = FieldTrialList::Find("NormalTrial");
+  ASSERT_TRUE(normal_trial);
+  EXPECT_EQ("Group1", normal_trial->GetGroupNameWithoutActivation());
+  EXPECT_FALSE(normal_trial->IsOverridden());
+
+  FieldTrial* overridden_trial = FieldTrialList::Find("OverriddenTrial");
+  ASSERT_TRUE(overridden_trial);
+  EXPECT_EQ("Group2", overridden_trial->group_name());
+  EXPECT_TRUE(overridden_trial->IsOverridden());
+}
+
 }  // namespace base
