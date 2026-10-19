@@ -421,7 +421,7 @@ BaseRenderingContext2D::GetOrCreateSWCanvasImageProvider() {
 void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
     SkCanvas* canvas,
     uint32_t id) {
-  if (shared_image_provider_) {
+  if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
     shared_image_provider_->SetAnimatedImageFrameIndexes(
         GetAnimatedImageFrameIndexMap(id));
     return;
@@ -433,6 +433,9 @@ void BaseRenderingContext2D::ApplyAnimatedImageFrameIndexesForId(
 
 void BaseRenderingContext2D::RasterRecordToSoftwareSurface(
     cc::PaintRecord last_recording) {
+  if (shared_image_provider_) {
+    shared_image_provider_->WillDrawUnaccelerated();
+  }
   cc::SkiaPaintCanvas skia_canvas(surface_->getCanvas(),
                                   GetOrCreateSWCanvasImageProvider());
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
@@ -1156,10 +1159,8 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   cc::PaintRecord recording = recorder->ReleaseMainRecording();
   DidFlushRecording(recording, clear_frame_, reason);
   clear_frame_ = false;
-  if (shared_image_provider_) {
-    ScopedRasterTimer timer(shared_image_provider_->IsAccelerated()
-                                ? shared_image_provider_->RasterInterface()
-                                : nullptr,
+  if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
+    ScopedRasterTimer timer(shared_image_provider_->RasterInterface(),
                             shared_image_provider_.get());
     cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback =
         blink::BindRepeating(

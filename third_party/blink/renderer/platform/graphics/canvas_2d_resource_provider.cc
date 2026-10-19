@@ -24,12 +24,11 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/process_memory_dump.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/paint/decode_stashing_image_provider.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "cc/paint/skia_paint_canvas.h"
-#include "cc/tiles/software_image_decode_cache.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -456,13 +455,8 @@ Canvas2DResourceProvider::GetOrCreateCanvasImageProvider() {
 void Canvas2DResourceProvider::RasterRecord(
     cc::PaintRecord last_recording,
     cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback) {
-  if (!is_accelerated_) {
-    WillDrawUnaccelerated();
-    cc::SkiaPaintCanvas skia_canvas(GetSkSurface()->getCanvas(),
-                                    GetOrCreateSWCanvasImageProvider());
-    skia_canvas.drawPicture(std::move(last_recording),
-                            std::move(custom_callback));
-  } else if (!IsGpuContextLost()) {
+  CHECK(is_accelerated_);
+  if (!IsGpuContextLost()) {
     EnsureResourceReadyForDraw();
     EnsureWriteAccess();
 
@@ -785,36 +779,9 @@ void Canvas2DResourceProvider::RecordingCleared() {
   must_preserve_content_on_copy_on_write_ = false;
 }
 
-CanvasImageProvider*
-Canvas2DResourceProvider::GetOrCreateSWCanvasImageProvider() {
-  if (canvas_image_provider_) {
-    return canvas_image_provider_.get();
-  }
-
-  cc::ImageDecodeCache* cache_f16 = nullptr;
-  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
-    cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
-  }
-
-  cc::ImageDecodeCache* cache_rgba8 =
-      &Image::SharedCCDecodeCache(kN32_SkColorType);
-
-  if (!context_provider_wrapper_) {
-    context_provider_wrapper_ = SharedGpuContext::ContextProviderWrapper();
-    if (context_provider_wrapper_) {
-      context_provider_wrapper_->AddObserver(this);
-    }
-  }
-  canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
-      cc::PlaybackImageProvider::RasterMode::kSoftware,
-      context_provider_wrapper_);
-
-  return canvas_image_provider_.get();
-}
-
 void Canvas2DResourceProvider::SetAnimatedImageFrameIndexes(
     scoped_refptr<const cc::AnimatedImageFrameIndexMap> map) {
+  CHECK(is_accelerated_);
   CHECK(canvas_image_provider_);
   canvas_image_provider_->SetAnimatedImageFrameIndexes(map);
 }

@@ -237,7 +237,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
 
   SkSurface* GetSkSurface() const;
-  CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
