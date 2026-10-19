@@ -632,21 +632,20 @@ class CORE_EXPORT ConstraintSpace final {
   }
 
   // The amount of available space for block-start side annotation.
-  // For the first box, this is the padding-block-start value of the container.
-  // Otherwise, this comes from LayoutResult::BlockEndAnnotationSpace().
-  // If the value is negative, it's block-end annotation overflow of the
-  // previous box.
+  // - For the first line box in an IFC, this is the initial block-start
+  //   annotation space of the container (see
+  //   BlockLayoutAlgorithm::ComputeInitialBlockStartAnnotationSpace()).
+  // - For subsequent line boxes, this comes from the previous line box's
+  //   LayoutResult::BlockEndAnnotationSpace(). If the value is negative, it's
+  //   block-end annotation overflow of the previous line box.
+  // - For a block box, this comes from the previous sibling block box's
+  //   LayoutResult::BlockEndAnnotationSpace().
   LayoutUnit BlockStartAnnotationSpace() const {
     return rare_data_ ? rare_data_->BlockStartAnnotationSpace() : LayoutUnit();
   }
   // Returns true if the layout object (and its descendants) have any ruby
   // annotations or text-emphasis marks.
   bool ContainsAnnotations() const { return bitfields_.contains_annotations; }
-
-  LayoutUnit PreviousSiblingBlockEndAnnotationSpace() const {
-    return rare_data_ ? rare_data_->PreviousSiblingBlockEndAnnotationSpace()
-                      : LayoutUnit();
-  }
 
   MarginStrut GetMarginStrut() const {
     return rare_data_ ? rare_data_->GetMarginStrut() : MarginStrut();
@@ -1019,6 +1018,7 @@ class CORE_EXPORT ConstraintSpace final {
     bool MaySkipLayout(const RareData& other) const {
       if (replaced_child_percentage_resolution_block_size !=
               other.replaced_child_percentage_resolution_block_size ||
+          block_start_annotation_space != other.block_start_annotation_space ||
           data_union_type != other.data_union_type ||
           is_pushed_by_floats != other.is_pushed_by_floats ||
           is_restricted_block_size_table_cell !=
@@ -1067,7 +1067,8 @@ class CORE_EXPORT ConstraintSpace final {
               other.is_adjacent_to_paper_edge_block_end ||
           !base::ValuesEquivalent(line_clamp_ancestor_chain_,
                                   other.line_clamp_ancestor_chain_) ||
-          !base::ValuesEquivalent(grid_layout_subtree_, other.grid_layout_subtree_)) {
+          !base::ValuesEquivalent(grid_layout_subtree_,
+                                  other.grid_layout_subtree_)) {
         return false;
       }
 
@@ -1093,8 +1094,9 @@ class CORE_EXPORT ConstraintSpace final {
     // Must be kept in sync with members checked within |MaySkipLayout|.
     bool IsInitialForMaySkipLayout() const {
       if (replaced_child_percentage_resolution_block_size != kIndefiniteSize ||
-          page_name || fragmentainer_block_size != kIndefiniteSize ||
-          fragmentainer_offset || safe_printable_inset || is_pushed_by_floats ||
+          block_start_annotation_space || page_name ||
+          fragmentainer_block_size != kIndefiniteSize || fragmentainer_offset ||
+          safe_printable_inset || is_pushed_by_floats ||
           is_restricted_block_size_table_cell || hide_table_cell_if_empty ||
           block_direction_fragmentation_type != kFragmentNone ||
           is_block_fragmentation_forced_off ||
@@ -1145,16 +1147,6 @@ class CORE_EXPORT ConstraintSpace final {
 
     void SetBlockStartAnnotationSpace(LayoutUnit space) {
       block_start_annotation_space = space;
-    }
-
-    LayoutUnit PreviousSiblingBlockEndAnnotationSpace() const {
-      return GetDataUnionType() == DataUnionType::kBlockData
-                 ? block_data_.previous_sibling_block_end_annotation_space
-                 : LayoutUnit();
-    }
-
-    void SetPreviousSiblingBlockEndAnnotationSpace(LayoutUnit space) {
-      EnsureBlockData()->previous_sibling_block_end_annotation_space = space;
     }
 
     MarginStrut GetMarginStrut() const {
@@ -1404,21 +1396,17 @@ class CORE_EXPORT ConstraintSpace final {
    private:
     struct BlockData {
       bool MaySkipLayout(const BlockData& other) const {
-        return line_clamp_data == other.line_clamp_data &&
-               previous_sibling_block_end_annotation_space ==
-                   other.previous_sibling_block_end_annotation_space;
+        return line_clamp_data == other.line_clamp_data;
       }
 
       bool IsInitialForMaySkipLayout() const {
-        return line_clamp_data.state == LineClampData::State::kDisabled &&
-               previous_sibling_block_end_annotation_space == LayoutUnit();
+        return line_clamp_data.state == LineClampData::State::kDisabled;
       }
 
       MarginStrut margin_strut;
       std::optional<LayoutUnit> optimistic_bfc_block_offset;
       std::optional<LayoutUnit> forced_bfc_block_offset;
       LayoutUnit clearance_offset = LayoutUnit::Min();
-      LayoutUnit previous_sibling_block_end_annotation_space;
       LineClampData line_clamp_data;
     };
 

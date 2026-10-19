@@ -2747,14 +2747,14 @@ TEST_F(BlockLayoutAlgorithmTest, PreviousSiblingBlockEndAnnotationSpace) {
     return cursor.Current().OffsetInContainerFragment().top;
   };
 
-  // target1, target6, and target7 have PreviousSiblingBlockEndAnnotationSpace
+  // target1, target6, and target7 have BlockStartAnnotationSpace
   // from their previous siblings. They have line-height 60px, so their
   // BlockEndAnnotationSpace is around 25px.
   // Targets' annotation overflow is 20px (because rt font-size is 20px).
   // Since 20px <= 25px, the overflow is fully accommodated, so offset should
   // be 0.
   //
-  // target3, target4, target5 have no PreviousSiblingBlockEndAnnotationSpace,
+  // target3, target4, target5 have no BlockStartAnnotationSpace,
   // so their lines should be pushed down by the 20px annotation.
   //
   // target2 also should be pushed down because prev2 has height constraint and
