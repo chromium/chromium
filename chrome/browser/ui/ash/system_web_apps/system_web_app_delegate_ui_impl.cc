@@ -22,6 +22,7 @@
 #include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
@@ -101,11 +102,10 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   if (!web_contents || web_contents->GetURL() != url ||
       GetType() == SystemWebAppType::HELP) {
     // TODO(crbug.com/40829466): Migrate to use PWA pinned home tab when ready.
-    web_contents = browser->NavigateWebApp(
-        url,
-        ShouldPinTab(url) ? BrowserDelegate::TabPinning::kYes
-                          : BrowserDelegate::TabPinning::kNo,
-        std::move(launch_params));
+    web_contents =
+        browser->LoadUrl(url, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
+                         {.pin_tab = ShouldPinTab(url),
+                          .launch_params = std::move(launch_params)});
   } else {
     // Launch params need to account for the use-case where it needs to be
     // dispatched immediately, because a new navigation has not started. Update
