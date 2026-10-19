@@ -339,11 +339,6 @@ class BASE_EXPORT PersistentHistogramAllocator {
     return last_created_.load(std::memory_order_relaxed);
   }
 
-  // Gets the next histogram in persistent data based on iterator while
-  // ignoring a particular reference if it is found.
-  std::unique_ptr<HistogramBase> GetNextHistogramWithIgnore(Iterator* iter,
-                                                            Reference ignore);
-
  private:
   // Create a histogram based on saved (persistent) information about it.
   // `histogram_data_ptr` refers to a variable length structure, ending
@@ -432,10 +427,10 @@ class BASE_EXPORT GlobalHistogramAllocator
                                    uint64_t id,
                                    std::string_view name);
 
-  // Uses ConstructBaseActivePairFilePaths() to build a pair of file names which
-  // are then used for CreateWithActiveFile(). `name` is used for both the
-  // internal name for the allocator and also for the name of the file inside
-  // `dir`.
+  // Uses ConstructFilePath() and ConstructFilePathForActiveFile() to build a
+  // pair of file names which are then used for CreateWithActiveFile(). `name`
+  // is used for both the internal name for the allocator and also for the name
+  // of the file inside `dir`.
   static bool CreateWithActiveFileInDir(const FilePath& dir,
                                         size_t size,
                                         uint64_t id,
@@ -539,10 +534,6 @@ class BASE_EXPORT GlobalHistogramAllocator
   // this method resumes from the last entry it saw; it costs nothing if
   // nothing new has been added.
   void ImportHistogramsToStatisticsRecorder();
-
-  // Builds a FilePath for a metrics file.
-  static FilePath MakeMetricsFilePath(const FilePath& dir,
-                                      std::string_view name);
 
   // Import always continues from where it left off, making use of a single
   // iterator to continue the work.
