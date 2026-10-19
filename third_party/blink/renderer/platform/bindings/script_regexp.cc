@@ -106,7 +106,7 @@ int ScriptRegexp::Match(StringView string,
   v8::Local<v8::String> subject =
       V8String(isolate_, StringView(string, start_from));
   v8::Local<v8::Value> return_value;
-  if (!regex->Exec(context, subject).ToLocal(&return_value)) {
+  if (!regex->ExecV2(context, subject).ToLocal(&return_value)) {
     return -1;
   }
 

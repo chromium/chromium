@@ -228,11 +228,11 @@ inline void CheckGlobalStringMatches(
 int64_t ExtractVersion(v8::Local<v8::RegExp> regexp,
                        v8::Local<v8::Context> context,
                        v8::Local<v8::Value> version) {
-  v8::Local<v8::Object> groups;
+  v8::Local<v8::Value> groups;
   v8::Local<v8::Value> major;
   v8::Local<v8::Value> minor;
   bool success =
-      regexp->Exec(context, version.As<v8::String>()).ToLocal(&groups);
+      regexp->ExecV2(context, version.As<v8::String>()).ToLocal(&groups);
   if (!success || !groups->IsArray()) {
     return kNoFrameworkVersionDetected;
   }
