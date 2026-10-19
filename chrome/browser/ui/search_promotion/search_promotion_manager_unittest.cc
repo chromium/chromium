@@ -1753,6 +1753,8 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, PerformInstallActionSuccess) {
             EXPECT_EQ(promo_task->post_install_url(),
                       GURL("https://google.com/instructions"));
             EXPECT_EQ(promo_task->extension_id(), "test_extension_id");
+            EXPECT_TRUE(promo_task->escape_hatch_url().is_empty());
+            EXPECT_FALSE(promo_task->escape_hatch_time().has_value());
             std::move(callback).Run(
                 {static_cast<int>(SearchPromotionExitCode::kSuccessBackground),
                  base::Milliseconds(200)});
@@ -1767,6 +1769,172 @@ TEST_F(SearchPromotionManagerTaskRunnerTest, PerformInstallActionSuccess) {
   histogram_tester.ExpectUniqueTimeSample(
       "Search.SearchPromotion.Duration.SuccessBackground",
       base::Milliseconds(200), 1);
+}
+
+TEST_F(SearchPromotionManagerTaskRunnerTest,
+       PerformInstallActionWithEscapeHatchSuccess) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"action", feature_engagement::kSearchPromotionActionInstall},
+       {"extension_id", "test_extension_id"},
+       {"instructions_url", "https://google.com/instructions"},
+       {"store_url", "https://google.com/store"},
+       {"escape_hatch_time", "3s"}});
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](std::unique_ptr<platform_experience::DelegatedTask> task,
+              std::string_view min_version,
+              platform_experience::DelegatedTaskCompletionCallback callback) {
+            auto* promo_task =
+                static_cast<RegisterSearchPromotionTask*>(task.get());
+            EXPECT_EQ(promo_task->post_install_url(),
+                      GURL("https://google.com/instructions"));
+            EXPECT_EQ(promo_task->extension_id(), "test_extension_id");
+            EXPECT_EQ(promo_task->escape_hatch_url(),
+                      GURL("https://google.com/store"));
+            EXPECT_EQ(promo_task->escape_hatch_time(), base::Seconds(3));
+            std::move(callback).Run(
+                {static_cast<int>(SearchPromotionExitCode::kEscapeHatchSuccess),
+                 base::Milliseconds(3000)});
+            future.GetCallback().Run();
+          });
+
+  manager()->OnPromoAccepted();
+  EXPECT_TRUE(future.Wait());
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.DelegatedTaskExitCode",
+      SearchPromotionExitCode::kEscapeHatchSuccess, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Search.SearchPromotion.Duration.EscapeHatchSuccess",
+      base::Milliseconds(3000), 1);
+}
+
+TEST_F(SearchPromotionManagerTaskRunnerTest,
+       PerformInstallActionWithEscapeHatchLaunchFailed) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"action", feature_engagement::kSearchPromotionActionInstall},
+       {"extension_id", "test_extension_id"},
+       {"instructions_url", "https://google.com/instructions"},
+       {"store_url", "https://google.com/store"},
+       {"escape_hatch_time", "3s"}});
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](std::unique_ptr<platform_experience::DelegatedTask> task,
+              std::string_view min_version,
+              platform_experience::DelegatedTaskCompletionCallback callback) {
+            std::move(callback).Run(
+                {static_cast<int>(
+                     SearchPromotionExitCode::kEscapeHatchLaunchFailed),
+                 base::Milliseconds(3000)});
+            future.GetCallback().Run();
+          });
+
+  manager()->OnPromoAccepted();
+  EXPECT_TRUE(future.Wait());
+  histogram_tester.ExpectUniqueSample(
+      "Search.SearchPromotion.DelegatedTaskExitCode",
+      SearchPromotionExitCode::kEscapeHatchLaunchFailed, 1);
+  histogram_tester.ExpectUniqueTimeSample(
+      "Search.SearchPromotion.Duration.EscapeHatchLaunchFailed",
+      base::Milliseconds(3000), 1);
+}
+
+// An unusable store_url must not drop the accepted promo; the regular install
+// still runs without an escape hatch.
+TEST_F(SearchPromotionManagerTaskRunnerTest,
+       PerformInstallActionWithEscapeHatchInvalidStoreUrl) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      feature_engagement::kIPHSearchPromotionFeature,
+      {{"action", feature_engagement::kSearchPromotionActionInstall},
+       {"extension_id", "test_extension_id"},
+       {"instructions_url", "https://google.com/instructions"},
+       {"store_url", "1234"},
+       {"escape_hatch_time", "3s"}});
+
+  base::test::TestFuture<void> future;
+  EXPECT_CALL(*mock_runner_, Run(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&](std::unique_ptr<platform_experience::DelegatedTask> task,
+              std::string_view min_version,
+              platform_experience::DelegatedTaskCompletionCallback callback) {
+            auto* promo_task =
+                static_cast<RegisterSearchPromotionTask*>(task.get());
+            EXPECT_EQ(promo_task->post_install_url(),
+                      GURL("https://google.com/instructions"));
+            EXPECT_TRUE(promo_task->escape_hatch_url().is_empty());
+            EXPECT_FALSE(promo_task->escape_hatch_time().has_value());
+            std::move(callback).Run({});
+            future.GetCallback().Run();
+          });
+
+  manager()->OnPromoAccepted();
+  EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(SearchPromotionManagerTaskRunnerTest,
+       RegisterSearchPromotionTaskCommandLineRoundTrip) {
+  RegisterSearchPromotionTask task_with_escape_hatch(
+      GURL("https://google.com/instructions"), "test_extension_id",
+      GURL("https://google.com/store"), base::Milliseconds(2500));
+  base::CommandLine cmd_line(base::CommandLine::NO_PROGRAM);
+  task_with_escape_hatch.AppendCommandLineSwitches(cmd_line);
+
+  auto parsed_task = RegisterSearchPromotionTask::FromCommandLine(cmd_line);
+  ASSERT_NE(parsed_task, nullptr);
+  EXPECT_EQ(parsed_task->post_install_url(),
+            GURL("https://google.com/instructions"));
+  EXPECT_EQ(parsed_task->extension_id(), "test_extension_id");
+  EXPECT_EQ(parsed_task->escape_hatch_url(), GURL("https://google.com/store"));
+  EXPECT_EQ(parsed_task->escape_hatch_time(), base::Milliseconds(2500));
+
+  RegisterSearchPromotionTask task_without_escape_hatch(
+      GURL("https://google.com/instructions"), "test_extension_id");
+  base::CommandLine cmd_line_no_escape_hatch(base::CommandLine::NO_PROGRAM);
+  task_without_escape_hatch.AppendCommandLineSwitches(cmd_line_no_escape_hatch);
+  EXPECT_FALSE(cmd_line_no_escape_hatch.HasSwitch("escape-hatch-url"));
+  EXPECT_FALSE(cmd_line_no_escape_hatch.HasSwitch("escape-hatch-time-ms"));
+
+  auto parsed_no_escape_hatch =
+      RegisterSearchPromotionTask::FromCommandLine(cmd_line_no_escape_hatch);
+  ASSERT_NE(parsed_no_escape_hatch, nullptr);
+  EXPECT_TRUE(parsed_no_escape_hatch->escape_hatch_url().is_empty());
+  EXPECT_FALSE(parsed_no_escape_hatch->escape_hatch_time().has_value());
+
+  // Malformed escape hatch switches are rejected.
+  const struct {
+    const char* url;
+    const char* time_ms;
+  } kInvalidCases[] = {
+      {"1234", "2500"},
+      {"https://google.com/store", "0"},
+      {"https://google.com/store", "abc"},
+      {"https://google.com/store", nullptr},
+      {nullptr, "2500"},
+  };
+  for (const auto& test_case : kInvalidCases) {
+    base::CommandLine invalid_cmd_line(base::CommandLine::NO_PROGRAM);
+    invalid_cmd_line.AppendSwitchASCII("post-install-url",
+                                       "https://google.com/instructions");
+    if (test_case.url) {
+      invalid_cmd_line.AppendSwitchASCII("escape-hatch-url", test_case.url);
+    }
+    if (test_case.time_ms) {
+      invalid_cmd_line.AppendSwitchASCII("escape-hatch-time-ms",
+                                         test_case.time_ms);
+    }
+    EXPECT_EQ(RegisterSearchPromotionTask::FromCommandLine(invalid_cmd_line),
+              nullptr);
+  }
 }
 
 TEST_F(SearchPromotionManagerTaskRunnerTest,

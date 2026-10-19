@@ -2130,6 +2130,10 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     task-specific exit code to Chrome. Only recorded on Windows.
   </summary>
   <token key="Outcome">
+    <variant name="EscapeHatchLaunchFailed"
+        summary="escape hatch store page launch failed"/>
+    <variant name="EscapeHatchSuccess"
+        summary="escape hatch store page launch succeeded"/>
     <variant name="ForegroundFallbackLaunchFailed"
         summary="foreground fallback launch failed"/>
     <variant name="InvalidExtensionId"

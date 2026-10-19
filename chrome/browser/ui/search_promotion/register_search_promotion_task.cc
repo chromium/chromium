@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -16,6 +17,8 @@ namespace {
 
 constexpr char kExtensionId[] = "extension-id";
 constexpr char kPostInstallUrlSwitch[] = "post-install-url";
+constexpr char kEscapeHatchUrlSwitch[] = "escape-hatch-url";
+constexpr char kEscapeHatchTimeMsSwitch[] = "escape-hatch-time-ms";
 
 }  // namespace
 
@@ -39,15 +42,28 @@ std::string_view SearchPromotionExitCodeToString(SearchPromotionExitCode code) {
       return "SuccessWithForegroundFallback";
     case SearchPromotionExitCode::kForegroundFallbackLaunchFailed:
       return "ForegroundFallbackLaunchFailed";
+    case SearchPromotionExitCode::kEscapeHatchSuccess:
+      return "EscapeHatchSuccess";
+    case SearchPromotionExitCode::kEscapeHatchLaunchFailed:
+      return "EscapeHatchLaunchFailed";
   }
   return std::string_view();
 }
 
 RegisterSearchPromotionTask::RegisterSearchPromotionTask(
     const GURL& post_install_url,
-    std::string_view extension_id)
-    : post_install_url_(post_install_url), extension_id_(extension_id) {
+    std::string_view extension_id,
+    const GURL& escape_hatch_url,
+    std::optional<base::TimeDelta> escape_hatch_time)
+    : post_install_url_(post_install_url),
+      extension_id_(extension_id),
+      escape_hatch_url_(escape_hatch_url),
+      escape_hatch_time_(escape_hatch_time) {
   CHECK(post_install_url_.is_valid());
+  CHECK(escape_hatch_url_.is_empty()
+            ? !escape_hatch_time_.has_value()
+            : escape_hatch_url_.is_valid() && escape_hatch_time_.has_value() &&
+                  escape_hatch_time_->is_positive());
 }
 
 RegisterSearchPromotionTask::~RegisterSearchPromotionTask() = default;
@@ -68,6 +84,14 @@ void RegisterSearchPromotionTask::AppendCommandLineSwitches(
   if (!extension_id_.empty()) {
     command_line.AppendSwitchASCII(kExtensionId, extension_id_);
   }
+  if (escape_hatch_url_.is_valid() && escape_hatch_time_.has_value()) {
+    command_line.AppendSwitchASCII(kEscapeHatchUrlSwitch,
+                                   escape_hatch_url_.spec());
+    // Round up so sub-millisecond values stay positive.
+    command_line.AppendSwitchASCII(
+        kEscapeHatchTimeMsSwitch,
+        base::NumberToString(escape_hatch_time_->InMillisecondsRoundedUp()));
+  }
 }
 
 std::string_view RegisterSearchPromotionTask::GetTaskName() const {
@@ -86,8 +110,25 @@ RegisterSearchPromotionTask::FromCommandLine(
     return nullptr;
   }
 
+  GURL escape_hatch_url;
+  std::optional<base::TimeDelta> escape_hatch_time;
+  if (command_line.HasSwitch(kEscapeHatchUrlSwitch) ||
+      command_line.HasSwitch(kEscapeHatchTimeMsSwitch)) {
+    escape_hatch_url =
+        GURL(command_line.GetSwitchValueASCII(kEscapeHatchUrlSwitch));
+    int64_t escape_hatch_time_ms = 0;
+    if (!escape_hatch_url.is_valid() ||
+        !base::StringToInt64(
+            command_line.GetSwitchValueASCII(kEscapeHatchTimeMsSwitch),
+            &escape_hatch_time_ms) ||
+        escape_hatch_time_ms <= 0) {
+      return nullptr;
+    }
+    escape_hatch_time = base::Milliseconds(escape_hatch_time_ms);
+  }
+
   std::string extension_id = command_line.GetSwitchValueASCII(kExtensionId);
 
-  return std::make_unique<RegisterSearchPromotionTask>(post_install_url,
-                                                       extension_id);
+  return std::make_unique<RegisterSearchPromotionTask>(
+      post_install_url, extension_id, escape_hatch_url, escape_hatch_time);
 }

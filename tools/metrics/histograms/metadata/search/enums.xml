@@ -697,6 +697,8 @@ chromium-metrics-reviews@google.com.
   <int value="106" label="Success Background (Install)"/>
   <int value="107" label="Success With Foreground Fallback (Install)"/>
   <int value="108" label="Foreground Fallback Launch Failed (Install)"/>
+  <int value="109" label="Escape Hatch Success (Install)"/>
+  <int value="110" label="Escape Hatch Launch Failed (Install)"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/search_promotion/register_search_promotion_task.h:SearchPromotionExitCode) -->

@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONSTANTS_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONSTANTS_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -552,6 +554,15 @@ COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionInstructionsUrl);
 COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
 BASE_DECLARE_FEATURE_PARAM(std::string, kSearchPromotionMinPehVersion);
+// When non-zero, opens `store_url` if installation hasn't completed within this
+// time. Keep well under the 15s task timeout (e.g. <= 10s).
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kSearchPromotionEscapeHatchTime);
+
+// Returns the escape hatch timeout if configured (positive), or std::nullopt
+// if disabled.
+COMPONENT_EXPORT(FEATURE_ENGAGEMENT_FEATURE_CONSTANTS)
+std::optional<base::TimeDelta> GetSearchPromotionEscapeHatchTime();
 
 inline constexpr char kSearchPromotionActionOpen[] = "open";
 inline constexpr char kSearchPromotionActionInstall[] = "install";
