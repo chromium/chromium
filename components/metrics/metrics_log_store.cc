@@ -158,7 +158,7 @@ std::optional<uint64_t> MetricsLogStore::staged_log_user_id() const {
   return get_staged_log_queue()->staged_log_user_id();
 }
 
-const LogMetadata MetricsLogStore::staged_log_metadata() const {
+const LogMetadata& MetricsLogStore::staged_log_metadata() const {
   return get_staged_log_queue()->staged_log_metadata();
 }
 

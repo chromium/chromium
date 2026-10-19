@@ -229,11 +229,8 @@ std::optional<uint64_t> UnsentLogStore::staged_log_user_id() const {
   return current_log()->log_metadata.user_id;
 }
 
-const LogMetadata UnsentLogStore::staged_log_metadata() const {
-  // Use list_ directly instead of current_log() to preserve the move
-  // semantics enabled by unique_ptr's non-const operator-> in const methods.
-  DCHECK(has_staged_log());
-  return std::move(list_[staged_log_index_.value()]->log_metadata);
+const LogMetadata& UnsentLogStore::staged_log_metadata() const {
+  return current_log()->log_metadata;
 }
 
 // static

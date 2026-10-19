@@ -64,7 +64,7 @@ class TestLogStore : public LogStore {
   std::optional<uint64_t> staged_log_user_id() const override {
     return logs_.front().user_id;
   }
-  const LogMetadata staged_log_metadata() const override {
+  const LogMetadata& staged_log_metadata() const override {
     return logs_.front().log_metadata;
   }
   const std::string& staged_log_signature() const override {
