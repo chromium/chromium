@@ -959,8 +959,31 @@ void WebGLRenderingContextWebGPUBase::cullFace(GLenum mode) {
   driver_gl_.fn.glCullFaceFn(mode);
 }
 
-void WebGLRenderingContextWebGPUBase::deleteBuffer(WebGLBuffer*) {
-  NOTIMPLEMENTED();
+void WebGLRenderingContextWebGPUBase::deleteBuffer(WebGLBuffer* buffer) {
+  if (!DeleteObject(buffer)) {
+    return;
+  }
+
+  // glDeleteBuffers reset the GL bindings to 0. Do the same for Blink's.
+  for (Member<WebGLBuffer>* binding : {
+           &array_buffer_binding_,
+           &copy_read_buffer_binding_,
+           &copy_write_buffer_binding_,
+           &element_array_buffer_binding_,
+           &pixel_pack_buffer_binding_,
+           &pixel_unpack_buffer_binding_,
+           &transform_feedback_buffer_binding_,
+           &uniform_buffer_binding_,
+       }) {
+    if (*binding == buffer) {
+      *binding = nullptr;
+    }
+  }
+  // TODO(413078308): With VAOs and transform feedback objects, call their
+  // UnbindBuffer(). It releases their attachment to the buffer, otherwise the
+  // GL buffer is never deleted. For VAOs, this replaces
+  // element_array_buffer_binding_. Also clear the indexed bindings once
+  // implemented.
 }
 
 void WebGLRenderingContextWebGPUBase::deleteFramebuffer(
