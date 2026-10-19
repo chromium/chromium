@@ -33,7 +33,7 @@ class FontVariantNumeric {
   enum SlashedZero { kSlashedZeroOff = 0, kSlashedZeroOn };
   static String ToString(SlashedZero);
 
-  FontVariantNumeric() : fields_as_unsigned_(0) {}
+  FontVariantNumeric() = default;
 
   static FontVariantNumeric InitializeFromUnsigned(uint32_t init_value) {
     return FontVariantNumeric(init_value);
@@ -91,7 +91,7 @@ class FontVariantNumeric {
 
   union {
     BitFields fields_;
-    uint32_t fields_as_unsigned_;
+    uint32_t fields_as_unsigned_ = 0;
   };
   static_assert(sizeof(BitFields) == sizeof(uint32_t),
                 "Mapped union types must match in size.");

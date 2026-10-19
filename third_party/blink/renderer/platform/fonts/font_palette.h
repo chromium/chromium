@@ -191,11 +191,10 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
 
  private:
   explicit FontPalette(KeywordPaletteName palette_name)
-      : palette_keyword_(palette_name), base_palette_({kNoBasePalette, 0}) {}
+      : palette_keyword_(palette_name) {}
   explicit FontPalette(AtomicString palette_values_name)
       : palette_keyword_(kCustomPalette),
-        palette_values_name_(palette_values_name),
-        base_palette_({kNoBasePalette, 0}) {}
+        palette_values_name_(palette_values_name) {}
   FontPalette(
       scoped_refptr<const FontPalette> start,
       scoped_refptr<const FontPalette> end,
@@ -212,12 +211,11 @@ class PLATFORM_EXPORT FontPalette : public RefCounted<FontPalette> {
         alpha_multiplier_(alpha_multiplier),
         color_interpolation_space_(color_interpoaltion_space),
         hue_interpolation_method_(hue_interpolation_method) {}
-  FontPalette()
-      : palette_keyword_(kNormalPalette), base_palette_({kNoBasePalette, 0}) {}
+  FontPalette() = default;
 
-  KeywordPaletteName palette_keyword_;
+  KeywordPaletteName palette_keyword_ = kNormalPalette;
   AtomicString palette_values_name_;
-  BasePaletteValue base_palette_;
+  BasePaletteValue base_palette_ = {kNoBasePalette, 0};
   AtomicString match_font_family_;
   Vector<FontPaletteOverride> palette_overrides_;
   scoped_refptr<const FontPalette> start_;

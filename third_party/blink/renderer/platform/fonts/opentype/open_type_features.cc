@@ -11,8 +11,7 @@
 
 namespace blink {
 
-OpenTypeFeatures::OpenTypeFeatures(const SimpleFontData& font)
-    : features_(kInitialSize) {
+OpenTypeFeatures::OpenTypeFeatures(const SimpleFontData& font) {
   const FontPlatformData& platform_data = font.PlatformData();
   HarfBuzzFace* const face = platform_data.GetHarfBuzzFace();
   DCHECK(face);

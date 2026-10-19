@@ -88,15 +88,7 @@ FontDescription::FontDescription(HashTableDeletedValueType) {
   fields_.hash_category_ = kHashDeletedValue;
 }
 
-FontDescription::FontDescription()
-    : specified_size_(0),
-      computed_size_(0),
-      adjusted_size_(0),
-      letter_spacing_(Length(0, Length::kFixed)),
-      word_spacing_(Length(0, Length::kFixed)),
-      font_selection_request_(kNormalWeightValue,
-                              kNormalWidthValue,
-                              kNormalSlopeValue) {
+FontDescription::FontDescription() {
   fields_.orientation_ = static_cast<uint32_t>(FontOrientation::kHorizontal);
   fields_.width_variant_ = kRegularWidth;
   fields_.variant_caps_ = kCapsNormal;

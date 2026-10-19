@@ -98,7 +98,7 @@ class ScriptToFontMap {
  public:
   static constexpr UScriptCode kSize = USCRIPT_CODE_LIMIT;
 
-  ScriptToFontMap() : mappings_(kSize) {}
+  ScriptToFontMap() = default;
 
   FontMapping& operator[](UScriptCode script) { return mappings_[script]; }
 
@@ -109,7 +109,7 @@ class ScriptToFontMap {
   }
 
  private:
-  Vector<FontMapping> mappings_;
+  Vector<FontMapping> mappings_ = Vector<FontMapping>(kSize);
 };
 
 const AtomicString& FindMonospaceFontForScript(UScriptCode script) {
@@ -485,8 +485,8 @@ const AtomicString& GetFontFamilyForScript(
   // Try the `AtomicString` cache first. `AtomicString` must be per thread, and
   // thus it can't be added to `ScriptToFontMap`.
   struct AtomicFamilies {
-    AtomicFamilies() : families(ScriptToFontMap::kSize) {}
-    Vector<std::optional<AtomicString>> families;
+    Vector<std::optional<AtomicString>> families =
+        Vector<std::optional<AtomicString>>(ScriptToFontMap::kSize);
   };
   DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<AtomicFamilies>, families, ());
   std::optional<AtomicString>& family = (*families).families[script];

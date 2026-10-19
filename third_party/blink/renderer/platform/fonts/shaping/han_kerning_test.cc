@@ -127,9 +127,7 @@ TEST_F(HanKerningTest, FontDataVertical) {
 TEST_F(HanKerningTest, FontDataSizeError) {
   class EnableAntialiasedText {
    public:
-    EnableAntialiasedText()
-        : is_antialiased_text_enabled_(
-              FontCache::Get().AntialiasedTextEnabled()) {
+    EnableAntialiasedText() {
       FontCache::Get().SetAntialiasedTextEnabled(true);
     }
     ~EnableAntialiasedText() {
@@ -137,7 +135,8 @@ TEST_F(HanKerningTest, FontDataSizeError) {
     }
 
    private:
-    bool is_antialiased_text_enabled_;
+    bool is_antialiased_text_enabled_ =
+        FontCache::Get().AntialiasedTextEnabled();
   } enable_antialias_text;
 
   FontDescription font_description;

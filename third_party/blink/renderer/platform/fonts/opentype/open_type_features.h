@@ -32,7 +32,8 @@ class PLATFORM_EXPORT OpenTypeFeatures {
   // This value is heuristic, 64 is enough to load all features of "Yu Gothic".
   constexpr static wtf_size_t kInitialSize = 64;
 
-  Vector<hb_tag_t, kInitialSize> features_;
+  Vector<hb_tag_t, kInitialSize> features_ =
+      Vector<hb_tag_t, kInitialSize>(kInitialSize);
 };
 
 }  // namespace blink

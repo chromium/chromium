@@ -28,8 +28,7 @@ bool DWriteVersionSupportsVariationsImpl() {
 
 class DWriteVersionSupportsVariationsChecker {
  public:
-  DWriteVersionSupportsVariationsChecker()
-      : value_(DWriteVersionSupportsVariationsImpl()) {}
+  DWriteVersionSupportsVariationsChecker() = default;
   ~DWriteVersionSupportsVariationsChecker() = default;
   DWriteVersionSupportsVariationsChecker(
       const DWriteVersionSupportsVariationsChecker&) = delete;
@@ -39,7 +38,7 @@ class DWriteVersionSupportsVariationsChecker {
   bool value() const { return value_; }
 
  private:
-  const bool value_;
+  const bool value_ = DWriteVersionSupportsVariationsImpl();
 };
 
 }  // namespace

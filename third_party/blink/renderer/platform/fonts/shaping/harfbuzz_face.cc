@@ -489,13 +489,9 @@ class HarfBuzzSkiaFontFuncs final {
     return shared_hb_funcs;
   }
 
-#if BUILDFLAG(IS_APPLE)
-  HarfBuzzSkiaFontFuncs()
-      : hb_font_funcs_skia_advances_(
-            CreateFontFunctions(kSkiaHorizontalAdvances)),
-        hb_font_funcs_harfbuzz_advances_(
-            CreateFontFunctions(kHarfBuzzHorizontalAdvances)) {}
+  HarfBuzzSkiaFontFuncs() = default;
 
+#if BUILDFLAG(IS_APPLE)
   ~HarfBuzzSkiaFontFuncs() {
     hb_font_funcs_destroy(hb_font_funcs_skia_advances_);
     hb_font_funcs_destroy(hb_font_funcs_harfbuzz_advances_);
@@ -525,10 +521,6 @@ class HarfBuzzSkiaFontFuncs final {
                                  : hb_font_funcs_skia_advances_;
   }
 #else
-  HarfBuzzSkiaFontFuncs()
-      : hb_font_funcs_skia_advances_(
-            CreateFontFunctions(kSkiaHorizontalAdvances)) {}
-
   ~HarfBuzzSkiaFontFuncs() {
     hb_font_funcs_destroy(hb_font_funcs_skia_advances_);
   }
@@ -585,11 +577,13 @@ class HarfBuzzSkiaFontFuncs final {
   // (font shaping).
   const raw_ptr<hb_font_funcs_t,
                 UnprotectedInReleaseForPerformance | DanglingUntriaged>
-      hb_font_funcs_skia_advances_;
+      hb_font_funcs_skia_advances_ =
+          CreateFontFunctions(kSkiaHorizontalAdvances);
 #if BUILDFLAG(IS_APPLE)
   const raw_ptr<hb_font_funcs_t,
                 UnprotectedInReleaseForPerformance | DanglingUntriaged>
-      hb_font_funcs_harfbuzz_advances_;
+      hb_font_funcs_harfbuzz_advances_ =
+          CreateFontFunctions(kHarfBuzzHorizontalAdvances);
 #endif
 };
 

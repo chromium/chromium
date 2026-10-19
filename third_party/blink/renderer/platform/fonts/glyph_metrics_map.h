@@ -47,7 +47,7 @@ class GlyphMetricsMap {
   USING_FAST_MALLOC(GlyphMetricsMap);
 
  public:
-  GlyphMetricsMap() : filled_primary_page_(false) {}
+  GlyphMetricsMap() = default;
   GlyphMetricsMap(const GlyphMetricsMap&) = delete;
   GlyphMetricsMap& operator=(const GlyphMetricsMap&) = delete;
   std::optional<T> MetricsForGlyph(Glyph glyph) {
@@ -104,7 +104,7 @@ class GlyphMetricsMap {
 
   static constexpr T UnknownMetrics();
 
-  bool filled_primary_page_;
+  bool filled_primary_page_ = false;
   // We optimize for the page that contains glyph indices 0-255.
   GlyphMetricsPage primary_page_;
   std::unique_ptr<HashMap<int, std::unique_ptr<GlyphMetricsPage>>> pages_;

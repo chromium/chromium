@@ -527,23 +527,24 @@ class PLATFORM_EXPORT FontDescription {
 
   // Specified CSS value. Independent of rendering issues such as integer
   // rounding, minimum font sizes, and zooming.
-  float specified_size_;
+  float specified_size_ = 0;
   // Computed size adjusted for the minimum font size and the zoom factor.
-  float computed_size_;
+  float computed_size_ = 0;
 
   // (Given aspect value / aspect value of a font family) * specifiedSize.
   // This value is adjusted for the minimum font size and the zoom factor
   // as well as a computed size is.
-  float adjusted_size_;
+  float adjusted_size_ = 0;
 
-  Length letter_spacing_;
-  Length word_spacing_;
+  Length letter_spacing_{0, Length::kFixed};
+  Length word_spacing_{0, Length::kFixed};
 
   FontSizeAdjust size_adjust_;
   ResolvedFontFeatures resolved_font_features_;
 
   // Covers stretch, style, weight.
-  FontSelectionRequest font_selection_request_;
+  FontSelectionRequest font_selection_request_{
+      kNormalWeightValue, kNormalWidthValue, kNormalSlopeValue};
   FontSelectionValue original_slope;
 
   // Preserves the author's intent for computed-value serialization without

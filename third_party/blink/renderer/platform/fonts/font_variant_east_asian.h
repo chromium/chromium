@@ -34,7 +34,7 @@ class FontVariantEastAsian {
   };
   static String ToString(EastAsianWidth);
 
-  FontVariantEastAsian() : fields_as_unsigned_(0) {}
+  FontVariantEastAsian() = default;
 
   static FontVariantEastAsian InitializeFromUnsigned(uint32_t init_value) {
     return FontVariantEastAsian(init_value);
@@ -73,7 +73,7 @@ class FontVariantEastAsian {
 
   union {
     BitFields fields_;
-    uint32_t fields_as_unsigned_;
+    uint32_t fields_as_unsigned_ = 0;
   };
   static_assert(sizeof(BitFields) == sizeof(uint32_t),
                 "Mapped union types must match in size.");
