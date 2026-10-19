@@ -113,27 +113,32 @@ std::vector<url::Origin> WebViewChooserContext::RevokeEphemeralPermissions(
 }
 
 void WebViewChooserContext::OnPermissionRevoked(const url::Origin& origin) {
-  auto* origins_per_device = base::FindOrNull(device_access_, origin);
-  if (!origins_per_device) {
+  auto it = device_access_.find(origin);
+  if (it == device_access_.end()) {
     return;
   }
 
   // If permission was revoked for the embedding origin, permission for web view
-  // must be revoked as well.
-  for (auto it = origins_per_device->begin();
-       it != origins_per_device->end();) {
-    auto* device = chooser_context_->GetDeviceInfo(it->first);
-    if (!device || chooser_context_->HasDevicePermission(origin, *device)) {
-      ++it;
-      continue;
+  // must be revoked as well. Erase revoked entries from `device_access_` before
+  // notifying observers, as `PermissionForWebViewRevoked()` can synchronously
+  // re-enter `OnPermissionRevoked()`.
+  std::set<url::Origin> revoked_guest_origins;
+  std::erase_if(it->second, [&](const auto& device_entry) {
+    const auto& [device_guid, guest_origins] = device_entry;
+    auto* device = chooser_context_->GetDeviceInfo(device_guid);
+    if (device && chooser_context_->HasDevicePermission(origin, *device)) {
+      return false;
     }
+    revoked_guest_origins.insert(guest_origins.begin(), guest_origins.end());
+    return true;
+  });
 
-    std::set<url::Origin> revoked_guest_origins;
-    revoked_guest_origins.swap(it->second);
-    for (const auto& guest_origin : revoked_guest_origins) {
-      chooser_context_->PermissionForWebViewRevoked(guest_origin);
-    }
-    it = origins_per_device->erase(it);
+  if (it->second.empty()) {
+    device_access_.erase(it);
+  }
+
+  for (const auto& guest_origin : revoked_guest_origins) {
+    chooser_context_->PermissionForWebViewRevoked(guest_origin);
   }
 }
 
