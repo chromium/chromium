@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] A blocked static import in a module SharedWorker is reported on the creator document.
+  promise_test: Unhandled rejection with value: object "Error: No report received"
+[FAIL] Violation report status OK.
+  Cannot read properties of undefined (reading 'body')
+Harness: the test ran to completion.
+

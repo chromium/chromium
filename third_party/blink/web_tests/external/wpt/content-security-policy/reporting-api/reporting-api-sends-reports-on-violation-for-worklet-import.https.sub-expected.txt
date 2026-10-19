@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] A blocked static import in an AudioWorklet is reported on the creator document.
+  assert_equals: event.statusCode expected 200 but got 0
+[FAIL] Violation report status OK.
+  Cannot read properties of undefined (reading 'body')
+Harness: the test ran to completion.
+
