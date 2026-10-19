@@ -104,6 +104,7 @@ class ChromeSignoutConfirmationPromptPixelTest
 
 IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptPixelTest,
                        InvokeUi_Default) {
+  set_baseline("8481376");
   ShowAndVerifyUi();
 }
 
@@ -175,6 +176,7 @@ IN_PROC_BROWSER_TEST_P(ChromeSignoutConfirmationPromptWithExtensionsPixelTest,
           extensions::AccountExtensionTracker::AccountExtensionType::
               kAccountInstalledSignedIn);
 
+  set_baseline("8481376");
   ShowAndVerifyUi();
 }
 

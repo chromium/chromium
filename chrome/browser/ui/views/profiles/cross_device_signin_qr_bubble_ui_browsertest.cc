@@ -170,6 +170,7 @@ class CrossDeviceSigninQrBubbleUIPixelTest
 };
 
 IN_PROC_BROWSER_TEST_P(CrossDeviceSigninQrBubbleUIPixelTest, InvokeUi_default) {
+  set_baseline("8481376");
   ShowAndVerifyUi();
 }
 

@@ -116,8 +116,9 @@ class FirstRunDefaultBrowserPixelTest
 
     const testing::TestInfo* test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    const std::string screenshot_name =
-        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
+    const std::string baseline = "8481376";
+    const std::string screenshot_name = base::StrCat(
+        {test_info->test_suite_name(), "_", test_info->name(), "_", baseline});
 
     return VerifyPixelUi(widget, "FirstRunDefaultBrowserPixelTest",
                          screenshot_name) != ui::test::ActionResult::kFailed;

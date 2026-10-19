@@ -136,9 +136,10 @@ class FirstRunFeatureShowcasePixelTest
     const testing::TestInfo* test_info =
         testing::UnitTest::GetInstance()->current_test_info();
     CHECK(test_info);
+    const std::string baseline = "8481376";
     const std::string screenshot_name =
         base::StrCat({test_info->test_suite_name(), "_", test_info->name(), "_",
-                      GetParam().step});
+                      GetParam().step, "_", baseline});
 
     return VerifyPixelUi(widget, "FirstRunFeatureShowcasePixelTest",
                          screenshot_name) != ui::test::ActionResult::kFailed;

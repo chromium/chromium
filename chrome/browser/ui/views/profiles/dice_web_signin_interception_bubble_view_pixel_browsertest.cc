@@ -478,6 +478,7 @@ class DiceWebSigninInterceptionBubblePixelTest
 
 IN_PROC_BROWSER_TEST_P(DiceWebSigninInterceptionBubblePixelTest,
                        InvokeUi_default) {
+  set_baseline("8481376");
   ShowAndVerifyUi();
 }
 

@@ -467,6 +467,7 @@ class SearchEngineChoiceUIPixelTest
 };
 
 IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {
+  set_baseline("8481376");
   ShowAndVerifyUi();
 }
 

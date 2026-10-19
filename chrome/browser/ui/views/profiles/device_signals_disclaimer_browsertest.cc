@@ -151,7 +151,7 @@ class DeviceSignalsDisclaimerModalPixelTest
 
 IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerModalPixelTest,
                        InvokeUi_default) {
-  set_baseline("8231223");
+  set_baseline("8481376");
   ShowAndVerifyUi();
 }
 
@@ -256,7 +256,7 @@ class DeviceSignalsDisclaimerProfilePickerPixelTest
 
     const testing::TestInfo* test_info =
         testing::UnitTest::GetInstance()->current_test_info();
-    const std::string baseline = "8231223";
+    const std::string baseline = "8481376";
     const std::string screenshot_name =
         base::StrCat({"_", test_info->name(), "_", baseline});
 
