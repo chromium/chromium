@@ -86,7 +86,6 @@ import org.chromium.net.test.util.TestWebServer;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1264,12 +1263,8 @@ public class AwContentsTest extends AwParameterizedTest {
     @Feature({"AndroidWebView"})
     @MediumTest
     public void testHardwareRenderingSmokeTestVulkanWhereSupported() throws Throwable {
-        // Manually curated list.
-        final String[] supportedModels = {
-            "Pixel", "Pixel 2", "Pixel 3", "Pixel 4a",
-        };
-        if (!Arrays.asList(supportedModels).contains(Build.MODEL)) {
-            Log.w(TAG, "Skipping vulkan test on unknown device: " + Build.MODEL);
+        if ("ranchu".equals(Build.HARDWARE)) {
+            Log.w(TAG, "Skipping vulkan test on emulator");
             return;
         }
         mActivityTestRule.startBrowserProcessWithVulkan();
