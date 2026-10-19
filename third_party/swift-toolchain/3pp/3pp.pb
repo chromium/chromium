@@ -17,13 +17,13 @@ create {
   platform_re: "mac-.*"
   source {
     url {
-      download_url: "https://download.swift.org/swift-6.3.3-release/xcode/swift-6.3.3-RELEASE/swift-6.3.3-RELEASE-osx.pkg"
-      version: "6.3.3-release"
+      download_url: "https://download.swift.org/swift-6.4.0-release/xcode/swift-6.4.0-RELEASE/swift-6.4.0-RELEASE-osx.pkg"
+      version: "6.4.0-release"
     }
   }
   build {
     install: "install-mac.sh"
-    install: "swift-6.3.3-RELEASE-osx"
+    install: "swift-6.4.0-RELEASE-osx"
   }
 }
 
