@@ -1031,6 +1031,10 @@ base::CommandLine ChromeBrowserMainPartsWin::GetRestartCommandLine(
 
   // Remove switches that should never be conveyed to the restart.
   switches.erase(switches::kFromInstaller);
+  // The `--isolated` switch should only be appended by the elevation service
+  // when launching an isolated child browser process, and never when launching
+  // directly from the shell.
+  switches.erase(switches::kIsolated);
 
   // Add remaining switches, but not non-switch arguments.
   for (const auto& it : switches)

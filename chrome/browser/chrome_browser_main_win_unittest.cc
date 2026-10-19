@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/webui/flags/feature_entry_macros.h"
@@ -48,6 +49,16 @@ TEST(ChromeBrowserMainWinTest, GetRestartCommand) {
   restart_command_line = ChromeBrowserMainPartsWin::GetRestartCommandLine(
       retained_switch_command_line);
   EXPECT_EQ(restart_command_line.GetCommandLineString(), kRetainedSwitchResult);
+
+  // Command line with switches that should be stripped on restart (such as
+  // --from-installer and --isolated) so that a restarted browser launches
+  // through the normal stub flow rather than pretending to be isolated.
+  base::CommandLine stripped_switch_command_line(chrome_path);
+  stripped_switch_command_line.AppendSwitch(switches::kFromInstaller);
+  stripped_switch_command_line.AppendSwitch(switches::kIsolated);
+  restart_command_line = ChromeBrowserMainPartsWin::GetRestartCommandLine(
+      stripped_switch_command_line);
+  EXPECT_EQ(restart_command_line.GetCommandLineString(), kNoArgsResult);
 
   // Command line with flag switches.
   base::CommandLine experiments_command_line(chrome_path);
