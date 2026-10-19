@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/webauthn/mock_enclave_manager.h"
 #include "components/sync/base/user_selectable_type.h"
+#include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -143,11 +144,8 @@ TEST_P(ChromePasskeyOnDeviceEncryptionStateTrackerStateTest,
   webauthn::TestPasskeyModel passkey_model;
   passkey_model.SetReady(test_case.is_passkey_model_ready);
   if (!test_case.is_passkey_model_empty) {
-    passkey_model.CreatePasskey(
-        "example.com",
-        webauthn::PasskeyModel::UserEntity({1, 2, 3}, "user", "User"),
-        /*trusted_vault_key=*/{}, /*trusted_vault_key_version=*/0,
-        /*public_key_spki_der_out=*/nullptr);
+    passkey_model.AddNewPasskeyForTesting(
+        sync_pb::WebauthnCredentialSpecifics());
   }
 
   NiceMock<MockEnclaveManager> enclave_manager;

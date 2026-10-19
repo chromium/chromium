@@ -471,29 +471,6 @@ bool PasskeySyncBridge::UpdatePasskeyEncryptedBlob(
           new_encrypted_blob));
 }
 
-sync_pb::WebauthnCredentialSpecifics PasskeySyncBridge::CreatePasskey(
-    std::string_view rp_id,
-    const UserEntity& user_entity,
-    base::span<const uint8_t> trusted_vault_key,
-    int32_t trusted_vault_key_version,
-    std::vector<uint8_t>* public_key_spki_der_out) {
-  CHECK(IsReady());
-
-  auto [specifics, public_key_spki_der] =
-      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
-          rp_id, user_entity, trusted_vault_key, trusted_vault_key_version,
-          /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
-
-  AddShadowedCredentialIdsToNewPasskey(specifics);
-
-  AddPasskeyInternal(specifics);
-
-  if (public_key_spki_der_out != nullptr) {
-    *public_key_spki_der_out = std::move(public_key_spki_der);
-  }
-  return specifics;
-}
-
 void PasskeySyncBridge::CreatePasskey(
     sync_pb::WebauthnCredentialSpecifics& passkey) {
   // TODO(crbug.com/349547003): make it sure that all the callers check for

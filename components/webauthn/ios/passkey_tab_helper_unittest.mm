@@ -30,6 +30,7 @@
 #import "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #import "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "components/webauthn/ios/fake_ios_passkey_client.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
@@ -217,11 +218,14 @@ class PasskeyTabHelperTest : public PlatformTest {
   // key, suitable for testing cryptographic assertions.
   sync_pb::WebauthnCredentialSpecifics AddValidPasskey(
       std::string_view rp_id = kRpId) {
-    return static_cast<TestPasskeyModel*>(passkey_model_.get())
-        ->CreatePasskey(rp_id, {{1, 2, 3}, "test_user", "Test User"},
-                        std::vector<uint8_t>(32u, 0),
-                        /*trusted_vault_key_version=*/0,
-                        /*public_key_spki_der_out=*/nullptr);
+    auto [specifics, public_key_spki_der] =
+        passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
+            rp_id, {{1, 2, 3}, "test_user", "Test User"},
+            std::vector<uint8_t>(32u, 0),
+            /*trusted_vault_key_version=*/0,
+            /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
+    passkey_model_->CreatePasskey(specifics);
+    return specifics;
   }
 
   void MaybeShowInterstitialAndRegister(RegistrationRequestParams params) {

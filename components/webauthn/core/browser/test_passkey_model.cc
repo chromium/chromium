@@ -101,29 +101,6 @@ TestPasskeyModel::GetPasskey(std::variant<AnyRp, std::string_view> rp_id,
   return std::nullopt;
 }
 
-sync_pb::WebauthnCredentialSpecifics TestPasskeyModel::CreatePasskey(
-    std::string_view rp_id,
-    const UserEntity& user_entity,
-    base::span<const uint8_t> trusted_vault_key,
-    int32_t trusted_vault_key_version,
-    std::vector<uint8_t>* public_key_spki_der_out) {
-  auto [specifics, public_key_spki_der] =
-      webauthn::passkey_model_utils::GeneratePasskeyAndEncryptSecrets(
-          rp_id, user_entity, trusted_vault_key, trusted_vault_key_version,
-          /*extension_input_data=*/{}, /*extension_output_data=*/nullptr);
-
-  AddShadowedCredentialIdsToNewPasskey(specifics);
-  credentials_.push_back(specifics);
-
-  NotifyPasskeysChanged(
-      {PasskeyModelChange(PasskeyModelChange::ChangeType::ADD, specifics)});
-
-  if (public_key_spki_der_out != nullptr) {
-    *public_key_spki_der_out = std::move(public_key_spki_der);
-  }
-  return specifics;
-}
-
 void TestPasskeyModel::CreatePasskey(
     sync_pb::WebauthnCredentialSpecifics& passkey) {
   AddShadowedCredentialIdsToNewPasskey(passkey);

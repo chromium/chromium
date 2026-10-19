@@ -172,25 +172,6 @@ class PasskeyModel : public KeyedService {
       const std::string& credential_id,
       const std::string& new_encrypted_blob) = 0;
 
-  // Creates a passkey for the given RP and user and returns the new entity
-  // specifics.
-  //
-  // The returned entity's `encrypted` field will contain an
-  // `WebauthnCredentialSpecifics_EncryptedData` message, encrypted to
-  // `trusted_vault_key`. `public_key_spki_der_out`, if non-null, will be set to
-  // a DER-serialized X.509 SubjectPublicKeyInfo of the corresponding public
-  // key.
-  //
-  // Any existing passkeys for the same RP and user ID are shadowed (i.e., added
-  // to the new passkey's `newly_shadowed_credential_ids`), causing them not to
-  // be enumerated by other methods in the model.
-  virtual sync_pb::WebauthnCredentialSpecifics CreatePasskey(
-      std::string_view rp_id,
-      const UserEntity& user_entity,
-      base::span<const uint8_t> trusted_vault_key,
-      int32_t trusted_vault_key_version,
-      std::vector<uint8_t>* public_key_spki_der_out) = 0;
-
   // Creates a passkey from a pre-constructed protobuf.
   // Existing passkeys for the same RP and user ID will be shadowed, but
   // otherwise all fields in the entity should be filled by the caller.
