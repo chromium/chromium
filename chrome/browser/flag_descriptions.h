@@ -5635,14 +5635,6 @@ inline constexpr char kAndroidSpellcheckNativeUiDescription[] =
     "Makes the spellcheck underline style the same as native applications";
 
 inline constexpr char
-    kAndroidBlockMisspellingSuggestionSpanInCompositionModeName[] =
-        "Block Android misspelling suggestion span in composition mode";
-inline constexpr char
-    kAndroidBlockMisspellingSuggestionSpanInCompositionModeDescription[] =
-        "When enabled, misspelling suggestion spans will be blocked when "
-        "entering composition mode";
-
-inline constexpr char
     kAndroidBlockGrammarSuggestionSpanInCompositionModeName[] =
         "Block Android grammar suggestion span in composition mode";
 inline constexpr char

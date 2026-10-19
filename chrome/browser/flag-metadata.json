@@ -393,14 +393,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "android-block-misspelling-suggestion-span-in-composition-mode",
-    "owners": [
-      "hdchuong@google.com",
-      "essential-inputs-team@google.com"
-    ],
-    "expiry_milestone": 155
-  },
-  {
     "name": "android-bookmark-bar-drag-drop",
     "owners": ["nehasapre@google.com", "clank-app-team@google.com"],
     "expiry_milestone": 175

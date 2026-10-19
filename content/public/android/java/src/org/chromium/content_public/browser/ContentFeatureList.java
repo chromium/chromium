@@ -62,9 +62,6 @@ public class ContentFeatureList {
 
     public static final String ANDROID_SPELLCHECK_FULL_API_BLINK = "AndroidSpellcheckFullApiBlink";
 
-    public static final String ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE =
-            "AndroidBlockMisspellingSuggestionSpanInCompositionMode";
-
     public static final String ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE =
             "AndroidBlockGrammarSuggestionSpanInCompositionMode";
 

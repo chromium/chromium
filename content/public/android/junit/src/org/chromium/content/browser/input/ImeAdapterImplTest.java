@@ -83,7 +83,6 @@ import org.chromium.ui.test.util.TestViewAndroidDelegate;
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE,
     ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2,
     ContentFeatureList.ANDROID_BLOCK_GRAMMAR_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
-    ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
     ContentFeatureList.ANDROID_MEDIA_INSERTION,
     ContentFeatures.ANDROID_REPLAY_DEL_KEY_EVENT,
     ContentFeatures.RESTRICT_INTERACTIONS_IN_SWIPE_REGION_ON_FULLSCREEN
@@ -1230,34 +1229,6 @@ public class ImeAdapterImplTest {
                         /* suggestionHighlightColor= */ anyInt(),
                         /* suggestions= */ eq(new String[0]),
                         /* shouldHideSuggestionMenu= */ eq(true));
-    }
-
-    @Test
-    @EnableFeatures(
-            ContentFeatureList.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE)
-    public void testPopulateImeTextSpansFromJava_MisspellingSpanBlocked() {
-        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
-        SpannableString text = new SpannableString("hello");
-        SuggestionSpan span =
-                new SuggestionSpan(
-                        ApplicationProvider.getApplicationContext(),
-                        new String[] {"suggestion"},
-                        SuggestionSpan.FLAG_MISSPELLED);
-        text.setSpan(span, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        adapter.populateImeTextSpansFromJava(text, 123L);
-
-        verify(mImeAdapterImplJni, never())
-                .appendSuggestionSpan(
-                        /* spanPtr= */ anyLong(),
-                        /* start= */ anyInt(),
-                        /* end= */ anyInt(),
-                        /* type= */ anyInt(),
-                        /* removeOnFinishComposing= */ anyBoolean(),
-                        /* underlineColor= */ anyInt(),
-                        /* suggestionHighlightColor= */ anyInt(),
-                        /* suggestions= */ any(),
-                        /* shouldHideSuggestionMenu= */ anyBoolean());
     }
 
     @Test

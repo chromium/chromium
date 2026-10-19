@@ -2140,10 +2140,6 @@ public class ImeAdapterImpl
         }
         if (!(text instanceof SpannableString)) return;
 
-        final boolean blockMisspellingInComposition =
-                ContentFeatureMap.isEnabled(
-                        ContentFeatureList
-                                .ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE);
         final boolean blockGrammarInComposition =
                 ContentFeatureMap.isEnabled(
                         ContentFeatureList
@@ -2204,13 +2200,6 @@ public class ImeAdapterImpl
                         && !isMisspellingSpan
                         && !isGrammarSpan
                         && !isAutoCorrectionSpan) {
-                    continue;
-                }
-
-                // Some IMEs (Gboard) require the additional suggestion spans with FLAG_MISSPELLED
-                // present in the surrounding text to guide their custom spell check bar. We should
-                // not report these "artificial" suggestion spans to Blink.
-                if (!isEasyCorrectSpan && isMisspellingSpan && blockMisspellingInComposition) {
                     continue;
                 }
 

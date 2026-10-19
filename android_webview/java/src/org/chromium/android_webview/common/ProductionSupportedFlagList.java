@@ -1190,10 +1190,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, forces pushing active text input state update calculation "
                         + "whenever focus is gained on an editable text field."),
         Flag.baseFeature(
-                ContentFeatures.ANDROID_BLOCK_MISSPELLING_SUGGESTION_SPAN_IN_COMPOSITION_MODE,
-                "When enabled, misspelling suggestion span will be blocked from showing in"
-                        + " composition mode."),
-        Flag.baseFeature(
                 "LevelDBCacheSize",
                 "Reduces the size of the LevelDB cache to reduce memory usage at no expected speed"
                         + " cost"),
