@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -170,6 +171,47 @@ class PolicyLoaderMacTest : public PolicyTestBase {
   void TearDown() override {
     provider_->Shutdown();
     PolicyTestBase::TearDown();
+  }
+
+  // Runs InitialLoad() on a new loader that reads from `prefs`.
+  PolicyBundle InitialLoad(std::unique_ptr<MockPreferences> prefs) {
+    PolicyLoaderMac loader(task_environment_.GetMainThreadTaskRunner(),
+                           PlatformManagementService::GetInstance(),
+                           base::FilePath(), std::move(prefs));
+    return loader.InitialLoad(schema_registry_.schema_map());
+  }
+
+  // Returns preferences with the sensitive SafeBrowsingEnabled policy and the
+  // non-sensitive CloudReportingEnabled policy.
+  static std::unique_ptr<MockPreferences>
+  CreateSensitiveAndNonSensitivePreferences() {
+    auto prefs = std::make_unique<MockPreferences>();
+    prefs->AddTestItem(
+        base::SysUTF8ToCFStringRef(key::kSafeBrowsingEnabled).get(),
+        kCFBooleanTrue, /*is_forced=*/true, /*is_machine=*/true);
+    prefs->AddTestItem(
+        base::SysUTF8ToCFStringRef(key::kCloudReportingEnabled).get(),
+        kCFBooleanTrue, /*is_forced=*/true, /*is_machine=*/true);
+    return prefs;
+  }
+
+  // Returns preferences with an ExtensionInstallForcelist with one ID-only
+  // entry, one entry with an off-store update URL and one entry with the CWS
+  // update URL.
+  static std::unique_ptr<MockPreferences>
+  CreateExtensionInstallForcelistPreferences() {
+    ScopedCFTypeRef<CFPropertyListRef> property = ValueToProperty(base::Value(
+        base::ListValue()
+            .Append("extension0")
+            .Append("extension1;https://example.com")
+            .Append(
+                "extension2;https://clients2.google.com/service/update2/crx")));
+    CHECK(property);
+    auto prefs = std::make_unique<MockPreferences>();
+    prefs->AddTestItem(
+        base::SysUTF8ToCFStringRef(key::kExtensionInstallForcelist).get(),
+        property.get(), /*is_forced=*/true, /*is_machine=*/true);
+    return prefs;
   }
 
   // Gets any existing PolicyMap::Entry, even if marked 'ignored'.
@@ -358,6 +400,95 @@ TEST_F(PolicyLoaderMacTest, SensitivePoliciesHonoredWhenManaged) {
       key::kCloudReportingEnabled, base::Value::Type::BOOLEAN);
   ASSERT_TRUE(cloud_reporting_value);
   EXPECT_TRUE(cloud_reporting_value->GetBool());
+}
+
+TEST_F(PolicyLoaderMacTest,
+       InitialLoadSensitivePoliciesFilteredWhenNotManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+
+  ScopedManagementServiceOverrideForTesting scoped_override(
+      PlatformManagementService::GetInstance(),
+      EnterpriseManagementAuthority::NONE);
+  PolicyBundle loaded =
+      InitialLoad(CreateSensitiveAndNonSensitivePreferences());
+  const PolicyMap& actual_map = loaded.Get(chrome_ns);
+
+  // The sensitive policy is loaded, but marked as ignored.
+  EXPECT_EQ(nullptr, actual_map.Get(key::kSafeBrowsingEnabled));
+  const PolicyMap::Entry* entry_safe_browsing =
+      GetRawPolicyEntry(actual_map, key::kSafeBrowsingEnabled);
+  ASSERT_TRUE(entry_safe_browsing);
+  EXPECT_TRUE(entry_safe_browsing->ignored());
+
+  const base::Value* cloud_reporting_value = actual_map.GetValue(
+      key::kCloudReportingEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(cloud_reporting_value);
+  EXPECT_TRUE(cloud_reporting_value->GetBool());
+}
+
+TEST_F(PolicyLoaderMacTest, InitialLoadSensitivePoliciesHonoredWhenManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+
+  ScopedManagementServiceOverrideForTesting scoped_override(
+      PlatformManagementService::GetInstance(),
+      EnterpriseManagementAuthority::CLOUD);
+  PolicyBundle loaded =
+      InitialLoad(CreateSensitiveAndNonSensitivePreferences());
+  const PolicyMap& actual_map = loaded.Get(chrome_ns);
+
+  const base::Value* safe_browsing_value = actual_map.GetValue(
+      key::kSafeBrowsingEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(safe_browsing_value);
+  EXPECT_TRUE(safe_browsing_value->GetBool());
+
+  const base::Value* cloud_reporting_value = actual_map.GetValue(
+      key::kCloudReportingEnabled, base::Value::Type::BOOLEAN);
+  ASSERT_TRUE(cloud_reporting_value);
+  EXPECT_TRUE(cloud_reporting_value->GetBool());
+}
+
+TEST_F(PolicyLoaderMacTest,
+       InitialLoadOffStoreExtensionInstallForcelistBlockedWhenNotManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+
+  ScopedManagementServiceOverrideForTesting scoped_override(
+      PlatformManagementService::GetInstance(),
+      EnterpriseManagementAuthority::NONE);
+  PolicyBundle loaded =
+      InitialLoad(CreateExtensionInstallForcelistPreferences());
+  const base::Value* list_value = loaded.Get(chrome_ns).GetValue(
+      key::kExtensionInstallForcelist, base::Value::Type::LIST);
+  ASSERT_TRUE(list_value);
+  EXPECT_EQ(*list_value,
+            base::Value(base::ListValue()
+                            .Append("extension0")
+                            .Append("[BLOCKED]extension1;https://example.com")
+                            .Append("extension2;https://clients2.google.com/"
+                                    "service/update2/crx")));
+}
+
+TEST_F(PolicyLoaderMacTest,
+       InitialLoadOffStoreExtensionInstallForcelistHonoredWhenManaged) {
+  const PolicyNamespace chrome_ns(POLICY_DOMAIN_CHROME, std::string());
+  RegisterChromeSchema(chrome_ns);
+
+  ScopedManagementServiceOverrideForTesting scoped_override(
+      PlatformManagementService::GetInstance(),
+      EnterpriseManagementAuthority::CLOUD);
+  PolicyBundle loaded =
+      InitialLoad(CreateExtensionInstallForcelistPreferences());
+  const base::Value* list_value = loaded.Get(chrome_ns).GetValue(
+      key::kExtensionInstallForcelist, base::Value::Type::LIST);
+  ASSERT_TRUE(list_value);
+  EXPECT_EQ(*list_value,
+            base::Value(base::ListValue()
+                            .Append("extension0")
+                            .Append("extension1;https://example.com")
+                            .Append("extension2;https://clients2.google.com/"
+                                    "service/update2/crx")));
 }
 
 }  // namespace policy
