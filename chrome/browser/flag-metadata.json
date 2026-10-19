@@ -6899,6 +6899,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "location-bar-performance-improvements",
+    "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 163
+  },
+  {
     "name": "lock-controls-on-tablets-v2",
     "owners": [
       "twellington@chromium.org",

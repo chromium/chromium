@@ -170,6 +170,8 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
   // Whether this coordinator is for a text-only location bar.
   BOOL _textOnly;
+  // Whether this location bar is currently active.
+  BOOL _active;
 }
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -244,6 +246,7 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   self = [super initWithBaseViewController:nil browser:browser];
   if (self) {
     _textOnly = textOnly;
+    _active = YES;
   }
   return self;
 }
@@ -269,6 +272,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
   self.viewController =
       [[LocationBarViewController alloc] initWithTextOnly:_textOnly];
+  if (IsLocationBarPerformanceImprovementsEnabled()) {
+    self.viewController.active = _active;
+  }
   self.viewController.incognito = isIncognito;
   self.viewController.contentSizeDelegate = _contentSizeDelegate;
   _prefService = self.profile->GetPrefs();
@@ -338,6 +344,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
       initWithURLLoadingBrowsingAgent:URLLoading
                 aimEligibilityService:aimEligibilityService
                           isIncognito:isIncognito];
+  if (IsLocationBarPerformanceImprovementsEnabled()) {
+    self.mediator.active = _active;
+  }
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.consumer = self.viewController;
@@ -350,6 +359,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
   self.steadyViewMediator = [[LocationBarSteadyViewMediator alloc]
       initWithLocationBarModel:[self locationBarModel]];
+  if (IsLocationBarPerformanceImprovementsEnabled()) {
+    self.steadyViewMediator.active = _active;
+  }
   self.steadyViewMediator.webStateList = self.browser->GetWebStateList();
   self.steadyViewMediator.webContentAreaOverlayPresenter =
       OverlayPresenter::FromBrowser(self.browser,
@@ -501,8 +513,12 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 }
 
 - (void)setLocationBarActive:(BOOL)active {
+  _active = active;
   [self.badgeMediator setActive:active];
   self.mediator.active = active;
+  if (IsLocationBarPerformanceImprovementsEnabled()) {
+    self.steadyViewMediator.active = active;
+  }
   [self.locationBarBadgeCoordinator setActive:active];
   self.viewController.active = active;
 }
@@ -819,7 +835,10 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
     [self.omniboxCoordinator updateOmniboxState];
   }
   [self.viewController updateLocationText:text clipTail:clipTail];
-  [self.viewController updateForNTP:NO];
+  if (!IsLocationBarPerformanceImprovementsEnabled() ||
+      !IsVisibleURLNewTabPage(self.webState)) {
+    [self.viewController updateForNTP:NO];
+  }
   [self.mediator locationUpdated];
 }
 
@@ -927,6 +946,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
                            browser:self.browser];
     self.locationBarBadgeCoordinator.delegate = self;
     [self.locationBarBadgeCoordinator start];
+    if (IsLocationBarPerformanceImprovementsEnabled()) {
+      [self.locationBarBadgeCoordinator setActive:_active];
+    }
     // TODO (crbug.com/429140788): Remove after migration when this view is
     // permanently shown.
     self.locationBarBadgeCoordinator.viewController.visibilityDelegate =
@@ -992,6 +1014,9 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
   self.badgeMediator =
       [[BadgeMediator alloc] initWithWebStateList:self.webStateList
                                  overlayPresenter:overlayPresenter];
+  if (IsLocationBarPerformanceImprovementsEnabled()) {
+    [self.badgeMediator setActive:_active];
+  }
   self.badgeMediator.consumer = self.badgeViewController;
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.

@@ -1192,3 +1192,10 @@ BASE_FEATURE(kLightAppBar, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsLightAppBarEnabled() {
   return base::FeatureList::IsEnabled(kLightAppBar);
 }
+
+BASE_FEATURE(kLocationBarPerformanceImprovements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLocationBarPerformanceImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(kLocationBarPerformanceImprovements);
+}

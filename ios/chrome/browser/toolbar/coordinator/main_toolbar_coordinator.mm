@@ -346,15 +346,18 @@ inline LayoutStateToolbarPassKey PassKey() {
               self, FullscreenBrowserAgent::FromBrowser(browser));
     }
 
-    _bottomLocationBarCoordinator =
-        [self createLocationBarCoordinatorActive:isToolbarAtBottom
-                                     topPosition:NO
-                                        textOnly:NO];
-    if (IsGlassToolbarEnabled()) {
-      _bottomTextOnlyLocationBarCoordinator =
+    if (!IsLocationBarPerformanceImprovementsEnabled() ||
+        IsBottomOmniboxAvailable()) {
+      _bottomLocationBarCoordinator =
           [self createLocationBarCoordinatorActive:isToolbarAtBottom
                                        topPosition:NO
-                                          textOnly:YES];
+                                          textOnly:NO];
+      if (IsGlassToolbarEnabled()) {
+        _bottomTextOnlyLocationBarCoordinator =
+            [self createLocationBarCoordinatorActive:isToolbarAtBottom
+                                         topPosition:NO
+                                            textOnly:YES];
+      }
     }
     _bottomToolbarMediator = [self createToolbarMediatorTopPosition:NO];
     _bottomToolbarViewController = [self
@@ -1467,9 +1470,14 @@ inline LayoutStateToolbarPassKey PassKey() {
   LocationBarCoordinator* coordinator =
       [[LocationBarCoordinator alloc] initWithBrowser:self.browser
                                              textOnly:textOnly];
+  if (IsLocationBarPerformanceImprovementsEnabled()) {
+    [coordinator setLocationBarActive:active];
+  }
   [coordinator start];
   [coordinator setTopPosition:topPosition];
-  [coordinator setLocationBarActive:active];
+  if (!IsLocationBarPerformanceImprovementsEnabled()) {
+    [coordinator setLocationBarActive:active];
+  }
 
   return coordinator;
 }

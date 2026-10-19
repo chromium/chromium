@@ -87,6 +87,7 @@ const CGFloat kIconPointSize = 16.0;
                                     isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
+    _active = YES;
     _searchEngineSupportsSearchByImage = NO;
     _searchEngineSupportsLens = NO;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
@@ -162,6 +163,16 @@ const CGFloat kIconPointSize = 16.0;
 }
 
 #pragma mark - Setters
+
+- (void)setActive:(BOOL)active {
+  if (_active == active) {
+    return;
+  }
+  _active = active;
+  if (IsLocationBarPerformanceImprovementsEnabled() && _active) {
+    [self updatePlaceholderType];
+  }
+}
 
 - (void)setConsumer:(id<LocationBarConsumer>)consumer {
   _consumer = consumer;
@@ -247,6 +258,9 @@ const CGFloat kIconPointSize = 16.0;
                        change:(const WebStateListChange&)change
                        status:(const WebStateListStatus&)status {
   DCHECK_EQ(_webStateList, webStateList);
+  if (IsLocationBarPerformanceImprovementsEnabled() && !self.active) {
+    return;
+  }
   if (status.active_web_state_change()) {
     [self.consumer defocusOmnibox];
   }
@@ -381,6 +395,9 @@ const CGFloat kIconPointSize = 16.0;
 
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
+  if (IsLocationBarPerformanceImprovementsEnabled() && !self.active) {
+    return;
+  }
   if ([self isCurrentPageNTP]) {
     if ([self shouldShowPlusButton]) {
       [self.consumer

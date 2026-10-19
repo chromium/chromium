@@ -209,6 +209,9 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
 
   // The type of custom leading view to display.
   CustomLeadingViewType _customLeadingViewType;
+
+  // Cached share icon image with balanced vertical padding.
+  UIImage* _cachedPaddedShareImage;
 }
 
 #pragma mark - public
@@ -847,28 +850,9 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
                     action:@selector(shareButtonPressed)
           forControlEvents:UIControlEventTouchUpInside];
 
-      // The system share image has uneven vertical padding. Add a small bottom
-      // padding to balance it.
-      UIImage* shareImage =
-          SymbolWithPointSize(SymbolShare, kSymbolImagePointSize);
-
-      UIGraphicsImageRendererFormat* format =
-          [UIGraphicsImageRendererFormat preferredFormat];
-      format.scale = 0.0;
-      format.opaque = NO;
-      UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
-          initWithSize:CGSizeMake(shareImage.size.width,
-                                  shareImage.size.height +
-                                      kShareIconBalancingHeightPadding)
-                format:format];
-      UIImage* paddedShareImage = [renderer
-          imageWithActions:^(UIGraphicsImageRendererContext* context) {
-            [shareImage drawInRect:CGRectMake(0, 0, shareImage.size.width,
-                                              shareImage.size.height)];
-          }];
-
-      [self.locationBarSteadyView.trailingButton setImage:paddedShareImage
-                                                 forState:UIControlStateNormal];
+      [self.locationBarSteadyView.trailingButton
+          setImage:[self paddedShareImage]
+          forState:UIControlStateNormal];
       self.locationBarSteadyView.trailingButton.accessibilityLabel =
           l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SHARE);
       self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
@@ -909,6 +893,37 @@ const CGFloat kGeminiLiveCircleSize = 20.0;
   if (IsChromeNextIaEnabled()) {
     [self updateShareButtonGuide];
   }
+}
+
+// Returns the share icon image with balanced vertical padding, caching the
+// rasterized image when `kLocationBarPerformanceImprovements` is enabled.
+- (UIImage*)paddedShareImage {
+  if (IsLocationBarPerformanceImprovementsEnabled() &&
+      _cachedPaddedShareImage) {
+    return _cachedPaddedShareImage;
+  }
+  // The system share image has uneven vertical padding. Add a small bottom
+  // padding to balance it.
+  UIImage* shareImage = SymbolWithPointSize(SymbolShare, kSymbolImagePointSize);
+
+  UIGraphicsImageRendererFormat* format =
+      [UIGraphicsImageRendererFormat preferredFormat];
+  format.scale = 0.0;
+  format.opaque = NO;
+  UIGraphicsImageRenderer* renderer = [[UIGraphicsImageRenderer alloc]
+      initWithSize:CGSizeMake(shareImage.size.width,
+                              shareImage.size.height +
+                                  kShareIconBalancingHeightPadding)
+            format:format];
+  UIImage* paddedShareImage =
+      [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+        [shareImage drawInRect:CGRectMake(0, 0, shareImage.size.width,
+                                          shareImage.size.height)];
+      }];
+  if (IsLocationBarPerformanceImprovementsEnabled()) {
+    _cachedPaddedShareImage = paddedShareImage;
+  }
+  return paddedShareImage;
 }
 
 - (void)setTrailingButtonState:(TrailingButtonState)state {

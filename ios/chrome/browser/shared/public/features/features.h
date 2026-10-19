@@ -976,4 +976,10 @@ BASE_DECLARE_FEATURE(kLightAppBar);
 // Returns true if the LightAppBar feature is enabled.
 bool IsLightAppBarEnabled();
 
+// Enables the `kLocationBarPerformanceImprovements` feature.
+BASE_DECLARE_FEATURE(kLocationBarPerformanceImprovements);
+
+// Returns true if the `kLocationBarPerformanceImprovements` feature is enabled.
+bool IsLocationBarPerformanceImprovementsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

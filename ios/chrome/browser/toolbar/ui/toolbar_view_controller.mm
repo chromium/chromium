@@ -474,6 +474,9 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   }
 
   _locationBarViewController = locationBarViewController;
+  if (!_locationBarViewController) {
+    return;
+  }
 
   UIView* locationBarView = locationBarViewController.view;
   locationBarView.translatesAutoresizingMaskIntoConstraints = NO;
