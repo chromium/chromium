@@ -4967,11 +4967,6 @@ inline constexpr char kVcTrayMicIndicatorDescription[] =
     "captured by the microphone, after some effects like noise cancellation "
     "is applied.";
 
-inline constexpr char kVcTrayTitleHeaderName[] =
-    "Adds a sidetone toggle in VC tray";
-inline constexpr char kVcTrayTitleHeaderDescription[] =
-    "Displays a sidetone toggle in VC Tray Title header";
-
 inline constexpr char kVcWebApiName[] = "VC web API";
 inline constexpr char kVcWebApiDescription[] =
     "Allows web API support for video conferencing on Chromebooks.";

@@ -81,10 +81,8 @@ TitleView::TitleView(base::OnceClosure close_bubble_callback) {
                                         *title_label);
   SetFlexForView(title_column, 1);
 
-  if (features::IsVcTrayTitleHeaderEnabled()) {
-    AddChildView(std::make_unique<MicTestButton>());
-    VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
-  }
+  AddChildView(std::make_unique<MicTestButton>());
+  VideoConferenceTrayController::Get()->UpdateSidetoneSupportedState();
 
   AddChildView(
       std::make_unique<SettingsButton>(std::move(close_bubble_callback)));

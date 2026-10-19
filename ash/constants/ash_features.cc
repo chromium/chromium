@@ -1712,11 +1712,6 @@ BASE_FEATURE(kVcTrayMicIndicator,
              "VCTrayMicIndicator",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables sidetone toggle inside VC tray title header
-BASE_FEATURE(kVcTrayTitleHeader,
-             "VCTrayTitleHeader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables web API support for ChromeOS video conferencing.
 BASE_FEATURE(kVcWebApi, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -2846,10 +2841,6 @@ bool IsVcControlsUiFakeEffectsEnabled() {
 
 bool IsVcTrayMicIndicatorEnabled() {
   return base::FeatureList::IsEnabled(kVcTrayMicIndicator);
-}
-
-bool IsVcTrayTitleHeaderEnabled() {
-  return base::FeatureList::IsEnabled(kVcTrayTitleHeader);
 }
 
 bool IsVcWebApiEnabled() {
