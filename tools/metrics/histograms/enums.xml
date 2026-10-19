@@ -25022,6 +25022,15 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange(//content/browser/preloading/preload_activation_report_utils.h:PreloadActivationBeaconStatus) -->
 
+<!-- LINT.IfChange(PreloadActivationReportType) -->
+
+<enum name="PreloadActivationReportType">
+  <int value="0" label="Prefetch"/>
+  <int value="1" label="Prerender"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/preloading/preload_activation_report_manager.h:PreloadActivationReportType) -->
+
 <enum name="PreloadingTriggeringOutcome">
   <int value="0" label="Unspecified"/>
   <int value="2" label="Duplicate"/>

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/common/features.h"
@@ -63,10 +64,15 @@ PreloadActivationReportManager::PreloadActivationReportManager() = default;
 
 PreloadActivationReportManager::~PreloadActivationReportManager() = default;
 
-void PreloadActivationReportManager::ReportActivation(const GURL& endpoint,
-                                                      RenderFrameHost* rfh) {
+void PreloadActivationReportManager::ReportActivation(
+    const GURL& endpoint,
+    RenderFrameHost* rfh,
+    PreloadActivationReportType report_type) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   CHECK(rfh);
+
+  base::UmaHistogramEnumeration("Preloading.ActivationBeacon.ReportPreloadType",
+                                report_type);
 
   url::Origin original_origin = url::Origin::Create(endpoint);
 
@@ -188,6 +194,8 @@ void PreloadActivationReportManager::OnRedirect(
     devtools_instrumentation::OnPrefetchActivationBeaconRequestComplete(
         it->frame_tree_node_id, it->devtools_request_id,
         network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    base::UmaHistogramBoolean("Preloading.ActivationBeacon.ReportSuccess",
+                              false);
     RemoveLoader(it);
     return;
   }
@@ -197,6 +205,8 @@ void PreloadActivationReportManager::OnRedirect(
     devtools_instrumentation::OnPrefetchActivationBeaconRequestComplete(
         it->frame_tree_node_id, it->devtools_request_id,
         network::URLLoaderCompletionStatus(net::ERR_ABORTED));
+    base::UmaHistogramBoolean("Preloading.ActivationBeacon.ReportSuccess",
+                              false);
     RemoveLoader(it);
     return;
   }
@@ -232,6 +242,10 @@ void PreloadActivationReportManager::OnComplete(
   network::URLLoaderCompletionStatus status(it->loader->NetError());
   devtools_instrumentation::OnPrefetchActivationBeaconRequestComplete(
       it->frame_tree_node_id, it->devtools_request_id, status);
+
+  base::UmaHistogramBoolean(
+      "Preloading.ActivationBeacon.ReportSuccess",
+      it->loader->NetError() == net::OK && headers != nullptr);
 
   RemoveLoader(it);
 }

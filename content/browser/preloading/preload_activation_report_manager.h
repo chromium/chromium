@@ -34,6 +34,19 @@ namespace content {
 class BrowserContext;
 class RenderFrameHost;
 
+// The preload type for which
+// `PreloadActivationReportManager::ReportActivation` is called.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PreloadActivationReportType)
+enum class PreloadActivationReportType {
+  kPrefetch = 0,
+  kPrerender = 1,
+  kMaxValue = kPrerender,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:PreloadActivationReportType)
+
 // Manages sending activation beacons for prefetched or prerendered pages
 // that have been consumed.
 // This is bound to `BrowserContext` so that beacon requests can outlive
@@ -52,7 +65,9 @@ class CONTENT_EXPORT PreloadActivationReportManager
       BrowserContext* browser_context);
 
   // Sends a credentialless GET request to the specified endpoint.
-  void ReportActivation(const GURL& endpoint, RenderFrameHost* rfh);
+  void ReportActivation(const GURL& endpoint,
+                        RenderFrameHost* rfh,
+                        PreloadActivationReportType report_type);
 
   size_t GetLoaderCountForTesting() const { return loaders_.size(); }
 

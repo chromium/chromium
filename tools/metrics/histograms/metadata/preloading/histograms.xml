@@ -260,6 +260,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Preloading.ActivationBeacon.ReportPreloadType"
+    enum="PreloadActivationReportType" expires_after="2027-04-01">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether `PreloadActivationReportManager::ReportActivation` is called
+    for a prefetch activation or a prerender activation. Recorded each time
+    `PreloadActivationReportManager::ReportActivation` is called.
+  </summary>
+</histogram>
+
+<histogram name="Preloading.ActivationBeacon.ReportSuccess"
+    enum="BooleanSuccess" expires_after="2027-04-01">
+  <owner>gjc@google.com</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records whether an activation beacon report request sent by
+    `PreloadActivationReportManager::ReportActivation` succeeded or failed.
+    Recorded when the report request completes in
+    `PreloadActivationReportManager::OnComplete`, or when it is aborted due to a
+    disallowed redirect in `PreloadActivationReportManager::OnRedirect`.
+  </summary>
+</histogram>
+
 <histogram name="Preloading.ActivationBeacon.StatusOnResponseStarted"
     enum="PreloadActivationBeaconStatus" expires_after="2027-04-01">
   <owner>gjc@google.com</owner>
