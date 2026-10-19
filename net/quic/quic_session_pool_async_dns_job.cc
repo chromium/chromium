@@ -460,15 +460,18 @@ QuicSessionPool::AsyncDnsJob::TakeNextCandidate(
   }
 
   // While the secondary slot is empty the primary connector may use both
-  // families, and every visible IPv6 candidate ranks above any IPv4 one.
-  // Once both slots are filled the primary takes IPv6 and the secondary
-  // takes IPv4 while DNS resolution is in flight. Once DNS resolution
-  // finishes, connectors may attempt the other family's remaining candidates
-  // if their preferred family is exhausted.
+  // families, starting with IPv6 and alternating families on each failed
+  // attempt. Once both slots are filled the primary takes IPv6 and the
+  // secondary takes IPv4 while DNS resolution is in flight. Once DNS
+  // resolution finishes, connectors may attempt the other family's remaining
+  // candidates if their preferred family is exhausted.
+  CHECK(&connector == state.primary_connector.get() ||
+        &connector == state.secondary_connector.get());
   const bool slots_are_exclusive =
       state.secondary_connector != nullptr && !resolution_finished_;
-  const bool takes_ipv6 = &connector == state.primary_connector.get();
-  CHECK(takes_ipv6 || &connector == state.secondary_connector.get());
+  const bool takes_ipv6 = state.secondary_connector
+                              ? &connector == state.primary_connector.get()
+                              : state.prefer_ipv6;
 
   const std::vector<UsableEndpoint>& usable_endpoints = GetUsableEndpoints();
   for (bool ipv6 : {takes_ipv6, !takes_ipv6}) {
@@ -495,8 +498,13 @@ QuicSessionPool::AsyncDnsJob::TakeNextCandidate(
 }
 
 void QuicSessionPool::AsyncDnsJob::OnAttemptFailed(
+    const EndpointConnector& connector,
     int rv,
     const NetErrorDetails& details) {
+  ConnectionState& state = GetState(connector);
+  CHECK(&connector == state.primary_connector.get() ||
+        &connector == state.secondary_connector.get());
+  state.prefer_ipv6 = !connector.is_attempting_ipv6();
   last_attempt_failure_ = AttemptFailure{rv, details};
 }
 

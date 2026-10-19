@@ -179,9 +179,9 @@ void QuicSessionPool::EndpointConnector::RecordAttemptFailure(int rv) {
             .Set("ip_endpoint", attempt_->ip_endpoint().ToString())
             .Set("net_error", rv);
       });
+  job_->OnAttemptFailed(*this, rv, details);
   attempt_.reset();
   attempt_id_.reset();
-  job_->OnAttemptFailed(rv, details);
 }
 
 void QuicSessionPool::EndpointConnector::OnAttemptComplete(int rv) {
