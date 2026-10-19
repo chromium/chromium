@@ -145,7 +145,6 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
@@ -329,11 +328,11 @@ void RunTestFunction(DevToolsWindow* window, const char* test_name) {
   DispatchOnTestSuite(window, test_name);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void SwitchToPanel(DevToolsWindow* window, const char* panel) {
   DispatchOnTestSuite(window, "switchToPanel", panel);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Version of SwitchToPanel that works with extension-created panels.
 void SwitchToExtensionPanel(DevToolsWindow* window,
                             const Extension* devtools_extension,
@@ -2809,13 +2808,37 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestToolboxNotLoadedDocked) {
   CloseDevToolsWindow();
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Tests that inspector will reattach to inspected page when it is reloaded
 // after a crash. See http://crbug.com/40105374
-// Disabled. it doesn't check anything right now: http://crbug.com/40407209
-IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_TestReattachAfterCrash) {
-  RunTest("testReattachAfterCrash", kArbitraryPage);
+IN_PROC_BROWSER_TEST_F(DevToolsTest, TestReattachAfterCrash) {
+  OpenDevToolsWindow(kArbitraryPage, false);
+
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, renderers run as bound Android Services whose OS priority is
+  // controlled by service bindings (ChildBindingState). OpenDevToolsWindow()
+  // launches a separate DevToolsActivity, which backgrounds the browser
+  // activity and hides the inspected tab, downgrading its renderer's service
+  // binding below VISIBLE. Because Android cannot use waitpid() on service
+  // processes, ChildProcessLauncherHelper::GetTerminationInfo() only treats a
+  // renderer exit as a crash if it held at least a VISIBLE binding (otherwise
+  // assuming the OS reclaimed a background process and reporting normal
+  // termination). Boost the tab's importance to MODERATE to maintain a VISIBLE
+  // service binding so CrashTab() is recognized as a crash.
+  GetInspectedTab()->SetPrimaryPageImportance(
+      content::ChildProcessImportance::MODERATE,
+      content::ChildProcessImportance::NORMAL);
+#endif
+  content::CrashTab(GetInspectedTab());
+  content::TestNavigationObserver navigation_observer(GetInspectedTab(), 1);
+  GetInspectedTab()->GetController().Reload(content::ReloadType::NORMAL, true);
+  navigation_observer.Wait();
+
+  ASSERT_TRUE(content::ExecJs(GetInspectedTab(), "console.log('PASS');"));
+  RunTestFunction(window_, "waitForTestResultsInConsole");
+  CloseDevToolsWindow();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest, TestPageWithNoJavaScript) {
   OpenDevToolsWindow("about:blank", false);
@@ -2874,38 +2897,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutoOpenerTest, MAYBE_TestAutoOpenForTabs) {
   observer_->CloseAllSync();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-class DevToolsReattachAfterCrashTest : public DevToolsTest {
- protected:
-  void RunTestWithPanel(const char* panel_name) {
-    OpenDevToolsWindow("about:blank", false);
-    SwitchToPanel(window_, panel_name);
-    ASSERT_TRUE(NavigateToURL(GetInspectedTab(), GURL(url::kAboutBlankURL)));
-
-    content::RenderProcessHostWatcher crash_observer(
-        GetInspectedTab(),
-        content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-    std::ignore =
-        NavigateToURL(GetInspectedTab(), GURL(blink::kChromeUICrashURL));
-    crash_observer.Wait();
-    content::TestNavigationObserver navigation_observer(GetInspectedTab(), 1);
-    GetInspectedTab()->GetController().Reload(content::ReloadType::NORMAL,
-                                              true);
-    navigation_observer.Wait();
-  }
-};
-
-// TODO(crbug.com/40936829): Reenable after fixing consistent Windows failure.
-IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
-                       DISABLED_TestReattachAfterCrashOnTimeline) {
-  RunTestWithPanel("timeline");
-}
-
-// TODO(crbug.com/40938244): Gardener 2023-10-26: Flaky on bots.
-IN_PROC_BROWSER_TEST_F(DevToolsReattachAfterCrashTest,
-                       DISABLED_TestReattachAfterCrashOnNetwork) {
-  RunTestWithPanel("network");
-}
 
 // Very flaky on Linux only.  http://crbug.com/40770357
 #if BUILDFLAG(IS_LINUX)
