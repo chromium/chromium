@@ -1916,7 +1916,7 @@
       // :muted, and :volume-locked for media elements.
       // https://drafts.csswg.org/selectors/#resource-pseudos
       name: "CSSMediaElementPseudos",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://drafts.csswg.org/css-values-5/#progress
