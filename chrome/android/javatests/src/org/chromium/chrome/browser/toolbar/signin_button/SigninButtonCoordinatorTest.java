@@ -28,7 +28,6 @@ import android.content.res.ColorStateList;
 import android.graphics.Rect;
 
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Rule;
@@ -37,7 +36,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -50,7 +48,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
@@ -62,10 +60,10 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.signin.SignedOutAccountMenuFacility;
-import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.chrome.test.util.SettingsTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
@@ -83,11 +81,7 @@ import org.chromium.ui.test.util.ViewUtils;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({SigninFeatures.SIGNIN_LEVEL_UP_BUTTON, SigninFeatures.PROFILE_DISC_ON_ALL_PAGES})
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP, // crbug.com/556881398
-    ChromeFeatureList.USE_WEB_UI_NTP_ANDROID // crbug.com/555414915
-})
+@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID) // crbug.com/555414915
 public class SigninButtonCoordinatorTest {
 
     // Mock sign-in environment needs to be destroyed after ChromeTabbedActivity in case there are
@@ -447,12 +441,11 @@ public class SigninButtonCoordinatorTest {
         mPage.signinButtonElement.checkPresent();
 
         // Clicking the avatar should lead to the settings screen when signin is disabled.
-        Activity settingsActivity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SettingsActivity.class,
-                        () -> onView(withId(R.id.signin_button)).perform(click()));
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        Activity settingsHost =
+                SettingsTestUtils.waitForSettingsFragment(
+                        () -> onView(withId(R.id.signin_button)).perform(click()),
+                        MainSettings.class);
+        SettingsTestUtils.closeSettings(settingsHost);
     }
 
     @Test
@@ -475,12 +468,11 @@ public class SigninButtonCoordinatorTest {
                         withContentDescription(mContentDescriptionWithNameAndEmail)));
 
         // Clicking the signed-in avatar should lead to the settings screen.
-        Activity settingsActivity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SettingsActivity.class,
-                        () -> onView(withId(R.id.signin_button)).perform(click()));
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        Activity settingsHost =
+                SettingsTestUtils.waitForSettingsFragment(
+                        () -> onView(withId(R.id.signin_button)).perform(click()),
+                        MainSettings.class);
+        SettingsTestUtils.closeSettings(settingsHost);
     }
 
     @Test

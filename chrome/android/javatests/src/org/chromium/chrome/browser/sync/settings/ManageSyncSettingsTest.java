@@ -103,6 +103,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesServiceFactory;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridgeJni;
@@ -160,7 +161,6 @@ import java.util.Set;
 // Avoids UserActionableError.NEEDS_UPM_BACKEND_UPGRADE for most tests. Specific tests can still
 // trigger the error by overriding getUserActionableError()
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
-@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 13;
 
@@ -482,7 +482,7 @@ public class ManageSyncSettingsTest {
         // Signing out indirectly closes the settings activity (when ManageSyncSettings detects the
         // primary account change). Wait for this to complete before signing in again and
         // re-starting the settings activity.
-        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
+        waitForManageSyncSettingsClosed();
 
         // Add a different account, and open the sync settings to check that history opt-in did not
         // carry over from one user to another.
@@ -511,7 +511,7 @@ public class ManageSyncSettingsTest {
                 .getSigninTestRule()
                 .removeAccount(mSyncTestRule.getSigninTestRule().getPrimaryAccount().getId());
 
-        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
+        waitForManageSyncSettingsClosed();
     }
 
     @Test
@@ -537,7 +537,7 @@ public class ManageSyncSettingsTest {
         // Signing out indirectly closes the settings activity (when ManageSyncSettings detects the
         // primary account change). Wait for this to complete before signing in again and
         // re-starting the settings activity.
-        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
+        waitForManageSyncSettingsClosed();
 
         signinTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
@@ -572,7 +572,7 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.signOut();
         // Signing out indirectly closes the settings activity. (when
         // ManageSyncSettings detects the primary account change).
-        ApplicationTestUtils.waitForActivityState(mSettingsTestRule.getActivity(), Stage.DESTROYED);
+        waitForManageSyncSettingsClosed();
 
         // Sign-in again with the same account, and open the sync settings to check that history
         // opt-in did carry over through sign-out & sign-in.
@@ -1518,6 +1518,22 @@ public class ManageSyncSettingsTest {
 
     private void setupMockSyncService() {
         setupMockSyncService(BiometricStatus.BIOMETRICS_AVAILABLE, TransportState.ACTIVE);
+    }
+
+    /**
+     * Waits for ManageSyncSettings to close itself, e.g. after the primary account changed.
+     * SettingsActivity finishes, while settings in a tab shows the main settings page instead.
+     */
+    private void waitForManageSyncSettingsClosed() {
+        if (SettingsInTab.shouldOpenSettingsInTab()) {
+            SettingsActivityInterface host =
+                    (SettingsActivityInterface) mSettingsTestRule.getActivity();
+            CriteriaHelper.pollUiThread(
+                    () -> !(host.getMainFragment() instanceof ManageSyncSettings));
+        } else {
+            ApplicationTestUtils.waitForActivityState(
+                    mSettingsTestRule.getActivity(), Stage.DESTROYED);
+        }
     }
 
     private ManageSyncSettings startManageSyncPreferences() {
