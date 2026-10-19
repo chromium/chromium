@@ -40,6 +40,7 @@ source_set("side_panel") {
     "//chrome/browser:primitives",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",
+    "//components/contextual_tasks/public:feature_list",
     "//components/pref_registry",
     "//url",
   ]

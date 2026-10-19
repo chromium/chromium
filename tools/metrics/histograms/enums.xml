@@ -19034,6 +19034,7 @@ from previous Chrome versions.
   <int value="1235539689" label="UseSharedImageInOOPVDProcess:disabled"/>
   <int value="1235800887" label="V8Ignition:enabled"/>
   <int value="1235940786" label="ChromeHomePersistentIph:enabled"/>
+  <int value="1236325746" label="ContextualTasksSidePanelDefaultRight:enabled"/>
   <int value="1236772382" label="BiometricAuthenticationInSettings:disabled"/>
   <int value="1236821372"
       label="SupervisedUserMergeDeviceParentalControlsAndFamilyLinkPrefs:enabled"/>
@@ -19255,6 +19256,8 @@ from previous Chrome versions.
   <int value="1293473298" label="PageInfoAboutThisSiteNewIcon:disabled"/>
   <int value="1293697921" label="RequestDesktopSiteExceptions:enabled"/>
   <int value="1293870742" label="EnableAiSubscriptionAvatarRing:disabled"/>
+  <int value="1294088582"
+      label="ContextualTasksSidePanelDefaultRight:disabled"/>
   <int value="1294131571" label="disable-winrt-midi-api"/>
   <int value="1294306055" label="FeedInteractiveRefresh:disabled"/>
   <int value="1295005331" label="SupportPepperVideoDecoderDevAPI:enabled"/>

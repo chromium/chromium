@@ -12209,6 +12209,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksSidePanel)},
 
+    {"contextual-tasks-side-panel-default-right",
+     contextual_tasks::flag_descriptions::
+         kContextualTasksSidePanelDefaultRightName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksSidePanelDefaultRightDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         contextual_tasks::kContextualTasksSidePanelDefaultRight)},
+
     {"contextual-tasks-override-show-bottom-sheet-on-large-screen",
      contextual_tasks::flag_descriptions::
          kContextualTasksOverrideShowBottomSheetOnLargeScreenName,

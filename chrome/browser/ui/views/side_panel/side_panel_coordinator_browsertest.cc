@@ -67,6 +67,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/crx_file/id_util.h"
 #include "components/lens/lens_features.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -760,6 +761,31 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, SidePanelAlignmentOverrides) {
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kLeft);
 
+  GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
+  EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
+            SidePanel::HorizontalAlignment::kRight);
+}
+
+class SidePanelCoordinatorContextualTasksDefaultRightTest
+    : public SidePanelCoordinatorTest {
+ public:
+  SidePanelCoordinatorContextualTasksDefaultRightTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        contextual_tasks::kContextualTasksSidePanelDefaultRight);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorContextualTasksDefaultRightTest,
+                       ContextualTasksDefaultAlignmentRight) {
+  Init();
+  PrefService* prefs = BrowserView::GetBrowserViewForBrowser(browser())
+                           ->GetProfile()
+                           ->GetPrefs();
+
+  prefs->SetBoolean(prefs::kSidePanelHorizontalAlignment, false);
   GetSidePanel()->UpdateHorizontalAlignment(SidePanelEntryId::kContextualTasks);
   EXPECT_EQ(GetSidePanel()->horizontal_alignment(),
             SidePanel::HorizontalAlignment::kRight);

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -43,9 +45,14 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   base::DictValue alignment_overrides;
   alignment_overrides.Set(SidePanelEntryIdToString(SidePanelEntryId::kGlic),
                           !base::i18n::IsRTL());
+  const bool contextual_tasks_alignment =
+      base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksSidePanelDefaultRight)
+          ? !base::i18n::IsRTL()
+          : base::i18n::IsRTL();
   alignment_overrides.Set(
       SidePanelEntryIdToString(SidePanelEntryId::kContextualTasks),
-      base::i18n::IsRTL());
+      contextual_tasks_alignment);
   registry->RegisterDictionaryPref(prefs::kSidePanelAlignmentOverrides,
                                    std::move(alignment_overrides));
 #endif

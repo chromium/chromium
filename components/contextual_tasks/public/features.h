@@ -18,6 +18,7 @@ namespace contextual_tasks {
 BASE_DECLARE_FEATURE(kContextualTasks);
 BASE_DECLARE_FEATURE(kContextualTasksPrivateApiNoAnimation);
 BASE_DECLARE_FEATURE(kContextualTasksSidePanel);
+BASE_DECLARE_FEATURE(kContextualTasksSidePanelDefaultRight);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralBrandedEntryPoint);
 BASE_DECLARE_FEATURE(kContextualTasksUpdatedEntryPoints);
 BASE_DECLARE_FEATURE(kContextualTasksExtraOauthScopes);
@@ -557,6 +558,8 @@ extern const char kContextualTasksName[];
 extern const char kContextualTasksDescription[];
 extern const char kContextualTasksSidePanelName[];
 extern const char kContextualTasksSidePanelDescription[];
+extern const char kContextualTasksSidePanelDefaultRightName[];
+extern const char kContextualTasksSidePanelDefaultRightDescription[];
 extern const char kContextualTasksContextLibraryName[];
 extern const char kContextualTasksContextLibraryDescription[];
 extern const char kContextualTasksContextName[];
