@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 
+#import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_mutator.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -123,11 +124,64 @@ TEST_F(GeminiContainerViewControllerTest, TestUpdateZeroStateVisibility) {
 
   [container updateZeroStateVisibility:YES];
   EXPECT_FALSE(zero_state_view_controller.view.hidden);
-  EXPECT_EQ([container contentHeight], 360.0);
+  EXPECT_EQ([container contentHeight], 388.0);
 
   [container updateZeroStateVisibility:NO];
   EXPECT_TRUE(zero_state_view_controller.view.hidden);
+  EXPECT_EQ([container contentHeight], 108.0);
+
+  [container setHasPadding:NO];
   EXPECT_EQ([container contentHeight], 80.0);
+
+  [container updateZeroStateVisibility:YES];
+  EXPECT_EQ([container contentHeight], 360.0);
+
+  [container.view removeFromSuperview];
+}
+
+// Tests that inside content has padding on all 4 sides and does not touch the
+// container edges when not minimized, and has 0 padding when minimized.
+TEST_F(GeminiContainerViewControllerTest, TestContentPadding) {
+  constexpr CGFloat kContainerPadding = 14.0;
+  GeminiContainerViewController* container =
+      [[GeminiContainerViewController alloc] initWithWorklogViewController:nil];
+  [scoped_key_window_.Get() addSubview:container.view];
+  container.view.frame = CGRectMake(0, 0, 300, 400);
+  [container.view setNeedsLayout];
+  [container.view layoutIfNeeded];
+
+  // The last subview added to `container.view` is the content view wrapper.
+  UIView* content_view = container.view.subviews.lastObject;
+  ASSERT_TRUE(content_view != nil);
+
+  EXPECT_EQ(content_view.frame.origin.x, kContainerPadding);
+  EXPECT_EQ(content_view.frame.origin.y, kContainerPadding);
+  EXPECT_EQ(content_view.frame.size.width,
+            container.view.bounds.size.width - 2 * kContainerPadding);
+  EXPECT_EQ(content_view.frame.size.height,
+            container.view.bounds.size.height - 2 * kContainerPadding);
+
+  // When minimized, padding should be 0.
+  [container setHasPadding:NO];
+  [container.view setNeedsLayout];
+  [container.view layoutIfNeeded];
+
+  EXPECT_EQ(content_view.frame.origin.x, 0.0);
+  EXPECT_EQ(content_view.frame.origin.y, 0.0);
+  EXPECT_EQ(content_view.frame.size.width, container.view.bounds.size.width);
+  EXPECT_EQ(content_view.frame.size.height, container.view.bounds.size.height);
+
+  // When expanded again, padding is restored.
+  [container setHasPadding:YES];
+  [container.view setNeedsLayout];
+  [container.view layoutIfNeeded];
+
+  EXPECT_EQ(content_view.frame.origin.x, kContainerPadding);
+  EXPECT_EQ(content_view.frame.origin.y, kContainerPadding);
+  EXPECT_EQ(content_view.frame.size.width,
+            container.view.bounds.size.width - 2 * kContainerPadding);
+  EXPECT_EQ(content_view.frame.size.height,
+            container.view.bounds.size.height - 2 * kContainerPadding);
 
   [container.view removeFromSuperview];
 }

@@ -20,14 +20,12 @@ namespace {
 constexpr CGFloat kChipInterItemSpacing = 8.0;
 constexpr CGFloat kChipContentPaddingVertical = 12.0;
 constexpr CGFloat kChipContentPaddingHorizontal = 16.0;
-constexpr CGFloat kContainerContentPadding = 12.0;
 constexpr CGFloat kContainerTopPadding = 36.0;
 constexpr CGFloat kGeminiLogoSize = 38.0;
 constexpr CGFloat kLogoToGreetingSpacing = 16.0;
 constexpr CGFloat kChipsContainerHeight = 180.0;
 constexpr CGFloat kCloseButtonSize = 46.0;
 constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
-constexpr CGFloat kCloseButtonPadding = 20.0;
 
 }  // namespace
 
@@ -86,9 +84,8 @@ constexpr CGFloat kCloseButtonPadding = 20.0;
   _suggestionsStack.spacing = kChipInterItemSpacing;
   _suggestionsStack.alignment = UIStackViewAlignmentLeading;
   _suggestionsStack.layoutMarginsRelativeArrangement = YES;
-  _suggestionsStack.directionalLayoutMargins = NSDirectionalEdgeInsetsMake(
-      0, kContainerContentPadding, kContainerContentPadding,
-      kContainerContentPadding);
+  _suggestionsStack.directionalLayoutMargins =
+      NSDirectionalEdgeInsetsMake(0, 0, kChipInterItemSpacing, 0);
   [_suggestionsStack setContentHuggingPriority:UILayoutPriorityRequired
                                        forAxis:UILayoutConstraintAxisVertical];
   [_suggestionsStack
@@ -136,18 +133,15 @@ constexpr CGFloat kCloseButtonPadding = 20.0;
   centerHeaderConstraint.priority = UILayoutPriorityDefaultHigh;
 
   [NSLayoutConstraint activateConstraints:@[
-    [closeButton.topAnchor constraintEqualToAnchor:self.view.topAnchor
-                                          constant:kCloseButtonPadding],
-    [closeButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                               constant:-kCloseButtonPadding],
+    [closeButton.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [closeButton.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
     guideTopConstraint,
     [headerLayoutGuide.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor
-                       constant:-(kChipsContainerHeight +
-                                  kContainerContentPadding)],
+                       constant:-kChipsContainerHeight],
     [_suggestionsStack.topAnchor
-        constraintGreaterThanOrEqualToAnchor:headerLayoutGuide.bottomAnchor
-                                    constant:kContainerContentPadding],
+        constraintGreaterThanOrEqualToAnchor:headerLayoutGuide.bottomAnchor],
     [headerStack.topAnchor
         constraintGreaterThanOrEqualToAnchor:headerLayoutGuide.topAnchor],
     [headerStack.bottomAnchor

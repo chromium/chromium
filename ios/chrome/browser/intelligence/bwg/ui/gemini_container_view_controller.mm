@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_view_controller.h"
 
+#import <algorithm>
+
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_constants.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_controller.h"
 #import "ios/chrome/browser/intelligence/actor/ui/actuation_worklog_view_data.h"
@@ -12,6 +14,9 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
+// Small padding applied to all sides inside the container.
+constexpr CGFloat kContainerPadding = 14.0;
+
 // Standard insets applied around the worklog inside the container.
 constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
     NSDirectionalEdgeInsets{intelligence::actor::kSpacingLarge, 0,
@@ -36,6 +41,15 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   UIStackView* _containerStack;
   // Background halo gradient view displayed when in zero-state.
   GeminiContainerZeroStateBackgroundView* _zeroStateBackgroundView;
+
+  // Layout constraints pinning `_geminiContentView` to `self.view`.
+  NSLayoutConstraint* _contentViewTopConstraint;
+  NSLayoutConstraint* _contentViewLeadingConstraint;
+  NSLayoutConstraint* _contentViewTrailingConstraint;
+  NSLayoutConstraint* _contentViewBottomConstraint;
+
+  // Whether the container content has padding applied.
+  BOOL _hasPadding;
 }
 
 - (instancetype)initWithWorklogViewController:
@@ -43,6 +57,7 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _worklogViewController = worklogViewController;
+    _hasPadding = YES;
   }
   return self;
 }
@@ -64,12 +79,24 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   _geminiContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_geminiContentView];
 
-  AddSameConstraintsToSides(
-      _geminiContentView, self.view,
-      LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
+  CGFloat initialPadding = _hasPadding ? kContainerPadding : 0.0;
+  _contentViewTopConstraint =
+      [_geminiContentView.topAnchor constraintEqualToAnchor:self.view.topAnchor
+                                                   constant:initialPadding];
+  _contentViewLeadingConstraint = [_geminiContentView.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:initialPadding];
+  _contentViewTrailingConstraint = [_geminiContentView.trailingAnchor
+      constraintEqualToAnchor:self.view.trailingAnchor
+                     constant:-initialPadding];
+  _contentViewBottomConstraint = [_geminiContentView.bottomAnchor
+      constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
+                     constant:-initialPadding];
   [NSLayoutConstraint activateConstraints:@[
-    [_geminiContentView.bottomAnchor
-        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor]
+    _contentViewTopConstraint,
+    _contentViewLeadingConstraint,
+    _contentViewTrailingConstraint,
+    _contentViewBottomConstraint,
   ]];
 
   _containerStack = [[UIStackView alloc] init];
@@ -142,15 +169,29 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
   [_worklogViewController notifyHeightDidChange];
 }
 
+- (void)setHasPadding:(BOOL)hasPadding {
+  if (_hasPadding == hasPadding) {
+    return;
+  }
+  _hasPadding = hasPadding;
+  [self updateLayoutConstraintsForPadding];
+}
+
 - (CGFloat)contentHeight {
   [self.view layoutIfNeeded];
-  CGSize targetSize = CGSizeMake(self.view.bounds.size.width,
-                                 UILayoutFittingCompressedSize.height);
-  return [_geminiContentView
-               systemLayoutSizeFittingSize:targetSize
-             withHorizontalFittingPriority:UILayoutPriorityRequired
-                   verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
-      .height;
+  CGFloat padding = _hasPadding ? kContainerPadding : 0.0;
+  CGFloat containerWidth = self.view.bounds.size.width;
+  CGFloat contentWidth =
+      containerWidth > 0 ? std::max(0.0, containerWidth - 2 * padding) : 0.0;
+  CGSize targetSize =
+      CGSizeMake(contentWidth, UILayoutFittingCompressedSize.height);
+  CGFloat contentViewHeight =
+      [_geminiContentView
+            systemLayoutSizeFittingSize:targetSize
+          withHorizontalFittingPriority:UILayoutPriorityRequired
+                verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
+          .height;
+  return contentViewHeight == 0 ? 0 : contentViewHeight + 2 * padding;
 }
 
 // TODO(crbug.com/532204179): Push the minimized height alongside the compact
@@ -163,6 +204,18 @@ constexpr NSDirectionalEdgeInsets kWorklogContainerInsets =
 }
 
 #pragma mark - Private
+
+// Updates content view layout constraints based on whether padding is applied.
+- (void)updateLayoutConstraintsForPadding {
+  if (!self.isViewLoaded) {
+    return;
+  }
+  CGFloat padding = _hasPadding ? kContainerPadding : 0.0;
+  _contentViewTopConstraint.constant = padding;
+  _contentViewLeadingConstraint.constant = padding;
+  _contentViewTrailingConstraint.constant = -padding;
+  _contentViewBottomConstraint.constant = -padding;
+}
 
 // Returns the container height needed to fit `worklogHeight`, accounting for
 // the insets applied around the worklog in `addWorklogSubviews`.

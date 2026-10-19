@@ -27,6 +27,9 @@
 // Notifies consumer whether actuation is currently active.
 - (void)setActuationActive:(BOOL)active;
 
+// Sets whether the container content should have padding.
+- (void)setHasPadding:(BOOL)hasPadding;
+
 // Returns the fitting height of the container's current content.
 - (CGFloat)contentHeight;
 

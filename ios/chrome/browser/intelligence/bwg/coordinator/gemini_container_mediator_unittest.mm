@@ -148,9 +148,17 @@ constexpr actor::ActorTaskId kTaskId = actor::ActorTaskId(1);
 @property(nonatomic, assign) CGFloat contentHeight;
 @property(nonatomic, strong) UIViewController* geminiViewController;
 @property(nonatomic, assign) CGFloat actuationMinimizedDetentHeight;
+@property(nonatomic, assign) BOOL hasPadding;
 @end
 
 @implementation FakeGeminiContainerConsumer
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _hasPadding = YES;
+  }
+  return self;
+}
 - (void)updateZeroStateVisibility:(BOOL)visible {
   _zeroState = visible;
   _zeroStateChangeCount++;
@@ -1052,6 +1060,30 @@ TEST_F(GeminiContainerMediatorTest,
 
   [mediator_ didSwitchToMode:ios::provider::GeminiViewMode::kLive];
   EXPECT_FALSE(dismissed);
+}
+
+// Tests that changing detent updates the consumer's hasPadding property.
+TEST_F(GeminiContainerMediatorTest,
+       TestDidChangeDetentUpdatesConsumerHasPadding) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+
+  AppendActiveWebState();
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  mediator_.consumer = consumer;
+  [mediator_ connect];
+
+  EXPECT_TRUE(consumer.hasPadding);
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMinimized];
+  EXPECT_FALSE(consumer.hasPadding);
+
+  [mediator_ assistantContainer:nil
+                didChangeDetent:AssistantContainerDetent::kMedium];
+  EXPECT_TRUE(consumer.hasPadding);
 }
 
 // Tests that container detent changes outside of actuation leave the

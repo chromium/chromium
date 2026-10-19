@@ -500,6 +500,9 @@ class GeminiContainerMediatorTabHelperObserver
   [_stateManager updateDetent:newDetent];
   [_sessionMetricsManager didChangeDetent:newDetent];
 
+  // TODO(crbug.com/574081190): Move setHasPadding to didChangeUIState
+  [self.consumer setHasPadding:!minimized];
+
   if (_stateManager.currentUIState.actuating) {
     [self.containerHandler setAssistantContainerGrabberHidden:NO animated:YES];
   } else if ([_stateManager shouldBeDismissed]) {
