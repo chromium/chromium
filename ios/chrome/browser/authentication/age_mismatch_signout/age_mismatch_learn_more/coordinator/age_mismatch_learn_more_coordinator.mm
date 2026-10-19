@@ -89,7 +89,7 @@
 
   // Create web view.
   WKWebView* webView =
-      (WKWebView*)web::BuildWKWebView(CGRectZero, self.browser->GetProfile());
+      web::BuildWKWebView(CGRectZero, self.browser->GetProfile());
   webView.navigationDelegate = self;
 
   // Loads URL into the web view.

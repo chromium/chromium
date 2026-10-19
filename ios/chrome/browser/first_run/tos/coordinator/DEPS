@@ -1,7 +1,0 @@
-
-specific_include_rules = {
-  # TODO(crbug.com/532174813): Remove usage of //ios/web internals.
-  "^tos_coordinator\\.mm$" : [
-    "+ios/web/web_state/crw_web_view.h",
-  ]
-}

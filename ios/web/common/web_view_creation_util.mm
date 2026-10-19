@@ -14,7 +14,7 @@
 
 namespace web {
 
-CRWWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state) {
+WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state) {
   DCHECK(browser_state);
 
   WKWebViewConfigurationProvider& config_provider =
