@@ -20,6 +20,8 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace {
 
@@ -35,7 +37,10 @@ std::optional<GURL> GetFaviconDataUrl(content::WebContents* web_contents) {
   if (favicon.IsEmpty()) {
     return std::nullopt;
   }
-  SkBitmap bitmap = favicon.AsBitmap();
+  const gfx::ImageSkiaRep& image_rep =
+      favicon.AsImageSkia().GetRepresentation(2.0f);
+  SkBitmap bitmap =
+      image_rep.is_null() ? favicon.AsBitmap() : image_rep.GetBitmap();
   if (bitmap.isNull()) {
     return std::nullopt;
   }
