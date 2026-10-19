@@ -81,9 +81,12 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
@@ -237,7 +240,7 @@ WebAppInstallFlowDialogDelegate::~WebAppInstallFlowDialogDelegate() {
 }
 
 bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
-  CHECK(dialog_model());
+  CHECK(dialog_model() && dialog_model()->host());
 
   // Update install dialog step.
   switch (current_step_) {
@@ -272,6 +275,27 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
         std::move(reparent_closure_).Run();
       }
       return true;
+  }
+
+  // Clear focus before updating buttons and views.
+  // This ensures that:
+  // 1) A fresh focus event fires when a button is focused again on the next
+  //    step.
+  // 2) Hiding dialog buttons on the Progress step does not cause FocusManager
+  //    to advance focus to another view in the browser.
+  // Additionally, only clear focus when it is within the dialog so we do not
+  // take focus away if the user moved focus elsewhere in the browser (e.g. the
+  // omnibox).
+  auto* host =
+      static_cast<views::BubbleDialogModelHost*>(dialog_model()->host());
+  if (views::Widget* widget = host->GetWidget()) {
+    if (views::FocusManager* focus_manager = widget->GetFocusManager()) {
+      views::View* focused_view = focus_manager->GetFocusedView();
+      if (focused_view && widget->GetRootView() &&
+          widget->GetRootView()->Contains(focused_view)) {
+        focus_manager->ClearFocus();
+      }
+    }
   }
 
   // Actions based on the new current_step_
@@ -338,6 +362,7 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
                              current_step_ == InstallDialogStep::kSuccessful);
 
   UpdateDialogTitleAndHeader(current_step_);
+  UpdateFocusAndAnnounceStep(current_step_);
   return false;
 }
 
@@ -651,6 +676,64 @@ void WebAppInstallFlowDialogDelegate::UpdateDialogTitleAndHeader(
   // Clear the header for all subsequent steps.
   if (host->GetBubbleFrameView()) {
     host->GetBubbleFrameView()->SetHeaderView(nullptr);
+  }
+}
+
+void WebAppInstallFlowDialogDelegate::UpdateFocusAndAnnounceStep(
+    InstallDialogStep step) {
+  CHECK(dialog_model() && dialog_model()->host());
+  auto* host =
+      static_cast<views::BubbleDialogModelHost*>(dialog_model()->host());
+  views::Widget* widget = host->GetWidget();
+
+  switch (step) {
+    case InstallDialogStep::kInstallDialog:
+      NOTREACHED();
+    case InstallDialogStep::kInstallerOptions:
+      if (widget && widget->GetRootView()) {
+        widget->GetRootView()->GetViewAccessibility().AnnouncePolitely(
+            l10n_util::GetStringUTF16(dialog_type() == InstallDialogType::kDiy
+                                          ? IDS_DIY_APP_INSTALL_DIALOG_TITLE
+                                          : IDS_INSTALL_PWA_DIALOG_TITLE));
+      }
+      if (views::View* cancel_button = host->GetCancelButton()) {
+        cancel_button->RequestFocus();
+      }
+      break;
+    case InstallDialogStep::kProgress:
+      if (widget && widget->GetRootView()) {
+        widget->GetRootView()->GetViewAccessibility().AnnouncePolitely(
+            l10n_util::GetStringUTF16(IDS_INSTALL_PWA_DIALOG_INSTALLING));
+      }
+      break;
+    case InstallDialogStep::kSuccessful:
+      if (widget && widget->GetRootView()) {
+        widget->GetRootView()->GetViewAccessibility().AnnouncePolitely(
+            l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_SUCCESS_TITLE));
+      }
+      // Only move focus to the primary button if focus was not moved outside
+      // the dialog (e.g. to the omnibox) during the progress step. If the
+      // top-level widget is inactive, update the stored focus view instead of
+      // calling `RequestFocus()` so we do not activate the browser window.
+      if (views::FocusManager* focus_manager =
+              widget ? widget->GetFocusManager() : nullptr) {
+        views::View* focused_view = focus_manager->GetFocusedView();
+        if (!focused_view) {
+          focused_view = focus_manager->GetStoredFocusView();
+        }
+        if (!focused_view || (widget->GetRootView() &&
+                              widget->GetRootView()->Contains(focused_view))) {
+          if (views::View* ok_button = host->GetOkButton()) {
+            views::Widget* top_level_widget = widget->GetTopLevelWidget();
+            if (top_level_widget && !top_level_widget->IsActive()) {
+              focus_manager->SetStoredFocusView(ok_button);
+            } else {
+              ok_button->RequestFocus();
+            }
+          }
+        }
+      }
+      break;
   }
 }
 
