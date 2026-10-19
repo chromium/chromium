@@ -982,6 +982,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/android/metrics:base_java",
+    "//chrome/browser/settings:settings_in_tab_java",
   ]
 }
 
@@ -1888,6 +1889,7 @@ android_library("chrome_test_java_various") {
     "//chrome/browser/gsa:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/omaha/android:ui_java",
+    "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/logo:utils_java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",

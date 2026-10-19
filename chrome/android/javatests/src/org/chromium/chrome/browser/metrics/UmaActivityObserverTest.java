@@ -37,8 +37,10 @@ import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
@@ -168,11 +170,9 @@ public class UmaActivityObserverTest {
 
     @Test
     @LargeTest
-    @DisableFeatures({
-        ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-        ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
-    })
     public void testSessionPreservedInSettings() throws Exception {
+        // When settings are shown in a tab, the settings "activity" is the tabbed activity itself.
+        boolean settingsInTab = SettingsInTab.shouldOpenSettingsInTab();
         WebPageStation pageInFirstWindow = mCtaTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -215,13 +215,21 @@ public class UmaActivityObserverTest {
                         ApplicationStatus.getStateForActivity(settingsStation.getActivity())
                                 == ActivityState.RESUMED);
 
-        // Ideally we would re-start the session here, but this is complicated and enough of an edge
-        // case that it's not worth fixing for now.
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaResumeSession(anyLong());
+        // With settings in a tab, the tabbed activity resumed, which restarts the session. With a
+        // separate SettingsActivity, ideally we would re-start the session here, but this is
+        // complicated and enough of an edge case that it's not worth fixing for now.
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(settingsInTab ? 1 : 0))
+                .umaResumeSession(anyLong());
         mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
 
         // Close settings and return to Tabbed activity.
-        settingsStation.getActivity().finish();
+        if (settingsInTab) {
+            ChromeTriggers.closeCurrentTabProgrammaticallyTo(
+                            settingsStation, mCtaTestRule.getActivity())
+                    .arriveAt(WebPageStation.newBuilder().initFrom(pageInFirstWindow).build());
+        } else {
+            settingsStation.getActivity().finish();
+        }
         CriteriaHelper.pollUiThread(
                 () ->
                         ApplicationStatus.getStateForActivity(mCtaTestRule.getActivity())
@@ -232,7 +240,8 @@ public class UmaActivityObserverTest {
                     Assert.assertEquals(
                             ActivityType.TABBED, UmaActivityObserver.getCurrentActivityType());
                 });
-        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(1)).umaResumeSession(anyLong());
+        mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(settingsInTab ? 0 : 1))
+                .umaResumeSession(anyLong());
         mInOrder.verify(mUmaSessionStatsJniSpy, Mockito.times(0)).umaEndSession(anyLong());
     }
 }
