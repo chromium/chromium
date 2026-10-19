@@ -183,8 +183,11 @@ void WaylandZwpLinuxDmabuf::NotifyRequestCreateBufferDone(
     return item.first.get();
   });
   CHECK(it != pending_params_.end());
-  std::move(it->second).Run(wl::Object<wl_buffer>(new_buffer));
+  // Erase the entry before running the callback, as the callback may re-enter
+  // CreateBuffer() and modify `pending_params_`, which would invalidate `it`.
+  wl::OnRequestBufferCallback callback = std::move(it->second);
   pending_params_.erase(it);
+  std::move(callback).Run(wl::Object<wl_buffer>(new_buffer));
   connection_->Flush();
 }
 

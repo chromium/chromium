@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -716,6 +717,59 @@ TEST_P(WaylandBufferManagerTest, CreateAndDestroyBuffer) {
     DestroyBufferAndSetTerminateExpectation(kBufferId2, false /*fail*/);
     DestroyBufferAndSetTerminateExpectation(kBufferId2, true /*fail*/);
   }
+}
+
+// Verifies that requesting a new dmabuf-based wl_buffer from within the
+// callback of a previous request (i.e. re-entrantly) is handled safely. This
+// only applies to the non-immediate creation path.
+TEST_P(WaylandBufferManagerTest, ReentrantDmabufBufferCreation) {
+  auto* buffer_factory = connection_->buffer_factory();
+  ASSERT_FALSE(buffer_factory->CanCreateDmabufImmed());
+
+  PostToServerAndWait([](wl::TestWaylandServerThread* server) {
+    EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(3);
+  });
+
+  std::vector<wl::Object<wl_buffer>> created_buffers;
+  bool reentered = false;
+  auto create_buffer = [&](wl::OnRequestBufferCallback callback) {
+    buffer_factory->CreateDmabufBuffer(MakeFD(), kDefaultSize, {1}, {2}, {3},
+                                       DRM_FORMAT_ABGR8888, 1,
+                                       std::move(callback));
+  };
+  auto on_created = [&](wl::Object<wl_buffer> buffer) {
+    EXPECT_TRUE(buffer);
+    created_buffers.push_back(std::move(buffer));
+  };
+  auto on_created_reentrant = [&](wl::Object<wl_buffer> buffer) {
+    on_created(std::move(buffer));
+    if (!reentered) {
+      reentered = true;
+      // Issue another request while the pending requests container is at
+      // capacity, so that it would need to reallocate.
+      create_buffer(base::BindLambdaForTesting(on_created));
+    }
+  };
+
+  create_buffer(base::BindLambdaForTesting(on_created_reentrant));
+  create_buffer(base::BindLambdaForTesting(on_created_reentrant));
+  base::RunLoop().RunUntilIdle();
+
+  // Complete the first two requests. One of them re-enters and issues a third.
+  ProcessCreatedBufferResourcesWithExpectation(/*expected_size=*/2u,
+                                               /*fail=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(reentered);
+  EXPECT_EQ(created_buffers.size(), 2u);
+
+  // Complete the re-entrant request.
+  ProcessCreatedBufferResourcesWithExpectation(/*expected_size=*/1u,
+                                               /*fail=*/false);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(created_buffers.size(), 3u);
+
+  created_buffers.clear();
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_P(WaylandBufferManagerTest, CommitBufferNonExistingBufferId) {
