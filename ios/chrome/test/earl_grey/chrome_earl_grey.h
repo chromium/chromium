@@ -671,6 +671,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // secondary windows.
 - (void)openSettingsInWindowWithNumber:(int)windowNumber;
 
+// Shows the tab switcher directly (not via the UI) in the window with the
+// given number.
+- (void)showTabSwitcherInWindowWithNumber:(int)windowNumber;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts & browsing data, and wait for

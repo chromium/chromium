@@ -292,6 +292,10 @@ enum class TipsNotificationType;
 // windows.
 + (void)openSettingsInWindowWithNumber:(int)windowNumber;
 
+// Shows the tab switcher directly (not via the UI) in the window with the
+// given number.
++ (void)showTabSwitcherInWindowWithNumber:(int)windowNumber;
+
 // Returns the interface orientation of the scene.
 + (UIInterfaceOrientation)interfaceOrientation;
 
