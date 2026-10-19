@@ -19,6 +19,15 @@
 #define EXPENSIVE_DCHECKS_ARE_ON() false
 #endif
 
+// Equivalent to EXPENSIVE_DCHECKS_ARE_ON(), but used to gate expensive test
+// logic rather than assertions so that it runs on CI and local developer builds
+// without slowing down CQ trybuilders.
+#if BUILDFLAG(EXPENSIVE_TEST_LOGIC_IS_ON)
+#define EXPENSIVE_TEST_LOGIC_IS_ON() true
+#else
+#define EXPENSIVE_TEST_LOGIC_IS_ON() false
+#endif
+
 #if BUILDFLAG(ENABLE_CHECK_ELISION_WARNING)
 #define ENABLE_CHECK_ELISION_WARNING() true
 #else
