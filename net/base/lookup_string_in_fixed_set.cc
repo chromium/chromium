@@ -7,12 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/strings/stringprintf.h"
@@ -22,45 +24,53 @@ namespace net {
 
 namespace {
 
-// Read next offset from `bytes`, increment `offset_bytes` by that amount, and
-// increment `bytes` either to point to the start of the next encoded offset in
-// its node, or set it to an empty span, if there are no remaining offsets.
-//
-// Returns true if an offset could be read; false otherwise.
-inline bool GetNextOffset(base::span<const uint8_t>* bytes,
-                          base::span<const uint8_t>* offset_bytes) {
-  if (bytes->empty()) {
-    return false;
-  }
-
-  size_t bytes_consumed;
-  switch ((*bytes)[0] & 0x60) {
-    case 0x60:  // Read three byte offset
-      *offset_bytes = offset_bytes->subspan(static_cast<size_t>(
-          (((*bytes)[0] & 0x1F) << 16) | ((*bytes)[1] << 8) | (*bytes)[2]));
-      bytes_consumed = 3;
-      break;
-    case 0x40:  // Read two byte offset
-      *offset_bytes = offset_bytes->subspan(
-          static_cast<size_t>((((*bytes)[0] & 0x1F) << 8) | (*bytes)[1]));
-      bytes_consumed = 2;
-      break;
-    default:
-      *offset_bytes =
-          offset_bytes->subspan(static_cast<size_t>((*bytes)[0] & 0x3F));
-      bytes_consumed = 1;
-  }
-  if ((*bytes)[0] & 0x80) {
-    *bytes = base::span<const uint8_t>();
-  } else {
-    *bytes = bytes->subspan(bytes_consumed);
-  }
-  return true;
-}
-
 // Check if byte at `byte` is last in label.
 bool IsEOL(uint8_t byte) {
   return (byte & 0x80) != 0;
+}
+
+struct NextOffset {
+  STACK_ALLOCATED();
+
+ public:
+  size_t offset;
+  base::span<const uint8_t> remaining_bytes;
+};
+
+// Reads the next offset from `bytes` and returns it along with the remaining
+// unconsumed offset list bytes (or an empty span if there are no remaining
+// offsets).
+//
+// Returns `std::nullopt` if `bytes` is empty.
+ALWAYS_INLINE std::optional<NextOffset> GetNextOffset(
+    base::span<const uint8_t> bytes) {
+  if (bytes.empty()) {
+    return std::nullopt;
+  }
+
+  size_t offset;
+  size_t bytes_consumed;
+  switch (bytes[0] & 0x60) {
+    case 0x60:  // Read three byte offset
+      offset = ((bytes[0] & 0x1F) << 16) | (bytes[1] << 8) | bytes[2];
+      bytes_consumed = 3;
+      break;
+    case 0x40:  // Read two byte offset
+      offset = ((bytes[0] & 0x1F) << 8) | bytes[1];
+      bytes_consumed = 2;
+      break;
+    default:
+      offset = bytes[0] & 0x3F;
+      bytes_consumed = 1;
+  }
+  base::span<const uint8_t> remaining_bytes;
+  if (!IsEOL(bytes[0])) {
+    remaining_bytes = bytes.subspan(bytes_consumed);
+  }
+  return NextOffset{
+      .offset = offset,
+      .remaining_bytes = remaining_bytes,
+  };
 }
 
 // Check if byte at `byte` matches key. This version matches both end-of-label
@@ -174,47 +184,30 @@ class FixedSetIncrementalLookup {
         // Currently processing a label, so it is only necessary to check the
         // byte pointed by `bytes_` to see if it encodes a character matching
         // `input`.
-        bool is_last_char_in_label = IsEOL(bytes_.front());
-        bool is_match = IsMatch(bytes_.front(), input);
-        if (is_match) {
-          // If this is not the last character in the label, the next byte
-          // should be interpreted as a character or return value. Otherwise,
-          // the next byte should be interpreted as a list of child node
-          // offsets.
-          bytes_ = bytes_.subspan<1>();
-          DCHECK(!bytes_.empty());
-          bytes_starts_with_label_character_ = !is_last_char_in_label;
+        if (TryConsumeLabelChar(bytes_, input)) {
           return true;
         }
       } else {
         base::span<const uint8_t> offset_bytes = bytes_;
         // Read offsets from `bytes_` until the label of the child node at
-        // `offset_bytes` matches `input`, or until there are no more offsets.
-        while (GetNextOffset(&bytes_, &offset_bytes)) {
-          DCHECK(!offset_bytes.empty());
+        // `offset_bytes.front()` matches `input`, or until there are no more
+        // offsets.
+        while (std::optional<NextOffset> next = GetNextOffset(bytes_)) {
+          bytes_ = next->remaining_bytes;
+          offset_bytes = offset_bytes.subspan(next->offset);
 
-          // `offset_bytes` points to a DAFSA node that is a child of the
-          // original node.
+          // `offset_bytes.front()` points to a DAFSA node that is a child of
+          // the original node.
           //
           // The low 7 bits of a node encodes a character value; the high bit
           // indicates whether it's the last character in the label.
           //
-          // Note that `*offset_bytes` could also be a result code value, but
-          // these are really just out-of-range ASCII values, encoded the same
-          // way as characters. Since `input` was already validated as a
+          // Note that `offset_bytes.front()` could also be a result code value,
+          // but these are really just out-of-range ASCII values, encoded the
+          // same way as characters. Since `input` was already validated as a
           // printable ASCII value, IsMatch will never return true if
-          // `offset_bytes` is a result code.
-          bool is_last_char_in_label = IsEOL(offset_bytes.front());
-          bool is_match = IsMatch(offset_bytes.front(), input);
-
-          if (is_match) {
-            // If this is not the last character in the label, the next byte
-            // should be interpreted as a character or return value. Otherwise,
-            // the next byte should be interpreted as a list of child node
-            // offsets.
-            bytes_ = offset_bytes.subspan<1>();
-            DCHECK(!bytes_.empty());
-            bytes_starts_with_label_character_ = !is_last_char_in_label;
+          // `offset_bytes.front()` is a result code.
+          if (TryConsumeLabelChar(offset_bytes, input)) {
             return true;
           }
         }
@@ -256,7 +249,9 @@ class FixedSetIncrementalLookup {
     // until the byte at `offset_bytes` contains a result code (encoded as an
     // ASCII character below 0x20).
     base::span<const uint8_t> offset_bytes = bytes_;
-    while (GetNextOffset(&temp_bytes, &offset_bytes)) {
+    while (std::optional<NextOffset> next = GetNextOffset(temp_bytes)) {
+      temp_bytes = next->remaining_bytes;
+      offset_bytes = offset_bytes.subspan(next->offset);
       DCHECK(!offset_bytes.empty());
       std::optional<int> ret = GetReturnValue(offset_bytes.front());
       if (ret) {
@@ -267,6 +262,20 @@ class FixedSetIncrementalLookup {
   }
 
  private:
+  bool TryConsumeLabelChar(base::span<const uint8_t> node_bytes, char input) {
+    DCHECK(!node_bytes.empty());
+    if (IsMatch(node_bytes.front(), input)) {
+      // If this is not the last character in the label, the next byte
+      // should be interpreted as a character or return value. Otherwise,
+      // the next byte should be interpreted as a list of child node
+      // offsets.
+      bytes_ = node_bytes.subspan<1>();
+      DCHECK(!bytes_.empty());
+      bytes_starts_with_label_character_ = !IsEOL(node_bytes.front());
+      return true;
+    }
+    return false;
+  }
   // Span start points to the current position in the graph indicating the
   // current state of the automaton. Is an empty span if the graph is exhausted.
   base::span<const uint8_t> bytes_;
@@ -279,25 +288,27 @@ class FixedSetIncrementalLookup {
 
 // Helper function for `EnumerateDafsaLanguageForTesting`.
 void RecursivelyEnumerateDafsaLanguage(const FixedSetIncrementalLookup& lookup,
-                                       std::vector<char>* sequence,
-                                       std::vector<std::string>* language) {
+                                       std::string& sequence,
+                                       std::vector<std::string>& language) {
   std::optional<int> result = lookup.GetResultForCurrentSequence();
   if (result) {
-    std::string line(sequence->begin(), sequence->end());
-    line += base::StringPrintf(", %d", result.value());
-    language->emplace_back(std::move(line));
+    // `sequence.c_str()` is fine because `sequence` cannot contain '\0'.
+    language.emplace_back(
+        base::StringPrintf("%s, %d", sequence.c_str(), *result));
   }
   // Try appending each char value.
   for (char c = std::numeric_limits<char>::min();; ++c) {
     FixedSetIncrementalLookup continued_lookup = lookup;
     if (continued_lookup.Advance(c)) {
-      sequence->push_back(c);
-      size_t saved_language_size = language->size();
+      // `FixedSetIncrementalLookup::Advance` never returns true for char values
+      // below 0x20, but in particular it never returns true for '\0'.
+      CHECK_NE(c, '\0');
+      sequence.push_back(c);
+      size_t saved_language_size = language.size();
       RecursivelyEnumerateDafsaLanguage(continued_lookup, sequence, language);
-      CHECK_LT(saved_language_size, language->size())
-          << "DAFSA includes a branch to nowhere at node: "
-          << std::string(sequence->begin(), sequence->end());
-      sequence->pop_back();
+      CHECK_LT(saved_language_size, language.size())
+          << "DAFSA includes a branch to nowhere at node: " << sequence;
+      sequence.pop_back();
     }
     if (c == std::numeric_limits<char>::max()) {
       break;
@@ -364,9 +375,9 @@ std::optional<SuffixMatch> LookupSuffixInReversedSet(
 std::vector<std::string> EnumerateDafsaLanguageForTesting(
     base::span<const uint8_t> graph) {
   FixedSetIncrementalLookup query(graph);
-  std::vector<char> sequence;
+  std::string sequence;
   std::vector<std::string> language;
-  RecursivelyEnumerateDafsaLanguage(query, &sequence, &language);
+  RecursivelyEnumerateDafsaLanguage(query, sequence, language);
   return language;
 }
 
