@@ -1327,6 +1327,10 @@ if (!is_android) {
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }
+    if (is_chromeos) {
+      sources += [ "ash/web_ui_browser_test_browsertest.cc" ]
+      deps += [ ":cros_web_ui_browser_test" ]
+    }
   }
 }
 
