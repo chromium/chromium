@@ -819,8 +819,10 @@ std::string BuildUnifiedPlatformUserAgentFromProduct(
 
 std::string BuildModelInfo() {
 #if BUILDFLAG(IS_ANDROID)
-  // Model information is not exposed on Android desktop.
-  if (base::android::device_info::is_desktop()) {
+  // Model information is not exposed on Android desktop unless
+  // kAndroidDesktopUAModel is enabled.
+  if (!base::FeatureList::IsEnabled(blink::features::kAndroidDesktopUAModel) &&
+      base::android::device_info::is_desktop()) {
     return std::string();
   }
 

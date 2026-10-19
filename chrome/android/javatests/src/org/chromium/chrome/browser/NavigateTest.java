@@ -12,6 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import android.content.res.Configuration;
+import android.os.Build;
 import android.util.Base64;
 import android.view.KeyEvent;
 
@@ -341,6 +342,32 @@ public class NavigateTest {
                         tab.getWebContents(), "document.body.textContent");
         Assert.assertTrue("Proper platform header", content.startsWith("\"\\\"Android\\\"\\n\\\""));
         Assert.assertFalse("Platform version should not be empty", content.endsWith("\\\"\\\"\""));
+    }
+
+    /** Test 'AndroidDesktopUAModel' feature exposes the device model in UA client hints. */
+    @Test
+    @MediumTest
+    @Feature({"Navigation"})
+    @CommandLineFlags.Add({"enable-features=AndroidDesktopUAModel"})
+    @Restriction(DeviceFormFactor.DESKTOP)
+    public void testAndroidDesktopUAModelClientHint() throws Exception {
+        // Model is only reported on release builds of Android.
+        String expectedModel = "REL".equals(Build.VERSION.CODENAME) ? Build.MODEL : "";
+        String expected = "\"\\\"" + expectedModel + "\\\"\"";
+        for (boolean overrideUserAgent : new boolean[] {false, true}) {
+            final Tab tab =
+                    navigateUrlToEchoClientHintHeaders(
+                            "/set-header?Accept-CH: sec-ch-ua-model",
+                            "/echoheader?sec-ch-ua-model",
+                            overrideUserAgent);
+            String content =
+                    JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                            tab.getWebContents(), "document.body.textContent");
+            Assert.assertEquals(
+                    "Proper model header, overrideUserAgent=" + overrideUserAgent,
+                    expected,
+                    content);
+        }
     }
 
     private Tab navigateUrlToEchoClientHintHeaders(

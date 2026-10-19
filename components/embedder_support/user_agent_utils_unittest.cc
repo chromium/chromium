@@ -44,6 +44,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace embedder_support {
@@ -458,6 +460,28 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadataForXrDevice) {
 
   // Restore the device info.
   base::android::device_info::reset_is_xr_for_testing();
+}
+
+TEST_F(UserAgentUtilsTest, UserAgentMetadataModelForDesktopDevice) {
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::ScopedClosureRunner reset_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  ASSERT_TRUE(base::android::device_info::is_desktop());
+
+  // By default, the model is not exposed on Android desktop.
+  EXPECT_EQ(BuildModelInfo(), "");
+  EXPECT_EQ(GetUserAgentMetadata().model, "");
+
+  // kAndroidDesktopUAModel exposes the model on release builds of Android
+  // desktop.
+  base::test::ScopedFeatureList feature_list(
+      blink::features::kAndroidDesktopUAModel);
+  const std::string expected_model =
+      base::SysInfo::GetAndroidBuildCodename() == "REL"
+          ? base::SysInfo::HardwareModelName()
+          : "";
+  EXPECT_EQ(BuildModelInfo(), expected_model);
+  EXPECT_EQ(GetUserAgentMetadata().model, expected_model);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
