@@ -1005,8 +1005,10 @@ UIColor* AssistantHighlightBackgroundColor() {
 
   [self updateAssistantButton];
 
-  [button
-      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
+  if (!IsAppBarDisableLongPressEnabled()) {
+    [button addInteraction:[[UIContextMenuInteraction alloc]
+                               initWithDelegate:self]];
+  }
 
   return button;
 }
@@ -1022,8 +1024,10 @@ UIColor* AssistantHighlightBackgroundColor() {
                 action:@selector(didTapOpenNewTabButton:)
       forControlEvents:UIControlEventTouchUpInside];
 
-  [button
-      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
+  if (!IsAppBarDisableLongPressEnabled()) {
+    [button addInteraction:[[UIContextMenuInteraction alloc]
+                               initWithDelegate:self]];
+  }
 
   return button;
 }
@@ -1191,8 +1195,10 @@ UIColor* AssistantHighlightBackgroundColor() {
 
   [_tabGridContentView bringSubviewToFront:_tabCountLabel];
 
-  [button
-      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
+  if (!IsAppBarDisableLongPressEnabled()) {
+    [button addInteraction:[[UIContextMenuInteraction alloc]
+                               initWithDelegate:self]];
+  }
 
   return button;
 }
@@ -1204,12 +1210,16 @@ UIColor* AssistantHighlightBackgroundColor() {
   button.accessibilityIdentifier = kAppBarBackButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
   button.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK);
+      IsAppBarDisableLongPressEnabled()
+          ? nil
+          : l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK);
   [button addTarget:self
                 action:@selector(didTapBackButton)
       forControlEvents:UIControlEventTouchUpInside];
-  [button
-      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
+  if (!IsAppBarDisableLongPressEnabled()) {
+    [button addInteraction:[[UIContextMenuInteraction alloc]
+                               initWithDelegate:self]];
+  }
   return button;
 }
 
@@ -1221,12 +1231,16 @@ UIColor* AssistantHighlightBackgroundColor() {
   button.accessibilityIdentifier = kAppBarForwardButtonIdentifier;
   button.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_FORWARD);
   button.accessibilityHint =
-      l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_FORWARD);
+      IsAppBarDisableLongPressEnabled()
+          ? nil
+          : l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_FORWARD);
   [button addTarget:self
                 action:@selector(didTapForwardButton)
       forControlEvents:UIControlEventTouchUpInside];
-  [button
-      addInteraction:[[UIContextMenuInteraction alloc] initWithDelegate:self]];
+  if (!IsAppBarDisableLongPressEnabled()) {
+    [button addInteraction:[[UIContextMenuInteraction alloc]
+                               initWithDelegate:self]];
+  }
   return button;
 }
 
@@ -1344,7 +1358,7 @@ UIColor* AssistantHighlightBackgroundColor() {
 // state.
 - (void)updateNewTabButtonAccessibilityHint {
   _openNewTabButton.accessibilityHint =
-      _isTabGridVisible
+      (_isTabGridVisible || IsAppBarDisableLongPressEnabled())
           ? nil
           : l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_NEW_TAB);
 }
@@ -1408,7 +1422,7 @@ UIColor* AssistantHighlightBackgroundColor() {
                   }
                   completion:nil];
   _tabGridButton.accessibilityHint =
-      _isTabGridVisible
+      (_isTabGridVisible || IsAppBarDisableLongPressEnabled())
           ? nil
           : l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_TAB_GRID);
 }
@@ -1570,6 +1584,9 @@ UIColor* AssistantHighlightBackgroundColor() {
 - (UIContextMenuConfiguration*)contextMenuInteraction:
                                    (UIContextMenuInteraction*)interaction
                        configurationForMenuAtLocation:(CGPoint)location {
+  if (IsAppBarDisableLongPressEnabled()) {
+    return nil;
+  }
   UIView* view = interaction.view;
   UIMenu* menu = nil;
   if (view == _assistantButton) {

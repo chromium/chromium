@@ -785,4 +785,73 @@ TEST_F(AppBarViewControllerTestManual, TestLightAppBarButtonShadowOpacity) {
   }
 }
 
+// Returns whether `view` has a `UIContextMenuInteraction` attached whose
+// delegate is `delegate`.
+bool HasCustomContextMenuInteraction(
+    UIView* view,
+    id<UIContextMenuInteractionDelegate> delegate) {
+  for (id<UIInteraction> interaction in view.interactions) {
+    if ([interaction isKindOfClass:[UIContextMenuInteraction class]]) {
+      UIContextMenuInteraction* context_menu_interaction =
+          static_cast<UIContextMenuInteraction*>(interaction);
+      if (context_menu_interaction.delegate == delegate) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// Tests that `kAppBarDisableLongPress` removes long-press context menu
+// interactions and accessibility hints from the App Bar buttons while keeping
+// the New Tab button primary-action menu on the Tab Groups page.
+TEST_F(AppBarViewControllerTestManual, TestDisableLongPressFlag) {
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kAppBarDisableLongPress);
+
+    AppBarViewController* vc = [[AppBarViewController alloc] init];
+    [vc loadViewIfNeeded];
+
+    UIButton* assistantButton = [vc valueForKey:@"assistantButton"];
+    UIButton* openNewTabButton = [vc valueForKey:@"openNewTabButton"];
+    UIButton* tabGridButton = [vc valueForKey:@"tabGridButton"];
+    EXPECT_TRUE(HasCustomContextMenuInteraction(assistantButton, vc));
+    EXPECT_TRUE(HasCustomContextMenuInteraction(openNewTabButton, vc));
+    EXPECT_TRUE(HasCustomContextMenuInteraction(tabGridButton, vc));
+    EXPECT_NE(openNewTabButton.accessibilityHint, nil);
+    EXPECT_NE(tabGridButton.accessibilityHint, nil);
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list(kAppBarDisableLongPress);
+
+    AppBarViewController* vc = [[AppBarViewController alloc] init];
+    [vc loadViewIfNeeded];
+
+    UIButton* assistantButton = [vc valueForKey:@"assistantButton"];
+    UIButton* openNewTabButton = [vc valueForKey:@"openNewTabButton"];
+    UIButton* tabGridButton = [vc valueForKey:@"tabGridButton"];
+    EXPECT_FALSE(HasCustomContextMenuInteraction(assistantButton, vc));
+    EXPECT_FALSE(HasCustomContextMenuInteraction(openNewTabButton, vc));
+    EXPECT_FALSE(HasCustomContextMenuInteraction(tabGridButton, vc));
+    EXPECT_EQ(openNewTabButton.accessibilityHint, nil);
+    EXPECT_EQ(tabGridButton.accessibilityHint, nil);
+
+    UIMenu* dummyMenu = [UIMenu menuWithTitle:@"Test" children:@[]];
+    [vc setMenu:dummyMenu forButtonType:AppBarButtonTypeNewTab];
+    UIContextMenuInteraction* interaction =
+        [[UIContextMenuInteraction alloc] initWithDelegate:vc];
+    [openNewTabButton addInteraction:interaction];
+    EXPECT_EQ([vc contextMenuInteraction:interaction
+                  configurationForMenuAtLocation:CGPointZero],
+              nil);
+
+    // Primary-action menu on the Tab Groups page should still work on tap.
+    [vc setTabGroupsPageVisible:YES];
+    EXPECT_TRUE(openNewTabButton.showsMenuAsPrimaryAction);
+    EXPECT_NSEQ(openNewTabButton.menu, dummyMenu);
+  }
+}
+
 }  // namespace

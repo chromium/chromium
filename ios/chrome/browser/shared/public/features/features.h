@@ -1048,4 +1048,10 @@ BASE_DECLARE_FEATURE(kAppBarStaticSymbolWhenHidden);
 // Returns true if the AppBarStaticSymbolWhenHidden feature is enabled.
 bool IsAppBarStaticSymbolWhenHiddenEnabled();
 
+// Disables long-press context menus on the App Bar buttons.
+BASE_DECLARE_FEATURE(kAppBarDisableLongPress);
+
+// Returns true if the AppBarDisableLongPress feature is enabled.
+bool IsAppBarDisableLongPressEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_
