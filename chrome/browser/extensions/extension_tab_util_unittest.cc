@@ -484,4 +484,22 @@ TEST_F(ChromeExtensionNavigationTest, GetTabById_StandaloneWindowController) {
   EXPECT_EQ(0, found_index);
 }
 
+// Verifies that ExtensionTabUtil::CreateTabObject treats a standalone
+// WebContents without a TabInterface as active and selected.
+TEST_F(ChromeExtensionNavigationTest,
+       CreateTabObject_StandaloneWebContentsIsActive) {
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+
+  api::tabs::Tab tab_object = ExtensionTabUtil::CreateTabObject(
+      web_contents.get(),
+      {ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab},
+      /*extension=*/nullptr, /*tab_list=*/nullptr, /*tab_index=*/0);
+  EXPECT_TRUE(tab_object.active);
+  EXPECT_TRUE(tab_object.selected);
+  EXPECT_FALSE(tab_object.highlighted);
+}
+
 }  // namespace extensions
