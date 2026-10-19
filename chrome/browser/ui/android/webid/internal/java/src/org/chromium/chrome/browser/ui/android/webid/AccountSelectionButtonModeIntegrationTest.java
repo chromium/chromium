@@ -41,6 +41,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
@@ -52,6 +53,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -66,6 +68,7 @@ import java.util.Collections;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462792872
 public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionIntegrationTestBase {
     @Before
     @Override

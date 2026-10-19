@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkDelegate;
@@ -52,10 +53,12 @@ import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.content_public.browser.test.util.TouchCommon;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for the bookmark manager which include partner bookmarks. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462590301
 public class PartnerBookmarkTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

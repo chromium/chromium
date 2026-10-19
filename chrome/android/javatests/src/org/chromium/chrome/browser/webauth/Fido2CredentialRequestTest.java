@@ -49,6 +49,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.AttestationConveyancePreference;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
@@ -101,6 +102,7 @@ import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.mojo_base.mojom.String16;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.GURL;
@@ -121,6 +123,7 @@ import java.util.List;
 })
 @Batch(Batch.PER_CLASS)
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_19W13)
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/1515446
 public class Fido2CredentialRequestTest {
     private static final String TAG = "Fido2CredentialRequestTest";
 

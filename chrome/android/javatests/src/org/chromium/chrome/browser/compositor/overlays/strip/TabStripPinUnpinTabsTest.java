@@ -55,7 +55,10 @@ import java.util.Set;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-@DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/565643378
+@DisableIf.Device({
+    DeviceFormFactor.DESKTOP, // https://crbug.com/565643378
+    DeviceFormFactor.AUTOMOTIVE // crbug.com/462592111
+})
 // TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class TabStripPinUnpinTabsTest {

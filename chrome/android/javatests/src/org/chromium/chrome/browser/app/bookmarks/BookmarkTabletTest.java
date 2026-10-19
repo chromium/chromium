@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -69,6 +70,7 @@ import org.chromium.ui.base.DeviceInput;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462590301
 public class BookmarkTabletTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

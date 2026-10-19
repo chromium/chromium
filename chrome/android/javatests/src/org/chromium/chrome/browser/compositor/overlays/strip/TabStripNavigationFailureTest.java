@@ -18,6 +18,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -43,6 +44,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @EnableFeatures(ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP)
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462592111
 public class TabStripNavigationFailureTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();

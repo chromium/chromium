@@ -172,6 +172,7 @@ import java.util.stream.IntStream;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462590301
 public class BookmarkTest {
     private static final String TEST_PAGE_URL_GOOGLE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_TITLE_GOOGLE = "The Google";

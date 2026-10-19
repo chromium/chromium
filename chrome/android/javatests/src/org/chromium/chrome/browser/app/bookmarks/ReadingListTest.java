@@ -99,6 +99,7 @@ import java.util.concurrent.ExecutionException;
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462590301
 public class ReadingListTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =

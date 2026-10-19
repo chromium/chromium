@@ -29,12 +29,12 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -47,19 +47,22 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelTest;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Tests functionality in BookmarkEditActivity. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @DisabledTest(message = "crbug.com/393436289")
+@DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462590301
 public class BookmarkEditTest {
 
     private static final String TITLE_A = "a";

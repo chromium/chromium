@@ -1035,6 +1035,7 @@ public class PageInfoViewTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462750864
     public void testShowCookiesSubpageUserBypassOn() throws IOException {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -1153,6 +1154,7 @@ public class PageInfoViewTest {
     /** Tests that the User Bypass has an accessibility live region set up correctly. */
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462750864
     public void a11yLiveRegionInUserBypass() throws Exception {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));

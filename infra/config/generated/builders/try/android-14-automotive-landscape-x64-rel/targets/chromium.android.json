@@ -105,7 +105,6 @@
           "--bypass-skia-gold-functionality",
           "--force-main-user",
           "--avd-config=../../tools/android/avd/proto/android_34_automotive_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_automotive_landscape.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],

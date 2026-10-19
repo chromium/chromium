@@ -32,6 +32,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -232,6 +233,7 @@ public class KeyboardFocusRowManagerTest {
         ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL,
         ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL_DEV_FEATURE
     })
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/543500090
     public void testSwitchKeyboardFocusRow_withBookmarksBarAndSidePanel() {
         setShowBookmarksBar(true);
 

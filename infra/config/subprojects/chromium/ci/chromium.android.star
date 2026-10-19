@@ -3482,13 +3482,6 @@ ci.builder(
             "has_native_resultdb_integration",
             "linux-jammy",
         ],
-        per_test_modifications = {
-            "chrome_public_test_apk": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_automotive_landscape.chrome_public_test_apk.filter",
-                ],
-            ),
-        },
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,

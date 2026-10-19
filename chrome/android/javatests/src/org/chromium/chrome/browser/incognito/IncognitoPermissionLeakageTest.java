@@ -67,6 +67,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,6 +177,7 @@ public class IncognitoPermissionLeakageTest {
     @LargeTest
     @UseMethodParameter(RegularAndIncognito.class)
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40704641")
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462595998
     public void testAllowPermissionDoNotLeakBetweenRegularAndIncognito(
             String activityType1, String activityType2) throws Exception {
         ActivityType activity1 = ActivityType.valueOf(activityType1);
