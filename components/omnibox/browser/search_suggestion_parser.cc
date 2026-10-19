@@ -194,12 +194,12 @@ constexpr auto kReservedReservedGroupSectionsMap =
 // section known to Chrome.
 omnibox::GroupSection ChromeGroupSectionForRemoteGroupIndex(
     const int group_index) {
-  if (kReservedReservedGroupSectionsMap.contains(group_index)) {
-    return kReservedReservedGroupSectionsMap.at(group_index);
-  } else {
-    // Return a default section if we don't have any reserved sections left.
-    return omnibox::SECTION_DEFAULT;
+  const auto it = kReservedReservedGroupSectionsMap.find(group_index);
+  if (it != kReservedReservedGroupSectionsMap.end()) {
+    return it->second;
   }
+  // Return a default section if we don't have any reserved sections left.
+  return omnibox::SECTION_DEFAULT;
 }
 
 // Decodes a proto object from its serialized Base64 string representation.
@@ -1211,14 +1211,15 @@ bool SearchSuggestionParser::ParseSuggestResults(
       return false;
     }
 
-    // There is nothing to do if the group config has been added before.
-    if (results->suggestion_groups_map.contains(suggestion_group_id)) {
+    // Store the group config in the results, unless it has been added before.
+    auto [it, inserted] = results->suggestion_groups_map.try_emplace(
+        suggestion_group_id, group_config);
+    if (!inserted) {
       return true;
     }
 
-    // Store the group config with the appropriate section in the results.
-    results->suggestion_groups_map[suggestion_group_id].MergeFrom(group_config);
-    results->suggestion_groups_map[suggestion_group_id].set_section(
+    // Set the appropriate section for the newly added group config.
+    it->second.set_section(
         ChromeGroupSectionForRemoteGroupIndex(group_index++));
     return true;
   };
@@ -1235,12 +1236,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
     // Add the group config associated with the suggestion, if the suggestion
     // has a valid group ID and a corresponding group config is found in the
     // response.
-    if (!response_metadata.groups_info.group_configs().contains(
-            suggestion_group_id) ||
-        !add_group_config(suggestion_group_id,
-                          response_metadata.groups_info.group_configs().at(
-                              suggestion_group_id))) {
-      continue;
+    const auto it =
+        response_metadata.groups_info.group_configs().find(suggestion_group_id);
+    if (it != response_metadata.groups_info.group_configs().end()) {
+      add_group_config(suggestion_group_id, it->second);
     }
   }
 
