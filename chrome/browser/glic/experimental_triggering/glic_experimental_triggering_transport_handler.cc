@@ -31,7 +31,7 @@ GlicExperimentalTriggeringTransportHandler::
     GlicExperimentalTriggeringTransportHandler(
         Profile* profile,
         browser_actuator::TransportSession* session,
-        std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator)
+        base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator)
     : TransportHandler(session),
       profile_(profile),
       coordinator_(std::move(coordinator)) {
@@ -122,7 +122,17 @@ void GlicExperimentalTriggeringTransportHandler::SendResponse(
 
 GlicExperimentalTriggeringTransportHandlerFactory::
     GlicExperimentalTriggeringTransportHandlerFactory(Profile* profile)
-    : profile_(profile) {}
+    : GlicExperimentalTriggeringTransportHandlerFactory(
+          profile,
+          std::make_unique<GlicExperimentalTriggeringCoordinator>(profile)) {}
+
+GlicExperimentalTriggeringTransportHandlerFactory::
+    GlicExperimentalTriggeringTransportHandlerFactory(
+        Profile* profile,
+        std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator)
+    : profile_(profile), coordinator_(std::move(coordinator)) {
+  CHECK(profile_);
+}
 
 GlicExperimentalTriggeringTransportHandlerFactory::
     ~GlicExperimentalTriggeringTransportHandlerFactory() = default;
@@ -142,8 +152,7 @@ std::unique_ptr<browser_actuator::TransportHandler>
 GlicExperimentalTriggeringTransportHandlerFactory::OnNewSession(
     browser_actuator::TransportSession* session) {
   return std::make_unique<GlicExperimentalTriggeringTransportHandler>(
-      profile_, session,
-      std::make_unique<GlicExperimentalTriggeringCoordinator>(profile_));
+      profile_, session, coordinator_ ? coordinator_->GetWeakPtr() : nullptr);
 }
 
 }  // namespace glic

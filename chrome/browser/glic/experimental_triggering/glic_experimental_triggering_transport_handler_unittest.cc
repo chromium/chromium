@@ -5,7 +5,10 @@
 #include "chrome/browser/glic/experimental_triggering/glic_experimental_triggering_transport_handler.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -196,10 +199,10 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
        HandlesDeviceOptInRequest) {
   OptIn();
 
-  auto mock_coordinator = std::make_unique<
-      testing::NiceMock<MockGlicExperimentalTriggeringCoordinator>>(profile_);
-  EXPECT_CALL(*mock_coordinator, OnRequest("test_session_id", testing::_,
-                                           testing::_, testing::_, nullptr))
+  testing::NiceMock<MockGlicExperimentalTriggeringCoordinator> mock_coordinator(
+      profile_);
+  EXPECT_CALL(mock_coordinator, OnRequest("test_session_id", testing::_,
+                                          testing::_, testing::_, nullptr))
       .WillOnce([](const std::string& context_id,
                    const ExperimentalTriggeringRequest& request,
                    ScopedIncomingMessageResultLogger result_logger,
@@ -219,7 +222,7 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
       });
 
   GlicExperimentalTriggeringTransportHandler handler(
-      profile_, session_.get(), std::move(mock_coordinator));
+      profile_, session_.get(), mock_coordinator.GetWeakPtr());
 
   components_sharing_message::GlicExperimentalTriggering triggering;
   triggering.set_context_id("test_session_id");
@@ -254,9 +257,9 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
 }
 
 TEST_F(GlicExperimentalTriggeringTransportHandlerTest, HandlesMissingPayload) {
-  GlicExperimentalTriggeringTransportHandler handler(
-      profile_, session_.get(),
-      std::make_unique<GlicExperimentalTriggeringCoordinator>(profile_));
+  GlicExperimentalTriggeringCoordinator coordinator(profile_);
+  GlicExperimentalTriggeringTransportHandler handler(profile_, session_.get(),
+                                                     coordinator.GetWeakPtr());
 
   components_sharing_message::GlicExperimentalTriggering triggering;
   triggering.set_context_id("test_session_id");
@@ -297,6 +300,113 @@ TEST_F(GlicExperimentalTriggeringTransportHandlerTest, FactoryMethods) {
 
   auto handler = factory.OnNewSession(session_.get());
   EXPECT_NE(nullptr, handler);
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       SharesCoordinatorAcrossSessions) {
+  auto mock_coordinator = std::make_unique<
+      testing::NiceMock<MockGlicExperimentalTriggeringCoordinator>>(profile_);
+  auto* raw_coordinator = mock_coordinator.get();
+  GlicExperimentalTriggeringTransportHandlerFactory factory(
+      profile_, std::move(mock_coordinator));
+
+  GlicExperimentalTriggeringUpdateCallback captured_update_callback;
+  EXPECT_CALL(*raw_coordinator, OnRequest("shared_context_id", testing::_,
+                                          testing::_, testing::_, nullptr))
+      .Times(2)
+      .WillRepeatedly(
+          [&](const std::string& context_id,
+              const ExperimentalTriggeringRequest& request,
+              ScopedIncomingMessageResultLogger result_logger,
+              GlicExperimentalTriggeringUpdateCallback update_callback,
+              tabs::TabInterface* prepared_tab)
+              -> std::optional<ExperimentalTriggeringResponse> {
+            result_logger.set_result(
+                GlicExperimentalTriggeringIncomingMessageResult::kSuccess);
+            captured_update_callback = std::move(update_callback);
+            return std::nullopt;
+          });
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("shared_context_id");
+  triggering.mutable_request()->mutable_device_opt_in_request();
+
+  EXPECT_CALL(*session_, SendUpstreamMessage(testing::_, testing::_)).Times(0);
+
+  // Session 1 handles initial message and is then torn down.
+  auto handler_1 = factory.OnNewSession(session_.get());
+  handler_1->OnMessage(PayloadType::kExperimentalTriggering,
+                       triggering.SerializeAsString());
+  handler_1.reset();
+
+  // Invoking the callback captured from Session 1 after handler_1 destruction
+  // is safely a no-op.
+  ASSERT_TRUE(captured_update_callback);
+  ExperimentalTriggeringResponse dropped_response;
+  dropped_response.context_id = "shared_context_id";
+  captured_update_callback.Run(std::move(dropped_response));
+
+  // Session 2 is created on the same factory and rebinds the update callback.
+  testing::NiceMock<MockTransportSession> session_2;
+  ON_CALL(session_2, GetSessionId())
+      .WillByDefault(testing::Return("test_session_id_2"));
+  auto handler_2 = factory.OnNewSession(&session_2);
+  handler_2->OnMessage(PayloadType::kExperimentalTriggering,
+                       triggering.SerializeAsString());
+
+  ASSERT_TRUE(captured_update_callback);
+  EXPECT_CALL(session_2, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ("shared_context_id", response.context_id());
+        return {};
+      });
+
+  ExperimentalTriggeringResponse async_response;
+  async_response.context_id = "shared_context_id";
+  async_response.device_opt_in_result = DeviceOptInResult::kAccepted;
+  captured_update_callback.Run(std::move(async_response));
+}
+
+TEST_F(GlicExperimentalTriggeringTransportHandlerTest,
+       HandlerSurvivesFactoryDestruction) {
+  auto factory =
+      std::make_unique<GlicExperimentalTriggeringTransportHandlerFactory>(
+          profile_);
+  auto handler = factory->OnNewSession(session_.get());
+
+  // Destroy the factory (and its owned coordinator) while the session handler
+  // is still alive, matching KeyedService shutdown ordering.
+  factory.reset();
+
+  components_sharing_message::GlicExperimentalTriggering triggering;
+  triggering.set_context_id("test_session_id");
+  triggering.mutable_request()->mutable_device_opt_in_request();
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*session_, SendUpstreamMessage(
+                             PayloadType::kExperimentalTriggering, testing::_))
+      .WillOnce([](PayloadType type, const google::protobuf::MessageLite& msg)
+                    -> base::expected<void, SendUpstreamMessageError> {
+        const auto& response = static_cast<
+            const components_sharing_message::GlicExperimentalTriggering&>(msg);
+        EXPECT_EQ(components_sharing_message::GlicExperimentalTriggering::
+                      ExperimentalTriggeringResponse::TaskUpdate::FAILED,
+                  response.response().task_update().state());
+        return {};
+      });
+
+  handler->OnMessage(PayloadType::kExperimentalTriggering,
+                     triggering.SerializeAsString());
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.IncomingMessageResult."
+      "BrowserActuatorTransport",
+      GlicExperimentalTriggeringIncomingMessageResult::kCoordinatorUnavailable,
+      1);
 }
 
 // Pins `ExpectedTypeUrl` to the generated proto; this layer may include it.

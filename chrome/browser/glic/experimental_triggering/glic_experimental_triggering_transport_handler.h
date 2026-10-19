@@ -34,7 +34,7 @@ class GlicExperimentalTriggeringTransportHandler
   GlicExperimentalTriggeringTransportHandler(
       Profile* profile,
       browser_actuator::TransportSession* session,
-      std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator);
+      base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator);
   ~GlicExperimentalTriggeringTransportHandler() override;
 
   GlicExperimentalTriggeringTransportHandler(
@@ -50,7 +50,7 @@ class GlicExperimentalTriggeringTransportHandler
   void SendResponse(ExperimentalTriggeringResponse response);
 
   const raw_ptr<Profile> profile_;
-  std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator_;
+  base::WeakPtr<GlicExperimentalTriggeringCoordinator> coordinator_;
   base::WeakPtrFactory<GlicExperimentalTriggeringTransportHandler>
       weak_ptr_factory_{this};
 };
@@ -59,6 +59,9 @@ class GlicExperimentalTriggeringTransportHandlerFactory
     : public browser_actuator::TransportHandlerFactory {
  public:
   explicit GlicExperimentalTriggeringTransportHandlerFactory(Profile* profile);
+  GlicExperimentalTriggeringTransportHandlerFactory(
+      Profile* profile,
+      std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator);
   ~GlicExperimentalTriggeringTransportHandlerFactory() override;
 
   GlicExperimentalTriggeringTransportHandlerFactory(
@@ -75,6 +78,7 @@ class GlicExperimentalTriggeringTransportHandlerFactory
 
  private:
   const raw_ptr<Profile> profile_;
+  std::unique_ptr<GlicExperimentalTriggeringCoordinator> coordinator_;
 };
 
 }  // namespace glic
