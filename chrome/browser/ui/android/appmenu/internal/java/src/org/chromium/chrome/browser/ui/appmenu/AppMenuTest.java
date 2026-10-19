@@ -235,6 +235,7 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462297674
     public void testShowAppMenu_AnchorTop() throws TimeoutException {
         AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(false);
         showMenuAndAssert(mAppMenuHandler);
