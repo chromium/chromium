@@ -12,6 +12,11 @@ namespace ttc {
 // Enables TTC feature.
 BASE_DECLARE_FEATURE(kTtc);
 
+// Enables the first run experience feature for TTC. While FRE is under
+// development, this is used to hide the unfinished FRE. Once FRE is complete,
+// this can be used to suppress the feature in tests.
+BASE_DECLARE_FEATURE(kTtcFre);
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_FEATURES_H_

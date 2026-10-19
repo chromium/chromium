@@ -638,6 +638,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &tab_groups::kUseAlternateHistorySyncIllustration,
     &themes::kCrossDeviceThemeTracker,
     &ttc::kTtc,
+    &ttc::kTtcFre,
     &universal_optout::features::kUniversalOptOut,
     &universal_optout::features::kUniversalOptOutSettings,
     &visited_url_ranking::features::kGroupSuggestionService,

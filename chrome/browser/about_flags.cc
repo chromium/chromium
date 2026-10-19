@@ -9559,7 +9559,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDesksTemplatesDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kDesksTemplates)},
 
-
     {"vc-relighting-inference-backend",
      flag_descriptions::kVcRelightingInferenceBackendName,
      flag_descriptions::kVcRelightingInferenceBackendDescription, kOsCrOS,
@@ -10502,7 +10501,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"data-sharing-debug-logs", flag_descriptions::kDataSharingDebugLogsName,
      flag_descriptions::kDataSharingDebugLogsDescription, kOsAll,
      SINGLE_VALUE_TYPE(data_sharing::kDataSharingDebugLoggingEnabled)},
-
 
     {"multistep-filter", flag_descriptions::kMultistepFilterName,
      flag_descriptions::kMultistepFilterDescription, kOsDesktop,
@@ -14341,6 +14339,10 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ttc", flag_descriptions::kTtcName, flag_descriptions::kTtcDescription,
      kOsDesktop | kOsAndroid, FEATURE_VALUE_TYPE(ttc::kTtc)},
+
+    {"ttc-fre", flag_descriptions::kTtcFreName,
+     flag_descriptions::kTtcFreDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(ttc::kTtcFre)},
 
     {"force-webgpu-adapter", flag_descriptions::kForceWebGpuAdapterName,
      flag_descriptions::kForceWebGpuAdapterDescription,

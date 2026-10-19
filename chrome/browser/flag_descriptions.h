@@ -1878,6 +1878,10 @@ inline constexpr char kActorNotificationIntentRoutingDescription[] =
 inline constexpr char kTtcName[] = "TTC";
 inline constexpr char kTtcDescription[] = "Enables the TTC feature.";
 
+inline constexpr char kTtcFreName[] = "TTC FRE";
+inline constexpr char kTtcFreDescription[] =
+    "Enables the first run experience for TTC.";
+
 inline constexpr char kActorObserveScreenshotDefaultName[] =
     "Actor observe screenshot default";
 inline constexpr char kActorObserveScreenshotDefaultDescription[] =
