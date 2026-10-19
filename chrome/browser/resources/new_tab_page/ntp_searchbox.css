@@ -202,16 +202,6 @@ cr-searchbox-input::part(searchbox-input) {
   align-self: center;
 }
 
-@media (forced-colors: active) {
-  .searchbox-icon-button-container {
-    background-color: ButtonText;
-  }
-  .searchbox-icon-button-container:focus-within {
-    outline: 2px solid Highlight;
-    outline-offset: 2px;
-  }
-}
-
 :host-context(.focus-outline-visible) .searchbox-icon-button-container:focus-within {
   box-shadow: 0 0 0 2px var(--cr-focus-outline-color);
 }
@@ -384,4 +374,33 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 :host-context([webui-rounded-icons]):host([use-webkit-search-icons_]) #voiceSearchButton {
   -webkit-mask-image: url(//resources/cr_components/searchbox/icons/mic.svg);
+}
+
+@media (forced-colors: active) {
+  .searchbox-icon-button-container {
+    background-color: ButtonText;
+    forced-color-adjust: none;
+  }
+  :host([use-webkit-search-icons_]) #voiceSearchButton,
+  :host([use-webkit-search-icons_]) #lensSearchButton {
+    background-color: ButtonFace;
+    forced-color-adjust: none;
+  }
+  .searchbox-icon-button-container:hover,
+  :host([ntp-realbox-next-enabled])
+      .searchbox-icon-button-container.lens:hover,
+  :host([ntp-realbox-next-enabled])
+      .searchbox-icon-button-container.voice:hover {
+    background-color: Highlight;
+  }
+  :host([use-webkit-search-icons_])
+      .searchbox-icon-button-container:hover #voiceSearchButton,
+  :host([use-webkit-search-icons_])
+      .searchbox-icon-button-container:hover #lensSearchButton {
+    background-color: HighlightText;
+  }
+  .searchbox-icon-button-container:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
 }

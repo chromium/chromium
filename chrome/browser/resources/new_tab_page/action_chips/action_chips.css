@@ -395,3 +395,38 @@ cr-button>span {
     transform: none;
   }
 }
+
+@media (forced-colors: active) {
+  .action-chip {
+    border: 1px solid ButtonBorder;
+  }
+
+  .action-chip-icon-container:not(.icon-type-favicon):not(.icon-type-banana) {
+    background-color: ButtonText;
+    forced-color-adjust: none;
+  }
+
+  .action-chip:hover,
+  .action-chip:focus-visible {
+    background-color: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+
+  .action-chip:hover .chip-title,
+  .action-chip:hover .chip-body,
+  .action-chip:focus-visible .chip-title,
+  .action-chip:focus-visible .chip-body {
+    color: HighlightText;
+  }
+
+  .action-chip:hover
+      .action-chip-icon-container:not(.icon-type-favicon):not(
+          .icon-type-banana),
+  .action-chip:focus-visible
+      .action-chip-icon-container:not(.icon-type-favicon):not(
+          .icon-type-banana) {
+    background-color: HighlightText;
+  }
+}

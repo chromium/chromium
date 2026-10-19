@@ -103,6 +103,9 @@
   #addShortcutIcon,
   #showMoreIcon,
   #showLessIcon,
+  :host([use-white-tile-icon_]) #addShortcutIcon,
+  :host([use-white-tile-icon_]) #showMoreIcon,
+  :host([use-white-tile-icon_]) #showLessIcon,
   .query-tile-icon {
     background-color: ButtonText;
   }
@@ -197,6 +200,50 @@
 :host(:not([reordering_])) #showLess:hover,
 .force-hover {
   background-color: var(--tile-hover-color);
+}
+
+@media (forced-colors: active) {
+  :host(:not([reordering_])) .tile:hover,
+  :host(:not([reordering_])) #addShortcut:hover,
+  :host(:not([reordering_])) #showMore:hover,
+  :host(:not([reordering_])) #showLess:hover,
+  .force-hover {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
+
+  .tile-icon {
+    background-color: Canvas;
+    border: 1px solid CanvasText;
+    box-sizing: border-box;
+  }
+
+  .tile-icon-container {
+    background-color: ButtonFace;
+    border-color: ButtonText;
+  }
+
+  #addShortcut:hover .tile-icon-container,
+  #showMore:hover .tile-icon-container,
+  #showLess:hover .tile-icon-container {
+    background-color: Highlight;
+    border-color: Highlight;
+  }
+
+  #addShortcut:hover #addShortcutIcon,
+  #showMore:hover #showMoreIcon,
+  #showLess:hover #showLessIcon {
+    background-color: HighlightText;
+  }
+
+  .tile-title {
+    color: CanvasText;
+  }
+
+  :host(:not([reordering_])) cr-icon-button:hover {
+    outline: 1px solid Highlight;
+    outline-offset: -1px;
+  }
 }
 
 .tile-icon {
