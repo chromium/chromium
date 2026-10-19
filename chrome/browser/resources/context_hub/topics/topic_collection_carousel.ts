@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
 
+import {skColorToRgba} from '//resources/js/color_utils.js';
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -63,6 +64,7 @@ export class TopicCollectionCarouselElement extends CrLitElement {
       canScrollBack_: {type: Boolean, state: true},
       canScrollForward_: {type: Boolean, state: true},
       imageUrls_: {type: Object, state: true},
+      faviconColors_: {type: Object, state: true},
     };
   }
 
@@ -75,6 +77,9 @@ export class TopicCollectionCarouselElement extends CrLitElement {
   // Image URLs of the cards' pages, keyed by page URL. Pages without one, or
   // whose image failed to load, show their favicon instead.
   protected accessor imageUrls_: Map<string, string> = new Map();
+  // CSS colors of the cards' pages' favicons, keyed by page URL. A card that
+  // shows its favicon tints its image area with this color.
+  protected accessor faviconColors_: Map<string, string> = new Map();
 
   private resizeObserver_: ResizeObserver|null = null;
 
@@ -98,7 +103,9 @@ export class TopicCollectionCarouselElement extends CrLitElement {
     super.willUpdate(changedProperties);
     if (changedProperties.has('collection')) {
       this.imageUrls_ = new Map();
+      this.faviconColors_ = new Map();
       this.fetchImages_();
+      this.fetchFaviconColors_();
     }
   }
 
@@ -172,6 +179,12 @@ export class TopicCollectionCarouselElement extends CrLitElement {
     return getFaviconForPageURL(
         url, /*isSyncedUrlForHistoryUi=*/ false, /*remoteIconUrlForUma=*/ '',
         CARD_FAVICON_SIZE);
+  }
+
+  // Sets the tint of a card's image area to its page's favicon color, if known.
+  protected getFaviconColorStyle_(url: string): string {
+    const color = this.faviconColors_.get(url);
+    return color ? `--card-favicon-color: ${color}` : '';
   }
 
   // Falls back to the favicon when a page's image can't be loaded.
@@ -256,6 +269,30 @@ export class TopicCollectionCarouselElement extends CrLitElement {
       }
     });
     this.imageUrls_ = imageUrls;
+  }
+
+  // Requests the favicon color of each card's page and applies them all in a
+  // single update. Replies for a collection that has since been replaced are
+  // dropped.
+  private async fetchFaviconColors_() {
+    const collection = this.collection;
+    if (!collection) {
+      return;
+    }
+    const handler = browserProxyFactory.getInstance().handler;
+    const urls = [...new Set(collection.items.map(item => item.url))];
+    const replies = await Promise.all(
+        urls.map(url => handler.getTopicPageFaviconColor(url)));
+    if (this.collection !== collection) {
+      return;
+    }
+    const faviconColors = new Map<string, string>();
+    replies.forEach(({color}, i) => {
+      if (color) {
+        faviconColors.set(urls[i]!, skColorToRgba(color));
+      }
+    });
+    this.faviconColors_ = faviconColors;
   }
 }
 

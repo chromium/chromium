@@ -1161,6 +1161,8 @@ suite('TopicDetails', () => {
         'openUrlsInTabGroup', Promise.resolve({success: true}));
     handler.setResultFor(
         'getTopicPageImageUrl', Promise.resolve({imageUrl: null}));
+    handler.setResultFor(
+        'getTopicPageFaviconColor', Promise.resolve({color: null}));
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
@@ -1412,6 +1414,8 @@ suite('TopicDetailsFeedback', () => {
         'getTopics', Promise.resolve({topics: [topic, otherTopic]}));
     handler.setResultFor(
         'getTopicPageImageUrl', Promise.resolve({imageUrl: null}));
+    handler.setResultFor(
+        'getTopicPageFaviconColor', Promise.resolve({color: null}));
   });
 
   teardown(() => {
@@ -1733,6 +1737,8 @@ suite('TopicCollectionCarousel', () => {
     browserProxyFactory.setInstance(instance);
     handler.setResultFor(
         'getTopicPageImageUrl', Promise.resolve({imageUrl: null}));
+    handler.setResultFor(
+        'getTopicPageFaviconColor', Promise.resolve({color: null}));
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
@@ -1797,6 +1803,41 @@ suite('TopicCollectionCarousel', () => {
     assertFalse(!!withImage!.querySelector('.card-favicon'));
     assertFalse(!!withoutImage!.querySelector('.card-page-image'));
     assertTrue(!!withoutImage!.querySelector('.card-favicon'));
+  });
+
+  test('tints the image area with the favicon color', async () => {
+    handler.setResultMapperFor(
+        'getTopicPageFaviconColor', (url: string) => Promise.resolve({
+          color: url === 'https://site0.com/' ? {value: 0xff102030} : null,
+        }));
+    await createCarousel({title: 'Collection title', items: createItems(2)});
+    await microtasksFinished();
+
+    assertDeepEquals(
+        ['https://site0.com/', 'https://site1.com/'],
+        handler.getArgs('getTopicPageFaviconColor'));
+    const [withColor, withoutColor] = getCardImages();
+    assertEquals(
+        'rgba(16, 32, 48, 1.00)',
+        withColor!.style.getPropertyValue('--card-favicon-color'));
+    assertEquals(
+        '', withoutColor!.style.getPropertyValue('--card-favicon-color'));
+  });
+
+  test('ignores favicon colors for a replaced collection', async () => {
+    const resolver = new PromiseResolver<{color: {value: number} | null}>();
+    handler.setResultFor('getTopicPageFaviconColor', resolver.promise);
+    await createCarousel({title: 'Collection 1', items: createItems(1)});
+
+    handler.setResultFor(
+        'getTopicPageFaviconColor', Promise.resolve({color: null}));
+    carousel.collection = {title: 'Collection 2', items: createItems(1)};
+    await microtasksFinished();
+    resolver.resolve({color: {value: 0xff102030}});
+    await microtasksFinished();
+    assertEquals(2, handler.getCallCount('getTopicPageFaviconColor'));
+    assertEquals(
+        '', getCardImages()[0]!.style.getPropertyValue('--card-favicon-color'));
   });
 
   test('falls back to the favicon when the image fails', async () => {

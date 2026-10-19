@@ -39,6 +39,10 @@ namespace context_hub {
 struct TabGroupEntry;
 }  // namespace context_hub
 
+namespace favicon_base {
+struct FaviconRawBitmapResult;
+}  // namespace favicon_base
+
 class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
                               public context_hub::ContextHubService::Observer {
  public:
@@ -173,6 +177,9 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   void GetTopic(const std::string& id, GetTopicCallback callback) override;
   void GetTopicPageImageUrl(const GURL& page_url,
                             GetTopicPageImageUrlCallback callback) override;
+  void GetTopicPageFaviconColor(
+      const GURL& page_url,
+      GetTopicPageFaviconColorCallback callback) override;
   void OpenTopic(
       browser::context_hub::mojom::TopicIdOrUrlPtr topic_id_or_url) override;
   void OpenGlicPanel(const std::vector<std::string>& prompts) override;
@@ -206,6 +213,13 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
       base::Time window_start,
       base::OnceCallback<void(context_hub::TopicsFeedbackExportData)> callback);
 
+  // Replies to a `GetTopicPageFaviconColor()` call with the dominant color of
+  // the favicon in `result`, computed off the UI thread, or null if there is
+  // no favicon.
+  void OnTopicPageFaviconLoaded(
+      GetTopicPageFaviconColorCallback callback,
+      const favicon_base::FaviconRawBitmapResult& result);
+
 #if !BUILDFLAG(IS_ANDROID)
   void OnCopyAttachmentsToClipboardWritten(
       CopyAttachmentsToClipboardCallback callback,
@@ -223,6 +237,9 @@ class ContextHubPageHandler : public browser::context_hub::mojom::PageHandler,
   // Tracks in-flight HistoryService journey queries. Destroying it cancels
   // their replies, so a query outliving this handler is dropped.
   base::CancelableTaskTracker topics_task_tracker_;
+  // Tracks in-flight favicon lookups. Destroying it cancels their replies, so a
+  // lookup outliving this handler is dropped.
+  base::CancelableTaskTracker favicon_task_tracker_;
   base::WeakPtrFactory<ContextHubPageHandler> weak_factory_{this};
 };
 

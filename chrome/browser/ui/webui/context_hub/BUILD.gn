@@ -9,6 +9,7 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
   public_deps = [
     "//mojo/public/mojom/base",
+    "//skia/public/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
   cpp_typemaps = [
@@ -107,17 +108,21 @@ source_set("context_hub_page_handler") {
 
   deps = [
     "//chrome/browser/context_hub",
+    "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/page_image_service",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:channel_info",
+    "//components/favicon/core",
+    "//components/favicon_base",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/page_image_service",
     "//components/page_image_service/mojom:mojo_bindings",
     "//components/sessions",
+    "//skia",
   ]
 
   if (!is_android) {
@@ -181,12 +186,15 @@ source_set("unit_tests") {
     ":context_hub_page_handler",
     "//base/test:test_support",
     "//chrome/browser/context_hub",
+    "//chrome/browser/favicon",
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/personal_context",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//components/favicon/core/test:test_support",
+    "//components/favicon_base",
     "//components/history/core/browser",
     "//components/history/core/test",
     "//components/personal_context/core:test_support",
@@ -194,8 +202,12 @@ source_set("unit_tests") {
     "//components/saved_tab_groups/test_support",
     "//content/test:test_support",
     "//mojo/public/cpp/test_support:test_utils",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/gfx",
+    "//ui/gfx:color_utils",
+    "//ui/gfx:test_support",
   ]
 
   if (!is_android) {

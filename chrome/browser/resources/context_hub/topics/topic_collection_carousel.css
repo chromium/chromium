@@ -84,10 +84,17 @@
   outline-offset: -2px;
 }
 
-/* The page's image, or its favicon on a tinted background when it has none. */
+/* The page's image, or its favicon on a gradient tinted with the favicon's
+ * dominant color (--card-favicon-color) when it has none. Pages whose
+ * favicon color is unknown are tinted with the theme's primary color. */
 .card-image {
+  --card-image-tint: var(--card-favicon-color, var(--cr-fallback-color-primary));
   align-items: center;
-  background-color: var(--cr-fallback-color-secondary-container);
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--card-image-tint) 40%,
+          var(--cr-fallback-color-surface)),
+      color-mix(in srgb, var(--card-image-tint) 12%,
+          var(--cr-fallback-color-surface)));
   display: flex;
   height: 98px;
   justify-content: center;
@@ -100,12 +107,16 @@
   width: 100%;
 }
 
+/* The favicon sits on a raised chip, so it reads on any tint. */
 .card-favicon {
+  background-color: var(--cr-fallback-color-surface);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 32px;
-  height: 32px;
-  width: 32px;
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-1);
+  height: 52px;
+  width: 52px;
 }
 
 .card-text {

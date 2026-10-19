@@ -48,7 +48,8 @@ export function getHtml(this: TopicCollectionCarouselElement) {
   ${(this.collection?.items || []).map((item, index) => html`
     <li ?rejected="${this.feedbackEnabled_ && this.isItemRejected_(item)}">
       <button class="card" data-index="${index}" @click="${this.onCardClick_}">
-        <span class="card-image" aria-hidden="true">
+        <span class="card-image" aria-hidden="true"
+            style="${this.getFaviconColorStyle_(item.url)}">
           ${this.getImageUrl_(item.url) ? html`
             <img class="card-page-image" is="cr-auto-img"
                 auto-src="${this.getImageUrl_(item.url)}"

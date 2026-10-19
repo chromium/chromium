@@ -24,6 +24,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
@@ -31,6 +33,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -44,11 +47,15 @@
 #include "chrome/browser/context_hub/memory_bank/memory_bank_chat_types.h"
 #include "chrome/browser/context_hub/memory_bank/memory_bank_entry.h"
 #include "chrome/browser/context_hub/topics/topics_feedback_exporter.h"
+#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "chrome/common/channel_info.h"
+#include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/fallback_icon_style.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/journeys/journey.h"
@@ -59,6 +66,7 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "url/gurl.h"
@@ -1330,6 +1338,65 @@ void ContextHubPageHandler::GetTopicPageImageUrl(
                                         : std::nullopt);
           },
           std::move(callback)));
+}
+
+namespace {
+
+// Size, in pixels, of the favicon whose dominant color is computed. Matches
+// the size of the favicon drawn in a topic collection card.
+constexpr int kTopicPageFaviconColorSourceSize = 32;
+
+// Returns the dominant color of the PNG-encoded favicon `png_bytes`, with its
+// lightness clamped like the background of fallback icons. Decodes the image,
+// so it runs off the UI thread. Returns an optional to match the reply of
+// `GetTopicPageFaviconColor()`.
+std::optional<SkColor> ComputeFaviconDominantColor(
+    scoped_refptr<base::RefCountedMemory> png_bytes) {
+  favicon_base::FallbackIconStyle style;
+  favicon_base::SetDominantColorAsBackground(*png_bytes, &style);
+  return style.background_color;
+}
+
+}  // namespace
+
+void ContextHubPageHandler::GetTopicPageFaviconColor(
+    const GURL& page_url,
+    GetTopicPageFaviconColorCallback callback) {
+  favicon::FaviconService* favicon_service =
+      FaviconServiceFactory::GetForProfile(profile_,
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  if (!favicon_service || !page_url.is_valid() ||
+      !page_url.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Looks the favicon up from local storage only, falling back to the host's
+  // favicon, the same way chrome://favicon2 does for the card's favicon.
+  favicon_service->GetRawFaviconForPageURL(
+      page_url, {favicon_base::IconType::kFavicon},
+      kTopicPageFaviconColorSourceSize, /*fallback_to_host=*/true,
+      base::BindOnce(&ContextHubPageHandler::OnTopicPageFaviconLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      &favicon_task_tracker_);
+}
+
+void ContextHubPageHandler::OnTopicPageFaviconLoaded(
+    GetTopicPageFaviconColorCallback callback,
+    const favicon_base::FaviconRawBitmapResult& result) {
+  if (!result.is_valid()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // The reply only runs `callback`, so there is nothing to cancel if the
+  // handler goes away first.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_VISIBLE,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&ComputeFaviconDominantColor, result.bitmap_data),
+      std::move(callback));
 }
 
 void ContextHubPageHandler::OpenTopic(

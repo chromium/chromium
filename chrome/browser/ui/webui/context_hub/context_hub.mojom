@@ -6,6 +6,7 @@ module browser.context_hub.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
 
 feature kAutoTabGroups {
@@ -702,6 +703,14 @@ interface PageHandler {
   // URL.
   [RuntimeFeature=kTopics]
   GetTopicPageImageUrl(url.mojom.Url page_url) => (url.mojom.Url? image_url);
+
+  // Returns the dominant color of the locally stored favicon for `page_url`,
+  // a page in one of a Topic's collections, or null if there is no favicon or
+  // `page_url` is not a web URL. The color's lightness is clamped to a
+  // moderate range, so it works as a tint behind the favicon.
+  [RuntimeFeature=kTopics]
+  GetTopicPageFaviconColor(url.mojom.Url page_url)
+      => (skia.mojom.SkColor? color);
 
   // Opens the specified topic (by topic ID or full URL) in a new tab.
   [RuntimeFeature=kTopics]
