@@ -1051,6 +1051,27 @@ const FeatureEntry::Choice kOmniboxLoomChoices[] = {
      "OmniboxEverywhere,IPH_OmniboxEverywhereLensPromo"},
 };
 
+const FeatureEntry::Choice kOmniboxTruncateSearchUrlChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
+     "TruncateSearchUrlOq,TruncateSearchUrlQ"},
+    {"Enabled Oq31kQ31k (31k oq, 31k q)", switches::kEnableFeatures,
+     "TruncateSearchUrlOq:truncate_search_url_oq_length/31744,"
+     "TruncateSearchUrlQ:truncate_search_url_q_length/31744"},
+    {"Enabled Oq1kQ61k (1k oq, 61k q)", switches::kEnableFeatures,
+     "TruncateSearchUrlOq:truncate_search_url_oq_length/1024,"
+     "TruncateSearchUrlQ:truncate_search_url_q_length/62464"},
+    {"Enabled Oq0kQ62k (0k oq, 62k q)", switches::kEnableFeatures,
+     "TruncateSearchUrlOq:truncate_search_url_oq_length/0,"
+     "TruncateSearchUrlQ:truncate_search_url_q_length/63488"},
+    {"Enabled Oq1kQNoTruncation (1k oq, q disabled)", switches::kEnableFeatures,
+     "TruncateSearchUrlOq:truncate_search_url_oq_length/1024"},
+    {"Enabled Oq0kQNoTruncation (0k oq, q disabled)", switches::kEnableFeatures,
+     "TruncateSearchUrlOq:truncate_search_url_oq_length/0"},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "TruncateSearchUrlOq,TruncateSearchUrlQ"},
+};
+
 const FeatureEntry::FeatureParam
     kWebUiOmniboxAskGAboutThisPageCobrowseAndLensEntrypoint[] = {
         {"Omnibox_AskGCoBrowse", "true"},
@@ -9860,6 +9881,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"omnibox-loom", flag_descriptions::kOmniboxLoomName,
      flag_descriptions::kOmniboxLoomDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kOmniboxLoomChoices)},
+
+    {"omnibox-truncate-search-url",
+     flag_descriptions::kOmniboxTruncateSearchUrlName,
+     flag_descriptions::kOmniboxTruncateSearchUrlDescription, kOsAll,
+     MULTI_VALUE_TYPE(kOmniboxTruncateSearchUrlChoices)},
 
     {"omnibox-everywhere-screenshot-new-window",
      flag_descriptions::kOmniboxEverywhereScreenshotNewWindowName,

@@ -7878,6 +7878,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "omnibox-truncate-search-url",
+    "owners": [ "jdonnelly@chromium.org", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "omnibox-ui-max-autocomplete-matches",
     "owners": [ "jdonnelly@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 120

@@ -89,6 +89,12 @@ inline constexpr char kOmniboxLoomName[] = "Enable Loom";
 inline constexpr char kOmniboxLoomDescription[] =
     "Enables experimental Loom features.";
 
+inline constexpr char kOmniboxTruncateSearchUrlName[] =
+    "Omnibox Truncate Search URL";
+inline constexpr char kOmniboxTruncateSearchUrlDescription[] =
+    "Truncates search URLs for the original query ('oq') and query ('q') "
+    "parameters across various length limits.";
+
 inline constexpr char kZeroSuggestPrefetchingForComposeboxName[] =
     "Zero suggest prefetching for composebox";
 inline constexpr char kZeroSuggestPrefetchingForComposeboxDescription[] =
