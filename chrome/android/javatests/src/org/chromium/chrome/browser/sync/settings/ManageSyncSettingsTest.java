@@ -1741,7 +1741,7 @@ public class ManageSyncSettingsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/574600173
+    @DisabledTest(message = "crbug.com/574207996")
     public void testSearchHistoryAndTabs_signedOut() {
         mSettingsSearchTestRule.startSettingsActivity();
 
