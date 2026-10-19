@@ -14,22 +14,25 @@ include_rules = [
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/extensions/extension_special_storage_policy.h",
-  "+chrome/browser/ui/web_applications",
-  "+chrome/browser/web_applications/external_install_options.h",
   "+chrome/browser/web_applications/externally_managed_app_manager.h",
-  "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_icon_generator.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
-  "+chrome/browser/web_applications/web_app_management_type.h",
-  "+chrome/browser/web_applications/web_app_provider.h",
-  "+chrome/browser/web_applications/web_app_registrar.h",
-  "+chrome/browser/web_applications/web_app_registry_update.h",
-  "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/common/chrome_paths.h",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "kiosk_web_app_service_launcher_unittest\\.cc": [
+    "+chrome/browser/ui/web_applications",
+    "+chrome/browser/web_applications/external_install_options.h",
+    "+chrome/browser/web_applications/web_app_constants.h",
+    "+chrome/browser/web_applications/web_app_management_type.h",
+    "+chrome/browser/web_applications/web_app_provider.h",
+    "+chrome/browser/web_applications/web_app_registrar.h",
+    "+chrome/browser/web_applications/web_app_registry_update.h",
+    "+chrome/browser/web_applications/web_app_ui_manager.h",
+  ],
   "kiosk_web_app_data_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
   ],

@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
-  "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 
   # Dependencies outside of //chrome:
@@ -24,6 +23,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "(arc_system_stat_collector_unittest|arc_tracing_model_unittest)\\.cc": [
+    "+chrome/common/chrome_paths.h",
+  ],
   # ArcAppPerformanceTracing reads the SyncService through
   # ash::SyncServiceProvider; the tests still install and mutate the
   # TestSyncService through the //chrome-side Profile-keyed factory.

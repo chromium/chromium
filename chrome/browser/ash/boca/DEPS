@@ -6,11 +6,7 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/app/chrome_command_ids.h",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
-  "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/extensions/test_extension_environment.h",
-  "+chrome/browser/extensions/test_extension_system.h",
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/login_detection/login_detection_util.h",
   "+chrome/browser/platform_util.h",
@@ -34,6 +30,15 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "(on_task_locked_session_window_tracker_browsertest|on_task_system_web_app_manager_impl_browsertest)\\.cc": [
+    "+chrome/app/chrome_command_ids.h",
+  ],
+  "on_task_extensions_manager_impl_unittest\\.cc": [
+    "+chrome/browser/extensions/extension_service.h",
+    "+chrome/browser/extensions/test_extension_environment.h",
+    "+chrome/browser/extensions/test_extension_system.h",
+  ],
   # The keyed-service factories are the //chrome seam for GCM and signin:
   # they DependsOn() the Profile-keyed factories and pass the resulting
   # gcm::GCMDriver / instance_id::InstanceIDDriver / signin::IdentityManager

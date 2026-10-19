@@ -15,13 +15,16 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/browser_window/public",
   "+chrome/grit",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "local_files_migration_dialog_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public",
+  ],
   "local_files_migration_ui\\.cc": [
     "+chrome/browser/ui/webui/theme_source.h",
   ],

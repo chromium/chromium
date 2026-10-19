@@ -11,8 +11,15 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # crbug.com/332804822. Whenever possible, avoid adding new //chrome
   # dependencies to this list.
-  "+chrome/browser/content_settings/host_content_settings_map_factory.h",
   "+chrome/browser/extensions/component_extensions_allowlist/allowlist.h",
   "+chrome/browser/profiles",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "component_extension_content_settings_provider_unittest\\.cc": [
+    "+chrome/browser/content_settings/host_content_settings_map_factory.h",
+    "+chrome/common/extensions/extension_constants.h",
+  ],
+}

@@ -2,7 +2,15 @@ include_rules = [
   "-chrome",
 
   "+chrome/browser/ash/login/test",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "(screenshot_integration_test|web_handwriting_integration_test)\\.cc": [
+    "+chrome/browser/ui/browser_window.h",
+  ],
+  "security_files_integration_test\\.cc": [
+    "+chrome/common/chrome_paths.h",
+  ],
+}

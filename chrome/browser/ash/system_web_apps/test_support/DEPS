@@ -20,7 +20,6 @@ include_rules = [
   "+chrome/browser/web_applications/mojom",
   "+chrome/browser/web_applications/os_integration",
   "+chrome/browser/web_applications/test",
-  "+chrome/browser/web_applications/web_app_helpers.h",
   "+chrome/browser/web_applications/web_app_icon_generator.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_provider.h",
@@ -30,3 +29,10 @@ include_rules = [
   "+chrome/test/base",
   "+chrome/test/interaction",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "system_web_app_integration_test\\.cc": [
+    "+chrome/browser/web_applications/web_app_helpers.h",
+  ],
+}

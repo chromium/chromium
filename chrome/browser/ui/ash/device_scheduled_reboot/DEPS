@@ -12,12 +12,17 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/users",
   "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/ui/test",
-  "+chrome/browser/ui/views/chrome_constrained_window_views_client.h",
   "+chrome/browser/ui/views/relaunch_notification",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "reboot_notification_controller_browsertest\\.cc": [
+    "+chrome/browser/ui/test",
+  ],
+  "scheduled_reboot_dialog_unittest\\.cc": [
+    "+chrome/browser/ui/views/chrome_constrained_window_views_client.h",
+  ],
   "reboot_notification_controller(_unittest)?\\.cc": [
     "+ui/message_center/message_center.h",
   ],

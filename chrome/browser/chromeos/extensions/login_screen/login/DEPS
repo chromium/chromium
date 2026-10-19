@@ -21,8 +21,6 @@ include_rules = [
   "+chrome/browser/chromeos/extensions/login_screen",
   "+chrome/browser/extensions/extension_api_unittest.h",
   "+chrome/browser/lifetime/application_lifetime.h",
-  "+chrome/browser/lifetime/termination_notification.h",
-  "+chrome/browser/policy/extension_force_install_mixin.h",
   "+chrome/browser/profiles/profile_manager.h",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/session",
@@ -31,10 +29,15 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "(extension_cleanup_handler_browsertest|login_apitest)\\.cc": [
+    "+chrome/browser/policy/extension_force_install_mixin.h",
+  ],
   "login_api_ash_unittest\\.cc": [
     "+chrome/browser/global_features.h",
   ],
   "login_apitest\\.cc": [
+    "+chrome/browser/lifetime/termination_notification.h",
     "+chrome/browser/profiles/profile.h",
   ],
 }

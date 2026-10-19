@@ -18,10 +18,13 @@ include_rules = [
   "+chrome/browser/local_discovery",
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles",
-  "+chrome/services/sharing/nearby/test_support",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "nearby_process_manager_impl_unittest\\.cc": [
+    "+chrome/services/sharing/nearby/test_support",
+  ],
   # The keyed service factory is the //chrome seam: it resolves the
   # signin::IdentityManager that the ash class takes by constructor.
   "nearby_dependencies_provider_factory\\.cc": [

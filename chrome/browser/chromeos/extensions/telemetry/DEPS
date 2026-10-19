@@ -11,7 +11,13 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/extensions/test_extension_environment.h",
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "chromeos_permission_messages_unittest\\.cc": [
+    "+chrome/browser/extensions/test_extension_environment.h",
+  ],
+}

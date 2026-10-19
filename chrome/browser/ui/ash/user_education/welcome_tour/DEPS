@@ -9,9 +9,15 @@ include_rules = [
   "+chrome/browser/ash/app_list",
   "+chrome/browser/ash/app_restore",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/profiles/profile_manager.h",
-  "+chrome/browser/ui/browser_element_identifiers.h",
-  "+chrome/browser/ui/views/frame",
-  "+chrome/browser/ui/web_applications",
-  "+chrome/browser/web_applications",
 ]
+
+specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "welcome_tour_interactive_uitest\\.cc": [
+    "+chrome/browser/profiles/profile_manager.h",
+    "+chrome/browser/ui/browser_element_identifiers.h",
+    "+chrome/browser/ui/views/frame",
+    "+chrome/browser/ui/web_applications",
+    "+chrome/browser/web_applications",
+  ],
+}

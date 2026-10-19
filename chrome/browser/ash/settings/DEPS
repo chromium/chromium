@@ -25,11 +25,14 @@ include_rules = [
   "+chrome/browser/ash/tpm",
   "+chrome/browser/profiles",
   "+chrome/browser/site_isolation",
-  "+chrome/common/chrome_paths.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "device_settings_provider_unittest\\.cc": [
+    "+chrome/common/chrome_paths.h",
+  ],
   # Only tests need these //chrome dependencies.
   "(cros_settings_unittest\\.cc|device_settings_service_unittest\\.cc|device_settings_test_helper\\.cc|stats_reporting_controller_unittest\\.cc)": [
     "+chrome/browser/net",

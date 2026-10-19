@@ -22,11 +22,14 @@ include_rules = [
   "+chrome/browser/ui/webui/ash/login",
   "+chrome/browser/ui/webui/signin",
   "+chrome/common/chrome_paths.h",
-  "+chrome/common/chrome_switches.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "oobe_base_test\\.cc": [
+    "+chrome/common/chrome_switches.h",
+  ],
   "chrome_user_session_test_environment_delegate_unittest\\.cc": [
     "+chrome/browser/profiles/profile.h",
   ]

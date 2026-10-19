@@ -16,9 +16,6 @@ include_rules = [
   "+chrome/browser/apps/almanac_api_client",
   "+chrome/browser/apps/app_service",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/browser_window.h",
-  "+chrome/browser/ui/browser_window/public",
-  "+chrome/browser/ui/web_applications",
   "+chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h",
   "+chrome/browser/web_applications",
   "+chrome/grit",
@@ -26,6 +23,12 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "app_install_dialog_browsertest\\.cc": [
+    "+chrome/browser/ui/browser_window.h",
+    "+chrome/browser/ui/browser_window/public",
+    "+chrome/browser/ui/web_applications",
+  ],
   "app_install_ui\\.cc": [
     "+chrome/browser/ui/webui/theme_source.h",
   ],

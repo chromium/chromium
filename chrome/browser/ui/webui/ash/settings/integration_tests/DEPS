@@ -11,11 +11,14 @@ include_rules = [
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/profiles/profile.h",
   "+chrome/test",
 ]
 
 specific_include_rules = {
+  # Only tests need these //chrome dependencies.
+  "(os_settings_auto_screen_lock_browsertest|os_settings_password_setup_browsertest|os_settings_pin_setup_browsertest)\\.cc": [
+    "+chrome/browser/profiles/profile.h",
+  ],
   '.*interactive_uitest\\.cc': [
     '+ash/ash_element_identifiers.h',
   ],
