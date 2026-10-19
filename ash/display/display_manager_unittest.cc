@@ -231,19 +231,17 @@ class DisplayManagerTest : public AshTestBase,
     return changed_metrics_.at(display_id);
   }
 
-  string GetCountSummary() const {
-    return StringPrintf("c%" PRIuS " a%" PRIuS " r%" PRIuS " w%" PRIuS
-                        " d%" PRIuS,
-                        changed_.size(), added_.size(), removed_count_,
-                        will_process_count_, did_process_count_);
-  }
-
-  void reset() {
+  string GetCountSummaryAndReset() {
+    string summary =
+        StringPrintf("c%" PRIuS " a%" PRIuS " r%" PRIuS " w%" PRIuS " d%" PRIuS,
+                     changed_.size(), added_.size(), removed_count_,
+                     will_process_count_, did_process_count_);
     changed_.clear();
     added_.clear();
     removed_count_ = will_process_count_ = did_process_count_ = 0U;
     changed_metrics_.clear();
     root_window_destroyed_ = false;
+    return summary;
   }
 
   bool root_window_destroyed() const { return root_window_destroyed_; }
@@ -404,7 +402,6 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   EXPECT_EQ(gfx::Rect(0, 0, 500, 400),
             display_manager()->GetDisplayAt(0).bounds());
 
-  EXPECT_EQ("c1 a1 r0 w1 d1", GetCountSummary());
   // Metrics change immediately when new displays set shelf work area insets.
   // After that, DisplayManager::OnNativeDisplaysChanged trigger changes of the
   // primary display's metrics. So the observed order of changes is [1, 0].
@@ -415,42 +412,41 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   EXPECT_EQ(gfx::Rect(500, 0, 400, 300), added()[0].bounds());
   EXPECT_EQ(gfx::Rect(0, 501, 400, 300),
             GetDisplayInfo(added()[0]).bounds_in_native());
+  EXPECT_EQ("c1 a1 r0 w1 d1", GetCountSummaryAndReset());
 
-  reset();
   // Delete secondary.
   UpdateDisplay("100+0-500x400");
-  EXPECT_EQ("c0 a0 r1 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c0 a0 r1 w1 d1", GetCountSummaryAndReset());
+
   // Change primary.
   UpdateDisplay("1+1-1000x600");
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(), changed()[0].id());
   EXPECT_EQ(gfx::Rect(0, 0, 1000, 600), changed()[0].bounds());
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
+
   // Add secondary.
   UpdateDisplay("1+1-1000x600,1002+0-600x400");
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c0 a1 r0 w1 d1", GetCountSummary());
   EXPECT_EQ(display_manager()->GetDisplayAt(1).id(), added()[0].id());
   // Secondary display is on right.
   EXPECT_EQ(gfx::Rect(1000, 0, 600, 400), added()[0].bounds());
   EXPECT_EQ(gfx::Rect(1002, 0, 600, 400),
             GetDisplayInfo(added()[0]).bounds_in_native());
-  reset();
+  EXPECT_EQ("c0 a1 r0 w1 d1", GetCountSummaryAndReset());
+
   // Secondary removed, primary changed.
   UpdateDisplay("1+1-800x300");
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c1 a0 r1 w1 d1", GetCountSummary());
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(), changed()[0].id());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 300), changed()[0].bounds());
-  reset();
+  EXPECT_EQ("c1 a0 r1 w1 d1", GetCountSummaryAndReset());
+
   // # of display can go to zero when screen is off.
   const vector<display::ManagedDisplayInfo> empty;
   display_manager()->OnNativeDisplaysChanged(empty);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
   // Going to 0 displays doesn't actually change the active display list but the
   // detected bit for the previously connected displays is propagated as false.
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
   EXPECT_FALSE(root_window_destroyed());
   // Display configuration stays the same
   EXPECT_EQ(gfx::Rect(0, 0, 800, 300),
@@ -458,11 +454,11 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   EXPECT_FALSE(display_manager()->GetDisplayAt(0).detected());
   EXPECT_EQ(changed_metrics(),
             display::DisplayObserver::DISPLAY_METRIC_DETECTED);
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
+
   // Connect to display again.
   UpdateDisplay("1+1-800x300");
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
   EXPECT_FALSE(root_window_destroyed());
   EXPECT_EQ(gfx::Rect(800, 300), changed()[0].bounds());
   EXPECT_EQ(gfx::Rect(1, 1, 800, 300),
@@ -470,14 +466,14 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
   EXPECT_TRUE(display_manager()->GetDisplayAt(0).detected());
   EXPECT_EQ(changed_metrics(),
             display::DisplayObserver::DISPLAY_METRIC_DETECTED);
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   // Resumed with different resolution.
   display_manager()->OnNativeDisplaysChanged(empty);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
   UpdateDisplay("100+100-500x400");
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
   EXPECT_FALSE(root_window_destroyed());
   EXPECT_EQ(gfx::Rect(0, 0, 500, 400), changed()[0].bounds());
   EXPECT_EQ(gfx::Rect(100, 100, 500, 400),
@@ -487,13 +483,13 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
             (display::DisplayObserver::DISPLAY_METRIC_DETECTED |
              display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
              display::DisplayObserver::DISPLAY_METRIC_WORK_AREA));
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
-  reset();
   // Go back to zero and wake up with multiple displays.
   display_manager()->OnNativeDisplaysChanged(empty);
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
   EXPECT_FALSE(root_window_destroyed());
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   // Add secondary.
   UpdateDisplay("0+0-1000x600,1000+1000-600x400");
@@ -505,12 +501,11 @@ TEST_F(DisplayManagerTest, UpdateDisplayTest) {
             display_manager()->GetDisplayAt(1).bounds());
   EXPECT_EQ(gfx::Rect(1000, 1000, 600, 400),
             GetDisplayInfoAt(1).bounds_in_native());
-  reset();
+  EXPECT_EQ("c1 a1 r0 w1 d1", GetCountSummaryAndReset());
 
   // Changing primary will update secondary as well.
   UpdateDisplay("0+0-800x600,1000+1000-600x400");
-  EXPECT_EQ("c2 a0 r0 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c2 a0 r0 w1 d1", GetCountSummaryAndReset());
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600),
             display_manager()->GetDisplayAt(0).bounds());
   EXPECT_EQ(gfx::Rect(800, 0, 600, 400),
@@ -634,17 +629,15 @@ TEST_F(DisplayManagerTest, EmulatorTest) {
   display_manager()->AddRemoveDisplay();
   // Add secondary.
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c0 a1 r0 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c0 a1 r0 w1 d1", GetCountSummaryAndReset());
 
   display_manager()->AddRemoveDisplay();
   EXPECT_EQ(1U, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c0 a0 r1 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c0 a0 r1 w1 d1", GetCountSummaryAndReset());
 
   display_manager()->AddRemoveDisplay();
   EXPECT_EQ(2U, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c0 a1 r0 w1 d1", GetCountSummary());
+  EXPECT_EQ("c0 a1 r0 w1 d1", GetCountSummaryAndReset());
 }
 
 // Tests support for 3 displays.
@@ -663,7 +656,6 @@ TEST_F(DisplayManagerTest, UpdateThreeDisplaysWithDefaultLayout) {
   EXPECT_EQ(gfx::Rect(960, 0, 400, 300),
             display_manager()->GetDisplayAt(2).bounds());
 
-  EXPECT_EQ("c1 a2 r0 w1 d1", GetCountSummary());
   // Metrics change immediately when new displays set shelf work area insets.
   // After that, DisplayManager::OnNativeDisplaysChanged trigger changes of the
   // primary display's metrics. So the observed order of changes is [1, 2, 0].
@@ -678,6 +670,7 @@ TEST_F(DisplayManagerTest, UpdateThreeDisplaysWithDefaultLayout) {
   EXPECT_EQ(gfx::Rect(960, 0, 400, 300), added()[1].bounds());
   EXPECT_EQ(gfx::Rect(2000, 0, 400, 300),
             GetDisplayInfo(added()[1]).bounds_in_native());
+  EXPECT_EQ("c1 a2 r0 w1 d1", GetCountSummaryAndReset());
 
   // Verify calling ReconfigureDisplays doesn't change anything.
   display_manager()->ReconfigureDisplays();
@@ -1338,7 +1331,7 @@ TEST_F(DisplayManagerTest, NoOverlappedDisplaysWithDetachedDisplays) {
 
 TEST_F(DisplayManagerTest, OverscanInsetsTest) {
   UpdateDisplay("0+0-500x400,0+501-400x300");
-  reset();
+  EXPECT_EQ("c1 a1 r0 w1 d1", GetCountSummaryAndReset());
   ASSERT_EQ(2u, display_manager()->GetNumDisplays());
   const display::ManagedDisplayInfo display_info1 = GetDisplayInfoAt(0);
   const display::ManagedDisplayInfo display_info2 = GetDisplayInfoAt(1);
@@ -1437,7 +1430,7 @@ TEST_F(DisplayManagerTest, OverscanInsetsTest) {
                                        gfx::Insets::TLBR(0, 0, 20, 20));
   EXPECT_EQ(gfx::Rect(0, 0, 480, 380),
             display::Screen::Get()->GetPrimaryDisplay().bounds());
-  reset();
+  EXPECT_EQ("c12 a2 r3 w15 d15", GetCountSummaryAndReset());
   display_manager()->SetOverscanInsets(primary_id, gfx::Insets(10));
   EXPECT_TRUE(changed_metrics() &
               display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
@@ -1445,7 +1438,7 @@ TEST_F(DisplayManagerTest, OverscanInsetsTest) {
               display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
   EXPECT_EQ(gfx::Rect(0, 0, 480, 380),
             display::Screen::Get()->GetPrimaryDisplay().bounds());
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
   display_manager()->SetOverscanInsets(primary_id, gfx::Insets());
   EXPECT_TRUE(changed_metrics() &
               display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
@@ -1461,17 +1454,17 @@ TEST_F(DisplayManagerTest, ZeroOverscanInsets) {
   ASSERT_EQ(2u, display_manager()->GetNumDisplays());
   int64_t display2_id = display_manager()->GetDisplayAt(1).id();
 
-  reset();
+  EXPECT_EQ("c1 a1 r0 w1 d1", GetCountSummaryAndReset());
   display_manager()->SetOverscanInsets(display2_id, gfx::Insets());
   EXPECT_EQ(0u, changed().size());
 
-  reset();
+  EXPECT_EQ("c0 a0 r0 w1 d1", GetCountSummaryAndReset());
   display_manager()->SetOverscanInsets(display2_id,
                                        gfx::Insets::TLBR(1, 0, 0, 0));
   ASSERT_EQ(1u, changed().size());
   EXPECT_EQ(display2_id, changed()[0].id());
 
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
   display_manager()->SetOverscanInsets(display2_id, gfx::Insets());
   ASSERT_EQ(1u, changed().size());
   EXPECT_EQ(display2_id, changed()[0].id());
@@ -1479,7 +1472,6 @@ TEST_F(DisplayManagerTest, ZeroOverscanInsets) {
 
 TEST_F(DisplayManagerTest, TouchCalibrationTest) {
   UpdateDisplay("0+0-500x400,0+501-1024x600");
-  reset();
   display::TouchDeviceManager* touch_device_manager =
       display_manager()->touch_device_manager();
   display::test::TouchDeviceManagerTestApi tdm_test_api(touch_device_manager);
@@ -1573,7 +1565,6 @@ TEST_F(DisplayManagerTest, TouchCalibrationTest) {
 TEST_F(DisplayManagerTest, UpdateDisplayZoomTest) {
   // Initialize a display pair.
   UpdateDisplay("1920x1080#1280x720|640x480%60, 600x400*2#600x400");
-  reset();
 
   // The second display has a device scale factor of 2 set.
   constexpr float display_2_dsf = 2.0f;
@@ -1676,7 +1667,6 @@ TEST_F(DisplayManagerTest, UpdateDisplayZoomTest) {
 TEST_F(DisplayManagerTest, ZoomDisplay) {
   // Initialize a display pair.
   UpdateDisplay("1920x1080#1920x1080|1280x720%60, 2560x1440*2#2560x1440");
-  reset();
 
   ASSERT_EQ(2u, display_manager()->GetNumDisplays());
 
@@ -1782,7 +1772,6 @@ TEST_F(DisplayManagerTest, ZoomDisplay) {
 TEST_F(DisplayManagerTest, ZoomFactorMapTest) {
   // Initialize a display pair.
   UpdateDisplay("2560x1440#1920x1080|1280x720");
-  reset();
 
   ASSERT_EQ(1u, display_manager()->GetNumDisplays());
 
@@ -1855,11 +1844,11 @@ TEST_F(DisplayManagerTest, TestDeviceScaleOnlyChange) {
   EXPECT_EQ(1, host->compositor()->device_scale_factor());
   EXPECT_EQ(gfx::Size(1000, 600),
             Shell::GetPrimaryRootWindow()->bounds().size());
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   UpdateDisplay("1000x600*2");
   EXPECT_EQ(2, host->compositor()->device_scale_factor());
-  EXPECT_EQ("c2 a0 r0 w2 d2", GetCountSummary());
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
   EXPECT_EQ(gfx::Size(500, 300),
             Shell::GetPrimaryRootWindow()->bounds().size());
 }
@@ -2309,29 +2298,28 @@ TEST_F(DisplayManagerTest, DisplayRemovedOnlyOnceWhenEnteringDockedMode) {
   // Switching to docked mode in this configuration should result in only a
   // single display removal, and no new display additions.
   // https://crbug.com/921275.
-  reset();
+  EXPECT_EQ("c1 a2 r1 w1 d1", GetCountSummaryAndReset());
   display_info_list.clear();
   display_info_list.emplace_back(external_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
   // There should only be 1 display change, 0 adds, and 1 removal.
-  EXPECT_EQ("c1 a0 r1 w1 d1", GetCountSummary());
   const int expected_changed_metrics =
       display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
       display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
       display::DisplayObserver::DISPLAY_METRIC_PRIMARY;
   EXPECT_EQ(expected_changed_metrics, changed_metrics());
+  EXPECT_EQ("c1 a0 r1 w1 d1", GetCountSummaryAndReset());
 
   // Exit docked mode by re-adding the internal display again.
-  reset();
   display_info_list.clear();
   display_info_list.emplace_back(internal_info);
   display_info_list.emplace_back(external_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
   // Expect that we get a "primary" change notification.
-  EXPECT_EQ("c4 a1 r0 w1 d1", GetCountSummary());
   EXPECT_EQ(expected_changed_metrics, changed_metrics());
+  EXPECT_EQ("c4 a1 r0 w1 d1", GetCountSummaryAndReset());
 }
 
 TEST_F(DisplayManagerTest, Rotate) {
@@ -2342,10 +2330,9 @@ TEST_F(DisplayManagerTest, Rotate) {
   EXPECT_EQ(gfx::Rect(1, 201, 300, 400),
             GetDisplayInfoAt(1).bounds_in_native());
   EXPECT_EQ(gfx::Size(400, 300), GetDisplayInfoAt(1).size_in_pixel());
-  reset();
+  EXPECT_EQ("c1 a1 r0 w1 d1", GetCountSummaryAndReset());
   UpdateDisplay("100x200/b,300x400");
-  EXPECT_EQ("c2 a0 r0 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c2 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   EXPECT_EQ(gfx::Rect(1, 1, 100, 200), GetDisplayInfoAt(0).bounds_in_native());
   EXPECT_EQ(gfx::Size(100, 200), GetDisplayInfoAt(0).size_in_pixel());
@@ -2356,31 +2343,26 @@ TEST_F(DisplayManagerTest, Rotate) {
 
   // Just Rotating display will change the bounds on both display.
   UpdateDisplay("100x200/l,300x400");
-  EXPECT_EQ("c2 a0 r0 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c2 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   // Updating to the same configuration should report no changes. A will/did
   // change is still sent.
   UpdateDisplay("100x200/l,300x400");
-  EXPECT_EQ("c0 a0 r0 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c0 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   // Rotating 180 degrees should report one change.
   UpdateDisplay("100x200/r,300x400");
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   UpdateDisplay("300x200");
-  EXPECT_EQ("c1 a0 r1 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c1 a0 r1 w1 d1", GetCountSummaryAndReset());
 
   // Rotating 180 degrees should report one change.
   UpdateDisplay("300x200/u");
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   UpdateDisplay("300x200/l");
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   // Having the internal display deactivated should restore user rotation. Newly
   // set rotations should be applied.
@@ -2770,7 +2752,7 @@ TEST_F(DisplayManagerTest, NotifyPrimaryChangeSwapped) {
 TEST_F(DisplayManagerTest, NotifyPrimaryChangeDock) {
   UpdateDisplay("500x400,500x400");
   SwapPrimaryDisplay();
-  reset();
+  EXPECT_EQ("c3 a1 r0 w4 d4", GetCountSummaryAndReset());
   UpdateDisplay("500x400");
   EXPECT_FALSE(changed_metrics() &
                display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
@@ -2797,7 +2779,6 @@ TEST_F(DisplayManagerTest, NotifyPrimaryChangeUndock) {
       CreateDisplayInfo(1, gfx::Rect(0, 0, 1280, 800));
   std::vector<display::ManagedDisplayInfo> info_list;
   info_list.push_back(another_display_info);
-  reset();
   display_manager()->OnNativeDisplaysChanged(info_list);
   EXPECT_TRUE(changed_metrics() &
               display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
@@ -2805,6 +2786,7 @@ TEST_F(DisplayManagerTest, NotifyPrimaryChangeUndock) {
               display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
   EXPECT_TRUE(changed_metrics() &
               display::DisplayObserver::DISPLAY_METRIC_PRIMARY);
+  EXPECT_EQ("c1 a1 r1 w1 d1", GetCountSummaryAndReset());
 }
 
 TEST_F(DisplayManagerTest, UpdateDisplayWithHostOrigin) {
@@ -4077,13 +4059,14 @@ TEST_F(DisplayManagerTest, UpdateInternalDisplayNativeBounds) {
   external_snapshot->set_current_mode(external_snapshot->native_mode());
   outputs.push_back(external_snapshot.get());
 
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
   observer.GetStateForDisplayIds(outputs);
   observer.OnDisplayConfigurationChanged(outputs);
 
   EXPECT_EQ(2u, display_manager()->GetNumDisplays());
   EXPECT_TRUE(changed_metrics() &
               display::DisplayObserver::DISPLAY_METRIC_BOUNDS);
+  EXPECT_EQ("c1 a1 r0 w1 d1", GetCountSummaryAndReset());
 }
 
 TEST_F(DisplayManagerTest, InternalDisplayWithMultipleModesAndOneNative) {
@@ -5303,13 +5286,13 @@ TEST_F(DisplayManagerTest, DifferentDisplayConnectedToSameOutput) {
   EXPECT_EQ(3u, screen->GetAllDisplays().size());
   EXPECT_EQ(kExternalId_1, screen->GetAllDisplays()[1].id());
 
-  reset();
+  EXPECT_EQ("c0 a2 r0 w1 d1", GetCountSummaryAndReset());
 
   display_manager()->OnNativeDisplaysChanged(
       vector<display::ManagedDisplayInfo>{
           internal_display_info, external_info_2, second_external_info});
   // There should be 1 display change, 1 removal, and 1 add.
-  EXPECT_EQ("c1 a1 r1 w1 d1", GetCountSummary());
+  EXPECT_EQ("c1 a1 r1 w1 d1", GetCountSummaryAndReset());
 
   EXPECT_EQ(3u, screen->GetAllDisplays().size());
   EXPECT_EQ(kExternalId_2, screen->GetAllDisplays()[1].id());
@@ -5697,30 +5680,27 @@ TEST_F(DisplayManagerTest, ReplaceTwoDisplaysWithNewDisplayWhilePowerMenuOpen) {
 
   display_manager()->OnNativeDisplaysChanged({display_info_1, display_info_2});
   ASSERT_EQ(2u, display_manager()->GetNumDisplays());
-  EXPECT_EQ("c1 a2 r1 w1 d1", GetCountSummary());
   EXPECT_EQ(kDisplayId1, changed()[0].id());
   EXPECT_EQ(display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
                 display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
                 display::DisplayObserver::DISPLAY_METRIC_PRIMARY,
             changed_metrics(kDisplayId1));
-  reset();
+  EXPECT_EQ("c1 a2 r1 w1 d1", GetCountSummaryAndReset());
 
   // Make the primary display's shelf alignment differ from the secondary
   // display so that promoting the secondary display during removal of the
   // primary display changes its work area.
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummary());
   EXPECT_EQ(kDisplayId1, changed()[0].id());
   EXPECT_EQ(display::DisplayObserver::DISPLAY_METRIC_WORK_AREA,
             changed_metrics(kDisplayId1));
-  reset();
+  EXPECT_EQ("c1 a0 r0 w1 d1", GetCountSummaryAndReset());
 
   Shell::Get()->power_button_controller()->ShowMenuOnDebugAccelerator();
   ASSERT_TRUE(Shell::Get()->power_button_controller()->IsMenuOpened());
-  EXPECT_EQ("c0 a0 r0 w0 d0", GetCountSummary());
+  EXPECT_EQ("c0 a0 r0 w0 d0", GetCountSummaryAndReset());
 
   display_manager()->OnNativeDisplaysChanged({display_info_3});
-  EXPECT_EQ("c2 a1 r2 w1 d1", GetCountSummary());
   EXPECT_EQ(1u, display_manager()->GetNumDisplays());
   EXPECT_EQ(kDisplayId3, display::Screen::Get()->GetPrimaryDisplay().id());
   EXPECT_EQ(kDisplayId3, changed()[0].id());
@@ -5729,6 +5709,7 @@ TEST_F(DisplayManagerTest, ReplaceTwoDisplaysWithNewDisplayWhilePowerMenuOpen) {
                 display::DisplayObserver::DISPLAY_METRIC_WORK_AREA |
                 display::DisplayObserver::DISPLAY_METRIC_PRIMARY,
             changed_metrics(kDisplayId3));
+  EXPECT_EQ("c2 a1 r2 w1 d1", GetCountSummaryAndReset());
 }
 
 }  // namespace ash
