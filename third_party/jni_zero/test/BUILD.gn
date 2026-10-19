@@ -32,6 +32,7 @@ test("jni_zero_unittests") {
 generate_jni("test_jni") {
   sources = [
     "java/src/org/jni_zero/SampleForAnnotationProcessor.java",
+    "java/src/org/jni_zero/SampleForKotlinTests.kt",
     "java/src/org/jni_zero/SampleForTests.java",
   ]
 }
@@ -47,6 +48,7 @@ android_library("test_java") {
   sources = [
     "java/src/org/jni_zero/NullMarked.java",
     "java/src/org/jni_zero/SampleForAnnotationProcessor.java",
+    "java/src/org/jni_zero/SampleForKotlinTests.kt",
     "java/src/org/jni_zero/SampleForTests.java",
     "java/src/org/jni_zero/SampleUnderSamePackage.java",
     "java/src/org/jni_zero/TinySample.java",
@@ -57,6 +59,7 @@ android_library("test_java") {
     ":stubs_java",
     ":test_jni_java",
     "//third_party/jni_zero:jni_zero_java",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
   ]
 }
 

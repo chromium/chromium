@@ -191,6 +191,7 @@ def _WriteMetadataJson(path, sources, use_weak=False):
 
 
 class BaseTest(unittest.TestCase):
+
   def _CheckSrcjarGoldens(self, srcjar_path, name_to_goldens):
     with zipfile.ZipFile(srcjar_path, 'r') as srcjar:
       self.assertEqual(set(srcjar.namelist()), set(name_to_goldens))
@@ -225,6 +226,7 @@ class BaseTest(unittest.TestCase):
     golden_name = self._testMethodName
     options = CliOptions(is_javap=is_javap, **kwargs)
     name_to_goldens = {}
+    kotlin_proxy_files = []
     if srcjar:
       dir_prefix, file_prefix = _MakePrefixes(options)
       # GEN_JNI ends up in placeholder srcjar instead if passed.
@@ -239,11 +241,14 @@ class BaseTest(unittest.TestCase):
         basename = os.path.basename(basename_and_folder)
         options.shared_header_files.append(f'{basename}_shared_jni.h')
         options.unshared_header_files.append(f'{basename}_jni.h')
-        if srcjar:
+        if srcjar and not i.endswith('.kt'):
           name_to_goldens.update({
               f'org/jni_zero/{basename_and_folder}Jni.java':
               f'{golden_name}-{basename}Jni.java.golden',
           })
+        if srcjar and i.endswith('.kt'):
+          # Kotlin proxies are written as loose files rather than into srcjar.
+          kotlin_proxy_files.append(f'{basename}Jni.kt')
 
         relative_input_file = os.path.join(_JAVA_SRC_DIR, i)
         if is_javap:
@@ -283,6 +288,9 @@ class BaseTest(unittest.TestCase):
 
       if srcjar:
         self._CheckSrcjarGoldens(srcjar_path, name_to_goldens)
+      for o in kotlin_proxy_files:
+        with open(os.path.join(tdir, o), 'r') as f:
+          self.AssertGoldenTextEquals(f.read(), f'{golden_name}-{o}.golden')
       if generate_placeholders:
         placeholder_srcjar_golden = f'{golden_name}-placeholder.srcjar.golden'
         self._CheckPlaceholderSrcjarGolden(placeholder_srcjar_path,
@@ -413,6 +421,7 @@ class BaseTest(unittest.TestCase):
       self.fail('Golden text mismatch.')
 
   def CompareText(self, golden_text, generated_text):
+
     def FilterText(text):
       return [
           l.strip() for l in text.split('\n')
@@ -463,6 +472,16 @@ class Tests(BaseTest):
   def testBidirectionalClass(self):
     self._TestGenerateJni(['SampleForTests.java'], srcjar=True)
     self._TestGenerateFinal(['SampleForTests.java'])
+
+  def testKotlin(self):
+    self._TestGenerateJni(['SampleForKotlinTests.kt'],
+                          srcjar=True,
+                          generate_placeholders=True)
+
+  def testKotlinPerFileNatives(self):
+    self._TestGenerateJni(['SampleForKotlinTests.kt'],
+                          srcjar=True,
+                          per_file_natives=True)
 
   def testFromClassFile(self):
     self._TestGenerateJni(['JavapClass.class'])
@@ -754,7 +773,6 @@ class MyFile {
 }
 """
     self._TestParseError('@JniType not allowed within generics', data)
-
 
   def testTypeCatalog(self):
     with tempfile.TemporaryDirectory() as tdir:

@@ -36,7 +36,7 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
     inputs.add_argument(
         '--java-sources-file',
         required=True,
-        help='JSON file containing paths to .java or .jni.pickle files '
+        help='JSON file containing paths to .java, .kt, or .jni.pickle files '
         'and their module names, taken from Java dependency tree.')
     inputs.add_argument(
         '--priority-java-sources-file',
@@ -49,7 +49,7 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
         'omitting switch_num for unique signatures.')
     inputs.add_argument(
         '--native-sources-file',
-        help='JSON file containing paths to .java or .jni.pickle files '
+        help='JSON file containing paths to .java, .kt, or .jni.pickle files '
         'and their module names, taken from Native dependency tree.')
   else:
     if is_javap:
@@ -60,7 +60,7 @@ def _add_io_args(parser, *, is_final=False, is_javap=False):
 
       help_text = 'Paths within the .jar'
     else:
-      help_text = 'Paths to .java files to parse.'
+      help_text = 'Paths to .java or .kt files to parse.'
     inputs.add_argument('--input-file',
                         action='append',
                         required=True,
@@ -170,7 +170,6 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
         help='When using --enable-jni-multiplexing, emit weak definitions for '
         '@CalledByNative methods, so that they will function even if no '
         'generate_final_jni() exists.')
-
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',
@@ -313,6 +312,7 @@ def main():
                               is_muxing=bool_arg('enable_jni_multiplexing'),
                               is_per_file=bool_arg('per_file_natives'))
     args.func(parser, args, jni_mode)
+
 
 if __name__ == '__main__':
   _maybe_relaunch_with_newer_python()

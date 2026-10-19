@@ -719,7 +719,7 @@ template("generate_jni_impl") {
 # <generate_jni's target name>_java.
 #
 # Variables
-#   sources: List of .java files to generate JNI bindings for.
+#   sources: List of .java or .kt files to generate JNI bindings for.
 #   use_weak_called_by_natives: (Optional) Emits @CalledByNative stubs with
 #     [[gnu::weak]] fallback implementations. Allows the bindings to be used
 #     with or without a generate_final_jni() target.
