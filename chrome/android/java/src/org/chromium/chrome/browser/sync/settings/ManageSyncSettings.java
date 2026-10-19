@@ -369,6 +369,14 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
         if (eventDetails.getEventTypeFor() == PrimaryAccountChangeEvent.Type.CLEARED) {
+            // This page and its settings (e.g. "Sign out") no longer exist, so settings search
+            // must stop offering them. If this page was opened from search results, closing it
+            // returns to the results, which are re-run against the rebuilt index.
+            SettingsIndexData indexData = SettingsIndexData.getInstance();
+            if (indexData != null) {
+                indexData.setNeedsIndexing();
+                indexData.setRefreshResult(true);
+            }
             finishCurrentSettings();
         }
     }

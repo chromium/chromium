@@ -563,7 +563,7 @@ public class SettingsSearchCoordinator
         }
         queryEdit.setText("");
         updateClearTextButton(queryEdit.getText());
-        if (RecentSearchQueue.getInstance().isEmpty()) {
+        if (getRecentSearchesInIndex().isEmpty()) {
             clearFragment(
                     R.drawable.settings_zero_state, /* addToBackStack= */ false, emptyRunnable());
         } else {
@@ -1241,6 +1241,7 @@ public class SettingsSearchCoordinator
         // Search again to reflect the changes to the index that might have been made
         // while browsing results.
         if (mIndexData != null && mIndexData.shouldRefreshResult()) {
+            if (mIndexData.needsIndexing()) initIndex();
             onQueryUpdated(queryEdit.getText().toString());
             mIndexData.setRefreshResult(false);
         }
@@ -1263,7 +1264,7 @@ public class SettingsSearchCoordinator
     private void clearFragmentWithCallback(
             int imageId, boolean addToBackStack, Runnable openHelpCenter, Runnable callback) {
         Fragment fragment;
-        if (RecentSearchQueue.getInstance().isEmpty()) {
+        if (getRecentSearchesInIndex().isEmpty()) {
             fragment = clearFragment(imageId, addToBackStack, openHelpCenter);
         } else {
             fragment = displayRecentSearches(/* addToBackStack= */ true);
@@ -1318,9 +1319,23 @@ public class SettingsSearchCoordinator
                 .show(mActivity, mActivity.getString(R.string.help_context_settings), null);
     }
 
+    /**
+     * Returns the recent searches whose settings still exist in the index. A setting can go away
+     * after it was searched for, e.g. "Sign out" after signing out, and offering it would open a
+     * page that closes itself. The entry stays in the queue, so it comes back if the setting does.
+     */
+    @VisibleForTesting(otherwise = PRIVATE)
+    ArrayList<SettingsIndexData.Entry> getRecentSearchesInIndex() {
+        ArrayList<SettingsIndexData.Entry> entries = new ArrayList<>();
+        for (SettingsIndexData.Entry entry : RecentSearchQueue.getInstance().values()) {
+            if (mIndexData.getEntry(entry.id) != null) entries.add(entry);
+        }
+        return entries;
+    }
+
     private Fragment displayRecentSearches(boolean addToBackStack) {
         var fragment = new RecentSearchesFragment();
-        fragment.setPreferenceData(new ArrayList<>(RecentSearchQueue.getInstance().values()));
+        fragment.setPreferenceData(getRecentSearchesInIndex());
         fragment.setDeleteCallback(this::deleteRecentSearches);
         fragment.setSelectedCallback(this::onResultSelected);
 
