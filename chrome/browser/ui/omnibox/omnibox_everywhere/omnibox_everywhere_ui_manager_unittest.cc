@@ -48,6 +48,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/drop_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -1883,6 +1884,11 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
   EXPECT_EQ(
       model->GetCommandIdAt(index++),
       omnibox_everywhere::OmniboxEverywhereUIManager::kManageSearchEngines);
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(
+      model->GetCommandIdAt(index++),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionMenu);
+#endif  // BUILDFLAG(IS_MAC)
   EXPECT_EQ(model->GetTypeAt(index++), ui::MenuModel::ItemType::TYPE_SEPARATOR);
   EXPECT_EQ(model->GetCommandIdAt(index++),
             omnibox_everywhere::OmniboxEverywhereUIManager::kShowShortcuts);
@@ -1900,6 +1906,67 @@ TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuModelEditableElement) {
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_EQ(model->GetItemCount(), index);
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuWritingDirectionSubmenu) {
+  auto ui_manager = CreateUIManager();
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+
+  auto* rfh = ui_manager->contents_wrapper_for_testing()
+                  ->web_contents()
+                  ->GetPrimaryMainFrame();
+
+  content::ContextMenuParams params;
+  params.is_editable = true;
+  params.writing_direction_default =
+      blink::ContextMenuData::kCheckableMenuItemDisabled;
+  params.writing_direction_left_to_right =
+      blink::ContextMenuData::kCheckableMenuItemEnabled |
+      blink::ContextMenuData::kCheckableMenuItemChecked;
+  params.writing_direction_right_to_left =
+      blink::ContextMenuData::kCheckableMenuItemEnabled;
+  ASSERT_TRUE(ui_manager->HandleContextMenu(*rfh, params));
+
+  const ui::SimpleMenuModel* model =
+      ui_manager->context_menu_model_for_testing();
+  ASSERT_TRUE(model);
+  std::optional<size_t> submenu_index = model->GetIndexOfCommandId(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionMenu);
+  ASSERT_TRUE(submenu_index.has_value());
+  ui::MenuModel* submenu = model->GetSubmenuModelAt(*submenu_index);
+  ASSERT_TRUE(submenu);
+  ASSERT_EQ(submenu->GetItemCount(), 3u);
+  EXPECT_EQ(
+      submenu->GetCommandIdAt(0),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionDefault);
+  EXPECT_EQ(
+      submenu->GetCommandIdAt(1),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionLtr);
+  EXPECT_EQ(
+      submenu->GetCommandIdAt(2),
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl);
+
+  EXPECT_FALSE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kWritingDirectionDefault));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionLtr));
+  EXPECT_TRUE(ui_manager->IsCommandIdEnabled(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl));
+
+  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::
+          kWritingDirectionDefault));
+  EXPECT_TRUE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionLtr));
+  EXPECT_FALSE(ui_manager->IsCommandIdChecked(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl));
+
+  ui_manager->ExecuteCommand(
+      omnibox_everywhere::OmniboxEverywhereUIManager::kWritingDirectionRtl, 0);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(OmniboxEverywhereUIManagerTest, ContextMenuEmojiCommand) {
   auto ui_manager = CreateUIManager();

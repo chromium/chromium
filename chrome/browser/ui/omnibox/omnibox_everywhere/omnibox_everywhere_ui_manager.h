@@ -117,6 +117,12 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
     kMinimize = 13,
     kClose = 14,
     kEmoji = 15,
+#if BUILDFLAG(IS_MAC)
+    kWritingDirectionMenu = 16,
+    kWritingDirectionDefault = 17,
+    kWritingDirectionLtr = 18,
+    kWritingDirectionRtl = 19,
+#endif  // BUILDFLAG(IS_MAC)
   };
 
   using ContentsWrapperFactory =
@@ -366,6 +372,7 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
 
   void ShowContextMenu(const content::ContextMenuParams& params,
                        std::u16string clipboard_text);
+  void ResetContextMenuModels();
   void BuildInputContextMenu(const content::ContextMenuParams& params,
                              const std::u16string& clipboard_text);
   void BuildSelectionContextMenu(const content::ContextMenuParams& params);
@@ -451,6 +458,9 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   std::unique_ptr<views::UnhandledKeyboardEventHandler>
       unhandled_keyboard_event_handler_;
   content::ContextMenuParams last_context_menu_params_;
+#if BUILDFLAG(IS_MAC)
+  std::unique_ptr<ui::SimpleMenuModel> writing_direction_submenu_model_;
+#endif  // BUILDFLAG(IS_MAC)
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
 

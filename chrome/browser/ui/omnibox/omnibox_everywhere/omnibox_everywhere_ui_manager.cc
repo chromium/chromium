@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -54,9 +55,12 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -840,10 +844,7 @@ void OmniboxEverywhereUIManager::DestroyWidget() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(context_menu_runner_));
   }
-  if (context_menu_model_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(context_menu_model_));
-  }
+  ResetContextMenuModels();
   last_context_menu_params_ = content::ContextMenuParams();
   is_file_chooser_open_ = false;
   is_drive_picker_open_ = false;
@@ -965,10 +966,7 @@ void OmniboxEverywhereUIManager::OnContextMenuClosed() {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(context_menu_runner_));
   }
-  if (context_menu_model_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(context_menu_model_));
-  }
+  ResetContextMenuModels();
   if (widget_ && !widget_->IsActive() && !HasOpenModalDialog()) {
     HandleWidgetDeactivated();
   }
@@ -1517,10 +1515,7 @@ void OmniboxEverywhereUIManager::ShowContextMenu(
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, std::move(context_menu_runner_));
   }
-  if (context_menu_model_) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
-        FROM_HERE, std::move(context_menu_model_));
-  }
+  ResetContextMenuModels();
 
   last_context_menu_params_ = params;
   context_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
@@ -1564,6 +1559,19 @@ void OmniboxEverywhereUIManager::ShowContextMenu(
   context_menu_runner_->RunMenuAt(
       widget_.get(), nullptr, gfx::Rect(screen_point, gfx::Size()),
       views::MenuAnchorPosition::kTopLeft, params.source_type);
+}
+
+void OmniboxEverywhereUIManager::ResetContextMenuModels() {
+  if (context_menu_model_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(context_menu_model_));
+  }
+#if BUILDFLAG(IS_MAC)
+  if (writing_direction_submenu_model_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(writing_direction_submenu_model_));
+  }
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void OmniboxEverywhereUIManager::BuildInputContextMenu(
@@ -1628,6 +1636,23 @@ void OmniboxEverywhereUIManager::AppendSettingsContextMenu() {
       }
     }
   }
+
+#if BUILDFLAG(IS_MAC)
+  if (last_context_menu_params_.is_editable) {
+    writing_direction_submenu_model_ =
+        std::make_unique<ui::SimpleMenuModel>(this);
+    writing_direction_submenu_model_->AddCheckItemWithStringId(
+        kWritingDirectionDefault,
+        IDS_CONTENT_CONTEXT_WRITING_DIRECTION_DEFAULT);
+    writing_direction_submenu_model_->AddCheckItemWithStringId(
+        kWritingDirectionLtr, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_LTR);
+    writing_direction_submenu_model_->AddCheckItemWithStringId(
+        kWritingDirectionRtl, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_RTL);
+    context_menu_model_->AddSubMenuWithStringId(
+        kWritingDirectionMenu, IDS_CONTENT_CONTEXT_WRITING_DIRECTION_MENU,
+        writing_direction_submenu_model_.get());
+  }
+#endif  // BUILDFLAG(IS_MAC)
 
   // Loomnibox settings.
   context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -1859,6 +1884,28 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       }
       break;
     }
+#if BUILDFLAG(IS_MAC)
+    case kWritingDirectionDefault:
+    case kWritingDirectionLtr:
+    case kWritingDirectionRtl: {
+      base::i18n::TextDirection direction =
+          base::i18n::TextDirection::UNKNOWN_DIRECTION;
+      if (command_id == kWritingDirectionRtl) {
+        direction = base::i18n::RIGHT_TO_LEFT;
+      } else if (command_id == kWritingDirectionLtr) {
+        direction = base::i18n::LEFT_TO_RIGHT;
+      }
+      content::RenderFrameHost* rfh = web_contents()->GetFocusedFrame();
+      if (!rfh) {
+        rfh = web_contents()->GetPrimaryMainFrame();
+      }
+      if (rfh && rfh->IsRenderFrameLive()) {
+        rfh->GetRenderWidgetHost()->UpdateTextDirection(direction);
+        rfh->GetRenderWidgetHost()->NotifyTextDirection();
+      }
+      break;
+    }
+#endif  // BUILDFLAG(IS_MAC)
     default:
       NOTREACHED();
   }
@@ -1924,12 +1971,40 @@ bool OmniboxEverywhereUIManager::IsCommandIdEnabled(int command_id) const {
       return true;
     case kSettings:
       return true;
+#if BUILDFLAG(IS_MAC)
+    case kWritingDirectionMenu:
+      return true;
+    case kWritingDirectionDefault:
+      return (last_context_menu_params_.writing_direction_default &
+              blink::ContextMenuData::kCheckableMenuItemEnabled) != 0;
+    case kWritingDirectionLtr:
+      return (last_context_menu_params_.writing_direction_left_to_right &
+              blink::ContextMenuData::kCheckableMenuItemEnabled) != 0;
+    case kWritingDirectionRtl:
+      return (last_context_menu_params_.writing_direction_right_to_left &
+              blink::ContextMenuData::kCheckableMenuItemEnabled) != 0;
+#endif  // BUILDFLAG(IS_MAC)
     default:
       return false;
   }
 }
 
 bool OmniboxEverywhereUIManager::IsCommandIdChecked(int command_id) const {
+#if BUILDFLAG(IS_MAC)
+  switch (command_id) {
+    case kWritingDirectionDefault:
+      return (last_context_menu_params_.writing_direction_default &
+              blink::ContextMenuData::kCheckableMenuItemChecked) != 0;
+    case kWritingDirectionLtr:
+      return (last_context_menu_params_.writing_direction_left_to_right &
+              blink::ContextMenuData::kCheckableMenuItemChecked) != 0;
+    case kWritingDirectionRtl:
+      return (last_context_menu_params_.writing_direction_right_to_left &
+              blink::ContextMenuData::kCheckableMenuItemChecked) != 0;
+    default:
+      break;
+  }
+#endif  // BUILDFLAG(IS_MAC)
   if (command_id == kAlwaysShowAiMode) {
     if (profile_ && profile_->GetPrefs()) {
       return profile_->GetPrefs()->GetBoolean(
