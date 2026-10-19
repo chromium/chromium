@@ -369,7 +369,14 @@ class OmniboxEverywhereUIManager : public views::WidgetObserver,
   void AppendWindowControlsContextMenu();
 #endif  // BUILDFLAG(IS_WIN)
 
-  void CleanUpWidget();
+  // Destroys the widget and the WebContents, and releases keep-alives.
+  void DestroyWidgetAndWebContents();
+
+  // Destroys the widget and the UI it owns (dialogs, menus, overlays) and
+  // resets transient UI state, but keeps the WebContents so the next widget
+  // reuses it. Unlike DestroyWidgetAndWebContents(), safe to call from within a
+  // call on the WebContents.
+  void DestroyWidget();
 
   // Cancels any pending deactivation tasks or deferred-dismissal poll timer.
   void CancelPendingDeactivation();

@@ -1568,6 +1568,38 @@ TEST_F(OmniboxEverywhereUIManagerTest, CloseDestroysWidgetWhenChooserOpen) {
   EXPECT_FALSE(ui_manager->widget());
 }
 
+// Regression test for crbug.com/567673370: Close() can run inside a call on the
+// WebContents itself (e.g. OpenURLFromTab), so with a modal open it must
+// destroy only the widget and keep the contents.
+TEST_F(OmniboxEverywhereUIManagerTest,
+       CloseWithModalOpenDestroysWidgetButKeepsContents) {
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  WebUIContentsWrapper* contents_wrapper =
+      ui_manager->contents_wrapper_for_testing();
+  ASSERT_TRUE(contents_wrapper);
+  content::WebContents* web_contents = ui_manager->web_contents();
+  ASSERT_TRUE(web_contents);
+
+  ui_manager->OnDrivePickerOpened();
+  ui_manager->Close();
+
+  EXPECT_FALSE(ui_manager->widget());
+  EXPECT_FALSE(ui_manager->is_drive_picker_open_for_testing());
+  EXPECT_EQ(ui_manager->contents_wrapper_for_testing(), contents_wrapper);
+  EXPECT_EQ(ui_manager->web_contents(), web_contents);
+  EXPECT_FALSE(web_contents->ShouldIgnoreInputEventsForTesting());
+
+  // The next show creates a new widget around the same contents.
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  EXPECT_EQ(ui_manager->web_contents(), web_contents);
+
+  ui_manager->Shutdown();
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest,
        BrowserCollectionObserverNoCrashWhenNull) {
   auto ui_manager = CreateUIManager();

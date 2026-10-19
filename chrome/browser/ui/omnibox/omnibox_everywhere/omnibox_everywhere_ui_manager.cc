@@ -257,7 +257,7 @@ OmniboxEverywhereUIManager::OmniboxEverywhereUIManager(
 }
 
 OmniboxEverywhereUIManager::~OmniboxEverywhereUIManager() {
-  CleanUpWidget();
+  DestroyWidgetAndWebContents();
 }
 
 OmniboxEverywhereWidgetDelegate* OmniboxEverywhereUIManager::widget_delegate() {
@@ -319,7 +319,7 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
 
   if (widget_) {
     // If a different profile is present, clean up first.
-    CleanUpWidget();
+    DestroyWidgetAndWebContents();
   }
 
   // Ensure any previous browser collection observation is cleanly reset if the
@@ -641,7 +641,7 @@ void OmniboxEverywhereUIManager::OnEphemeralModelPrefChanged() {
   }
   bool was_visible = IsVisible() || widget_->IsMinimized();
   Profile* profile = profile_;
-  CleanUpWidget();
+  DestroyWidgetAndWebContents();
   if (was_visible) {
     CHECK(profile);
     ShowForProfile(profile);
@@ -656,7 +656,7 @@ void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
   }
   // Clean up the widget when the pref changes so there is not flicker when the
   // omnibox is re-invoked.
-  CleanUpWidget();
+  DestroyWidgetAndWebContents();
 }
 
 // TODO(crbug.com/558851707): Move impression recording to the FRE WebUI
@@ -704,7 +704,14 @@ void OmniboxEverywhereUIManager::Close() {
   CancelPendingDeactivation();
   if (widget_) {
     if (HasOpenModalDialog()) {
-      CleanUpWidget();
+      // TODO(crbug.com/567673370): Ideally, we should only close the open
+      // modals and not destroy the widget or the WebContents here (preserving
+      // the widget's position). For now, destroy the widget to close dialogs
+      // that can't be dismissed directly (e.g. native file choosers), while
+      // keeping the WebContents alive in case Close() is reached from inside a
+      // call on it (e.g. OpenURLFromTab).
+      DestroyWidget();
+      ReleaseKeepAlives();
       return;
     }
     if (is_context_menu_open_ && context_menu_runner_) {
@@ -780,7 +787,16 @@ void OmniboxEverywhereUIManager::Minimize() {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void OmniboxEverywhereUIManager::CleanUpWidget() {
+void OmniboxEverywhereUIManager::DestroyWidgetAndWebContents() {
+  DestroyWidget();
+  permission_prompt_observation_.Reset();
+  contents_wrapper_.reset();
+  draggable_region_.reset();
+  browser_collection_observation_.Reset();
+  ReleaseKeepAlives();
+}
+
+void OmniboxEverywhereUIManager::DestroyWidget() {
   capture_release_timer_.Stop();
   CancelPendingDeactivation();
   if (disclosure_dialog_widget_) {
@@ -811,8 +827,6 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
             },
             std::move(widget_), std::move(widget_delegate_)));
   }
-  permission_prompt_observation_.Reset();
-  contents_wrapper_.reset();
   if (context_menu_runner_) {
     context_menu_runner_->Cancel();
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
@@ -834,11 +848,8 @@ void OmniboxEverywhereUIManager::CleanUpWidget() {
   is_dragging_ = false;
   is_adjusting_bounds_ = false;
   pending_auto_resize_size_.reset();
-  draggable_region_.reset();
   region_select_overlay_.reset();
-  browser_collection_observation_.Reset();
   last_shown_time_.reset();
-  ReleaseKeepAlives();
 }
 
 void OmniboxEverywhereUIManager::CancelPendingDeactivation() {
@@ -863,7 +874,7 @@ void OmniboxEverywhereUIManager::Shutdown() {
   permission_prompt_observation_.Reset();
   browser_collection_observation_.Reset();
   profile_pref_change_registrar_.Reset();
-  CleanUpWidget();
+  DestroyWidgetAndWebContents();
   profile_ = nullptr;
 }
 
@@ -1020,12 +1031,12 @@ void OmniboxEverywhereUIManager::OnPendingDismissalPoll() {
 }
 
 void OmniboxEverywhereUIManager::OnWidgetDestroying(views::Widget* widget) {
-  CleanUpWidget();
+  DestroyWidgetAndWebContents();
 }
 
 void OmniboxEverywhereUIManager::OnWidgetClosed(
     views::Widget::ClosedReason reason) {
-  CleanUpWidget();
+  DestroyWidgetAndWebContents();
 }
 
 void OmniboxEverywhereUIManager::AdjustWidgetBoundsToWorkArea() {
