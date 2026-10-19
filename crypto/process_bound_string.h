@@ -6,6 +6,7 @@
 #define CRYPTO_PROCESS_BOUND_STRING_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -63,10 +64,26 @@ class CRYPTO_EXPORT ProcessBound {
                                              std::char_traits<CharType>,
                                              SecureAllocator<CharType>>;
 
+  ProcessBound() = default;
+
   ProcessBound(const ProcessBound& other) = default;
-  ProcessBound(ProcessBound&& other) = default;
   ProcessBound& operator=(const ProcessBound& other) = default;
-  ProcessBound& operator=(ProcessBound&& other) = default;
+
+  // Moving the `maybe_encrypted_data_` vector leaves it empty, and the other
+  // values are updated to match an empty vector for safety.
+  ProcessBound(ProcessBound&& other) noexcept
+      : maybe_encrypted_data_(std::move(other.maybe_encrypted_data_)),
+        original_size_(std::exchange(other.original_size_, 0)),
+        encrypted_(std::exchange(other.encrypted_, false)) {}
+
+  ProcessBound& operator=(ProcessBound&& other) noexcept {
+    if (this != &other) {
+      maybe_encrypted_data_ = std::move(other.maybe_encrypted_data_);
+      original_size_ = std::exchange(other.original_size_, 0);
+      encrypted_ = std::exchange(other.encrypted_, false);
+    }
+    return *this;
+  }
 
   // Create a process bound string. Takes a copy of the string passed in.
   explicit ProcessBound(const StringType& value)
@@ -120,7 +137,7 @@ class CRYPTO_EXPORT ProcessBound {
   }
 
   std::vector<CharType> maybe_encrypted_data_;
-  size_t original_size_;
+  size_t original_size_ = 0;
   bool encrypted_ = false;
 };
 

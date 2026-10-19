@@ -43,11 +43,11 @@ PasswordString::PasswordString(std::u16string&& plaintext) {
   crypto::SecureZeroBuffer(base::as_writable_byte_span(plaintext));
 }
 
-// The move constructor and assignment operators for ProcessBoundString can
-// leave stale values for crypto::ProcessBound::original_size_ and
-// crypto::ProcessBound::encrypted_. As a result, PasswordString uses custom
-// move constructor and assignment operators that explicitly clear the
-// source object.
+// std::u16string (used when UseProcessBoundBacking() is false) doesn't handle
+// self-assignment moves, leaving both the source and target in an unspecified
+// state. Add a self-assignment guard to operator= and, for consistency, clear
+// the moved-from source object. This is redundant but harmless if
+// UseProcessBoundBacking() is true.
 PasswordString::PasswordString(PasswordString&& other) noexcept
     : value_(std::move(other.value_)) {
   other.clear();
@@ -105,7 +105,7 @@ size_t PasswordString::size() const {
 
 void PasswordString::clear() {
   if (std::holds_alternative<crypto::ProcessBoundU16String>(value_)) {
-    value_ = crypto::ProcessBoundU16String(u"");
+    value_ = crypto::ProcessBoundU16String();
     return;
   }
 

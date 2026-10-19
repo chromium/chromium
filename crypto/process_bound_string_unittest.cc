@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +32,14 @@ typedef ::testing::Types<std::string, std::wstring, std::u16string> TestTypes;
 
 // Register the test fixture for these types
 TYPED_TEST_SUITE(ProcessBoundTest, TestTypes);
+
+TYPED_TEST(ProcessBoundTest, DefaultConstructed) {
+  crypto::ProcessBound<TypeParam> str;
+  EXPECT_TRUE(str.empty());
+  EXPECT_EQ(0u, str.size());
+  EXPECT_EQ(TypeParam(), str.value());
+  EXPECT_TRUE(str.secure_value().empty());
+}
 
 TYPED_TEST(ProcessBoundTest, TestCases) {
   const size_t test_cases[] = {0, 1, 15, 16, 17};
@@ -58,9 +67,48 @@ TEST(ProcessBound, Copy) {
 TEST(ProcessBound, Move) {
   crypto::ProcessBound<std::string> str(std::string("hello"));
 
+  // Move constructor
   auto str2 = std::move(str);
 
   EXPECT_EQ(str2.value(), "hello");
+  EXPECT_EQ(str2.size(), 5u);
+  EXPECT_FALSE(str2.empty());
+
+  // Intentional use-after-move to validate moved-from state matches default
+  // constructor.
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(str.empty());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(str.size(), 0u);
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(str.value(), "");
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(str.secure_value().empty());
+
+  // Move assignment
+  crypto::ProcessBound<std::string> str3(std::string("world"));
+  str3 = std::move(str2);
+
+  EXPECT_EQ(str3.value(), "hello");
+  EXPECT_EQ(str3.size(), 5u);
+  EXPECT_FALSE(str3.empty());
+
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(str2.empty());
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(str2.size(), 0u);
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_EQ(str2.value(), "");
+  // NOLINTNEXTLINE(bugprone-use-after-move)
+  EXPECT_TRUE(str2.secure_value().empty());
+
+  // Indirect through a pointer so this is not optimized away as a self-move.
+  crypto::ProcessBound<std::string>* alias = &str3;
+  str3 = std::move(*alias);
+
+  EXPECT_EQ(str3.value(), "hello");
+  EXPECT_EQ(str3.size(), 5u);
+  EXPECT_FALSE(str3.empty());
 }
 
 using ProcessBoundEncryptionTest = ::testing::Test;
