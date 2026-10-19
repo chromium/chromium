@@ -32,7 +32,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -81,6 +80,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
@@ -139,6 +139,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
 public class ClearBrowsingDataFragmentTest {
     @Rule(order = 0)
     public final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
@@ -617,13 +618,9 @@ public class ClearBrowsingDataFragmentTest {
 
         @Override
         public void run() {
-            // Once the fragment is closed, settings in a tab shows another fragment (such as
-            // PrivacySettings) in its place, while SettingsActivity keeps it as the main
-            // fragment but hidden.
-            if (!(mSettingsActivity.getMainFragment()
-                    instanceof ClearBrowsingDataFragment fragment)) {
-                return;
-            }
+            ClearBrowsingDataFragment fragment =
+                    (ClearBrowsingDataFragment) mSettingsActivity.getMainFragment();
+            if (fragment == null) return;
             Criteria.checkThat(fragment.isVisible(), Matchers.is(false));
         }
     }
@@ -1226,20 +1223,12 @@ public class ClearBrowsingDataFragmentTest {
         onView(withText(text)).check(doesNotExist());
     }
 
-    /**
-     * Wait for the snackbar to show post deletion. SettingsActivity finishes after deleting, so the
-     * snackbar shows on the main activity. Settings in a tab stays open on the parent settings page
-     * instead, so the snackbar shows on the settings host activity.
-     */
+    /** Wait for the snackbar to show on the main activity post deletion. */
     private void waitForSnackbar(String expectedSnackbarMessage) {
-        Activity activity =
-                SettingsInTab.shouldOpenSettingsInTab()
-                        ? mSettingsActivityTestRule.getActivity()
-                        : mActivityTestRule.getActivity();
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
-                    SnackbarManager snackbarManager =
-                            ((SnackbarManager.SnackbarManageable) activity).getSnackbarManager();
+                    SnackbarManager snackbarManager = activity.getSnackbarManager();
                     Criteria.checkThat(snackbarManager.isShowing(), Matchers.is(true));
                     TextView snackbarMessage = activity.findViewById(R.id.snackbar_message);
                     Criteria.checkThat(snackbarMessage, Matchers.notNullValue());

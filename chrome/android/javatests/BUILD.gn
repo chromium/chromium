@@ -1266,7 +1266,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {
   deps = [
     ":chrome_test_java_helper",
     "//base:flagged_apis_java",
-    "//chrome/browser/settings:settings_in_tab_java",
   ]
 }
 
