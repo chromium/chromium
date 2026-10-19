@@ -10,6 +10,7 @@
 
 #import "base/containers/flat_set.h"
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/system/sys_info.h"
 #import "components/device_signals/core/browser/base_signals_collector.h"
@@ -17,13 +18,21 @@
 
 @protocol ReauthenticationProtocol;
 
+namespace policy {
+class CloudPolicyManager;
+}  // namespace policy
+
 class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
  public:
   using DeviceAffiliationIdsCallback =
       base::RepeatingCallback<base::flat_set<std::string>()>;
 
+  // `device_cloud_policy_manager` is the browser-level (CBCM) policy manager,
+  // used to report the device enrollment domain. May be null when the browser
+  // is not enrolled; it must outlive this collector otherwise.
   IOSSystemSignalsCollector(
       DeviceAffiliationIdsCallback device_affiliation_ids_callback,
+      policy::CloudPolicyManager* device_cloud_policy_manager,
       id<ReauthenticationProtocol> reauth_module);
   ~IOSSystemSignalsCollector() override;
 
@@ -44,6 +53,7 @@ class IOSSystemSignalsCollector : public device_signals::BaseSignalsCollector {
       base::SysInfo::HardwareInfo hardware_info);
 
   const DeviceAffiliationIdsCallback device_affiliation_ids_callback_;
+  const raw_ptr<policy::CloudPolicyManager> device_cloud_policy_manager_;
   const id<ReauthenticationProtocol> reauth_module_;
   base::WeakPtrFactory<IOSSystemSignalsCollector> weak_factory_{this};
 };

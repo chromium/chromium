@@ -10,6 +10,7 @@
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/system/sys_info.h"
+#import "components/device_signals/core/browser/browser_utils.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
@@ -23,6 +24,7 @@ constexpr char kIOSOperatingSystem[] = "iOS";
 
 IOSSystemSignalsCollector::IOSSystemSignalsCollector(
     DeviceAffiliationIdsCallback device_affiliation_ids_callback,
+    policy::CloudPolicyManager* device_cloud_policy_manager,
     id<ReauthenticationProtocol> reauth_module)
     : device_signals::BaseSignalsCollector({
           {device_signals::SignalName::kOsSignals,
@@ -31,6 +33,7 @@ IOSSystemSignalsCollector::IOSSystemSignalsCollector(
       }),
       device_affiliation_ids_callback_(
           std::move(device_affiliation_ids_callback)),
+      device_cloud_policy_manager_(device_cloud_policy_manager),
       reauth_module_(reauth_module) {
   CHECK(device_affiliation_ids_callback_);
   CHECK(reauth_module_);
@@ -52,6 +55,9 @@ void IOSSystemSignalsCollector::GetOsSignals(
       device_affiliation_ids_callback_.Run();
   signal_response->device_affiliation_ids.assign(device_affiliation_ids.begin(),
                                                  device_affiliation_ids.end());
+  // Null manager (not CBCM-enrolled) or a store without policy yields nullopt.
+  signal_response->device_enrollment_domain =
+      device_signals::TryGetEnrollmentDomain(device_cloud_policy_manager_);
   signal_response->operating_system = kIOSOperatingSystem;
   signal_response->vendor_id = ios::provider::GetDeviceIdentifier();
   device_signals::SettingValue screen_lock =

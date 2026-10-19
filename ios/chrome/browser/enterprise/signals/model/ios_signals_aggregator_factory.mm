@@ -15,6 +15,7 @@
 #import "components/device_signals/core/browser/signals_aggregator_impl.h"
 #import "components/device_signals/core/browser/signals_collector.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
+#import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
@@ -95,9 +96,14 @@ IOSSignalsAggregatorFactory::BuildServiceInstanceFor(
   BrowserPolicyConnectorIOS* browser_policy_connector =
       GetApplicationContext()->GetBrowserPolicyConnector();
   CHECK(browser_policy_connector);
+  // The machine-level manager is created at startup, before CBCM policy is
+  // fetched; pass it unconditionally and let the collector read the store at
+  // collection time. Gating on management authority here would freeze a
+  // null pointer for the first session.
   collectors.push_back(std::make_unique<IOSSystemSignalsCollector>(
       base::BindRepeating(&BrowserPolicyConnectorIOS::GetDeviceAffiliationIds,
                           base::Unretained(browser_policy_connector)),
+      browser_policy_connector->machine_level_user_cloud_policy_manager(),
       ReauthenticationServiceFactory::GetForProfile(profile)
           ->GetReauthModule()));
 
