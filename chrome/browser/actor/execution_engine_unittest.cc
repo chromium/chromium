@@ -1632,6 +1632,13 @@ TEST_F(ExecutionEngineUrlGatingTest,
 
   SetExpectedOptimizationGuideCall(
       destination_url, optimization_guide::OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(
+      mock_actor_task_delegate(),
+      RequestToConfirmNavigation(_, url::Origin::Create(destination_url), _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          webui::mojom::NavigationConfirmationResponse::New(
+              webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
+                  true))));
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
                                                              source_url);

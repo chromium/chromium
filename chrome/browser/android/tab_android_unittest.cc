@@ -507,6 +507,8 @@ TEST_F(GlicTabAndroidTest, IsWebContentsCreationOverridden_GlicSandboxCheck) {
   // Set the delegate on the web contents.
   raw_web_contents->SetDelegate(delegate.get());
 
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      raw_web_contents, GURL("https://sandboxed.example.com"));
   content::RenderFrameHost* main_frame =
       raw_web_contents->GetPrimaryMainFrame();
 

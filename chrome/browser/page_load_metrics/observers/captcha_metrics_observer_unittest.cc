@@ -214,6 +214,8 @@ TEST_F(CaptchaMetricsObserverTest, CaptchaProviderSpecificMetrics) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(CaptchaMetricsObserverTest, CaptchaLoadWithGlicAgent) {
+  NavigateAndCommit(GURL("https://www.top-level-site.com/"));
+
   // Associate a mock TabInterface with the WebContents.
   actor::TestTabState tab_state(web_contents());
   tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
@@ -230,7 +232,6 @@ TEST_F(CaptchaMetricsObserverTest, CaptchaLoadWithGlicAgent) {
   task->AddTab(tab_state.tab.GetHandle(), /*stop_task_on_detach=*/false,
                base::DoNothing());
 
-  NavigateAndCommit(GURL("https://www.top-level-site.com/"));
   AppendChildFrameAndNavigateAndCommit(
       web_contents()->GetPrimaryMainFrame(), "captcha-frame",
       GURL("https://www.captcha.com/subframe.html"));
@@ -276,6 +277,8 @@ TEST_F(CaptchaMetricsObserverTest, CaptchaLoadWithDevToolsAgent) {
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(CaptchaMetricsObserverTest, CaptchaLoadWithMultipleAgents) {
+  NavigateAndCommit(GURL("https://www.top-level-site.com/"));
+
   // Attach a DevTools client to the WebContents.
   content::TestDevToolsProtocolClient devtools_client;
   scoped_refptr<content::DevToolsAgentHost> devtools_host =
@@ -298,7 +301,6 @@ TEST_F(CaptchaMetricsObserverTest, CaptchaLoadWithMultipleAgents) {
   task->AddTab(tab_state.tab.GetHandle(), /*stop_task_on_detach=*/false,
                base::DoNothing());
 
-  NavigateAndCommit(GURL("https://www.top-level-site.com/"));
   AppendChildFrameAndNavigateAndCommit(
       web_contents()->GetPrimaryMainFrame(), "captcha-frame",
       GURL("https://www.captcha.com/subframe.html"));
