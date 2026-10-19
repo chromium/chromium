@@ -1253,7 +1253,16 @@ public class MediaDrmBridge {
             return;
         }
 
-        assert sessionId.keySetId() != null;
+        if (sessionId.keySetId() == null) {
+            // A persistent-license session only gets a key set ID once update() has delivered a
+            // persistable license, and loses it again once the license has been released. In
+            // both cases there is no persisted license to release, so per the EME spec remove()
+            // simply resolves without a license-release message. Persisting the RELEASE key type
+            // below would pass a null key set ID to native. See crbug.com/574137610.
+            Log.w(TAG, "removeSession(%s): no persistent license to release", sessionId);
+            onPromiseResolved(promiseId);
+            return;
+        }
 
         // Persist the key type before removing the keys completely.
         // 1. If we fails to persist the key type, both the persistent storage and MediaDrm think
