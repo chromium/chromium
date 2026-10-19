@@ -163,6 +163,9 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
   source->AddBoolean(
       "omniboxPopupDebugEnabled",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug));
+  source->AddBoolean("omniboxDogfoodFeedbackEnabled",
+                     omnibox::internal::IsWebUIOmniboxFullPopupEnabled() &&
+                         omnibox::kWebUIOmniboxFullPopupDogfoodFeedback.Get());
   source->AddBoolean("webuiOmniboxPopupSelectionControlEnabled",
                      base::FeatureList::IsEnabled(
                          omnibox::kWebUIOmniboxPopupSelectionControl));

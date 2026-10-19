@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_dogfood_feedback.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/suggest_template_info_mojo_utils.h"
@@ -484,6 +485,19 @@ void OmniboxPopupHandler::OpenDevTools() {
     DevToolsWindow::OpenDevToolsWindow(web_contents_,
                                        DevToolsOpenedByAction::kUnknown);
   }
+}
+
+void OmniboxPopupHandler::OpenDogfoodFeedback() {
+  if (!omnibox::kWebUIOmniboxFullPopupDogfoodFeedback.Get() || !controller_ ||
+      !controller_->client()->IsChromeOmniboxClient()) {
+    return;
+  }
+  auto* browser =
+      static_cast<ChromeOmniboxClient*>(controller_->client())->browser();
+  if (!browser) {
+    return;
+  }
+  omnibox_dogfood_feedback::ShowFeedbackForm(browser);
 }
 
 void OmniboxPopupHandler::AdvanceFocus(bool reverse) {

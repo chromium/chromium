@@ -4007,6 +4007,7 @@ shown properly on the user-facing crash UI.
   <int value="47" label="Split View"/>
   <int value="48" label="Vertical Tabs"/>
   <int value="49" label="On-Device AI"/>
+  <int value="50" label="Omnibox"/>
 </enum>
 
 <!--LINT.ThenChange(//chrome/browser/feedback/public/feedback_source.h:FeedbackSource) -->

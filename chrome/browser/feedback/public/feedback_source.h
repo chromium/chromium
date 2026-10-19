@@ -66,6 +66,7 @@ enum FeedbackSource {
   kFeedbackSourceSplitView = 47,
   kFeedbackSourceVerticalTabs = 48,
   kFeedbackSourceOnDeviceAI = 49,
+  kFeedbackSourceOmnibox = 50,
 
   // ATTENTION: Before making any changes or adding to feedback collection,
   // please ensure the teams that operationalize feedback are aware and
