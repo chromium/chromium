@@ -2456,9 +2456,13 @@ WebGLRenderingContextBase::GetRGBAUnacceleratedStaticBitmapImage(
       source_buffer);
 }
 
-void WebGLRenderingContextBase::Reshape(int width, int height) {
+void WebGLRenderingContextBase::Reshape(gfx::Size old_size,
+                                        gfx::Size new_size) {
   if (isContextLost())
     return;
+
+  int width = new_size.width();
+  int height = new_size.height();
 
   GLint buffer = 0;
   if (IsWebGL2()) {

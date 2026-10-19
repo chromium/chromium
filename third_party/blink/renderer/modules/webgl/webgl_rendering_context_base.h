@@ -600,7 +600,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   Extensions3DUtil* ExtensionsUtil();
 
-  void Reshape(int width, int height) override;
+  void Reshape(gfx::Size old_size, gfx::Size new_size) override;
 
   void MarkLayerComposited() override;
 

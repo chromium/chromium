@@ -304,7 +304,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   // WebGL & WebGPU-specific interface
   virtual void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {}
-  virtual void Reshape(int width, int height) {}
+  virtual void Reshape(gfx::Size old_size, gfx::Size new_size) {}
 
   virtual base::ByteSize AllocatedBufferSize() const = 0;
 

@@ -163,10 +163,13 @@ cc::Layer* GPUCanvasContext::CcLayer() const {
   return nullptr;
 }
 
-void GPUCanvasContext::Reshape(int width, int height) {
+void GPUCanvasContext::Reshape(gfx::Size old_size, gfx::Size new_size) {
   if (stopped_) {
     return;
   }
+
+  int width = new_size.width();
+  int height = new_size.height();
 
   // Steps for canvas context resizing:
   // 1. Replace the drawing buffer of context.

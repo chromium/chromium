@@ -1291,7 +1291,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
       VideoFrameCopyCompletedCallback) override;
 
   cc::Layer* CcLayer() const override;
-  void Reshape(int width, int height) override;
+  void Reshape(gfx::Size old_size, gfx::Size new_size) override;
   void Stop() override;
   void FinalizeFrame(FlushReason) override;
   scoped_refptr<CanvasResource> GetResourceForPushFrame(

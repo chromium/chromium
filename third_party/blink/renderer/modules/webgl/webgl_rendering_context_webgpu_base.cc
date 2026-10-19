@@ -3955,7 +3955,8 @@ cc::Layer* WebGLRenderingContextWebGPUBase::CcLayer() const {
   return nullptr;
 }
 
-void WebGLRenderingContextWebGPUBase::Reshape(int width, int height) {
+void WebGLRenderingContextWebGPUBase::Reshape(gfx::Size old_size,
+                                              gfx::Size new_size) {
   NOTIMPLEMENTED();
 }
 
