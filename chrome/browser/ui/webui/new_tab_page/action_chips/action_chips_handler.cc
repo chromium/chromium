@@ -76,9 +76,9 @@ bool IsInvalidMostRecentTab(content::WebContents& contents) {
          url.SchemeIs(content::kChromeUIUntrustedScheme);
 }
 
-TabInterface* FindMostRecentTab(content::WebUI& web_ui) {
+TabInterface* FindMostRecentTab(content::WebContents* web_contents) {
   auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_ui.GetWebContents());
+      webui::GetBrowserWindowInterface(web_contents);
   if (!browser_window_interface) {
     return nullptr;
   }
@@ -127,19 +127,19 @@ ActionChipsHandler::ActionChipsHandler(
     mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> receiver,
     mojo::PendingRemote<action_chips::mojom::Page> page,
     Profile* profile,
-    content::WebUI* web_ui,
+    content::WebContents* web_contents,
     std::unique_ptr<ActionChipsGenerator> action_chips_generator,
     GetSessionHandleCallback get_session_handle_callback)
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile),
-      web_ui_(web_ui),
+      web_contents_(web_contents),
       action_chips_generator_(std::move(action_chips_generator)),
       get_session_handle_callback_(std::move(get_session_handle_callback)) {
 #if !BUILDFLAG(IS_ANDROID)
   browser_window_interface_subscription_ =
       webui::RegisterBrowserWindowInterfaceChanged(
-          web_ui_->GetWebContents(),
+          web_contents_.get(),
           base::BindRepeating(
               &ActionChipsHandler::OnBrowserWindowInterfaceChanged,
               weak_factory_.GetWeakPtr()));
@@ -164,7 +164,7 @@ void ActionChipsHandler::StartActionChipsRetrieval() {
 #if !BUILDFLAG(IS_ANDROID)
   if (contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs())) {
-    tab = FindMostRecentTab(*web_ui_);
+    tab = FindMostRecentTab(web_contents_);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -226,7 +226,7 @@ void ActionChipsHandler::OnTabStripModelChanged(
     TabStripModel*,
     const TabStripModelChange& change,
     const TabStripSelectionChange&) {
-  if (!IsTabReadyForActionChipsRetrieval(web_ui_->GetWebContents(), change)) {
+  if (!IsTabReadyForActionChipsRetrieval(web_contents_.get(), change)) {
     return;
   }
   StartActionChipsRetrieval();
@@ -234,7 +234,7 @@ void ActionChipsHandler::OnTabStripModelChanged(
 
 bool ActionChipsHandler::UpdateTabStripModelObservation() {
   TabStripModelObserver::StopObservingAll(this);
-  content::WebContents* web_contents = web_ui_->GetWebContents();
+  content::WebContents* web_contents = web_contents_.get();
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents);
   if (browser_window_interface) {
@@ -292,6 +292,6 @@ void ActionChipsHandler::NavigateToAim(
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           aim_url, disposition, ui::PAGE_TRANSITION_GENERATED);
-  web_ui_->GetWebContents()->OpenURL(params,
-                                     /*navigation_handle_callback=*/{});
+  web_contents_.get()->OpenURL(params,
+                               /*navigation_handle_callback=*/{});
 }
