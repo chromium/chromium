@@ -81,8 +81,10 @@ std::string ChromeConnectedHeaderHelper::BuildRequestCookieIfPossible(
     return "";
   }
 
-  // Child accounts are not supported on iOS, so it is preferred to not include
-  // this information in the ChromeConnected cookie.
+  // The `CHROME_CONNECTED` cookie is only used on iOS, and even then
+  // `is_child_account` is not needed on iOS because supervised-user
+  // restrictions (such as disabling Incognito) are already conveyed via
+  // `profile_mode_mask`.
   return chrome_connected_helper.BuildRequestHeader(
       /*is_header_request=*/false, url, gaia_id,
       /*is_child_account=*/Tribool::kUnknown, profile_mode_mask,
