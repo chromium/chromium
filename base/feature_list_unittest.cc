@@ -2253,6 +2253,26 @@ TEST_F(FeatureListTest, GetFeaturesAssociatedWithTrial_ReplaceUseDefault) {
                 FeatureList::ControllingTrialInfo{.trial_name = "Trial1"}));
 }
 
+TEST_F(FeatureListTest,
+       RegisterExtraFeatureOverrides_ReplaceUseDefaultWithNullTrial) {
+  auto feature_list = std::make_unique<FeatureList>();
+
+  // Register an OVERRIDE_USE_DEFAULT entry without an associated FieldTrial.
+  feature_list->InitFromCommandLine("*FeatureOnByDefault", "");
+
+  std::vector<FeatureList::FeatureOverrideInfo> overrides;
+  overrides.emplace_back(std::cref(kFeatureOnByDefault),
+                         FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
+  feature_list->RegisterExtraFeatureOverrides(
+      std::move(overrides), /*replace_use_default_overrides=*/true);
+
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  EXPECT_FALSE(FeatureList::IsEnabled(kFeatureOnByDefault));
+  EXPECT_EQ(nullptr, FeatureList::GetFieldTrial(kFeatureOnByDefault));
+}
+
 TEST_F(FeatureListTest, RuntimeMutableFeatureUpdate_MoveSemantics) {
   int pre_calls = 0;
   RuntimeMutabilityCallbackData pre_data;

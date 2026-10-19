@@ -1463,7 +1463,7 @@ void FeatureList::RegisterOverride(std::string_view feature_name,
     if (found != overrides_.end() &&
         found->second.overridden_state == OVERRIDE_USE_DEFAULT) {
       // Also, keep the existing trial if a null trial was passed.
-      auto* trial = field_trial ? field_trial : &*found->second.field_trial;
+      auto* trial = field_trial ? field_trial : found->second.field_trial.get();
       found->second = OverrideEntry(overridden_state, trial);
       return;
     }
