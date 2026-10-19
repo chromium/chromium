@@ -72,7 +72,9 @@ public class PriceChangeModuleBuilderUnitTest {
         profileProviderSupplier.set(mProfileProvider);
         mModuleBuilder =
                 new PriceChangeModuleBuilder(
-                        RuntimeEnvironment.application, profileProviderSupplier, mTabModelSelector);
+                        RuntimeEnvironment.getApplication(),
+                        profileProviderSupplier,
+                        mTabModelSelector);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
@@ -89,7 +91,7 @@ public class PriceChangeModuleBuilderUnitTest {
     public void testBuildModule_NotEligibleWithoutProfileProvider() {
         mModuleBuilder =
                 new PriceChangeModuleBuilder(
-                        RuntimeEnvironment.application,
+                        RuntimeEnvironment.getApplication(),
                         new OneshotSupplierImpl<ProfileProvider>(),
                         mTabModelSelector);
         assertFalse(mModuleBuilder.isEligible());

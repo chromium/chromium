@@ -76,7 +76,7 @@ public final class OptionalNewTabButtonControllerUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
 
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mTab).getUrl();
         doReturn(mContext).when(mTab).getContext();

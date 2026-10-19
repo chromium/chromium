@@ -55,7 +55,7 @@ public class SendTabToSelfTabCardLabelDataUnitTest {
     @Before
     public void setUp() {
         PersistedTabDataConfiguration.setUseTestConfig(true);
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mUserDataHost = new UserDataHost();
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mTab.getProfile()).thenReturn(mProfile);

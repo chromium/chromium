@@ -75,7 +75,7 @@ public class NotificationIntentInterceptorTest {
 
     @Before
     public void setUp() throws Exception {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mShadowNotificationManager =
                 shadowOf(
                         (NotificationManager)

@@ -48,7 +48,7 @@ public class GlicActionButtonBinderTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mImageView = new ImageView(mContext);
         mModel = new PropertyModel.Builder(GlicActionProperties.ALL_KEYS).build();
     }

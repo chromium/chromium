@@ -75,7 +75,7 @@ public class ActorNotificationServiceTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mMockNotificationManager = new MockNotificationManagerProxy();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
         ActorForegroundServiceController.setInstanceForTesting(mServiceController);

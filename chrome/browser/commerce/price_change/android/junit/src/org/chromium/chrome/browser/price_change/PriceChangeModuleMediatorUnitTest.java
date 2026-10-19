@@ -112,7 +112,7 @@ public class PriceChangeModuleMediatorUnitTest {
         doReturn(true).when(mTabModelSelector).isTabStateInitialized();
         ShoppingPersistedTabDataService.setServiceForTesting(mService);
 
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mModel = new PropertyModel(PriceChangeModuleProperties.ALL_KEYS);
         mMediator =
                 new PriceChangeModuleMediator(

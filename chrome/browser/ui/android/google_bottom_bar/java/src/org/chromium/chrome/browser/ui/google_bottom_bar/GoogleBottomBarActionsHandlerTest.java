@@ -102,7 +102,7 @@ public class GoogleBottomBarActionsHandlerTest {
                 new GoogleBottomBarActionsHandler(mActivity, mTabSupplier, mShareDelegateSupplier);
 
         mShadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
 
         when(mTabSupplier.get()).thenReturn(mTab);
         when(mTab.getUrl()).thenReturn(mGURL);

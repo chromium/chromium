@@ -63,11 +63,11 @@ public class ActorNotificationFactoryTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         ActorForegroundServiceController.setInstanceForTesting(mServiceController);
         if (!ApplicationStatus.isInitialized()) {
-            ApplicationStatus.initialize(RuntimeEnvironment.application);
+            ApplicationStatus.initialize(RuntimeEnvironment.getApplication());
         }
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 

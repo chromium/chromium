@@ -30,7 +30,7 @@ public class VoiceRecognitionUtilUnitTest {
     @Before
     public void setUp() {
         mShadowPackageManager =
-                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
     }
 
     @After

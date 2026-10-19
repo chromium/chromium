@@ -29,7 +29,7 @@ public class AutofillContactUnitTest {
     @Test
     public void testIsEqualOrSupersetOf_RequestAllFields() {
         AutofillProfile dummyProfile = AutofillProfile.builder().build();
-        Context mockContext = spy(RuntimeEnvironment.application);
+        Context mockContext = spy(RuntimeEnvironment.getApplication());
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
         AutofillContact contact1 =
@@ -86,7 +86,7 @@ public class AutofillContactUnitTest {
     @Test
     public void testIsEqualOrSupersetOf_RequestSomeFields() {
         AutofillProfile dummyProfile = AutofillProfile.builder().build();
-        Context mockContext = spy(RuntimeEnvironment.application);
+        Context mockContext = spy(RuntimeEnvironment.getApplication());
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
         // The merchant does not request a name.
@@ -128,7 +128,7 @@ public class AutofillContactUnitTest {
     @Test
     public void testGetRelevanceScore_RequestAllFields() {
         AutofillProfile dummyProfile = AutofillProfile.builder().build();
-        Context mockContext = spy(RuntimeEnvironment.application);
+        Context mockContext = spy(RuntimeEnvironment.getApplication());
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
         // The merchant requests all fields.
@@ -250,7 +250,7 @@ public class AutofillContactUnitTest {
     @Test
     public void testGetRelevanceScore_RequestSomeFields() {
         AutofillProfile dummyProfile = AutofillProfile.builder().build();
-        Context mockContext = spy(RuntimeEnvironment.application);
+        Context mockContext = spy(RuntimeEnvironment.getApplication());
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
         // The merchant does not request a name.

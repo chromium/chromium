@@ -77,7 +77,7 @@ public class InactiveShortcutMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         doReturn(mPrefServiceMock).when(mUserPrefsJniMock).get(any(Profile.class));
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);

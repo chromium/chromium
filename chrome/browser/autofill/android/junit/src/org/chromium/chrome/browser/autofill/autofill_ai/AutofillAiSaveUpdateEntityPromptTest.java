@@ -246,10 +246,11 @@ public class AutofillAiSaveUpdateEntityPromptTest {
     @Test
     public void walletNotice() {
         String walletTitle =
-                RuntimeEnvironment.application.getString(R.string.autofill_google_wallet_title);
+                RuntimeEnvironment.getApplication()
+                        .getString(R.string.autofill_google_wallet_title);
         String email = "alexpark@gmail.com";
         String sourceNotice =
-                RuntimeEnvironment.application
+                RuntimeEnvironment.getApplication()
                         .getString(
                                 R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice)
                         .replace("$1", walletTitle)

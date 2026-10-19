@@ -60,7 +60,7 @@ public class EnhancedTargetDevicePickerMediatorTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
 
         mModel =

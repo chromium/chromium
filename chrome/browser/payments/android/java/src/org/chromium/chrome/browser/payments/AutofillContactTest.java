@@ -135,7 +135,7 @@ public class AutofillContactTest {
             String expectedPayerName,
             String expectedPayerPhone,
             String expectedPayerEmail) {
-        mContext = spy(RuntimeEnvironment.application);
+        mContext = spy(RuntimeEnvironment.getApplication());
         doReturn(INCOMPLETE_MESSAGE).when(mContext).getString(anyInt());
         mPayerName = payerName;
         mPayerPhone = payerPhone;

@@ -73,7 +73,7 @@ public class SafetyHubMagicStackMediatorTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mView = new View(mContext);
         mProfile = mSafetyHubTestRule.getProfile();
         mPrefService = mSafetyHubTestRule.getPrefService();

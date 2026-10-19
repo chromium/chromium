@@ -64,7 +64,7 @@ public class TailSuggestionProcessorUnitTest {
     public void setUp() {
         AutocompleteUIContext uiContext =
                 new AutocompleteUIContext(
-                        RuntimeEnvironment.application,
+                        RuntimeEnvironment.getApplication(),
                         mSuggestionHost,
                         mTextProvider,
                         mImageSupplier,

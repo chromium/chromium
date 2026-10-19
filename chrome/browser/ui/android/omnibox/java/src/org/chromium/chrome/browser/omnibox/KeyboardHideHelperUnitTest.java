@@ -47,8 +47,8 @@ public class KeyboardHideHelperUnitTest {
 
     @Before
     public void setUp() {
-        mRootView = new FrameLayout(RuntimeEnvironment.application);
-        mView = new View(RuntimeEnvironment.application);
+        mRootView = new FrameLayout(RuntimeEnvironment.getApplication());
+        mView = new View(RuntimeEnvironment.getApplication());
         mRootView.addView(mView);
         mKeyboardHideHelper = new KeyboardHideHelper(mView, mKeyboardHiddenCallback);
     }
