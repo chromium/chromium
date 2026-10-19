@@ -752,14 +752,7 @@ class GpuIntegrationTest(
     browser_args_key = frozenset(cls._last_launched_browser_info.browser_args)
     collect_dawn_info = cls._ShouldCollectDawnInfoForCurrentBrowser()
     about_gpu_cache_key = (browser_args_key, collect_dawn_info)
-    # TODO(crbug.com/568512619): Skipping the chrome://gpu navigation when
-    # --gpu-blocklist-test-group=2 triggers a SwiftShader fallback on Linux
-    # leaves the initial about:blank RasterDecoderImpl alive until WebGL
-    # context creation, tripping a DCHECK in RasterDecoderImpl::Destroy().
-    if (
-      '--gpu-blocklist-test-group=2' not in browser_args_key
-      and about_gpu_cache_key in cls._about_gpu_cache
-    ):
+    if about_gpu_cache_key in cls._about_gpu_cache:
       cached_about_gpu = cls._about_gpu_cache[about_gpu_cache_key]
       cls._about_gpu_content = cached_about_gpu.content
       cls._test_that_started_browser = (

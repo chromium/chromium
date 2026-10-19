@@ -181,7 +181,7 @@ TEST_P(RasterDecoderManualInitTest, GetCapabilitiesNorm16) {
   EXPECT_TRUE(caps.texture_norm16);
 }
 
-class RasterDecoderOOPTest : public testing::Test, DecoderClient {
+class RasterDecoderOOPTest : public testing::Test, public DecoderClient {
  public:
   void SetUp() override {
     display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
@@ -665,6 +665,42 @@ TEST_P(RasterDecoderOOPCopyGLErrorTest, ClearWhenSourceUnavailable) {
   EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(mailboxes)));
   EXPECT_EQ(GL_INVALID_VALUE, GetGLError());
   EXPECT_EQ(!raise_gl_error(), representation->IsCleared());
+}
+
+TEST_F(RasterDecoderOOPTest, MakeCurrentAndDestroyWithGrContextTypeNone) {
+  gpu::GpuDriverBugWorkarounds workarounds;
+  scoped_refptr<gl::GLShareGroup> share_group = new gl::GLShareGroup();
+  scoped_refptr<gl::GLSurface> surface =
+      gl::init::CreateOffscreenGLSurface(display_, gfx::Size());
+  scoped_refptr<gl::GLContext> context = gl::init::CreateGLContext(
+      share_group.get(), surface.get(), gl::GLContextAttribs());
+  ASSERT_TRUE(context->MakeCurrent(surface.get()));
+
+  auto none_context_state = base::MakeRefCounted<SharedContextState>(
+      std::move(share_group), std::move(surface), std::move(context),
+      /*use_virtualized_gl_contexts=*/false, base::DoNothing(),
+      GrContextType::kNone);
+  ASSERT_TRUE(
+      none_context_state->InitializeSkia(GpuPreferences(), workarounds));
+  ASSERT_TRUE(none_context_state->InitializeGL(GpuPreferences(), workarounds,
+                                               gpu_feature_info_));
+
+  FakeCommandBufferServiceBase command_buffer_service;
+  std::unique_ptr<RasterDecoder> decoder = RasterDecoder::Create(
+      this, &command_buffer_service, &outputter_, gpu_feature_info_,
+      GpuPreferences(), /*memory_tracker=*/nullptr, &shared_image_manager_,
+      none_context_state, /*is_privileged=*/true);
+  ASSERT_EQ(decoder->Initialize(/*lose_context_when_out_of_memory=*/false),
+            ContextResult::kSuccess);
+
+  // Simulate another GL context becoming current on the thread before
+  // RasterDecoder is destroyed.
+  ASSERT_TRUE(context_state_->MakeCurrent(nullptr));
+  EXPECT_FALSE(none_context_state->IsCurrent(nullptr));
+
+  EXPECT_TRUE(decoder->MakeCurrent());
+  EXPECT_TRUE(none_context_state->IsCurrent(nullptr));
+  decoder->Destroy(/*have_context=*/true);
 }
 
 }  // namespace raster

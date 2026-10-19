@@ -887,13 +887,13 @@ bool GpuInit2::FinalizeFeaturesWithContextInfo(InitState& state) {
       state.command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, false);
   if (gl_use_swiftshader_) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
-            << "on Linux";
+            << "on ChromeOS";
     return false;
 #else
     return ReinitializeGLWithSwiftShader(state);
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   return true;
 }

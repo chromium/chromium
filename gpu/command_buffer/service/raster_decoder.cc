@@ -1089,8 +1089,9 @@ void RasterDecoderImpl::Destroy(bool have_context) {
 
 // Make this decoder's GL context current.
 bool RasterDecoderImpl::MakeCurrent() {
-  if (!shared_context_state_->GrContextIsGL())
+  if (!shared_context_state_->IsUsingGL()) {
     return true;
+  }
 
   if (context_lost_) {
     LOG(ERROR) << "  RasterDecoderImpl: Trying to make lost context current.";
