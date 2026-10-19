@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Optional
 import unittest
 from unittest.mock import patch
 import urllib.parse
@@ -17,6 +18,7 @@ from bug_tracker import (
     _COMPONENT_ID,
     _CONTEXT_PLACEHOLDER,
     _CONTEXT_QUESTION,
+    _MAX_BUG_URL_LENGTH,
     _PRIVACY_REMINDER,
     _format_targets,
     _redact_home_dir,
@@ -31,6 +33,7 @@ def _denial(
     target: str,
     action: str = "mach-lookup",
     process: str = "Chromium Helper (Renderer)",
+    command_line: Optional[str] = None,
 ) -> SandboxDenial:
     return SandboxDenial(
         event_message=f"Sandbox: {process}(123) deny(1) {action} {target}",
@@ -38,6 +41,7 @@ def _denial(
         pid=123,
         action=action,
         target=target,
+        command_line=command_line,
     )
 
 
@@ -83,22 +87,31 @@ class GetBugUrlTest(unittest.TestCase):
         denial = _denial("com.apple.foo")
         _, params = _parse_url(get_bug_url(denial))
         self.assertIn(
-            "Process: Chromium Helper (Renderer)", params["description"]
+            "Process type: renderer\nSeatbelt profile: renderer.sb",
+            params["description"],
         )
         self.assertIn(
             f"```\n{denial.event_message}\n```", params["description"]
         )
 
     def test_batch_title_and_description_with_different_targets(self):
+        cmd = (
+            "/Applications/Google Chrome Canary.app/Contents/MacOS/"
+            "Google Chrome Helper (Aperitif) --type=utility "
+            "--utility-sub-type=unzip.mojom.Unzipper "
+            "--service-sandbox-type=service"
+        )
         d1 = _denial(
             "/path/to/crl-set",
             action="file-write-times",
             process="Google Chrome Helper (Aperitif)",
+            command_line=cmd,
         )
         d2 = _denial(
             "/path/to/manifest.json",
             action="file-write-times",
             process="Google Chrome Helper (Aperitif)",
+            command_line=cmd,
         )
         _, params = _parse_url(get_bug_url([d1, d2]))
         self.assertEqual(
@@ -107,7 +120,9 @@ class GetBugUrlTest(unittest.TestCase):
             "file-write-times /path/to/crl-set, /path/to/manifest.json",
         )
         self.assertIn(
-            "Process: Google Chrome Helper (Aperitif)", params["description"]
+            "Process type: utility (unzip.mojom.Unzipper)\n"
+            "Seatbelt profile: utility.sb",
+            params["description"],
         )
         self.assertIn(d1.event_message, params["description"])
         self.assertIn(d2.event_message, params["description"])
@@ -204,6 +219,156 @@ class GetBugUrlTest(unittest.TestCase):
             "file-read-data ~/Documents/sub/file_1.txt, "
             "~/Documents/sub/file_2.txt",
         )
+
+    def test_process_and_profile_from_command_line(self):
+        cases = (
+            (
+                "Chrome --type=utility --utility-sub-type=audio.mojom.Audio "
+                "--service-sandbox-type=audio",
+                "audio.mojom.Audio",
+                "audio.sb",
+            ),
+            (
+                "Chrome --type=utility --utility-sub-type=net.mojom.Net "
+                "--service-sandbox-type=network",
+                "net.mojom.Net",
+                "network.sb",
+            ),
+            (
+                "Chrome --type=utility --utility-sub-type=unzip.mojom.Unzipper "
+                "--service-sandbox-type=service",
+                "unzip.mojom.Unzipper",
+                "utility.sb",
+            ),
+            (
+                "Chrome --type=utility --utility-sub-type=foo.mojom.Foo "
+                "--service-sandbox-type=service_with_jit",
+                "foo.mojom.Foo",
+                "utility.sb",
+            ),
+            (
+                "Chrome --type=utility --utility-sub-type=foo.mojom.Foo "
+                "--service-sandbox-type=platform_runtime",
+                "foo.mojom.Foo",
+                "utility.sb",
+            ),
+            (
+                "Chrome --type=utility --utility-sub-type=foo.mojom.Foo "
+                "--service-sandbox-type=utility",
+                "foo.mojom.Foo",
+                "utility.sb",
+            ),
+            (
+                "Chrome --type=utility --utility-sub-type=video.mojom.Video "
+                "--service-sandbox-type=none",
+                "video.mojom.Video",
+                "none",
+            ),
+            (
+                "Chrome --type=utility --service-sandbox-type=service",
+                None,
+                "utility.sb",
+            ),
+            (
+                "Chrome --type=utility --utility-sub-type=foo.mojom.Foo",
+                "foo.mojom.Foo",
+                "unknown",
+            ),
+        )
+        for cmd, sub_type, expected_profile in cases:
+            with self.subTest(cmd=cmd):
+                denial = _denial(
+                    "com.apple.foo",
+                    process="Google Chrome Helper (Aperitif)",
+                    command_line=cmd,
+                )
+                _, params = _parse_url(get_bug_url(denial))
+                expected_type = (
+                    f"utility ({sub_type})" if sub_type else "utility"
+                )
+                self.assertIn(
+                    f"Process type: {expected_type}\n"
+                    f"Seatbelt profile: {expected_profile}",
+                    params["description"],
+                )
+
+    def test_non_utility_process_and_profile_from_command_line(self):
+        cases = (
+            ("Chrome --type=renderer", "renderer", "renderer.sb"),
+            ("Chrome --type=renderer --no-sandbox", "renderer", "none"),
+            ("Chrome --type=gpu-process", "gpu-process", "gpu.sb"),
+            (
+                "Chrome --type=gpu-process --disable-gpu-sandbox",
+                "gpu-process",
+                "none",
+            ),
+            (
+                "Chrome --type=no-op-for-testing",
+                "no-op-for-testing",
+                "utility.sb",
+            ),
+            ("Chrome --type=relauncher", "relauncher", "none"),
+        )
+        for cmd, expected_type, expected_profile in cases:
+            with self.subTest(cmd=cmd):
+                denial = _denial(
+                    "com.apple.foo",
+                    process="Google Chrome Helper (Aperitif)",
+                    command_line=cmd,
+                )
+                _, params = _parse_url(get_bug_url(denial))
+                self.assertIn(
+                    f"Process type: {expected_type}\n"
+                    f"Seatbelt profile: {expected_profile}",
+                    params["description"],
+                )
+
+    def test_process_and_profile_fallback_from_process_name(self):
+        cases = (
+            ("MTLCompilerService", "MTLCompilerService", "gpu.sb"),
+            ("Chromium Helper (Renderer)", "renderer", "renderer.sb"),
+            (
+                "Google Chrome Helper (Aperitif Renderer)",
+                "renderer",
+                "renderer.sb",
+            ),
+            ("Google Chrome Helper (Aperitif R", "renderer", "renderer.sb"),
+            ("Chromium Helper (Aperitif Render", "renderer", "renderer.sb"),
+            ("Chromium Helper (GPU)", "gpu-process", "gpu.sb"),
+            ("Google Chrome Helper (Aperitif GPU)", "gpu-process", "gpu.sb"),
+            ("Google Chrome Helper (Aperitif G", "gpu-process", "gpu.sb"),
+            ("Google Chrome Helper (Aperitif)", "unknown", "unknown"),
+        )
+        for proc_name, expected_type, expected_profile in cases:
+            with self.subTest(proc_name=proc_name):
+                denial = _denial("com.apple.foo", process=proc_name)
+                _, params = _parse_url(get_bug_url(denial))
+                self.assertIn(
+                    f"Process type: {expected_type}\n"
+                    f"Seatbelt profile: {expected_profile}",
+                    params["description"],
+                )
+
+    def test_long_url_truncates_message_block_within_max_length(self):
+        denials = [
+            _denial(
+                f"/private/var/folders/xx/long_directory_name_{i}/file_{i}.txt",
+                action="file-read-data",
+            )
+            for i in range(150)
+        ]
+        url = get_bug_url(denials)
+        self.assertLessEqual(len(url), _MAX_BUG_URL_LENGTH)
+        _, params = _parse_url(url)
+        description = params["description"]
+        self.assertIn("Process type: renderer\n", description)
+        self.assertIn("Seatbelt profile: renderer.sb\n", description)
+        self.assertIn("\n... (truncated)\n```", description)
+        self.assertIn("macOS version: 15.1", description)
+        self.assertIn(
+            f"{_CONTEXT_QUESTION}\n{_CONTEXT_PLACEHOLDER}", description
+        )
+        self.assertIn(_PRIVACY_REMINDER, description)
 
 
 class FormatTargetsTest(unittest.TestCase):

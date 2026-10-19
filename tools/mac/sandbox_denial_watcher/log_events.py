@@ -44,6 +44,7 @@ class SandboxDenial:
     pid: int
     action: str
     target: str
+    command_line: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> Optional[SandboxDenial]:

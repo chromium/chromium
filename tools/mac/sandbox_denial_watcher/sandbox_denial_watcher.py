@@ -25,6 +25,7 @@ Usage (from the Chromium src directory):
 from __future__ import annotations
 
 import argparse
+from dataclasses import replace
 import logging
 import math
 from pathlib import Path
@@ -52,6 +53,7 @@ _BATCH_WINDOW_SECONDS = 1.0
 
 _LOG_PATH = "/usr/bin/log"
 _OSASCRIPT_PATH = "/usr/bin/osascript"
+_PS_PATH = "/bin/ps"
 
 _DISMISS_BUTTON_TITLE = "Dismiss"
 _FILE_BUG_BUTTON_TITLE = "File bug"
@@ -323,6 +325,36 @@ def _validate_process_name(proc: str) -> None:
         raise ValueError(f"Invalid process name: {proc!r}")
 
 
+def _get_process_command_line(pid: int) -> Optional[str]:
+    """Returns the executable path and command-line arguments for `pid`.
+
+    For example:
+        '/Applications/Chromium.app/.../Chromium Helper --type=renderer ...'
+
+    Returns None if unavailable (e.g., if `ps` fails or if the process has
+    exited).
+    """
+    logger = logging.getLogger("sandbox_denial_watcher")
+    try:
+        res = subprocess.run(
+            [_PS_PATH, "-p", str(pid), "-o", "command="],
+            capture_output=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=2,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as e:
+        logger.debug("Failed to query command line for pid %d: %s", pid, e)
+        return None
+
+    if res.returncode != 0:
+        logger.debug("ps exited with code %d for pid %d", res.returncode, pid)
+        return None
+
+    return res.stdout.strip() or None
+
+
 def prompt_to_file_bug(
     denial_event: Union[SandboxDenial, Sequence[SandboxDenial]],
 ) -> bool:
@@ -451,6 +483,13 @@ class SandboxDenialWatcher:
                 return
 
             if batch_key not in self._active_batches:
+                # Capture the process command line now (rather than when the
+                # batch flushes) in case a short-lived process exits beforehand.
+                command_line = _get_process_command_line(denial_event.pid)
+                if command_line:
+                    denial_event = replace(
+                        denial_event, command_line=command_line
+                    )
                 self._active_batches[batch_key] = [denial_event]
                 timer = threading.Timer(
                     self._batch_window_seconds,

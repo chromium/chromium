@@ -12,6 +12,7 @@ watch_logs() uses, with the macOS dialog and `log stream` process mocked out.
 
 from __future__ import annotations
 
+from dataclasses import replace
 import io
 import json
 import math
@@ -33,8 +34,10 @@ from sandbox_denial_watcher import (
     _HOME_DIR,
     _INTERESTING_PROCS,
     _OSASCRIPT_PATH,
+    _PS_PATH,
     DenialFilter,
     SandboxDenialWatcher,
+    _get_process_command_line,
     _validate_process_name,
     main,
     prompt_to_file_bug,
@@ -95,6 +98,12 @@ class WatcherTestCase(unittest.TestCase):
         timer_patcher = patch("sandbox_denial_watcher.threading.Timer")
         self.mock_timer = timer_patcher.start()
         self.addCleanup(timer_patcher.stop)
+        cmdline_patcher = patch(
+            "sandbox_denial_watcher._get_process_command_line",
+            return_value=None,
+        )
+        self.mock_get_cmdline = cmdline_patcher.start()
+        self.addCleanup(cmdline_patcher.stop)
         self.denial_filter = self.make_filter()
         self.watcher = SandboxDenialWatcher(denial_filter=self.denial_filter)
 
@@ -264,6 +273,50 @@ class FilteringTest(WatcherTestCase):
             ],
         )
         mock_prompt.assert_called_once_with([d1, d2])
+
+    @patch("sandbox_denial_watcher.prompt_to_file_bug")
+    def test_report_denial_attaches_command_line_once_per_batch(
+        self, mock_prompt
+    ):
+        cmd = "Chromium Helper --type=utility --service-sandbox-type=service"
+        self.mock_get_cmdline.return_value = cmd
+        denial1 = _denial("file-write-times /path/to/crl-set", pid=42)
+        denial2 = _denial("file-write-times /path/to/manifest.json", pid=42)
+        self.watcher._report_denial(denial1)
+        self.watcher._report_denial(denial2)
+        self.watcher._flush_batch((denial1.process_name, denial1.action))
+
+        self.mock_get_cmdline.assert_called_once_with(42)
+        mock_prompt.assert_called_once_with(
+            [replace(denial1, command_line=cmd), denial2]
+        )
+
+
+class ProcessCommandLineTest(unittest.TestCase):
+    """Verifies querying process command lines with `/bin/ps`."""
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    def test_returns_stripped_command_line_on_success(self, mock_run):
+        mock_run.return_value = MagicMock(
+            returncode=0,
+            stdout="  Chromium Helper --type=renderer  \n",
+        )
+        self.assertEqual(
+            _get_process_command_line(123),
+            "Chromium Helper --type=renderer",
+        )
+        args, _ = mock_run.call_args
+        self.assertEqual(args[0], [_PS_PATH, "-p", "123", "-o", "command="])
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    def test_returns_none_on_nonzero_exit(self, mock_run):
+        mock_run.return_value = MagicMock(returncode=1, stdout="")
+        self.assertIsNone(_get_process_command_line(123))
+
+    @patch("sandbox_denial_watcher.subprocess.run")
+    def test_returns_none_on_subprocess_error(self, mock_run):
+        mock_run.side_effect = subprocess.TimeoutExpired(cmd="ps", timeout=2)
+        self.assertIsNone(_get_process_command_line(123))
 
 
 class DenialFilterTest(WatcherTestCase):

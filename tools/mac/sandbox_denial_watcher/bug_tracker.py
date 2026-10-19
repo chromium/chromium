@@ -20,6 +20,14 @@ _COMPONENT_ID = "1455745"
 _BUG_TITLE_PREFIX = "[macOS Sandbox] Unexpected denial:"
 _BUG_TRACKER_URL = "https://issues.chromium.org/issues/new"
 
+# Maximum length of the generated pre-filled issue URL to avoid exceeding
+# browser or server URL length limits when many denials are detected.
+_MAX_BUG_URL_LENGTH = 8000
+
+# Reserve ~1,000 URL-encoded chars for the base URL, title, and non-log
+# sections of the bug description.
+_MAX_DENIAL_LOGS_ENCODED_LENGTH = _MAX_BUG_URL_LENGTH - 1000
+
 _CONTEXT_QUESTION = "What were you doing when this notification was triggered?"
 _CONTEXT_PLACEHOLDER = (
     "<Please describe what you were doing, e.g., the page you were on and the "
@@ -90,19 +98,130 @@ def _get_bug_title(denials: Sequence[SandboxDenial]) -> str:
     return f"{_BUG_TITLE_PREFIX} {get_denial_summary(denials)}"
 
 
+# Values of `--service-sandbox-type` that all use the `utility.sb` seatbelt
+# profile rather than `<type>.sb` (see sandbox::policy::GetSandboxProfile in
+# //sandbox/policy/mac/sandbox_mac.mm).
+_UTILITY_SANDBOX_TYPES = frozenset(
+    ("platform_runtime", "service", "service_with_jit", "utility")
+)
+
+
+def _parse_switches(command_line: str) -> dict[str, str]:
+    """Extracts `--key` and `--key=value` switches from a command line.
+
+    Used to parse the flags provided in a process's CLI invocation, retrieved
+    with `ps -p <PID> -o command=`"""
+    switches: dict[str, str] = {}
+    for token in command_line.split():
+        if token.startswith("--"):
+            key, _, value = token[2:].partition("=")
+            if key:
+                switches[key] = value
+    return switches
+
+
+def _get_process_and_profile(denial: SandboxDenial) -> tuple[str, str]:
+    """Returns `(process_type, seatbelt_profile)` for a sandbox denial.
+
+    Uses Chrome's command-line switches (`--type`, `--utility-sub-type`,
+    `--service-sandbox-type`, etc.) when available. Falls back to
+    `denial.process_name` if the process exited before we were able to query
+    with `ps` or if the process is a system service (e.g., MTLCompilerService).
+    """
+    switches = (
+        _parse_switches(denial.command_line) if denial.command_line else {}
+    )
+    proc_type = switches.get("type")
+    if not proc_type:
+        if denial.process_name == "MTLCompilerService":
+            return "MTLCompilerService", "gpu.sb"
+        # macOS truncates process names in sandbox denial logs to 32 bytes
+        # (e.g. "Google Chrome Helper (Aperitif R" or
+        # "Chromium Helper (Aperitif Render"), cutting off the end of
+        # "(Aperitif Renderer)" and "(Aperitif GPU)". These can be removed when
+        # Aperitif is the default.
+        if (
+            denial.process_name.endswith(" (Renderer)")
+            or " (Aperitif R" in denial.process_name
+        ):
+            proc_type = "renderer"
+        elif (
+            denial.process_name.endswith(" (GPU)")
+            or " (Aperitif G" in denial.process_name
+        ):
+            proc_type = "gpu-process"
+        else:
+            return "unknown", "unknown"
+
+    sub_type = (
+        switches.get("utility-sub-type") if proc_type == "utility" else None
+    )
+    process_type = f"utility ({sub_type})" if sub_type else proc_type
+
+    # Mirrors SandboxTypeFromCommandLine in //sandbox/policy/sandbox_type.cc
+    # and GetSandboxProfile in //sandbox/policy/mac/sandbox_mac.mm.
+    if "no-sandbox" in switches:
+        return process_type, "none"
+    if proc_type == "renderer":
+        return process_type, "renderer.sb"
+    if proc_type == "gpu-process":
+        profile = "none" if "disable-gpu-sandbox" in switches else "gpu.sb"
+        return process_type, profile
+    if proc_type == "no-op-for-testing":
+        return process_type, "utility.sb"
+    if proc_type == "utility":
+        sandbox_type = switches.get("service-sandbox-type")
+        if not sandbox_type:
+            return process_type, "unknown"
+        if sandbox_type == "none":
+            return process_type, "none"
+        if sandbox_type in _UTILITY_SANDBOX_TYPES:
+            return process_type, "utility.sb"
+        return process_type, f"{sandbox_type}.sb"
+    return process_type, "none"
+
+
+def _truncate_denial_logs(
+    denial_logs: str,
+    max_encoded_len: int = _MAX_DENIAL_LOGS_ENCODED_LENGTH,
+) -> str:
+    """Truncates `denial_logs` to fit within `max_encoded_len`."""
+    if len(urllib.parse.quote_plus(denial_logs)) <= max_encoded_len:
+        return denial_logs
+
+    suffix = "\n... (truncated)"
+    budget = max_encoded_len - len(urllib.parse.quote_plus(suffix))
+    if budget <= 0:
+        return "... (truncated)"
+
+    encoded_len = 0
+    kept_chars: list[str] = []
+    for ch in denial_logs:
+        ch_len = len(urllib.parse.quote_plus(ch))
+        if encoded_len + ch_len > budget:
+            break
+        kept_chars.append(ch)
+        encoded_len += ch_len
+
+    return "".join(kept_chars).rstrip("\n") + suffix
+
+
 def _get_bug_body(denials: Sequence[SandboxDenial]) -> str:
     """Generates the bug description for a sequence of related denials."""
-    first = denials[0]
+    process_type, seatbelt_profile = _get_process_and_profile(denials[0])
     unique_messages = list(dict.fromkeys(d.event_message for d in denials))
-    message_block = _redact_home_dir("\n".join(unique_messages))
+    denial_logs = _truncate_denial_logs(
+        _redact_home_dir("\n".join(unique_messages))
+    )
     header = (
         "Unexpected Sandbox denial detected:"
         if len(unique_messages) == 1
         else "Unexpected Sandbox denials detected:"
     )
     return (
-        f"Process: {first.process_name}\n\n"
-        f"{header}\n```\n{message_block}\n```\n"
+        f"Process type: {process_type}\n"
+        f"Seatbelt profile: {seatbelt_profile}\n\n"
+        f"{header}\n```\n{denial_logs}\n```\n"
         "\n"
         f"{_get_system_info()}\n"
         "\n"
