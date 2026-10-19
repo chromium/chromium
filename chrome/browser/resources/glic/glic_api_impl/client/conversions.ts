@@ -25,7 +25,6 @@ import type {                                                                //
              AdditionalContextPart as AdditionalContextPartMojo,             //
              AnnotatedPageData as AnnotatedPageDataMojo,                     //
              CaptureRegionResult as CaptureRegionResultMojo,                 //
-             ContextData as ContextDataMojo,                                 //
              ConversationInfo as ConversationInfoMojo,                       //
              CounterAbuseVerdict as CounterAbuseVerdictMojo,                 //
              CreateTabOptions as CreateTabOptionsMojo,                       //
@@ -45,7 +44,6 @@ import type {                                                                //
              PinTabsOptions as PinTabsOptionsMojo,                           //
              Screenshot as ScreenshotMojo,                                   //
              ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, //
-             SkillPreview as SkillPreviewMojo,                               //
              SkillsPayload as SkillsPayloadMojo,                             //
              TabContextOptions as TabContextOptionsMojo,                     //
              TabContextResult as TabContextResultMojo,                       //
@@ -81,7 +79,6 @@ import type {                                                   //
              PinTrigger,                                        //
              Screenshot,                                        //
              ScreenshotCollectionOptions,                       //
-             SkillPreview,                                      //
              SkillsPayload,                                     //
              TabContextOptions,                                 //
              TabData,                                           //
@@ -121,7 +118,6 @@ export const conversionSettings = {
   platform: undefined as Platform | undefined,
   omitFaviconInTabData: false as boolean,
 };
-
 
 export function idToClient(windowId: number): string;
 export function idToClient(windowId: number|null): string|undefined;
@@ -169,17 +165,6 @@ export function screenshotToClient(
     originAnnotations: {},
     encryptionScheme: enumToClient(screenshot.encryptionScheme),
   };
-}
-
-export function contextDataToClient(
-    data: ContextDataMojo,
-    extras: ResponseExtras): {mimeType: string, data: ArrayBuffer}|undefined {
-  const buffer = getArrayBufferFromBigBuffer(data.data);
-  if (!buffer) {
-    return undefined;
-  }
-  extras.addTransfer(buffer);
-  return {mimeType: data.mimeType, data: buffer};
 }
 
 export function webPageDataToClient(webPageData: WebPageDataMojo|null):
@@ -404,20 +389,6 @@ export function timeToClient(time: Time|null|undefined): Date|undefined {
   const unixEpochMs =
       Number((time.internalValue - WINDOWS_TO_UNIX_EPOCH_OFFSET_US) / 1000n);
   return new Date(unixEpochMs);
-}
-
-export function skillPreviewToClient(s: SkillPreviewMojo): SkillPreview {
-  return {
-    id: s.id,
-    name: s.name,
-    icon: s.icon,
-    source: enumToClient(s.source),
-    description: s.description,
-    curatedBy: s.curatedBy || undefined,
-    imageUrl: urlToClient(s.imageUrl),
-    category: optionalToClient(s.category),
-    creationTime: timeToClient(s.creationTime),
-  };
 }
 
 export function focusedTabDataToClient(

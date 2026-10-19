@@ -14,7 +14,7 @@ import {                         //
 } from '../../glic_api/glic_api.js';
 import type {ChromeTool, ChromeToolExecutionResult, GlicBrowserHost, GlicToolsHost} from '../../glic_api/glic_api.js';
 import {AiOverlayToolsRemote, ScrollGranularity} from '../../tools.mojom-webui.js';
-import {hostCapabilitiesToClient} from '../host/conversions.js';
+import {hostCapabilitiesToClient} from '../client/conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 
 class InvalidArgumentError extends Error {}

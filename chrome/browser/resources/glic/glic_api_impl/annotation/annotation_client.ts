@@ -13,7 +13,7 @@ import type {                                          //
 } from '../../glic.mojom-webui.js';
 import type {GlicBrowserHost, ScrollToParams} from '../../glic_api/glic_api.js';
 import {ScrollToErrorReason} from '../../glic_api/glic_api.js';
-import {urlFromClient} from '../host/conversions.js';
+import {urlFromClient} from '../client/conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {ErrorWithReasonImpl} from '../request_types.js';
 

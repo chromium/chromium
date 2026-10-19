@@ -70,9 +70,6 @@ import {                      //
   PerformActionsErrorReason,  //
 } from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
-import {convertTabContextResultFromPrivate, convertTabDataFromPrivate} from '../client/glic_api_client.js';
-import {rgbaImageToBlob} from '../client/image_utils.js';
-import type {CheckEnumCompatibility} from '../conversions.js';
 import {                        //
   bitmapN32ToRGBAImage,         //
   byteArrayFromClient,          //
@@ -85,7 +82,10 @@ import {                        //
   tabContextOptionsFromClient,  //
   tabContextToClient,           //
   urlToClient,                  //
-} from '../host/conversions.js';
+} from '../client/conversions.js';
+import {convertTabContextResultFromPrivate, convertTabDataFromPrivate} from '../client/glic_api_client.js';
+import {rgbaImageToBlob} from '../client/image_utils.js';
+import type {CheckEnumCompatibility} from '../conversions.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import type {ResumeActorTaskResultPrivate} from '../request_types.js';
 import {ErrorWithReasonImpl} from '../request_types.js';
