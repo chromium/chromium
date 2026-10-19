@@ -14,6 +14,7 @@
 
 #import "base/containers/span.h"
 #import "base/memory/raw_ptr.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/test_utils.h"
 #import "components/ttc/app/ttc_backend.h"
@@ -26,6 +27,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 using ::testing::_;
 using ::testing::ElementsAre;
@@ -303,6 +305,27 @@ TEST_F(TtcConversationTest, TestAudioCaptureForwardsToBackend) {
   EXPECT_CALL(*mock_backend_, SendAudioChunk(ElementsAre(0x1122, 0x3344)));
   [fake_audio_controller_.delegate audioController:fake_audio_controller_
                               didCaptureAudioChunk:chunk];
+}
+
+// Tests that `SendContextUpdate` forwards the URL, title, and APC to the
+// backend.
+TEST_F(TtcConversationTest, TestSendContextUpdateForwardsToBackend) {
+  conversation_->Start();
+
+  const GURL url("https://example.com/article");
+  optimization_guide::proto::AnnotatedPageContent apc;
+  apc.mutable_main_frame_data()->set_title("Article Title");
+  EXPECT_CALL(*mock_backend_,
+              SendContextUpdate(
+                  url, "Article Title",
+                  testing::ResultOf(
+                      [](const optimization_guide::proto::AnnotatedPageContent&
+                             forwarded_apc) {
+                        return forwarded_apc.main_frame_data().title();
+                      },
+                      "Article Title")))
+      .Times(1);
+  conversation_->SendContextUpdate(url, "Article Title", apc);
 }
 
 // Tests that backend initialization forwards to conversation delegate.

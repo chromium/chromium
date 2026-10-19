@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_journal.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -220,6 +221,16 @@ void TtcConversation::SendToolSetUpdate(
   if (backend_) {
     LogToolDefinitionsSent(tool_definitions);
     backend_->SendToolSetUpdate(tool_definitions);
+  }
+}
+
+void TtcConversation::SendContextUpdate(
+    const GURL& url,
+    const std::string& title,
+    const optimization_guide::proto::AnnotatedPageContent& apc) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (backend_) {
+    backend_->SendContextUpdate(url, title, apc);
   }
 }
 

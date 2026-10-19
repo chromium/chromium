@@ -64,6 +64,7 @@ class TtcPageContextMonitor : public web::WebStateObserver {
 
  private:
   friend class TtcPageContextMonitorTest;
+  friend class TtcSessionControllerTest;
 
   // Starts an asynchronous `PageContextWrapper` extraction if `web_state_` is
   // eligible for page context extraction.

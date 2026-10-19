@@ -22,9 +22,14 @@
 #import "components/ttc/app/public/tool_types.h"
 #import "components/ttc/app/ttc_backend.h"
 
+class GURL;
 @protocol TTCAudioController;
 @class TTCAudioControllerDelegateBridge;
 class TTCJournal;
+
+namespace optimization_guide::proto {
+class AnnotatedPageContent;
+}  // namespace optimization_guide::proto
 
 // Coordinates between audio input/output and the transport session for TTC on
 // iOS.
@@ -90,6 +95,13 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   // delegates, and invalidates in-flight operations. Safe to call multiple
   // times.
   void Disconnect();
+
+  // Sends an updated context frame with page `url`, `title`, and
+  // `AnnotatedPageContent` (`apc`) for the active tab to the backend.
+  void SendContextUpdate(
+      const GURL& url,
+      const std::string& title,
+      const optimization_guide::proto::AnnotatedPageContent& apc);
 
   // Forwarded `TTCAudioControllerDelegate` callbacks.
   void OnAudioChunkCaptured(NSData* pcm_data);

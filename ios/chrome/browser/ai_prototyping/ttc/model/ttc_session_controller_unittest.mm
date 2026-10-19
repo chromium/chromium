@@ -7,19 +7,27 @@
 #import <UIKit/UIKit.h>
 
 #import <memory>
+#import <string>
 #import <utility>
 
+#import "base/types/expected.h"
+#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "components/ttc/app/test_utils.h"
 #import "components/ttc/app/ttc_backend.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/audio/ttc_audio_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_page_context_monitor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/js_messaging/content_world.h"
+#import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 using ::testing::IsEmpty;
 using ::testing::Not;
@@ -122,10 +130,32 @@ class FakeTtcSessionControllerObserver : public TtcSessionControllerObserver {
   ttc::ErrorCode last_error_ = ttc::ErrorCode::kUnknown;
 };
 
+}  // namespace
+
+// Test fixture for `TtcSessionController`.
 class TtcSessionControllerTest : public PlatformTest {
  protected:
+  // Simulates completion of an asynchronous page context extraction for
+  // `controller`'s active monitor using `url` and `title`.
+  void SimulateMonitorExtraction(TtcSessionController& controller,
+                                 const GURL& url,
+                                 const std::string& title) {
+    ASSERT_NE(controller.page_context_monitor_, nullptr);
+    auto page_context =
+        std::make_unique<optimization_guide::proto::PageContext>();
+    page_context->set_url(url.spec());
+    page_context->set_title(title);
+    auto* apc = page_context->mutable_annotated_page_content();
+    apc->mutable_main_frame_data()->set_url(url.spec());
+    apc->mutable_main_frame_data()->set_title(title);
+    controller.page_context_monitor_->OnPageContextExtracted(
+        url, base::ok(std::move(page_context)));
+  }
+
   web::WebTaskEnvironment task_environment_;
 };
+
+namespace {
 
 // Tests that a controller initializes in `kInitializing` state.
 TEST_F(TtcSessionControllerTest, TestInitialLifecycleIsInitializing) {
@@ -471,18 +501,63 @@ TEST_F(TtcSessionControllerTest,
   controller.Disconnect();
 }
 
-// Tests that `TtcSessionController` tracks the initial active `WebState` and
-// clears it when the session stops or disconnects.
-TEST_F(TtcSessionControllerTest, TestTracksInitialActiveWebState) {
+// Tests that `TtcSessionController` monitors the initial active `WebState` on
+// session start and forwards extracted `AnnotatedPageContent` updates to the
+// backend.
+TEST_F(TtcSessionControllerTest,
+       TestInitialActiveWebStateContextForwardedToBackend) {
+  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  const GURL first_url("https://example.com/first");
   web::FakeWebState first_tab;
+  first_tab.SetBrowserState(profile.get());
+  first_tab.SetIsRealized(true);
+  first_tab.SetCurrentURL(first_url);
+  first_tab.SetContentsMimeType("text/html");
+  for (web::ContentWorld world : {web::ContentWorld::kIsolatedWorld,
+                                  web::ContentWorld::kPageContentWorld}) {
+    first_tab.SetWebFramesManager(
+        world, std::make_unique<web::FakeWebFramesManager>());
+  }
+
   FakeTTCSessionAudioController* fake_audio =
       [[FakeTTCSessionAudioController alloc] init];
-  auto conversation = std::make_unique<TtcConversation>(fake_audio, nullptr);
+  auto mock_backend =
+      std::make_unique<testing::NiceMock<ttc::MockTtcBackend>>();
+  ttc::MockTtcBackend* mock_backend_ptr = mock_backend.get();
+  auto conversation =
+      std::make_unique<TtcConversation>(fake_audio, std::move(mock_backend));
   TtcSessionController controller(std::move(conversation), &first_tab);
 
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), &first_tab);
   controller.StartSession();
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), &first_tab);
+
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(first_url, "First Tab", testing::_))
+      .Times(1);
+  SimulateMonitorExtraction(controller, first_url, "First Tab");
+
+  // Error responses and responses without `AnnotatedPageContent` must not
+  // forward context updates to the backend.
+  EXPECT_CALL(*mock_backend_ptr, SendContextUpdate).Times(0);
+  controller.OnPageContextFetched(
+      base::unexpected(PageContextWrapperError::kGenericError));
+  auto empty_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  controller.OnPageContextFetched(base::ok(std::move(empty_context)));
+
+  // Falls back to `PageContext` URL and title when `main_frame_data` fields are
+  // empty.
+  const GURL fallback_url("https://example.com/fallback");
+  auto fallback_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  fallback_context->set_url(fallback_url.spec());
+  fallback_context->set_title("Fallback Title");
+  fallback_context->mutable_annotated_page_content();
+  EXPECT_CALL(*mock_backend_ptr,
+              SendContextUpdate(fallback_url, "Fallback Title", testing::_))
+      .Times(1);
+  controller.OnPageContextFetched(base::ok(std::move(fallback_context)));
 
   controller.StopSession();
   EXPECT_EQ(controller.GetVoiceFocusedWebState(), nullptr);

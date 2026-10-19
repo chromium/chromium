@@ -14,6 +14,7 @@
 #import "base/sequence_checker.h"
 #import "components/ttc/app/public/error_codes.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_page_context_monitor.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
@@ -31,7 +32,8 @@ class WebState;
 
 // Coordinates the lifecycle, observer notifications, and backgrounding teardown
 // for an active TTC session on iOS.
-class TtcSessionController : public TtcConversation::Delegate {
+class TtcSessionController : public TtcConversation::Delegate,
+                             public TtcPageContextMonitor::Delegate {
  public:
   // Underlying conversation coordinator.
   TtcConversation* conversation() const { return conversation_.get(); }
@@ -43,7 +45,7 @@ class TtcSessionController : public TtcConversation::Delegate {
   TTCJournal* journal() const;
   void set_journal(TTCJournal* journal);
 
-  // Returns the initial active `WebState` resolved for this session, or
+  // Returns the active `WebState` currently tracked by this session, or
   // `nullptr` if none.
   web::WebState* GetVoiceFocusedWebState() const;
 
@@ -94,7 +96,13 @@ class TtcSessionController : public TtcConversation::Delegate {
   void OnAudioEnergyUpdated(float energy) override;
   void OnConversationError(ttc::ErrorCode error) override;
 
+  // `TtcPageContextMonitor::Delegate` implementation:
+  void OnPageContextFetched(
+      PageContextWrapperCallbackResponse response) override;
+
  private:
+  friend class TtcSessionControllerTest;
+
   // Updates `lifecycle_` and notifies registered observers if the state
   // changed.
   void SetLifecycle(TTCSessionLifecycle lifecycle);
@@ -120,6 +128,10 @@ class TtcSessionController : public TtcConversation::Delegate {
 
   // Initial active `WebState` to monitor when the session starts.
   base::WeakPtr<web::WebState> initial_web_state_;
+
+  // Per-tab monitor extracting `AnnotatedPageContent` for the active
+  // `WebState` tracked by this session.
+  std::unique_ptr<TtcPageContextMonitor> page_context_monitor_;
 
   // Current lifecycle state of the session.
   TTCSessionLifecycle lifecycle_ = TTCSessionLifecycle::kInitializing;
