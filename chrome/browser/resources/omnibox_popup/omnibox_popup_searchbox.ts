@@ -831,16 +831,6 @@ export class OmniboxPopupSearchboxElement extends
     });
   }
 
-  isInputEmpty(): boolean {
-    // If this is called before first render, the input element will not exist.
-    // TODO (crbug.com/565444900): Remove `?` from `shadowRoot` in this file.
-    if (!this.shadowRoot?.querySelector('#input') || !this.$.input ||
-        !this.$.input.lastInput()) {
-      return true;
-    }
-    return !this.$.input.lastInput()!.text.trim();
-  }
-
   /**
    * Returns true if `value` should be treated as a cleared input, i.e. the
    * dropdown should close and the backend should be told the draft was

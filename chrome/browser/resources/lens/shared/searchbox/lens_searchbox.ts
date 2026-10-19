@@ -271,15 +271,6 @@ export class LensSearchboxElement extends LensSearchboxElementBase implements
         /*isOnFocus=*/ !input);
   }
 
-  isInputEmpty(): boolean {
-    // If this is called before first render, the input element will not exist.
-    if (!this.shadowRoot?.querySelector('#input') || !this.$.input ||
-        !this.$.input.lastInput()) {
-      return true;
-    }
-    return !this.$.input.lastInput()!.text.trim();
-  }
-
   private computeSelectedMatch_(): AutocompleteMatch|null {
     if (!this.result || !this.result.matches) {
       return null;

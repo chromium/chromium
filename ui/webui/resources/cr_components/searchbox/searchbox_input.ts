@@ -590,9 +590,18 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     if (newInputValue !== lastInputValue) {
       this.urlEmphasis = null;
     }
-    this.lastInput_ = newInput;
+    this.setLastInput_(newInput);
     this.updateEllipsisState_();
     this.updateMirror_();
+  }
+
+  private setLastInput_(newInput: Input) {
+    const wasInputEmpty = !this.lastInput_.text.trim();
+    this.lastInput_ = newInput;
+    const isInputEmpty = !this.lastInput_.text.trim();
+    if (wasInputEmpty !== isInputEmpty) {
+      this.fire('searchbox-input-empty-changed', {value: isInputEmpty});
+    }
   }
 
   /**
@@ -754,7 +763,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
         input.selectionStart !== input.selectionEnd;
 
     if (hasInlineAutocomplete && !hasInlineSelection) {
-      this.lastInput_ = {text: input.value, inline: ''};
+      this.setLastInput_({text: input.value, inline: ''});
       this.forceSingleLine_ = false;
     } else if (
         // If the user clicks into or moves the cursor within preview text,

@@ -497,15 +497,6 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
   // Public API (ported from SearchboxElement)
   //============================================================================
 
-  isInputEmpty(): boolean {
-    // If this is called before first render, the input element will not exist.
-    if (!this.shadowRoot?.querySelector('#input') || !this.$.input ||
-        !this.$.input.lastInput()) {
-      return true;
-    }
-    return !this.$.input.lastInput()!.text.trim();
-  }
-
   setInputText(text: string) {
     this.$.input.setInputText(text);
     // Setting the text programmatically (e.g. with the voice search transcript)
