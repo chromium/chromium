@@ -284,6 +284,10 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
 
   value_map_.clear();
 
+  if (prefs_->GetDict(pref_name_).empty()) {
+    return;
+  }
+
   std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update;
   std::unique_ptr<prefs::DictionaryValueUpdate> mutable_settings;
   // Don't create `update` in off the record mode to avoid accidentally
