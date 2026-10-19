@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "ui/gfx/extension_set.h"
 
 namespace gpu {
@@ -46,9 +47,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanInfo {
   ~VulkanInfo();
   VulkanInfo& operator=(const VulkanInfo& other);
 
-  void SetEnabledInstanceExtensions(const std::vector<const char*>& extensions);
   void SetEnabledInstanceExtensions(
-      const std::vector<std::string_view>& extensions);
+      base::span<const std::string_view> extensions);
 
   uint32_t api_version = VK_MAKE_VERSION(1, 0, 0);
   uint32_t used_api_version = VK_MAKE_VERSION(1, 0, 0);

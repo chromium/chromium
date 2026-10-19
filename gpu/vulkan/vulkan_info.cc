@@ -4,10 +4,10 @@
 
 #include "gpu/vulkan/vulkan_info.h"
 
-#include <cstring>
 #include <string_view>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 
 namespace gpu {
@@ -27,39 +27,23 @@ VulkanInfo::VulkanInfo(const VulkanInfo& other) {
 }
 
 VulkanInfo& VulkanInfo::operator=(const VulkanInfo& other) {
+  if (this == &other) {
+    return *this;
+  }
   api_version = other.api_version;
   used_api_version = other.used_api_version;
   instance_extensions = other.instance_extensions;
   instance_layers = other.instance_layers;
   physical_devices = other.physical_devices;
-  SetEnabledInstanceExtensions(other.enabled_instance_extensions);
+  SetEnabledInstanceExtensions(
+      base::ToVector<std::string_view>(other.enabled_instance_extensions));
   return *this;
 }
 
 void VulkanInfo::SetEnabledInstanceExtensions(
-    const std::vector<const char*>& extensions) {
+    base::span<const std::string_view> extensions) {
   enabled_instance_extensions.clear();
-  for (const auto* const extension : extensions) {
-    bool found = false;
-    for (const auto& instance_extension : instance_extensions) {
-      if (UNSAFE_TODO(strcmp(extension, instance_extension.extensionName)) ==
-          0) {
-        enabled_instance_extensions.push_back(instance_extension.extensionName);
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      LOG(ERROR) << "The enabled extension '" << extension
-                 << "' is not in instance_extensions!";
-    }
-  }
-}
-
-void VulkanInfo::SetEnabledInstanceExtensions(
-    const std::vector<std::string_view>& extensions) {
-  enabled_instance_extensions.clear();
-  for (const auto& extension : extensions) {
+  for (std::string_view extension : extensions) {
     bool found = false;
     for (const auto& instance_extension : instance_extensions) {
       if (extension == instance_extension.extensionName) {
