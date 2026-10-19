@@ -118,6 +118,19 @@ TEST(DecayingBloomFilterTest, SharedCounterReferenceCounting) {
   EXPECT_TRUE(filter.Contains(kBravo));
 }
 
+TEST(DecayingBloomFilterTest, AddIfNotContained) {
+  FakeHashFilter filter;
+
+  // kAlfa sets slots {16, 8}.
+  EXPECT_TRUE(filter.AddIfNotContained(kAlfa));
+  EXPECT_TRUE(filter.Contains(kAlfa));
+  EXPECT_EQ(filter.GetCounterForTesting(16), 1u);
+
+  // Already contained: not added again.
+  EXPECT_FALSE(filter.AddIfNotContained(kAlfa));
+  EXPECT_EQ(filter.GetCounterForTesting(16), 1u);
+}
+
 constexpr size_t kConcurrentDecaySteps = 512;
 using ConcurrentTestFilter =
     DecayingBloomFilter<kTestNumCounters,

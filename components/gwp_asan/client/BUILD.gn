@@ -115,6 +115,7 @@ source_set("unit_tests") {
     "gwp_asan_unittest.cc",
     "lightweight_detector/poison_metadata_recorder_unittest.cc",
     "sampling_helpers_unittest.cc",
+    "sampling_state_unittest.cc",
   ]
 
   if (use_partition_alloc_as_malloc && !is_ios) {

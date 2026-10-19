@@ -65,31 +65,21 @@ class DecayingBloomFilter {
   // Returns true if `key` may have been added within the last `kDecaySteps`
   // calls to Add().
   ALWAYS_INLINE bool Contains(uint64_t key) const {
-    const uint32_t hash = ComputeHash(key);
-    for (size_t i = 0; i < kNumHashes; ++i) {
-      const size_t idx = GetSlotIndex(hash, i);
-      if (counters_[idx].load(std::memory_order_relaxed) == 0) {
-        return false;
-      }
-    }
-    return true;
+    return ContainsHash(ComputeHash(key));
   }
 
   // Adds `key` and evicts the entry added `kDecaySteps` steps ago.
-  void Add(uint64_t key) {
-    const uint32_t hash = ComputeHash(key);
-    IncrementCounters(hash);
+  void Add(uint64_t key) { AddHash(ComputeHash(key)); }
 
-    // `ring_pos_` is allowed to overflow. At its maximum value all bits are
-    // ones so it maps to the last ring slot, and overflowing to zero seamlessly
-    // wraps to slot zero. Bitwise AND is used instead of modulo for
-    // performance.
-    const size_t pos = ring_pos_.fetch_add(1u, std::memory_order_relaxed);
-    const uint32_t evicted_hash =
-        ring_[pos & kRingIndexMask].exchange(hash, std::memory_order_relaxed);
-    if (evicted_hash != kEmptyRingSlot) {
-      DecrementCounters(evicted_hash);
+  // Same as Add(), but only if `key` is not contained. Hashes `key` only once.
+  // Returns whether `key` was added.
+  bool AddIfNotContained(uint64_t key) {
+    const uint32_t hash = ComputeHash(key);
+    if (ContainsHash(hash)) {
+      return false;
     }
+    AddHash(hash);
+    return true;
   }
 
   size_t CountNonZeroCountersForTesting() const {
@@ -104,6 +94,16 @@ class DecayingBloomFilter {
 
   Counter GetCounterForTesting(size_t index) const {
     return counters_[index].load(std::memory_order_relaxed);
+  }
+
+  void ResetForTesting() {
+    for (auto& counter : counters_) {
+      counter.store(0, std::memory_order_relaxed);
+    }
+    for (auto& slot : ring_) {
+      slot.store(kEmptyRingSlot, std::memory_order_relaxed);
+    }
+    ring_pos_.store(0, std::memory_order_relaxed);
   }
 
  private:
@@ -126,6 +126,31 @@ class DecayingBloomFilter {
   ALWAYS_INLINE static size_t GetSlotIndex(uint32_t hash, size_t hash_index) {
     return static_cast<size_t>((hash >> (hash_index * kShiftWidth)) &
                                kCounterIndexMask);
+  }
+
+  ALWAYS_INLINE bool ContainsHash(uint32_t hash) const {
+    for (size_t i = 0; i < kNumHashes; ++i) {
+      const size_t idx = GetSlotIndex(hash, i);
+      if (counters_[idx].load(std::memory_order_relaxed) == 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void AddHash(uint32_t hash) {
+    IncrementCounters(hash);
+
+    // `ring_pos_` is allowed to overflow. At its maximum value all bits are
+    // ones so it maps to the last ring slot, and overflowing to zero seamlessly
+    // wraps to slot zero. Bitwise AND is used instead of modulo for
+    // performance.
+    const size_t pos = ring_pos_.fetch_add(1u, std::memory_order_relaxed);
+    const uint32_t evicted_hash =
+        ring_[pos & kRingIndexMask].exchange(hash, std::memory_order_relaxed);
+    if (evicted_hash != kEmptyRingSlot) {
+      DecrementCounters(evicted_hash);
+    }
   }
 
   void IncrementCounters(uint32_t hash) {
