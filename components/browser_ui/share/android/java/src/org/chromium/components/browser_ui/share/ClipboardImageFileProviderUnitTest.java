@@ -10,8 +10,6 @@ import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBO
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,12 +17,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.base.Clipboard.ClipboardUriMetadata;
 
 /** Tests for ClipboardImageFileProvider. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ClipboardImageFileProviderUnitTest {
     private static final Uri CONTENT_URI = Uri.parse("content://package/path/image.png");
 
@@ -41,7 +39,6 @@ public class ClipboardImageFileProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ClipboardImageFileProvider")
     public void testStoreLastCopiedImageMetadata() {
         long timestamp = System.currentTimeMillis();
@@ -56,7 +53,6 @@ public class ClipboardImageFileProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ClipboardImageFileProvider")
     public void testGetLastCopiedImageMetadata() {
         long timestamp = System.currentTimeMillis();
@@ -69,7 +65,6 @@ public class ClipboardImageFileProviderUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature("ClipboardImageFileProvider")
     public void testClearLastCopiedImageMetadata() {
         long timestamp = System.currentTimeMillis();
