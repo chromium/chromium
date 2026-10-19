@@ -1070,12 +1070,9 @@ LRESULT CALLBACK DropWmDestroyWndProc(HWND hwnd,
 
 }  // namespace
 
-// Verifies that when features::kHandleMissingWmDestroy is enabled, receiving
-// WM_NCDESTROY without a preceding WM_DESTROY is safely handled and does not
-// crash at CHECK(widget_destroying_handled_).
+// Verifies that receiving WM_NCDESTROY without a preceding WM_DESTROY is safely
+// handled and does not crash at CHECK(widget_destroying_handled_).
 TEST_F(DesktopWindowTreeHostWinTest, MissingWmDestroyDoesNotCrash) {
-  base::test::ScopedFeatureList feature_list(features::kHandleMissingWmDestroy);
-
   Widget widget;
   HWND widget_hwnd = InitTestWidget(
       widget, CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,

@@ -1254,8 +1254,7 @@ void DesktopWindowTreeHostWin::HandleDestroying() {
 }
 
 void DesktopWindowTreeHostWin::HandleDestroyed() {
-  if (!called_handle_destroying_ &&
-      base::FeatureList::IsEnabled(features::kHandleMissingWmDestroy)) {
+  if (!called_handle_destroying_) {
     // In anomalous destruction cases (such as external subclassing or
     // third-party hooks dropping WM_DESTROY), WM_NCDESTROY may arrive without a
     // preceding WM_DESTROY. Ensure that HandleDestroying() is called before the
