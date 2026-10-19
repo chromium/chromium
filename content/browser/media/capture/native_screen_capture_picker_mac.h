@@ -88,6 +88,8 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
       GetWindowOwnerPidCallback callback);
 
  private:
+  friend class NativeScreenCapturePickerMacTest;
+
   struct CaptureSession {
     CaptureSession();
     ~CaptureSession();
@@ -144,9 +146,9 @@ class API_AVAILABLE(macos(14.0)) CONTENT_EXPORT NativeScreenCapturePickerMac
 
   // On every new getDisplayMedia request, we increment
   // `active_picker_source_id_` and assign `active_picker_type_` the type of the
-  // request. Since while making a selection of the capture surface the rest of
-  // the UI becomes non-interactive, it is ensured that the callbacks are called
-  // for the right selection.
+  // request. Only one pending request is tracked at a time; Open() rejects new
+  // requests while a selection is in progress so the callbacks above always
+  // belong to the request that opened the system picker.
   DesktopMediaID::Id active_picker_source_id_ = 0;
   DesktopMediaID::Type active_picker_type_;
 

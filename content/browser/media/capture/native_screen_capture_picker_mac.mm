@@ -416,6 +416,13 @@ void NativeScreenCapturePickerMac::Open(
   CHECK(type == DesktopMediaID::Type::TYPE_SCREEN ||
         type == DesktopMediaID::Type::TYPE_WINDOW);
   if (@available(macOS 14.0, *)) {
+    if (picker_callback_) {
+      // The system picker is already showing for another request; reject this
+      // one rather than displacing the in-flight selection.
+      std::move(error_callback).Run();
+      return;
+    }
+
     active_picker_source_id_++;
     active_picker_type_ = type;
     LogSessionEvent(SCContentSharingPickerSessionEvent::kPickerOpened);
@@ -563,6 +570,13 @@ void NativeScreenCapturePickerMac::OnPickerObserverUpdated(
     return;
   }
 
+  if (!stream && !picker_callback_) {
+    VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
+               "picker_callback_ is null for source id = "
+            << session_id;
+    return;
+  }
+
   auto& session = GetOrCreateCaptureSession(session_id);
   session.filter = filter;
 
@@ -583,13 +597,6 @@ void NativeScreenCapturePickerMac::OnPickerObserverUpdated(
       session.window_list_updated_logged = true;
       LogSessionEvent(SCContentSharingPickerSessionEvent::kWindowListUpdated);
     }
-    return;
-  }
-
-  if (!picker_callback_) {
-    VLOG(1) << "NSCPM::OnPickerObserverUpdated: "
-               "picker_callback_ is null for source id = "
-            << session_id;
     return;
   }
 
@@ -629,6 +636,13 @@ void NativeScreenCapturePickerMac::OnPickerObserverCancelled(SCStream* stream) {
     return;
   }
 
+  if (!cancel_callback_) {
+    VLOG(1) << "NSCPM::OnPickerObserverCancelled: "
+               "cancel_callback_ is null for source id = "
+            << active_picker_source_id_;
+    return;
+  }
+
   VLOG(1) << "NSCPM::OnPickerObserverCancelled: sourcce id = "
           << active_picker_source_id_;
   auto& session = GetOrCreateCaptureSession(active_picker_source_id_);
@@ -638,9 +652,7 @@ void NativeScreenCapturePickerMac::OnPickerObserverCancelled(SCStream* stream) {
   }
   picker_callback_.Reset();
   error_callback_.Reset();
-  if (cancel_callback_) {
-    std::move(cancel_callback_).Run();
-  }
+  std::move(cancel_callback_).Run();
   MaybeDeactivatePicker();
 }
 
@@ -648,6 +660,13 @@ void NativeScreenCapturePickerMac::OnPickerObserverEncounteredError(
     NSError* error) {
   CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M160);
+
+  if (!error_callback_) {
+    VLOG(1) << "NSCPM::OnPickerObserverEncounteredError: "
+               "error_callback_ is null for source id = "
+            << active_picker_source_id_;
+    return;
+  }
 
   VLOG(1) << "NSCPM::OnPickerObserverEncounteredError: source id = "
           << active_picker_source_id_ << ", code = " << [error code]
@@ -660,9 +679,7 @@ void NativeScreenCapturePickerMac::OnPickerObserverEncounteredError(
   }
   picker_callback_.Reset();
   cancel_callback_.Reset();
-  if (error_callback_) {
-    std::move(error_callback_).Run();
-  }
+  std::move(error_callback_).Run();
   MaybeDeactivatePicker();
 }
 
@@ -686,6 +703,11 @@ void NativeScreenCapturePickerMac::Close(DesktopMediaID device_id) {
   CHECK(device_task_runner_->RunsTasksInCurrentSequence(),
         base::NotFatalUntil::M160);
   if (@available(macOS 14.0, *)) {
+    if (device_id.id == active_picker_source_id_) {
+      picker_callback_.Reset();
+      cancel_callback_.Reset();
+      error_callback_.Reset();
+    }
     ScheduleCleanup(device_id.id);
     active_source_ids_.erase(device_id.id);
     MaybeDeactivatePicker();
