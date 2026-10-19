@@ -1982,6 +1982,8 @@ void RTCVideoEncoder::Impl::BitstreamBufferReady(
         media::EncoderStatus status = FillGenericFrameInfo(info, metadata);
         if (!status.is_ok()) {
           NotifyErrorStatus(status);
+        } else {
+          image.SetTemporalIndex(info.generic_frame_info->temporal_id);
         }
       }
       break;
