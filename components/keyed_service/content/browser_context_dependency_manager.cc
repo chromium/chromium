@@ -57,6 +57,11 @@ void BrowserContextDependencyManager::MarkBrowserContextLive(
   DependencyManager::MarkContextLive(context);
 }
 
+void BrowserContextDependencyManager::DisableBrowserContextServicesByDefault(
+    content::BrowserContext* context) {
+  DependencyManager::DisableContextServicesByDefault(context);
+}
+
 // static
 BrowserContextDependencyManager*
 BrowserContextDependencyManager::GetInstance() {

@@ -109,7 +109,10 @@ buildflag_header("features") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "dependency_graph_unittest.cc" ]
+  sources = [
+    "dependency_graph_unittest.cc",
+    "keyed_service_factory_unittest.cc",
+  ]
   deps = [
     ":core",
     "//base",

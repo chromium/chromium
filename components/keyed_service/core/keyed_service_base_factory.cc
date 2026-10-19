@@ -67,6 +67,16 @@ bool KeyedServiceBaseFactory::ServiceIsNULLWhileTesting() const {
   return false;
 }
 
+bool KeyedServiceBaseFactory::ServiceIsAllowedWhenServicesDisabledByDefault()
+    const {
+  return false;
+}
+
+bool KeyedServiceBaseFactory::AreContextServicesDisabledByDefault(
+    void* context) const {
+  return dependency_manager_->AreContextServicesDisabledByDefault(context);
+}
+
 void KeyedServiceBaseFactory::ContextDestroyed(void* context) {
   // While object destruction can be customized in ways where the object is
   // only dereferenced, this still must run on the UI thread.

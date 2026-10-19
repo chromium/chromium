@@ -115,6 +115,13 @@ KeyedServiceTemplatedFactory<ServiceType>::GetServiceForContext(void* context,
     return nullptr;
   }
 
+  // If services are disabled by default for `context`, only factories that
+  // explicitly allow it create a service for it.
+  if (AreContextServicesDisabledByDefault(context) &&
+      !ServiceIsAllowedWhenServicesDisabledByDefault()) {
+    return nullptr;
+  }
+
   auto iterator = FindOrCreateMapping(context);
   CHECK(iterator != mapping_.end());
 

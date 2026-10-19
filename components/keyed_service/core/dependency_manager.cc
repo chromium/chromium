@@ -226,6 +226,7 @@ void DependencyManager::MarkContextLive(void* context) {
 
 void DependencyManager::MarkContextDead(void* context) {
   dead_context_pointers_.insert(context);
+  contexts_with_services_disabled_by_default_.erase(context);
 
 #if DCHECK_IS_ON()
 #if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
@@ -233,6 +234,19 @@ void DependencyManager::MarkContextDead(void* context) {
   --context_created_count_;
 #endif
 #endif
+}
+
+void DependencyManager::DisableContextServicesByDefault(void* context) {
+  AssertContextWasntDestroyed(context);
+  for (KeyedServiceBaseFactory* factory : GetConstructionOrder()) {
+    CHECK(!factory->IsServiceCreated(context));
+  }
+  contexts_with_services_disabled_by_default_.insert(context);
+}
+
+bool DependencyManager::AreContextServicesDisabledByDefault(
+    void* context) const {
+  return contexts_with_services_disabled_by_default_.contains(context);
 }
 
 DependencyGraph& DependencyManager::GetDependencyGraphForTesting() {

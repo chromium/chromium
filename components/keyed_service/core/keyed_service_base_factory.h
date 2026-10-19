@@ -93,6 +93,16 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   // testing context will be null.
   virtual bool ServiceIsNULLWhileTesting() const;
 
+  // By default, no service is created for a context passed to
+  // DependencyManager::DisableContextServicesByDefault(). Factories whose
+  // service should be created for such contexts must override this method to
+  // return true.
+  virtual bool ServiceIsAllowedWhenServicesDisabledByDefault() const;
+
+  // Returns whether DependencyManager::DisableContextServicesByDefault() has
+  // been called for |context|.
+  bool AreContextServicesDisabledByDefault(void* context) const;
+
   // Most of the KeyedServices needs a fully initialised context, but some
   // embedders delegates part of the context initialisation to services. To
   // support this, the KeyedServiceFactories are informed of the creation

@@ -75,6 +75,12 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   // new BrowserContext object might be created at 0xWhatever).
   void MarkBrowserContextLive(content::BrowserContext* context);
 
+  // Disables services for |context| by default: services are only created for
+  // it by factories that explicitly allow it, see
+  // KeyedServiceBaseFactory::ServiceIsAllowedWhenServicesDisabledByDefault().
+  // Must be called before any service is created for |context|.
+  void DisableBrowserContextServicesByDefault(content::BrowserContext* context);
+
   static BrowserContextDependencyManager* GetInstance();
 
   BrowserContextDependencyManager(const BrowserContextDependencyManager&) =

@@ -100,6 +100,12 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // marked as live again with MarkContextLive().
   void MarkContextDead(void* context);
 
+  // Disables services for |context| by default: services are only created for
+  // it by factories that explicitly allow it, see
+  // KeyedServiceBaseFactory::ServiceIsAllowedWhenServicesDisabledByDefault().
+  // Must be called before any service is created for |context|.
+  void DisableContextServicesByDefault(void* context);
+
  private:
   friend class KeyedServiceBaseFactory;
 
@@ -124,6 +130,10 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   static void DestroyFactoriesInOrder(void* context,
                                       const OrderedFactories& factories);
 
+  // Returns whether DisableContextServicesByDefault() has been called for
+  // |context|.
+  bool AreContextServicesDisabledByDefault(void* context) const;
+
   DependencyGraph dependency_graph_;
 
   // A list of context objects that have gone through the Shutdown() phase.
@@ -131,6 +141,10 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // locations in memory so we can nicely assert if we're asked to do anything
   // with them.
   std::set<raw_ptr<void, SetExperimental>> dead_context_pointers_;
+
+  // Contexts passed to DisableContextServicesByDefault(). A context is removed
+  // when it is marked as dead.
+  std::set<raw_ptr<void>> contexts_with_services_disabled_by_default_;
 
 #if DCHECK_IS_ON()
 #if BUILDFLAG(KEYED_SERVICE_HAS_TIGHT_REGISTRATION)
