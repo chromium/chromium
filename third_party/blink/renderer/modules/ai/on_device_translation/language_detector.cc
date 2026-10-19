@@ -10,14 +10,12 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
-#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/feedback_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -77,16 +75,8 @@ class LanguageDetectorCreateTask
                           options->getSignalOr(nullptr)),
         task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())),
         options_(options) {
-    if (options->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<CreateMonitor>(
-          GetExecutionContext(), options->getSignalOr(nullptr), task_runner_);
-
-      // If an exception is thrown, don't initiate language detection model
-      // download. `CreateMonitorCallback`'s `Invoke` will automatically
-      // reject the promise with the thrown exception.
-      if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
-        return;
-      }
+    if (!InitializeMonitor(options, task_runner_)) {
+      return;
     }
 
     AIInterfaceProxy::GetLanguageDetectionModelStatus(
@@ -99,7 +89,6 @@ class LanguageDetectorCreateTask
   void Trace(Visitor* visitor) const override {
     ExecutionContextClient::Trace(visitor);
     AIContextObserver::Trace(visitor);
-    visitor->Trace(monitor_);
     visitor->Trace(options_);
   }
 
@@ -166,7 +155,7 @@ class LanguageDetectorCreateTask
       }
       return;
     }
-    if (!CompleteDownloadProgress(monitor_)) {
+    if (!CompleteDownloadProgress()) {
       return;
     }
     GetResolver()->Resolve(MakeGarbageCollected<LanguageDetector>(
@@ -178,8 +167,6 @@ class LanguageDetectorCreateTask
   void ResetReceiver() override {}
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  Member<CreateMonitor> monitor_;
   Member<LanguageDetectorCreateOptions> options_;
 };
 

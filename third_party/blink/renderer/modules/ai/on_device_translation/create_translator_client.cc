@@ -6,11 +6,9 @@
 
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-blink-forward.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
-#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -132,16 +130,8 @@ CreateTranslatorClient::CreateTranslatorClient(
       target_language_(options->targetLanguage()),
       receiver_(this, GetExecutionContext()),
       task_runner_(AIInterfaceProxy::GetTaskRunner(GetExecutionContext())) {
-  if (options->hasMonitor()) {
-    monitor_ = MakeGarbageCollected<CreateMonitor>(
-        GetExecutionContext(), options->getSignalOr(nullptr), task_runner_);
-
-    // If an exception is thrown, don't initiate language detection model
-    // download. `AICreateMonitorCallback`'s `Invoke` will automatically
-    // reject the promise with the thrown exception.
-    if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
-      return;
-    }
+  if (!InitializeMonitor(options, task_runner_)) {
+    return;
   }
 
   AIInterfaceProxy::GetTranslationManagerRemote(GetExecutionContext())
@@ -157,7 +147,6 @@ void CreateTranslatorClient::Trace(Visitor* visitor) const {
   AIContextObserver::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(receiver_);
-  visitor->Trace(monitor_);
 }
 
 void CreateTranslatorClient::OnResult(
@@ -194,7 +183,7 @@ void CreateTranslatorClient::OnResult(
   source_language_ = source_language->code;
   target_language_ = target_language->code;
 
-  if (!CompleteDownloadProgress(monitor_)) {
+  if (!CompleteDownloadProgress()) {
     return;
   }
 
@@ -239,20 +228,13 @@ void CreateTranslatorClient::OnGotAvailability(
 
   receiver_.Bind(client.InitWithNewPipeAndPassReceiver(), task_runner_);
 
-  mojo::PendingRemote<on_device_model::mojom::blink::DownloadObserver>
-      progress_observer;
-
-  if (monitor_) {
-    progress_observer = monitor_->BindRemote();
-  }
-
   AIInterfaceProxy::GetTranslationManagerRemote(GetExecutionContext())
       ->CreateTranslator(
           std::move(client),
           mojom::blink::TranslatorCreateOptions::New(
               mojom::blink::TranslatorLanguageCode::New(source_language_),
               mojom::blink::TranslatorLanguageCode::New(target_language_),
-              std::move(progress_observer)));
+              BindMonitorRemote()));
 }
 
 void CreateTranslatorClient::ResetReceiver() {

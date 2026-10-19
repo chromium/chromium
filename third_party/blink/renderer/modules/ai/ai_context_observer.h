@@ -5,7 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CONTEXT_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AI_AI_CONTEXT_OBSERVER_H_
 
+#include "base/check.h"
+#include "base/task/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/on_device_model/public/mojom/download_observer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -49,6 +54,7 @@ class AIContextObserver : public ContextLifecycleObserver {
     visitor->Trace(resolver_);
     visitor->Trace(abort_signal_);
     visitor->Trace(abort_handle_);
+    visitor->Trace(monitor_);
   }
 
   ~AIContextObserver() override = default;
@@ -60,16 +66,48 @@ class AIContextObserver : public ContextLifecycleObserver {
   }
   AbortSignal* GetAbortSignal() { return abort_signal_; }
 
-  // Ensures 0 and 100% download progress events are dispatched via `monitor`
+  // Initializes the download progress monitor from `options` (if present) and
+  // invokes its callback. Returns false if the callback threw or aborted.
+  template <typename CreateOptions>
+  bool InitializeMonitor(const CreateOptions* options,
+                         scoped_refptr<base::SequencedTaskRunner> task_runner) {
+    CHECK(options);
+    if (!options->hasMonitor()) {
+      return resolver_ != nullptr;
+    }
+    monitor_ = MakeGarbageCollected<CreateMonitor>(
+        context_client_->GetExecutionContext(), abort_signal_,
+        std::move(task_runner));
+    // Use `InvokeAndCatch` and reject `resolver_` explicitly instead of
+    // `Invoke`, which detaches `resolver_` and would fail if `Promise()` is
+    // called after constructing the observer, or trip `Dispose()`'s detach
+    // check on `Cleanup()`.
+    if (auto result = options->monitor()->InvokeAndCatch(nullptr, monitor_);
+        !result.has_value()) {
+      if (resolver_) {
+        resolver_->Reject(result.error());
+      }
+      Cleanup();
+      return false;
+    }
+    return resolver_ != nullptr;
+  }
+
+  mojo::PendingRemote<on_device_model::mojom::blink::DownloadObserver>
+  BindMonitorRemote() {
+    return monitor_ ? monitor_->BindRemote() : mojo::NullRemote();
+  }
+
+  // Ensures 0 and 100% download progress events are dispatched via `monitor_`
   // (which ignores redundant updates). Returns whether `resolver_` remains
   // valid, as progress listeners may abort creation or destroy the context.
-  bool CompleteDownloadProgress(CreateMonitor* monitor) {
-    if (monitor && resolver_) {
-      monitor->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
+  bool CompleteDownloadProgress() {
+    if (monitor_ && resolver_) {
+      monitor_->OnDownloadProgressUpdate(0, kNormalizedDownloadProgressMax);
     }
-    if (monitor && resolver_) {
-      monitor->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
-                                        kNormalizedDownloadProgressMax);
+    if (monitor_ && resolver_) {
+      monitor_->OnDownloadProgressUpdate(kNormalizedDownloadProgressMax,
+                                         kNormalizedDownloadProgressMax);
     }
     return resolver_ != nullptr;
   }
@@ -77,6 +115,7 @@ class AIContextObserver : public ContextLifecycleObserver {
   void Cleanup() {
     ResetReceiver();
     resolver_ = nullptr;
+    monitor_ = nullptr;
     keep_alive_.Clear();
     if (abort_handle_) {
       abort_signal_->RemoveAlgorithm(abort_handle_);
@@ -105,6 +144,7 @@ class AIContextObserver : public ContextLifecycleObserver {
   Member<ScriptPromiseResolver<V8SessionObjectType>> resolver_;
   Member<AbortSignal> abort_signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
+  Member<CreateMonitor> monitor_;
   SelfKeepAlive<AIContextObserver> keep_alive_{{}, this};
 };
 

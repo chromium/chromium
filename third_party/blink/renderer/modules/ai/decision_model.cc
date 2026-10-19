@@ -11,7 +11,6 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_create_monitor_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decide_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decision.h"
@@ -29,7 +28,6 @@
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
-#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -255,28 +253,22 @@ class CreateDecisionModelClient
  public:
   CreateDecisionModelClient(ScriptState* script_state,
                             ScriptPromiseResolver<DecisionModel>* resolver,
-                            AbortSignal* signal,
                             DecisionModelCreateOptions* options)
       : ExecutionContextClient(ExecutionContext::From(script_state)),
-        AIContextObserver(script_state, this, resolver, signal),
+        AIContextObserver(script_state,
+                          this,
+                          resolver,
+                          options->getSignalOr(nullptr)),
         options_(options),
-        receiver_(this, ExecutionContext::From(script_state)),
-        task_runner_(ExecutionContext::From(script_state)
-                         ->GetTaskRunner(TaskType::kInternalDefault)) {
-    if (options_->hasMonitor()) {
-      monitor_ = MakeGarbageCollected<CreateMonitor>(
-          ExecutionContext::From(script_state), options_->getSignalOr(nullptr),
-          task_runner_);
-      if (options_->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
-        GetResolver()->Detach();
-        Cleanup();
-        return;
-      }
+        receiver_(this, GetExecutionContext()),
+        task_runner_(
+            GetExecutionContext()->GetTaskRunner(TaskType::kInternalDefault)) {
+    if (!InitializeMonitor(options, task_runner_)) {
+      return;
     }
 
     HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
-        AIInterfaceProxy::GetAIManagerRemote(
-            ExecutionContext::From(GetScriptState()));
+        AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
 
     ai_manager_remote->CanCreateDecisionModel(
         CreateOptionsToMojo(options_),
@@ -288,13 +280,12 @@ class CreateDecisionModelClient
     ExecutionContextClient::Trace(visitor);
     visitor->Trace(options_);
     visitor->Trace(receiver_);
-    visitor->Trace(monitor_);
   }
 
   // mojom::blink::AIManagerCreateDecisionModelClient:
   void OnSessionCreated(mojo::PendingRemote<mojom::blink::AIDecisionModel>
                             pending_remote) override {
-    if (!CompleteDownloadProgress(monitor_)) {
+    if (!CompleteDownloadProgress()) {
       return;
     }
     CHECK(pending_remote);
@@ -368,13 +359,12 @@ class CreateDecisionModelClient
     receiver_.set_disconnect_handler(
         BindOnce(&CreateDecisionModelClient::OnConnectionError,
                  WrapWeakPersistent(this)));
-    ai_manager_remote->CreateDecisionModel(
-        std::move(client_remote), CreateOptionsToMojo(options_),
-        monitor_ ? monitor_->BindRemote() : mojo::NullRemote());
+    ai_manager_remote->CreateDecisionModel(std::move(client_remote),
+                                           CreateOptionsToMojo(options_),
+                                           BindMonitorRemote());
   }
 
   Member<DecisionModelCreateOptions> options_;
-  Member<CreateMonitor> monitor_;
   HeapMojoReceiver<mojom::blink::AIManagerCreateDecisionModelClient,
                    CreateDecisionModelClient>
       receiver_;
@@ -480,8 +470,8 @@ ScriptPromise<DecisionModel> DecisionModel::create(
     return ScriptPromise<DecisionModel>();
   }
 
-  AbortSignal* signal = options->hasSignal() ? options->signal() : nullptr;
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
+  if (HandleAbortSignal(options->getSignalOr(nullptr), script_state,
+                        exception_state)) {
     return EmptyPromise();
   }
 
@@ -507,7 +497,7 @@ ScriptPromise<DecisionModel> DecisionModel::create(
   }
 
   MakeGarbageCollected<CreateDecisionModelClient>(script_state, resolver,
-                                                  signal, options);
+                                                  options);
   return promise;
 }
 

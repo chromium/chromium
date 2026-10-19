@@ -15,8 +15,6 @@
 
 namespace blink {
 
-class CreateMonitor;
-
 class CreateTranslatorClient
     : public GarbageCollected<CreateTranslatorClient>,
       public mojom::blink::TranslationManagerCreateTranslatorClient,
@@ -43,7 +41,6 @@ class CreateTranslatorClient
   void ResetReceiver() override;
 
  private:
-  Member<CreateMonitor> monitor_;
   String source_language_;
   String target_language_;
 

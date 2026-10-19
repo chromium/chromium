@@ -282,9 +282,9 @@ void AIWritingAssistanceCreateClient<
           client_remote) {
   HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
       AIInterfaceProxy::GetAIManagerRemote(GetExecutionContext());
-  ai_manager_remote->CreateProofreader(
-      std::move(client_remote), ToMojoProofreaderCreateOptions(options_),
-      monitor_ ? monitor_->BindRemote() : mojo::NullRemote());
+  ai_manager_remote->CreateProofreader(std::move(client_remote),
+                                       ToMojoProofreaderCreateOptions(options_),
+                                       BindMonitorRemote());
 }
 
 template <>

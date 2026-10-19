@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_create_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
-#include "third_party/blink/renderer/modules/ai/create_monitor.h"
 #include "third_party/blink/renderer/modules/ai/language_model.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 
@@ -63,7 +62,6 @@ class LanguageModelCreateClient
                    LanguageModelCreateClient>
       receiver_;
   Member<LanguageModelCreateOptions> options_;
-  Member<CreateMonitor> monitor_;
   mojom::blink::AILanguageModelSamplingParamsPtr resolved_sampling_params_;
   std::optional<mojom::blink::AILanguageModelSamplingMode> sampling_mode_;
   Vector<mojom::blink::AILanguageModelToolDeclarationPtr> converted_tools_;
