@@ -78,6 +78,9 @@ dependencies {
     compileLatest 'javax.annotation:javax.annotation-api:+'
     compileLatest 'com.squareup.leakcanary:leakcanary-android:+'
     compileLatest 'com.squareup.leakcanary:leakcanary-android-core:+'
+    // For AppWatcher.getObjectWatcher(), used by LeakCanaryChecker.
+    compileLatest 'com.squareup.leakcanary:leakcanary-object-watcher:+'
+    compileLatest 'com.squareup.leakcanary:leakcanary-object-watcher-android-core:+'
     compileLatest 'com.squareup.leakcanary:shark:+'
     compileLatest 'com.squareup.leakcanary:shark-android:+'
     androidTestCompileLatest 'com.squareup.leakcanary:leakcanary-android-instrumentation:+'
