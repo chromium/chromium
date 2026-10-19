@@ -237,19 +237,6 @@ void DeclarativePerformanceObserver::OnFrameDeleted() {
 
 void DeclarativePerformanceObserver::OnEnterBFCache() {
   EndSessionAndFlush();
-  // When a document enters the BackForwardCache, its execution is suspended
-  // while its document-associated data and Reporting API endpoint configuration
-  // remain intact for potential restoration. Because the document is not
-  // destroyed, SendReportsAndRemoveSource is not invoked. To prevent reports
-  // from waiting on the Network Service's default delivery timer (and risking
-  // data loss if the browser is closed), immediately dispatch any queued
-  // reports for this source via SendReportsForSource while preserving the
-  // endpoint configuration in memory.
-  StoragePartition* storage_partition = GetStoragePartition();
-  if (storage_partition) {
-    storage_partition->GetNetworkContext()->SendReportsForSource(
-        reporting_source_);
-  }
 }
 
 void DeclarativePerformanceObserver::SetStoragePartitionForTesting(  // IN-TEST
@@ -263,6 +250,24 @@ StoragePartition* DeclarativePerformanceObserver::GetStoragePartition() const {
              : render_frame_host().GetStoragePartition();
 }
 
+void DeclarativePerformanceObserver::QueueAndSendReport(const GURL& url,
+                                                        base::DictValue body) {
+  StoragePartition* storage_partition = GetStoragePartition();
+  if (!storage_partition) {
+    return;
+  }
+  network::mojom::NetworkContext* network_context =
+      storage_partition->GetNetworkContext();
+  network_context->QueueReport(kDeclarativePerformanceObserverReportType,
+                               reporting_endpoint_, url, reporting_source_,
+                               network_anonymization_key_, std::move(body));
+  // Immediately dispatch the queued report without expiring `reporting_source_`
+  // so that multiple reports across the document's lifecycle (early failure
+  // reports, BackForwardCache entry, or session end) are delivered as soon as
+  // they are queued rather than waiting for the periodic Reporting API timer.
+  network_context->SendReportsForSource(reporting_source_);
+}
+
 void DeclarativePerformanceObserver::FlushMetrics() {
   if (buffered_entries_.empty()) {
     return;
@@ -273,14 +278,7 @@ void DeclarativePerformanceObserver::FlushMetrics() {
   buffered_entries_.clear();
   current_buffer_bytes_ = 0;
 
-  StoragePartition* storage_partition = GetStoragePartition();
-
-  if (storage_partition) {
-    storage_partition->GetNetworkContext()->QueueReport(
-        kDeclarativePerformanceObserverReportType, reporting_endpoint_,
-        committed_url_, reporting_source_, network_anonymization_key_,
-        std::move(body));
-  }
+  QueueAndSendReport(committed_url_, std::move(body));
 }
 
 void DeclarativePerformanceObserver::AppendSessionEndEntry() {
@@ -508,10 +506,6 @@ void DeclarativePerformanceObserver::RecordEarlyNavigationFailure(
 
 void DeclarativePerformanceObserver::OnEarlyFailureReportsTaken(
     base::ListValue reports) {
-  StoragePartition* storage_partition = GetStoragePartition();
-  if (!storage_partition) {
-    return;
-  }
   for (auto& val : reports) {
     if (val.is_dict()) {
       base::DictValue entry = std::move(val).TakeDict();
@@ -524,10 +518,11 @@ void DeclarativePerformanceObserver::OnEarlyFailureReportsTaken(
       entries_list.Append(base::Value(std::move(entry)));
       report_body.Set("entries", std::move(entries_list));
 
-      storage_partition->GetNetworkContext()->QueueReport(
-          kDeclarativePerformanceObserverReportType, reporting_endpoint_,
-          failed_url, reporting_source_, network_anonymization_key_,
-          std::move(report_body));
+      // Dispatch each early failure report individually rather than batching
+      // across the loop so that each failed navigation is delivered in its own
+      // HTTP POST request instead of combining multiple navigations into a
+      // single payload.
+      QueueAndSendReport(failed_url, std::move(report_body));
     }
   }
 }

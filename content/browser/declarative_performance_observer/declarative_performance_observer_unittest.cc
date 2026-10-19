@@ -59,12 +59,18 @@ class TestNetworkContext : public network::TestNetworkContext {
     Report(const std::string& type,
            const std::string& group,
            const GURL& url,
+           const std::optional<base::UnguessableToken>& reporting_source,
            base::DictValue body)
-        : type(type), group(group), url(url), body(std::move(body)) {}
+        : type(type),
+          group(group),
+          url(url),
+          reporting_source(reporting_source),
+          body(std::move(body)) {}
 
     std::string type;
     std::string group;
     GURL url;
+    std::optional<base::UnguessableToken> reporting_source;
     base::DictValue body;
   };
 
@@ -88,7 +94,7 @@ class TestNetworkContext : public network::TestNetworkContext {
       dropped_reports_due_to_expired_source_++;
       return;
     }
-    reports_.emplace_back(type, group, url, std::move(body));
+    reports_.emplace_back(type, group, url, reporting_source, std::move(body));
     if (quit_closure_) {
       std::move(quit_closure_).Run();
     }
@@ -464,9 +470,9 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsBFCacheLifecycle) {
   DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
 
   ASSERT_EQ(network_context_.reports().size(), 1u);
-  // SendReportsForSource should NOT be called on normal document
-  // unload/destruction.
-  EXPECT_EQ(network_context_.send_reports_for_source_calls().size(), 0u);
+  ASSERT_EQ(network_context_.send_reports_for_source_calls().size(), 1u);
+  EXPECT_EQ(network_context_.send_reports_for_source_calls()[0],
+            main_rfh()->GetReportingSource());
   const auto& report2 = network_context_.reports()[0];
 
   const base::ListValue* entries2 = report2.body.FindList("entries");
@@ -838,13 +844,25 @@ TEST_F(DeclarativePerformanceObserverTest,
       kOrigin, true, sync_loop.QuitClosure());
   sync_loop.Run();
 
+  // The early failure report must be queued and immediately flushed via
+  // `SendReportsForSource()` using the document's `reporting_source_` as soon
+  // as it is taken from the store, before the session ends.
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  ASSERT_EQ(network_context_.send_reports_for_source_calls().size(), 1u);
+  EXPECT_EQ(network_context_.send_reports_for_source_calls()[0],
+            main_rfh()->GetReportingSource());
+
   DeclarativePerformanceObserver::DeleteForCurrentDocument(main_rfh());
 
   ASSERT_EQ(network_context_.reports().size(), 2u);
+  ASSERT_EQ(network_context_.send_reports_for_source_calls().size(), 2u);
+  EXPECT_EQ(network_context_.send_reports_for_source_calls()[1],
+            main_rfh()->GetReportingSource());
 
   // First report: Early failure navigation timing
   const auto& failure_report = network_context_.reports()[0];
   EXPECT_EQ(failure_report.url, kOrigin.GetURL());
+  EXPECT_EQ(failure_report.reporting_source, main_rfh()->GetReportingSource());
   const base::ListValue* failure_entries =
       failure_report.body.FindList("entries");
   ASSERT_TRUE(failure_entries);
@@ -861,6 +879,7 @@ TEST_F(DeclarativePerformanceObserverTest,
   // session-end)
   const auto& main_report = network_context_.reports()[1];
   EXPECT_EQ(main_report.url, kPageURL);
+  EXPECT_EQ(main_report.reporting_source, main_rfh()->GetReportingSource());
   const base::ListValue* main_entries = main_report.body.FindList("entries");
   ASSERT_TRUE(main_entries);
   ASSERT_EQ(main_entries->size(), 2u);

@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/declarative_performance_observer/declarative_performance_observer_store.h"
 #include "content/browser/storage_partition_impl.h"
@@ -78,6 +80,25 @@ class DeclarativePerformanceObserverBrowserTest : public ContentBrowserTest {
     return received_reports_;
   }
 
+  void ClearReceivedReports() {
+    base::AutoLock lock(report_lock_);
+    received_reports_.clear();
+  }
+
+  void WaitForReportCount(size_t expected_count) {
+    while (true) {
+      base::RunLoop run_loop;
+      {
+        base::AutoLock lock(report_lock_);
+        if (received_reports_.size() >= expected_count) {
+          return;
+        }
+        report_quit_closure_ = run_loop.QuitClosure();
+      }
+      run_loop.Run();
+    }
+  }
+
   StoragePartition* storage_partition() {
     return shell()
         ->web_contents()
@@ -110,6 +131,26 @@ class DeclarativePerformanceObserverBrowserTest : public ContentBrowserTest {
           "report-to=\"dpo_sink\", entry-types=(\"navigation\" "
           "\"visibility-state\")");
       return response;
+    }
+    if (request.relative_url ==
+        "/declarative-performance-observer-early-failures-page") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/html");
+      response->set_content(
+          "<html><body>DeclarativePerformanceObserver Page</body></html>");
+      response->AddCustomHeader(
+          "Reporting-Endpoints",
+          "telemetry_sink=\"" + https_server_->GetURL("/report").spec() + "\"");
+      response->AddCustomHeader(
+          "Performance-Observer",
+          "report-to=\"telemetry_sink\", capture-early-failures=?1, "
+          "entry-types=(\"navigation\" \"visibility-state\")");
+      return response;
+    }
+    if (request.relative_url == "/early-failure-1" ||
+        request.relative_url == "/early-failure-2") {
+      return std::make_unique<net::test_server::RawHttpResponse>("", "");
     }
     if (request.relative_url == "/report") {
       auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -357,6 +398,66 @@ IN_PROC_BROWSER_TEST_F(DeclarativePerformanceObserverBrowserTest,
   ASSERT_EQ(reports.size(), 1u);
   EXPECT_TRUE(reports[0].contains("performance-observer"));
   EXPECT_TRUE(reports[0].contains("session-end"));
+}
+
+// Verifies that when stored early failure reports are taken upon navigation
+// commit, `DeclarativePerformanceObserver` immediately dispatches them via
+// `SendReportsForSource()` using the document's `reporting_source_` while the
+// document is still active, and subsequently dispatches the document's own
+// session-end report in a separate HTTP POST request upon session end.
+IN_PROC_BROWSER_TEST_F(
+    DeclarativePerformanceObserverBrowserTest,
+    SendsEarlyFailureReportsImmediatelyAndSessionEndSeparately) {
+  GURL observer_url = https_server()->GetURL(
+      "origin1.com", "/declarative-performance-observer-early-failures-page");
+  GURL fail_url_1 = https_server()->GetURL("origin1.com", "/early-failure-1");
+  GURL fail_url_2 = https_server()->GetURL("origin1.com", "/early-failure-2");
+  GURL page2_url = https_server()->GetURL("origin1.com", "/clear-site-data");
+
+  // 1. Navigate to the opted-in page so `capture-early-failures=?1` is
+  // persisted for `origin1.com`.
+  EXPECT_TRUE(NavigateToURL(shell(), observer_url));
+  EXPECT_TRUE(NavigateToURL(shell(), page2_url));
+  WaitForReportCount(1u);
+  ClearReceivedReports();
+
+  // 2. Trigger two early navigation failures (`ERR_EMPTY_RESPONSE`) on
+  // `origin1.com`.
+  EXPECT_FALSE(NavigateToURL(shell(), fail_url_1));
+  EXPECT_FALSE(NavigateToURL(shell(), fail_url_2));
+
+  // 3. Commit a new navigation to `observer_url`. Both stored early failure
+  // reports must be dispatched immediately via `SendReportsForSource()` while
+  // the committed document is still active (before navigating away).
+  EXPECT_TRUE(NavigateToURL(shell(), observer_url));
+  WaitForReportCount(2u);
+
+  std::vector<std::string> early_reports = GetReceivedReports();
+  ASSERT_EQ(early_reports.size(), 2u);
+  for (const std::string& raw_post : early_reports) {
+    std::optional<base::Value> parsed =
+        base::JSONReader::Read(raw_post, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    ASSERT_TRUE(parsed.has_value());
+    ASSERT_TRUE(parsed->is_list());
+    EXPECT_EQ(parsed->GetList().size(), 1u);
+    EXPECT_TRUE(raw_post.contains("ERR_EMPTY_RESPONSE"));
+    EXPECT_FALSE(raw_post.contains("session-end"));
+  }
+
+  // 4. Navigate away to end the document session and verify that the
+  // session-end report arrives in a third separate HTTP POST request.
+  EXPECT_TRUE(NavigateToURL(shell(), page2_url));
+  WaitForReportCount(3u);
+
+  std::vector<std::string> all_reports = GetReceivedReports();
+  ASSERT_EQ(all_reports.size(), 3u);
+  std::optional<base::Value> session_post = base::JSONReader::Read(
+      all_reports[2], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  ASSERT_TRUE(session_post.has_value());
+  ASSERT_TRUE(session_post->is_list());
+  EXPECT_EQ(session_post->GetList().size(), 1u);
+  EXPECT_TRUE(all_reports[2].contains("session-end"));
+  EXPECT_FALSE(all_reports[2].contains("ERR_EMPTY_RESPONSE"));
 }
 
 }  // namespace content

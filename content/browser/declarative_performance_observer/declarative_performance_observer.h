@@ -85,6 +85,11 @@ class CONTENT_EXPORT DeclarativePerformanceObserver
           receiver);
 
   StoragePartition* GetStoragePartition() const;
+  // Queues `body` as a `performance-observer` report for `url` under
+  // `reporting_source_` and immediately triggers `SendReportsForSource()` so
+  // each report is dispatched without waiting for the periodic Reporting API
+  // delivery timer or being batched with subsequent lifecycle flushes.
+  void QueueAndSendReport(const GURL& url, base::DictValue body);
   void AddEntryToBuffer(base::DictValue entry);
   void FlushMetrics();
   void AppendSessionEndEntry();
