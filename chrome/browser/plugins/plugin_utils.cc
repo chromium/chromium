@@ -55,10 +55,12 @@ bool IsExtensionAllowedInProfile(Profile* profile,
   return true;
 }
 
-bool IsExtensionAllowedForMimeType(Profile* profile,
-                                   const extensions::ExtensionId& extension_id,
-                                   const std::string& mime_type,
-                                   bool embedded) {
+bool IsExtensionAllowedForMimeType(
+    Profile* profile,
+    const extensions::MimeHandlerRegistry& registry,
+    const extensions::ExtensionId& extension_id,
+    const std::string& mime_type,
+    bool embedded) {
   if (!IsExtensionAllowedInProfile(profile, extension_id, mime_type)) {
     return false;
   }
@@ -70,8 +72,7 @@ bool IsExtensionAllowedForMimeType(Profile* profile,
     return false;
   }
 
-  const MimeTypesHandler* handler = MimeTypesHandler::Get(*extension);
-  if (!handler) {
+  if (!MimeTypesHandler::Get(*extension)) {
     return false;
   }
 
@@ -79,7 +80,7 @@ bool IsExtensionAllowedForMimeType(Profile* profile,
     return true;
   }
 
-  return handler->CanEmbedMimeType(mime_type);
+  return registry.CanEmbedForMimeType(extension_id, mime_type);
 }
 
 }  // namespace
@@ -116,8 +117,8 @@ std::string PluginUtils::GetExtensionIdForMimeType(
   CHECK(registry);
   for (const extensions::ExtensionId& extension_id :
        registry->GetHandlersForMimeType(mime_type)) {
-    if (IsExtensionAllowedForMimeType(profile, extension_id, mime_type,
-                                      embedded)) {
+    if (IsExtensionAllowedForMimeType(profile, *registry, extension_id,
+                                      mime_type, embedded)) {
       return extension_id;
     }
   }

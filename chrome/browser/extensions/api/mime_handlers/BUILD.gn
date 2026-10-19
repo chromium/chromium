@@ -14,6 +14,7 @@ source_set("browser_tests") {
 
   sources = [
     "generic_mime_handler_browsertest.cc",
+    "mime_handler_apitest.cc",
     "mime_handler_cookies_browsertest.cc",
     "mime_handler_process_isolation_browsertest.cc",
     "mime_handler_storage_partitioning_browsertest.cc",

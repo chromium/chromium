@@ -5,7 +5,9 @@
 #ifndef EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_REGISTRY_H_
 #define EXTENSIONS_BROWSER_MIME_HANDLER_MIME_HANDLER_REGISTRY_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -85,12 +87,26 @@ class MimeHandlerRegistry : public KeyedService,
   bool IsEnabledForMimeType(const ExtensionId& extension_id,
                             const std::string& mime_type) const;
 
+  // Returns true if `extension_id` may handle embedded loads of
+  // `mime_type`. Defaults to the manifest's can_embed when no preference is
+  // stored. Requires `extension_id` to be an enabled extension that handles
+  // `mime_type`. The result does not depend on IsEnabledForMimeType().
+  bool CanEmbedForMimeType(const ExtensionId& extension_id,
+                           const std::string& mime_type) const;
+
   // Persists the enabled state for (`extension_id`, `mime_type`).
   // Changing the state requires `extension_id` to be an enabled extension
   // that handles `mime_type`.
   void SetEnabledForMimeType(const ExtensionId& extension_id,
                              const std::string& mime_type,
                              bool enabled);
+
+  // Persists the can_embed state for (`extension_id`, `mime_type`). Does not
+  // change the list from GetHandlersForMimeType(). Requires `extension_id` to
+  // be an enabled extension that handles `mime_type`.
+  void SetCanEmbedForMimeType(const ExtensionId& extension_id,
+                              const std::string& mime_type,
+                              bool can_embed);
 
  private:
   // ExtensionRegistryObserver:
@@ -117,6 +133,19 @@ class MimeHandlerRegistry : public KeyedService,
   std::vector<ExtensionId> EnabledHandlers(
       const std::string& mime_type,
       const std::vector<ExtensionId>& handlers) const;
+
+  // Returns the value stored under `key` for (`extension_id`, `mime_type`),
+  // or nullopt when the extension has not set it.
+  std::optional<bool> ReadStoredOption(const ExtensionId& extension_id,
+                                       const std::string& mime_type,
+                                       std::string_view key) const;
+
+  // Stores `value` under `key` for (`extension_id`, `mime_type`), keeping the
+  // other options of that MIME type.
+  void StoreOption(const ExtensionId& extension_id,
+                   const std::string& mime_type,
+                   std::string_view key,
+                   bool value);
 
   // Sorts `handlers` in descending precedence order. See
   // `RegisterExtension` for the precedence rules.

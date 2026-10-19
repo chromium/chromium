@@ -5,6 +5,7 @@
 #include "extensions/browser/api/mime_handler/mime_handler_api.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -162,14 +163,23 @@ MimeHandlerSetMimeHandlerOptionsFunction::Run() {
       api::mime_handler::SetMimeHandlerOptions::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  const std::optional<bool>& enabled = params->options.enabled;
+  const std::optional<bool>& can_embed = params->options.can_embed;
+
   if (!ExtensionHandlesMimeType(*extension(), params->mime_type)) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         kUnhandledMimeTypeError, params->mime_type)));
   }
 
-  MimeHandlerRegistry::Get(browser_context())
-      ->SetEnabledForMimeType(extension_id(), params->mime_type,
-                              params->options.enabled);
+  MimeHandlerRegistry* registry = MimeHandlerRegistry::Get(browser_context());
+  if (enabled.has_value()) {
+    registry->SetEnabledForMimeType(extension_id(), params->mime_type,
+                                    enabled.value());
+  }
+  if (can_embed.has_value()) {
+    registry->SetCanEmbedForMimeType(extension_id(), params->mime_type,
+                                     can_embed.value());
+  }
   return RespondNow(NoArguments());
 }
 
@@ -189,10 +199,12 @@ MimeHandlerGetMimeHandlerOptionsFunction::Run() {
         kUnhandledMimeTypeError, params->mime_type)));
   }
 
+  MimeHandlerRegistry* registry = MimeHandlerRegistry::Get(browser_context());
   api::mime_handler::MimeHandlerOptions idl_options;
   idl_options.enabled =
-      MimeHandlerRegistry::Get(browser_context())
-          ->IsEnabledForMimeType(extension_id(), params->mime_type);
+      registry->IsEnabledForMimeType(extension_id(), params->mime_type);
+  idl_options.can_embed =
+      registry->CanEmbedForMimeType(extension_id(), params->mime_type);
   return RespondNow(WithArguments(idl_options.ToValue()));
 }
 
