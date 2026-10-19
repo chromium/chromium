@@ -1,0 +1,5 @@
+Tests that pausing and inspecting scopes when Object.prototype has a cyclic reference does not crash (crbug.com/43558).
+Set timer for test function.
+Script execution paused.
+Script execution resumed.
+

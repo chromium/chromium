@@ -1,0 +1,99 @@
+Tests that Debugger.setPauseOnExceptions does not crash when pausing on uncaught exceptions thrown from C++ bindings.
+Set timer for test function.
+rethrow-error-from-bindings-crash.js:20 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
+f2 @ rethrow-error-from-bindings-crash.js:20
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+rethrow-error-from-bindings-crash.js:15 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+f1 @ rethrow-error-from-bindings-crash.js:15
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+rethrow-error-from-bindings-crash.js:20 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
+f2 @ rethrow-error-from-bindings-crash.js:20
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+rethrow-error-from-bindings-crash.js:15 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+f1 @ rethrow-error-from-bindings-crash.js:15
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+rethrow-error-from-bindings-crash.js:20 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
+f2 @ rethrow-error-from-bindings-crash.js:20
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+rethrow-error-from-bindings-crash.js:15 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+f1 @ rethrow-error-from-bindings-crash.js:15
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+rethrow-error-from-bindings-crash.js:20 Uncaught TypeError: Failed to execute 'compareBoundaryPoints' on 'Range': parameter 2 is not of type 'Range'.
+f2 @ rethrow-error-from-bindings-crash.js:20
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+rethrow-error-from-bindings-crash.js:15 Uncaught TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+f1 @ rethrow-error-from-bindings-crash.js:15
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+setTimeout
+f1 @ rethrow-error-from-bindings-crash.js:14
+setTimeout
+f2 @ rethrow-error-from-bindings-crash.js:19
+testFunction @ rethrow-error-from-bindings-crash.js:10
+setTimeout
+(anonymous) @ schedule.js:1
+

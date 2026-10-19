@@ -1,0 +1,7 @@
+ALERT: 1
+Tests that Runtime.evaluate calling alert() while paused on a breakpoint with suspended active DOM objects does not crash.
+Set timer for test function.
+Script execution paused.
+Shown alert while staying on a breakpoint.
+Script execution resumed.
+

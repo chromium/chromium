@@ -1,6 +1,0 @@
-Tests that debugging a page where Object prototype has a cyclic reference won't crash the browser.Bug 43558
-
-Set timer for test function.
-Script execution paused.
-Script execution resumed.
-
