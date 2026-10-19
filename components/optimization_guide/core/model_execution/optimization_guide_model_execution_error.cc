@@ -4,9 +4,51 @@
 
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 
+#include <ostream>
+
 #include "base/notreached.h"
 
 namespace optimization_guide {
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const OptimizationGuideModelExecutionError::ModelExecutionError& val) {
+  switch (val) {
+    case OptimizationGuideModelExecutionError::ModelExecutionError::kUnknown:
+      return out << "Unknown";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kInvalidRequest:
+      return out << "InvalidRequest";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kRequestThrottled:
+      return out << "RequestThrottled";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kPermissionDenied:
+      return out << "PermissionDenied";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kGenericFailure:
+      return out << "GenericFailure";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kRetryableError:
+      return out << "RetryableError";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kNonRetryableError:
+      return out << "NonRetryableError";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kUnsupportedLanguage:
+      return out << "UnsupportedLanguage";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered:
+      return out << "Filtered";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::kDisabled:
+      return out << "Disabled";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled:
+      return out << "Cancelled";
+    case OptimizationGuideModelExecutionError::ModelExecutionError::
+        kResponseLowQuality:
+      return out << "ResponseLowQuality";
+  }
+  return out;
+}
 
 // static
 OptimizationGuideModelExecutionError

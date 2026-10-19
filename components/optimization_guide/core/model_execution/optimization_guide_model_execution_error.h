@@ -4,6 +4,8 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_OPTIMIZATION_GUIDE_MODEL_EXECUTION_ERROR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_OPTIMIZATION_GUIDE_MODEL_EXECUTION_ERROR_H_
 
+#include <iosfwd>
+
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "net/http/http_status_code.h"
 
@@ -67,6 +69,10 @@ class OptimizationGuideModelExecutionError {
 
   ModelExecutionError error_;
 };
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const OptimizationGuideModelExecutionError::ModelExecutionError& val);
 
 }  // namespace optimization_guide
 

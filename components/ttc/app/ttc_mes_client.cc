@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/ttc/app/public/server_journal_event.h"
 
 namespace ttc {
@@ -214,10 +215,12 @@ void TtcMesClient::OnConnectionStateChanged(
 void TtcMesClient::OnStreamingResult(
     optimization_guide::OptimizationGuideModelStreamingResult result) {
   if (!result.response.has_value()) {
-    // TODO(b/564241442): Propagate a better error code.
-    VLOG(1) << "Model execution failed with error "
-            << static_cast<int>(result.response.error().error());
-    observer_->OnBackendError(ErrorCode::kUnknown);
+    Log("ModelExecutionError",
+        actor::JournalDetailsBuilder()
+            .AddError(base::ToString(result.response.error().error()))
+            .Build(),
+        SessionJournal::Track::kMesClientRecv);
+    observer_->OnBackendError(ErrorCode::kInternalBackendError);
     return;
   }
 
