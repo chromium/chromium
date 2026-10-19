@@ -504,7 +504,6 @@ std::optional<FrameIntervalMatcher::Result> MixedFixedIntervalMatcher::Match(
         // Collect unique intervals from fixed-rate periodic content sources.
         case ContentFrameIntervalType::kVideo:
         case ContentFrameIntervalType::kAnimatingImage:
-        case ContentFrameIntervalType::kScrollBarFadeOutAnimation:
         case ContentFrameIntervalType::kSteppedCompositorAnimation: {
           if (!content_frame_interval_info.frame_interval.is_positive()) {
             return std::nullopt;
@@ -527,6 +526,12 @@ std::optional<FrameIntervalMatcher::Result> MixedFixedIntervalMatcher::Match(
           }
           break;
         }
+        // A scrollbar fade-out's rate is a floor, not a cadence, and an
+        // exact vote for it often outlasts the fade-out, delaying the next
+        // scroll's first frame. On adaptive refresh rate devices,
+        // OnlyScrollBarFadeOutAnimationMatcher handles fade-out-only frames.
+        case ContentFrameIntervalType::kScrollBarFadeOutAnimation:
+          return std::nullopt;
         // Continuous compositor scrolling has variable, velocity-dependent
         // frame rates and should not be throttled by a fixed cadence matcher.
         // Bail immediately so SlowScrollThrottleMatcher or default boost

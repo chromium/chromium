@@ -955,26 +955,37 @@ TEST(FrameIntervalMatchersTest, MixedFixedInterval_FractionalNTSCVideo) {
                ResultIntervalType::kExact);
 }
 
-TEST(FrameIntervalMatchersTest, MixedFixedInterval_ScrollBarFadeOutAnimation) {
+TEST(FrameIntervalMatchersTest,
+     MixedFixedInterval_ScrollBarFadeOutAnimation_ReturnsNullopt) {
+  // As on Android without adaptive refresh rate: the max interval is
+  // unbounded.
   Settings settings;
-  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/2u);
+  settings.interval_settings = BuildContinuousRangeSettings(
+      /*min_interval=*/base::Hertz(120),
+      /*max_interval=*/base::TimeDelta::Max());
   MixedFixedIntervalMatcher matcher;
 
-  // Sink 1: 24fps video
-  FrameIntervalInputs& sink1 = inputs.inputs_map[FrameSinkId(0, 1)];
-  sink1.content_interval_info.push_back(
-      {ContentFrameIntervalType::kVideo, base::Hertz(24)});
-  sink1.has_only_content_frame_interval_updates = true;
+  auto match =
+      [&](std::vector<ContentFrameIntervalInfo> content_interval_info) {
+        Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+        FrameIntervalInputs& frame_interval_inputs =
+            inputs.inputs_map[FrameSinkId(0, 1)];
+        frame_interval_inputs.content_interval_info =
+            std::move(content_interval_info);
+        frame_interval_inputs.has_only_content_frame_interval_updates = true;
+        return matcher.Match(inputs);
+      };
 
-  // Sink 2: 30fps scrollbar fade-out animation
-  FrameIntervalInputs& sink2 = inputs.inputs_map[FrameSinkId(0, 2)];
-  sink2.content_interval_info.push_back(
-      {ContentFrameIntervalType::kScrollBarFadeOutAnimation, base::Hertz(30)});
-  sink2.has_only_content_frame_interval_updates = true;
+  const ContentFrameIntervalInfo video = {ContentFrameIntervalType::kVideo,
+                                          base::Hertz(24)};
+  // cc reports the scrollbar fade-out at 20Hz.
+  const ContentFrameIntervalInfo fade_out = {
+      ContentFrameIntervalType::kScrollBarFadeOutAnimation, base::Hertz(20)};
 
-  // Common cadence(24, 30) = 120Hz
-  ExpectResult(matcher.Match(inputs), base::Hertz(120),
-               ResultIntervalType::kExact);
+  ExpectResult(match({video}), base::Hertz(24), ResultIntervalType::kExact);
+  // A fade-out isn't voted for, alone or with other fixed-rate content.
+  ExpectNullResult(match({fade_out}));
+  ExpectNullResult(match({video, fade_out}));
 }
 
 TEST(FrameIntervalMatchersTest,
