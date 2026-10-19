@@ -133,16 +133,20 @@ void ApplyNetworkRequestOverrides(
 // Called on a navigation redirect to `redirect_url`. In `headers`, reverts the
 // extra headers set by sessions whose client may not attach to `redirect_url`
 // to the value set by a session that may, or else to `original_headers`, and
-// records the changes in `headers_update_params`. Sets `headers_reverted` to
-// whether `headers` changed. Returns false if the navigation must be blocked
-// because such a session overrode the `Referer`, which can't be reverted on
-// redirect.
+// records the changes in `headers_update_params`. Likewise reverts emulation
+// overrides, clearing `devtools_user_agent_override` and
+// `devtools_accept_language_override` if no remaining session overrides them.
+// Sets `headers_reverted` to whether `headers` changed. Returns false if the
+// navigation must be blocked because such a session overrode the `Referer`,
+// which can't be reverted on redirect.
 bool RevertDisallowedNetworkOverridesOnRedirect(
     FrameTreeNode* frame_tree_node,
     const GURL& redirect_url,
     const net::HttpRequestHeaders& original_headers,
     net::HttpRequestHeaders* headers,
     network::HttpRequestHeadersUpdateParams* headers_update_params,
+    bool* devtools_user_agent_override,
+    bool* devtools_accept_language_override,
     bool* headers_reverted);
 
 // If this function overrides the `User-Agent` header, it sets the returned
@@ -151,7 +155,8 @@ bool RevertDisallowedNetworkOverridesOnRedirect(
 // `accept_language_overridden` to true; otherwise, false.
 DevtoolsOverriddenOutputParams ApplyEmulationOverrides(
     DevToolsAgentHostImpl* agent_host,
-    net::HttpRequestHeaders* headers);
+    net::HttpRequestHeaders* headers,
+    const GURL& url);
 
 // Applies extra headers set via Network.setExtraHTTPHeaders to a WebSocket
 // handshake request. This is needed because WebSocket connections bypass the
@@ -169,7 +174,8 @@ void ApplyExtraHeadersForWebSocket(
 //  the behavior).
 bool ApplyUserAgentMetadataOverrides(
     FrameTreeNode* frame_tree_node,
-    std::optional<blink::UserAgentMetadata>* override_out);
+    std::optional<blink::UserAgentMetadata>* override_out,
+    const GURL& url);
 
 class WillCreateURLLoaderFactoryParams final {
   STACK_ALLOCATED();

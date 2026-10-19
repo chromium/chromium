@@ -2335,12 +2335,17 @@ class DevToolsNetworkOverridesPolicyTest : public DevToolsProtocolTest {
     AttachRestrictedSessionWithExtraHeaders(std::move(headers));
   }
 
-  // Attaches a session that may not attach to disallowed.test and makes it
-  // inject `headers` into requests.
-  void AttachRestrictedSessionWithExtraHeaders(base::DictValue headers) {
+  // Attaches a session that may not attach to disallowed.test.
+  void AttachRestrictedSession() {
     set_agent_host_can_close();
     SetNotAttachableHosts({"disallowed.test"});
     Attach();
+  }
+
+  // Attaches a session that may not attach to disallowed.test and makes it
+  // inject `headers` into requests.
+  void AttachRestrictedSessionWithExtraHeaders(base::DictValue headers) {
+    AttachRestrictedSession();
     SendCommandSync("Network.enable");
     ASSERT_FALSE(error());
     base::DictValue params;
@@ -2808,6 +2813,238 @@ IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
       request_will_be_sent.FindStringByDottedPath("request.headers.X-Test");
   ASSERT_TRUE(reported_header);
   EXPECT_EQ("allowed", *reported_header);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       UntrustedClientEmulationOverridesKeptOnAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL allowed_url = embedded_test_server()->GetURL("b.test", "/echoall");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSession();
+
+  base::DictValue params;
+  params.Set("userAgent", "TestUA");
+  params.Set("acceptLanguage", "xx");
+  SendCommandSync("Emulation.setUserAgentOverride", std::move(params));
+
+  EXPECT_TRUE(NavigateToURL(shell(), allowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("User-Agent"));
+  EXPECT_EQ("TestUA", headers->at("User-Agent"));
+  ASSERT_TRUE(headers->contains("Accept-Language"));
+  EXPECT_EQ("xx", headers->at("Accept-Language"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    UntrustedClientEmulationOverridesRemovedOnNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall");
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSession();
+
+  base::DictValue params;
+  params.Set("userAgent", "TestUA");
+  params.Set("acceptLanguage", "xx");
+  SendCommandSync("Emulation.setUserAgentOverride", std::move(params));
+
+  EXPECT_TRUE(NavigateToURL(shell(), disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders("/echoall");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("User-Agent"));
+  EXPECT_NE("TestUA", headers->at("User-Agent"));
+  if (headers->contains("Accept-Language")) {
+    EXPECT_NE("xx", headers->at("Accept-Language"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    UntrustedClientEmulationOverridesRemovedOnRedirectToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url =
+      embedded_test_server()->GetURL("disallowed.test", "/echoall?redirected");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  AttachRestrictedSession();
+
+  base::DictValue params;
+  params.Set("userAgent", "TestUA");
+  params.Set("acceptLanguage", "xx");
+  SendCommandSync("Emulation.setUserAgentOverride", std::move(params));
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders(redirect_path);
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("User-Agent"));
+  EXPECT_EQ("TestUA", headers->at("User-Agent"));
+  ASSERT_TRUE(headers->contains("Accept-Language"));
+  EXPECT_EQ("xx", headers->at("Accept-Language"));
+
+  headers = GetRequestHeaders("/echoall?redirected");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("User-Agent"));
+  EXPECT_NE("TestUA", headers->at("User-Agent"));
+  if (headers->contains("Accept-Language")) {
+    EXPECT_NE("xx", headers->at("Accept-Language"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DevToolsNetworkOverridesPolicyTest,
+    OtherSessionEmulationOverridesKeptOnRedirectToNotAttachableHost) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url = embedded_test_server()->GetURL(
+      "disallowed.test", "/echoall?emulation-sessions");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  TestDevToolsProtocolClient allowed_client;
+  allowed_client.AttachToWebContents(shell()->web_contents());
+  base::ScopedClosureRunner detach_allowed_client(base::BindLambdaForTesting(
+      [&allowed_client] { allowed_client.DetachProtocolClient(); }));
+  base::DictValue allowed_params;
+  allowed_params.Set("userAgent", "AllowedUA");
+  allowed_client.SendCommandSync("Emulation.setUserAgentOverride",
+                                 std::move(allowed_params));
+  AttachRestrictedSession();
+  base::DictValue params;
+  params.Set("userAgent", "RestrictedUA");
+  SendCommandSync("Emulation.setUserAgentOverride", std::move(params));
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders(redirect_path);
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("User-Agent"));
+  EXPECT_EQ("RestrictedUA", headers->at("User-Agent"));
+  headers = GetRequestHeaders("/echoall?emulation-sessions");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("User-Agent"));
+  EXPECT_EQ("AllowedUA", headers->at("User-Agent"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       EmulationOverridesRevertedToOtherSessionHeaders) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url = embedded_test_server()->GetURL(
+      "disallowed.test", "/echoall?emulation-reverted");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  TestDevToolsProtocolClient allowed_client;
+  allowed_client.AttachToWebContents(shell()->web_contents());
+  base::ScopedClosureRunner detach_allowed_client(base::BindLambdaForTesting(
+      [&allowed_client] { allowed_client.DetachProtocolClient(); }));
+  allowed_client.SendCommandSync("Network.enable");
+  base::DictValue allowed_params;
+  allowed_params.SetByDottedPath("headers.Accept-Language", "fr");
+  allowed_client.SendCommandSync("Network.setExtraHTTPHeaders",
+                                 std::move(allowed_params));
+  AttachRestrictedSession();
+  base::DictValue params;
+  params.Set("userAgent", "RestrictedUA");
+  params.Set("acceptLanguage", "xx");
+  SendCommandSync("Emulation.setUserAgentOverride", std::move(params));
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders(redirect_path);
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("Accept-Language"));
+  EXPECT_EQ("xx", headers->at("Accept-Language"));
+  headers = GetRequestHeaders("/echoall?emulation-reverted");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("User-Agent"));
+  EXPECT_NE("RestrictedUA", headers->at("User-Agent"));
+  ASSERT_TRUE(headers->contains("Accept-Language"));
+  EXPECT_EQ("fr", headers->at("Accept-Language"));
+
+  base::DictValue request_will_be_sent =
+      allowed_client.WaitForMatchingNotification(
+          "Network.requestWillBeSent",
+          base::BindRepeating(
+              [](const GURL& url, const base::DictValue& params) {
+                const std::string* request_url =
+                    params.FindStringByDottedPath("request.url");
+                return request_url && *request_url == url.spec();
+              },
+              disallowed_url));
+  const std::string* user_agent =
+      request_will_be_sent.FindStringByDottedPath("request.headers.User-Agent");
+  ASSERT_TRUE(user_agent);
+  EXPECT_NE("RestrictedUA", *user_agent);
+  const std::string* accept_language =
+      request_will_be_sent.FindStringByDottedPath(
+          "request.headers.Accept-Language");
+  ASSERT_TRUE(accept_language);
+  EXPECT_EQ("fr", *accept_language);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsNetworkOverridesPolicyTest,
+                       EmulationOverrideRemovedWithoutOriginalHeader) {
+  const GURL start_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  const GURL disallowed_url = embedded_test_server()->GetURL(
+      "disallowed.test", "/echoall?emulation-removed");
+  const std::string redirect_path =
+      "/server-redirect-307?" + disallowed_url.spec();
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("a.test", redirect_path);
+  ASSERT_TRUE(NavigateToURL(shell(), start_url));
+  TestDevToolsProtocolClient allowed_client;
+  allowed_client.AttachToWebContents(shell()->web_contents());
+  base::ScopedClosureRunner detach_allowed_client(base::BindLambdaForTesting(
+      [&allowed_client] { allowed_client.DetachProtocolClient(); }));
+  allowed_client.SendCommandSync("Network.enable");
+  AttachRestrictedSession();
+  base::DictValue params;
+  params.Set("userAgent", "RestrictedUA");
+  params.Set("acceptLanguage", "xx");
+  SendCommandSync("Emulation.setUserAgentOverride", std::move(params));
+
+  EXPECT_TRUE(NavigateToURL(shell(), redirect_url, disallowed_url));
+  std::optional<net::test_server::HttpRequest::HeaderMap> headers =
+      GetRequestHeaders(redirect_path);
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("Accept-Language"));
+  EXPECT_EQ("xx", headers->at("Accept-Language"));
+  headers = GetRequestHeaders("/echoall?emulation-removed");
+  ASSERT_TRUE(headers);
+  ASSERT_TRUE(headers->contains("Accept-Language"));
+  EXPECT_NE("xx", headers->at("Accept-Language"));
+
+  // The navigation had no Accept-Language before the override, so it is
+  // removed and the network stack adds its default.
+  base::DictValue request_will_be_sent =
+      allowed_client.WaitForMatchingNotification(
+          "Network.requestWillBeSent",
+          base::BindRepeating(
+              [](const GURL& url, const base::DictValue& params) {
+                const std::string* request_url =
+                    params.FindStringByDottedPath("request.url");
+                return request_url && *request_url == url.spec();
+              },
+              disallowed_url));
+  EXPECT_FALSE(request_will_be_sent.FindStringByDottedPath(
+      "request.headers.Accept-Language"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,

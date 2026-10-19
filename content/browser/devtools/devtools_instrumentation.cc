@@ -1661,9 +1661,13 @@ bool ShouldWaitForDebuggerInWindowOpen() {
 
 DevtoolsOverriddenOutputParams ApplyEmulationOverrides(
     DevToolsAgentHostImpl* agent_host,
-    net::HttpRequestHeaders* headers) {
+    net::HttpRequestHeaders* headers,
+    const GURL& url) {
   DevtoolsOverriddenOutputParams output_params;
   for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
+    if (!emulation->MayApplyOverridesTo(url)) {
+      continue;
+    }
     bool ua_overridden = false;
     bool accept_language_overridden = false;
     emulation->ApplyOverrides(headers, &ua_overridden,
@@ -1720,7 +1724,7 @@ void ApplyNetworkRequestOverrides(DevToolsAgentHostImpl* agent_host,
   }
 
   DevtoolsOverriddenOutputParams output_params =
-      ApplyEmulationOverrides(agent_host, headers);
+      ApplyEmulationOverrides(agent_host, headers, request_url);
   if (devtools_user_agent_overridden) {
     *devtools_user_agent_overridden = output_params.user_agent_overridden;
   }
@@ -1728,6 +1732,75 @@ void ApplyNetworkRequestOverrides(DevToolsAgentHostImpl* agent_host,
     *devtools_accept_language_overridden =
         output_params.accept_language_overridden;
   }
+}
+
+// Returns the value of `name` without the overrides of sessions whose client
+// may not attach to `url`: the value set by the last session that may, since
+// sessions apply overrides in order, or else its value in `original_headers`.
+std::optional<std::string> GetRevertedHeaderValue(
+    const std::vector<protocol::NetworkHandler*>& networks,
+    const GURL& url,
+    const net::HttpRequestHeaders& original_headers,
+    std::string_view name) {
+  std::optional<std::string> value = original_headers.GetHeader(name);
+  for (auto* network : networks) {
+    if (!network->enabled() || !network->MayApplyOverridesTo(url)) {
+      continue;
+    }
+    for (const auto& [header_name, header_value] : network->extra_headers()) {
+      if (base::EqualsCaseInsensitiveASCII(header_name, name)) {
+        value = header_value;
+      }
+    }
+  }
+  return value;
+}
+
+// Sets `name` to `value` in `headers`, or removes it if `value` is
+// std::nullopt, and records the change in `headers_update_params`.
+void SetHeaderOrRemoveIfAbsent(
+    std::string_view name,
+    const std::optional<std::string>& value,
+    net::HttpRequestHeaders* headers,
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+  if (value) {
+    headers->SetHeader(name, *value);
+    headers_update_params->modified_headers.SetHeader(name, *value);
+    return;
+  }
+  headers->RemoveHeader(name);
+  headers_update_params->removed_headers.emplace_back(name);
+}
+
+// If `name` was overridden by emulation, sets it to its value in
+// `allowed_emulation_headers` if a session that may still apply emulation
+// overrides overrides it, and otherwise reverts it to `reverted_value` and
+// clears `overridden_by_emulation`. Returns whether `headers` changed.
+bool RevertEmulationOverride(
+    std::string_view name,
+    bool overridden_by_allowed_session,
+    const net::HttpRequestHeaders& allowed_emulation_headers,
+    const std::optional<std::string>& reverted_value,
+    bool* overridden_by_emulation,
+    net::HttpRequestHeaders* headers,
+    network::HttpRequestHeadersUpdateParams* headers_update_params) {
+  if (!*overridden_by_emulation) {
+    return false;
+  }
+  if (overridden_by_allowed_session) {
+    // The request may carry a restricted session's value, since the last
+    // session to apply its overrides wins.
+    std::string value = *allowed_emulation_headers.GetHeader(name);
+    headers->SetHeader(name, value);
+    headers_update_params->modified_headers.SetHeader(name, value);
+    return true;
+  }
+  // Only restricted sessions overrode it, so let the navigation compute it
+  // again, and remove it if it had no value before the overrides.
+  *overridden_by_emulation = false;
+  SetHeaderOrRemoveIfAbsent(name, reverted_value, headers,
+                            headers_update_params);
+  return true;
 }
 
 }  // namespace
@@ -1816,6 +1889,8 @@ bool RevertDisallowedNetworkOverridesOnRedirect(
     const net::HttpRequestHeaders& original_headers,
     net::HttpRequestHeaders* headers,
     network::HttpRequestHeadersUpdateParams* headers_update_params,
+    bool* devtools_user_agent_override,
+    bool* devtools_accept_language_override,
     bool* headers_reverted) {
   *headers_reverted = false;
   DevToolsAgentHostImpl* agent_host =
@@ -1842,37 +1917,40 @@ bool RevertDisallowedNetworkOverridesOnRedirect(
                                            net::HttpRequestHeaders::kAccept)) {
         continue;
       }
-      // Sessions apply overrides in order, so the last one that may still
-      // apply them wins.
-      std::optional<std::string> reverted_value =
-          original_headers.GetHeader(name);
-      for (auto* other : networks) {
-        if (!other->enabled() || !other->MayApplyOverridesTo(redirect_url)) {
-          continue;
-        }
-        for (const auto& [other_name, other_value] : other->extra_headers()) {
-          if (base::EqualsCaseInsensitiveASCII(other_name, name)) {
-            reverted_value = other_value;
-          }
-        }
-      }
-      if (reverted_value) {
-        headers->SetHeader(name, *reverted_value);
-        headers_update_params->modified_headers.SetHeader(name,
-                                                          *reverted_value);
-      } else {
-        headers->RemoveHeader(name);
-        headers_update_params->removed_headers.push_back(name);
-      }
+      SetHeaderOrRemoveIfAbsent(name,
+                                GetRevertedHeaderValue(networks, redirect_url,
+                                                       original_headers, name),
+                                headers, headers_update_params);
       *headers_reverted = true;
     }
   }
+  // Emulation overrides of sessions that may still apply them win over the
+  // network overrides and the original headers, like at navigation start.
+  net::HttpRequestHeaders allowed_emulation_headers;
+  DevtoolsOverriddenOutputParams allowed_emulation_overrides =
+      ApplyEmulationOverrides(agent_host, &allowed_emulation_headers,
+                              redirect_url);
+  *headers_reverted |= RevertEmulationOverride(
+      net::HttpRequestHeaders::kUserAgent,
+      allowed_emulation_overrides.user_agent_overridden,
+      allowed_emulation_headers,
+      GetRevertedHeaderValue(networks, redirect_url, original_headers,
+                             net::HttpRequestHeaders::kUserAgent),
+      devtools_user_agent_override, headers, headers_update_params);
+  *headers_reverted |= RevertEmulationOverride(
+      net::HttpRequestHeaders::kAcceptLanguage,
+      allowed_emulation_overrides.accept_language_overridden,
+      allowed_emulation_headers,
+      GetRevertedHeaderValue(networks, redirect_url, original_headers,
+                             net::HttpRequestHeaders::kAcceptLanguage),
+      devtools_accept_language_override, headers, headers_update_params);
   return true;
 }
 
 bool ApplyUserAgentMetadataOverrides(
     FrameTreeNode* frame_tree_node,
-    std::optional<blink::UserAgentMetadata>* override_out) {
+    std::optional<blink::UserAgentMetadata>* override_out,
+    const GURL& url) {
   DevToolsAgentHostImpl* agent_host =
       GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
   if (!agent_host) {
@@ -1881,6 +1959,9 @@ bool ApplyUserAgentMetadataOverrides(
 
   bool result = false;
   for (auto* emulation : protocol::EmulationHandler::ForAgentHost(agent_host)) {
+    if (!emulation->MayApplyOverridesTo(url)) {
+      continue;
+    }
     result = emulation->ApplyUserAgentMetadataOverrides(override_out) || result;
   }
 

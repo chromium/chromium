@@ -356,7 +356,8 @@ void AddClientHintsHeaders(net::HttpRequestHeaders& request_headers,
 // Hints):
 void MaybeApplyOverrideForDevtoolsUserAgentHeader(
     net::HttpRequestHeaders& request_headers,
-    const PrefetchRequest& prefetch_request) {
+    const PrefetchRequest& prefetch_request,
+    const GURL& request_url) {
   if (!base::FeatureList::IsEnabled(
           features::kPrefetchDevtoolsUserAgentOverride) ||
       !prefetch_request.referring_web_contents()) {
@@ -385,7 +386,8 @@ void MaybeApplyOverrideForDevtoolsUserAgentHeader(
     // mode UA override. There are other types of UA overrides, which are at
     // WebContents level.
     devtools_instrumentation::ApplyEmulationOverrides(
-        RenderFrameDevToolsAgentHost::GetFor(referring_ftn), &request_headers);
+        RenderFrameDevToolsAgentHost::GetFor(referring_ftn), &request_headers,
+        request_url);
   }
 }
 
@@ -507,7 +509,7 @@ network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
   // WebContents override. See also the comment in
   // `PrefetchContainer::MakeResourceRequest()` for the overriding order.
   MaybeApplyOverrideForDevtoolsUserAgentHeader(
-      headers_update_params.modified_headers, prefetch_request);
+      headers_update_params.modified_headers, prefetch_request, request_url);
 
   return headers_update_params;
 }
@@ -584,7 +586,7 @@ network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
   // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
   // override of non-UA Client Hints.
   MaybeApplyOverrideForDevtoolsUserAgentHeader(
-      headers_update_params.modified_headers, prefetch_request);
+      headers_update_params.modified_headers, prefetch_request, request_url);
 
   return headers_update_params;
 }

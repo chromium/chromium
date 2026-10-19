@@ -702,7 +702,8 @@ void UpdateNavigationRequestClientUaHeadersImpl(
 
   if (ftn_for_devtools_override &&
       devtools_instrumentation::ApplyUserAgentMetadataOverrides(
-          ftn_for_devtools_override, &ua_metadata)) {
+          ftn_for_devtools_override, &ua_metadata,
+          data.resource_origin.GetURL())) {
     // Likewise, if devtools says to override client hints but provides no
     // value, disable them. This overwrites previous decision from UI.
     disable_due_to_custom_ua = !ua_metadata.has_value();

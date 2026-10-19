@@ -427,7 +427,8 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   session->CreateAndAddHandler<protocol::DOMHandler>(
       session->GetClient()->MayReadLocalFiles());
   auto* emulation_handler =
-      session->CreateAndAddHandler<protocol::EmulationHandler>();
+      session->CreateAndAddHandler<protocol::EmulationHandler>(
+          session->GetClient());
   session->CreateAndAddHandler<protocol::InputHandler>(
       session->GetClient()->MayReadLocalFiles(),
       session->GetClient()->IsTrusted());

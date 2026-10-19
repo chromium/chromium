@@ -30,6 +30,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/screen_orientation/screen_orientation_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/devtools_agent_host_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "net/http/http_util.h"
@@ -125,11 +126,12 @@ bool ValidateClientHintString(const std::string& s) {
 
 }  // namespace
 
-EmulationHandler::EmulationHandler()
+EmulationHandler::EmulationHandler(DevToolsAgentHostClient* client)
     : DevToolsDomainHandler(Emulation::Metainfo::domainName),
       touch_emulation_enabled_(false),
       device_emulation_enabled_(false),
       focus_emulation_enabled_(false),
+      client_(client),
       host_(nullptr) {}
 
 EmulationHandler::~EmulationHandler() = default;
@@ -167,6 +169,10 @@ void EmulationHandler::SetRenderer(int process_host_id,
   if (device_emulation_enabled_)
     UpdateDeviceEmulationState(
         blink::mojom::DeviceEmulationCacheBehavior::kKeepCache);
+}
+
+bool EmulationHandler::MayApplyOverridesTo(const GURL& url) const {
+  return client_ && client_->MayAttachToURL(url, host_ && host_->web_ui());
 }
 
 void EmulationHandler::Wire(UberDispatcher* dispatcher) {
@@ -1322,6 +1328,9 @@ bool EmulationHandler::ApplyUserAgentMetadataOverrides(
 
 void EmulationHandler::ApplyNetworkOverridesForDownload(
     download::DownloadUrlParameters* parameters) {
+  if (!MayApplyOverridesTo(parameters->url())) {
+    return;
+  }
   net::HttpRequestHeaders headers;
   bool user_agent_overridden;
   bool accept_language_overridden;

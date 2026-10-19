@@ -6655,7 +6655,8 @@ void NavigationRequest::OnRedirectChecksComplete(
   if (!devtools_instrumentation::RevertDisallowedNetworkOverridesOnRedirect(
           frame_tree_node_, common_params_->url,
           headers_before_devtools_overrides, &current_headers,
-          &headers_update_params_, &headers_reverted)) {
+          &headers_update_params_, &devtools_user_agent_override_,
+          &devtools_accept_language_override_, &headers_reverted)) {
     // Requests with an overridden Referer are canceled on redirect.
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CLIENT),
