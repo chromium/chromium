@@ -540,6 +540,63 @@ TEST_F(TemplateURLServiceUnitTest, HiddenFromLists) {
   }
 }
 
+TEST_F(TemplateURLServiceUnitTest, ShowInDsePickerList) {
+  template_url_service().Load();
+  TemplateURLServiceLoadWaiter().WaitForLoadComplete(template_url_service());
+
+  // Policy-created engine
+  TemplateURLData policy_data;
+  policy_data.SetShortName(u"policy");
+  policy_data.SetKeyword(u"policy");
+  policy_data.SetURL("https://policy.com/?q={searchTerms}");
+  policy_data.policy_origin =
+      TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+  TemplateURL* policy_turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(policy_data));
+
+  // Regional prepopulated engine (using a known prepopulate_id)
+  TemplateURLData regional_data;
+  regional_data.SetShortName(u"regional");
+  regional_data.SetKeyword(u"regional");
+  regional_data.SetURL("https://regional.com/?q={searchTerms}");
+  regional_data.prepopulate_id = TemplateURLPrepopulateData::google.id;
+  TemplateURL* regional_turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(regional_data));
+
+  // Non-regional prepopulated engine (using an unknown prepopulate_id)
+  TemplateURLData non_regional_data;
+  non_regional_data.SetShortName(u"non_regional");
+  non_regional_data.SetKeyword(u"non_regional");
+  non_regional_data.SetURL("https://nonregional.com/?q={searchTerms}");
+  non_regional_data.prepopulate_id = 999999;
+  TemplateURL* non_regional_turl = template_url_service().Add(
+      std::make_unique<TemplateURL>(non_regional_data));
+
+  // Custom user engine
+  TemplateURLData custom_data;
+  custom_data.SetShortName(u"custom");
+  custom_data.SetKeyword(u"custom");
+  custom_data.SetURL("https://custom.com/?q={searchTerms}");
+  custom_data.prepopulate_id = 0;
+  TemplateURL* custom_turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(custom_data));
+
+  // Starter pack engine
+  TemplateURLData starter_pack_data;
+  starter_pack_data.SetShortName(u"starter");
+  starter_pack_data.SetKeyword(u"starter");
+  starter_pack_data.SetURL("https://starter.com/?q={searchTerms}");
+  starter_pack_data.starter_pack_id = 1;
+  TemplateURL* starter_pack_turl = template_url_service().Add(
+      std::make_unique<TemplateURL>(starter_pack_data));
+
+  EXPECT_TRUE(template_url_service().ShowInDsePickerList(policy_turl));
+  EXPECT_TRUE(template_url_service().ShowInDsePickerList(regional_turl));
+  EXPECT_FALSE(template_url_service().ShowInDsePickerList(non_regional_turl));
+  EXPECT_FALSE(template_url_service().ShowInDsePickerList(custom_turl));
+  EXPECT_FALSE(template_url_service().ShowInDsePickerList(starter_pack_turl));
+}
+
 TEST_F(TemplateURLServiceUnitTest,
        GetDefaultSearchProviderIgnoringExtensionsFallbackMatch) {
   // Verify that if the default search provider doesn't strictly match any

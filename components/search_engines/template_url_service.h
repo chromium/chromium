@@ -204,6 +204,10 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // very long).
   bool ShowInDefaultList(const TemplateURL* template_url) const;
 
+  // Similar to the above (ShowInDefaultList), but excludes engines that are
+  // neither regional choice nor policy-provided.
+  bool ShowInDsePickerList(const TemplateURL* template_url) const;
+
   // Returns whether |template_url| should be shown in the list of active
   // engines, including active search engines and search engines created by
   // policy.
@@ -909,7 +913,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Returns the TemplateURL corresponding to |prepopulated_id|, if any.
   // TODO(crbug.com/570940695): When several engines share `prepopulated_id`,
   // this returns the first match in insertion order rather than ranking
-  // conflicts. `SearchEngineSettingsDataProvider::GetAllPrepopulatedSearchEngines()`
+  // conflicts.
+  // `SearchEngineSettingsDataProvider::GetAllPrepopulatedSearchEngines()`
   // follows the same rule so display and selection stay consistent.
   TemplateURL* FindPrepopulatedTemplateURL(int prepopulated_id);
 

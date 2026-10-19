@@ -211,7 +211,8 @@ SearchEngineSettingsDataProvider::GetDefaultSearchEnginePickerData() const {
       continue;
     }
 
-    if (!template_url_service_->ShowInDefaultList(url)) {
+    if (!template_url_service_->ShowInDsePickerList(url)) {
+      // Skip non-regional prepopulated engines.
       continue;
     }
 
@@ -224,12 +225,10 @@ SearchEngineSettingsDataProvider::GetDefaultSearchEnginePickerData() const {
     const TemplateURL* keyword_winner =
         template_url_service_->GetTemplateURLForKeyword(url->keyword());
     if (keyword_winner && keyword_winner != url &&
-        template_url_service_->ShowInDefaultList(keyword_winner)) {
+        template_url_service_->ShowInDsePickerList(keyword_winner)) {
       continue;
     }
 
-    // TODO(crbug.com/567524562): Revisit the logic to ensure non-regional
-    // prepopulated engines as also skipped.
     data.primary.push_back(url);
   }
 
@@ -249,8 +248,8 @@ SearchEngineSettingsDataProvider::GetAllPrepopulatedSearchEngines() const {
   // Map each `prepopulate_id` to its first matching engine in
   // `TemplateURLService`. This mirrors
   // `TemplateURLService::FindPrepopulatedTemplateURL()`, so the listed engine
-  // is the exact one that `SetUserSelectedDefaultSearchProviderByPrepopulateId()`
-  // makes the default.
+  // is the exact one that
+  // `SetUserSelectedDefaultSearchProviderByPrepopulateId()` makes the default.
   // TODO(crbug.com/570940695): Resolve conflicts when several engines share a
   // `prepopulate_id`.
   base::flat_map<int, TemplateURL*> service_engines_by_id;

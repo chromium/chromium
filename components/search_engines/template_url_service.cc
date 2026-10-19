@@ -705,6 +705,26 @@ bool TemplateURLService::ShowInDefaultList(const TemplateURL* t_url) const {
          IsPrepopulatedOrDefaultProviderByPolicy(t_url);
 }
 
+bool TemplateURLService::ShowInDsePickerList(const TemplateURL* t_url) const {
+  if (t_url == default_search_provider_) {
+    return true;
+  }
+
+  if (!t_url->SupportsReplacement(search_terms_data())) {
+    return false;
+  }
+
+  if (t_url->CreatedByDefaultSearchProviderPolicy()) {
+    return true;
+  }
+  if (t_url->CreatedByRegulatoryProgram()) {
+    return true;
+  }
+  return t_url->prepopulate_id() > 0 &&
+         prepopulate_data_resolver_->GetPrepopulatedEngine(
+             t_url->prepopulate_id()) != nullptr;
+}
+
 bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
   return t_url->is_active() == TemplateURLData::ActiveStatus::kTrue;
 }
@@ -3849,4 +3869,3 @@ TemplateURLService::GetEnterpriseSearchManager(PrefService* prefs) {
   return nullptr;
 #endif
 }
-
