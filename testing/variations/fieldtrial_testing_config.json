@@ -4778,6 +4778,22 @@
             ]
         }
     ],
+    "ComposeboxDriveContextMenuOptionAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ComposeboxDriveContextMenuOption",
+                        "ComposeboxDriveContextMenuOptionDisclaimer"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeboxDriveContextMenuOptionSigninPromo": [
         {
             "platforms": [
