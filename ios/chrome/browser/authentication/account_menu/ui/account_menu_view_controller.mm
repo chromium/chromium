@@ -36,7 +36,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -170,6 +169,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 - (void)viewIsAppearing:(BOOL)animated {
   [super viewIsAppearing:animated];
   _resizeReady = YES;
+  [self updateCloseButton];
 }
 
 #pragma mark - Private
@@ -326,9 +326,11 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 // Decides if the Close button should be shown.
 - (BOOL)shouldShowCloseButton {
-  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE ||
-         self.presentingViewController.traitCollection.horizontalSizeClass ==
-             UIUserInterfaceSizeClassCompact;
+  UITraitCollection* containerTraits =
+      self.presentingViewController
+          ? self.presentingViewController.traitCollection
+          : self.traitCollection;
+  return containerTraits.horizontalSizeClass == UIUserInterfaceSizeClassCompact;
 }
 
 // Adds or removes the Close button based on the device type and collection.

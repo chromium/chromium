@@ -601,3 +601,20 @@ TEST_F(AccountMenuViewControllerTest,
   EXPECT_EQ(user_actions_.GetActionCount("Signin_AccountMenu_SubscriptionChip"),
             1);
 }
+
+// Tests that the close button is shown when horizontalSizeClass is Compact and
+// hidden when horizontalSizeClass is Regular.
+TEST_F(AccountMenuViewControllerTest,
+       TestCloseButtonVisibilityDependsOnHorizontalSizeClass) {
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassCompact;
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+  EXPECT_NE(view_controller_.navigationItem.rightBarButtonItem, nil);
+
+  view_controller_.traitOverrides.horizontalSizeClass =
+      UIUserInterfaceSizeClassRegular;
+  [view_controller_.view setNeedsLayout];
+  [view_controller_.view layoutIfNeeded];
+  EXPECT_EQ(view_controller_.navigationItem.rightBarButtonItem, nil);
+}

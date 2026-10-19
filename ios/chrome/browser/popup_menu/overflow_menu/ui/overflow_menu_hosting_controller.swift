@@ -56,11 +56,16 @@ where Content: View {
     preferredContentSize =
       traitCollection.verticalSizeClass == .compact ? compactHeightPreferredContentSize : .zero
 
-    uiConfiguration.presentingViewControllerHorizontalSizeClass =
-      presentingViewController?.traitCollection.horizontalSizeClass == .regular
-      ? .regular : .compact
-    uiConfiguration.presentingViewControllerVerticalSizeClass =
-      presentingViewController?.traitCollection.verticalSizeClass == .regular ? .regular : .compact
+    // Preserve the initial size classes passed to `uiConfiguration` if
+    // `presentingViewController` is nil (e.g. before presentation completes or
+    // when hosted directly in unit tests).
+    if let presentingViewController = presentingViewController {
+      uiConfiguration.presentingViewControllerHorizontalSizeClass =
+        presentingViewController.traitCollection.horizontalSizeClass == .regular
+        ? .regular : .compact
+      uiConfiguration.presentingViewControllerVerticalSizeClass =
+        presentingViewController.traitCollection.verticalSizeClass == .regular ? .regular : .compact
+    }
   }
 
   override func viewWillAppear(_ animated: Bool) {
@@ -86,11 +91,16 @@ where Content: View {
     preferredContentSize =
       traitCollection.verticalSizeClass == .compact ? compactHeightPreferredContentSize : .zero
 
-    uiConfiguration.presentingViewControllerHorizontalSizeClass =
-      presentingViewController?.traitCollection.horizontalSizeClass == .regular
-      ? .regular : .compact
-    uiConfiguration.presentingViewControllerVerticalSizeClass =
-      presentingViewController?.traitCollection.verticalSizeClass == .regular ? .regular : .compact
+    if let presentingViewController = presentingViewController {
+      uiConfiguration.presentingViewControllerHorizontalSizeClass =
+        presentingViewController.traitCollection.horizontalSizeClass == .regular
+        ? .regular : .compact
+      uiConfiguration.presentingViewControllerVerticalSizeClass =
+        presentingViewController.traitCollection.verticalSizeClass == .regular ? .regular : .compact
+    }
+    if let scrollView = scrollView {
+      updatePreferredContentSize(contentSize: scrollView.contentSize)
+    }
   }
 
   // MARK: - Private
@@ -126,13 +136,14 @@ where Content: View {
 
   /// Updates the view controller's `preferredContentSize` based on the scroll
   /// view's content size, top insets, and bottom safe area. This is restricted
-  /// to iPhone portrait to preserve default popover sizing on iPad.
+  /// to compact-width regular-height presentations to preserve default popover
+  /// sizing in regular-width environments.
   fileprivate func updatePreferredContentSize(contentSize: CGSize) {
-    // Only update preferredContentSize dynamically in regular height (portrait iPhone).
+    // Only update preferredContentSize dynamically in compact-width regular-height.
     // In compact height (landscape iPhone), use compactHeightPreferredContentSize.
-    // On iPad, keep default popover sizing (.zero).
+    // In regular width (iPad or unfolded Duo), keep default popover sizing (.zero).
     guard
-      traitCollection.userInterfaceIdiom == .phone
+      uiConfiguration.presentingViewControllerHorizontalSizeClass == .compact
         && traitCollection.verticalSizeClass == .regular
     else { return }
 
