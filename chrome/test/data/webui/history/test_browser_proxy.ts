@@ -52,6 +52,15 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
       },
     }));
 
+    // Pages that don't fill the viewport request more results without
+    // scrolling, so provide a default empty, finished continuation.
+    this.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
+      results: {
+        info: createHistoryInfo(''),
+        value: [],
+      },
+    }));
+
     this.handler.setResultFor('requestAccountInfo', Promise.resolve({
       accountInfo: {
         name: 'Test User',

@@ -467,14 +467,50 @@ export class HistoryListElement extends HistoryListElementBase {
   }
 
   /**
-   * Called when the page is scrolled to near the bottom of the list.
+   * Requests the next batch of history results, unless loading is disabled or
+   * a query is already in progress.
    */
-  private onScrollToBottom_() {
+  private loadMoreHistory_() {
     if (this.resultLoadingDisabled_ || this.queryState.querying) {
       return;
     }
 
     this.fire('query-history', true);
+  }
+
+  protected onViewportFilled_() {
+    this.loadMoreIfListNotScrollable_();
+  }
+
+  /**
+   * Each query returns a fixed number of visits, which can merge into only a
+   * few entries. If the rendered list is too short to scroll, the user can't
+   * trigger loading more by scrolling, so request more results directly.
+   */
+  private loadMoreIfListNotScrollable_() {
+    if (!this.isActive || this.historyData_.length === 0) {
+      return;
+    }
+
+    const listRect = this.$.infiniteList.getBoundingClientRect();
+    if (listRect.height === 0) {
+      // The list has not been laid out yet (e.g. it is hidden).
+      return;
+    }
+
+    // Use on-screen positions, not scrollHeight. `scrollTarget` may be <html>
+    // or <body>, which never scroll here, so scrollHeight would say the list
+    // fits even when it doesn't. Limit the result to window.innerHeight so the
+    // check doesn't rely on CSS sizing <html> to the screen. Without that CSS
+    // (e.g. in tests), <html> grows with its content and we'd keep loading
+    // results the user doesn't need.
+    const viewportBottom = Math.min(
+        this.scrollTarget.getBoundingClientRect().bottom, window.innerHeight);
+    if (listRect.bottom > viewportBottom) {
+      return;
+    }
+
+    this.loadMoreHistory_();
   }
 
   private onOpenMenu_(e: OpenMenuEvent) {
@@ -759,7 +795,7 @@ export class HistoryListElement extends HistoryListElementBase {
     const lowerScroll = this.scrollTarget.scrollHeight -
         this.scrollTarget.scrollTop - this.scrollTarget.offsetHeight;
     if (lowerScroll < 500) {
-      this.onScrollToBottom_();
+      this.loadMoreHistory_();
     }
     this.fire('scroll-timeout-for-test');
   }

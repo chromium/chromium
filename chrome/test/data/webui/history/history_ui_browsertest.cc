@@ -237,6 +237,17 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest, ResizingLoadsMore) {
   RunTestCase("ResizingLoadsMore");
 }
 
+IN_PROC_BROWSER_TEST_F(HistoryListTest,
+                       LoadsMoreResultsWithoutScrollingWhenListIsShort) {
+  RunTestCase("LoadsMoreResultsWithoutScrollingWhenListIsShort");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HistoryListTest,
+    DoesNotLoadMoreResultsWithoutScrollingWhenListOverflows) {
+  RunTestCase("DoesNotLoadMoreResultsWithoutScrollingWhenListOverflows");
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryListTest, SharedMenuClosesOnFocusout) {
   RunTestCase("SharedMenuClosesOnFocusout");
 }

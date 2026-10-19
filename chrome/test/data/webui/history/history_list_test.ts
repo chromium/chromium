@@ -1108,13 +1108,20 @@ suite('HistoryListTest', function() {
     // Simulate a shorter window to make this easier.
     document.body.style.maxHeight = '300px';
     document.body.style.height = '300px';
-    await finishSetup(TEST_HISTORY_RESULTS, /*finished=*/ false);
+    // Enough items to scroll in the short window, so no results are loaded
+    // until the window is resized.
+    const results = [];
+    for (let i = 0; i < 10; i++) {
+      results.push(createHistoryEntry('2016-03-15', 'https://www.google.com'));
+    }
+    await finishSetup(results, /*finished=*/ false);
     testProxy.handler.reset();
 
-    // Set up more results.
+    // Set up more results. Report them as finished so that the taller window
+    // doesn't keep requesting more.
     testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
       results: {
-        info: {finished: false, term: ''},
+        info: {finished: true, term: ''},
         value: [
           createHistoryEntry('2013-02-13 10:00', 'https://en.wikipedia.org'),
         ],
@@ -1126,6 +1133,40 @@ suite('HistoryListTest', function() {
     document.body.style.height = '800px';
     await testProxy.handler.whenCalled('queryHistoryContinuation');
     assertEquals(1, testProxy.handler.getCallCount('queryHistoryContinuation'));
+  });
+
+  test('LoadsMoreResultsWithoutScrollingWhenListIsShort', async () => {
+    // If the loaded results don't fill the viewport and more are
+    // available, the next batch should be requested without any scrolling.
+    testProxy.handler.setResultFor('queryHistoryContinuation', Promise.resolve({
+      results: {
+        info: {finished: true, term: ''},
+        value: [
+          createHistoryEntry('2013-02-13 10:00', 'https://en.wikipedia.org'),
+        ],
+      },
+    }));
+    await finishSetup(TEST_HISTORY_RESULTS, /*finished=*/ false);
+
+    await testProxy.handler.whenCalled('queryHistoryContinuation');
+    await microtasksFinished();
+    assertEquals(1, testProxy.handler.getCallCount('queryHistoryContinuation'));
+    assertEquals(TEST_HISTORY_RESULTS.length + 1, getHistoryData().length);
+  });
+
+  test('DoesNotLoadMoreResultsWithoutScrollingWhenListOverflows', async () => {
+    // Simulate a shorter window so that the results overflow it.
+    document.body.style.maxHeight = '300px';
+    document.body.style.height = '300px';
+    const results = [];
+    for (let i = 0; i < 20; i++) {
+      results.push(createHistoryEntry('2016-03-15', 'https://www.google.com'));
+    }
+    await finishSetup(results, /*finished=*/ false);
+    await new Promise(resolve => setTimeout(resolve, 0));
+    await microtasksFinished();
+
+    assertEquals(0, testProxy.handler.getCallCount('queryHistoryContinuation'));
   });
 
   test('SharedMenuClosesOnFocusout', async () => {
