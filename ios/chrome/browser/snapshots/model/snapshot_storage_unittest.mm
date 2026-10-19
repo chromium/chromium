@@ -12,9 +12,6 @@
 #import "base/run_loop.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/snapshots/model/constants.h"
-#import "ios/chrome/browser/snapshots/model/features.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
@@ -34,12 +31,6 @@
 @end
 
 namespace {
-
-// Represents the possible SnapshotStorage implementations.
-enum class SnapshotStorageKind {
-  kLegacy,
-  kSwift,
-};
 
 const NSInteger kSnapshotCount = 10;
 const NSUInteger kSnapshotPixelSize = 8;
@@ -67,9 +58,7 @@ SnapshotIDWrapper* InvalidSnapshotID() {
 
 }  // namespace
 
-class SnapshotStorageTest
-    : public PlatformTest,
-      public testing::WithParamInterface<SnapshotStorageKind> {
+class SnapshotStorageTest : public PlatformTest {
  protected:
   void TearDown() override {
     ClearAllImages();
@@ -87,25 +76,11 @@ class SnapshotStorageTest
     }
 
     const base::FilePath storage_path = scoped_temp_directory_.GetPath();
-    switch (GetParam()) {
-      case SnapshotStorageKind::kLegacy: {
-        legacy_lru_cache_ = [[LegacySnapshotLRUCache alloc]
-            initWithCacheSize:kSnapshotCacheSize];
-        snapshot_storage_ =
-            [[LegacySnapshotStorage alloc] initWithLRUCache:legacy_lru_cache_
-                                                storagePath:storage_path];
-        break;
-      }
-
-      case SnapshotStorageKind::kSwift: {
-        using base::apple::FilePathToNSURL;
-        lru_cache_ = [[SnapshotLRUCache alloc] initWithSize:kSnapshotCacheSize];
-        snapshot_storage_ = [[SnapshotStorageImpl alloc]
-               initWithLruCache:lru_cache_
-            storageDirectoryUrl:FilePathToNSURL(storage_path)];
-        break;
-      }
-    }
+    using base::apple::FilePathToNSURL;
+    lru_cache_ = [[SnapshotLRUCache alloc] initWithSize:kSnapshotCacheSize];
+    snapshot_storage_ = [[SnapshotStorageImpl alloc]
+           initWithLruCache:lru_cache_
+        storageDirectoryUrl:FilePathToNSURL(storage_path)];
     DCHECK(snapshot_storage_);
 
     CGFloat scale = [SnapshotImageScale floatImageScaleForDevice];
@@ -125,10 +100,7 @@ class SnapshotStorageTest
     return snapshot_storage_;
   }
 
-  void ClearCache() {
-    [legacy_lru_cache_ removeAllObjects];
-    [lru_cache_ removeAllObjects];
-  }
+  void ClearCache() { [lru_cache_ removeAllObjects]; }
 
   // Generates an image of `scale`, filled with a random color.
   UIImage* GenerateRandomImage(CGFloat scale) {
@@ -233,19 +205,13 @@ class SnapshotStorageTest
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_directory_;
   id<SnapshotStorage> snapshot_storage_;
-  LegacySnapshotLRUCache* legacy_lru_cache_;
   SnapshotLRUCache* lru_cache_;
   NSMutableDictionary<SnapshotIDWrapper*, UIImage*>* test_images_;
 };
 
-INSTANTIATE_TEST_SUITE_P(,
-                         SnapshotStorageTest,
-                         testing::Values(SnapshotStorageKind::kLegacy,
-                                         SnapshotStorageKind::kSwift));
-
 // This test simply put all snapshots in the storage and then gets them back.
 // As the snapshots are kept in memory, the same pointer can be retrieved.
-TEST_P(SnapshotStorageTest, ReadAndWriteCache) {
+TEST_F(SnapshotStorageTest, ReadAndWriteCache) {
   ASSERT_TRUE(CreateSnapshotStorage());
   id<SnapshotStorage> storage = GetSnapshotStorage();
 
@@ -289,7 +255,7 @@ TEST_P(SnapshotStorageTest, ReadAndWriteCache) {
 
 // This test puts all snapshots in the storage, clears the LRU cache and checks
 // if the images can be retrieved from the disk.
-TEST_P(SnapshotStorageTest, ReadAndWriteWithoutCache) {
+TEST_F(SnapshotStorageTest, ReadAndWriteWithoutCache) {
   ASSERT_TRUE(CreateSnapshotStorage());
   id<SnapshotStorage> storage = GetSnapshotStorage();
 
@@ -320,7 +286,7 @@ TEST_P(SnapshotStorageTest, ReadAndWriteWithoutCache) {
 
 // Tests that an image is immediately deleted when calling
 // `-removeImageWithSnapshotID:`.
-TEST_P(SnapshotStorageTest, ImageDeleted) {
+TEST_F(SnapshotStorageTest, ImageDeleted) {
   ASSERT_TRUE(CreateSnapshotStorage());
   id<SnapshotStorage> storage = GetSnapshotStorage();
 
@@ -343,7 +309,7 @@ TEST_P(SnapshotStorageTest, ImageDeleted) {
 }
 
 // Tests that all images are deleted when calling `-removeAllImages`.
-TEST_P(SnapshotStorageTest, AllImagesDeleted) {
+TEST_F(SnapshotStorageTest, AllImagesDeleted) {
   ASSERT_TRUE(CreateSnapshotStorage());
   id<SnapshotStorage> storage = GetSnapshotStorage();
 
@@ -374,7 +340,7 @@ TEST_P(SnapshotStorageTest, AllImagesDeleted) {
 }
 
 // Tests that observers are notified when a snapshot is storaged and removed.
-TEST_P(SnapshotStorageTest, ObserversNotifiedOnSetAndRemoveImage) {
+TEST_F(SnapshotStorageTest, ObserversNotifiedOnSetAndRemoveImage) {
   ASSERT_TRUE(CreateSnapshotStorage());
   id<SnapshotStorage> storage = GetSnapshotStorage();
 
@@ -399,7 +365,7 @@ TEST_P(SnapshotStorageTest, ObserversNotifiedOnSetAndRemoveImage) {
 }
 
 // Tests that creating the SnapshotStorage create the storage directory.
-TEST_P(SnapshotStorageTest, CreateStorage) {
+TEST_F(SnapshotStorageTest, CreateStorage) {
   ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
   const base::FilePath root = scoped_temp_directory_.GetPath();
 
@@ -417,7 +383,7 @@ TEST_P(SnapshotStorageTest, CreateStorage) {
 
 // Tests that retrieving grey snapshot images generated by color images stored
 // in cache.
-TEST_P(SnapshotStorageTest, RetrieveGreyImageFromColorImageInMemory) {
+TEST_F(SnapshotStorageTest, RetrieveGreyImageFromColorImageInMemory) {
   ASSERT_TRUE(CreateSnapshotStorage());
   LoadAllColorImagesIntoCache(true);
 
@@ -440,7 +406,7 @@ TEST_P(SnapshotStorageTest, RetrieveGreyImageFromColorImageInMemory) {
 
 // Tests that retrieving grey snapshot images generated by color images stored
 // in disk.
-TEST_P(SnapshotStorageTest, RetrieveGreyImageFromColorImageInDisk) {
+TEST_F(SnapshotStorageTest, RetrieveGreyImageFromColorImageInDisk) {
   ASSERT_TRUE(CreateSnapshotStorage());
   LoadAllColorImagesIntoCache(true);
 
@@ -466,22 +432,12 @@ TEST_P(SnapshotStorageTest, RetrieveGreyImageFromColorImageInDisk) {
 }
 
 // Tests that the default LRU cache capacity is `kDefaultLRUCacheCapacity`.
-TEST_P(SnapshotStorageTest, DefaultLRUCacheCapacity) {
+TEST_F(SnapshotStorageTest, DefaultLRUCacheCapacity) {
   ASSERT_TRUE(scoped_temp_directory_.CreateUniqueTempDir());
   const base::FilePath storage_path = scoped_temp_directory_.GetPath();
 
-  id<SnapshotStorage> storage = nil;
-  switch (GetParam()) {
-    case SnapshotStorageKind::kLegacy:
-      storage =
-          [[LegacySnapshotStorage alloc] initWithStoragePath:storage_path];
-      break;
-    case SnapshotStorageKind::kSwift:
-      storage = [[SnapshotStorageImpl alloc]
-          initWithStorageDirectoryUrl:base::apple::FilePathToNSURL(
-                                          storage_path)];
-      break;
-  }
+  id<SnapshotStorage> storage = [[SnapshotStorageImpl alloc]
+      initWithStorageDirectoryUrl:base::apple::FilePathToNSURL(storage_path)];
 
   NSMutableArray<SnapshotIDWrapper*>* snapshot_ids =
       [[NSMutableArray alloc] init];

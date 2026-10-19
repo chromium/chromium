@@ -4,9 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/snapshots/model/legacy_snapshot_lru_cache.h"
 #import "ios/chrome/browser/snapshots/model/model_swift.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id_wrapper.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -14,47 +12,6 @@
 namespace {
 
 using SnapshotLRUCacheTest = PlatformTest;
-
-// Tests the LRU cache by adding, removing and getting an object by a key.
-TEST_F(SnapshotLRUCacheTest, Basic) {
-  LegacySnapshotLRUCache<NSString*>* cache =
-      [[LegacySnapshotLRUCache alloc] initWithCacheSize:3];
-
-  NSString* value1 = @"Value 1";
-  NSString* value2 = @"Value 2";
-  NSString* value3 = @"Value 3";
-  NSString* value4 = @"Value 4";
-
-  const SnapshotID key1 = SnapshotID(1);
-  const SnapshotID key2 = SnapshotID(2);
-  const SnapshotID key3 = SnapshotID(3);
-  const SnapshotID key4 = SnapshotID(4);
-
-  EXPECT_TRUE([cache count] == 0);
-  EXPECT_TRUE([cache isEmpty]);
-
-  [cache setObject:value1 forKey:key1];
-  [cache setObject:value2 forKey:key2];
-  [cache setObject:value3 forKey:key3];
-  [cache setObject:value4 forKey:key4];
-
-  EXPECT_TRUE([cache count] == 3);
-
-  // Check LRU behaviour, the value least recently added value should have been
-  // evicted.
-  id value = [cache objectForKey:key1];
-  EXPECT_TRUE(value == nil);
-
-  value = [cache objectForKey:key2];
-  EXPECT_TRUE(value == value2);
-
-  // Removing a non existing key shouldn't do anything.
-  [cache removeObjectForKey:SnapshotID(5)];
-  EXPECT_TRUE([cache count] == 3);
-
-  [cache removeAllObjects];
-  EXPECT_TRUE([cache isEmpty]);
-}
 
 // Tests that the LRU cache evicts the least recently "added" value.
 TEST_F(SnapshotLRUCacheTest, EvictLeastRecentlyAddedItem) {

@@ -8,9 +8,6 @@
 #ifdef __cplusplus
 #import "base/feature_list.h"
 
-// Feature flag to enable new snapshot system written in Swift.
-BASE_DECLARE_FEATURE(kSnapshotInSwift);
-
 // Feature flag to enable compressed JPEG quality (0.97) for snapshot images.
 // When disabled (default), snapshots use quality 1.0 (no compression).
 BASE_DECLARE_FEATURE(kSnapshotCompressedJPEGQuality);

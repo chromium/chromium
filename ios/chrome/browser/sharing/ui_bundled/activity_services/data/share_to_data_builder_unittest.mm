@@ -76,7 +76,7 @@ class ShareToDataBuilderTest : public PlatformTest {
     [window makeKeyAndVisible];
 
     // Forcefully render the view to successfully capture a snapshot.
-    // See LegacySnapshotGeneratorTest for reference.
+    // See SnapshotGeneratorTest for reference.
     [NSRunLoop.currentRunLoop
         runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
     [window layoutIfNeeded];

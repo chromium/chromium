@@ -6,48 +6,28 @@ import("//build/config/apple/swift_source_set.gni")
 
 source_set("model") {
   public = [
-    "legacy_image_file_manager.h",
-    "legacy_snapshot_generator.h",
-    "legacy_snapshot_lru_cache.h",
-    "legacy_snapshot_storage.h",
     "snapshot_browser_agent.h",
     "snapshot_storage_util.h",
     "snapshot_tab_helper.h",
   ]
   sources = [
-    "legacy_image_file_manager.mm",
-    "legacy_snapshot_generator.mm",
-    "legacy_snapshot_lru_cache.mm",
-    "legacy_snapshot_manager.h",
-    "legacy_snapshot_manager.mm",
-    "legacy_snapshot_storage.mm",
     "snapshot_browser_agent.mm",
     "snapshot_storage_util.mm",
     "snapshot_tab_helper.mm",
   ]
   deps = [
     ":constants",
-    ":features",
     ":model_common",
     ":model_swift",
-    ":snapshot_source",
     "//base",
-    "//build:blink_buildflags",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tabs/model:dependency_installer",
-    "//ios/third_party/webkit",
     "//ios/web/public",
-    "//ui/gfx",
   ]
-  frameworks = [
-    "QuartzCore.framework",
-    "UIKit.framework",
-  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("model_common") {

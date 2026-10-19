@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/snapshots/model/features.h"
 
-BASE_FEATURE(kSnapshotInSwift, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSnapshotCompressedJPEGQuality,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
