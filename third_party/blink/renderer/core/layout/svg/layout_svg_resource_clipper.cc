@@ -179,8 +179,13 @@ std::optional<Path> LayoutSVGResourceClipper::AsPath() {
     }
   }
 
-  if (clip_path_builder)
-    clip_path_builder->resolve(&resolved_path);
+  if (clip_path_builder) {
+    std::optional<SkPath> path = clip_path_builder->resolve();
+    if (!path) {
+      return std::nullopt;
+    }
+    resolved_path = std::move(*path);
+  }
   clip_content_path_ = std::move(resolved_path);
   clip_content_path_validity_ = kClipContentPathValid;
   return std::optional<Path>(clip_content_path_);
