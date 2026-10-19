@@ -7,7 +7,7 @@ import './recording_wave.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import {type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './animated_glow.css.js';
 import {getHtml} from './animated_glow.html.js';
@@ -90,10 +90,6 @@ export class SearchAnimatedGlowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
-      isZeroState: {
-        type: Boolean,
-        reflect: true,
-      },
       darkThemeColorsEnabled: {
         type: Boolean,
       },
@@ -114,7 +110,6 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   accessor showingOnlyCarouselOnTopOfInput: boolean = false;
   accessor isListening: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
-  accessor isZeroState: boolean = false;
   accessor darkThemeColorsEnabled: boolean = true;
 
   private targetAngle_: number = 0;

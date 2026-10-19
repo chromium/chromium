@@ -21,7 +21,6 @@ export function getHtml(this: OmniboxComposeboxElement) {
         .transcript="${this.transcript}"
         .receivedSpeech="${this.receivedSpeech}"
         .energyEffectAnimationEnabled="${false}"
-        .isZeroState="${false}"
         exportparts="composebox-background">
       ${this.showFileCarousel && this.shouldShowVoiceSearchAnimation() &&
           this.voiceSearchCoherenceEnabled ? html`

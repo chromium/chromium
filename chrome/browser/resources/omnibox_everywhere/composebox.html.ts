@@ -22,7 +22,6 @@ export function getHtml(this: OmniboxEverywhereComposeboxElement) {
           .transcript="${this.transcript}"
           .receivedSpeech="${this.receivedSpeech}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
-          .isZeroState="${false}"
           exportparts="composebox-background">
       </search-animated-glow>
     ` : ''}

@@ -20,7 +20,6 @@ export function getHtml(this: ContextualTasksInnerComposeboxElement) {
         .receivedSpeech="${this.receivedSpeech}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
         .entrypointName="${this.entrypointName}"
-        .isZeroState="${this.isZeroState}"
         .darkThemeColorsEnabled="${true}"
         .showingOnlyCarouselOnTopOfInput="${this.showFileCarousel &&
             !this.inToolMode && this.carouselOnTop_ &&

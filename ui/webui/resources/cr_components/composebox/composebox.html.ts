@@ -22,7 +22,6 @@ export function getHtml(this: ComposeboxElement) {
         .transcript="${this.transcript}"
         .receivedSpeech="${this.receivedSpeech}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
-        .isZeroState="${this.isZeroState}"
         .darkThemeColorsEnabled="${this.entrypointName !== ''}"
         .showingOnlyCarouselOnTopOfInput="${this.showFileCarousel
             && !this.inToolMode
