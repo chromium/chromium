@@ -35,6 +35,8 @@
 #include "chrome/browser/download/download_prompt_status.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -2034,6 +2036,67 @@ TEST_F(DownloadTargetDeterminerTest, BlockDownloads) {
       .WillByDefault(WithArg<2>(ScheduleCallback(
           download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK)));
   RunTestCasesWithActiveItem(kBlockDownloadsTestCases);
+}
+
+// Test that a download is blocked when the supervised user URL filter does not
+// allow the URL the content is served from, which is the URL at the end of the
+// redirect chain.
+TEST_F(DownloadTargetDeterminerTest, BlockDownloadsForSupervisedUser) {
+  const DownloadTestCase kBlockedForSupervisedUserTestCases[] = {
+      {AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.txt", "",
+       FILE_PATH_LITERAL(""), FILE_PATH_LITERAL(""),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_EMPTY},
+  };
+
+  ChildAccountServiceFactory::GetForProfile(profile());
+  profile()->SetIsSupervisedProfile();
+  supervised_user_test_util::SetManualFilterForHost(profile(), "example.com",
+                                                    /*allowlist=*/false);
+
+  base::HistogramTester histogram_tester;
+  RunTestCasesWithActiveItem(kBlockedForSupervisedUserTestCases);
+
+  histogram_tester.ExpectBucketCount(
+      "Download.CancelReason", DownloadCancelReason::kSupervisedUserBlocked, 1);
+}
+
+// Test that a download is blocked when an earlier URL in the redirect chain is
+// blocked by the supervised user URL filter, even if the final destination URL
+// is allowed.
+TEST_F(DownloadTargetDeterminerTest,
+       BlockDownloadsInRedirectChainForSupervisedUser) {
+  const DownloadTestCase kTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      "http://cdn.allowed.com/pdf/abc.pdf",
+      "",
+      FILE_PATH_LITERAL(""),
+      FILE_PATH_LITERAL(""),
+      DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+      EXPECT_EMPTY};
+
+  ChildAccountServiceFactory::GetForProfile(profile());
+  profile()->SetIsSupervisedProfile();
+  supervised_user_test_util::SetManualFilterForHost(profile(), "blocked.com",
+                                                    /*allowlist=*/false);
+  supervised_user_test_util::SetManualFilterForHost(
+      profile(), "cdn.allowed.com", /*allowlist=*/true);
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, kTestCase);
+  std::vector<GURL> url_chain = {GURL("http://blocked.com/abc.pdf"),
+                                 GURL("http://cdn.allowed.com/pdf/abc.pdf")};
+  ON_CALL(*item, GetUrlChain()).WillByDefault(ReturnRefOfCopy(url_chain));
+  ON_CALL(*item, GetOriginalUrl())
+      .WillByDefault(ReturnRefOfCopy(url_chain.front()));
+
+  base::HistogramTester histogram_tester;
+  RunTestCase(kTestCase, base::FilePath(), item.get());
+
+  histogram_tester.ExpectBucketCount(
+      "Download.CancelReason", DownloadCancelReason::kSupervisedUserBlocked, 1);
 }
 
 // Test basic functionality supporting extensions that want to override download

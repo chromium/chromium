@@ -98,7 +98,9 @@ enum class DownloadCancelReason {
   kFailedPathReservation = 4,
   // Canceled due to empty local path.
   kEmptyLocalPath = 5,
-  kMaxValue = kEmptyLocalPath
+  // Blocked by the supervised user URL filter.
+  kSupervisedUserBlocked = 6,
+  kMaxValue = kSupervisedUserBlocked
 };
 
 // Record initiation of a download from a specific source.

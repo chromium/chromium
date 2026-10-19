@@ -197,6 +197,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Mixed content"/>
   <int value="4" label="Failed path reservation"/>
   <int value="5" label="Empty local path"/>
+  <int value="6" label="Blocked by supervised user URL filter"/>
 </enum>
 
 <enum name="DownloadCommand">

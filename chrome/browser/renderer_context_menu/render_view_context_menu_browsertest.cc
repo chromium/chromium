@@ -47,6 +47,8 @@
 #include "chrome/browser/context_hub/memory_bank/memory_bank.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker.h"
 #include "chrome/browser/contextual_tasks/search_journey_tracker_factory.h"
+#include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/download/download_test_file_activity_observer.h"
 #include "chrome/browser/enterprise/data_controls/desktop_data_controls_dialog_test_helper.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -147,6 +149,7 @@
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -158,6 +161,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/download_test_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -1097,6 +1101,28 @@ class ContextMenuForSupervisedUsersBrowserTest
     return supervision_mixin_.api_mock_setup_mixin().api_mock();
   }
 
+  download::DownloadItem* SaveLinkAsAndWait(const GURL& link_url) {
+    DownloadTestFileActivityObserver file_activity(browser()->GetProfile());
+    file_activity.EnableFileChooser(true);
+
+    std::unique_ptr<TestRenderViewContextMenu> menu =
+        CreateContextMenuMediaTypeNone(link_url, link_url);
+    EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_SAVELINKAS));
+
+    content::DownloadManager* download_manager =
+        browser()->GetProfile()->GetDownloadManager();
+    content::DownloadTestObserverTerminal observer(
+        download_manager, /*wait_count=*/1,
+        content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_ACCEPT);
+    menu->ExecuteCommand(IDC_CONTENT_CONTEXT_SAVELINKAS, /*event_flags=*/0);
+    observer.WaitForFinished();
+
+    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> items;
+    download_manager->GetAllDownloads(&items);
+    CHECK_EQ(1u, items.size());
+    return items[0];
+  }
+
  private:
   // Supervision mixin hooks kids management api (including ClassifyUrl) onto
   // given embedded test server. This server is run in separate process and is
@@ -1109,6 +1135,9 @@ class ContextMenuForSupervisedUsersBrowserTest
       {
           .sign_in_mode =
               supervised_user::SupervisionMixin::SignInMode::kSupervised,
+          .embedded_test_server_options =
+              {.resolver_rules_map_host_list =
+                   "allowed.test, allowed2.test, blocked.test"},
       }};
 };
 
@@ -1204,6 +1233,46 @@ IN_PROC_BROWSER_TEST_F(
   menu_observer.WaitForMenuOpenAndClose();
 
   ASSERT_EQ(u"test_filename.png", menu_observer.params().suggested_filename);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuForSupervisedUsersBrowserTest,
+                       SaveLinkAsIsBlockedWhenRedirectedToBlockedHostForChild) {
+  supervised_user_test_util::SetManualFilterForHost(
+      browser()->GetProfile(), "allowed.test", /*allowlist=*/true);
+  supervised_user_test_util::SetManualFilterForHost(
+      browser()->GetProfile(), "blocked.test", /*allowlist=*/false);
+
+  GURL blocked_url =
+      embedded_test_server()->GetURL("blocked.test", "/cors-ok.txt");
+  GURL link_url = embedded_test_server()->GetURL(
+      "allowed.test", "/server-redirect-302?" + blocked_url.spec());
+
+  base::HistogramTester histogram_tester;
+  download::DownloadItem* item = SaveLinkAsAndWait(link_url);
+  EXPECT_EQ(blocked_url, item->GetURL());
+  EXPECT_EQ(download::DownloadItem::CANCELLED, item->GetState());
+  histogram_tester.ExpectBucketCount(
+      "Download.CancelReason", DownloadCancelReason::kSupervisedUserBlocked, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextMenuForSupervisedUsersBrowserTest,
+                       SaveLinkAsFollowsRedirectToAllowedHostForChild) {
+  supervised_user_test_util::SetManualFilterForHost(
+      browser()->GetProfile(), "allowed.test", /*allowlist=*/true);
+  supervised_user_test_util::SetManualFilterForHost(
+      browser()->GetProfile(), "allowed2.test", /*allowlist=*/true);
+
+  GURL redirect_target =
+      embedded_test_server()->GetURL("allowed2.test", "/cors-ok.txt");
+  GURL link_url = embedded_test_server()->GetURL(
+      "allowed.test", "/server-redirect-302?" + redirect_target.spec());
+
+  base::HistogramTester histogram_tester;
+  download::DownloadItem* item = SaveLinkAsAndWait(link_url);
+  EXPECT_EQ(redirect_target, item->GetURL());
+  EXPECT_EQ(download::DownloadItem::COMPLETE, item->GetState());
+  histogram_tester.ExpectBucketCount(
+      "Download.CancelReason", DownloadCancelReason::kSupervisedUserBlocked, 0);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

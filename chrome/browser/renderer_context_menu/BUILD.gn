@@ -399,6 +399,7 @@ if (!is_android) {
       "//chrome/browser/context_hub",
       "//chrome/browser/contextual_tasks",
       "//chrome/browser/devtools",
+      "//chrome/browser/download:test_support",
       "//chrome/browser/enterprise/data_controls:test_support",
       "//chrome/browser/pdf:pdf_extension_test_utils",
       "//chrome/browser/profiles:misc",

@@ -203,6 +203,7 @@ source_set("impl") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",
     "//chrome/browser/signin",
+    "//chrome/browser/supervised_user",
     "//chrome/browser/tab_contents",
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/thumbnail/generator",
@@ -230,6 +231,8 @@ source_set("impl") {
     "//components/security_state/content",
     "//components/services/quarantine",
     "//components/strings",
+    "//components/supervised_user/core/browser",
+    "//components/supervised_user/core/common",
     "//ui/base/unowned_user_data",
     "//url",
   ]

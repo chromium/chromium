@@ -28,6 +28,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_url_filtering_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -38,6 +39,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filtering_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -183,8 +186,7 @@ DownloadTargetDeterminer::DownloadTargetDeterminer(
     DownloadPrefs* download_prefs,
     DownloadTargetDeterminerDelegate* delegate,
     CompletionCallback callback)
-    : next_state_(STATE_GENERATE_TARGET_PATH),
-      confirmation_reason_(DownloadConfirmationReason::NONE),
+    : next_state_(STATE_CHECK_SUPERVISED_USER_URL_FILTER),
       should_notify_extensions_(false),
       create_target_directory_(false),
       conflict_action_(conflict_action),
@@ -225,6 +227,9 @@ void DownloadTargetDeterminer::DoLoop() {
     next_state_ = STATE_NONE;
 
     switch (current_state) {
+      case STATE_CHECK_SUPERVISED_USER_URL_FILTER:
+        result = DoCheckSupervisedUserUrlFilter();
+        break;
       case STATE_GENERATE_TARGET_PATH:
         result = DoGenerateTargetPath();
         break;
@@ -270,6 +275,56 @@ void DownloadTargetDeterminer::DoLoop() {
 
   if (result == COMPLETE)
     ScheduleCallbackAndDeleteSelf(download::DOWNLOAD_INTERRUPT_REASON_NONE);
+}
+
+DownloadTargetDeterminer::Result
+DownloadTargetDeterminer::DoCheckSupervisedUserUrlFilter() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  next_state_ = STATE_GENERATE_TARGET_PATH;
+
+  if (!GetProfile()->IsChild() ||
+      !base::FeatureList::IsEnabled(supervised_user::kFilterDownloadUrls)) {
+    return CONTINUE;
+  }
+
+  const std::vector<GURL>& url_chain = download_->GetUrlChain();
+  if (supervised_user_url_chain_index_ >= url_chain.size()) {
+    return CONTINUE;
+  }
+
+  if (auto* service =
+          supervised_user::SupervisedUserUrlFilteringServiceFactory::
+              GetForProfile(GetProfile())) {
+    GURL url = url_chain[supervised_user_url_chain_index_++];
+    if (supervised_user_url_chain_index_ < url_chain.size()) {
+      next_state_ = STATE_CHECK_SUPERVISED_USER_URL_FILTER;
+    }
+    // TODO(crbug.com/513728893): Update GetFilteringBehavior() to accept a
+    // std::vector<GURL> instead of checking URLs one by one.
+    service->GetFilteringBehavior(
+        url, /*skip_manual_parent_filter=*/false,
+        base::BindOnce(
+            &DownloadTargetDeterminer::CheckSupervisedUserDownloadUrlDone,
+            weak_ptr_factory_.GetWeakPtr()));
+    return QUIT_DOLOOP;
+  }
+  return CONTINUE;
+}
+
+void DownloadTargetDeterminer::CheckSupervisedUserDownloadUrlDone(
+    supervised_user::WebFilteringResult result) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(next_state_ == STATE_CHECK_SUPERVISED_USER_URL_FILTER ||
+         next_state_ == STATE_GENERATE_TARGET_PATH);
+
+  if (result.IsBlocked()) {
+    RecordDownloadCancelReason(DownloadCancelReason::kSupervisedUserBlocked);
+    ScheduleCallbackAndDeleteSelf(
+        download::DOWNLOAD_INTERRUPT_REASON_FILE_BLOCKED);
+    return;
+  }
+
+  DoLoop();
 }
 
 DownloadTargetDeterminer::Result

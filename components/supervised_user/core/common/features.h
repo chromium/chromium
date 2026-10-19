@@ -36,6 +36,10 @@ BASE_DECLARE_FEATURE(kSupervisedUserVerificationPageOnAndroid);
 BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 #endif
 
+// Blocks downloads when any URL in the redirect chain is blocked by the
+// supervised user filter.
+BASE_DECLARE_FEATURE(kFilterDownloadUrls);
+
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
 bool IsLocalWebApprovalsEnabled();
