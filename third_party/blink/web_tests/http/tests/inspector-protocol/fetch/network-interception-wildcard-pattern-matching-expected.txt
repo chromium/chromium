@@ -1,4 +1,4 @@
-Test to ensure the consistency of front-end patterns vs backend patterns for request interception.
+Tests that Fetch.enable URL patterns support '*' and '?' wildcards.
 
 Setting Pattern: **bar.js
 Requesting: (MASKED_URL_PATH)/bar.js
@@ -19,9 +19,8 @@ Setting Pattern: bar.js
 Requesting: (MASKED_URL_PATH)/bar.js
 Response Received: (MASKED_URL_PATH)/bar.js
 
-Setting Pattern: *bar.js
+Setting Pattern: \*bar.js
 Requesting: (MASKED_URL_PATH)/bar.js
-Intercepted Request: (MASKED_URL_PATH)/bar.js
 Response Received: (MASKED_URL_PATH)/bar.js
 
 Setting Pattern: *b*

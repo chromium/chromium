@@ -1,0 +1,7 @@
+Tests that the Log.entryAdded CSP violation for an inline script injected from JavaScript contains a stack trace.
+Message[0]: security error: Executing inline script violates the following Content Security Policy directive 'script-src 'self''. Either the 'unsafe-inline' keyword, a hash ('sha256-CihokcEcBW4atb/CW/XWsvWwbTjqwQlE9nj9ii5ww5M='), or a nonce ('nonce-...') is required to enable inline execution. The action has been blocked.
+Stack Trace:
+  url: csp-test.js
+  function: thisTest
+  line: 4
+

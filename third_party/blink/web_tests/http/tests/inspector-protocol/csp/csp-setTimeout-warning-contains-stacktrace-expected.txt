@@ -1,0 +1,13 @@
+Tests that the Log.entryAdded CSP violations for evaluating a string with setTimeout contain a stack trace.
+Message[0]: security error:  Hash of blocked script: "eval-sha256-9IRdP563CpG6XRgwe4vt6tzM6vD85hXbsPpUruUhctw=".
+Stack Trace:
+  url: csp-test.js
+  function: thisTest
+  line: 2
+Message[1]: security error: Evaluating a string as JavaScript violates the following Content Security Policy directive because neither 'unsafe-eval' nor the string's hash are an allowed source of script: "script-src 'self' 'unsafe-inline'". Hash of blocked script: "eval-sha256-9IRdP563CpG6XRgwe4vt6tzM6vD85hXbsPpUruUhctw=".
+ The action has been blocked.
+Stack Trace:
+  url: csp-test.js
+  function: thisTest
+  line: 2
+
