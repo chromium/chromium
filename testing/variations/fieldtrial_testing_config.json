@@ -12783,7 +12783,7 @@
                     "params": {
                         "IPv6FallbackMax": "1500ms",
                         "IPv6FallbackMin": "50ms",
-                        "IPv6FallbackRTTMultiplier": "1.5",
+                        "IPv6FallbackRTTMultiplier": "1.1",
                         "fallback_time": "100ms",
                         "use_stale_connectors": "true"
                     },
