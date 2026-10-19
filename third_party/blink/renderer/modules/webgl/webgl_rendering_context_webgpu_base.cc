@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_renderbuffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_sampler.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_shader.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_shader_precision_format.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_sync.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_transform_feedback.h"
@@ -1473,8 +1474,13 @@ WebGLShaderPrecisionFormat*
 WebGLRenderingContextWebGPUBase::getShaderPrecisionFormat(
     GLenum shader_type,
     GLenum precision_type) {
-  NOTIMPLEMENTED();
-  return nullptr;
+  std::array<GLint, 2> range = {0, 0};
+  GLint precision = 0;
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetShaderPrecisionFormatFn(
+                         shader_type, precision_type, range.data(), &precision),
+                     nullptr);
+  return MakeGarbageCollected<WebGLShaderPrecisionFormat>(range[0], range[1],
+                                                          precision);
 }
 
 String WebGLRenderingContextWebGPUBase::getShaderSource(WebGLShader* shader) {
