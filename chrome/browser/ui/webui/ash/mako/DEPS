@@ -7,14 +7,16 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/mako",
 
+  # Other ash directories in //chrome.
+  "+chrome/browser/ash/input_method",
+  "+chrome/browser/ash/lobster",
+  "+chrome/browser/ui/webui/ash/lobster",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/input_method",
-  "+chrome/browser/ash/lobster",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bubble",
-  "+chrome/browser/ui/webui/ash/lobster",
   "+chrome/browser/ui/webui/top_chrome",
   "+chrome/common",
   "+chrome/grit",

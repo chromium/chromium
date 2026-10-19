@@ -9,13 +9,15 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/parent_access",
 
+  # Other ash directories in //chrome.
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ui/webui/ash/system_web_dialog",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/login/test",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_window/public",
-  "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/grit",
   "+chrome/test/base",
 ]

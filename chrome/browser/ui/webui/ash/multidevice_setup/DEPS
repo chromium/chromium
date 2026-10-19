@@ -7,16 +7,18 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/multidevice_setup",
 
+  # Other ash directories in //chrome.
+  "+chrome/browser/ash/multidevice_setup",
+  "+chrome/browser/ash/profiles",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/webui/ash/system_web_dialog",
+  "+chrome/browser/ui/webui/ash/user_image",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/multidevice_setup",
-  "+chrome/browser/ash/profiles",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/dialogs/browser_dialogs.h",
-  "+chrome/browser/ui/webui/ash/system_web_dialog",
-  "+chrome/browser/ui/webui/ash/user_image",
   "+chrome/browser/ui/webui/metrics_handler.h",
   "+chrome/grit",
 ]

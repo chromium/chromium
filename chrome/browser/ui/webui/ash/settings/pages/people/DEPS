@@ -9,26 +9,28 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/settings/pages/people",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/apps/app_service",
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/account_manager",
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/auth",
   "+chrome/browser/ash/child_accounts",
   "+chrome/browser/ash/login/quick_unlock",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/enterprise/util",
-  "+chrome/browser/policy/profile_policy_connector.h",
-  "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/ui_features.h",
   "+chrome/browser/ui/ash/account_manager",
   "+chrome/browser/ui/webui/ash/account_manager",
   "+chrome/browser/ui/webui/ash/add_supervision",
   "+chrome/browser/ui/webui/ash/settings/os_settings_features_util.h",
   "+chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h",
   "+chrome/browser/ui/webui/ash/settings/search",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
+  "+chrome/browser/enterprise/util",
+  "+chrome/browser/policy/profile_policy_connector.h",
+  "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/ui/ui_features.h",
   "+chrome/browser/ui/webui/settings",
   "+chrome/grit",
   "+chrome/test",

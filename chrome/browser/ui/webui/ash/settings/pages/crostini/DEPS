@@ -3,22 +3,24 @@ include_rules = [
   # details.
   "-chrome",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/bruschetta",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/guest_os",
   "+chrome/browser/ash/usb",
+  "+chrome/browser/ui/webui/ash/crostini_installer",
+  "+chrome/browser/ui/webui/ash/settings/pages",
+  "+chrome/browser/ui/webui/ash/settings/search",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/enterprise/browser_management",
   "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bruschetta",
   "+chrome/browser/ui/views/crostini",
-  "+chrome/browser/ui/webui/ash/crostini_installer",
-  "+chrome/browser/ui/webui/ash/settings/pages",
-  "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/common",
   "+chrome/grit",
 ]

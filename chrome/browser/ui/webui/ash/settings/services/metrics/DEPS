@@ -7,14 +7,16 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/settings/services/metrics",
 
+  # Other ash directories in //chrome.
+  "+chrome/browser/ui/webui/ash/settings/pages",
+  "+chrome/browser/ui/webui/ash/settings/search",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/browser_process.h",
   "+chrome/browser/metrics",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/webui/ash/settings/pages",
-  "+chrome/browser/ui/webui/ash/settings/search",
 ]
 
 specific_include_rules = {

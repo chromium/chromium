@@ -7,14 +7,16 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/settings/calculator",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/crostini",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/file_manager",
+  "+chrome/browser/ui/webui/ash/settings/pages/storage",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/browsing_data",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/webui/ash/settings/pages/storage",
 ]

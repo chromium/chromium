@@ -7,22 +7,24 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/network_ui",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/ash/net/network_health",
   "+chrome/browser/ash/system_logs",
+  "+chrome/browser/ui/ash/system",
+  "+chrome/browser/ui/webui/ash/cellular_setup",
+  "+chrome/browser/ui/webui/ash/internet",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/download",
   "+chrome/browser/extensions/tab_helper.h",
   "+chrome/browser/feedback",
   "+chrome/browser/net",
   "+chrome/browser/policy/chrome_policy_conversions_client.h",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/ash/system",
   "+chrome/browser/ui/select_file_policy/chrome_select_file_policy.h",
-  "+chrome/browser/ui/webui/ash/cellular_setup",
-  "+chrome/browser/ui/webui/ash/internet",
   "+chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h",
   "+chrome/common",
   "+chrome/grit",

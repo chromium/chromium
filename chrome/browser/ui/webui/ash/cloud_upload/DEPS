@@ -1,8 +1,5 @@
 include_rules = [
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/apps/app_service",
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/arc/fileapi",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/extensions/file_manager",
@@ -12,14 +9,19 @@ include_rules = [
   "+chrome/browser/ash/office_web_app",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/chromeos/upload_office_to_cloud",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/webui/ash/office_fallback",
+  "+chrome/browser/ui/webui/ash/system_web_dialog",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/apps/app_service",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
-  "+chrome/browser/ui/webui/ash/office_fallback",
-  "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/web_applications",
   "+chrome/common",
   "+chrome/grit",

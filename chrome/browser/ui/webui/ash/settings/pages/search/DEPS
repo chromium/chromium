@@ -3,17 +3,19 @@ include_rules = [
   # details.
   "-chrome",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/lobster/lobster_service.h",
   "+chrome/browser/ash/lobster/lobster_service_provider.h",
   "+chrome/browser/ash/lobster/mock_lobster_system_state_provider.h",
-  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/settings",
   "+chrome/common",
   "+chrome/grit",

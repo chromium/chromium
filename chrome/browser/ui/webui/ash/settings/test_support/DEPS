@@ -3,13 +3,15 @@ include_rules = [
   # details.
   "-chrome",
 
+  # Other ash directories in //chrome.
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ui/webui/ash/settings",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/login/test",
   "+chrome/browser/chrome_content_browser_client.h",
   "+chrome/browser/ui/browser_window/public",
-  "+chrome/browser/ui/webui/ash/settings",
   "+chrome/grit",
   "+chrome/test",
 ]

@@ -7,21 +7,23 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/lock_screen_reauth",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/profiles",
+  "+chrome/browser/ui/ash/login",
+  "+chrome/browser/ui/webui/ash/internet",
+  "+chrome/browser/ui/webui/ash/login",
+  "+chrome/browser/ui/webui/ash/system_web_dialog",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/enterprise/util",
   "+chrome/browser/extensions/tab_helper.h",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h",
-  "+chrome/browser/ui/webui/ash/internet",
-  "+chrome/browser/ui/webui/ash/login",
-  "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/browser/ui/webui/metrics_handler.h",
   "+chrome/grit",
 ]

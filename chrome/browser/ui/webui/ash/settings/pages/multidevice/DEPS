@@ -3,17 +3,19 @@ include_rules = [
   # details.
   "-chrome",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/login/quick_unlock",
   "+chrome/browser/ash/phonehub",
-  "+chrome/browser/nearby_sharing",
-  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/webui/ash/multidevice_setup",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/nearby_sharing",
+  "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/webui/nearby_share",
   "+chrome/browser/ui/webui/settings",
   "+chrome/grit",

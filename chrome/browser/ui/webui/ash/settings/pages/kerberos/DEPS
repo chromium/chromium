@@ -3,12 +3,14 @@ include_rules = [
   # details.
   "-chrome",
 
+  # Other ash directories in //chrome.
+  "+chrome/browser/ash/kerberos",
+  "+chrome/browser/ui/webui/ash/settings/pages",
+  "+chrome/browser/ui/webui/ash/settings/search",
+
   # Existing dependencies within //chrome. There is an active effort to
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
-  "+chrome/browser/ash/kerberos",
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/webui/ash/settings/pages",
-  "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/grit",
 ]

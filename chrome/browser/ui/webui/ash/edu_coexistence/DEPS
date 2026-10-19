@@ -7,15 +7,17 @@ include_rules = [
   # directory to #include its own files.
   "+chrome/browser/ui/webui/ash/edu_coexistence",
 
-  # Existing dependencies within //chrome. There is an active effort to
-  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
-  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  # Other ash directories in //chrome.
   "+chrome/browser/ash/child_accounts",
   "+chrome/browser/ash/login",
   "+chrome/browser/ash/policy/core",
+  "+chrome/browser/ui/webui/ash/login",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_window/public",
-  "+chrome/browser/ui/webui/ash/login",
   "+chrome/browser/ui/webui/signin/ash",
   "+chrome/common",
   "+chrome/test/base",
