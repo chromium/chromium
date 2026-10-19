@@ -536,6 +536,18 @@ ChromePermissionMessageRule::GetAllRules() {
       {std::make_unique<USBDevicesFormatter>(),
        {APIPermissionID::kUsbDeviceUnknownVendor},
        {}},
+      // A ChromeOS platform app that holds both "usb" and "printerProvider"
+      // becomes a Print Preview provisional USB printer provider for every
+      // vendor/product ID listed in its "usb_printers" manifest key. The
+      // filter list itself is not represented in any PermissionSet (its
+      // manifest handler creates no ManifestPermission), and neither kUsb nor
+      // kPrinterProvider produces a message on its own, so acquiring this
+      // capability through a silent auto-update was invisible to
+      // IsPrivilegeIncrease(). Surface a warning for the combination so that
+      // an update adding it disables the app pending user approval.
+      {IDS_EXTENSION_PROMPT_WARNING_USB_DEVICE_UNKNOWN_VENDOR,
+       {APIPermissionID::kUsb, APIPermissionID::kPrinterProvider},
+       {}},
       // Access to users' devices should provide a single warning message
       // specifying the transport method used; serial and/or Bluetooth.
       {IDS_EXTENSION_PROMPT_WARNING_BLUETOOTH_SERIAL,
