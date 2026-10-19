@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.Tab
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /**
  * Utility class for creating and navigation a tab. Designed to handle creating tabs in background
@@ -35,11 +36,22 @@ public class TabCreationDelegateImpl implements TabCreationDelegate {
         mNavigationTracker = navigationTracker;
     }
 
+    /**
+     * Sync-originated URLs are not user-initiated; treat as renderer-initiated with an opaque
+     * initiator.
+     */
+    private static LoadUrlParams createSyncNavigationParams(GURL url) {
+        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        loadUrlParams.setIsRendererInitiated(true);
+        loadUrlParams.setInitiatorOrigin(Origin.createOpaqueOrigin());
+        return loadUrlParams;
+    }
+
     @Override
     public @Nullable Tab createBackgroundTab(
             GURL url, String title, @Nullable Tab parent, int position) {
         LogUtils.log(TAG, "createBackgroundTab " + url);
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        LoadUrlParams loadUrlParams = createSyncNavigationParams(url);
         mNavigationTracker.setNavigationWasFromSync(loadUrlParams.getNavigationHandleUserData());
         // TODO(shaktisahu): TabLaunchType will be a different type for revisit surface?
         return mTabCreator.createNewTab(
@@ -48,7 +60,7 @@ public class TabCreationDelegateImpl implements TabCreationDelegate {
 
     @Override
     public void navigateToUrl(Tab tab, GURL url, String title, boolean isForegroundTab) {
-        LoadUrlParams loadUrlParams = new LoadUrlParams(url);
+        LoadUrlParams loadUrlParams = createSyncNavigationParams(url);
         // TODO(shaktisahu): Since we are doing freezing tab now, the navigation handle will be
         // lost from the LoadUrlParams. However, tracking this navigation isn't as important
         // any more, since there will be no navigation and the only navigation will happen when
