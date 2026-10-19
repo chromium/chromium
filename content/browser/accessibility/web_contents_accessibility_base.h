@@ -414,7 +414,9 @@ class CONTENT_EXPORT WebContentsAccessibilityBase
     if (!slot) {
       // Otherwise, convert the string and add it to the cache, then return.
       slot = base::android::ConvertUTF16ToJavaString(env, str);
-      CHECK(common_string_cache_.size() < 500, base::NotFatalUntil::M159);
+      // TODO(crbug.com/574734481): CHECK-exclusion: Convert to a CHECK once we
+      // are confident it won't be triggered.
+      DCHECK(common_string_cache_.size() < 500);
     }
 
     return slot;
