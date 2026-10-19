@@ -87,6 +87,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
 #import "ios/public/provider/chrome/browser/lens/lens_image_metadata.h"
 #import "ios/public/provider/chrome/browser/lens/lens_image_source.h"
@@ -1207,16 +1208,14 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 - (void)lensOverlayConsentPresenterWillShowConsent:
     (LensOverlayConsentPresenter*)presented {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (IsRegularXRegularSizeClass(self.baseViewController)) {
     [_containerPresenter setContainerHidden:YES animated:NO];
   }
 }
 
 - (void)lensOverlayConsentPresenterWillDismissConsent:
     (LensOverlayConsentPresenter*)presented {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    [_containerPresenter setContainerHidden:NO animated:YES];
-  }
+  [_containerPresenter setContainerHidden:NO animated:YES];
 }
 
 #pragma mark - LensOverlayOverflowMenuDelegate
