@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -393,19 +392,11 @@ void Canvas2DResourceProvider::EndWriteAccess() {
   current_resource_has_write_access_ = false;
 }
 
-scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
-    ImageOrientation orientation) {
+scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot() {
   TRACE_EVENT0("blink", "Canvas2DResourceProvider::Snapshot");
+  CHECK(is_accelerated_);
   if (!IsValid()) {
     return nullptr;
-  }
-
-  // We don't need to EndWriteAccess here since that's required to upload the
-  // rendering results to the resource's SharedImage (e.g., for GPU compositing)
-  // while in this case we are simply returning the rendered CPU-side results to
-  // the client.
-  if (!is_accelerated_) {
-    return UnacceleratedSnapshot(orientation);
   }
 
   if (!cached_snapshot_) {
@@ -429,40 +420,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot(
   DCHECK(cached_snapshot_);
   DCHECK(!current_resource_has_write_access_);
   return cached_snapshot_;
-}
-
-scoped_refptr<UnacceleratedStaticBitmapImage>
-Canvas2DResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
-  if (!IsValid()) {
-    return nullptr;
-  }
-
-  cc::PaintImage paint_image;
-
-  auto sk_image = GetSkSurface()->makeImageSnapshot();
-  if (sk_image) {
-    auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
-    snapshot_sk_image_id_ = sk_image->uniqueID();
-
-    // Ensure that a new PaintImage::ContentId is used only when the underlying
-    // SkImage changes. This is necessary to ensure that the same image results
-    // in a cache hit in cc's ImageDecodeCache.
-    if (snapshot_paint_image_content_id_ == PaintImage::kInvalidContentId ||
-        last_snapshot_sk_image_id != snapshot_sk_image_id_) {
-      snapshot_paint_image_content_id_ = PaintImage::GetNextContentId();
-    }
-
-    paint_image =
-        PaintImageBuilder::WithDefault()
-            .set_id(snapshot_paint_image_id_)
-            .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
-            .set_hdr_metadata(GetHdrMetadata())
-            .TakePaintImage();
-  }
-
-  DCHECK(!paint_image.IsTextureBacked());
-  return UnacceleratedStaticBitmapImage::Create(std::move(paint_image),
-                                                orientation);
 }
 
 CanvasImageProvider*
@@ -749,8 +706,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
-      context_lost_callback_(std::move(context_lost_callback)),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
+      context_lost_callback_(std::move(context_lost_callback)) {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
@@ -882,8 +838,7 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
       alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
-      context_lost_callback_(std::move(context_lost_callback)),
-      snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
+      context_lost_callback_(std::move(context_lost_callback)) {
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {

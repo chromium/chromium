@@ -25,12 +25,10 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
-#include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -183,8 +181,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void OnFlushForImage(cc::PaintImage::ContentId content_id);
 
   bool IsValid() const;
-  scoped_refptr<StaticBitmapImage> Snapshot(
-      ImageOrientation = ImageOrientationEnum::kDefault);
+  scoped_refptr<StaticBitmapImage> Snapshot();
 
   void SetAnimatedImageFrameIndexes(
       scoped_refptr<const cc::AnimatedImageFrameIndexMap>);
@@ -224,9 +221,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
                            const gfx::HDRMetadata&,
                            WebGraphicsSharedImageInterfaceProvider*,
                            base::OnceClosure context_lost_callback = {});
-
-  scoped_refptr<UnacceleratedStaticBitmapImage> UnacceleratedSnapshot(
-      ImageOrientation);
 
   void ClearUnusedResources();
   bool IsGpuContextLost() const;
@@ -323,10 +317,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   base::OnceClosure context_lost_callback_;
   sk_sp<SkSurface> surface_;
-  const cc::PaintImage::Id snapshot_paint_image_id_;
-  cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
-      cc::PaintImage::kInvalidContentId;
-  uint32_t snapshot_sk_image_id_ = 0u;
 
   base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };

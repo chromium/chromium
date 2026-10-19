@@ -473,9 +473,16 @@ BaseRenderingContext2D::UnacceleratedSnapshot() {
 }
 
 scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() {
-  if (shared_image_provider_) {
+  if (shared_image_provider_ && shared_image_provider_->IsAccelerated()) {
     return shared_image_provider_->Snapshot();
   }
+  if (!IsBackingValid()) {
+    return nullptr;
+  }
+  // When using CPU raster with a SharedImage provider, we do not need to end
+  // write access (which uploads the CPU rendering results to the SharedImage
+  // for compositing) because we are simply returning the CPU-side results to
+  // the client.
   return UnacceleratedSnapshot();
 }
 
