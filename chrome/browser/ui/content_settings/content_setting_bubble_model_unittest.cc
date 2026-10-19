@@ -42,7 +42,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -415,12 +414,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
-  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
-  // setting bubble.
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(
-      content_settings::features::kLeftHandSideActivityIndicators);
-
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -458,6 +451,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   EXPECT_FALSE(bubble_content.manage_text.empty());
 
   // Change the microphone access.
+  content_settings->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                                           /*update_indicators=*/false);
   microphone_camera_state.Put(PageSpecificContentSettings::kMicrophoneBlocked);
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state);
@@ -483,12 +478,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
-  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
-  // setting bubble.
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(
-      content_settings::features::kLeftHandSideActivityIndicators);
-
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -526,6 +515,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   EXPECT_FALSE(bubble_content.manage_text.empty());
 
   // Change the camera access.
+  content_settings->ResetMediaBlockedState(
+      ContentSettingsType::MEDIASTREAM_CAMERA, /*update_indicators=*/false);
   microphone_camera_state.Put(PageSpecificContentSettings::kCameraBlocked);
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state);
@@ -552,12 +543,6 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
-  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
-  // setting bubble.
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(
-      content_settings::features::kLeftHandSideActivityIndicators);
-
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
@@ -594,6 +579,8 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   EXPECT_EQ(0, bubble_content.radio_group.default_item);
 
   // Then add camera access.
+  content_settings->ResetMediaBlockedState(ContentSettingsType::MEDIASTREAM_MIC,
+                                           /*update_indicators=*/false);
   microphone_camera_state.Put(PageSpecificContentSettings::kCameraAccessed);
   content_settings->OnMediaStreamPermissionSet(security_origin,
                                                microphone_camera_state);

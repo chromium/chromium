@@ -61,10 +61,6 @@ extern const base::FeatureParam<bool>
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kApproximateGeolocationPermission);
 
-// Move activity indicators to the left-hand side of Omnibox.
-COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
-BASE_DECLARE_FEATURE(kLeftHandSideActivityIndicators);
-
 // Move sensor activity indicators to the left-hand side of Omnibox.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kLeftHandSideSensorActivityIndicators);

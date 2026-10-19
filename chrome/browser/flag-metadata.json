@@ -6689,11 +6689,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "left-hand-side-activity-indicators",
-    "owners": [ "elklm@chromium.org", "//components/permissions/PERMISSIONS_OWNERS" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "lens-aim-gradient-suggest-background",
     "owners": [ "dianaou@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 150

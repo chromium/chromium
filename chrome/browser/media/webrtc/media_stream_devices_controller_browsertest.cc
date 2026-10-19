@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -26,7 +25,6 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/contexts/camera_pan_tilt_zoom_permission_context.h"
 #include "components/permissions/permission_manager.h"
@@ -55,13 +53,7 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
  public:
   MediaStreamDevicesControllerTest()
       : example_audio_id_("fake_audio_dev"),
-        example_video_id_("fake_video_dev") {
-    // `kLeftHandSideActivityIndicators` should be disabled as it changes the UI
-    // of the camera/mic activity indicator. The new UI will be tested
-    // separately.
-    scoped_feature_list_.InitWithFeatures(
-        {}, {content_settings::features::kLeftHandSideActivityIndicators});
-  }
+        example_video_id_("fake_video_dev") {}
 
   void OnMediaStreamResponse(
       const blink::mojom::StreamDevicesSet& stream_devices_set,
@@ -288,7 +280,6 @@ class MediaStreamDevicesControllerTest : public WebRtcTestBase {
 
   std::unique_ptr<PermissionBubbleMediaAccessHandler>
       permission_bubble_media_access_handler_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class MediaStreamDevicesControllerPtzTest
@@ -576,20 +567,22 @@ IN_PROC_BROWSER_TEST_F(MediaStreamDevicesControllerTest,
   EXPECT_TRUE(GetContentSettings()->IsContentBlocked(
       ContentSettingsType::MEDIASTREAM_MIC));
 
-  // Cam should still be included in the state.
+  // Cam should still be included in the state, and blocked mic does not
+  // override the active camera indicator.
   EXPECT_TRUE(GetContentSettings()->IsContentAllowed(
       ContentSettingsType::MEDIASTREAM_CAMERA));
   EXPECT_FALSE(GetContentSettings()->IsContentBlocked(
       ContentSettingsType::MEDIASTREAM_CAMERA));
-  EXPECT_TRUE(GetContentSettings()->GetMicrophoneCameraState().HasAll(
+  EXPECT_TRUE(GetContentSettings()->GetMicrophoneCameraState().Has(
+      PageSpecificContentSettings::kCameraAccessed));
+  EXPECT_FALSE(GetContentSettings()->GetMicrophoneCameraState().HasAny(
       {PageSpecificContentSettings::kMicrophoneAccessed,
-       PageSpecificContentSettings::kMicrophoneBlocked,
-       PageSpecificContentSettings::kCameraAccessed}));
+       PageSpecificContentSettings::kMicrophoneBlocked}));
 
-  // After ending the camera capture, the camera permission is no longer
-  // relevant, so it should no be included in the mic/cam state.
+  // After ending the camera capture, verify that the blocked mic state was not
+  // retained.
   video_stream_ui.reset();
-  EXPECT_TRUE(GetContentSettings()->GetMicrophoneCameraState().HasAll(
+  EXPECT_FALSE(GetContentSettings()->GetMicrophoneCameraState().HasAny(
       {PageSpecificContentSettings::kMicrophoneAccessed,
        PageSpecificContentSettings::kMicrophoneBlocked}));
 }

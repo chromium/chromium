@@ -47,8 +47,6 @@ BASE_FEATURE(kApproximateGeolocationPermission,
 #endif
 );
 
-BASE_FEATURE(kLeftHandSideActivityIndicators, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLeftHandSideSensorActivityIndicators,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

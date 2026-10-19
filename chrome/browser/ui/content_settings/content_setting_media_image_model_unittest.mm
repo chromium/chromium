@@ -5,7 +5,6 @@
 #import <AVFoundation/AVFoundation.h>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/permissions/system/system_media_capture_permissions_mac.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,7 +15,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
@@ -75,11 +73,6 @@ class ContentSettingMediaImageModelTest
 };
 
 TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
-  // Keep `kLeftHandSideActivityIndicators` disabled to test camera/mic content
-  // setting bubble.
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(
-      content_settings::features::kLeftHandSideActivityIndicators);
   PageSpecificContentSettings::CreateForWebContents(
       web_contents(),
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
@@ -111,6 +104,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
         AVAuthorizationStatusNotDetermined);
     content_setting_image_model->Update(web_contents());
     EXPECT_FALSE(content_setting_image_model->is_visible());
+    content_settings->ResetMediaBlockedState(
+        ContentSettingsType::MEDIASTREAM_CAMERA, /*update_indicators=*/false);
   }
 
   // Microphone allowed per site: Test for system level permissions.
@@ -134,6 +129,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
         AVAuthorizationStatusNotDetermined);
     content_setting_image_model->Update(web_contents());
     EXPECT_FALSE(content_setting_image_model->is_visible());
+    content_settings->ResetMediaBlockedState(
+        ContentSettingsType::MEDIASTREAM_MIC, /*update_indicators=*/false);
   }
 
   // Microphone & camera allowed per site: Test for system level permissions.
@@ -161,6 +158,10 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
         AVAuthorizationStatusNotDetermined);
     content_setting_image_model->Update(web_contents());
     EXPECT_EQ(content_setting_image_model->is_visible(), false);
+    content_settings->ResetMediaBlockedState(
+        ContentSettingsType::MEDIASTREAM_MIC, /*update_indicators=*/false);
+    content_settings->ResetMediaBlockedState(
+        ContentSettingsType::MEDIASTREAM_CAMERA, /*update_indicators=*/false);
   }
 
   // Test that system permissions being allowed do not affect the image view,
@@ -182,6 +183,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
                             /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_CAMERA_BLOCKED), 0,
                             &gfx::VectorIcon::EmptyIcon());
+      content_settings->ResetMediaBlockedState(
+          ContentSettingsType::MEDIASTREAM_CAMERA, /*update_indicators=*/false);
     }
 
     // Microphone blocked per site.
@@ -195,6 +198,8 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
                             /*has_icon=*/true,
                             l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED),
                             0, &gfx::VectorIcon::EmptyIcon());
+      content_settings->ResetMediaBlockedState(
+          ContentSettingsType::MEDIASTREAM_MIC, /*update_indicators=*/false);
     }
 
     // Microphone & camera blocked per site
@@ -210,6 +215,10 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
           /*has_icon=*/true,
           l10n_util::GetStringUTF16(IDS_MICROPHONE_CAMERA_BLOCKED), 0,
           &gfx::VectorIcon::EmptyIcon());
+      content_settings->ResetMediaBlockedState(
+          ContentSettingsType::MEDIASTREAM_MIC, /*update_indicators=*/false);
+      content_settings->ResetMediaBlockedState(
+          ContentSettingsType::MEDIASTREAM_CAMERA, /*update_indicators=*/false);
     }
   }
 }
