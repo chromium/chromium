@@ -2138,7 +2138,7 @@
     },
     {
       name: "CSSTextDecorationSkipSpaces",
-      status: "stable",
+      status: "experimental",
     },
     {
       // crbug.com/417306102
