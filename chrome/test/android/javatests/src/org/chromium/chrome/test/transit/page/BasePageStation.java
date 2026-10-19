@@ -4,14 +4,11 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static org.chromium.base.test.transit.Condition.whether;
-
 import com.google.errorprone.annotations.CheckReturnValue;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.test.transit.CallbackCondition;
-import org.chromium.base.test.transit.Condition;
-import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Element;
@@ -268,7 +265,8 @@ public class BasePageStation<HostActivity extends ChromeActivity>
         }
         loadedTabElement =
                 declareEnterConditionAsElement(
-                        new PageLoadedCondition(activityTabElement, mIsIncognito));
+                        new PageLoadedCondition(
+                                activityTabElement, TriStateUtils.from(mIsIncognito)));
 
         declareEnterCondition(new PageInteractableOrHiddenCondition(loadedTabElement));
 
@@ -310,52 +308,6 @@ public class BasePageStation<HostActivity extends ChromeActivity>
                 .withTimeout(10000)
                 .withPossiblyAlreadyFulfilled()
                 .waitForAnd(new PageLoadCallbackCondition(loadedTabElement.value()));
-    }
-
-    /** Condition to check the page url contains a certain substring. */
-    public static class PageUrlContainsCondition extends Condition {
-        private final String mExpectedUrlPiece;
-        private final Supplier<Tab> mLoadedTabSupplier;
-
-        public PageUrlContainsCondition(String expectedUrl, Supplier<Tab> loadedTabSupplier) {
-            super(/* isRunOnUiThread= */ true);
-            mExpectedUrlPiece = expectedUrl;
-            mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
-        }
-
-        @Override
-        protected ConditionStatus checkWithSuppliers() throws Exception {
-            String url = mLoadedTabSupplier.get().getUrl().getSpec();
-            return whether(url.contains(mExpectedUrlPiece), "ActivityTab url: \"%s\"", url);
-        }
-
-        @Override
-        public String buildDescription() {
-            return String.format("URL of activity tab contains \"%s\"", mExpectedUrlPiece);
-        }
-    }
-
-    /** Condition to check the page title. */
-    public static class PageTitleCondition extends Condition {
-        private final String mExpectedTitle;
-        private final Supplier<Tab> mLoadedTabSupplier;
-
-        public PageTitleCondition(String expectedTitle, Supplier<Tab> loadedTabSupplier) {
-            super(/* isRunOnUiThread= */ true);
-            mExpectedTitle = expectedTitle;
-            mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
-        }
-
-        @Override
-        protected ConditionStatus checkWithSuppliers() throws Exception {
-            String title = mLoadedTabSupplier.get().getTitle();
-            return whether(mExpectedTitle.equals(title), "ActivityTab title: \"%s\"", title);
-        }
-
-        @Override
-        public String buildDescription() {
-            return String.format("Title of activity tab is \"%s\"", mExpectedTitle);
-        }
     }
 
     private static class TabAddedCondition extends CallbackCondition implements TabModelObserver {

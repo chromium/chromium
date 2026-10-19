@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit.page;
 
+import org.chromium.base.TriState;
+import org.chromium.base.TriStateUtils;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tab.Tab;
@@ -14,17 +16,26 @@ import java.util.function.Supplier;
 /** Fulfilled when a page is loaded. */
 public class PageLoadedCondition extends ConditionWithResult<Tab> {
     private final Supplier<Tab> mActivityTabSupplier;
-    private final boolean mIncognito;
+    private final @TriState int mExpectedIncognito;
 
-    PageLoadedCondition(Supplier<Tab> activityTabSupplier, boolean incognito) {
+    /**
+     * @param activityTabSupplier Supplies the Tab to check.
+     * @param expectedIncognito The incognito state the Tab must have, or {@link TriState#NOT_SET}
+     *     to not check it.
+     */
+    public PageLoadedCondition(Supplier<Tab> activityTabSupplier, @TriState int expectedIncognito) {
         super(/* isRunOnUiThread= */ true);
         mActivityTabSupplier = dependOnSupplier(activityTabSupplier, "ActivityTab");
-        mIncognito = incognito;
+        mExpectedIncognito = expectedIncognito;
     }
 
     @Override
     public String buildDescription() {
-        return mIncognito ? "Incognito tab loaded" : "Regular tab loaded";
+        return switch (mExpectedIncognito) {
+            case TriState.TRUE -> "Incognito tab loaded";
+            case TriState.FALSE -> "Regular tab loaded";
+            default -> "Tab loaded";
+        };
     }
 
     @Override
@@ -39,10 +50,10 @@ public class PageLoadedCondition extends ConditionWithResult<Tab> {
                 String.format(
                         "incognito %b, isLoading %b, hasWebContents %b, shouldShowLoadingUi %b",
                         isIncognito, isLoading, webContents != null, shouldShowLoadingUi);
-        if (isIncognito == mIncognito
-                && !isLoading
-                && webContents != null
-                && !shouldShowLoadingUi) {
+        boolean incognitoMatches =
+                mExpectedIncognito == TriState.NOT_SET
+                        || TriStateUtils.from(isIncognito) == mExpectedIncognito;
+        if (incognitoMatches && !isLoading && webContents != null && !shouldShowLoadingUi) {
             return fulfilled(message).withResult(tab);
         } else {
             return notFulfilled(message).withoutResult();
