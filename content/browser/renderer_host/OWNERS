@@ -45,7 +45,7 @@ per-file agent_scheduling_group*=kouhei@chromium.org
 per-file agent_scheduling_group*=haraken@chromium.org
 
 # WebMCP and script tools.
-per-file model_context_user_data*=dom@chromium.org
+per-file model_context_user_data*=file://third_party/blink/renderer/core/script_tools/OWNERS
 
 per-file render_process_host_impl_receiver_bindings.cc=set noparent
 per-file render_process_host_impl_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
