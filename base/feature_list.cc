@@ -1535,14 +1535,11 @@ void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
 bool FeatureList::CheckFeatureIdentity(const Feature& feature) const {
   AutoLock auto_lock(feature_identity_tracker_lock_);
 
-  auto it = feature_identity_tracker_.find(feature.name);
-  if (it == feature_identity_tracker_.end()) {
-    // If it's not tracked yet, register it.
-    feature_identity_tracker_[feature.name] = &feature;
-    return true;
-  }
-  // Compare address of |feature| to the existing tracked entry.
-  return it->second == &feature;
+  auto [it, inserted] =
+      feature_identity_tracker_.try_emplace(feature.name, &feature);
+  // If it wasn't tracked yet, it is now registered; otherwise compare the
+  // address of `feature` to the existing tracked entry.
+  return inserted || it->second == &feature;
 }
 
 bool FeatureList::IsEarlyAccessInstance() const {
