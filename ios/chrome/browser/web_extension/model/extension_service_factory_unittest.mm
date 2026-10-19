@@ -149,8 +149,13 @@ TEST_F(ExtensionServiceFactoryTest,
   EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
 }
 
-// Tests that ExtensionService is not created if the user is not eligible.
-TEST_F(ExtensionServiceFactoryTest, TestFactoryReturnsNullWhenIneligible) {
+// Tests that ExtensionService is created even if the user is not eligible.
+TEST_F(ExtensionServiceFactoryTest, TestFactoryReturnsServiceWhenIneligible) {
+  if (!universal_optout::IsGPCExtensionSupportedOS()) {
+    GTEST_SKIP()
+        << "ExtensionService is only created on supported OS versions (iOS "
+           "18.4 to 26).";
+  }
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/
       {universal_optout::features::kUniversalOptOut,
@@ -165,7 +170,11 @@ TEST_F(ExtensionServiceFactoryTest, TestFactoryReturnsNullWhenIneligible) {
       base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
                           base::Unretained(this), /*eligible=*/false));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
-  EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
+  ExtensionService* service =
+      ExtensionServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(service, nullptr);
+  EXPECT_TRUE(service->IsReady());
+  EXPECT_FALSE(service->WebExtensionsWereLoadedAtStartup());
 }
 
 // Tests that ExtensionService is created when ineligible but the feature is
@@ -197,9 +206,15 @@ TEST_F(ExtensionServiceFactoryTest,
   EXPECT_NE(service, nullptr);
 }
 
-// Tests that ExtensionService is not created when eligible but forced off.
+// Tests that ExtensionService is created even when eligible but forced off
+// (since forced off affects eligibility, not service creation).
 TEST_F(ExtensionServiceFactoryTest,
-       TestFactoryReturnsNullWhenEligibleButForcedOff) {
+       TestFactoryReturnsServiceWhenEligibleButForcedOff) {
+  if (!universal_optout::IsGPCExtensionSupportedOS()) {
+    GTEST_SKIP()
+        << "ExtensionService is only created on supported OS versions (iOS "
+           "18.4 to 26).";
+  }
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/
       {universal_optout::features::kUniversalOptOut,
@@ -220,7 +235,11 @@ TEST_F(ExtensionServiceFactoryTest,
       base::BindRepeating(&ExtensionServiceFactoryTest::CreateOptOutService,
                           base::Unretained(this), /*eligible=*/true));
   std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
-  EXPECT_EQ(ExtensionServiceFactory::GetForProfile(profile.get()), nullptr);
+  ExtensionService* service =
+      ExtensionServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(service, nullptr);
+  EXPECT_TRUE(service->IsReady());
+  EXPECT_FALSE(service->WebExtensionsWereLoadedAtStartup());
 
   [[NSUserDefaults standardUserDefaults]
       removeObjectForKey:@"UniversalOptOutEligibilityOverride"];

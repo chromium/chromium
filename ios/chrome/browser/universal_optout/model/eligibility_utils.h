@@ -29,8 +29,9 @@ bool IsGPCExtensionSupportedOS();
 
 // Returns whether the Universal Opt-Out extension is enabled for `profile`.
 // Returns true only if the current OS is supported (between iOS 18.4 and iOS
-// 27), the user is eligible, the UniversalOptOutService is available, and
-// extension silent mode is not enabled.
+// 27), the UniversalOptOutService is available, the feature flags are enabled,
+// and extension silent mode is not enabled. User eligibility is not checked
+// because eligibility can change dynamically at runtime.
 bool IsGPCExtensionEnabled(ProfileIOS* profile);
 
 }  // namespace universal_optout
