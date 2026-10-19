@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "components/browser_apis/tab_strip/adapters/tab_strip_model_adapter.h"
 #include "components/browser_apis/tab_strip/types/tab_states.h"
+#include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs_api {
 
@@ -68,7 +69,7 @@ class AndroidTabStripModelAdapter : public TabStripModelAdapter {
   base::expected<void, mojo_base::mojom::ErrorPtr> ReplaceTabInSplit(
       tabs::TabHandle tab_to_replace,
       int tab_to_insert_index) override;
-  const tabs::TabCollection* GetRoot() const override;
+  tabs::TabStripCollection* GetRoot() const override;
   std::string GetWindowId() const override;
 
  private:
@@ -77,7 +78,7 @@ class AndroidTabStripModelAdapter : public TabStripModelAdapter {
   static base::PassKey<AndroidTabStripModelAdapter> GetPassKey();
 
   raw_ref<TabModel> model_;
-  raw_ptr<tabs::TabStripCollection> root_;
+  mutable tabs::TabCollectionHandle root_;
 };
 
 }  // namespace tabs_api

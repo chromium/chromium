@@ -1338,6 +1338,14 @@ source_set("unit_tests") {
     "//ui/menus",
     "//url",
   ]
+
+  if (enable_webui_tabstrip_ntb) {
+    sources += [ "compositor/tab_strip_ntb_webui_host_unittest.cc" ]
+    deps += [
+      "//chrome/browser/profiles:profile_manager",
+      "//chrome/browser/ui/android/tab_model:test_support",
+    ]
+  }
 }
 
 source_set("android_browsertests") {

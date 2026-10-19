@@ -192,12 +192,12 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     @Override
-    public @Nullable Integer getNativeSessionIdForTesting() {
+    public @Nullable Integer getNativeSessionId() {
         if (!isNativeInitialized()) {
             return null;
         }
 
-        return TabModelJniBridgeJni.get().getSessionIdForTesting(mNativeTabModelJniBridge);
+        return TabModelJniBridgeJni.get().getNativeSessionId(mNativeTabModelJniBridge);
     }
 
     @Override
@@ -796,7 +796,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 long nativeBrowserWindowPtr,
                 int newIndex);
 
-        int getSessionIdForTesting(long nativeTabModelJniBridge);
+        int getNativeSessionId(long nativeTabModelJniBridge);
 
         @JniType("chrome::android::ActivityType")
         @ActivityType

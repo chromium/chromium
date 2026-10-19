@@ -50,7 +50,7 @@ public class StubTabModelUnitTest {
                             "getOrderedMultiSelectedTabs",
                             "findFirstNonPinnedTabIndex",
                             "getPinnedTabsCount",
-                            "getNativeSessionIdForTesting",
+                            "getNativeSessionId",
                             "isMuted",
                             "getTabStripCollection",
                             "getTabModel",

@@ -1011,12 +1011,6 @@ public class StripLayoutHelperManager
         // The active model (and its delegate for incognito windows) is already initialized by
         // TabModelSelectorImpl#onNativeLibraryReady before #setTabModelSelector is called.
         assert tabModel.getProfile() != null;
-        // TODO(crbug.com/565326385): Support incognito windows. Their `tabModel` is an
-        // IncognitoTabModelImpl, which wraps a TabModelJniBridge delegate rather than subclassing
-        // it (so it can't be directly converted to a native TabModel*), and destroys that delegate
-        // when the last incognito tab closes, before this coordinator is destroyed. Until then,
-        // incognito windows keep the native new tab button.
-        if (tabModel.isIncognitoBranded()) return;
         mNtbWebUiCoordinator =
                 new NtbWebUiCoordinator(
                         mWindowAndroid, tabModel, (ControlContainer) mControlContainer);

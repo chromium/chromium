@@ -19,10 +19,7 @@
 namespace tabs_api {
 
 AndroidTabStripModelAdapter::AndroidTabStripModelAdapter(TabModel* model)
-    : model_(CHECK_DEREF(model)),
-      root_(model_->GetTabStripCollection(GetPassKey())) {
-  CHECK(root_ != nullptr) << "root tab strip handle cannot be null";
-}
+    : model_(CHECK_DEREF(model)) {}
 
 AndroidTabStripModelAdapter::~AndroidTabStripModelAdapter() = default;
 
@@ -94,7 +91,7 @@ AndroidTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
   NodeId parent_id;
   if (position.path().components().empty()) {
     parent_id = NodeId::FromTabCollectionHandle(
-        root_->unpinned_collection()->GetHandle());
+        GetRoot()->unpinned_collection()->GetHandle());
   } else {
     parent_id = position.path().components().back();
   }
@@ -129,7 +126,7 @@ AndroidTabStripModelAdapter::MoveTab(tabs::TabHandle handle,
       break;
     }
     case tabs::TabCollection::Type::UNPINNED:
-      to_position = root_->IndexOfFirstNonPinnedTab() + position.index();
+      to_position = GetRoot()->IndexOfFirstNonPinnedTab() + position.index();
       break;
     case tabs::TabCollection::Type::TABSTRIP:
     case tabs::TabCollection::Type::SPLIT:
@@ -167,7 +164,7 @@ AndroidTabStripModelAdapter::MoveCollection(const NodeId& id,
       NodeId parent_id;
       if (position.path().components().empty()) {
         parent_id = NodeId::FromTabCollectionHandle(
-            root_->unpinned_collection()->GetHandle());
+            GetRoot()->unpinned_collection()->GetHandle());
       } else {
         parent_id = position.path().components().back();
       }
@@ -180,7 +177,7 @@ AndroidTabStripModelAdapter::MoveCollection(const NodeId& id,
 
       int to_position = 0;
       if (parent_collection->type() == tabs::TabCollection::Type::UNPINNED) {
-        to_position = root_->IndexOfFirstNonPinnedTab() + position.index();
+        to_position = GetRoot()->IndexOfFirstNonPinnedTab() + position.index();
       } else if (parent_collection->type() ==
                  tabs::TabCollection::Type::GROUP) {
         return base::unexpected(mojo_base::mojom::Error::New(
@@ -232,7 +229,7 @@ mojom::ContainerPtr AndroidTabStripModelAdapter::GetTabStripTopology(
 std::optional<const tab_groups::TabGroupId>
 AndroidTabStripModelAdapter::FindGroupIdFor(
     const tabs::TabCollection::Handle& collection_handle) const {
-  auto* tab_strip = model_->GetTabStripCollection(GetPassKey());
+  auto* tab_strip = GetRoot();
 
   for (auto& group_id : tab_strip->GetAllTabGroupIds()) {
     auto* maybe_collection = tab_strip->GetTabGroupCollection(group_id);
@@ -270,7 +267,7 @@ AndroidTabStripModelAdapter::GetTabGroupForTab(int index) const {
 tabs::TabCollectionHandle
 AndroidTabStripModelAdapter::GetCollectionHandleForTabGroupId(
     tab_groups::TabGroupId group_id) const {
-  auto* collection = root_->GetTabGroupCollection(group_id);
+  auto* collection = GetRoot()->GetTabGroupCollection(group_id);
   CHECK(collection);
   return collection->GetHandle();
 }
@@ -278,7 +275,7 @@ AndroidTabStripModelAdapter::GetCollectionHandleForTabGroupId(
 tabs::TabCollectionHandle
 AndroidTabStripModelAdapter::GetCollectionHandleForSplitTabId(
     split_tabs::SplitTabId split_id) const {
-  auto* collection = root_->GetSplitTabCollection(split_id);
+  auto* collection = GetRoot()->GetSplitTabCollection(split_id);
   CHECK(collection);
   return collection->GetHandle();
 }
@@ -299,7 +296,7 @@ tabs_api::Position AndroidTabStripModelAdapter::GetPositionForAbsoluteIndex(
 
   // Fallback to absolute index and tab strip root if collection is not ready.
   return tabs_api::Position(absolute_index,
-                            GetPathForCollection(root_->GetHandle()));
+                            GetPathForCollection(GetRoot()->GetHandle()));
 }
 
 tabs_api::Path AndroidTabStripModelAdapter::GetPathForCollection(
@@ -336,7 +333,7 @@ InsertionParams AndroidTabStripModelAdapter::CalculateInsertionParams(
   NodeId parent_id;
   if (position.path().components().empty()) {
     parent_id = NodeId::FromTabCollectionHandle(
-        root_->unpinned_collection()->GetHandle());
+        GetRoot()->unpinned_collection()->GetHandle());
   } else {
     parent_id = position.path().components().back();
   }
@@ -355,7 +352,7 @@ InsertionParams AndroidTabStripModelAdapter::CalculateInsertionParams(
       index = position.index();
       break;
     case tabs::TabCollection::Type::UNPINNED:
-      index = root_->IndexOfFirstNonPinnedTab() + position.index();
+      index = GetRoot()->IndexOfFirstNonPinnedTab() + position.index();
       break;
 
     case tabs::TabCollection::Type::GROUP:
@@ -382,8 +379,16 @@ AndroidTabStripModelAdapter::ReplaceTabInSplit(tabs::TabHandle tab_to_replace,
                                    "split tabs are not supported on Android"));
 }
 
-const tabs::TabCollection* AndroidTabStripModelAdapter::GetRoot() const {
-  return root_;
+tabs::TabStripCollection* AndroidTabStripModelAdapter::GetRoot() const {
+  if (root_ == tabs::TabCollectionHandle::Null()) {
+    auto* collection = model_->GetTabStripCollection(GetPassKey());
+    CHECK(collection != nullptr) << "root tab strip handle cannot be null";
+    root_ = collection->GetHandle();
+    return collection;
+  }
+  auto* collection = static_cast<tabs::TabStripCollection*>(root_.Get());
+  CHECK(collection != nullptr) << "root tab strip handle cannot be null";
+  return collection;
 }
 
 std::string AndroidTabStripModelAdapter::GetWindowId() const {

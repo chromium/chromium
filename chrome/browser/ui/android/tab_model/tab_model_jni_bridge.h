@@ -60,7 +60,7 @@ class TabModelJniBridge : public TabModel {
                                       int64_t native_browser_window_ptr,
                                       int new_index);
   void SetMuteSetting(const std::vector<TabAndroid*>& tabs, bool mute);
-  int32_t GetSessionIdForTesting();
+  int32_t GetNativeSessionId();
   chrome::android::ActivityType GetActivityTypeForTesting();
 
   // TabModel::

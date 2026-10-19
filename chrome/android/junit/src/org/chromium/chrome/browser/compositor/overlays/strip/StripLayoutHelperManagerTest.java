@@ -243,7 +243,7 @@ public class StripLayoutHelperManagerTest {
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         when(mPrefChangeRegistrarJniMock.init(any(), any())).thenReturn(1L);
         NtbWebUiCoordinatorJni.setInstanceForTesting(mNtbWebUiCoordinatorJniMock);
-        when(mNtbWebUiCoordinatorJniMock.init(any())).thenReturn(1L);
+        when(mNtbWebUiCoordinatorJniMock.init(anyInt())).thenReturn(1L);
         when(mNtbWebUiCoordinatorJniMock.getWebContents(1L)).thenReturn(mWebContents);
         when(mWebContents.getEventForwarder()).thenReturn(mEventForwarder);
 
@@ -284,6 +284,7 @@ public class StripLayoutHelperManagerTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mStandardTabModel);
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
         when(mStandardTabModel.getProfile()).thenReturn(mProfile);
+        when(mStandardTabModel.getNativeSessionId()).thenReturn(1);
 
         mTabModelStartupInfoSupplier = ObservableSuppliers.createMonotonic();
 
@@ -1580,29 +1581,12 @@ public class StripLayoutHelperManagerTest {
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         initializeTest();
 
-        verify(mNtbWebUiCoordinatorJniMock).init(mStandardTabModel);
+        verify(mNtbWebUiCoordinatorJniMock).init(1);
         assertEquals(1L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(1, mControlContainer.getChildCount());
 
         mStripLayoutHelperManager.destroy();
         verify(mNtbWebUiCoordinatorJniMock).destroy(1L);
-        assertEquals(0L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
-        assertEquals(0, mControlContainer.getChildCount());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_NEW_TAB_BUTTON_TABSTRIP_WEB_UI,
-        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW
-    })
-    public void testNtbWebUiCoordinator_IncognitoSkipped() {
-        mStripLayoutHelperManager.destroy();
-        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
-        when(mStandardTabModel.isIncognitoBranded()).thenReturn(true);
-
-        initializeTest();
-
-        verify(mNtbWebUiCoordinatorJniMock, never()).init(any());
         assertEquals(0L, mStripLayoutHelperManager.getNtbWebUiNativePtr());
         assertEquals(0, mControlContainer.getChildCount());
     }

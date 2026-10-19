@@ -299,7 +299,7 @@ public interface TabModel extends TabList {
     int getPinnedTabsCount();
 
     /** Returns the native {@code SessionID} as returned by {@code tab_model.h:GetSessionId()}. */
-    @Nullable Integer getNativeSessionIdForTesting();
+    @Nullable Integer getNativeSessionId();
 
     /**
      * Sets the mute setting for the sites of the provided tabs.

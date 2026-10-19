@@ -4,15 +4,17 @@
 
 #include "chrome/browser/android/compositor/tab_strip_ntb_webui_host.h"
 
+#include "base/check.h"
 #include "base/location.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/browser_apis/tab_strip/tab_strip_service.h"
 #include "components/browser_apis/tab_strip/tab_strip_service_impl.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -48,10 +50,12 @@ std::unique_ptr<content::WebContents> CreateWebContents(Profile* profile,
 // lazily-restored Android tabs without WebContents. The NTB does not observe
 // tab strip events.
 TabStripNtbWebUiHost::TabStripNtbWebUiHost(TabModel* tab_model)
-    : service_(std::make_unique<tabs_api::TabStripServiceImpl>(
+    : tab_model_(tab_model),
+      service_(std::make_unique<tabs_api::TabStripServiceImpl>(
           std::make_unique<tabs_api::AndroidTabStripApiInjector>(
               tab_model,
               /*enable_event_bridge=*/false))) {
+  TabModelList::AddObserver(this);
   const GURL url(chrome::kChromeUITabStripNtbURL);
   web_contents_ = CreateWebContents(tab_model->GetProfile(), url);
   web_contents_->SetOwnerLocationForDebug(FROM_HERE);
@@ -70,14 +74,41 @@ TabStripNtbWebUiHost::TabStripNtbWebUiHost(TabModel* tab_model)
 }
 
 TabStripNtbWebUiHost::~TabStripNtbWebUiHost() {
-  // Ensure no delegate callbacks are made after this point.
-  web_contents_->SetDelegate(nullptr);
-  tabstrip_ntb::TabStripNtbUI::SetTabStripServiceForWebContents(
-      web_contents_.get(), nullptr);
+  Reset();
+}
+
+void TabStripNtbWebUiHost::OnTabModelRemoved(TabModel* tab_model) {
+  if (tab_model != tab_model_) {
+    return;
+  }
+  // An incognito window destroys its TabModel as soon as its last tab closes,
+  // before the window is torn down. Tear down the WebContents and service now
+  // so that the WebContents does not keep a RenderProcessHost for the
+  // off-the-record Profile alive and block ProfileDestroyer.
+  Reset();
+}
+
+void TabStripNtbWebUiHost::Reset() {
+  if (!web_contents_) {
+    return;
+  }
   Observe(nullptr);
+  web_contents_->SetDelegate(nullptr);
+  // Destroy before |service_| so TabStripServiceUserData is torn down first.
+  // Also detaches the scene layer, clears the Java WebContents/EventForwarder
+  // pointers, and releases the Profile's RenderProcessHost.
+  web_contents_.reset();
+  // Destroy before |tab_model_| finishes destruction so the adapters'
+  // TabModel* never dangles.
+  service_.reset();
+  tab_model_ = nullptr;
+  TabModelList::RemoveObserver(this);
 }
 
 void TabStripNtbWebUiHost::Resize(int32_t width_px, int32_t height_px) {
+  if (!web_contents_) {
+    return;
+  }
   ui::ViewAndroid* view = web_contents_->GetNativeView();
   view->OnPhysicalBackingSizeChanged(gfx::Size(width_px, height_px));
   view->OnSizeChanged(width_px, height_px);
@@ -108,7 +139,11 @@ content::WebContents* TabStripNtbWebUiHost::GetWebContents() {
   return web_contents_.get();
 }
 
-static int64_t JNI_NtbWebUiCoordinator_Init(JNIEnv* env, TabModel* tab_model) {
+static int64_t JNI_NtbWebUiCoordinator_Init(JNIEnv* env, int32_t session_id) {
+  SessionID id = SessionID::FromSerializedValue(session_id);
+  CHECK(id.is_valid());
+  TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(id);
+  CHECK(tab_model);
   return reinterpret_cast<intptr_t>(new TabStripNtbWebUiHost(tab_model));
 }
 

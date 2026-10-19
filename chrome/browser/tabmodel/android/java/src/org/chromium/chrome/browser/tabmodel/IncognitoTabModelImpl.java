@@ -478,8 +478,8 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @Nullable Integer getNativeSessionIdForTesting() {
-        return mDelegateModel.getNativeSessionIdForTesting();
+    public @Nullable Integer getNativeSessionId() {
+        return mDelegateModel.getNativeSessionId();
     }
 
     @Override

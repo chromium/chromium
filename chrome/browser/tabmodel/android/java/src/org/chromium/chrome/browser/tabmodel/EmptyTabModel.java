@@ -311,7 +311,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @Nullable Integer getNativeSessionIdForTesting() {
+    public @Nullable Integer getNativeSessionId() {
         return null;
     }
 

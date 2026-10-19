@@ -80,7 +80,8 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
             // Native creates and owns the TabStripService and WebContents, and starts navigating
             // it to the WebUI. The navigation commits asynchronously, so the view and the window
             // attached below are in place before the page is created.
-            mNativePtr = NtbWebUiCoordinatorJni.get().init(tabModel);
+            int sessionId = assertNonNull(tabModel.getNativeSessionId());
+            mNativePtr = NtbWebUiCoordinatorJni.get().init(sessionId);
             if (mNativePtr == 0) {
                 mInputView = null;
                 mEventForwarder = null;
@@ -199,7 +200,7 @@ public class NtbWebUiCoordinator implements AccessibilityState.Listener {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("TabModel*") TabModel tabModel);
+        long init(int sessionId);
 
         @JniType("content::WebContents*")
         WebContents getWebContents(long hostPtr);

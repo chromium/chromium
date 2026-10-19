@@ -5,7 +5,6 @@
 #include <cstdint>
 
 #include "base/notreached.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_jni_bridge.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -13,7 +12,7 @@
 
 namespace android {
 
-static int64_t JNI_NtbWebUiCoordinator_Init(JNIEnv* env, TabModel* tab_model) {
+static int64_t JNI_NtbWebUiCoordinator_Init(JNIEnv* env, int32_t session_id) {
   return 0;
 }
 

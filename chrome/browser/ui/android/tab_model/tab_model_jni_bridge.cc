@@ -281,7 +281,7 @@ void TabModelJniBridge::SetMuteSetting(const std::vector<TabAndroid*>& tabs,
   }
 }
 
-int32_t TabModelJniBridge::GetSessionIdForTesting() {
+int32_t TabModelJniBridge::GetNativeSessionId() {
   return GetSessionId().id();
 }
 

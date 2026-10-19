@@ -192,10 +192,9 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Assert.
         assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
-        assertNotNull(tabModel.getNativeSessionIdForTesting());
+        assertNotNull(tabModel.getNativeSessionId());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(profile),
-                tabModel.getNativeSessionIdForTesting());
+                chromeAndroidTask.getSessionIdForTesting(profile), tabModel.getNativeSessionId());
     }
 
     @Test
@@ -216,10 +215,9 @@ public class ChromeAndroidTaskIntegrationTest {
         var profile = assumeNonNull(tabModel.getProfile());
 
         assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
-        assertNotNull(tabModel.getNativeSessionIdForTesting());
+        assertNotNull(tabModel.getNativeSessionId());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(profile),
-                tabModel.getNativeSessionIdForTesting());
+                chromeAndroidTask.getSessionIdForTesting(profile), tabModel.getNativeSessionId());
     }
 
     @Test
@@ -240,10 +238,9 @@ public class ChromeAndroidTaskIntegrationTest {
         var profile = assumeNonNull(tabModel.getProfile());
 
         assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
-        assertNotNull(tabModel.getNativeSessionIdForTesting());
+        assertNotNull(tabModel.getNativeSessionId());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(profile),
-                tabModel.getNativeSessionIdForTesting());
+                chromeAndroidTask.getSessionIdForTesting(profile), tabModel.getNativeSessionId());
     }
 
     @Test
@@ -261,10 +258,9 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Assert.
         assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
-        assertNotNull(tabModel.getNativeSessionIdForTesting());
+        assertNotNull(tabModel.getNativeSessionId());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(profile),
-                tabModel.getNativeSessionIdForTesting());
+                chromeAndroidTask.getSessionIdForTesting(profile), tabModel.getNativeSessionId());
     }
 
     @Test
@@ -283,10 +279,9 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Assert.
         assertNotNull(chromeAndroidTask.getSessionIdForTesting(profile));
-        assertNotNull(tabModel.getNativeSessionIdForTesting());
+        assertNotNull(tabModel.getNativeSessionId());
         assertEquals(
-                chromeAndroidTask.getSessionIdForTesting(profile),
-                tabModel.getNativeSessionIdForTesting());
+                chromeAndroidTask.getSessionIdForTesting(profile), tabModel.getNativeSessionId());
     }
 
     @Test
