@@ -1939,15 +1939,42 @@ class GlicExperimentalTriggeringCoordinatorCannotActOnWebTest
 
 TEST_F(GlicExperimentalTriggeringCoordinatorCannotActOnWebTest,
        ExecuteActions_CannotActOnWeb) {
+  // Experimental triggering is unavailable for profiles that cannot act on the
+  // web, so the request is rejected before any action-specific checks.
   auto response = SendRequest(CreateExecuteScriptToolRequest());
   ASSERT_TRUE(response.has_value());
   ASSERT_TRUE(response->task_update.has_value());
   EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
   EXPECT_EQ(response->task_update->data,
-            "Acting on the web is not allowed for this profile.");
+            "User is not opted in to experimental triggering.");
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.StateOnActuationRequest",
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable, 1);
   histogram_tester_.ExpectUniqueSample(
       "Glic.ExperimentalTriggering.IncomingMessageResult.SharingMessage",
-      GlicExperimentalTriggeringIncomingMessageResult::kCannotActOnWeb, 1);
+      GlicExperimentalTriggeringIncomingMessageResult::kUserNotOptedIn, 1);
+}
+
+TEST_F(GlicExperimentalTriggeringCoordinatorCannotActOnWebTest,
+       TriggerActuation_CannotActOnWeb) {
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = TriggerActuationRequest{.initial_prompt = "hello"};
+
+  // The request must fail immediately rather than invoking Glic, which would
+  // be unable to actuate.
+  auto response = SendRequest(request);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kFailed);
+  EXPECT_EQ(response->task_update->data,
+            "User is not opted in to experimental triggering.");
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.StateOnActuationRequest",
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable, 1);
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 0u);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,

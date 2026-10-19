@@ -1288,15 +1288,18 @@ std::unique_ptr<GlicEnabling> GlicEnabling::CreateForTesting(  // IN-TEST
     Profile* profile,
     ProfileAttributesStorage* profile_attributes_storage) {
   return std::make_unique<GlicEnabling>(base::PassKey<GlicEnabling>(), profile,
-                                        profile_attributes_storage);
+                                        profile_attributes_storage,
+                                        /*actor_policy_checker=*/nullptr);
 }
 
 GlicEnabling::GlicEnabling(
     base::PassKey<GlicKeyedService, GlicEnabling> pass_key,
     Profile* profile,
-    ProfileAttributesStorage* profile_attributes_storage)
+    ProfileAttributesStorage* profile_attributes_storage,
+    GlicActorPolicyChecker* actor_policy_checker)
     : profile_(profile),
-      profile_attributes_storage_(profile_attributes_storage) {
+      profile_attributes_storage_(profile_attributes_storage),
+      actor_policy_checker_(actor_policy_checker) {
   pref_registrar_.Init(profile_->GetPrefs());
   pref_registrar_.Add(
       optimization_guide::prefs::kGeminiSettings,
@@ -1337,6 +1340,13 @@ GlicEnabling::GlicEnabling(
   if (subscription_eligibility_service) {
     subscription_eligibility_service_observation_.Observe(
         subscription_eligibility_service);
+  }
+
+  if (actor_policy_checker_) {
+    act_on_web_capability_subscription_ =
+        actor_policy_checker_->AddActOnWebCapabilityChangedCallback(
+            base::BindRepeating(&GlicEnabling::OnActOnWebCapabilityChanged,
+                                base::Unretained(this)));
   }
 
   static_assert(std::is_final_v<GlicEnabling>,
@@ -1543,6 +1553,15 @@ GlicEnabling::GetExperimentalTriggeringState() const {
     }
   }
 
+  // Experimental triggering exists to let the server start actuation on this
+  // device, so don't advertise it if the profile cannot act on the web (e.g.
+  // due to enterprise policy or account eligibility). Otherwise the server
+  // may route requests here that can never succeed. Note that a policy URL
+  // allowlist leaves CanActOnWeb() true, deferring to per-URL evaluation.
+  if (!actor_policy_checker_ || !actor_policy_checker_->CanActOnWeb()) {
+    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+  }
+
   if (HasConsented() && GetUserEnabledActuationOnWeb() &&
       GetExperimentalTriggeringEnabled()) {
     return syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady;
@@ -1622,6 +1641,10 @@ GlicEnabling::RegisterOnExperimentalTriggeringEnabledChanged(
 
 void GlicEnabling::OnExperimentalTriggeringEnabledChanged() {
   experimental_triggering_enabled_changed_callback_list_.Notify();
+  MaybeNotifyExperimentalTriggeringStateChanged();
+}
+
+void GlicEnabling::OnActOnWebCapabilityChanged(bool can_act_on_web) {
   MaybeNotifyExperimentalTriggeringStateChanged();
 }
 

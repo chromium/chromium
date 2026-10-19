@@ -40,6 +40,7 @@ class Profile;
 class ProfileAttributesStorage;
 
 namespace glic {
+class GlicActorPolicyChecker;
 class GlicKeyedService;
 namespace prefs {
 enum class FreStatus;
@@ -518,9 +519,13 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       Profile* profile,
       ProfileAttributesStorage* profile_attributes_storage);
 
+  // `actor_policy_checker` may be null (e.g. if the actor framework is not
+  // available for `profile`), in which case the profile is treated as unable to
+  // act on the web. If non-null, it must outlive this object.
   GlicEnabling(base::PassKey<GlicKeyedService, GlicEnabling> pass_key,
                Profile* profile,
-               ProfileAttributesStorage* profile_attributes_storage);
+               ProfileAttributesStorage* profile_attributes_storage,
+               GlicActorPolicyChecker* actor_policy_checker);
   ~GlicEnabling() override;
 
   // Returns true if the given profile is allowed to use Glic. This is the
@@ -587,7 +592,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Sets whether experimental triggering is enabled.
   void SetExperimentalTriggeringEnabled(bool enabled);
 
-  // Returns the state of experimental triggering.
+  // Returns the state of experimental triggering. This is reported to other
+  // devices via Sync, and is kUnavailable whenever the profile is not allowed
+  // to act on the web (see GlicActorPolicyChecker::CanActOnWeb()).
   syncer::DeviceInfo::GlicExperimentalTriggeringState
   GetExperimentalTriggeringState() const;
 
@@ -680,6 +687,7 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   void OnGlicSettingsPolicyChanged();
   void OnUserEnabledActuationOnWebChanged();
   void OnExperimentalTriggeringEnabledChanged();
+  void OnActOnWebCapabilityChanged(bool can_act_on_web);
   void MaybeNotifyExperimentalTriggeringStateChanged();
 
   // IdentityManagerObserver:
@@ -723,6 +731,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
 
   raw_ptr<Profile> profile_;
   raw_ptr<ProfileAttributesStorage> profile_attributes_storage_;
+  // Owned by the GlicKeyedService, which also owns this object. May be null.
+  raw_ptr<GlicActorPolicyChecker> actor_policy_checker_;
+  base::CallbackListSubscription act_on_web_capability_subscription_;
   using EnableChangedCallbackList = base::RepeatingCallbackList<void()>;
   EnableChangedCallbackList enable_changed_callback_list_;
   using OnConsentChangeCallbackList = base::RepeatingCallbackList<void()>;
@@ -757,7 +768,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       subscription_eligibility::SubscriptionEligibilityService::Observer>
       subscription_eligibility_service_observation_{this};
   syncer::DeviceInfo::GlicExperimentalTriggeringState
-      last_experimental_triggering_state_;
+      last_experimental_triggering_state_ =
+          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
   mojom::ProfileReadyState last_profile_ready_state_;
 };
 
