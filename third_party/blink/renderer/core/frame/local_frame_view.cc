@@ -696,7 +696,15 @@ void LocalFrameView::AdjustViewSize() {
     return;
 
   DCHECK_EQ(frame_->View(), this);
-  SetLayoutOverflowSize(ToPixelSnappedRect(layout_view->DocumentRect()).size());
+  const gfx::Size size = ToPixelSnappedRect(layout_view->DocumentRect()).size();
+  SetLayoutOverflowSize(size);
+  if (const std::optional<PhysicalRect>& overflow =
+          layout_view->ScrollableOverflowWithoutPaddingBox()) {
+    layout_overflow_size_without_padding_box_ =
+        ToPixelSnappedRect(*overflow).size();
+  } else {
+    layout_overflow_size_without_padding_box_ = size;
+  }
 }
 
 void LocalFrameView::CountObjectsNeedingLayout(unsigned& needs_layout_objects,
@@ -1299,10 +1307,14 @@ LocalFrameView::NaturalSizeLayoutScope::~NaturalSizeLayoutScope() {
 }
 
 bool LocalFrameView::RecordNaturalDimensions() {
-  if (natural_size_ == layout_overflow_size_) {
+  const gfx::Size& size =
+      RuntimeEnabledFeatures::ResponsiveIframesShrinkEnabled()
+          ? layout_overflow_size_without_padding_box_
+          : layout_overflow_size_;
+  if (natural_size_ == size) {
     return false;
   }
-  natural_size_ = layout_overflow_size_;
+  natural_size_ = size;
   return true;
 }
 

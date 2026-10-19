@@ -1273,6 +1273,7 @@ class CORE_EXPORT LocalFrameView final
   // TODO(bokan): This is unneeded when root-layer-scrolls is turned on.
   // crbug.com/417782.
   gfx::Size layout_overflow_size_;
+  gfx::Size layout_overflow_size_without_padding_box_;
   std::optional<gfx::Size> natural_size_;
 
   bool root_layer_did_scroll_;

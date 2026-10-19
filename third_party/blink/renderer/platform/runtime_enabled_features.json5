@@ -5516,6 +5516,11 @@
       status: "stable",
     },
     {
+      // Kill switch for https://crbug.com/570579609.
+      name: "ResponsiveIframesShrink",
+      status: "stable",
+    },
+    {
       name: "RestrictGamepadAccess",
       public: true,
       status: "experimental",
