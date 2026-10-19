@@ -63,10 +63,10 @@ void FontHandler::FontListHasLoaded(std::string callback_id,
                                     base::ListValue list) {
   // Font list. Selects the directionality for the fonts in the given list.
   for (auto& i : list) {
-    DCHECK(i.is_list());
+    CHECK(i.is_list(), base::NotFatalUntil::M162);
     base::ListValue& font = i.GetList();
 
-    DCHECK(font.size() >= 2u && font[1].is_string());
+    CHECK(font.size() >= 2u && font[1].is_string(), base::NotFatalUntil::M162);
     std::u16string value = base::UTF8ToUTF16(font[1].GetString());
 
     bool has_rtl_chars = base::i18n::StringContainsStrongRTLChars(value);

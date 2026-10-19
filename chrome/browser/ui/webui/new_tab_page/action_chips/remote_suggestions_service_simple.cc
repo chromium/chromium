@@ -84,7 +84,7 @@ base::expected<std::optional<std::string>,
 HandleRawRemoteResponse(const network::SimpleURLLoader* source,
                         const int response_code,
                         std::optional<std::string> response_body) {
-  DCHECK(source);
+  CHECK(source, base::NotFatalUntil::M162);
   if (source->NetError() != net::OK || response_code != 200) {
     return base::unexpected(RemoteSuggestionsServiceSimple::NetworkError{
         .net_error = source->NetError(), .http_response_code = response_code});
@@ -99,7 +99,7 @@ ParseZeroSuggestionsResponse(AutocompleteProviderClient* client,
                              const bool allow_empty_suggestion,
                              std::optional<std::string> response) {
   using enum ::action_chips::RemoteSuggestionsServiceSimple::ParseFailureReason;
-  DCHECK(response);
+  CHECK(response, base::NotFatalUntil::M162);
 
   if (!response || response->empty()) {
     return base::unexpected(RemoteSuggestionsServiceSimple::ParseError{

@@ -186,7 +186,7 @@ void SystemWebDialogDelegate::Focus() {
 }
 
 void SystemWebDialogDelegate::Close() {
-  DCHECK(dialog_window());
+  CHECK(dialog_window(), base::NotFatalUntil::M162);
   views::Widget::GetWidgetForNativeWindow(dialog_window())->Close();
 }
 

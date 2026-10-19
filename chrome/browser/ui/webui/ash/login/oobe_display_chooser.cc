@@ -46,7 +46,7 @@ OobeDisplayChooser::OobeDisplayChooser(
 OobeDisplayChooser::~OobeDisplayChooser() = default;
 
 void OobeDisplayChooser::TryToPlaceUiOnTouchDisplay() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Don't (potentially) queue a second task to run MoveToTouchDisplay if one
   // already is queued.
@@ -73,12 +73,13 @@ void OobeDisplayChooser::MaybeMoveToTouchDisplay() {
   } else if (!scoped_observation_.IsObserving()) {
     scoped_observation_.Observe(device_data_manager);
   } else {
-    DCHECK(scoped_observation_.IsObservingSource(device_data_manager));
+    CHECK(scoped_observation_.IsObservingSource(device_data_manager),
+          base::NotFatalUntil::M162);
   }
 }
 
 void OobeDisplayChooser::MoveToTouchDisplay() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   scoped_observation_.Reset();
 

@@ -49,7 +49,7 @@ gfx::NativeWindow MultiDeviceSetupDialog::containing_window_ =
 void MultiDeviceSetupDialog::Show() {
   // Focus the window hosting the dialog that has already been created.
   if (containing_window_) {
-    DCHECK(current_instance_);
+    CHECK(current_instance_, base::NotFatalUntil::M162);
     containing_window_->Focus();
     return;
   }
@@ -97,7 +97,7 @@ void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
 }
 
 void MultiDeviceSetupDialog::OnDialogClosed(const std::string& json_retval) {
-  DCHECK(this == current_instance_);
+  CHECK(this == current_instance_, base::NotFatalUntil::M162);
   current_instance_ = nullptr;
   containing_window_ = nullptr;
 

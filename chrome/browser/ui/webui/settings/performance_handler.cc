@@ -62,7 +62,7 @@ void PerformanceHandler::OnJavascriptDisallowed() {
 }
 
 void PerformanceHandler::OnDeviceHasBatteryChanged(bool device_has_battery) {
-  DCHECK(IsJavascriptAllowed());
+  CHECK(IsJavascriptAllowed(), base::NotFatalUntil::M162);
   FireWebUIListener("device-has-battery-changed", device_has_battery);
 }
 
@@ -128,7 +128,7 @@ void PerformanceHandler::HandleOpenFeedbackDialog(const base::ListValue& args) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           web_ui()->GetWebContents());
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M162);
   std::string unused;
   chrome::ShowFeedbackPage(browser,
                            feedback::kFeedbackSourceSettingsPerformancePage,

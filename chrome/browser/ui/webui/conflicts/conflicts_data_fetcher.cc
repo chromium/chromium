@@ -88,7 +88,7 @@ void ConflictsDataFetcher::GetListOfModules() {
 void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
                                             const ModuleInfoData& module_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(module_list_);
+  CHECK(module_list_, base::NotFatalUntil::M162);
 
   base::DictValue data;
 
@@ -113,7 +113,7 @@ void ConflictsDataFetcher::OnNewModuleFound(const ModuleInfoKey& module_key,
 
 void ConflictsDataFetcher::OnModuleDatabaseIdle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(module_list_);
+  CHECK(module_list_, base::NotFatalUntil::M162);
 
   ModuleDatabase::GetInstance()->RemoveObserver(this);
 

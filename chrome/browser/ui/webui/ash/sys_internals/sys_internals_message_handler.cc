@@ -53,12 +53,12 @@ constexpr uint32_t COUNTER_MAX = 0x7FFFFFFFu;
 
 template <typename T>
 inline int ToCounter(T value) {
-  DCHECK_GE(value, T(0));
+  CHECK_GE(value, T(0), base::NotFatalUntil::M162);
   return static_cast<int>(value & COUNTER_MAX);
 }
 
 bool ParseProcStatLine(const std::string& line, std::vector<CpuInfo>* infos) {
-  DCHECK(infos);
+  CHECK(infos, base::NotFatalUntil::M162);
   uint64_t user = 0;
   uint64_t nice = 0;
   uint64_t sys = 0;
@@ -82,7 +82,7 @@ bool ParseProcStatLine(const std::string& line, std::vector<CpuInfo>* infos) {
 }
 
 bool GetCpuInfo(std::vector<CpuInfo>* infos) {
-  DCHECK(infos);
+  CHECK(infos, base::NotFatalUntil::M162);
 
   // WARNING: this method may return incomplete data because some processors may
   // be brought offline at runtime. /proc/stat does not report statistics of
@@ -120,13 +120,13 @@ bool GetCpuInfo(std::vector<CpuInfo>* infos) {
 }
 
 void SetConstValue(base::DictValue* result) {
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
   int counter_max = static_cast<int>(COUNTER_MAX);
   result->SetByDottedPath("const.counterMax", counter_max);
 }
 
 void SetCpusValue(const std::vector<CpuInfo>& infos, base::DictValue* result) {
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
   base::ListValue cpu_results;
   for (const CpuInfo& cpu : infos) {
     base::DictValue cpu_result;
@@ -148,7 +148,7 @@ double GetAvailablePhysicalMemory(const base::SystemMemoryInfo& info) {
 void SetMemValue(const base::SystemMemoryInfo& info,
                  const base::VmStatInfo& vmstat,
                  base::DictValue* result) {
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
   base::DictValue mem_result;
 
   // For values that may exceed the range of 32-bit signed integer, use double.
@@ -167,7 +167,7 @@ void SetMemValue(const base::SystemMemoryInfo& info,
 }
 
 void SetZramValue(const base::SwapInfo& info, base::DictValue* result) {
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
   base::DictValue zram_result;
 
   zram_result.Set("numReads", ToCounter(info.num_reads));
@@ -356,7 +356,7 @@ void SysInternalsMessageHandler::RegisterMessages() {
 }
 
 void SysInternalsMessageHandler::HandleGetSysInfo(const base::ListValue& list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
@@ -372,7 +372,7 @@ void SysInternalsMessageHandler::HandleGetSysInfo(const base::ListValue& list) {
 
 void SysInternalsMessageHandler::ReplySysInfo(base::Value callback_id,
                                               base::DictValue result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   ResolveJavascriptCallback(callback_id, result);
 }

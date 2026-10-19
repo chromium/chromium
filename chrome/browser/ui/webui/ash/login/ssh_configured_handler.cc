@@ -88,7 +88,7 @@ void SshConfiguredHandler::ResolveCallbacks() {
   if (!IsJavascriptAllowed()) {
     return;
   }
-  DCHECK(is_ssh_configured_.has_value());
+  CHECK(is_ssh_configured_.has_value(), base::NotFatalUntil::M162);
   for (const std::string& callback_id : callback_ids_) {
     ResolveJavascriptCallback(base::Value(callback_id),
                               base::Value(is_ssh_configured_.value()));

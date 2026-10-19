@@ -67,7 +67,7 @@ std::string GetPasswordChangeUrl(Profile* profile) {
 std::u16string GetHostedHeaderText(const std::string& password_change_url) {
   std::u16string host =
       base::UTF8ToUTF16(net::GetHostAndOptionalPort(GURL(password_change_url)));
-  DCHECK(!host.empty());
+  CHECK(!host.empty(), base::NotFatalUntil::M162);
   return l10n_util::GetStringFUTF16(IDS_LOGIN_SAML_PASSWORD_CHANGE_NOTICE,
                                     host);
 }

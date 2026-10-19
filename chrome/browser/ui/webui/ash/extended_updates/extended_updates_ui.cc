@@ -94,7 +94,7 @@ void ExtendedUpdatesUI::BindInterface(
 void ExtendedUpdatesUI::CreatePageHandler(
     mojo::PendingRemote<ash::extended_updates::mojom::Page> page,
     mojo::PendingReceiver<ash::extended_updates::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
   page_handler_ = std::make_unique<ExtendedUpdatesPageHandler>(
       std::move(page), std::move(receiver), web_ui(),
       base::BindOnce(&ExtendedUpdatesUI::CloseDialog, base::Unretained(this),

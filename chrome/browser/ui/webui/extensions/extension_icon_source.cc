@@ -64,7 +64,7 @@ SkBitmap DesaturateImage(const SkBitmap* image) {
 std::unique_ptr<SkBitmap> ToBitmap(base::span<const uint8_t> data) {
   auto result = std::make_unique<SkBitmap>();
   *result = gfx::PNGCodec::Decode(data);
-  DCHECK(!result->isNull());
+  CHECK(!result->isNull(), base::NotFatalUntil::M162);
   return result;
 }
 

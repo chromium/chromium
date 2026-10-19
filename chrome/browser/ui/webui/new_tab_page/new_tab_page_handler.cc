@@ -1395,8 +1395,9 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
     std::string_view interaction,
     const std::string& module_id) {
   static const std::string kNoTriggerId;
-  DCHECK(kModuleInteractionNames.find(interaction) !=
-         kModuleInteractionNames.end());
+  CHECK(kModuleInteractionNames.find(interaction) !=
+            kModuleInteractionNames.end(),
+        base::NotFatalUntil::M162);
   const base::DictValue* module_id_trigger_dict =
       interaction_module_id_trigger_dict_.FindDict(interaction);
   if (module_id_trigger_dict) {

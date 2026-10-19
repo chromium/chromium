@@ -653,7 +653,7 @@ std::string ExtensionsInternalsSource::GetHtml() const {
 }
 
 std::string ExtensionsInternalsSource::WriteToString() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   using ExtensionStatusMap =
       std::map<extensions::ExtensionRegistry::IncludeFlag,
                extensions::ExtensionSet>;

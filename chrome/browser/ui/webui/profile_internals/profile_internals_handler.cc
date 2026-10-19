@@ -172,7 +172,7 @@ void ProfileInternalsHandler::HandleGetProfilesList(
 }
 
 void ProfileInternalsHandler::PushProfilesList() {
-  DCHECK(IsJavascriptAllowed());
+  CHECK(IsJavascriptAllowed(), base::NotFatalUntil::M162);
   FireWebUIListener("profiles-list-changed", GetProfilesList());
 }
 

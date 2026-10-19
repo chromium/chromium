@@ -177,7 +177,7 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Sometimes the |profile_| is the parent (non-incognito) version of the user
   // so we check the |web_contents| if it is provided.

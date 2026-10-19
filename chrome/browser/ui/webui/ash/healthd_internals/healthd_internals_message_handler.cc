@@ -302,7 +302,7 @@ void HealthdInternalsMessageHandler::RegisterMessages() {
 
 void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
     const base::ListValue& list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
@@ -316,7 +316,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
 
 void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(
     const base::ListValue& list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
@@ -374,7 +374,7 @@ void HealthdInternalsMessageHandler::HandleTelemetryResult(
 
 void HealthdInternalsMessageHandler::HandleGetHealthdProcessInfo(
     const base::ListValue& list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
@@ -417,7 +417,7 @@ void HealthdInternalsMessageHandler::HandleMultipleProcessResult(
 
 void HealthdInternalsMessageHandler::HandleGetCrosSystemInfo(
     const base::ListValue& list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
@@ -437,7 +437,7 @@ void HealthdInternalsMessageHandler::HandleGetCrosSystemInfo(
 void HealthdInternalsMessageHandler::ReplyHealthdInternalInfo(
     base::Value callback_id,
     base::DictValue result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   ResolveJavascriptCallback(callback_id, result);
 }

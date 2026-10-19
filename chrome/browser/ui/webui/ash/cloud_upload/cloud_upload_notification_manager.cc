@@ -160,7 +160,7 @@ CloudUploadNotificationManager::CreateUploadCompleteNotification() {
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::NORMAL);
 
-  DCHECK(!destination_path_.empty());
+  CHECK(!destination_path_.empty(), base::NotFatalUntil::M162);
   if (!destination_path_.empty()) {
     //  Add "Show in folder" button.
     std::u16string button_title = l10n_util::GetStringUTF16(
@@ -237,7 +237,7 @@ void CloudUploadNotificationManager::ShowUploadProgress(int progress) {
 }
 
 void CloudUploadNotificationManager::ShowCompleteNotification() {
-  DCHECK_EQ(state_, State::kComplete);
+  CHECK_EQ(state_, State::kComplete, base::NotFatalUntil::M162);
   std::unique_ptr<message_center::Notification> notification =
       CreateUploadCompleteNotification();
   // Close the progress notification before displaying the completed

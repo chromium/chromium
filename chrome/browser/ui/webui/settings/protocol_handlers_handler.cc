@@ -328,7 +328,7 @@ void ProtocolHandlersHandler::ResetProtocolHandlerUserApproval(
     const base::ListValue& args) {
   custom_handlers::ProtocolHandler handler(ParseAppHandlerFromArgs(args));
   CHECK(!handler.IsEmpty());
-  DCHECK(web_app_provider_);
+  CHECK(web_app_provider_, base::NotFatalUntil::M162);
 
   const webapps::AppId& app_id = handler.web_app_id().value();
   web_app_provider_->scheduler().UpdateProtocolHandlerUserApproval(

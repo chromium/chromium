@@ -239,7 +239,7 @@ WebUIToolbarExtensionsContainer::~WebUIToolbarExtensionsContainer() {
   }
   // The widgets should close synchronously (resulting in OnWidgetClosing()),
   // so |anchored_widgets_| should now be empty.
-  DCHECK(anchored_widgets_.empty());
+  CHECK(anchored_widgets_.empty(), base::NotFatalUntil::M162);
   CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
@@ -259,7 +259,7 @@ void WebUIToolbarExtensionsContainer::HideActivePopup() {
   if (popup_owner_) {
     popup_owner_->HidePopup();
   }
-  DCHECK(!popup_owner_);
+  CHECK(!popup_owner_, base::NotFatalUntil::M162);
 }
 
 void WebUIToolbarExtensionsContainer::CloseExtensionsMenuIfOpen() {
@@ -446,7 +446,7 @@ bool WebUIToolbarExtensionsContainer::IsVisible() const {
 
 void WebUIToolbarExtensionsContainer::OnContextMenuShownFromToolbar(
     const std::string& action_id) {
-  DCHECK_EQ(action_id, context_menu_->action_id());
+  CHECK_EQ(action_id, context_menu_->action_id(), base::NotFatalUntil::M162);
   NotifyOfOneAction(action_id);
 }
 
@@ -475,14 +475,15 @@ void WebUIToolbarExtensionsContainer::SetPopupOwner(
     ToolbarActionViewModel* popup_owner) {
   // We should never be setting a popup owner when one already exists, and
   // never unsetting one when one wasn't set.
-  DCHECK((popup_owner_ != nullptr) ^ (popup_owner != nullptr));
+  CHECK((popup_owner_ != nullptr) ^ (popup_owner != nullptr),
+        base::NotFatalUntil::M162);
   popup_owner_ = popup_owner;
 }
 
 void WebUIToolbarExtensionsContainer::PopOutAction(
     const extensions::ExtensionId& action_id,
     base::OnceClosure closure) {
-  DCHECK(!popped_out_action_.has_value());
+  CHECK(!popped_out_action_.has_value(), base::NotFatalUntil::M162);
   // Cancel any IPH, since popped out actions take priority over it.
   CancelPinnedByDefaultIph();
   popped_out_action_ = action_id;

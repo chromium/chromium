@@ -79,7 +79,7 @@ void SamlChallengeKeyHandler::Run(Profile* profile,
                                   const GURL& source_url,
                                   const GURL& destination_url,
                                   const std::string& challenge) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M162);
   callback_ = std::move(callback);
   profile_ = profile;
 

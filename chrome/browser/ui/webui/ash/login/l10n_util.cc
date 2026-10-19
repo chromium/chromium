@@ -89,7 +89,7 @@ base::DictValue CreateLanguageEntry(
   std::u16string display_name = language_display_name;
   const bool markup_removal =
       base::i18n::UnadjustStringForLocaleDirection(&display_name);
-  DCHECK(markup_removal);
+  CHECK(markup_removal, base::NotFatalUntil::M162);
 
   const bool has_rtl_chars =
       base::i18n::StringContainsStrongRTLChars(display_name);

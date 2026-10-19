@@ -61,7 +61,7 @@ constexpr char kLinuxProxyConfigUrl[] = "chrome://linux-proxy-config";
 // Show the proxy config URL in the given tab.
 void ShowLinuxProxyConfigUrl(base::WeakPtr<content::WebContents> web_contents,
                              bool launched) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (launched) {
     return;
   }

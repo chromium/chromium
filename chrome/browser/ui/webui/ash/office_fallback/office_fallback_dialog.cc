@@ -148,7 +148,7 @@ bool OfficeFallbackDialog::Show(
     return false;
   }
 
-  DCHECK(!file_urls.empty());
+  CHECK(!file_urls.empty(), base::NotFatalUntil::M162);
   if (file_urls.empty()) {
     LOG(ERROR) << "No file urls";
     std::move(callback).Run(std::nullopt);

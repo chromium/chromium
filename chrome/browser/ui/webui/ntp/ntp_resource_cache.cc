@@ -166,7 +166,7 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
 base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
     WindowType win_type,
     const content::WebContents::Getter& wc_getter) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   switch (win_type) {
     case GUEST:
       return GetNewTabGuestHTML();
@@ -198,7 +198,7 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
 base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(
     WindowType win_type,
     const content::WebContents::Getter& wc_getter) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Guest mode doesn't have theme-related CSS.
   if (win_type == GUEST) {
@@ -237,7 +237,8 @@ void NTPResourceCache::Shutdown() {
 
 void NTPResourceCache::OnNativeThemeUpdated(ui::NativeTheme* updated_theme) {
   // TODO(crbug.com/40677117): Remove the global accessor to NativeTheme.
-  DCHECK_EQ(updated_theme, ui::NativeTheme::GetInstanceForNativeUi());
+  CHECK_EQ(updated_theme, ui::NativeTheme::GetInstanceForNativeUi(),
+           base::NotFatalUntil::M162);
   Invalidate();
 }
 
@@ -256,8 +257,8 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   base::DictValue localized_strings;
 
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
-  DCHECK(!profile_->IsOffTheRecord());
-  DCHECK(profile_->HasAnyOffTheRecordProfile());
+  CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M162);
+  CHECK(profile_->HasAnyOffTheRecordProfile(), base::NotFatalUntil::M162);
 
   replacements["incognitoTabDescription"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_SUBTITLE_WITH_READING_LIST);
@@ -439,7 +440,7 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
   auto* web_contents = wc_getter.Run();
   const ui::NativeTheme* native_theme =
       webui::GetNativeThemeDeprecated(web_contents);
-  DCHECK(native_theme);
+  CHECK(native_theme, base::NotFatalUntil::M162);
 
   const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
       profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
@@ -473,7 +474,7 @@ void NTPResourceCache::CreateNewTabCSS(
   auto* web_contents = wc_getter.Run();
   const ui::NativeTheme* native_theme =
       webui::GetNativeThemeDeprecated(web_contents);
-  DCHECK(native_theme);
+  CHECK(native_theme, base::NotFatalUntil::M162);
 
   const ui::ThemeProvider& tp =
       ThemeService::GetThemeProviderForProfile(profile_);

@@ -88,7 +88,7 @@ DriveUploadHandler::DriveUploadHandler(
 DriveUploadHandler::~DriveUploadHandler() = default;
 
 void DriveUploadHandler::Run() {
-  DCHECK(callback_);
+  CHECK(callback_, base::NotFatalUntil::M162);
 
   if (!profile_) {
     LOG(ERROR) << "No profile";
@@ -285,8 +285,8 @@ void DriveUploadHandler::OnCopyStatus(
       UpdateProgressNotification();
       if (observed_relative_drive_path_.empty()) {
         // TODO (b/242685536) Define multiple-file handling.
-        DCHECK_EQ(status.sources.size(), 1u);
-        DCHECK_EQ(status.outputs.size(), 1u);
+        CHECK_EQ(status.sources.size(), 1u, base::NotFatalUntil::M162);
+        CHECK_EQ(status.outputs.size(), 1u, base::NotFatalUntil::M162);
 
         if (!drive_integration_service_) {
           LOG(ERROR) << "No Drive integration service";
@@ -312,7 +312,7 @@ void DriveUploadHandler::OnCopyStatus(
       move_progress_ = 100;
       notification_manager_->SetDestinationPath(status.outputs[0].url.path());
       UpdateProgressNotification();
-      DCHECK_EQ(status.outputs.size(), 1u);
+      CHECK_EQ(status.outputs.size(), 1u, base::NotFatalUntil::M162);
       return;
     case file_manager::io_task::State::kCancelled:
       LOG(ERROR) << "Upload to Google Drive cancelled";

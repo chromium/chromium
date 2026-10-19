@@ -70,7 +70,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
     const base::ListValue& args) {
   AllowJavascript();
 
-  DCHECK(!args.empty());
+  CHECK(!args.empty(), base::NotFatalUntil::M162);
   const std::string& callback_id = args[0].GetString();
 
   const user_manager::User* user =
@@ -89,7 +89,7 @@ void MultideviceSetupHandler::HandleGetProfileInfo(
 
 void MultideviceSetupHandler::HandleOpenMultiDeviceSettings(
     const base::ListValue& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty(), base::NotFatalUntil::M162);
   auto* user = ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
       Profile::FromWebUI(web_ui()));
   if (!user) {

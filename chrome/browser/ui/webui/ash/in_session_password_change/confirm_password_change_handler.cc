@@ -69,7 +69,8 @@ void ConfirmPasswordChangeHandler::HandleChangePassword(
       FirstNonEmpty(params[0].GetString(), scraped_old_password_);
   const std::string new_password =
       FirstNonEmpty(params[1].GetString(), scraped_new_password_);
-  DCHECK(!old_password.empty() && !new_password.empty());
+  CHECK(!old_password.empty() && !new_password.empty(),
+        base::NotFatalUntil::M162);
 
   InSessionPasswordChangeManager::Get()->ChangePassword(
       old_password, new_password, kPasswordSource);

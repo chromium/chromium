@@ -109,12 +109,12 @@ void MediaDevicesSelectionHandler::SetWebUiForTest(content::WebUI* web_ui) {
 
 void MediaDevicesSelectionHandler::InitializeCaptureDevices(
     const base::ListValue& args) {
-  DCHECK_EQ(1U, args.size());
+  CHECK_EQ(1U, args.size(), base::NotFatalUntil::M162);
   if (!args[0].is_string()) {
     NOTREACHED();
   }
   const std::string& type = args[0].GetString();
-  DCHECK(!type.empty());
+  CHECK(!type.empty(), base::NotFatalUntil::M162);
 
   if (type == kAudio) {
     OnAudioDevicesChanged(

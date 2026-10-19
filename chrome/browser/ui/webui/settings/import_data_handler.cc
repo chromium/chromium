@@ -44,11 +44,11 @@ const char kImportStatusFailed[] = "failed";
 }  // namespace
 
 ImportDataHandler::ImportDataHandler() : importer_host_(nullptr) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 ImportDataHandler::~ImportDataHandler() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (importer_host_) {
     importer_host_->set_observer(nullptr);
@@ -60,7 +60,7 @@ ImportDataHandler::~ImportDataHandler() {
 }
 
 void ImportDataHandler::RegisterMessages() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   web_ui()->RegisterMessageCallback(
       "initializeImportDialog",
@@ -92,7 +92,7 @@ void ImportDataHandler::OnJavascriptDisallowed() {
 void ImportDataHandler::StartImport(
     const user_data_importer::SourceProfile& source_profile,
     uint16_t imported_items) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (!imported_items) {
     return;
@@ -118,7 +118,7 @@ void ImportDataHandler::StartImport(
 }
 
 void ImportDataHandler::HandleImportData(const base::ListValue& args) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   const auto& list = args;
   CHECK_GE(list.size(), 2u);
 
@@ -181,13 +181,13 @@ void ImportDataHandler::HandleInitializeImportDialog(
 
 void ImportDataHandler::HandleImportFromBookmarksFile(
     const base::ListValue& args) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   if (select_file_dialog_) {
     return;
   }
 
-  DCHECK(args.empty());
+  CHECK(args.empty(), base::NotFatalUntil::M162);
   select_file_dialog_ = ui::SelectFileDialog::Create(
       this,
       std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
@@ -207,7 +207,7 @@ void ImportDataHandler::HandleImportFromBookmarksFile(
 }
 
 void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   importer_list_loaded_ = true;
 
   base::ListValue browser_profiles;
@@ -239,24 +239,24 @@ void ImportDataHandler::SendBrowserProfileData(const std::string& callback_id) {
 }
 
 void ImportDataHandler::ImportStarted() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 void ImportDataHandler::ImportItemStarted(user_data_importer::ImportItem item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // TODO(csilv): show progress detail in the web view.
 }
 
 void ImportDataHandler::ImportItemEnded(user_data_importer::ImportItem item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   // TODO(csilv): show progress detail in the web view.
   import_did_succeed_ = true;
 }
 
 void ImportDataHandler::ImportEnded() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   importer_host_->set_observer(nullptr);
   importer_host_ = nullptr;
@@ -268,7 +268,7 @@ void ImportDataHandler::ImportEnded() {
 
 void ImportDataHandler::FileSelected(const ui::SelectedFileInfo& file,
                                      int /*index*/) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   select_file_dialog_ = nullptr;
 

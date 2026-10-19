@@ -130,7 +130,8 @@ std::string ToPercent(const T num, const T total) {
 // The list is sorted by the path.
 std::pair<base::ListValue, base::DictValue> GetGCacheContents(
     const FilePath& root_path) {
-  DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
+  CHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI),
+        base::NotFatalUntil::M162);
 
   // Use this map to sort the result list by the path.
   std::map<FilePath, base::DictValue> files;
@@ -279,7 +280,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   template <typename... Values>
   void FireWebUIListenerIfAllowed(std::string_view event_name,
                                   const Values&... values) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     if (IsJavascriptAllowed()) {
       FireWebUIListener(event_name, values...);
     }
@@ -400,7 +401,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   // Called when the page requests periodic update.
   void OnPeriodicUpdate(const base::ListValue& args) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
     DriveIntegrationService* const service = GetIntegrationService();
     if (!service) {
@@ -584,8 +585,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   // Called when GetStartupArguments() is complete.
   void OnGetStartupArguments(const std::string& arguments) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(developer_mode_);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+    CHECK(developer_mode_, base::NotFatalUntil::M162);
     FireWebUIListenerIfAllowed("updateStartupArguments",
                                base::Value(arguments));
     SetSectionEnabled("developer-mode-controls", true);
@@ -594,7 +595,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   // Called when AmountOfFreeDiskSpace() is complete.
   void OnGetFreeDiskSpace(std::optional<int64_t> free_space) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     base::DictValue local_storage_summary;
     local_storage_summary.Set("free_space",
                               static_cast<double>(free_space.value_or(-1)));
@@ -720,7 +721,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   // Called when GetGCacheContents() is complete.
   void OnGetGCacheContents(
       std::pair<base::ListValue, base::DictValue> response) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     FireWebUIListenerIfAllowed("updateGCacheContents",
                                base::Value(std::move(response.first)),
                                base::Value(std::move(response.second)));
@@ -795,8 +796,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   }
 
   void OnSetStartupArguments(bool success) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    DCHECK(developer_mode_);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
+    CHECK(developer_mode_, base::NotFatalUntil::M162);
     if (success) {
       RestartDrive(base::ListValue());
     }
@@ -876,7 +877,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
 
   // Called after file system reset for ResetDriveFileSystem is done.
   void ResetFinished(bool success) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     FireWebUIListenerIfAllowed("updateResetStatus", base::Value(success));
   }
 
@@ -886,7 +887,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
   // Returns a DriveIntegrationService, if any.
   // May return nullptr in guest/incognito mode.
   DriveIntegrationService* GetIntegrationService() {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
     DriveIntegrationService* const service =
         drive::DriveIntegrationServiceFactory::FindForProfile(profile());
 
@@ -979,7 +980,7 @@ class LogsZipper : public download::AllDownloadItemNotifier::Observer {
   }
 
   void OnZipDone(const scoped_refptr<ZipFileCreator> creator) {
-    DCHECK(creator);
+    CHECK(creator, base::NotFatalUntil::M162);
     if (!drive_internals_ || creator->GetResult() != ZipFileCreator::kSuccess) {
       CleanUp();
       return;

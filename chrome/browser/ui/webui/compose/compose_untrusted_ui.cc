@@ -172,7 +172,7 @@ void ComposeUntrustedUI::CreateComposeSessionUntrustedPageHandler(
     mojo::PendingReceiver<compose::mojom::ComposeSessionUntrustedPageHandler>
         handler,
     mojo::PendingRemote<compose::mojom::ComposeUntrustedDialog> dialog) {
-  DCHECK(dialog.is_valid());
+  CHECK(dialog.is_valid(), base::NotFatalUntil::M162);
 
   content::WebContents* web_contents = triggering_web_contents_
                                            ? triggering_web_contents_.get()

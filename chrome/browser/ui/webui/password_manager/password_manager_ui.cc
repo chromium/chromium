@@ -904,7 +904,7 @@ void PasswordManagerUI::BindInterface(
 void PasswordManagerUI::CreatePageHandler(
     mojo::PendingRemote<password_manager::mojom::Page> page,
     mojo::PendingReceiver<password_manager::mojom::PageHandler> receiver) {
-  DCHECK(page);
+  CHECK(page, base::NotFatalUntil::M162);
   password_manager_ui_handler_ = std::make_unique<PasswordManagerUIHandler>(
       std::move(receiver), std::move(page), passwords_private_delegate_,
       web_ui()->GetWebContents());

@@ -36,7 +36,7 @@ void ParseRequest(PrefService& local_state,
                   const GURL& url,
                   std::string* email,
                   int* frame) {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M162);
   const std::string serialized_account_id = base::UnescapeURLComponent(
       url.path().substr(1),
       base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |

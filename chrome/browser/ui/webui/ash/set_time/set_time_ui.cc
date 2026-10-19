@@ -127,7 +127,7 @@ class SetTimeMessageHandler : public content::WebUIMessageHandler,
     std::string timezone_id = args[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M162);
     system::SetTimezoneFromUI(local_state_.get(), profile, timezone_id);
   }
 

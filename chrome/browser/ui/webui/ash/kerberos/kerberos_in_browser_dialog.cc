@@ -45,7 +45,7 @@ KerberosInBrowserDialog::KerberosInBrowserDialog(
     : SystemWebDialogDelegate(GURL(ash::kChromeUIKerberosInBrowserURL),
                               /*title=*/std::u16string()),
       close_dialog_closure_(std::move(close_dialog_closure)) {
-  DCHECK(!g_dialog);
+  CHECK(!g_dialog, base::NotFatalUntil::M162);
   g_dialog = this;
 }
 
@@ -54,7 +54,7 @@ KerberosInBrowserDialog::~KerberosInBrowserDialog() {
     std::move(close_dialog_closure_).Run();
   }
 
-  DCHECK_EQ(this, g_dialog);
+  CHECK_EQ(this, g_dialog, base::NotFatalUntil::M162);
   g_dialog = nullptr;
 }
 

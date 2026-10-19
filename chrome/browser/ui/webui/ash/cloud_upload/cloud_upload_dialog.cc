@@ -465,7 +465,7 @@ bool CloudOpenTask::Execute(
     const fm_tasks::TaskDescriptor& task,
     const CloudProvider cloud_provider,
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics) {
-  DCHECK(!file_urls.empty());
+  CHECK(!file_urls.empty(), base::NotFatalUntil::M162);
   auto* event_router = file_manager::EventRouterFactory::GetForProfile(profile);
   // TODO(b/242685536) add support for multiple files.
   if (event_router) {
@@ -525,7 +525,7 @@ CloudOpenTask::CloudOpenTask(
 CloudOpenTask::~CloudOpenTask() {
   auto* event_router =
       file_manager::EventRouterFactory::GetForProfile(profile_);
-  DCHECK(!file_urls_.empty());
+  CHECK(!file_urls_.empty(), base::NotFatalUntil::M162);
   if (event_router) {
     event_router->RemoveCloudOpenTask(file_urls_.front());
   } else {
@@ -946,7 +946,7 @@ void CloudOpenTask::OpenAndroidOneDriveUrl(
 }
 
 void CloudOpenTask::StartUpload() {
-  DCHECK_EQ(file_urls_idx_, 0UL);
+  CHECK_EQ(file_urls_idx_, 0UL, base::NotFatalUntil::M162);
   upload_timer_ = base::ElapsedTimer();
   // CloudOpenTask is the only owner of the `CloudOpenMetrics` object and will
   // still be alive after the upload handler completes. Thus, pass a `SafeRef`
@@ -960,7 +960,7 @@ void CloudOpenTask::StartUpload() {
 }
 
 void CloudOpenTask::StartNextGoogleDriveUpload() {
-  DCHECK_LT(file_urls_idx_, file_urls_.size());
+  CHECK_LT(file_urls_idx_, file_urls_.size(), base::NotFatalUntil::M162);
   drive_upload_handler_ = std::make_unique<DriveUploadHandler>(
       profile_, file_urls_[file_urls_idx_],
       SourceTypeToUploadType(source_type_),
@@ -970,7 +970,7 @@ void CloudOpenTask::StartNextGoogleDriveUpload() {
 }
 
 void CloudOpenTask::StartNextOneDriveUpload() {
-  DCHECK_LT(file_urls_idx_, file_urls_.size());
+  CHECK_LT(file_urls_idx_, file_urls_.size(), base::NotFatalUntil::M162);
   one_drive_upload_handler_ = std::make_unique<OneDriveUploadHandler>(
       profile_, file_urls_[file_urls_idx_],
       SourceTypeToUploadType(source_type_),
@@ -983,7 +983,7 @@ void CloudOpenTask::StartNextOneDriveUpload() {
 void CloudOpenTask::FinishedDriveUpload(OfficeTaskResult task_result,
                                         std::optional<GURL> url,
                                         int64_t size) {
-  DCHECK_LT(file_urls_idx_, file_urls_.size());
+  CHECK_LT(file_urls_idx_, file_urls_.size(), base::NotFatalUntil::M162);
   if (url.has_value()) {
     upload_total_size_ += size;
     fm_tasks::SetOfficeFileMovedToGoogleDrive(profile_, base::Time::Now());
@@ -1009,7 +1009,7 @@ void CloudOpenTask::FinishedOneDriveUpload(
     OfficeTaskResult task_result,
     std::optional<storage::FileSystemURL> url,
     int64_t size) {
-  DCHECK_LT(file_urls_idx_, file_urls_.size());
+  CHECK_LT(file_urls_idx_, file_urls_.size(), base::NotFatalUntil::M162);
   if (url.has_value()) {
     upload_total_size_ += size;
     Profile* profile = profile_weak_ptr.get();
@@ -1244,7 +1244,7 @@ void CloudOpenTask::ShowDialog(
   }
   if (!modal_parent) {
     need_new_files_app_ = true;
-    DCHECK(!pending_dialog_);
+    CHECK(!pending_dialog_, base::NotFatalUntil::M162);
     pending_dialog_ = dialog;
     // Create a files app window and use it as the modal parent. CloudOpenTask
     // is kept alive by the callback passed to CloudUploadDialog above. We
@@ -1294,7 +1294,7 @@ void CloudOpenTask::OnBrowserCreated(BrowserWindowInterface* browser) {
 
   // TODO(petermarshall): Add a timeout. If Files app never launches for some
   // reason, then we will never show the dialog.
-  DCHECK(pending_dialog_);
+  CHECK(pending_dialog_, base::NotFatalUntil::M162);
   const BrowserDelegate& delegate =
       CHECK_DEREF(ash::BrowserController::GetInstance()->GetDelegate(browser));
   if (!ash::IsBrowserForSystemWebApp(delegate,
@@ -1535,7 +1535,7 @@ void CloudOpenTask::ConstructEntriesAndFindTasks(
     fm_tasks::FindTasksCallback find_all_types_of_tasks_callback,
     std::unique_ptr<std::vector<std::string>> mime_types) {
   std::vector<extensions::EntryInfo> entries;
-  DCHECK_EQ(file_paths.size(), mime_types->size());
+  CHECK_EQ(file_paths.size(), mime_types->size(), base::NotFatalUntil::M162);
   for (size_t i = 0; i < file_paths.size(); ++i) {
     entries.emplace_back(file_paths[i], (*mime_types)[i], false);
   }
