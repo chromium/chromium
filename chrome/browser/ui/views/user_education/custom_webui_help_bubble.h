@@ -147,8 +147,10 @@ CustomWebUIHelpBubble::CreateForController(
 
   // Specific shadow types are required for help bubbles in order to properly
   // render visible bubble arrows.
-  bubble->set_shadow(
-      user_education::HelpBubbleFactoryViews::GetDefaultBubbleShadow());
+  auto shadow_config = bubble->shadow_config();
+  shadow_config.shadow_type =
+      user_education::HelpBubbleFactoryViews::GetDefaultBubbleShadow();
+  bubble->set_shadow_config(shadow_config);
 
   std::unique_ptr<views::Widget> widget =
       views::BubbleDialogDelegate::CreateBubble(

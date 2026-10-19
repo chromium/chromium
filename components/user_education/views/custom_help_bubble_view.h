@@ -73,8 +73,10 @@ CreateCustomHelpBubbleViewFactoryCallback(
 
         // Specific shadow types are required for help bubbles in order to
         // properly render visible bubble arrows.
-        bubble_ptr->set_shadow(
-            HelpBubbleFactoryViews::GetDefaultBubbleShadow());
+        auto shadow_config = bubble_ptr->shadow_config();
+        shadow_config.shadow_type =
+            HelpBubbleFactoryViews::GetDefaultBubbleShadow();
+        bubble_ptr->set_shadow_config(shadow_config);
 
         auto widget =
             base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
