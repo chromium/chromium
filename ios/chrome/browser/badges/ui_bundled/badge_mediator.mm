@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/location_bar_badge_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -492,7 +493,7 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 }
 
 - (void)showModalForBadgeType:(BadgeType)badgeType {
-  [self addModalRequestForInfobarType:InfobarTypeForBadgeType(badgeType)];
+  [self handleActionForInfobarType:InfobarTypeForBadgeType(badgeType)];
 }
 
 #pragma mark - InfobarBadgeTabHelperDelegate
@@ -680,11 +681,21 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
   }
 }
 
-// Shows the modal UI when `button` is tapped.
+// Shows the UI when `button` is tapped.
 - (void)handleTappedBadgeButton:(BadgeButton*)button {
   InfobarType infobarType = InfobarTypeForBadgeType(button.badgeType);
-  [self addModalRequestForInfobarType:infobarType];
+  [self handleActionForInfobarType:infobarType];
   [self recordMetricsForBadgeButton:button infobarType:infobarType];
+}
+
+// Presents the UI associated with the Infobar of `infobarType`.
+- (void)handleActionForInfobarType:(InfobarType)infobarType {
+  if (infobarType == InfobarType::kInfobarTypePermissions &&
+      IsDomainLevelSitePermissionsEnabled()) {
+    [self.pageInfoHandler showPageInfo];
+    return;
+  }
+  [self addModalRequestForInfobarType:infobarType];
 }
 
 // Adds a modal request for the Infobar of `infobarType`.

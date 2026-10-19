@@ -8,11 +8,13 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/test/fake_infobar_banner_consumer.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -103,10 +105,11 @@ TEST_F(PermissionsBannerOverlayMediatorTest, PresentModal) {
 }
 
 // Tests that tapping on the banner action shows the page action menu when
-// domain level site permissions are enabled.
+// domain level site permissions and the page action menu are enabled.
 TEST_F(PermissionsBannerOverlayMediatorTest, ShowPageActionMenu) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+  scoped_feature_list.InitWithFeatures(
+      {kDomainLevelSitePermissions, kPageActionMenu}, {});
 
   NSArray<NSNumber*>* recently_accessible_permissions =
       @[ @(web::PermissionCamera) ];
@@ -144,4 +147,89 @@ TEST_F(PermissionsBannerOverlayMediatorTest, ShowPageActionMenu) {
   [mediator bannerInfobarButtonWasPressed:nil];
 
   EXPECT_OCMOCK_VERIFY(mock_page_action_menu_handler);
+}
+
+// Tests that tapping on the banner action shows Page Info when domain level
+// site permissions are enabled and the page action menu is disabled.
+TEST_F(PermissionsBannerOverlayMediatorTest,
+       ShowPageInfoWhenPageActionMenuDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kDomainLevelSitePermissions, kGeminiKillSwitch}, {kPageActionMenu});
+
+  NSArray<NSNumber*>* recently_accessible_permissions =
+      @[ @(web::PermissionCamera) ];
+  std::unique_ptr<PermissionsInfobarDelegate> delegate =
+      std::make_unique<PermissionsInfobarDelegate>(
+          recently_accessible_permissions, nullptr);
+  InfoBarIOS infobar(InfobarType::kInfobarTypePermissions, std::move(delegate));
+
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+          &infobar, InfobarOverlayType::kBanner);
+  callback_installer_.InstallCallbacks(request.get());
+  PermissionsBannerOverlayMediator* mediator =
+      [[PermissionsBannerOverlayMediator alloc] initWithRequest:request.get()];
+  FakeInfobarBannerConsumer* consumer =
+      [[FakeInfobarBannerConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  id mock_page_info_handler =
+      OCMStrictProtocolMock(@protocol(PageInfoCommands));
+  mediator.pageInfoHandler = mock_page_info_handler;
+
+  OCMExpect([mock_page_info_handler showPageInfo]);
+
+  // Check that the infobar modal is NOT presented and Page Info is shown.
+  EXPECT_CALL(
+      callback_receiver_,
+      DispatchCallback(request.get(),
+                       InfobarBannerShowModalResponse::ResponseSupport()))
+      .Times(0);
+  [mediator bannerInfobarButtonWasPressed:nil];
+
+  EXPECT_OCMOCK_VERIFY(mock_page_info_handler);
+}
+
+// Tests that tapping on the banner action in Incognito shows Page Info when
+// domain level site permissions and the page action menu are enabled, but
+// ChromeNextIa is disabled.
+TEST_F(PermissionsBannerOverlayMediatorTest,
+       ShowPageInfoInIncognitoWhenChromeNextIaDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kDomainLevelSitePermissions, kPageActionMenu}, {kChromeNextIa});
+
+  NSArray<NSNumber*>* recently_accessible_permissions =
+      @[ @(web::PermissionCamera) ];
+  std::unique_ptr<PermissionsInfobarDelegate> delegate =
+      std::make_unique<PermissionsInfobarDelegate>(
+          recently_accessible_permissions, nullptr);
+  InfoBarIOS infobar(InfobarType::kInfobarTypePermissions, std::move(delegate));
+
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<DefaultInfobarOverlayRequestConfig>(
+          &infobar, InfobarOverlayType::kBanner);
+  callback_installer_.InstallCallbacks(request.get());
+  PermissionsBannerOverlayMediator* mediator =
+      [[PermissionsBannerOverlayMediator alloc] initWithRequest:request.get()];
+  mediator.incognito = YES;
+  FakeInfobarBannerConsumer* consumer =
+      [[FakeInfobarBannerConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  id mock_page_info_handler =
+      OCMStrictProtocolMock(@protocol(PageInfoCommands));
+  mediator.pageInfoHandler = mock_page_info_handler;
+
+  OCMExpect([mock_page_info_handler showPageInfo]);
+
+  EXPECT_CALL(
+      callback_receiver_,
+      DispatchCallback(request.get(),
+                       InfobarBannerShowModalResponse::ResponseSupport()))
+      .Times(0);
+  [mediator bannerInfobarButtonWasPressed:nil];
+
+  EXPECT_OCMOCK_VERIFY(mock_page_info_handler);
 }

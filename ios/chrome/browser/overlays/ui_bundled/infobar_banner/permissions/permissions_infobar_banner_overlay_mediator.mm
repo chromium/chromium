@@ -9,12 +9,14 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
+#import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -49,10 +51,12 @@
   [super configureDependenciesWithDispatcher:dispatcher];
   self.pageActionMenuHandler =
       HandlerForProtocol(dispatcher, PageActionMenuCommands);
+  self.pageInfoHandler = HandlerForProtocol(dispatcher, PageInfoCommands);
 }
 
 - (void)disconnect {
   self.pageActionMenuHandler = nil;
+  self.pageInfoHandler = nil;
   [super disconnect];
 }
 
@@ -60,10 +64,17 @@
 
 - (void)bannerInfobarButtonWasPressed:(UIButton*)sender {
   if (IsDomainLevelSitePermissionsEnabled()) {
-    id<PageActionMenuCommands> pageActionMenuHandler =
-        self.pageActionMenuHandler;
-    [self dismissOverlay];
-    [pageActionMenuHandler showPageActionMenu];
+    if (IsPageActionMenuEnabled() &&
+        (!self.incognito || IsChromeNextIaEnabled())) {
+      id<PageActionMenuCommands> pageActionMenuHandler =
+          self.pageActionMenuHandler;
+      [self dismissOverlay];
+      [pageActionMenuHandler showPageActionMenu];
+    } else {
+      id<PageInfoCommands> pageInfoHandler = self.pageInfoHandler;
+      [self dismissOverlay];
+      [pageInfoHandler showPageInfo];
+    }
   } else {
     // Present the modal if the 'Edit' button is pressed.
     [self presentInfobarModalFromBanner];
