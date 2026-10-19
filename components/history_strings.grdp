@@ -353,43 +353,43 @@
     Gemini key browsing actions
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_LINKOUT_A11Y_LABEL" desc="Accessibility label for a critical action linkout icon in history item indicating the destination." translateable="false">
-    <ph name="DESTINATION">$1<ex>Contact info</ex></ph>, opens in a new tab
+    <ph name="DESTINATION">$1<ex>Go to contact info</ex></ph>, opens in a new tab
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_FILLED" desc="Label for password filled critical action in history item." translateable="false">
-    Password filled
+    Signed in using a Google service like Password Manager
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_TOOLTIP" desc="Tooltip for password filled critical action in history item." translateable="false">
-    Saved passwords
+    Go to Google Password Manager
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED" desc="Label for form filled critical action in history item." translateable="false">
     Contact info filled
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP" desc="Tooltip for form filled critical action in history item." translateable="false">
-    Contact info
+    Go to contact info
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD" desc="Label for download critical action in history item." translateable="false">
     File downloaded
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD_TOOLTIP" desc="Tooltip for download critical action in history item." translateable="false">
-    Downloads
+    Go to downloads
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_CHANGE" desc="Label for setting change critical action in history item." translateable="false">
-    Site settings modified
+    Site settings changed
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_TOOLTIP" desc="Tooltip for setting change critical action in history item." translateable="false">
-    Site settings
+    Go to site settings
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN" desc="Label for federated login critical action in history item." translateable="false">
     Signed in with account
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN_TOOLTIP" desc="Tooltip for federated login critical action in history item." translateable="false">
-    Account sign-in
+    Go to account sign-in
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP" desc="Label for credentials OTP verification code critical action in history item." translateable="false">
     Verification code filled
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP_TOOLTIP" desc="Tooltip for credentials OTP verification code critical action in history item." translateable="false">
-    Verification codes
+    Go to verification codes
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL" desc="Fallback label for WebMCP tool execution critical action in history item." translateable="false">
     Used website tool
@@ -398,7 +398,7 @@
     Used website tool: <ph name="TOOL_NAME">$1<ex>book_flight</ex></ph>
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_TOOLTIP" desc="Tooltip for WebMCP tool execution critical action in history item." translateable="false">
-    Website actions
+    See website actions
   </message>
   <message name="IDS_HISTORY_CRITICAL_ACTION_APP_MENU_IPH_BODY" desc="Text shown in the IPH bubble attached to the Chrome app menu teaching users where to view Gemini's auto browse actions." translateable="false">
     In Chrome history, you can see the key actions that Gemini completed while browsing for you
