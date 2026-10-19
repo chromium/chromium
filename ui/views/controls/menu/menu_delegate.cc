@@ -78,6 +78,10 @@ bool MenuDelegate::ShouldExecuteCommandWithoutClosingMenu(int id,
   return false;
 }
 
+bool MenuDelegate::ShouldDragActivateChildButtons() const {
+  return false;
+}
+
 bool MenuDelegate::IsTriggerableEvent(MenuItemView* source,
                                       const ui::Event& e) {
   // By default, a sub-menu is not triggerable.

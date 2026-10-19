@@ -96,6 +96,7 @@ class ActionAppMenu : public views::MenuDelegate,
                      ui::OSExchangeData* data) override;
   int GetDragOperations(views::MenuItemView* sender) override;
   bool ShouldCloseOnDragDropCompleted() override;
+  bool ShouldDragActivateChildButtons() const override;
 
   // AppMenuSearchController::Delegate:
   void ShowSearchResults(actions::ActionItem* results) override;

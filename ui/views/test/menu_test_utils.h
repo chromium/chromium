@@ -50,6 +50,9 @@ class TestMenuDelegate : public MenuDelegate {
   void set_should_close_on_drag_complete(bool val) {
     should_close_on_drag_complete_ = val;
   }
+  void set_should_drag_activate_child_buttons(bool val) {
+    should_drag_activate_child_buttons_ = val;
+  }
 
   // `ShowContextMenu()` will return false for the provided `command_id`.
   void DisableContextMenuForCommandId(int command_id);
@@ -73,6 +76,7 @@ class TestMenuDelegate : public MenuDelegate {
   bool ShouldExecuteCommandWithoutClosingMenu(int id,
                                               const ui::Event& e) override;
   bool ShouldCloseOnDragDropCompleted() override;
+  bool ShouldDragActivateChildButtons() const override;
 
  private:
   // Performs the drop operation and updates |output_drag_op| accordingly.
@@ -97,6 +101,8 @@ class TestMenuDelegate : public MenuDelegate {
 
   // The number of times WillHideMenu was called.
   int will_hide_menu_count_ = 0;
+
+  bool should_drag_activate_child_buttons_ = false;
 
   // The value of the last call to WillHideMenu.
   raw_ptr<MenuItemView, DanglingUntriaged> will_hide_menu_ = nullptr;

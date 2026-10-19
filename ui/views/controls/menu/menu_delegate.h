@@ -120,6 +120,11 @@ class VIEWS_EXPORT MenuDelegate {
   virtual bool ShouldExecuteCommandWithoutClosingMenu(int id,
                                                       const ui::Event& e);
 
+  // Returns true if child buttons embedded in menu items should support
+  // mouse click-and-drag highlighting and release activation across buttons and
+  // menu items. Defaults to false.
+  virtual bool ShouldDragActivateChildButtons() const;
+
   // Returns true if the specified event is one the user can use to trigger, or
   // accept, the item. Defaults to left or right mouse buttons or tap.
   virtual bool IsTriggerableEvent(MenuItemView* view, const ui::Event& e);

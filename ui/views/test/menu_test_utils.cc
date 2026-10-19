@@ -86,6 +86,10 @@ bool TestMenuDelegate::ShouldCloseOnDragDropCompleted() {
   return should_close_on_drag_complete_;
 }
 
+bool TestMenuDelegate::ShouldDragActivateChildButtons() const {
+  return should_drag_activate_child_buttons_;
+}
+
 void TestMenuDelegate::PerformDrop(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,

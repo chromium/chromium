@@ -100,6 +100,24 @@ DEFINE_UI_CLASS_PROPERTY_KEY(views::MenuController*,
                              kMenuControllerKey,
                              nullptr)
 
+Button* GetButtonForView(View* view) {
+  for (View* v = view; v; v = v->parent()) {
+    if (Button* button = Button::AsButton(v)) {
+      return button;
+    }
+  }
+  return nullptr;
+}
+
+bool ShouldDragActivateButton(const SubmenuView* source, const Button* button) {
+  if (!button || !source) {
+    return false;
+  }
+  const MenuItemView* item = source->GetMenuItem();
+  const MenuDelegate* delegate = item ? item->GetDelegate() : nullptr;
+  return delegate && delegate->ShouldDragActivateChildButtons();
+}
+
 void CollectWidgets(views::MenuItemView* item,
                     std::vector<views::Widget*>* widgets) {
   if (item->HasSubmenu()) {
@@ -989,13 +1007,17 @@ bool MenuController::OnMousePressed(SubmenuView* source,
 
   current_mouse_pressed_state_ |= event.changed_button_flags();
 
+  Button* button = nullptr;
   if (forward_to_root) {
     // Reset hot-tracking if a different view is getting a mouse press.
     const ui::MouseEvent event_for_root =
         ConvertLocatedEventForRootView(*source, *forward_to_root, event);
     View* view =
         forward_to_root->GetEventHandlerForPoint(event_for_root.location());
-    Button* button = Button::AsButton(view);
+    button = GetButtonForView(view);
+    if (button && !button->GetEnabled()) {
+      button = nullptr;
+    }
     if (hot_button_ != button) {
       SetHotTrackedButton(button);
     }
@@ -1004,8 +1026,10 @@ bool MenuController::OnMousePressed(SubmenuView* source,
       return true;
     }
 
-    // Empty menu items are always handled by the menu controller.
-    if (!IsViewClass<EmptyMenuMenuItem>(view)) {
+    const bool drag_activates_button = ShouldDragActivateButton(source, button);
+
+    // Empty menu items and buttons are handled by the menu controller directly.
+    if (!IsViewClass<EmptyMenuMenuItem>(view) && !drag_activates_button) {
       bool processed = forward_to_root->ProcessMousePressed(event_for_root);
       // This object may be destroyed as a result of a mouse press event (some
       // item may close the menu).
@@ -1028,6 +1052,19 @@ bool MenuController::OnMousePressed(SubmenuView* source,
 
   // Otherwise, the menu handles this click directly.
   SetSelectionOnPointerDown(source, &event);
+  if (ShouldDragActivateButton(source, button) && !destroy_pending_) {
+    SetHotTrackedButton(button);
+    active_mouse_view_tracker_->SetView(button);
+    const gfx::Point loc = View::ConvertPointFromScreen(
+        button, ConvertToScreen(*source, event.location()));
+    ui::MouseEvent mouse_entered_event(ui::EventType::kMouseEntered, loc, loc,
+                                       ui::EventTimeForNow(), 0, 0);
+    button->OnMouseEntered(mouse_entered_event);
+    ui::MouseEvent mouse_pressed_event(ui::EventType::kMousePressed, loc, loc,
+                                       ui::EventTimeForNow(), event.flags(),
+                                       event.changed_button_flags());
+    button->OnMousePressed(mouse_pressed_event);
+  }
   return true;
 }
 
@@ -1212,7 +1249,7 @@ void MenuController::OnMouseMoved(SubmenuView* source,
     // mouse and keyboard are used to navigate the menu.
     View* view = root_view->GetEventHandlerForPoint(
         ConvertLocatedEventForRootView(*source, *root_view, event).location());
-    new_hot_tracked_button = Button::AsButton(view);
+    new_hot_tracked_button = GetButtonForView(view);
   }
 
   // `HandleMouseLocation()` may change the selection, which can cause `this` to
@@ -3853,7 +3890,8 @@ void MenuController::UpdateActiveMouseView(SubmenuView* event_source,
                                            View* target_menu) {
   View* target = nullptr;
   gfx::Point target_menu_loc(event.location());
-  if (target_menu && !target_menu->children().empty()) {
+  if (target_menu && !target_menu->children().empty() &&
+      target_menu->GetWidget()) {
     // Locate the deepest child view to send events to.  This code assumes we
     // don't have to walk up the tree to find a view interested in events. This
     // is currently true for the cases we are embedding views, but if we embed
@@ -3861,6 +3899,10 @@ void MenuController::UpdateActiveMouseView(SubmenuView* event_source,
     target_menu_loc = ConvertToScreen(*event_source, target_menu_loc);
     View::ConvertPointFromScreen(target_menu, &target_menu_loc);
     target = target_menu->GetEventHandlerForPoint(target_menu_loc);
+    if (Button* button = GetButtonForView(target)) {
+      target =
+          ShouldDragActivateButton(event_source, button) ? button : nullptr;
+    }
     if (target == target_menu || !target->GetEnabled()) {
       target = nullptr;
     }
@@ -3882,6 +3924,14 @@ void MenuController::UpdateActiveMouseView(SubmenuView* event_source,
           ui::EventType::kMousePressed, target_point, target_point,
           ui::EventTimeForNow(), event.flags(), event.changed_button_flags());
       active_mouse_view->OnMousePressed(mouse_pressed_event);
+    }
+  }
+
+  Button* new_hot_tracked_button = Button::AsButton(target);
+  if (hot_button_ != new_hot_tracked_button) {
+    SetHotTrackedButton(new_hot_tracked_button);
+    if (destroy_pending_) {
+      return;
     }
   }
 
