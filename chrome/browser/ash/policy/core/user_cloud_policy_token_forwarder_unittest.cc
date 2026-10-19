@@ -32,6 +32,9 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -127,6 +130,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   ~UserCloudPolicyTokenForwarderTest() override = default;
 
   void SetUp() override {
+    session_manager_.OnUserManagerCreated(user_manager_.Get());
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
@@ -164,8 +168,9 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
           LOG(FATAL) << "unsupported UserType: " << user_type;
       }
     }
-    user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+    session_manager_.CreateSession(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id),
+        /*new_user=*/false, /*has_active_session=*/false);
 
     ash::ScopedAccountIdAnnotator annotator(profile_manager_->profile_manager(),
                                             account_id);
@@ -181,7 +186,10 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(kEmail, signin::ConsentLevel::kSignin);
 
-    ASSERT_TRUE(user_manager_->GetActiveUser());
+    const session_manager::Session* active_session =
+        session_manager_.GetActiveSession();
+    ASSERT_TRUE(active_session);
+    ASSERT_EQ(active_session->account_id(), account_id);
 
     user_policy_manager_ = std::make_unique<MockUserCloudPolicyManagerAsh>(
         test_url_loader_factory_.GetSafeWeakWrapper(), profile, account_id,
@@ -240,6 +248,8 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
 
  private:
   user_manager::ScopedUserManager user_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>

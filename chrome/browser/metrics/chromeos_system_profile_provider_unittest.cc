@@ -221,7 +221,7 @@ TEST_F(ChromeOSSystemProfileProviderTest,
       base::WrapUnique(user_manager));
   user_manager->AddKioskChromeAppUser(account_id1);
   user_manager->LoginUser(account_id1);
-  const user_manager::User* primary_user = user_manager->GetPrimaryUser();
+  const user_manager::User* primary_user = user_manager->FindUser(account_id1);
   ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
       primary_user, testing_profile_);
 

@@ -177,8 +177,9 @@ void AppTimeControllerTest::SetUp() {
       ->OverrideInnerIconLoaderForTesting(&icon_loader_);
 
   arc_app_test_.PostProfileSetUp(profile_.get());
-  user_hash_ =
-      user_manager::UserManager::Get()->GetActiveUser()->username_hash();
+  const user_manager::User* user = arc_app_test_.user();
+  ASSERT_TRUE(user);
+  user_hash_ = user->username_hash();
   arc_app_test_.app_instance()->set_icon_response_type(
       arc::FakeAppInstance::IconResponseType::ICON_RESPONSE_SKIP);
   task_environment_.RunUntilIdle();

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
@@ -49,6 +50,7 @@ void TrashBaseTest::SetUp() {
       account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
       profile_.get());
   fake_user_manager_->LoginUser(account_id, true);
+  ash::AnnotatedAccountId::Set(profile_.get(), account_id);
 
   file_system_context_ =
       storage::CreateFileSystemContextForTesting(nullptr, temp_dir_.GetPath());

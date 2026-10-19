@@ -98,6 +98,10 @@ class ArcAppTest {
     return fake_packages_;
   }
 
+  // The user logged in by `PreProfileSetUp()`. Null unless
+  // `user_manager_mode` is `kCreate`.
+  const user_manager::User* user() const { return user_; }
+
   // Adds package info and takes ownership.
   void AddPackage(arc::mojom::ArcPackageInfoPtr package);
 

@@ -78,7 +78,7 @@ class CrostiniExportImportTest : public testing::Test {
   const message_center::Notification* GetUiNotification(
       const std::string& notification_id) {
     const user_manager::User& user =
-        CHECK_DEREF(user_manager_->GetActiveUser());
+        CHECK_DEREF(user_manager_->FindUser(account_id_));
     return message_center::MessageCenter::Get()->FindNotificationById(
         ash::CreateUserScopedNotificationId(notification_id,
                                             user.username_hash()));
@@ -99,7 +99,7 @@ class CrostiniExportImportTest : public testing::Test {
       return nullptr;
     }
     const user_manager::User& user =
-        CHECK_DEREF(user_manager_->GetActiveUser());
+        CHECK_DEREF(user_manager_->FindUser(account_id_));
     const std::string ui_notification_id = ash::CreateUserScopedNotificationId(
         controller_notification->id(), user.username_hash());
     const message_center::Notification* ui_notification =
@@ -209,15 +209,14 @@ class CrostiniExportImportTest : public testing::Test {
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
         TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
-    const AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
     ASSERT_TRUE(user_manager::TestHelper(user_manager_.Get())
-                    .AddRegularUser(account_id));
+                    .AddRegularUser(account_id_));
     user_manager_->UserLoggedIn(
-        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
+        account_id_,
+        user_manager::TestHelper::GetFakeUsernameHash(account_id_));
 
     profile_ = std::make_unique<TestingProfile>();
-    ash::AnnotatedAccountId::Set(profile_.get(), account_id);
+    ash::AnnotatedAccountId::Set(profile_.get(), account_id_);
     message_center::MessageCenter::Initialize();
 
     crostini_export_import_ = std::make_unique<CrostiniExportImport>(profile());
@@ -258,6 +257,8 @@ class CrostiniExportImportTest : public testing::Test {
  protected:
   Profile* profile() { return profile_.get(); }
 
+  const AccountId account_id_ =
+      AccountId::FromUserEmailGaiaId("test@test", GaiaId("12345"));
   user_manager::ScopedUserManager user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<CrostiniExportImport> crostini_export_import_;
