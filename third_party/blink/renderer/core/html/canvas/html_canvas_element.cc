@@ -889,28 +889,43 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   if (IsRenderingContext2D()) {
     context_->Reset();
     origin_clean_ = true;
-  }
 
-  // For Canvas2D, reuse any existing backing buffer rather than dropping and
-  // recreating it. Doing this optimization for WebGL and WebGPU would require
-  // investigation to make sure that it's spec-compliant (including adding any
-  // operations as necessary to get it compliant).
-  if (IsRenderingContext2D() && old_size == new_size) {
-    return;
-  }
+    // For Canvas2D, reuse any existing backing buffer rather than dropping and
+    // recreating it. Doing this optimization for WebGL and WebGPU would require
+    // investigation to make sure that it's spec-compliant (including adding any
+    // operations as necessary to get it compliant).
+    if (old_size == new_size) {
+      return;
+    }
 
-  size_ = new_size;
-  if (RenderingContext()) {
+    size_ = new_size;
     RenderingContext()->SizeChanged();
-  }
 
-  DiscardResources();
-  if (IsRenderingContext2D() && context_->isContextLost()) {
-    context_->RestoreFromInvalidSizeIfNeeded();
-  }
+    DiscardResources();
+    if (context_->isContextLost()) {
+      context_->RestoreFromInvalidSizeIfNeeded();
+    }
+  } else if (IsWebGL()) {
+    size_ = new_size;
+    RenderingContext()->SizeChanged();
+    DiscardResources();
 
-  if ((IsWebGL() && old_size != Size()) || IsWebGPU()) {
+    if (old_size != Size()) {
+      context_->Reshape(width(), height());
+    }
+  } else if (IsWebGPU()) {
+    size_ = new_size;
+    RenderingContext()->SizeChanged();
+    DiscardResources();
     context_->Reshape(width(), height());
+  } else if (IsImageBitmapRenderingContext()) {
+    size_ = new_size;
+    RenderingContext()->SizeChanged();
+    DiscardResources();
+  } else {
+    size_ = new_size;
+    DiscardResources();
+    CHECK(!context_);
   }
 
   if (LayoutObject* layout_object = GetLayoutObject()) {
