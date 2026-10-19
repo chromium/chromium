@@ -346,7 +346,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': '686814d06630e1684d302d1629580a991e28d3e5',
+  'pdfium_revision': '4e6f5ead3e8eef06e8a8482ec4afff4b52845e18',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -1763,7 +1763,7 @@ deps = {
 
   'src/clank': {
     'url': Var('chrome_git') + '/clank/internal/apps.git' + '@' +
-    'b57e5cbee86aaf54eac743bd3b51656d594fd7e5',
+    '8806ac4d966fe17df7cb7e163d6475a07ef68f91',
     'condition': 'checkout_android and checkout_src_internal',
   },
 
@@ -3586,7 +3586,7 @@ deps = {
 
   'src/chrome/browser/glic/e2e_test/internal': {
       'url': Var('chrome_git') + '/chrome/browser/glic/test/internal.git' + '@' +
-        '4651b3f57ddac8e81a2121b01b81fe912943b6de',
+        'ba38171838fe9cefb2d1c8528571472810224965',
       'condition': 'checkout_glic_e2e_tests',
   },
 
