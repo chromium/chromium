@@ -1015,6 +1015,12 @@ BASE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion,
 // TODO(crbug.com/524084900): Remove when launched.
 BASE_FEATURE(kAutofillPopupUseDeleteSoon, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, shows the updated storage notice. This notice explains how
+// saved info is used across Google and links to the Privacy Policy when saving
+// private passes to Google Wallet.
+BASE_FEATURE(kAutofillRegionalizedPrivatePassesUxRefine,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
 // triggering events.
