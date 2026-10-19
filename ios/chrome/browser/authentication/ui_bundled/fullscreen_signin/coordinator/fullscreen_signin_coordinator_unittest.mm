@@ -40,6 +40,29 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+// Fake delegate for `FullscreenSigninCoordinator` that captures completion
+// results via `base::test::TestFuture`.
+@interface FakeFullscreenSigninCoordinatorDelegate
+    : NSObject <FullscreenSigninCoordinatorDelegate>
+- (SigninCoordinatorResultOrIdentity)waitForResult;
+@end
+
+@implementation FakeFullscreenSigninCoordinatorDelegate {
+  base::test::TestFuture<SigninCoordinatorResultOrIdentity> _resultFuture;
+}
+
+- (void)
+    fullscreenSigninCoordinatorDone:(FullscreenSigninCoordinator*)coordinator
+                             result:(SigninCoordinatorResultOrIdentity)result {
+  _resultFuture.SetValue(std::move(result));
+}
+
+- (SigninCoordinatorResultOrIdentity)waitForResult {
+  return _resultFuture.Get();
+}
+
+@end
+
 namespace {
 
 // Test fixture for `FullscreenSigninCoordinator`.
@@ -73,12 +96,12 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
 
   ~FullscreenSigninCoordinatorTest() override {
     EXPECT_OCMOCK_VERIFY((id)fullscreen_signin_screen_coordinator_mock_);
-    EXPECT_OCMOCK_VERIFY((id)delegate_mock_);
   }
 
   void TearDown() override {
     [coordinator_ stop];
     coordinator_ = nil;
+    delegate_ = nil;
     browser_.reset();
     profile_ = nullptr;
     window_ = nil;
@@ -89,8 +112,7 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
 
   // Initializes and starts `coordinator_`.
   void StartCoordinator() {
-    delegate_mock_ =
-        OCMStrictProtocolMock(@protocol(FullscreenSigninCoordinatorDelegate));
+    delegate_ = [[FakeFullscreenSigninCoordinatorDelegate alloc] init];
     coordinator_ = [[FullscreenSigninCoordinator alloc]
                initWithBaseViewController:window_.rootViewController
                                   browser:browser_.get()
@@ -98,7 +120,7 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
                              contextStyle:SigninContextStyle::kDefault
                               accessPoint:signin_metrics::AccessPoint::kSettings
         changeProfileContinuationProvider:DoNothingContinuationProvider()];
-    coordinator_.delegate = delegate_mock_;
+    coordinator_.delegate = delegate_;
 
     fullscreen_signin_screen_coordinator_mock_ =
         OCMStrictClassMock([FullscreenSigninScreenCoordinator class]);
@@ -135,7 +157,7 @@ class FullscreenSigninCoordinatorTest : public PlatformTest {
   raw_ptr<TestProfileIOS> profile_ = nullptr;
   std::unique_ptr<Browser> browser_;
   FullscreenSigninCoordinator* coordinator_ = nil;
-  id<FullscreenSigninCoordinatorDelegate> delegate_mock_ = nil;
+  FakeFullscreenSigninCoordinatorDelegate* delegate_ = nil;
   FullscreenSigninScreenCoordinator*
       fullscreen_signin_screen_coordinator_mock_ = nil;
   UIWindow* window_ = nil;
@@ -155,15 +177,6 @@ TEST_F(FullscreenSigninCoordinatorTest,
   auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kStartPage);
 
   OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
-  __block base::test::TestFuture<SigninCoordinatorResult> result_future;
-  const SigninCoordinatorResult expected_result =
-      SigninCoordinatorResultCanceledByUser;
-  OCMExpect([delegate_mock_
-                fullscreenSigninCoordinatorWantsToBeStopped:coordinator_
-                                                     result:expected_result])
-      .andDo(^(NSInvocation*) {
-        result_future.SetValue(expected_result);
-      });
 
   [static_cast<id<FirstRunScreenDelegate>>(coordinator_)
       firstRunScreenCoordinatorWantsToBeStopped:
@@ -173,11 +186,13 @@ TEST_F(FullscreenSigninCoordinatorTest,
   // completion block runs.
   auth_service->SignOut(signin_metrics::ProfileSignout::kTest);
 
-  EXPECT_EQ(result_future.Get(), expected_result);
+  SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), SigninCoordinatorResultCanceledByUser);
 }
 
-// Tests that `FullscreenSigninCoordinator` reports success when the primary
-// identity remains signed in after dismissal completes.
+// Tests that `FullscreenSigninCoordinator` reports the signed-in identity when
+// the primary identity remains signed in after dismissal completes.
 TEST_F(FullscreenSigninCoordinatorTest, CompletesWithSuccessWhenSignedIn) {
   StartCoordinator();
 
@@ -186,21 +201,14 @@ TEST_F(FullscreenSigninCoordinatorTest, CompletesWithSuccessWhenSignedIn) {
   auth_service->SignIn(fake_identity_, signin_metrics::AccessPoint::kStartPage);
 
   OCMExpect([fullscreen_signin_screen_coordinator_mock_ stop]);
-  __block base::test::TestFuture<SigninCoordinatorResult> result_future;
-  const SigninCoordinatorResult expected_result =
-      SigninCoordinatorResultSuccess;
-  OCMExpect([delegate_mock_
-                fullscreenSigninCoordinatorWantsToBeStopped:coordinator_
-                                                     result:expected_result])
-      .andDo(^(NSInvocation*) {
-        result_future.SetValue(expected_result);
-      });
 
   [static_cast<id<FirstRunScreenDelegate>>(coordinator_)
       firstRunScreenCoordinatorWantsToBeStopped:
           fullscreen_signin_screen_coordinator_mock_];
 
-  EXPECT_EQ(result_future.Get(), expected_result);
+  SigninCoordinatorResultOrIdentity result = [delegate_ waitForResult];
+  ASSERT_TRUE(result.has_value());
+  EXPECT_NSEQ(result.value(), fake_identity_);
 }
 
 }  // namespace

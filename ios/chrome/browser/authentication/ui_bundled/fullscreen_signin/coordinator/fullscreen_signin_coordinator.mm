@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <utility>
+
 #import "base/notreached.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -182,16 +184,27 @@
   id<SystemIdentity> identity =
       AuthenticationServiceFactory::GetForProfile(self.profile)
           ->GetPrimaryIdentity();
-  [self finishWithResult:identity ? SigninCoordinatorResultSuccess
-                                  : SigninCoordinatorResultCanceledByUser];
+  SigninCoordinatorResultOrIdentity result =
+      identity ? SigninCoordinatorResultOrIdentity(identity)
+               : base::unexpected(SigninCoordinatorResultCanceledByUser);
+  [self finishWithResult:std::move(result)];
 }
 
-- (void)finishWithResult:(SigninCoordinatorResult)result {
+- (void)finishWithResult:(SigninCoordinatorResultOrIdentity)result {
   [self stopChildCoordinator];
   self.navigationController = nil;
   self.screenProvider = nil;
-  [self.delegate fullscreenSigninCoordinatorWantsToBeStopped:self
-                                                      result:result];
+  if ([self.delegate
+          respondsToSelector:@selector(
+                                 fullscreenSigninCoordinatorDone:result:)]) {
+    [self.delegate fullscreenSigninCoordinatorDone:self
+                                            result:std::move(result)];
+  } else {
+    SigninCoordinatorResult legacyResult =
+        result.has_value() ? SigninCoordinatorResultSuccess : result.error();
+    [self.delegate fullscreenSigninCoordinatorWantsToBeStopped:self
+                                                        result:legacyResult];
+  }
 }
 
 #pragma mark - FirstRunScreenDelegate

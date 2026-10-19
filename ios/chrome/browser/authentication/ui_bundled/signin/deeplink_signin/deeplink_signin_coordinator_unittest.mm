@@ -210,9 +210,8 @@ TEST_F(DeeplinkSigninCoordinatorTest,
   const SigninCoordinatorResult expected_result =
       SigninCoordinatorResultCanceledByUser;
   [static_cast<id<FullscreenSigninCoordinatorDelegate>>(coordinator_)
-      fullscreenSigninCoordinatorWantsToBeStopped:
-          fullscreen_signin_coordinator_mock_
-                                           result:expected_result];
+      fullscreenSigninCoordinatorDone:fullscreen_signin_coordinator_mock_
+                               result:base::unexpected(expected_result)];
 
   SigninCoordinatorResultOrIdentity result = completion_future.Get();
   ASSERT_FALSE(result.has_value());

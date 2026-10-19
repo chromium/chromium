@@ -6,6 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <utility>
+
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/consent_level.h"
@@ -17,7 +19,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/screen/ui_bundled/screen_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -140,8 +141,7 @@
       l10n_util::GetNSStringF(
           IDS_IOS_DEEPLINK_SIGNIN_ALREADY_SIGNED_IN_DESCRIPTION,
           base::SysNSStringToUTF16(name)));
-  [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
-                   completionIdentity:_selectedIdentity];
+  [self runCompletionWithSigninResult:_selectedIdentity];
 }
 
 - (void)startAddAccountFlow {
@@ -156,16 +156,12 @@
                              continuationProvider:
                                  _changeProfileContinuationProvider];
   __weak __typeof(self) weakSelf = self;
-  addAccountCoordinator.signinCompletion = ^(
-      SigninCoordinator* coordinator,
-      SigninCoordinatorResultOrIdentity result) {
-    SigninCoordinatorResult signinResult =
-        signin::SigninCoordinatorResultFromSigninCoordinatorResultOrIdentity(
-            result);
-    [weakSelf addAccountDoneWithCoordinator:coordinator
-                                     result:signinResult
-                             resultIdentity:result.value_or(nil)];
-  };
+  addAccountCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator,
+        SigninCoordinatorResultOrIdentity result) {
+        [weakSelf addAccountDoneWithCoordinator:coordinator
+                                         result:std::move(result)];
+      };
   _childCoordinator = addAccountCoordinator;
   [_childCoordinator start];
 }
@@ -190,22 +186,21 @@
 }
 
 - (void)addAccountDoneWithCoordinator:(SigninCoordinator*)coordinator
-                               result:(SigninCoordinatorResult)result
-                       resultIdentity:(id<SystemIdentity>)resultIdentity {
+                               result:
+                                   (SigninCoordinatorResultOrIdentity)result {
   CHECK_EQ(_childCoordinator, coordinator, base::NotFatalUntil::M155);
   [self stopChildCoordinator];
 
-  if (result == SigninCoordinatorResultSuccess &&
-      _accountManagerService->IsValidIdentity(resultIdentity.gaiaId)) {
-    _selectedIdentity = resultIdentity;
+  if (result.has_value() &&
+      _accountManagerService->IsValidIdentity(result.value().gaiaId)) {
+    _selectedIdentity = result.value();
     [self startSigninFlow];
   } else {
-    SigninCoordinatorResult completionResult =
-        result == SigninCoordinatorResultSuccess
-            ? SigninCoordinatorResultCanceledByUser
-            : result;
-    [self runCompletionWithSigninResult:completionResult
-                     completionIdentity:nil];
+    SigninCoordinatorResultOrIdentity completionResult =
+        result.has_value()
+            ? base::unexpected(SigninCoordinatorResultCanceledByUser)
+            : std::move(result);
+    [self runCompletionWithSigninResult:std::move(completionResult)];
   }
 }
 
@@ -216,16 +211,12 @@
 
 #pragma mark - FullscreenSigninCoordinatorDelegate
 
-- (void)fullscreenSigninCoordinatorWantsToBeStopped:
-            (FullscreenSigninCoordinator*)coordinator
-                                             result:(SigninCoordinatorResult)
-                                                        result {
+- (void)
+    fullscreenSigninCoordinatorDone:(FullscreenSigninCoordinator*)coordinator
+                             result:(SigninCoordinatorResultOrIdentity)result {
   CHECK_EQ(_childCoordinator, coordinator);
   [self stopChildCoordinator];
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  id<SystemIdentity> identity = authService->GetPrimaryIdentity();
-  [self runCompletionWithSigninResult:result completionIdentity:identity];
+  [self runCompletionWithSigninResult:std::move(result)];
 }
 
 #pragma mark - NSObject

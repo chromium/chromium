@@ -322,10 +322,9 @@
 
 #pragma mark - FullscreenSigninCoordinatorDelegate
 
-- (void)fullscreenSigninCoordinatorWantsToBeStopped:
-            (FullscreenSigninCoordinator*)coordinator
-                                             result:(SigninCoordinatorResult)
-                                                        result {
+- (void)
+    fullscreenSigninCoordinatorDone:(FullscreenSigninCoordinator*)coordinator
+                             result:(SigninCoordinatorResultOrIdentity)result {
   CHECK_EQ(coordinator, _fullscreenSigninCoordinator);
   [self stopFullScreenSigninCoordinator];
 }
