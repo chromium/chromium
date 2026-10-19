@@ -16,6 +16,12 @@ FakeSyncGCMDriver::FakeSyncGCMDriver(
           profile->GetPath().Append(FILE_PATH_LITERAL("gcm_test_store")),
           blocking_task_runner) {}
 
+FakeSyncGCMDriver::~FakeSyncGCMDriver() = default;
+
+void FakeSyncGCMDriver::SetOnDestroyedCallback(base::OnceClosure on_destroyed) {
+  on_destroyed_.ReplaceClosure(std::move(on_destroyed));
+}
+
 void FakeSyncGCMDriver::EncryptMessage(const std::string& app_id,
                                        const std::string& authorized_entity,
                                        const std::string& p256dh,

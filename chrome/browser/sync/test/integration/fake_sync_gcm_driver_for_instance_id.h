@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/gcm_driver/instance_id/fake_gcm_driver_for_instance_id.h"
 
@@ -22,6 +23,9 @@ class FakeSyncGCMDriver : public instance_id::FakeGCMDriverForInstanceID {
   FakeSyncGCMDriver(
       Profile* profile,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+  ~FakeSyncGCMDriver() override;
+
+  void SetOnDestroyedCallback(base::OnceClosure on_destroyed);
 
  protected:
   // FakeGCMDriverForInstanceID overrides:
@@ -31,6 +35,9 @@ class FakeSyncGCMDriver : public instance_id::FakeGCMDriverForInstanceID {
                       const std::string& auth_secret,
                       const std::string& message,
                       EncryptMessageCallback callback) override;
+
+ private:
+  base::ScopedClosureRunner on_destroyed_;
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_FAKE_SYNC_GCM_DRIVER_FOR_INSTANCE_ID_H_

@@ -52,6 +52,11 @@ void FakeServerSyncInvalidationSender::RemoveFakeGCMDriver(
   std::erase(fake_gcm_drivers_, fake_gcm_driver);
 }
 
+base::WeakPtr<FakeServerSyncInvalidationSender>
+FakeServerSyncInvalidationSender::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void FakeServerSyncInvalidationSender::OnWillCommit() {
   token_to_interested_data_types_.clear();
   UpdateTokenToInterestedDataTypesMap();

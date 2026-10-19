@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/sync/base/data_type.h"
@@ -54,6 +55,8 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
   void RemoveFakeGCMDriver(
       instance_id::FakeGCMDriverForInstanceID* fake_gcm_driver);
 
+  base::WeakPtr<FakeServerSyncInvalidationSender> GetWeakPtr();
+
   // FakeServer::Observer implementation.
   void OnWillCommit() override;
   void OnCommit(syncer::DataTypeSet committed_data_types) override;
@@ -91,6 +94,9 @@ class FakeServerSyncInvalidationSender : public FakeServer::Observer,
 
   std::vector<raw_ptr<instance_id::FakeGCMDriverForInstanceID>>
       fake_gcm_drivers_;
+
+  base::WeakPtrFactory<FakeServerSyncInvalidationSender> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace fake_server
