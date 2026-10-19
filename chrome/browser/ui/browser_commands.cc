@@ -2572,6 +2572,13 @@ void ShowTabSearch(BrowserWindowInterface* browser) {
 }
 
 void CloseTabSearch(BrowserWindowInterface* browser) {
+  if (organizer_panel::IsOrganizerPanelFeatureEnabled()) {
+    auto* controller = OrganizerPanelController::From(browser);
+    if (controller && controller->IsOrganizerPanelVisible()) {
+      controller->SetOrganizerVisible(false);
+      return;
+    }
+  }
   BrowserWindow::FromBrowser(browser)->CloseTabSearchBubble();
 }
 

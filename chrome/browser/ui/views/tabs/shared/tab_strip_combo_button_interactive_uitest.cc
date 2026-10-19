@@ -9,6 +9,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
@@ -233,6 +234,24 @@ class TabStripComboButtonOrganizerPanelInteractiveUiTest
       browser()->GetProfile()->GetPrefs()->SetBoolean(pref, pinned);
     });
   }
+
+  auto CheckTabSearchIcon(const gfx::VectorIcon& expected_icon) {
+    return CheckView(
+        kTabSearchButtonElementId,
+        [&expected_icon](TabStripFlatEdgeButton* button) {
+          const auto& image_model =
+              button->GetImageModel(views::Button::STATE_NORMAL);
+          return image_model.has_value() && image_model->IsVectorIcon() &&
+                 image_model->GetVectorIcon().vector_icon() == &expected_icon;
+        });
+  }
+
+  auto CheckTabSearchTooltip(const std::u16string& expected_tooltip) {
+    return CheckView(kTabSearchButtonElementId,
+                     [&expected_tooltip](TabStripFlatEdgeButton* button) {
+                       return button->GetTooltipText() == expected_tooltip;
+                     });
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
@@ -246,6 +265,31 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
       // Saved tab group button should NOT be present in the view hierarchy of
       // the combo button.
       EnsureNotPresent(kSavedTabGroupButtonElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(TabStripComboButtonOrganizerPanelInteractiveUiTest,
+                       TabSearchIconAndTooltipWhenOrganizerPanelVisible) {
+  const gfx::VectorIcon& search_icon = features::IsRoundedIconsEnabled()
+                                           ? kManageSearchIcon
+                                           : kTabSearchTabStripOldIcon;
+  const gfx::VectorIcon& close_icon = features::IsRoundedIconsEnabled()
+                                          ? kCloseSmallIcon
+                                          : kCloseChromeRefreshOldIcon;
+  const std::u16string view_tooltip =
+      chrome::GetCleanText(l10n_util::GetStringUTF16(IDS_TAB_SEARCH_MENU));
+  const std::u16string close_tooltip = chrome::GetCleanText(
+      l10n_util::GetStringUTF16(IDS_ORGANIZER_PANEL_CLOSE_TAB_SEARCH));
+
+  RunTestSequence(
+      SetPinned(prefs::kTabSearchPinnedToTabstrip, true),
+      WaitForShow(kTabSearchButtonElementId), CheckTabSearchIcon(search_icon),
+      CheckTabSearchTooltip(view_tooltip),
+      PressButton(kTabSearchButtonElementId),
+      WaitForShow(kOrganizerPanelElementId), CheckTabSearchIcon(close_icon),
+      CheckTabSearchTooltip(close_tooltip),
+      PressButton(kTabSearchButtonElementId),
+      WaitForHide(kOrganizerPanelElementId), CheckTabSearchIcon(search_icon),
+      CheckTabSearchTooltip(view_tooltip));
 }
 
 class TabStripComboButtonHorizontalInteractiveUiTest

@@ -49,6 +49,7 @@ source_set("impl") {
     "//chrome/common:constants",
     "//components/pref_registry",
     "//components/prefs",
+    "//ui/base",
     "//ui/views",
   ]
 

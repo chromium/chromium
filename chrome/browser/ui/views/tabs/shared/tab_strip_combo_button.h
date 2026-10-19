@@ -110,6 +110,7 @@ class TabStripComboButton : public views::View,
 
   bool IsTabSearchPinned();
 
+  actions::ActionId GetEndButtonActionId() const;
   actions::ActionItem* GetStartButtonActionItem();
   actions::ActionItem* GetEndButtonActionItem();
 
