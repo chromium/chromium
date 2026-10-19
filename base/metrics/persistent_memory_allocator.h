@@ -491,7 +491,7 @@ class BASE_EXPORT PersistentMemoryAllocator {
                       size_t count,
                       size_t* alloc_size = nullptr) const {
     static_assert(std::is_fundamental_v<T>, "use GetAsObject<>()");
-    return const_cast<const char*>(reinterpret_cast<const volatile T*>(
+    return const_cast<const T*>(reinterpret_cast<const volatile T*>(
         GetBlockData(ref, type_id, count * sizeof(T), alloc_size)));
   }
 

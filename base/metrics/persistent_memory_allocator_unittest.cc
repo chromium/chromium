@@ -270,6 +270,8 @@ TEST_F(PersistentMemoryAllocatorTest, AllocateAndIterate) {
   EXPECT_EQ(0U, iter3.GetNext(&type));
   EXPECT_NE(nullptr, allocator3->GetAsObject<TestObject1>(block1));
   EXPECT_NE(nullptr, allocator3->GetAsObject<TestObject2>(block2));
+  EXPECT_NE(nullptr, allocator3->GetAsArray<uint32_t>(
+                         block1, TestObject1::kPersistentTypeId, 1));
 
   // Ensure that GetNextOfType works.
   PersistentMemoryAllocator::Iterator iter1c(allocator_.get());
