@@ -1548,13 +1548,17 @@ void ProfileManager::DoFinalInit(ProfileInfo* profile_info,
 
   // Delete browsing data specified by the ClearBrowsingDataOnExitList policy
   // if they were not properly deleted on the last browser shutdown.
-  auto* browsing_data_lifetime_manager =
-      ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(profile);
-  if (browsing_data_lifetime_manager && !profile->IsOffTheRecord() &&
+  if (!profile->IsOffTheRecord() &&
       profile->GetPrefs()->GetBoolean(
           browsing_data::prefs::kClearBrowsingDataOnExitDeletionPending)) {
-    browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
-        /*keep_browser_alive=*/false);
+    // This may be expensive so only do it after other conditions are
+    // checked.
+    auto* browsing_data_lifetime_manager =
+        ChromeBrowsingDataLifetimeManagerFactory::GetForProfile(profile);
+    if (browsing_data_lifetime_manager) {
+      browsing_data_lifetime_manager->ClearBrowsingDataForOnExitPolicy(
+          /*keep_browser_alive=*/false);
+    }
   }
 }
 
