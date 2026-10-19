@@ -52,8 +52,9 @@ base::Value SettingSyncData::ExtractValue() {
 void SettingSyncData::ExtractSyncData(const syncer::SyncData& sync_data) {
   sync_pb::EntitySpecifics specifics = sync_data.GetSpecifics();
   // The specifics are exclusively either extension or app settings.
-  CHECK_NE(specifics.has_extension_setting(), specifics.has_app_setting(),
-           base::NotFatalUntil::M161);
+  // TODO(crbug.com/573845270): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_NE(specifics.has_extension_setting(), specifics.has_app_setting());
   const sync_pb::ExtensionSettingSpecifics& extension_specifics =
       specifics.has_extension_setting()
           ? specifics.extension_setting()
