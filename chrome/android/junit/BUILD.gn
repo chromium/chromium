@@ -1053,6 +1053,8 @@ if (is_android) {
       "//chrome/browser/segmentation_platform:client_util_java",
       "//chrome/browser/ui/android/logo:utils_java",
       "//chrome/browser/ui/side_ui/public:java",
+      "//components/contextual_search:components_contextual_search_java",
+      "//components/contextual_search:test_support_java",
       "//third_party/android_deps:com_airbnb_android_lottie_java",
     ]
   }

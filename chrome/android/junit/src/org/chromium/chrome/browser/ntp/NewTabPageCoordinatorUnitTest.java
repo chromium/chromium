@@ -53,6 +53,7 @@ import org.chromium.base.FeatureOverrides;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -84,7 +85,6 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineService;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
-import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridgeJni;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -117,6 +117,8 @@ import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserv
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.contextual_search.InputState;
+import org.chromium.components.contextual_search.InputStateBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -154,7 +156,7 @@ public class NewTabPageCoordinatorUnitTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock private ComposeplateUtils.Natives mMockComposeplateUtilsJni;
-    @Mock private ComposeboxQueryControllerBridge.Natives mMockComposeboxQueryControllerBridgeJni;
+    @Mock private ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     @Mock private HomeModulesRankingHelper.Natives mHomeModulesRankingHelperJniMock;
     @Mock private NewTabPageManager mManager;
     @Mock private Tab mTab;
@@ -206,6 +208,8 @@ public class NewTabPageCoordinatorUnitTest {
     private final SettableNonNullObservableSupplier<StatusIconResource> mAiModeButtonIconSupplier =
             ObservableSuppliers.createNonNull(
                     new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
+    private final SettableMonotonicObservableSupplier<InputState> mInputStateSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {
@@ -228,11 +232,11 @@ public class NewTabPageCoordinatorUnitTest {
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(mProfile)).thenReturn(true);
         when(mMockComposeplateUtilsJni.isEnabledByPolicy(mProfile)).thenReturn(true);
-        ComposeboxQueryControllerBridgeJni.setInstanceForTesting(
-                mMockComposeboxQueryControllerBridgeJni);
-        when(mMockComposeboxQueryControllerBridgeJni.isToolAllowedForProfile(
-                        mProfile, ToolMode.TOOL_MODE_IMAGE_GEN))
-                .thenReturn(true);
+        ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxQueryControllerBridge);
+        mInputStateSupplier.set(
+                new InputStateBuilder().withAllowedTools(ToolMode.TOOL_MODE_IMAGE_GEN).build());
+        when(mComposeboxQueryControllerBridge.getInputStateSupplier())
+                .thenReturn(mInputStateSupplier);
         IncognitoUtils.setEnabledForTesting(true);
 
         // Setup for home modules.
@@ -951,14 +955,39 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
     public void testOptionalButton_CreateImage_ImageGenNotAllowed_FallsBackToCanvas() {
-        when(mMockComposeboxQueryControllerBridgeJni.isToolAllowedForProfile(
-                        mProfile, ToolMode.TOOL_MODE_IMAGE_GEN))
-                .thenReturn(false);
+        mInputStateSupplier.set(new InputStateBuilder().withAllowedTools().build());
+        // Tool availability is checked when the composeplate is created, so recreate the
+        // coordinator.
+        mCoordinator.destroy();
+        clearInvocations(mComposeboxQueryControllerBridge);
+        createCoordinator();
+
+        // The session used to determine the allowed tools is closed right away, and only one is
+        // created even though the chip type is queried multiple times during initialization.
+        verify(mComposeboxQueryControllerBridge).destroy();
+        verifyOptionalButtonFellBackToCanvas();
+    }
+
+    /**
+     * Verifies that the Create image chip falls back to the canvas chip when no Composebox session
+     * can be created.
+     */
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
+    })
+    public void testOptionalButton_CreateImage_NoComposeboxSession_FallsBackToCanvas() {
+        ComposeboxQueryControllerBridge.setInstanceForTesting(null);
         // Tool availability is checked when the composeplate is created, so recreate the
         // coordinator.
         mCoordinator.destroy();
         createCoordinator();
 
+        verifyOptionalButtonFellBackToCanvas();
+    }
+
+    private void verifyOptionalButtonFellBackToCanvas() {
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
         View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
         assertEquals(View.VISIBLE, optionalButton.getVisibility());
