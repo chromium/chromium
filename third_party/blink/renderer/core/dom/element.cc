@@ -4314,12 +4314,17 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   RecomputeDirectionFromParent();
 
   auto* parent = ParentOrShadowHostElement();
-  if (parent && parent->IsCanvasOrInCanvasSubtree()) {
+  if (!IsPseudoElement() && IsChildOfShadowHost()) {
+    if (auto* slot = AssignedSlotWithoutRecalc();
+        slot && slot->OwnerShadowHost() == parent &&
+        slot->IsInCanvasSubtree()) {
+      SetIsInCanvasSubtree(true);
+    }
+  } else if (parent && parent->IsCanvasOrInCanvasSubtree()) {
     const auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(*parent);
     const bool is_inactive_fallback_content =
         slot && !slot->AssignedNodesNoRecalc().empty();
-    if (IsPseudoElement() ||
-        (!IsChildOfShadowHost() && !is_inactive_fallback_content)) {
+    if (IsPseudoElement() || !is_inactive_fallback_content) {
       SetIsInCanvasSubtree(true);
     }
   } else if (!parent && insertion_point.IsDocumentNode()) {

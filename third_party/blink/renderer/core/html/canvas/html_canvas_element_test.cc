@@ -1020,4 +1020,80 @@ TEST_P(HTMLCanvasElementTest, SlotReassignmentInvalidatesVisitedLinkStyle) {
             EInsideLink::kInsideVisitedLink);
 }
 
+TEST_P(HTMLCanvasElementTest, RemoveAndReinsertSlottedElementToSameHost) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host1">
+      <template shadowrootmode="open">
+        <canvas content="drawable">
+          <slot></slot>
+        </canvas>
+      </template>
+      <div id="slotted1">
+        <div id="child1"></div>
+      </div>
+    </div>
+    <canvas content="drawable">
+      <div id="host2">
+        <template shadowrootmode="open">
+          <slot></slot>
+        </template>
+        <div id="slotted2">
+          <div id="child2"></div>
+        </div>
+      </div>
+    </canvas>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* host1 = GetDocument().getElementById(AtomicString("host1"));
+  auto* slotted1 = GetDocument().getElementById(AtomicString("slotted1"));
+  auto* child1 = GetDocument().getElementById(AtomicString("child1"));
+  auto* host2 = GetDocument().getElementById(AtomicString("host2"));
+  auto* slotted2 = GetDocument().getElementById(AtomicString("slotted2"));
+  auto* child2 = GetDocument().getElementById(AtomicString("child2"));
+
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(child1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(child2->IsInCanvasSubtree());
+
+  // Remove and reinsert into the same shadow host without an intermediate
+  // slot assignment recalc, so both elements retain their previous slotting.
+  slotted1->remove();
+  EXPECT_FALSE(slotted1->IsInCanvasSubtree());
+  EXPECT_FALSE(child1->IsInCanvasSubtree());
+  host1->appendChild(slotted1);
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(child1->IsInCanvasSubtree());
+
+  slotted2->remove();
+  EXPECT_FALSE(slotted2->IsInCanvasSubtree());
+  EXPECT_FALSE(child2->IsInCanvasSubtree());
+  host2->appendChild(slotted2);
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(child2->IsInCanvasSubtree());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(child1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(child2->IsInCanvasSubtree());
+
+  // Also test single-call re-insertion of an already-attached slotted child
+  // (`host->appendChild(slotted)`), which internally removes and re-inserts
+  // in the same task.
+  host1->appendChild(slotted1);
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(child1->IsInCanvasSubtree());
+  host2->appendChild(slotted2);
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(child2->IsInCanvasSubtree());
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(child1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(child2->IsInCanvasSubtree());
+}
+
 }  // namespace blink
