@@ -56,26 +56,22 @@ ProviderRegistrationParseResult ParseProviderRegistrationParams(
     std::optional<GURL> provider_url,
     std::optional<net::device_bound_sessions::Session::Id>
         provider_session_id) {
-  // `provider_key` and `provider_url` must either both be present or
-  // both be absent.
-  if (provider_key.has_value() != provider_url.has_value()) {
-    return {.is_valid = false};
+  // An SSO registration names a pre-provisioned key by `provider_key` alone.
+  // `provider_url` is ignored: the key is looked up by digest and RP origin
+  // (https://github.com/WICG/dbsc-sso/pull/18).
+  if (provider_key.has_value() && !provider_session_id.has_value() &&
+      base::FeatureList::IsEnabled(
+          net::features::kDeviceBoundSessionsForSingleSignOn)) {
+    return {.is_valid = true,
+            .params = net::device_bound_sessions::ProviderRegistrationParams{
+                .provider_key = std::move(*provider_key)}};
   }
 
-  if (base::FeatureList::IsEnabled(
-          net::features::kDeviceBoundSessionsForSingleSignOn)) {
-    // In SSO scenarios, `provider_session_id` can be absent.
-    // However, if `provider_session_id` is present, then `provider_key`
-    // (and by extension `provider_url`) must also be present.
-    if (provider_session_id.has_value() && !provider_key.has_value()) {
-      return {.is_valid = false};
-    }
-  } else {
-    // In non-SSO scenarios, `provider_session_id` must be present
-    // if and only if `provider_key` is present.
-    if (provider_session_id.has_value() != provider_key.has_value()) {
-      return {.is_valid = false};
-    }
+  // `provider_key`, `provider_url` and `provider_session_id` must either all
+  // be present (federated registration) or all be absent.
+  if (provider_key.has_value() != provider_url.has_value() ||
+      provider_key.has_value() != provider_session_id.has_value()) {
+    return {.is_valid = false};
   }
 
   if (provider_url.has_value() &&

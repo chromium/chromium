@@ -26,8 +26,12 @@ namespace net::device_bound_sessions {
 //   Relying Party (RP).
 // - Federated sessions: where the RP reuses the same key and session from the
 //   IdP.
+// TODO(crbug.com/481629977): DBSC-SSO registrations only need `provider_key`.
+// Pass it as a plain string and keep this struct for federated registrations.
 struct NET_EXPORT ProviderRegistrationParams {
   std::string provider_key;
+  // `provider_url` is only set for federated session registrations. DBSC-SSO
+  // registrations ignore it and leave it empty.
   GURL provider_url;
   // `provider_session_id` is populated only during federated session
   // registrations when an RP reuses the same key as the IdP. It should be

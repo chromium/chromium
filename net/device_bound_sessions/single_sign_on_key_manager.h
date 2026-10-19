@@ -18,7 +18,6 @@
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_service.h"
-#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net::device_bound_sessions {
@@ -41,23 +40,29 @@ class NET_EXPORT SingleSignOnKeyManager {
 
   // Adds a pre-provisioned key to the in-memory store.
   //
+  // `provider_key` must be the JWK thumbprint of the key, computed by the
+  // browser, never a value supplied by the Identity Provider. Keys are unique
+  // per (`rp_origin`, `provider_key`) across Identity Providers, so an
+  // IdP-chosen `provider_key` would let one IdP squat another IdP's key name
+  // for the same Relying Party.
+  //
   // Returns true if the key was successfully added, false otherwise.
   //
   // A key insertion can fail if:
   // - the Identity Provider site does not have access to its cookies from a
   //   third-party context;
-  // - the key already exists (same `provider_url`, `rp_origin`, and
-  //   `provider_key`);
+  // - the key already exists (same `rp_origin` and `provider_key`);
   // - there are already `kMaxPreProvisionedKeysPerIdentityProvider` keys
   //   stored for the Identity Provider site.
   bool AddPreProvisionedKey(const url::Origin& rp_origin,
                             std::string_view provider_key,
-                            const GURL& provider_url,
+                            const url::Origin& provider_origin,
                             unexportable_keys::UnexportableSigningKeyId key_id);
 
-  // Finds a pre-provisioned key that matches `provider_params` and `initiator`.
+  // Finds the pre-provisioned key named `provider_key` that was generated for
+  // `initiator`. The cookie access check uses the IdP that generated the key.
   SessionErrorOr<unexportable_keys::UnexportableSigningKeyId>
-  FindPreProvisionedKey(const ProviderRegistrationParams& provider_params,
+  FindPreProvisionedKey(std::string_view provider_key,
                         base::optional_ref<const url::Origin> initiator) const;
 
   // Removes the pre-provisioned key used by `session`, if any. Called when a
@@ -71,7 +76,7 @@ class NET_EXPORT SingleSignOnKeyManager {
 
  private:
   struct PreProvisionedKeyEntry {
-    GURL provider_url;
+    url::Origin provider_origin;
     net::SchemefulSite provider_site;
     url::Origin rp_origin;
     std::string provider_key;
@@ -79,8 +84,8 @@ class NET_EXPORT SingleSignOnKeyManager {
   };
 
   // Helper function to check if a pre-provisioned key created by
-  // `provider_url` can be added to the in-memory store.
-  bool CanAddPreProvisionedKey(const GURL& provider_url,
+  // `provider_origin` can be added to the in-memory store.
+  bool CanAddPreProvisionedKey(const url::Origin& provider_origin,
                                const url::Origin& rp_origin) const;
 
   SessionService::CookieAccessCallback has_cookie_access_cb_;

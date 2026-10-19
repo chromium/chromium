@@ -454,7 +454,8 @@ void SessionServiceImpl::RegisterBoundSession(
     ASSIGN_OR_RETURN(
         unexportable_keys::UnexportableSigningKeyId pre_provisioned_key,
         sso_key_manager_.FindPreProvisionedKey(
-            *provider_params, registration_params.original_request_initiator),
+            provider_params->provider_key,
+            registration_params.original_request_initiator),
         [&](SessionError::ErrorType error) {
           OnRegistrationComplete(
               registration_params.access_callback,
