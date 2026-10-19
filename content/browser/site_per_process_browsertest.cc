@@ -11691,8 +11691,11 @@ class GpuInfoUpdateObserver : public GpuDataManagerObserver {
 
 // Checks if RenderInputRouterDelegate mojo connection is reset when GPU process
 // restarts.
+// TODO(crbug.com/439855865, crbug.com/544000851): Re-enable once
+// cc::slim::LayerTreeImpl resets frame_sink_ on GPU process crash so
+// HostFrameSinkManager reconnects on restart.
 IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
-                       RestartingGPUProcessResetsMojoConnection) {
+                       DISABLED_RestartingGPUProcessResetsMojoConnection) {
   // Return early if transferring input to Viz isn't supported.
   if (!input::InputUtils::IsTransferInputToVizSupported()) {
     return;
