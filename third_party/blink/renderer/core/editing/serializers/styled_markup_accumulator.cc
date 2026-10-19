@@ -35,7 +35,9 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/serializers/html_interchange.h"
+#include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -99,7 +101,10 @@ void StyledMarkupAccumulator::AppendText(Text& text) {
 void StyledMarkupAccumulator::AppendTextWithInlineStyle(
     Text& text,
     EditingStyle* inline_style) {
-  if (inline_style) {
+  const bool skip_interchange_and_style =
+      RuntimeEnabledFeatures::SkipHtmlInterchangeInForeignContentEnabled() &&
+      IsInForeignContentForSerialization(text);
+  if (inline_style && !skip_interchange_and_style) {
     // wrappingStyleForAnnotatedSerialization should have removed
     // -webkit-text-decorations-in-effect.
     DCHECK(!ShouldAnnotate() ||
@@ -114,7 +119,9 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
                                           result_);
     result_.Append("\">");
   }
-  if (!ShouldAnnotate()) {
+  if (!ShouldAnnotate() ||
+      (skip_interchange_and_style &&
+       options_.IgnoresCssTextTransformsForRenderedText())) {
     AppendText(text);
   } else {
     const bool use_rendered_text = !EnclosingElementWithTag(
@@ -131,17 +138,19 @@ void StyledMarkupAccumulator::AppendTextWithInlineStyle(
                                                    start_.GetText() == &text);
     const IsAtSelectionEnd is_at_selection_end(end_.IsNotNull() &&
                                                end_.GetText() == &text);
-    // Keep collapsible white spaces as is during markup sanitization.
+    // Keep collapsible white spaces as is during markup sanitization or inside
+    // foreign content.
     const String text_to_append =
-        IsForMarkupSanitization()
+        (IsForMarkupSanitization() || skip_interchange_and_style)
             ? buffer.ToString()
             : ConvertHtmlTextToInterchangeFormat(buffer.ToString(), text,
                                                  is_at_selection_start,
                                                  is_at_selection_end);
     result_.Append(text_to_append);
   }
-  if (inline_style)
+  if (inline_style && !skip_interchange_and_style) {
     result_.Append("</span>");
+  }
 }
 
 void StyledMarkupAccumulator::AppendElementWithInlineStyle(

@@ -147,6 +147,10 @@ CORE_EXPORT String CreateStrictlyProcessedMarkupWithContext(
 
 void MergeWithNextTextNode(Text*, ExceptionState&);
 
+// Returns true if |node| or any of its ancestors is in a non-HTML namespace
+// (such as MathML or SVG) or has a "math" or "svg" tag name.
+CORE_EXPORT bool IsInForeignContentForSerialization(const Node& node);
+
 bool PropertyMissingOrEqualToNone(CSSPropertyValueSet*, CSSPropertyID);
 
 }  // namespace blink

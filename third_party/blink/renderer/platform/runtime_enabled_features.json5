@@ -6168,6 +6168,10 @@
       status: "stable",
     },
     {
+      name: "SkipHtmlInterchangeInForeignContent",
+      status: "stable",
+    },
+    {
       // Kill switch for crbug.com/41254682: skips paint invalidation for
       // paint-only style changes (e.g. animation frames) on objects that were
       // and stay visibility:hidden.

@@ -89,6 +89,7 @@
 #include "third_party/blink/renderer/core/sanitizer/sanitizer_api.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -323,7 +324,47 @@ Element* HighestAncestorToWrapMarkup(
   return special_common_ancestor;
 }
 
+bool IsForeignElementForSerialization(const Element& element) {
+  if (!IsA<HTMLElement>(element)) {
+    return true;
+  }
+  const AtomicString& local_name = element.localName();
+  return EqualIgnoringAsciiCase(local_name,
+                                mathml_names::kMathTag.LocalName()) ||
+         EqualIgnoringAsciiCase(local_name, svg_names::kSVGTag.LocalName());
+}
+
 }  // namespace
+
+bool IsInForeignContentForSerialization(const Node& node) {
+  // Check both DOM tree (`NodeTraversal`) and flat tree (`FlatTreeTraversal`)
+  // ancestors because serialization can run with either `EditingStrategy` or
+  // `EditingInFlatTreeStrategy` (and `StyledMarkupAccumulator` is not templated
+  // on `Strategy`):
+  // - A light-DOM node slotted into a `<slot>` inside a shadow-DOM `<math>` has
+  //   `<math>` as an ancestor only in `FlatTreeTraversal`, not `NodeTraversal`.
+  // - Conversely, `<slot>` elements or unslotted children inside `<math>`
+  //   serialized via `EditingStrategy` have `<math>` as an ancestor only in
+  //   `NodeTraversal`, not `FlatTreeTraversal`.
+  for (const Node& runner : NodeTraversal::InclusiveAncestorsOf(node)) {
+    if (const auto* element = DynamicTo<Element>(runner)) {
+      if (IsForeignElementForSerialization(*element)) {
+        return true;
+      }
+    }
+  }
+  if (!node.GetDocument().IsFlatTreeTraversalForbidden() &&
+      !node.IsShadowRoot()) {
+    for (const Node& runner : FlatTreeTraversal::InclusiveAncestorsOf(node)) {
+      if (const auto* element = DynamicTo<Element>(runner)) {
+        if (IsForeignElementForSerialization(*element)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
 
 bool PropertyMissingOrEqualToNone(CSSPropertyValueSet* style,
                                   CSSPropertyID property_id) {
