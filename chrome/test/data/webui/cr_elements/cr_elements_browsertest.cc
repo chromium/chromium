@@ -140,10 +140,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrRadioButton) {
   RunTest("cr_elements/cr_radio_button_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrRippleMixinPolymer) {
-  RunTest("cr_elements/cr_ripple_mixin_polymer_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrCardRadioButton) {
   RunTest("cr_elements/cr_card_radio_button_test.js", "mocha.run()");
 }

@@ -169,8 +169,6 @@ build_webui("build") {
 
   if ((!is_android && !is_ios) || is_desktop_android) {
     ts_files += [
-      "cr_radio_button/cr_radio_button_mixin.ts",
-      "cr_ripple/cr_ripple_mixin_polymer.ts",
       "find_shortcut_manager.ts",
       "find_shortcut_mixin_lit.ts",
       "focus_row_mixin.ts",
@@ -211,7 +209,6 @@ build_webui("build") {
       "cr_loading_gradient/cr_loading_gradient.css",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.css",
       "cr_radio_button/cr_card_radio_button.css",
-      "cr_radio_button/cr_radio_button_style.css",
       "cr_shared_style.css",
       "cr_toolbar/cr_toolbar_selection_overlay.css",
       "md_select.css",
