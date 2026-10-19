@@ -96,7 +96,8 @@ enum class AutocompleteMatchType {
   kHistoryEmbeddingsAnswer       = 38,
   kTabGroup                      = 39,  // A tab group match.
   kCrossDeviceTab                = 40,  // A tab opened on another device.
-  kMaxValue                      = kCrossDeviceTab,
+  kRecentlyClosedTab             = 41,  // A tab recently closed on this device.
+  kMaxValue                      = kRecentlyClosedTab,
 };
 // clang-format on
 

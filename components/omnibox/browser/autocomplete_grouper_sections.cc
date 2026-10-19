@@ -243,6 +243,7 @@ AndroidHubZPSSection::AndroidHubZPSSection(
               },
               group_configs) {}
 
+// LINT.IfChange(TabSearchRecentlyClosedZPSSectionSlots)
 AndroidTabSearchZPSSection::AndroidTabSearchZPSSection(
     const omnibox::GroupConfigMap& group_configs)
     : Section(40,
@@ -257,6 +258,7 @@ AndroidTabSearchZPSSection::AndroidTabSearchZPSSection(
                         }),
               },
               group_configs) {}
+// LINT.ThenChange(//components/omnibox/browser/recently_closed_tabs_provider.cc:TabSearchRecentlyClosedMaxMatches)
 
 AndroidHubNonZPSSection::AndroidHubNonZPSSection(
     const omnibox::GroupConfigMap& group_configs)
@@ -301,11 +303,13 @@ AndroidTabSearchNonZPSSection::AndroidTabSearchNonZPSSection(
                         {omnibox::GROUP_MOBILE_OPEN_TABS, 30},
                     },
                     /*is_zps=*/false),
+              // LINT.IfChange(TabSearchRecentlyClosedNonZPSSectionSlots)
               Group(5,
                     {
                         {omnibox::GROUP_RECENTLY_CLOSED_TABS, 5},
                     },
                     /*is_zps=*/false),
+              // LINT.ThenChange(//components/omnibox/browser/recently_closed_tabs_provider.cc:TabSearchRecentlyClosedMaxMatches)
               // LINT.IfChange(TabSearchHistorySectionSlots)
               Group(5,
                     {

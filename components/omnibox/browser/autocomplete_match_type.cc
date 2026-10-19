@@ -66,6 +66,7 @@ std::string AutocompleteMatchTypeToString(AutocompleteMatchType type) {
     "history-embeddings-answer",
     "tab-group",
     "cross-device-tab",
+    "recently-closed-tab",
   });
   // clang-format on
   static_assert(strings.size() ==
@@ -164,6 +165,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                        // HISTORY_EMBEDDINGS_ANSWER
       0,                                        // TAB_GROUP
       0,                                        // CROSS_DEVICE_TAB
+      0,                                        // RECENTLY_CLOSED_TAB
   });
   static_assert(std::size(message_ids) ==
                     static_cast<size_t>(AutocompleteMatchType::kMaxValue) + 1,

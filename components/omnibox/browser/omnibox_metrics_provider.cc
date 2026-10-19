@@ -269,6 +269,8 @@ OmniboxMetricsProvider::GetClientSummarizedResultType(
            ClientSummarizedResultType::kUrl},
           {OmniboxEventProto::Suggestion::CROSS_DEVICE_TAB,
            ClientSummarizedResultType::kUrl},
+          {OmniboxEventProto::Suggestion::RECENTLY_CLOSED_TAB,
+           ClientSummarizedResultType::kUrl},
       });
 
   const auto it = kResultTypesToClientSummarizedResultTypes.find(type);

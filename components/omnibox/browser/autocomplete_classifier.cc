@@ -81,6 +81,10 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       AutocompleteProvider::Type::kOpenTab |
       // Only enabled for hub search.
       AutocompleteProvider::Type::kTabGroup |
+      // Only enabled for the Tab Search overlay.
+      (base::FeatureList::IsEnabled(omnibox::kAndroidTabSearchRecentTabs)
+           ? AutocompleteProvider::Type::kRecentlyClosedTabs
+           : AutocompleteProvider::Type::kNone) |
       // Keyword search for Android.
       (base::FeatureList::IsEnabled(omnibox::kOmniboxSiteSearch)
            ? AutocompleteProvider::Type::kKeyword |

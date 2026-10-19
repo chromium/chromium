@@ -23711,6 +23711,7 @@ Called by update_net_error_codes.py.-->
   <int value="39" label="CrossDeviceTab"/>
   <int value="40" label="HistoryEmbeddingsAnswer"/>
   <int value="41" label="TabGroup"/>
+  <int value="42" label="RecentlyClosedTab"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/metrics_proto/omnibox_event.proto:ResultType) -->

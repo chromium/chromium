@@ -2787,6 +2787,10 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
   controller_.input_ =
       AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,
                         TestSchemeClassifier());
+  // Recently closed tabs are only supported by the Tab Search overlay.
+  controller_.providers_.push_back(
+      base::MakeRefCounted<FakeAutocompleteProvider>(
+          AutocompleteProvider::Type::kRecentlyClosedTabs));
   for (auto& provider : controller_.providers()) {
     EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
               expected_provider_types.contains(provider->type()))
@@ -2796,19 +2800,24 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
 }
 
 TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidTabSearchOverlay) {
-  // Tab Search Overlay allows search, open tabs, bookmarks, and history.
+  // Tab Search Overlay allows search, open tabs, bookmarks, history, and
+  // recently closed tabs.
   // Note: While AutocompleteController allows them to run, the individual
   // providers (e.g. SearchProvider, BookmarkProvider) will filter themselves
   // out in their Start() methods.
   std::set<AutocompleteProvider::Type> expected_provider_types = {
       AutocompleteProvider::Type::kSearch, AutocompleteProvider::Type::kOpenTab,
       AutocompleteProvider::Type::kBookmark,
-      AutocompleteProvider::Type::kHistoryQuick};
+      AutocompleteProvider::Type::kHistoryQuick,
+      AutocompleteProvider::Type::kRecentlyClosedTabs};
 
   AutocompleteInput input(
       u"a", 1u, metrics::OmniboxEventProto::ANDROID_TAB_SEARCH_OVERLAY,
       TestSchemeClassifier());
   controller_.input_ = input;
+  controller_.providers_.push_back(
+      base::MakeRefCounted<FakeAutocompleteProvider>(
+          AutocompleteProvider::Type::kRecentlyClosedTabs));
   for (auto& provider : controller_.providers()) {
     EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
               expected_provider_types.contains(provider->type()))

@@ -87,6 +87,7 @@ OmniboxResultType MatchTypeToOmniboxType(
     case omnibox::AutocompleteMatchType::kTileRepeatableQuery:
     case omnibox::AutocompleteMatchType::kTabGroup:
     case omnibox::AutocompleteMatchType::kCrossDeviceTab:
+    case omnibox::AutocompleteMatchType::kRecentlyClosedTab:
       LOG(ERROR) << "Unhandled AutocompleteMatchType value: "
                  << omnibox::AutocompleteMatchTypeToString(type);
       return OmniboxResultType::kDomain;

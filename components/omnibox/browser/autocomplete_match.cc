@@ -1002,6 +1002,10 @@ omnibox::GroupId AutocompleteMatch::GetDefaultGroupId(Type type) {
     return omnibox::GROUP_CROSS_DEVICE_TABS;
   }
 
+  if (type == omnibox::AutocompleteMatchType::kRecentlyClosedTab) {
+    return omnibox::GROUP_RECENTLY_CLOSED_TABS;
+  }
+
   return omnibox::GROUP_OTHER_NAVS;
 }
 
@@ -1596,6 +1600,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::TAB_GROUP;
     case omnibox::AutocompleteMatchType::kCrossDeviceTab:
       return OmniboxEventProto::Suggestion::CROSS_DEVICE_TAB;
+    case omnibox::AutocompleteMatchType::kRecentlyClosedTab:
+      return OmniboxEventProto::Suggestion::RECENTLY_CLOSED_TAB;
     case omnibox::AutocompleteMatchType::kContactDeprecated:
     case omnibox::AutocompleteMatchType::kPhysicalWebDeprecated:
     case omnibox::AutocompleteMatchType::kPhysicalWebOverflowDeprecated:

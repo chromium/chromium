@@ -1211,7 +1211,10 @@ bool AutocompleteController::ShouldRunProvider(
     return provider->type() == AutocompleteProvider::Type::kSearch ||
            provider->type() == AutocompleteProvider::Type::kOpenTab ||
            provider->type() == AutocompleteProvider::Type::kBookmark ||
-           provider->type() == AutocompleteProvider::Type::kHistoryQuick;
+           provider->type() == AutocompleteProvider::Type::kHistoryQuick ||
+           (provider->type() ==
+                AutocompleteProvider::Type::kRecentlyClosedTabs &&
+            omnibox::IsAndroidTabSearch(input_.current_page_classification()));
   }
 #endif
 
