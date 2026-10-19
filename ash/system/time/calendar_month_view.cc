@@ -441,18 +441,14 @@ CalendarMonthView::CalendarMonthView(
 
   fetch_month_ = first_day_of_month_local.UTCMidnight();
 
-  if (calendar_utils::IsMultiCalendarEnabled()) {
-    // Set up the Calendar List Model observer to trigger an event fetch only
-    // after the calendar list fetch is completed.
-    scoped_calendar_list_model_observer_.Observe(calendar_list_model_.get());
+  // Set up the Calendar List Model observer to trigger an event fetch only
+  // after the calendar list fetch is completed.
+  scoped_calendar_list_model_observer_.Observe(calendar_list_model_.get());
 
-    // If the month view has been created after a successful calendar list
-    // fetch, this will trigger an event list fetch immediately. Otherwise,
-    // events will be fetched during `OnCalendarListFetchComplete`.
-    calendar_model_->MaybeFetchEvents(fetch_month_);
-  } else {
-    FetchEvents(fetch_month_);
-  }
+  // If the month view has been created after a successful calendar list
+  // fetch, this will trigger an event list fetch immediately. Otherwise,
+  // events will be fetched during `OnCalendarListFetchComplete`.
+  calendar_model_->MaybeFetchEvents(fetch_month_);
 
   bool has_fetched_data =
       calendar_view_controller_->IsSuccessfullyFetched(fetch_month_);
@@ -577,9 +573,7 @@ void CalendarMonthView::OnCalendarListFetchComplete() {
   // model signals that the fetch is complete. Any month views created after
   // the calendar list is ready will fetch events immediately during the
   // constructor instead.
-  if (calendar_utils::IsMultiCalendarEnabled()) {
-    calendar_model_->FetchEvents(fetch_month_);
-  }
+  calendar_model_->FetchEvents(fetch_month_);
 }
 
 void CalendarMonthView::OnEventsFetched(
@@ -640,10 +634,6 @@ CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
       /*is_grayed_out_date=*/!is_in_current_month, should_fetch_calendar_data,
       /*row_index=*/row_index,
       /*is_fetched=*/is_fetched));
-}
-
-void CalendarMonthView::FetchEvents(const base::Time& month) {
-  calendar_model_->FetchEvents(month);
 }
 
 BEGIN_METADATA(CalendarDateCellView)

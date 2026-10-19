@@ -67,8 +67,6 @@ constexpr char kCalendarFetchEventsTotalFetchDuration[] =
     "Ash.Calendar.FetchEvents.TotalFetchDuration";
 constexpr char kCalendarFetchCalendarsTotalSelectedCalendars[] =
     "Ash.Calendar.FetchCalendars.TotalSelectedCalendars";
-constexpr char kCalendarTimeToSeeTodaysEventDots[] =
-    "Ash.Calendar.TimeToSeeTodaysEventDots";
 constexpr char kCalendarTimeToSeeTodaysEventDotsForMultiCalendar[] =
     "Ash.Calendar.TimeToSeeTodaysEventDotsForMultiCalendar";
 
@@ -320,15 +318,9 @@ void RecordTotalSelectedCalendars(unsigned int selected_calendars) {
                                  selected_calendars);
 }
 
-void RecordTimeToSeeTodaysEventDots(const base::TimeDelta time_elapsed,
-                                    bool multi_calendar_enabled) {
-  if (multi_calendar_enabled) {
-    base::UmaHistogramMediumTimes(
-        kCalendarTimeToSeeTodaysEventDotsForMultiCalendar, time_elapsed);
-  } else {
-    base::UmaHistogramMediumTimes(kCalendarTimeToSeeTodaysEventDots,
-                                  time_elapsed);
-  }
+void RecordTimeToSeeTodaysEventDots(const base::TimeDelta time_elapsed) {
+  base::UmaHistogramMediumTimes(
+      kCalendarTimeToSeeTodaysEventDotsForMultiCalendar, time_elapsed);
 }
 
 }  // namespace calendar_metrics

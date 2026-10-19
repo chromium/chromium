@@ -9,7 +9,6 @@
 
 #include "ash/calendar/calendar_client.h"
 #include "ash/calendar/calendar_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/time/date_helper.h"
@@ -37,10 +36,6 @@ std::u16string KeepOnlyDigits(const std::u16string& str) {
 }
 
 }  // namespace
-
-bool IsMultiCalendarEnabled() {
-  return features::IsMultiCalendarSupportEnabled();
-}
 
 bool IsToday(const base::Time selected_date) {
   return IsTheSameDay(selected_date, base::Time::Now());

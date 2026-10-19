@@ -138,11 +138,9 @@ class CalendarEventListItemDot : public views::View {
     if (event_color_iter != kEventHexColorCodes.end()) {
       return event_color_iter->second;
     }
-    if (calendar_utils::IsMultiCalendarEnabled()) {
-      const auto cal_color_iter = kCalendarHexColorCodes.find(color_id);
-      if (cal_color_iter != kCalendarHexColorCodes.end()) {
-        return cal_color_iter->second;
-      }
+    const auto cal_color_iter = kCalendarHexColorCodes.find(color_id);
+    if (cal_color_iter != kCalendarHexColorCodes.end()) {
+      return cal_color_iter->second;
     }
     return kEventHexColorCodes.at(kDefaultColorId);
   }

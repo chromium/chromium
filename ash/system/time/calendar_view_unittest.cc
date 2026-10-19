@@ -1617,15 +1617,12 @@ TEST_F(CalendarViewTest, ManagedButtonTest) {
 // A test class for testing animation. This class cannot set fake now since it's
 // using `MOCK_TIME` to test the animations, and it can't inherit from
 // CalendarAnimationTest due to the same reason.
-class CalendarViewAnimationTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*multi_calendar_enabled=*/bool> {
+class CalendarViewAnimationTest : public AshTestBase {
  public:
   CalendarViewAnimationTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kMultiCalendarSupport, IsMultiCalendarEnabled()},
-         {features::kGlanceablesTimeManagementClassroomStudentView, false},
+        {{features::kGlanceablesTimeManagementClassroomStudentView, false},
          {features::kGlanceablesTimeManagementTasksView, false}});
   }
   CalendarViewAnimationTest(const CalendarViewAnimationTest&) = delete;
@@ -1652,11 +1649,9 @@ class CalendarViewAnimationTest
     Shell::Get()->calendar_controller()->RegisterClientForUser(
         account_id, calendar_client_.get());
 
-    if (IsMultiCalendarEnabled()) {
-      // Set a mock calendar list so the calendar list fetch returns
-      // successfully.
-      SetCalendarList();
-    }
+    // Set a mock calendar list so the calendar list fetch returns
+    // successfully.
+    SetCalendarList();
   }
 
   void TearDown() override {
@@ -1670,8 +1665,6 @@ class CalendarViewAnimationTest
 
     AshTestBase::TearDown();
   }
-
-  bool IsMultiCalendarEnabled() { return GetParam(); }
 
   void CreateCalendarView() {
     // Don't allow calendar_view_ to temporarily dangle while we're replacing
@@ -1832,13 +1825,9 @@ class CalendarViewAnimationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(MultiCalendar,
-                         CalendarViewAnimationTest,
-                         testing::Bool());
-
 // The header should show the new header with animation once there's an update
 // when the event list view is shown.
-TEST_P(CalendarViewAnimationTest, HeaderAnimation) {
+TEST_F(CalendarViewAnimationTest, HeaderAnimation) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   base::Time date;
@@ -1909,7 +1898,7 @@ TEST_P(CalendarViewAnimationTest, HeaderAnimation) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-TEST_P(CalendarViewAnimationTest, HeaderAnimationDirection) {
+TEST_F(CalendarViewAnimationTest, HeaderAnimationDirection) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   base::Time date;
@@ -1960,7 +1949,7 @@ TEST_P(CalendarViewAnimationTest, HeaderAnimationDirection) {
 }
 
 // The month views and header should animate when scrolling up or down.
-TEST_P(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
+TEST_F(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -2070,7 +2059,7 @@ TEST_P(CalendarViewAnimationTest, MonthAndHeaderAnimation) {
 }
 
 // The content view should not be scrollable when the month view is animating.
-TEST_P(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
+TEST_F(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -2148,7 +2137,7 @@ TEST_P(CalendarViewAnimationTest, NotScrollableWhenAnimating) {
   EXPECT_EQ(u"2021", header_year()->GetText());
 }
 
-TEST_P(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
+TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
@@ -2245,7 +2234,7 @@ TEST_P(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
 // Tests that the loading bar becomes visible when any of the on screen months
 // has not finished fetching and becomes invisible once all months on screen
 // have finished fetching events.
-TEST_P(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
+TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
@@ -2268,7 +2257,7 @@ TEST_P(CalendarViewAnimationTest, LoadingBarVisibilityForOneMonthOnScreen) {
   EXPECT_FALSE(progress_bar->GetVisible());
 }
 
-TEST_P(CalendarViewAnimationTest, LoadingBarVisibility) {
+TEST_F(CalendarViewAnimationTest, LoadingBarVisibility) {
   // Sets the timezone to "America/Los_Angeles".
   ash::system::ScopedTimezoneSettings timezone_settings(u"America/Los_Angeles");
 
@@ -2301,7 +2290,7 @@ TEST_P(CalendarViewAnimationTest, LoadingBarVisibility) {
 }
 
 // Tests the loading bar visibility for different user sessions.
-TEST_P(CalendarViewAnimationTest,
+TEST_F(CalendarViewAnimationTest,
        LoadingBarVisibilityForDifferentUserSessions) {
   // Make sure that the `CalendarView` can have enough space to hold at least 1
   // month. 600 should be enough since the calendar bubble's height is set to
@@ -2347,7 +2336,7 @@ TEST_P(CalendarViewAnimationTest,
 }
 
 // Tests the loading bar visibility for when fetching events errors.
-TEST_P(CalendarViewAnimationTest, LoadingBarVisibilityForErrorFetchingEvents) {
+TEST_F(CalendarViewAnimationTest, LoadingBarVisibilityForErrorFetchingEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
 
@@ -2388,7 +2377,7 @@ TEST_P(CalendarViewAnimationTest, LoadingBarVisibilityForErrorFetchingEvents) {
 }
 
 // Tests the loading bar visibility for when fetching events times out.
-TEST_P(CalendarViewAnimationTest,
+TEST_F(CalendarViewAnimationTest,
        LoadingBarVisibilityForTimeoutFetchingEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("04 May 2022 15:00 GMT", &date));
@@ -2430,7 +2419,7 @@ TEST_P(CalendarViewAnimationTest,
 }
 
 // Tests that the EventListView does not crash if shown during the initial open.
-TEST_P(CalendarViewAnimationTest, QuickShowEventListInitialOpen) {
+TEST_F(CalendarViewAnimationTest, QuickShowEventListInitialOpen) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -2452,7 +2441,7 @@ TEST_P(CalendarViewAnimationTest, QuickShowEventListInitialOpen) {
 }
 
 // Tests that the EventListView does not show during the month change animation.
-TEST_P(CalendarViewAnimationTest, DontShowEventListDuringMonthAnimation) {
+TEST_F(CalendarViewAnimationTest, DontShowEventListDuringMonthAnimation) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
@@ -2478,7 +2467,7 @@ TEST_P(CalendarViewAnimationTest, DontShowEventListDuringMonthAnimation) {
 // Tests open/close the `CalendarEventListView`. Also tests one corner case:
 // when closing the event list right after opening it, do nothing since the
 // animation is not finished.
-TEST_P(CalendarViewAnimationTest, OpenAndCloseEventList) {
+TEST_F(CalendarViewAnimationTest, OpenAndCloseEventList) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   // Sets the timezone to "America/Los_Angeles".
@@ -3319,11 +3308,7 @@ class CalendarViewWithUpNextViewAnimationTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(MultiCalendar,
-                         CalendarViewWithUpNextViewAnimationTest,
-                         testing::Bool());
-
-TEST_P(CalendarViewWithUpNextViewAnimationTest,
+TEST_F(CalendarViewWithUpNextViewAnimationTest,
        UpNextViewShouldNotCoversToday) {
   auto histogram_tester = std::make_unique<base::HistogramTester>();
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -3372,7 +3357,7 @@ TEST_P(CalendarViewWithUpNextViewAnimationTest,
   EXPECT_TRUE(todays_date_cell_is_visible);
 }
 
-TEST_P(CalendarViewWithUpNextViewAnimationTest,
+TEST_F(CalendarViewWithUpNextViewAnimationTest,
        ShouldNotScrollToShowTodaysCell_WhenUpNextViewDoesNotCoverIt) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3409,7 +3394,7 @@ TEST_P(CalendarViewWithUpNextViewAnimationTest,
   EXPECT_TRUE(todays_date_cell_is_visible);
 }
 
-TEST_P(
+TEST_F(
     CalendarViewWithUpNextViewAnimationTest,
     ShouldNotScrollToShowTodaysCell_WhenUserHasScrolled_AndAnUpcomingEventAppears) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
@@ -3424,10 +3409,8 @@ TEST_P(
   widget()->SetFullscreen(false);
   widget()->SetSize(gfx::Size(kTrayMenuWidth, 350));
 
-  if (IsMultiCalendarEnabled()) {
-    MockOnCalendarListFetched();
-    WaitUntilFetched();
-  }
+  MockOnCalendarListFetched();
+  WaitUntilFetched();
 
   // Fetch an event that starts in 11 mins and up next will show.
   MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
@@ -3452,7 +3435,7 @@ TEST_P(
   EXPECT_EQ(initial_scroll_position, scroll_view()->GetVisibleRect().y());
 }
 
-TEST_P(CalendarViewWithUpNextViewAnimationTest,
+TEST_F(CalendarViewWithUpNextViewAnimationTest,
        ShouldNotScroll_WhenAnUpcomingEventAppears) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3488,7 +3471,7 @@ TEST_P(CalendarViewWithUpNextViewAnimationTest,
   EXPECT_EQ(initial_scroll_position, scroll_view()->GetVisibleRect().y());
 }
 
-TEST_P(CalendarViewWithUpNextViewAnimationTest,
+TEST_F(CalendarViewWithUpNextViewAnimationTest,
        ShouldNotScrollToShowTodaysCell_WhenTodaysDateCellIsNull) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3502,10 +3485,8 @@ TEST_P(CalendarViewWithUpNextViewAnimationTest,
   widget()->SetFullscreen(false);
   widget()->SetSize(gfx::Size(kTrayMenuWidth, 350));
 
-  if (IsMultiCalendarEnabled()) {
-    MockOnCalendarListFetched();
-    WaitUntilFetched();
-  }
+  MockOnCalendarListFetched();
+  WaitUntilFetched();
 
   // Fetch an event that starts in 11 mins and up next view will be shown.
   MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
@@ -3534,7 +3515,7 @@ TEST_P(CalendarViewWithUpNextViewAnimationTest,
 
 // Tests that the scroll view scrolls up to today's row without the up-next
 // view.
-TEST_P(CalendarViewWithUpNextViewAnimationTest,
+TEST_F(CalendarViewWithUpNextViewAnimationTest,
        ShouldScrollToToday_WithoutUpNextView) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3552,7 +3533,7 @@ TEST_P(CalendarViewWithUpNextViewAnimationTest,
 }
 
 // Tests that the scroll view scrolls up to today's row with the up-next view.
-TEST_P(CalendarViewWithUpNextViewAnimationTest,
+TEST_F(CalendarViewWithUpNextViewAnimationTest,
        ShouldScrollToToday_WithUpNextView) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -3579,7 +3560,7 @@ TEST_P(CalendarViewWithUpNextViewAnimationTest,
 
 // Tests that the up-next view can show up after showing the event listview
 // first. Regression test for b/336722659.
-TEST_P(CalendarViewWithUpNextViewAnimationTest,
+TEST_F(CalendarViewWithUpNextViewAnimationTest,
        ShowUpNextViewAfterEventListViewCorrectly) {
   gfx::ScopedAnimationDurationScaleMode test_duration_mode(
       gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);

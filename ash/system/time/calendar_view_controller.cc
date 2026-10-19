@@ -257,9 +257,8 @@ void CalendarViewController::OnTodaysEventFetchComplete() {
   if (todays_date_cell_fetch_recorded_)
     return;
 
-  calendar_metrics::RecordTimeToSeeTodaysEventDots(
-      base::TimeTicks::Now() - calendar_open_time_,
-      /*multi_calendar_enabled=*/calendar_utils::IsMultiCalendarEnabled());
+  calendar_metrics::RecordTimeToSeeTodaysEventDots(base::TimeTicks::Now() -
+                                                   calendar_open_time_);
   todays_date_cell_fetch_recorded_ = true;
 }
 

@@ -144,14 +144,7 @@ void RecordTotalEventsCacheSizeInMonths(unsigned int events_cache_size);
 
 void RecordTotalSelectedCalendars(unsigned int selected_calendars);
 
-void RecordTimeToSeeTodaysEventDots(const base::TimeDelta time_elapsed,
-                                    bool multi_calendar_enabled);
-
-void RecordTimeToSeeTodaysPrimaryCalendarEventDots(
-    const base::TimeTicks time_elapsed);
-
-void RecordTimeToSeeTodaysMultiCalendarEventDots(
-    const base::TimeTicks time_elapsed);
+void RecordTimeToSeeTodaysEventDots(const base::TimeDelta time_elapsed);
 
 }  // namespace calendar_metrics
 

@@ -21,7 +21,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -329,15 +328,10 @@ TEST_F(CalendarMonthViewTest, OsloTimeDSTMonth) {
                       ->GetText());
 }
 
-class CalendarMonthViewFetchTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*multi_calendar_enabled=*/bool> {
+class CalendarMonthViewFetchTest : public AshTestBase {
  public:
   CalendarMonthViewFetchTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   CalendarMonthViewFetchTest(const CalendarMonthViewFetchTest& other) = delete;
   CalendarMonthViewFetchTest& operator=(
       const CalendarMonthViewFetchTest& other) = delete;
@@ -364,11 +358,9 @@ class CalendarMonthViewFetchTest
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
 
-    if (IsMultiCalendarEnabled()) {
-      // Sets a mock calendar list so the calendar list fetch returns
-      // successfully.
-      SetCalendarList();
-    }
+    // Sets a mock calendar list so the calendar list fetch returns
+    // successfully.
+    SetCalendarList();
   }
 
   void TearDown() override {
@@ -378,12 +370,9 @@ class CalendarMonthViewFetchTest
     DestroyCalendarMonthViewWidget();
     time_overrides_.reset();
     controller_.reset();
-    scoped_feature_list_.Reset();
 
     AshTestBase::TearDown();
   }
-
-  bool IsMultiCalendarEnabled() { return GetParam(); }
 
   void CreateMonthView(base::Time date) {
     if (!widget_) {
@@ -478,14 +467,9 @@ class CalendarMonthViewFetchTest
   raw_ptr<CalendarMonthView> calendar_month_view_ = nullptr;
   std::unique_ptr<CalendarViewController> controller_;
   AccountId account_id_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(MultiCalendar,
-                         CalendarMonthViewFetchTest,
-                         testing::Bool());
-
-TEST_P(CalendarMonthViewFetchTest, FetchedBeforeMonthViewIsCreated) {
+TEST_F(CalendarMonthViewFetchTest, FetchedBeforeMonthViewIsCreated) {
   // Create a monthview based on Aug,1st 2021. Today is set to 18th.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
@@ -498,10 +482,8 @@ TEST_P(CalendarMonthViewFetchTest, FetchedBeforeMonthViewIsCreated) {
   // Used to fetch events.
   base::Time month_start_midnight = calendar_utils::GetStartOfMonthUTC(today);
 
-  if (IsMultiCalendarEnabled()) {
-    calendar_list_model()->FetchCalendars();
-    WaitUntilFetched();
-  }
+  calendar_list_model()->FetchCalendars();
+  WaitUntilFetched();
 
   // Sets the event list response and fetches the events.
   auto event_list = CreateMockEventList();
@@ -542,7 +524,7 @@ TEST_P(CalendarMonthViewFetchTest, FetchedBeforeMonthViewIsCreated) {
   EXPECT_TRUE(is_events_indicator_drawn(17));
 }
 
-TEST_P(CalendarMonthViewFetchTest, UpdateEvents) {
+TEST_F(CalendarMonthViewFetchTest, UpdateEvents) {
   // Create a monthview based on Aug,1st 2021. Today is set to 18th.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
@@ -579,13 +561,9 @@ TEST_P(CalendarMonthViewFetchTest, UpdateEvents) {
   EXPECT_TRUE(events.empty());
   SetEventList(std::move(event_list));
 
-  if (IsMultiCalendarEnabled()) {
-    // Start a calendar list fetch, after which we expect an event fetch to be
-    // triggered.
-    calendar_list_model()->FetchCalendars();
-  } else {
-    calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
-  }
+  // Start a calendar list fetch, after which we expect an event fetch to be
+  // triggered.
+  calendar_list_model()->FetchCalendars();
 
   // After the fetch is triggered, before the response is back, the event
   // number is not updated.
@@ -624,7 +602,7 @@ TEST_P(CalendarMonthViewFetchTest, UpdateEvents) {
           ->GetTooltipText());
 }
 
-TEST_P(CalendarMonthViewFetchTest, RecordEventsDisplayedToUserOnce) {
+TEST_F(CalendarMonthViewFetchTest, RecordEventsDisplayedToUserOnce) {
   base::HistogramTester histogram_tester;
   // Create a monthview based on Aug,1st 2021. Today is set to 18th.
   base::Time date;
@@ -644,13 +622,9 @@ TEST_P(CalendarMonthViewFetchTest, RecordEventsDisplayedToUserOnce) {
   auto event_list = CreateMockEventList();
   SetEventList(std::move(event_list));
 
-  if (IsMultiCalendarEnabled()) {
-    // Start a calendar list fetch, after which we expect an event fetch to be
-    // triggered.
-    calendar_list_model()->FetchCalendars();
-  } else {
-    calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
-  }
+  // Start a calendar list fetch, after which we expect an event fetch to be
+  // triggered.
+  calendar_list_model()->FetchCalendars();
   WaitUntilFetched();
 
   // After fetching, we expect the metric to be logged.
@@ -666,7 +640,7 @@ TEST_P(CalendarMonthViewFetchTest, RecordEventsDisplayedToUserOnce) {
   histogram_tester.ExpectTotalCount("Ash.Calendar.EventsDisplayedToUser", 1);
 }
 
-TEST_P(CalendarMonthViewFetchTest, TimeZone) {
+TEST_F(CalendarMonthViewFetchTest, TimeZone) {
   // Create a monthview based on Aug,1st 2021. Today is set to 18th.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
@@ -686,13 +660,9 @@ TEST_P(CalendarMonthViewFetchTest, TimeZone) {
   EXPECT_TRUE(events.empty());
   SetEventList(std::move(event_list));
 
-  if (IsMultiCalendarEnabled()) {
-    // Start a calendar list fetch, after which we expect an event fetch to be
-    // triggered.
-    calendar_list_model()->FetchCalendars();
-  } else {
-    calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
-  }
+  // Start a calendar list fetch, after which we expect an event fetch to be
+  // triggered.
+  calendar_list_model()->FetchCalendars();
   WaitUntilFetched();
 
   EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(
@@ -722,7 +692,7 @@ TEST_P(CalendarMonthViewFetchTest, TimeZone) {
           ->GetTooltipText());
 }
 
-TEST_P(CalendarMonthViewFetchTest, InactiveUserSession) {
+TEST_F(CalendarMonthViewFetchTest, InactiveUserSession) {
   // Create a monthview based on Aug,1st 2021. Today is set to 18th.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date));
@@ -742,13 +712,9 @@ TEST_P(CalendarMonthViewFetchTest, InactiveUserSession) {
   EXPECT_TRUE(events.empty());
   SetEventList(std::move(event_list));
 
-  if (IsMultiCalendarEnabled()) {
-    // Start a calendar list fetch, after which we expect an event fetch to be
-    // triggered.
-    calendar_list_model()->FetchCalendars();
-  } else {
-    calendar_model_->FetchEvents(calendar_utils::GetStartOfMonthUTC(today));
-  }
+  // Start a calendar list fetch, after which we expect an event fetch to be
+  // triggered.
+  calendar_list_model()->FetchCalendars();
   WaitUntilFetched();
 
   EXPECT_EQ(u"18", static_cast<CalendarDateCellView*>(

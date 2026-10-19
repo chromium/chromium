@@ -8060,11 +8060,6 @@ inline constexpr char kMicrophoneMuteSwitchDeviceDescription[] =
     "flag does not affect the toggle functionality, it only affects how the "
     "System UI handles the mute toggle state.";
 
-inline constexpr char kMultiCalendarSupportName[] =
-    "Multi-Calendar Support in Quick Settings";
-inline constexpr char kMultiCalendarSupportDescription[] =
-    "Enables the Quick Settings Calendar to display Google Calendar events for "
-    "up to 10 of the user's calendars.";
 
 inline constexpr char kEnableNearbyBleV2Name[] = "Nearby BLE v2";
 inline constexpr char kEnableNearbyBleV2Description[] =

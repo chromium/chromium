@@ -21,7 +21,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -93,14 +92,9 @@ constexpr base::TimeDelta kCalendarClientResponseDelay =
 
 }  // namespace
 
-class CalendarViewEventListViewTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*multi_calendar_enabled=*/bool> {
+class CalendarViewEventListViewTest : public AshTestBase {
  public:
-  CalendarViewEventListViewTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
-  }
+  CalendarViewEventListViewTest() = default;
   CalendarViewEventListViewTest(const CalendarViewEventListViewTest&) = delete;
   CalendarViewEventListViewTest& operator=(
       const CalendarViewEventListViewTest&) = delete;
@@ -117,14 +111,11 @@ class CalendarViewEventListViewTest
   void TearDown() override {
     event_list_view_.reset();
     controller_.reset();
-    scoped_feature_list_.Reset();
     widget_.reset();
     calendar_model_ = nullptr;
 
     AshTestBase::TearDown();
   }
-
-  bool IsMultiCalendarEnabled() { return GetParam(); }
 
   void CreateEventListView(base::Time date) {
     event_list_view_.reset();
@@ -201,17 +192,12 @@ class CalendarViewEventListViewTest
   raw_ptr<CalendarModel> calendar_model_ = nullptr;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   static base::Time fake_time_;
 };
 
 base::Time CalendarViewEventListViewTest::fake_time_;
 
-INSTANTIATE_TEST_SUITE_P(MultiCalendar,
-                         CalendarViewEventListViewTest,
-                         testing::Bool());
-
-TEST_P(CalendarViewEventListViewTest, ShowEvents) {
+TEST_F(CalendarViewEventListViewTest, ShowEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
 
@@ -253,7 +239,7 @@ TEST_P(CalendarViewEventListViewTest, ShowEvents) {
   EXPECT_EQ(u"summary_5", GetSummary(1)->GetText());
 }
 
-TEST_P(CalendarViewEventListViewTest, LaunchEmptyList) {
+TEST_F(CalendarViewEventListViewTest, LaunchEmptyList) {
   base::HistogramTester histogram_tester;
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
@@ -273,7 +259,7 @@ TEST_P(CalendarViewEventListViewTest, LaunchEmptyList) {
             0);
 }
 
-TEST_P(CalendarViewEventListViewTest, LaunchItem) {
+TEST_F(CalendarViewEventListViewTest, LaunchItem) {
   base::HistogramTester histogram_tester;
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
@@ -294,7 +280,7 @@ TEST_P(CalendarViewEventListViewTest, LaunchItem) {
             3);
 }
 
-TEST_P(CalendarViewEventListViewTest, ScrollToCurrentOrNextEvent) {
+TEST_F(CalendarViewEventListViewTest, ScrollToCurrentOrNextEvent) {
   // Sets the timezone to GMT. Otherwise in other timezones events can become
   // multi-day events that will be ignored when calculating index.
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -329,7 +315,7 @@ TEST_P(CalendarViewEventListViewTest, ScrollToCurrentOrNextEvent) {
   EXPECT_EQ(scroll_view_visible_bounds.y(), current_item_bounds.y());
 }
 
-TEST_P(CalendarViewEventListViewTest,
+TEST_F(CalendarViewEventListViewTest,
        DoNotScrollToCurrentOrNextEventWhenFocused) {
   // Sets the timezone to GMT. Otherwise in other timezones events can become
   // multi-day events that will be ignored when calculating index.
@@ -376,7 +362,7 @@ TEST_P(CalendarViewEventListViewTest,
   EXPECT_LT(scroll_view_visible_bounds.y(), current_item_bounds.y());
 }
 
-TEST_P(CalendarViewEventListViewTest,
+TEST_F(CalendarViewEventListViewTest,
        ScrollToCurrentOrNextEvent_WithMultiDayEvents) {
   // Sets the timezone to HST. The first two events become multi-day events, and
   // will be ignored when calculating index.
@@ -411,7 +397,7 @@ TEST_P(CalendarViewEventListViewTest,
   EXPECT_EQ(scroll_view_visible_bounds.y(), current_item_bounds.y());
 }
 
-TEST_P(CalendarViewEventListViewTest,
+TEST_F(CalendarViewEventListViewTest,
        ScrollToCurrentOrNextEvent_PassedDatesStayAtTop) {
   // Sets the timezone to GMT. Otherwise in other timezones events can become
   // multi-day events that will be ignored when calculating index.
@@ -444,7 +430,7 @@ TEST_P(CalendarViewEventListViewTest,
   EXPECT_EQ(scroll_view_visible_bounds.y(), list_top_bounds.y());
 }
 
-TEST_P(CalendarViewEventListViewTest,
+TEST_F(CalendarViewEventListViewTest,
        ScrollToCurrentOrNextEvent_FutureDatesStaysAtTop) {
   // Sets the timezone to GMT. Otherwise in other timezones events can become
   // multi-day events that will be ignored when calculating index.
@@ -477,15 +463,10 @@ TEST_P(CalendarViewEventListViewTest,
   EXPECT_EQ(scroll_view_visible_bounds.y(), first_item_bounds.y());
 }
 
-class CalendarViewEventListViewFetchTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*multi_calendar_enabled=*/bool> {
+class CalendarViewEventListViewFetchTest : public AshTestBase {
  public:
   CalendarViewEventListViewFetchTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatureState(
-        ash::features::kMultiCalendarSupport, IsMultiCalendarEnabled());
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   CalendarViewEventListViewFetchTest(
       const CalendarViewEventListViewFetchTest&) = delete;
   CalendarViewEventListViewFetchTest& operator=(
@@ -513,14 +494,11 @@ class CalendarViewEventListViewFetchTest
   void TearDown() override {
     event_list_view_.reset();
     controller_.reset();
-    scoped_feature_list_.Reset();
     time_overrides_.reset();
     calendar_model_ = nullptr;
 
     AshTestBase::TearDown();
   }
-
-  bool IsMultiCalendarEnabled() { return GetParam(); }
 
   void CreateEventListView(base::Time date) {
     event_list_view_.reset();
@@ -622,15 +600,10 @@ class CalendarViewEventListViewFetchTest
   raw_ptr<CalendarModel> calendar_model_ = nullptr;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   AccountId account_id_;
 };
 
-INSTANTIATE_TEST_SUITE_P(MultiCalendar,
-                         CalendarViewEventListViewFetchTest,
-                         testing::Bool());
-
-TEST_P(CalendarViewEventListViewFetchTest, RefreshEvents) {
+TEST_F(CalendarViewEventListViewFetchTest, RefreshEvents) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   CreateEventListView(date);
@@ -641,11 +614,9 @@ TEST_P(CalendarViewEventListViewFetchTest, RefreshEvents) {
   // With the initial event list there should be 3 events on the 18th.
   EXPECT_EQ(3u, GetContentViewSize());
 
-  if (IsMultiCalendarEnabled()) {
-    // Set and fetch a calendar list so FetchEvents can create an event fetch.
-    SetCalendarList();
-    FetchCalendars();
-  }
+  // Set and fetch a calendar list so FetchEvents can create an event fetch.
+  SetCalendarList();
+  FetchCalendars();
 
   base::Time start_of_month = calendar_utils::GetStartOfMonthUTC(
       controller()->selected_date_midnight());

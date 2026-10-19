@@ -191,8 +191,6 @@ class ASH_EXPORT CalendarMonthView : public views::View,
                                             bool is_fetched,
                                             bool should_fetch_calendar_data);
 
-  // Fetches events.
-  void FetchEvents(const base::Time& month);
 
   // Owned by `CalendarView`.
   const raw_ptr<CalendarViewController> calendar_view_controller_;

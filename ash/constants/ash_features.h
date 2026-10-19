@@ -525,7 +525,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<MantisModel> kMediaAppImageMantisModelParams;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kMouseImposterCheck);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kMultiCalendarSupport);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNotificationLimit);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationCenterController);
@@ -1042,7 +1041,6 @@ bool IsLockScreenHideSensitiveNotificationsSupported();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLockScreenNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMacAddressRandomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldMigrateOwnerKeyToPrivateSlot();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsMultiCalendarSupportEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationLimitEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEnrollmentNudgingForTestingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationCenterControllerEnabled();

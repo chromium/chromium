@@ -101,8 +101,6 @@ constexpr int kUpNextBetweenChildSpacing = 8;
 // between the bottom and top of the 'nub'.
 constexpr int kUpNextOverlapInPx = 12;
 
-// Returns true if the Multi-Calendar Support feature is enabled.
-bool IsMultiCalendarEnabled();
 
 // Checks if the `selected_date` is local time today.
 bool IsToday(const base::Time selected_date);

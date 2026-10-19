@@ -23,7 +23,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/session_manager/session_manager_types.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
@@ -131,10 +130,6 @@ class CalendarListModelTest : public AshTestBase {
   ~CalendarListModelTest() override = default;
 
   void SetUp() override {
-    // Enable the Multi-Calendar feature.
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kMultiCalendarSupport);
-
     AshTestBase::SetUp();
 
     // Register a mock `CalendarClient` to the `CalendarController`.
@@ -153,7 +148,6 @@ class CalendarListModelTest : public AshTestBase {
 
   void TearDown() override {
     calendar_list_model_.reset();
-    scoped_feature_list_.Reset();
     AshTestBase::TearDown();
   }
 
@@ -181,7 +175,6 @@ class CalendarListModelTest : public AshTestBase {
 
   std::unique_ptr<CalendarListModel> calendar_list_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CalendarListModelTest, FetchShortCalendarList) {

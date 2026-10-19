@@ -94,14 +94,8 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // currently a calendar list fetch in progress.
   void MaybeFetchEvents(base::Time start_of_month);
 
-  // Requests events for the month starting at `start_of_month`. If there is no
-  // calendar list, or Multi-Calendar is disabled, only primary calendar events
-  // are fetched.
+  // Requests events for the month starting at `start_of_month`.
   void FetchEvents(base::Time start_of_month);
-
-  // Requests events for the month starting at `start_of_month` for the primary
-  // calendar.
-  void FetchPrimaryCalendarEvents(const base::Time start_of_month);
 
   // Cancels any pending event fetch for `start_of_month`.
   void CancelFetch(const base::Time& start_of_month);
