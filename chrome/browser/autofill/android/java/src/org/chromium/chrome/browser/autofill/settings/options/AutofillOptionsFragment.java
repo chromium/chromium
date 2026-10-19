@@ -163,12 +163,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/513493349): Remove this override after full launch of Autofill and Passwords.
-    @Override
-    public @Nullable String getMainMenuKey() {
-        return "autofill_options";
-    }
-
     static boolean isAutofillAiEnabled() {
         // LINT.IfChange(AutofillEnabledCheckFragment)
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);

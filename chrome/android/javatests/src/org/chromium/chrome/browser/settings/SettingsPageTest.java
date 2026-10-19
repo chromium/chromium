@@ -523,7 +523,6 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAutofillAndPasswordsHighlighting() {
         // The test requires an emulator wide enough to use two-column mode.
         Resources res = mActivityTestRule.getActivity().getResources();
@@ -633,10 +632,7 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures({
-        ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-    })
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testPaymentAppsUrlHighlightsMainMenu_urlNav() {
         assertUrlHighlightsAutofillAndPasswords("/paymentApps", AndroidPaymentAppsFragment.class);
     }
@@ -648,10 +644,7 @@ public class SettingsPageTest {
     @Test
     @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures({
-        ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-    })
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testFoldedRowPagesUrlHighlightMainMenu_urlNav() {
         assertUrlHighlightsAutofillAndPasswords("/payments", AutofillPaymentMethodsFragment.class);
         assertUrlHighlightsAutofillAndPasswords("/addresses", AutofillProfilesFragment.class);

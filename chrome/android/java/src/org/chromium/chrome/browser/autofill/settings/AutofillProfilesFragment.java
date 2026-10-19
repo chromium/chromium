@@ -476,12 +476,6 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         return SettingsFragment.AnimationType.PROPERTY;
     }
 
-    // TODO(crbug.com/513493349): Remove this override after full launch of Autofill and Passwords.
-    @Override
-    public @Nullable String getMainMenuKey() {
-        return "autofill_addresses";
-    }
-
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(AutofillProfilesFragment.class.getName(), 0) {
                 @Override

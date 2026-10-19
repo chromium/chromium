@@ -581,8 +581,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 histogramName,
                 MandatoryReauthAuthenticationFlowEvent.FLOW_STARTED,
                 MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
-        // We require user authentication every time user tries to change this
-        // preference. Set useLastValidAuth=false to skip the grace period.
+        // We require user authentication every time user tries to change this preference. Set
+        // useLastValidAuth=false to skip the grace period.
         assertNonNull(mReauthenticatorBridge);
         mReauthenticatorBridge.reauthenticate(
                 success -> {
@@ -592,8 +592,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                         PersonalDataManagerFactory.getForProfile(getProfile())
                                 .setAutofillPaymentMethodsMandatoryReauth((boolean) newValue);
 
-                        // When the preference is updated, the page is expected to refresh
-                        // and show
+                        // When the preference is updated, the page is expected to refresh and show
                         // the updated preference. Fallback if the page does not load.
                         mandatoryReauthSwitch.setChecked(userIntendedState);
                         RecordHistogram.recordEnumeratedHistogram(
@@ -607,10 +606,10 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 MandatoryReauthAuthenticationFlowEvent.MAX_VALUE + 1);
                     }
                 });
-        // Returning false here holds the toggle to still display the old value while
-        // waiting for biometric auth. Once biometric is completed (either succeed or
-        // fail), OnResume will reload the page with the pref value, which will switch
-        // to the new value if biometric auth succeeded.
+        // Returning false here holds the toggle to still display the old value while waiting
+        // for biometric auth. Once biometric is completed (either succeed or fail), OnResume
+        // will reload the page with the pref value, which will switch to the new value if
+        // biometric auth succeeded.
         return false;
     }
 
@@ -798,12 +797,6 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     @Override
     public @SettingsFragment.AnimationType int getAnimationType() {
         return SettingsFragment.AnimationType.PROPERTY;
-    }
-
-    // TODO(crbug.com/513493349): Remove this override after full launch of Autofill and Passwords.
-    @Override
-    public @Nullable String getMainMenuKey() {
-        return "autofill_payment_methods";
     }
 
     static boolean shouldShowManagePix(PersonalDataManager manager, Profile profile) {
