@@ -218,7 +218,9 @@ TEST_P(NavigationManagerTest, GetPendingItemIndexWithoutPendingEntry) {
       web::HttpsUpgradeType::kNone);
 
   [mock_wk_list_ setCurrentURL:@"http://www.url.com"];
-  navigation_manager()->CommitPendingItem();
+  auto pending_item = navigation_manager()->ReleasePendingItem();
+  ASSERT_TRUE(pending_item);
+  navigation_manager()->CommitPendingItem(std::move(pending_item));
 
   EXPECT_EQ(-1, navigation_manager()->GetPendingItemIndex());
 }
@@ -232,7 +234,9 @@ TEST_P(NavigationManagerTest, GetPendingItemIndexWithPendingEntry) {
       web::HttpsUpgradeType::kNone);
 
   [mock_wk_list_ setCurrentURL:@"http://www.url.com"];
-  navigation_manager()->CommitPendingItem();
+  auto pending_item = navigation_manager()->ReleasePendingItem();
+  ASSERT_TRUE(pending_item);
+  navigation_manager()->CommitPendingItem(std::move(pending_item));
 
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -250,7 +254,9 @@ TEST_P(NavigationManagerTest, SetAndGetPendingItemIndex) {
       /*is_post_navigation=*/false, /*is_error_navigation=*/false,
       web::HttpsUpgradeType::kNone);
   [mock_wk_list_ setCurrentURL:@"http://www.url.test"];
-  navigation_manager()->CommitPendingItem();
+  auto pending_item = navigation_manager()->ReleasePendingItem();
+  ASSERT_TRUE(pending_item);
+  navigation_manager()->CommitPendingItem(std::move(pending_item));
 
   navigation_manager()->SetPendingItemIndex(0);
   EXPECT_EQ(0, navigation_manager()->GetPendingItemIndex());
@@ -265,7 +271,9 @@ TEST_P(NavigationManagerTest, GetPendingItemIndexWithIndexedPendingEntry) {
       web::HttpsUpgradeType::kNone);
 
   [mock_wk_list_ setCurrentURL:@"http://www.url.com"];
-  navigation_manager()->CommitPendingItem();
+  auto pending_item = navigation_manager()->ReleasePendingItem();
+  ASSERT_TRUE(pending_item);
+  navigation_manager()->CommitPendingItem(std::move(pending_item));
 
   navigation_manager()->AddPendingItem(
       GURL("http://www.url.com/0"), Referrer(), ui::PAGE_TRANSITION_TYPED,
@@ -276,7 +284,9 @@ TEST_P(NavigationManagerTest, GetPendingItemIndexWithIndexedPendingEntry) {
   [mock_wk_list_ setCurrentURL:@"http://www.url.com/0"
                   backListURLs:@[ @"http://www.url.com" ]
                forwardListURLs:nil];
-  navigation_manager()->CommitPendingItem();
+  pending_item = navigation_manager()->ReleasePendingItem();
+  ASSERT_TRUE(pending_item);
+  navigation_manager()->CommitPendingItem(std::move(pending_item));
 
   EXPECT_EQ(-1, navigation_manager()->GetPendingItemIndex());
 }
