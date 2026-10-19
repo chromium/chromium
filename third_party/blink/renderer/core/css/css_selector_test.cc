@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -13,6 +14,10 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -244,6 +249,48 @@ TEST(CSSSelector, InlineSelectorList) {
   ASSERT_TRUE(nth->IsValid());
   EXPECT_FALSE(nth->First()->HasInlineSelectorList());
   EXPECT_TRUE(nth->First()->HasRareData());
+}
+
+// Switching a selector that already lives in a traced HeapVector backing from
+// an inline selector list to RareData (as the parser's :host:has() fix-up does
+// on its arena) must get the new RareData marked.
+TEST(CSSSelectorGCTest, InlineSelectorListToRareDataDuringMarking) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  Persistent<CSSSelectorList> has =
+      css_test_helpers::ParseSelectorList(":has(.x)");
+  ASSERT_TRUE(has->IsValid());
+  ASSERT_TRUE(has->First()->HasInlineSelectorList());
+
+  // Keep the selector in a heap-referenced vector, so that incremental marking
+  // traces the backing (without any stack scanning) before it is mutated.
+  Persistent<GCedHeapVector<CSSSelector>> arena =
+      MakeGarbageCollected<GCedHeapVector<CSSSelector>>();
+  arena->push_back(CSSSelector(*has->First()));
+
+  // Start unified-heap incremental marking and let allocation-driven marking
+  // steps trace everything reachable, the arena backing included.
+  v8::Isolate* isolate = scope.GetIsolate();
+  isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kModerate);
+  ASSERT_TRUE(ThreadState::Current()->IsIncrementalMarking());
+  for (int i = 0; i < 2048; ++i) {
+    MakeGarbageCollected<GCedHeapVector<Member<CSSSelectorList>>>()->reserve(
+        512);
+  }
+  ASSERT_TRUE(ThreadState::Current()->IsIncrementalMarking());
+
+  // Transition the element to RareData in place while its backing is black.
+  arena->front().SetHasArgumentMatchInShadowTree();
+  ASSERT_TRUE(arena->front().HasRareData());
+  WeakPersistent<CSSSelector::RareData> rare_data =
+      arena->front().data_.rare_data_.Get();
+
+  // Finish the cycle without stack scanning. The RareData is only referenced
+  // from the (already traced) backing, so it survives only if storing it ran
+  // the marking write barrier.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kNone);
+  EXPECT_TRUE(rare_data);
 }
 
 TEST(CSSSelector, Specificity_Slotted) {

@@ -175,6 +175,14 @@ void CSSSelector::CreateRareData() {
   // destruction of the old member followed by placement new of |rare_data_|.
   // A straight-assignment will compile and may kinda work, but will be
   // undefined behavior.
+  //
+  // The new Member is placement-new'ed empty and then *assigned*, rather
+  // than constructed from the pointer: Member's initializing constructor
+  // deliberately skips the marking write barrier (a freshly constructed
+  // object is always white), but this CSSSelector may already live inside a
+  // HeapVector backing that incremental marking has traced (the parser
+  // mutates selectors in its arena in place), in which case only the
+  // assigning barrier gets the new RareData marked.
   if (HasInlineSelectorList()) {
     CSSSelectorList* selector_list = data_.selector_list_.Get();
     auto* rare_data = MakeGarbageCollected<RareData>(
@@ -187,13 +195,15 @@ void CSSSelector::CreateRareData() {
     // (conservative scanning) meanwhile.
     bits_.set<HasInlineSelectorListField>(false);
     data_.selector_list_.~Member<CSSSelectorList>();
-    new (&data_.rare_data_) Member<RareData>(rare_data);
+    new (&data_.rare_data_) Member<RareData>();
+    data_.rare_data_ = rare_data;
     bits_.set<HasRareDataField>(true);
     return;
   }
   auto* rare_data = MakeGarbageCollected<RareData>(data_.value_);
   data_.value_.~AtomicString();
-  new (&data_.rare_data_) Member<RareData>(rare_data);
+  new (&data_.rare_data_) Member<RareData>();
+  data_.rare_data_ = rare_data;
   bits_.set<HasRareDataField>(true);
 }
 
@@ -1699,9 +1709,11 @@ void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   if (!HasRareData() && Match() == kPseudoClass &&
       CanStoreSelectorListInline(GetPseudoType()) &&
       data_.value_ == NameForInlineSelectorListPseudo(GetPseudoType())) {
-    // Same care as in CreateRareData(): switch the active union member.
+    // Same care as in CreateRareData(): switch the active union member, and
+    // assign rather than construct so the marking write barrier runs.
     data_.value_.~AtomicString();
-    new (&data_.selector_list_) Member<CSSSelectorList>(selector_list);
+    new (&data_.selector_list_) Member<CSSSelectorList>();
+    data_.selector_list_ = selector_list;
     bits_.set<HasInlineSelectorListField>(true);
     return;
   }
