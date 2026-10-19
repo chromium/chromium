@@ -232,6 +232,8 @@ VariationsCrashKeys::~VariationsCrashKeys() {
   g_num_variations_crash_key.Clear();
   g_variations_crash_key.Clear();
   g_variations_seed_version_crash_key.Clear();
+  g_variations_runtime_field_trial_overrides_crash_key.Clear();
+  g_num_runtime_field_trial_overrides_crash_key.Clear();
 }
 
 void VariationsCrashKeys::OnFieldTrialGroupFinalized(

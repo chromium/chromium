@@ -254,6 +254,10 @@ TEST_F(VariationsCrashKeysTest, RuntimeFieldTrialOverride) {
   EXPECT_EQ(expected_variations_crash_key, GetVariationsCrashKey());
 
   overrides->ResetForTesting();
+
+  RecreateCrashKeys();
+  EXPECT_EQ("", GetVariationsRuntimeFieldTrialOverridesCrashKey());
+  EXPECT_EQ("0", GetNumVariationsRuntimeFieldTrialOverridesCrashKey());
 }
 
 TEST_F(VariationsCrashKeysTest, RuntimeFieldTrialOverride_Truncate) {
