@@ -11,15 +11,7 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/account_picker_dialog_padding_top"
-        android:paddingBottom="@dimen/account_picker_dialog_padding_bottom"
-        android:clipToPadding="false">
-
-        <include layout="@layout/account_picker_state_view_flipper" />
-    </ScrollView>
+    <include layout="@layout/account_picker_state_view_flipper" />
 
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/account_picker_dialog_close_button"

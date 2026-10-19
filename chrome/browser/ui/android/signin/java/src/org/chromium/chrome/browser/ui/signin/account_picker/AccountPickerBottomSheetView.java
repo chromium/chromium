@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -66,6 +67,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     interface BackPressListener {
         /**
          * Notifies when user clicks the back-press button.
+         *
          * @return true if the listener handles the back press, false if not.
          */
         boolean onBackPressed();
@@ -143,6 +145,7 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
         mViewFlipper = mContentView.findViewById(R.id.account_picker_state_view_flipper);
         checkViewFlipperChildrenAndViewStateMatch(mViewFlipper);
+        applyTopPaddingToViewFlipperChildren(mViewFlipper, presentationMode);
         mAccountListView =
                 mViewFlipper
                         .getChildAt(ViewState.EXPANDED_ACCOUNT_LIST)
@@ -380,7 +383,17 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return 0;
+        int offset = 0;
+        View displayedView = mViewFlipper.getCurrentView();
+        if (displayedView instanceof ScrollView scrollView) {
+            offset += scrollView.getScrollY();
+        }
+        // The account list is a RecyclerView nested in the expanded screen's ScrollView, and it
+        // scrolls on its own too, so its offset needs to be taken into account as well.
+        if (displayedView == mViewFlipper.getChildAt(ViewState.EXPANDED_ACCOUNT_LIST)) {
+            offset += mAccountListView.computeVerticalScrollOffset();
+        }
+        return offset;
     }
 
     @Override
@@ -404,6 +417,11 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     @Override
     public boolean swipeToDismissEnabled() {
         return true;
+    }
+
+    @Override
+    public boolean showHandlebar() {
+        return mPresentationMode == PresentationMode.BOTTOM_SHEET;
     }
 
     @Override
@@ -451,6 +469,26 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         continueButton.setText(buttonId);
     }
 
+    /** See styles.xml for motivation behind this function. */
+    private static void applyTopPaddingToViewFlipperChildren(
+            ViewFlipper viewFlipper, @PresentationMode int presentationMode) {
+        int paddingTop =
+                viewFlipper
+                        .getResources()
+                        .getDimensionPixelSize(
+                                presentationMode == PresentationMode.MODAL_DIALOG
+                                        ? R.dimen.account_picker_dialog_padding_top
+                                        : R.dimen.account_picker_bottom_sheet_padding_top);
+        for (int i = 0; i < viewFlipper.getChildCount(); i++) {
+            View child = viewFlipper.getChildAt(i);
+            child.setPadding(
+                    child.getPaddingLeft(),
+                    paddingTop,
+                    child.getPaddingRight(),
+                    child.getPaddingBottom());
+        }
+    }
+
     private static void checkViewFlipperChildrenAndViewStateMatch(ViewFlipper viewFlipper) {
         checkViewFlipperChildIdAndViewStateMatch(
                 viewFlipper, ViewState.NO_ACCOUNTS, R.id.account_picker_state_no_account);
@@ -476,7 +514,16 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
 
     private static void checkViewFlipperChildIdAndViewStateMatch(
             ViewFlipper viewFlipper, @ViewState int viewState, @IdRes int expectedChildId) {
-        if (viewFlipper.getChildAt(viewState).getId() != expectedChildId) {
+        View child = viewFlipper.getChildAt(viewState);
+        // All view states are wrapped in a ScrollView, with a single child.
+        if (child instanceof ScrollView scrollView && scrollView.getChildCount() == 1) {
+            child = scrollView.getChildAt(0);
+        } else {
+            throw new IllegalArgumentException(
+                    "Match failed with ViewState, each view should be wrapped in a ScrollView: "
+                            + viewState);
+        }
+        if (child.getId() != expectedChildId) {
             throw new IllegalArgumentException("Match failed with ViewState:" + viewState);
         }
     }

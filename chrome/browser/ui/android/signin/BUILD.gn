@@ -207,6 +207,7 @@ android_resources("java_resources") {
     "java/res/values-large/dimens.xml",
     "java/res/values-xlarge/dimens.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
   ]
   deps = [
     "//chrome/app:java_strings_grd",

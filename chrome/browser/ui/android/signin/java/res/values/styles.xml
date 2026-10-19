@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!--
+    Wrapper for each account picker screen. The bottom padding is static, while
+    the top padding depends on the presentation mode and is applied by
+    AccountPickerBottomSheetView. clipToPadding="false" lets scrollable content
+    scroll through the padding instead of being clipped.
+    -->
+    <style name="AccountPickerScreenScrollView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/account_picker_content_padding_bottom</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
+</resources>

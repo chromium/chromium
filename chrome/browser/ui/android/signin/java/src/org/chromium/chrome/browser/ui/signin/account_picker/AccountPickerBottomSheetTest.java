@@ -22,6 +22,8 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anyOf;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,13 +43,18 @@ import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.graphics.Rect;
 import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.ViewInteraction;
+import androidx.test.espresso.action.GeneralSwipeAction;
+import androidx.test.espresso.action.Press;
+import androidx.test.espresso.action.Swipe;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -71,6 +78,7 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -94,6 +102,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.signin.SigninFeatures;
@@ -110,6 +119,7 @@ import org.chromium.components.sync.protocol.SyncEnums;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests account picker bottom sheet of the web signin flow. */
@@ -1538,6 +1548,93 @@ public class AccountPickerBottomSheetTest {
                 2,
                 SigninPreferencesManager.getInstance()
                         .getWebSigninAccountPickerActiveDismissalCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandedSheet_scrollsAccountListInsteadOfSheet() {
+        // Add enough accounts so that the expanded account list doesn't fit in the bottom sheet.
+        for (int i = 0; i < 20; i++) {
+            String email = "scroll.test" + i + "@gmail.com";
+            mAccountManagerTestRule.addAccount(
+                    new AccountInfo.Builder(email, FakeAccountManagerFacade.toGaiaId(email))
+                            .fullName("Scroll Test " + i)
+                            .givenName("Scroll " + i)
+                            .build());
+        }
+        buildAndShowCollapsedThenExpandedBottomSheet();
+        BottomSheetController controller = getBottomSheetController();
+        View scrollView =
+                mCoordinator
+                        .getBottomSheetViewForTesting()
+                        .findViewById(R.id.account_picker_expanded_scroll_view);
+        // Wait for the sheet to settle at its max position after expanding the account list.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        scrollView.isShown()
+                                && controller.getSheetState() == SheetState.FULL
+                                && controller.getCurrentOffset() == controller.getMaxOffset());
+        BottomSheetContent content =
+                ThreadUtils.runOnUiThreadBlocking(controller::getCurrentSheetContent);
+        Assert.assertEquals(
+                0, (int) ThreadUtils.runOnUiThreadBlocking(content::getVerticalScrollOffset));
+        int maxOffset = ThreadUtils.runOnUiThreadBlocking(controller::getMaxOffset);
+
+        // Scroll the account list down.
+        onView(withId(R.id.account_picker_expanded_scroll_view))
+                .perform(swipeOnAccountList(/* scrollDown= */ true));
+        // Wait for the fling to finish.
+        AtomicInteger offsetAfterScrollingDown = new AtomicInteger();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    int offset = content.getVerticalScrollOffset();
+                    int previousOffset = offsetAfterScrollingDown.getAndSet(offset);
+                    Criteria.checkThat(
+                            "The content should have scrolled down.", offset, greaterThan(0));
+                    Criteria.checkThat(
+                            "The content is still scrolling.", offset, is(previousOffset));
+                });
+        @SheetState int sheetState = ThreadUtils.runOnUiThreadBlocking(controller::getSheetState);
+        Assert.assertEquals(sheetState, SheetState.FULL);
+
+        // Scroll the account list back up. The gesture should be consumed by the account list
+        // instead of dragging the bottom sheet down.
+        onView(withId(R.id.account_picker_expanded_scroll_view))
+                .perform(swipeOnAccountList(/* scrollDown= */ false));
+
+        CriteriaHelper.pollUiThread(
+                () -> content.getVerticalScrollOffset() < offsetAfterScrollingDown.get());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(controller.isSheetOpen());
+                    Assert.assertEquals(SheetState.FULL, controller.getSheetState());
+                    Assert.assertEquals(maxOffset, controller.getCurrentOffset());
+                });
+        verify(mAccountPickerDelegateMock, never()).onSignInCancel();
+    }
+
+    private static ViewAction swipeOnAccountList(boolean scrollDown) {
+        return new GeneralSwipeAction(
+                Swipe.FAST,
+                view -> getAccountListSwipeCoordinates(view, /* isStart= */ true, scrollDown),
+                view -> getAccountListSwipeCoordinates(view, /* isStart= */ false, scrollDown),
+                Press.FINGER);
+    }
+
+    private static float[] getAccountListSwipeCoordinates(
+            View scrollView, boolean isStart, boolean scrollDown) {
+        View accountList = scrollView.findViewById(R.id.account_picker_account_list);
+        Rect visibleRect = new Rect();
+        accountList.getLocalVisibleRect(visibleRect);
+        int[] location = new int[2];
+        accountList.getLocationOnScreen(location);
+        float x = location[0] + visibleRect.exactCenterX();
+        float centerY = location[1] + visibleRect.exactCenterY();
+        if (isStart) {
+            return new float[] {x, centerY};
+        }
+        float distance = visibleRect.height() / 3f;
+        return new float[] {x, scrollDown ? centerY - distance : centerY + distance};
     }
 
     private void clickContinueButton(View bottomSheetView) {
