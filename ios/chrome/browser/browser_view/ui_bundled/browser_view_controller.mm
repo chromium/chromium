@@ -1607,7 +1607,6 @@ bool IsFullscreenNextIAEnabled() {
     // TODO(crbug.com/40842406): -updateToolbar will move out of the BVC; make
     // sure this comment remains accurate. Hide findbar.  `updateToolbar` will
     // restore the findbar later.
-    [self.findInPageCommandsHandler hideFindUI];
     [self.textZoomHandler hideTextZoomUI];
 
     // Make new content visible, resizing it first as the orientation may

@@ -63,6 +63,7 @@ class FindTabHelper final : public web::WebStateObserver,
   FindTabHelper(web::WebState* web_state);
 
   // web::WebStateObserver.
+  void WasHidden(web::WebState* web_state) final;
   void WebStateDestroyed(web::WebState* web_state) final;
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) final;

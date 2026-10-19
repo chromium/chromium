@@ -122,6 +122,10 @@ void FindTabHelper::RestoreSearchTerm() {
   [controller_ restoreSearchTerm];
 }
 
+void FindTabHelper::WasHidden(web::WebState* web_state) {
+  DismissFindNavigator();
+}
+
 void FindTabHelper::WebStateDestroyed(web::WebState* web_state) {
   observation_.Reset();
   scoped_force_fullscreen_.reset();
