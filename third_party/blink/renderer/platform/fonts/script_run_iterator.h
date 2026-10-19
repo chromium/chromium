@@ -129,7 +129,7 @@ class PLATFORM_EXPORT ScriptData {
   // which have special handling.
   //
   // This takes a bit of time to compute, so we cache it per-script
-  // across the entire rendering process (ICUScriptData is already
+  // across the entire rendering process (IcuScriptData is already
   // a process-wide singleton). We also only care about the code points
   // up to U+D800 (which covers most of the BMP), in order to never
   // have to worry about surrogates; as long as the UChars we read
@@ -148,11 +148,11 @@ class PLATFORM_EXPORT ScriptData {
       UScriptCode script) const = 0;
 };
 
-class PLATFORM_EXPORT ICUScriptData final : public ScriptData {
+class PLATFORM_EXPORT IcuScriptData final : public ScriptData {
  public:
-  ~ICUScriptData() override = default;
+  ~IcuScriptData() override = default;
 
-  static const ICUScriptData* Instance();
+  static const IcuScriptData* Instance();
 
   void GetScripts(UChar32, UScriptCodeList& dst) const override;
 

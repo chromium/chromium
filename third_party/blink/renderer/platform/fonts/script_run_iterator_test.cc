@@ -818,9 +818,9 @@ TEST_F(ScriptRunIteratorTest, MaxUnicodeScriptExtensions) {
   EXPECT_LE(max_extensions, ScriptRunIterator::kMaxUnicodeScriptExtensions);
 }
 
-class ScriptRunIteratorICUDataTest : public testing::Test {
+class ScriptRunIteratorIcuDataTest : public testing::Test {
  public:
-  ScriptRunIteratorICUDataTest() {
+  ScriptRunIteratorIcuDataTest() {
     std::tie(max_extensions_, max_extensions_codepoint_) =
         MaximumScriptExtensions();
   }
@@ -840,20 +840,20 @@ class ScriptRunIteratorICUDataTest : public testing::Test {
 
 // Validate that ICU never returns more than our maximum expected number of
 // script extensions.
-TEST_F(ScriptRunIteratorICUDataTest, ValidateICUMaxScriptExtensions) {
+TEST_F(ScriptRunIteratorIcuDataTest, ValidateIcuMaxScriptExtensions) {
   int max_extensions;
   UChar32 cp = GetACharWithMaxExtensions(&max_extensions);
   ASSERT_LT(max_extensions, ScriptData::kMaxScriptCount)
       << "char " << std::hex << cp << std::dec;
 }
 
-// Check that ICUScriptData returns all of a character's scripts.
+// Check that IcuScriptData returns all of a character's scripts.
 // This only checks one likely character, but doesn't check all cases.
-TEST_F(ScriptRunIteratorICUDataTest, ICUDataGetScriptsReturnsAllExtensions) {
+TEST_F(ScriptRunIteratorIcuDataTest, IcuDataGetScriptsReturnsAllExtensions) {
   int max_extensions;
   UChar32 cp = GetACharWithMaxExtensions(&max_extensions);
   ScriptData::UScriptCodeList extensions;
-  ICUScriptData::Instance()->GetScripts(cp, extensions);
+  IcuScriptData::Instance()->GetScripts(cp, extensions);
 
   // It's possible that GetScripts adds the primary script to the list of
   // extensions, resulting in one more script than the raw extension count.
@@ -861,10 +861,10 @@ TEST_F(ScriptRunIteratorICUDataTest, ICUDataGetScriptsReturnsAllExtensions) {
       << "char " << std::hex << cp << std::dec;
 }
 
-TEST_F(ScriptRunIteratorICUDataTest, CommonHaveNoMoreThanOneExtension) {
+TEST_F(ScriptRunIteratorIcuDataTest, CommonHaveNoMoreThanOneExtension) {
   ScriptData::UScriptCodeList extensions;
   for (UChar32 cp = 0; cp < 0x110000; ++cp) {
-    ICUScriptData::Instance()->GetScripts(cp, extensions);
+    IcuScriptData::Instance()->GetScripts(cp, extensions);
     UScriptCode primary = extensions.at(0);
     if (primary == USCRIPT_COMMON) {
       ASSERT_LE(extensions.size(), 2ul) << "cp: " << std::hex << cp << std::dec;

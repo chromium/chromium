@@ -274,7 +274,7 @@ namespace {
 
 // A port of hb_icu_script_to_script because harfbuzz on CrOS is built
 // without hb-icu. See http://crbug.com/356929
-static inline hb_script_t ICUScriptToHBScript(UScriptCode script) {
+static inline hb_script_t IcuScriptToHbScript(UScriptCode script) {
   if (script == USCRIPT_INVALID_CODE) [[unlikely]] {
     return HB_SCRIPT_INVALID;
   }
@@ -340,7 +340,7 @@ inline bool ShapeRange(hb_buffer_t* buffer,
       variant_features ? *variant_features : font_features;
 
   hb_buffer_set_language(buffer, language);
-  hb_buffer_set_script(buffer, ICUScriptToHBScript(current_run_script));
+  hb_buffer_set_script(buffer, IcuScriptToHbScript(current_run_script));
   hb_buffer_set_direction(buffer, direction);
 
   hb_font_t* hb_font =
@@ -518,7 +518,7 @@ void HarfBuzzShaper::CommitGlyphs(RangeContext* range_data,
                                   const BufferSlice& slice,
                                   ShapeResult* shape_result) const {
   hb_direction_t direction = range_data->HarfBuzzDirection(canvas_rotation);
-  hb_script_t script = ICUScriptToHBScript(current_run_script);
+  hb_script_t script = IcuScriptToHbScript(current_run_script);
   // Here we need to specify glyph positions.
   BufferSlice next_slice;
   wtf_size_t run_start_index = slice.start_character_index;
@@ -977,7 +977,7 @@ void HarfBuzzShaper::ShapeSegment(
           OpenTypeCapsSupport(font_data->PlatformData().GetHarfBuzzFace(),
                               font_description.VariantCaps(),
                               font_description.GetFontSynthesisSmallCaps(),
-                              ICUScriptToHBScript(segment.script));
+                              IcuScriptToHbScript(segment.script));
       if (caps_support.NeedsRunCaseSplitting()) {
         SplitUntilNextCaseChange(text_, &range_data->reshape_queue,
                                  current_queue_item, small_caps_behavior);
@@ -1199,7 +1199,7 @@ void HarfBuzzShaper::GetGlyphData(const SimpleFontData& font_data,
   PooledHarfBuzzBuffer pooled_hb_buffer;
   hb_buffer_t* hb_buffer = pooled_hb_buffer.Get();
   hb_buffer_set_language(hb_buffer, locale.HarfbuzzLanguage());
-  hb_buffer_set_script(hb_buffer, ICUScriptToHBScript(script));
+  hb_buffer_set_script(hb_buffer, IcuScriptToHbScript(script));
   hb_buffer_set_direction(
       hb_buffer, is_horizontal ? (blink::IsLtr(direction) ? HB_DIRECTION_LTR
                                                           : HB_DIRECTION_RTL)
