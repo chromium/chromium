@@ -318,8 +318,6 @@ class BASE_EXPORT HistogramBase {
   void WriteJSON(std::string* output, JSONVerbosityLevel verbosity_level) const;
 
  protected:
-  enum ReportActivity { HISTOGRAM_CREATED, HISTOGRAM_LOOKUP };
-
   struct BASE_EXPORT CountAndBucketData {
     Count32 count;
     int64_t sum;
