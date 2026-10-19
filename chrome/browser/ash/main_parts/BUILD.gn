@@ -190,6 +190,10 @@ static_library("main_parts") {
     "//ui/base/ime/ash",
     "//ui/events",
     "//ui/events/ash",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser instead after fixing
+    # cyclic dependency.
+    "//chrome/browser:buildflags",
   ]
 
   if (is_cfm) {

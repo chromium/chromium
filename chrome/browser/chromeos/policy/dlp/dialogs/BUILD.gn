@@ -29,6 +29,11 @@ static_library("dialogs") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/views",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/chromeos/policy/dlp
+    # instead after fixing cyclic dependency.
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//storage/browser",
   ]
 }
 
@@ -46,5 +51,10 @@ static_library("test_support") {
     "//testing/gmock",
     "//ui/gfx",
     "//ui/views",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/chromeos/policy/dlp
+    # instead after fixing cyclic dependency.
+    "//chromeos/dbus/dlp:dlp_proto",
+    "//storage/browser",
   ]
 }

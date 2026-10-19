@@ -106,6 +106,10 @@ static_library("borealis") {
     "//ui/display",
     "//ui/message_center",
     "//url",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/ash/guest_os instead
+    # after fixing cyclic dependency.
+    "//chromeos/ash/experiences/arc/mojom",
   ]
 }
 

@@ -53,6 +53,11 @@ static_library("ranking") {
     "//chrome/browser/ash/app_list/search/util:proto",
     "//chrome/browser/profiles:profile",
     "//components/omnibox/browser",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/ash/app_list/search
+    # instead after fixing cyclic dependency.
+    "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_preload_service/proto",
   ]
 }
 

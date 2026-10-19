@@ -21,6 +21,11 @@ static_library("pip") {
     "//content/public/browser",
     "//ui/aura",
     "//ui/gfx",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/ui/ash/shelf instead
+    # after fixing cyclic dependency.
+    "//chrome/browser/apps/almanac_api_client/proto",
+    "//chrome/browser/apps/app_preload_service/proto",
   ]
 }
 

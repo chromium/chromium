@@ -97,6 +97,10 @@ static_library("app_list") {
     "//components/pref_registry",
     "//extensions/common",
     "//rlz/buildflags",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/ash/crostini instead
+    # after fixing cyclic dependency.
+    "//chromeos/ash/components/dbus:vm_launch_proto",
   ]
 
   if (enable_rlz) {

@@ -97,6 +97,7 @@ static_library("dlp") {
     # chrome/browser/ash/policy/dlp/dlp_content_manager_ash.cc
     # instead after fixing cyclic dependency.
     "//components/enterprise/common/proto:dlp_policy_event_proto",
+    "//services/screen_ai/public/mojom",
   ]
 
   allow_circular_includes_from = [

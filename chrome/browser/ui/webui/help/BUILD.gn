@@ -32,6 +32,10 @@ source_set("help") {
       "//components/policy/core/common",
       "//content/public/browser",
       "//ui/base",
+
+      # TODO(crbug.com/556482973): Use //chrome/browser/ash/login instead after
+      # fixing cyclic dependency.
+      "//ash/webui/common/mojom:webui_syslog_emitter",
     ]
   }
 

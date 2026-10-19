@@ -46,6 +46,10 @@ static_library("cleanup") {
     "//extensions/common",
     "//mojo/public/cpp/bindings",
     "//ui/base/clipboard",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/ui/ash/shelf instead
+    # after fixing cyclic dependency.
+    "//chrome/browser/apps/app_preload_service/proto",
   ]
 }
 

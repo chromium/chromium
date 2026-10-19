@@ -61,6 +61,10 @@ static_library("drive") {
     "//ui/base",
     "//ui/chromeos/strings",
     "//ui/message_center",
+
+    # TODO(crbug.com/556482973): Use //chrome/browser/ash/file_manager instead
+    # after fixing cyclic dependency.
+    "//chromeos/ash/components/dbus:vm_applications_apps_proto",
   ]
 }
 
