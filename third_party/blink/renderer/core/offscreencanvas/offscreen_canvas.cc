@@ -343,10 +343,6 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
     return;
   }
 
-  if (context_->isContextLost()) {
-    context_->RestoreFromInvalidSizeIfNeeded();
-  }
-
   if (context_->IsWebGL() || IsWebGPU()) {
     context_->Reshape(Size().width(), Size().height());
   } else if (context_->IsImageBitmapRenderingContext()) {
