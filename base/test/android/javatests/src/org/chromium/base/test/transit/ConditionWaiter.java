@@ -30,6 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -264,6 +265,10 @@ public class ConditionWaiter {
     public static final long POLLING_INTERVAL = 50;
 
     private static final String TAG = "Transit";
+
+    // Emoji make the blocks easy to tell apart when scanning; the word keeps them readable without.
+    private static final String FAILED_HEADER_PREFIX = "❌ FAILED ";
+    private static final String OK_HEADER_PREFIX = "✅ OK ";
 
     protected final Transition mTransition;
     protected @MonotonicNonNull List<ConditionWait> mWaits;
@@ -636,44 +641,31 @@ public class ConditionWaiter {
         return newElements;
     }
 
+    /**
+     * Creates a summary of the status of all {@link ConditionWait}s, grouped by the
+     * ConditionalState entered/exited or the Transition. Failed Conditions are listed first, then
+     * OK ones.
+     */
     private static String createWaitConditionsSummary(
             List<ConditionWait> conditionWaits, boolean generateMainMessage) {
         String firstFailedConditionString = null;
         int failedConditionCount = 0;
-        StringBuilder detailsString = new StringBuilder();
+        Map<String, ConditionGroup> groups = new LinkedHashMap<>();
         int i = 1;
         for (ConditionWait conditionWait : conditionWaits) {
             String conditionDescription = conditionWait.mCondition.getDescription();
 
             String indexString = "[" + i + "]";
 
-            String marker = "  ";
-            String originString = "";
-            switch (conditionWait.mOrigin) {
-                case ConditionOrigin.ENTER:
-                    if (conditionWait.isInitialWait()) {
-                        originString = "[ENTER ]";
-                    } else {
-                        originString = "[+ENTER]";
-                    }
-                    break;
-                case ConditionOrigin.EXIT:
-                    originString = "[EXIT  ]";
-                    break;
-                case ConditionOrigin.TRANSITION:
-                    originString = "[TRSTN ]";
-                    break;
-            }
+            // "+" marks Conditions added after the wait started.
+            String delayedString = conditionWait.isInitialWait() ? " " : "+";
 
+            boolean failed = false;
             String verdictString;
             if (conditionWait.isFulfilled()) {
                 if (conditionWait.isTimedOut()) {
                     verdictString = "[LATE]";
-                    marker = "->";
-                    if (firstFailedConditionString == null) {
-                        firstFailedConditionString = indexString + " " + conditionDescription;
-                    }
-                    failedConditionCount++;
+                    failed = true;
                 } else if (conditionWait.getStatusStore().anyErrorsReported()) {
                     verdictString = "[OK* ]";
                 } else {
@@ -685,7 +677,9 @@ public class ConditionWaiter {
                 } else {
                     verdictString = "[FAIL]";
                 }
-                marker = "->";
+                failed = true;
+            }
+            if (failed) {
                 if (firstFailedConditionString == null) {
                     firstFailedConditionString = indexString + " " + conditionDescription;
                 }
@@ -740,12 +734,11 @@ public class ConditionWaiter {
                 }
             }
 
-            detailsString
-                    .append(marker)
-                    .append("  ")
+            StringBuilder rowString = new StringBuilder();
+            rowString
+                    .append("   ")
+                    .append(delayedString)
                     .append(indexString)
-                    .append(" ")
-                    .append(originString)
                     .append(" ")
                     .append(verdictString)
                     .append(" ")
@@ -753,21 +746,48 @@ public class ConditionWaiter {
                     .append(" ")
                     .append(fulfilledString);
             if (historyString.length() > 0) {
-                detailsString.append(historyString);
+                rowString.append(historyString);
             }
-            detailsString.append('\n');
+            rowString.append('\n');
+
+            ConditionGroup group =
+                    groups.computeIfAbsent(getGroupHeader(conditionWait), ConditionGroup::new);
+            (failed ? group.mFailedRows : group.mOkRows).append(rowString);
             i++;
         }
 
+        StringBuilder failedBlock = new StringBuilder();
+        StringBuilder okBlock = new StringBuilder();
+        for (ConditionGroup group : groups.values()) {
+            if (group.mFailedRows.length() > 0) {
+                failedBlock
+                        .append(FAILED_HEADER_PREFIX)
+                        .append(group.mHeader)
+                        .append(":\n")
+                        .append(group.mFailedRows);
+            }
+            if (group.mOkRows.length() > 0) {
+                okBlock.append(OK_HEADER_PREFIX)
+                        .append(group.mHeader)
+                        .append(":\n")
+                        .append(group.mOkRows);
+            }
+        }
+        StringBuilder detailsString = new StringBuilder(failedBlock);
+        if (failedBlock.length() > 0 && okBlock.length() > 0) {
+            detailsString.append('\n');
+        }
+        detailsString.append(okBlock);
+
         if (generateMainMessage) {
             if (failedConditionCount == 0) {
-                return String.format("all Conditions fulfilled:\n%s", detailsString);
+                return String.format("all Conditions fulfilled:\n\n%s", detailsString);
             } else if (failedConditionCount == 1) {
                 return String.format(
-                        "failed 1 Condition: %s\n%s", firstFailedConditionString, detailsString);
+                        "failed 1 Condition: %s\n\n%s", firstFailedConditionString, detailsString);
             } else {
                 return String.format(
-                        "failed %d Conditions: %s (+%d more)\n%s",
+                        "failed %d Conditions: %s (+%d more)\n\n%s",
                         failedConditionCount,
                         firstFailedConditionString,
                         failedConditionCount - 1,
@@ -775,6 +795,28 @@ public class ConditionWaiter {
             }
         } else {
             return detailsString.toString();
+        }
+    }
+
+    /** Returns e.g. "ENTER <S1: SomeStation>", "EXIT <C2: SomeFacility>" or "TRANSITION". */
+    private static String getGroupHeader(ConditionWait conditionWait) {
+        if (conditionWait.mOrigin == ConditionOrigin.TRANSITION) {
+            return "TRANSITION";
+        }
+        String originString = conditionWait.mOrigin == ConditionOrigin.ENTER ? "ENTER" : "EXIT";
+        ConditionalState ownerState = conditionWait.mCondition.mOwnerState;
+        String stateName = ownerState != null ? ownerState.getName() : "<unknown state>";
+        return originString + " " + stateName;
+    }
+
+    /** Summary rows of the Conditions with the same header. */
+    private static class ConditionGroup {
+        final String mHeader;
+        final StringBuilder mFailedRows = new StringBuilder();
+        final StringBuilder mOkRows = new StringBuilder();
+
+        ConditionGroup(String header) {
+            mHeader = header;
         }
     }
 
