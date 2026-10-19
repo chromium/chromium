@@ -490,6 +490,9 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
 // gfx::IsWindowVisibleAndFullyOpaque, which the Windows occlusion tracker
 // uses to ignore translucent layered windows and WS_EX_TRANSPARENT windows.
 - (BOOL)windowCanOccludeOtherWindows:(NSWindow*)window {
+  if (!([window occlusionState] & NSWindowOcclusionStateVisible)) {
+    return NO;
+  }
   if ([window alphaValue] < 1.0 || [window ignoresMouseEvents]) {
     return NO;
   }
@@ -529,6 +532,10 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   }
 
   NSRect windowFrame = [window frame];
+  BOOL windowIsActive = [window isKeyWindow] || [window isMainWindow];
+  BOOL windowCanBecomeActive =
+      [window canBecomeKeyWindow] || [window canBecomeMainWindow];
+  BOOL seenWindow = NO;
 
   // Determine if there's a window occluding `window`.
   for (NSWindow* nextWindow in windowList) {
@@ -536,9 +543,17 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
       continue;
     }
 
-    // If we come to our window in the list, we're done.
     if (nextWindow == window) {
-      break;
+      if (windowIsActive || !windowCanBecomeActive) {
+        break;
+      }
+      // `windowList` (from `-[NSApplication orderedWindows]`) can be stale when
+      // a window becomes active before WindowServer updates the z-order, or in
+      // Stage Manager where strip windows can precede the active stage window.
+      // Continue looping through `windowList` in case an active key/main window
+      // that is actually in front of `window` appears later in the list.
+      seenWindow = YES;
+      continue;
     }
 
     // If the next window is moving or resizing, treat it as if it doesn't
@@ -547,6 +562,30 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
     // fresh. We'll recompute `window`'s occlusion state after the move or
     // resize ends.
     if (nextWindow == _windowResizingOrMoving) {
+      continue;
+    }
+
+    BOOL nextWindowIsActive =
+        [nextWindow isKeyWindow] || [nextWindow isMainWindow];
+
+    // If `nextWindow` appears after `window` in `windowList`, it is behind
+    // `window` unless `window` is inactive and `nextWindow` is the active
+    // key/main window at the same or higher window level (which happens when
+    // NSWindowDidBecomeMainNotification fires before -[NSApplication
+    // orderedWindows] reflects the new z-order, e.g. during Cmd+` window
+    // cycling or animated window transitions).
+    if (seenWindow &&
+        (!nextWindowIsActive || [nextWindow level] < [window level])) {
+      continue;
+    }
+
+    // Conversely, an active key/main window cannot be covered by an inactive
+    // window of the same application at the same or lower window level, even
+    // if WindowServer places the inactive window ahead in -[NSApplication
+    // orderedWindows] (e.g. Stage Manager strip windows or Cmd+` window
+    // cycling).
+    if (windowIsActive && !nextWindowIsActive &&
+        [nextWindow level] <= [window level]) {
       continue;
     }
 

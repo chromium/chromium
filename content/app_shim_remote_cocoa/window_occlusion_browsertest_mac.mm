@@ -38,6 +38,9 @@ struct Version {
   BOOL _miniaturizedForTesting;
 }
 @property(assign, nonatomic) BOOL occludedForTesting;
+@property(assign, nonatomic) BOOL keyWindowForTesting;
+@property(assign, nonatomic) BOOL mainWindowForTesting;
+@property(assign, nonatomic) BOOL canBecomeKeyOrMainForTesting;
 @property(assign, nonatomic) BOOL modifyingChildWindowList;
 @property(assign, nonatomic) BOOL forceHiddenForTesting;
 @end
@@ -45,11 +48,32 @@ struct Version {
 @implementation WebContentsHostWindowForOcclusionTesting
 
 @synthesize occludedForTesting = _occludedForTesting;
+@synthesize keyWindowForTesting = _keyWindowForTesting;
+@synthesize mainWindowForTesting = _mainWindowForTesting;
+@synthesize canBecomeKeyOrMainForTesting = _canBecomeKeyOrMainForTesting;
 @synthesize modifyingChildWindowList = _modifyingChildWindowList;
 @synthesize forceHiddenForTesting = _forceHiddenForTesting;
 
 - (NSWindowOcclusionState)occlusionState {
   return _occludedForTesting ? 0 : NSWindowOcclusionStateVisible;
+}
+
+- (BOOL)isKeyWindow {
+  return _keyWindowForTesting || [super isKeyWindow];
+}
+
+- (BOOL)isMainWindow {
+  return _mainWindowForTesting || [super isMainWindow];
+}
+
+- (BOOL)canBecomeKeyWindow {
+  return _canBecomeKeyOrMainForTesting || _keyWindowForTesting ||
+         [super canBecomeKeyWindow];
+}
+
+- (BOOL)canBecomeMainWindow {
+  return _canBecomeKeyOrMainForTesting || _mainWindowForTesting ||
+         [super canBecomeMainWindow];
 }
 
 - (void)miniaturize:(id)sender {
@@ -464,7 +488,11 @@ class WindowOcclusionBrowserTestMac : public ContentBrowserTest {
     }
     [window_b_ setFrame:window_frame display:NO];
 
+    [window_b_web_contents_view_cocoa_ setHost:&host_b_];
+
     OrderWindowFront(window_b_);
+
+    SetWindowBWebContentsVisibility(remote_cocoa::mojom::Visibility::kVisible);
   }
 
   void OrderWindowFront(NSWindow* window) {
@@ -545,8 +573,18 @@ class WindowOcclusionBrowserTestMac : public ContentBrowserTest {
     host_a_.OnWindowVisibilityChanged(visibility);
   }
 
+  remote_cocoa::mojom::Visibility WindowBWebContentsVisibility() {
+    return host_b_.WebContentsVisibility();
+  }
+
+  void SetWindowBWebContentsVisibility(
+      remote_cocoa::mojom::Visibility visibility) {
+    host_b_.OnWindowVisibilityChanged(visibility);
+  }
+
   void TearDownInProcessBrowserTestFixture() override {
     [window_a_web_contents_view_cocoa_ setHost:nullptr];
+    [window_b_web_contents_view_cocoa_ setHost:nullptr];
   }
 
   WebContentsHostWindowForOcclusionTesting* __strong window_a_;
@@ -557,6 +595,7 @@ class WindowOcclusionBrowserTestMac : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList features_;
   WebContentsNSViewHostStub host_a_;
+  WebContentsNSViewHostStub host_b_;
 };
 
 // Tests that we correctly disallow unsupported macOS versions.
@@ -662,10 +701,66 @@ IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
   window_b_.ignoresMouseEvents = NO;
   expect_window_a_visibility(remote_cocoa::mojom::Visibility::kOccluded);
 
+  // A window_b that macOS itself reports as occluded (e.g. a parked Stage
+  // Manager strip window) cannot occlude window_a.
+  [window_b_ setOccludedForTesting:YES];
+  expect_window_a_visibility(remote_cocoa::mojom::Visibility::kVisible);
+  [window_b_ setOccludedForTesting:NO];
+  expect_window_a_visibility(remote_cocoa::mojom::Visibility::kOccluded);
+
   // As does a non-opaque window_b with a clear background.
   window_b_.opaque = NO;
   window_b_.backgroundColor = NSColor.clearColor;
   expect_window_a_visibility(remote_cocoa::mojom::Visibility::kVisible);
+}
+
+// Checks that when a window becomes the active key/main window while an
+// inactive window of the same application still precedes it in -[NSApplication
+// orderedWindows] (e.g. during animated window transitions, Cmd+` window
+// cycling, or Stage Manager), the active window is marked kVisible and the
+// inactive window covered by it is marked kOccluded.
+IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
+                       ManualOcclusionDetectionDoesNotOccludeActiveWindow) {
+  InitWindowA();
+  [window_a_ setCanBecomeKeyOrMainForTesting:YES];
+
+  // Place window_b ahead of window_a in orderedWindows with an identical frame
+  // as the initially active window.
+  InitWindowB(window_a_.frame);
+  [window_b_ setCanBecomeKeyOrMainForTesting:YES];
+  [window_b_ setKeyWindowForTesting:YES];
+  [window_b_ setMainWindowForTesting:YES];
+  WaitForOcclusionUpdate();
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kOccluded);
+  EXPECT_EQ(WindowBWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+
+  // Simulate focus switching from window_b to window_a while inactive window_b
+  // remains ahead of window_a in -[NSApplication orderedWindows].
+  [window_b_ setKeyWindowForTesting:NO];
+  [window_b_ setMainWindowForTesting:NO];
+  [window_a_ setKeyWindowForTesting:YES];
+  [window_a_ setMainWindowForTesting:YES];
+  PostNotification(NSWindowDidResignMainNotification, window_b_);
+  PostNotification(NSWindowDidBecomeMainNotification, window_a_);
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+  EXPECT_EQ(WindowBWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kOccluded);
+
+  // When focus switches back to window_b while still ahead of window_a,
+  // window_a should be marked occluded again and window_b should be visible.
+  [window_a_ setKeyWindowForTesting:NO];
+  [window_a_ setMainWindowForTesting:NO];
+  [window_b_ setKeyWindowForTesting:YES];
+  [window_b_ setMainWindowForTesting:YES];
+  PostNotification(NSWindowDidResignMainNotification, window_a_);
+  PostNotification(NSWindowDidBecomeMainNotification, window_b_);
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kOccluded);
+  EXPECT_EQ(WindowBWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
 }
 
 // Checks manual occlusion detection as windows change display order.
