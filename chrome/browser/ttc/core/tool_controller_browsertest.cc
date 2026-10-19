@@ -30,6 +30,7 @@
 #include "chrome/browser/actor/tab_annotation_manager.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
+#include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -45,6 +46,9 @@
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1757,6 +1761,87 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
   EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kTabWentAway);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       OpenGeminiPanelMissingPrompt) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name =
+      std::string(actor::PromptGeminiPanelToolRequest::kModelFacingName);
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenGeminiPanelEmptyPrompt) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name =
+      std::string(actor::PromptGeminiPanelToolRequest::kModelFacingName);
+  tool_request.arguments.Set(actor::PromptGeminiPanelToolRequest::kPromptParam,
+                             "");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+using ToolControllerGeminiPanelBrowserTest =
+    glic::GlicBrowserTestMixin<TtcCoreBrowserTestBase>;
+
+IN_PROC_BROWSER_TEST_F(ToolControllerGeminiPanelBrowserTest,
+                       OpenAndCloseGeminiPanel) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  auto* glic_service = glic::GlicKeyedService::Get(profile());
+  ASSERT_TRUE(glic_service);
+  ASSERT_FALSE(glic_service->instance_coordinator().IsPanelShowingForBrowser(
+      *GetBrowser()));
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name =
+        std::string(actor::PromptGeminiPanelToolRequest::kModelFacingName);
+    tool_request.arguments.Set(
+        actor::PromptGeminiPanelToolRequest::kPromptParam,
+        "Generate an image of a cat");
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+  }
+
+  EXPECT_TRUE(glic_service->instance_coordinator().IsPanelShowingForBrowser(
+      *GetBrowser()));
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name =
+        std::string(actor::CloseGeminiPanelToolRequest::kModelFacingName);
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+  }
+
+  EXPECT_FALSE(glic_service->instance_coordinator().IsPanelShowingForBrowser(
+      *GetBrowser()));
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -1785,14 +1870,23 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   const std::set<actor::ToolId> kExpectedToolIds = {
-      actor::ToolId::kNavigate,        actor::ToolId::kPerformSearch,
-      actor::ToolId::kGoBack,          actor::ToolId::kGoForward,
-      actor::ToolId::kReloadPage,      actor::ToolId::kFindAndHighlight,
-      actor::ToolId::kPlayVideo,       actor::ToolId::kPauseVideo,
-      actor::ToolId::kSeekToTimestamp, actor::ToolId::kTranslatePage,
-      actor::ToolId::kCloseTab,        actor::ToolId::kSwitchTab,
+      actor::ToolId::kNavigate,
+      actor::ToolId::kPerformSearch,
+      actor::ToolId::kGoBack,
+      actor::ToolId::kGoForward,
+      actor::ToolId::kReloadPage,
+      actor::ToolId::kFindAndHighlight,
+      actor::ToolId::kPlayVideo,
+      actor::ToolId::kPauseVideo,
+      actor::ToolId::kSeekToTimestamp,
+      actor::ToolId::kTranslatePage,
+      actor::ToolId::kCloseTab,
+      actor::ToolId::kSwitchTab,
 #if !BUILDFLAG(IS_ANDROID)
-      actor::ToolId::kOpenKnownPage,   actor::ToolId::kEnterFullscreen,
+      actor::ToolId::kOpenKnownPage,
+      actor::ToolId::kEnterFullscreen,
+      actor::ToolId::kPromptGeminiPanel,
+      actor::ToolId::kCloseGeminiPanel,
       actor::ToolId::kExitFullscreen,
 #endif
   };

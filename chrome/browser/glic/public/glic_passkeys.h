@@ -31,6 +31,7 @@ class ActorGeminiPanelToolBrowserTest;
 
 namespace ttc {
 class AiOverlayTools;
+class ToolController;
 }
 
 namespace skills {
@@ -81,6 +82,7 @@ class InvokeWithAutoSubmitPasskeyProvider {
   friend class ::indigo::IndigoPageActionController;
   friend class ::actor::ActorGeminiPanelToolBrowserTest;
   friend class ::ttc::AiOverlayTools;
+  friend class ::ttc::ToolController;
   friend class ::skills::SkillsUiTabController;
   friend class ::skills::SkillsInvocationInteractiveUiTest;
   friend class AndroidAutoSubmitPasskeyHelper<

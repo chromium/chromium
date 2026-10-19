@@ -92,7 +92,11 @@ enum class ToolId {
   // Attempts to log in to the website using saved credentials or social login
   // buttons.
   kAttemptLogin = 36,
-  kMaxValue = kAttemptLogin,
+  // Opens the Gemini side panel with a prompt.
+  kPromptGeminiPanel = 37,
+  // Closes the Gemini side panel if it is currently open.
+  kCloseGeminiPanel = 38,
+  kMaxValue = kCloseGeminiPanel,
 };
 
 // In-memory metadata and parameter schema for a shared browser tool. Prefer

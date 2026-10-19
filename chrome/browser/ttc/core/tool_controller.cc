@@ -20,10 +20,12 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
+#include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
@@ -37,6 +39,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/translate_page_tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
 #include "chrome/browser/ttc/core/session_controller_impl.h"
@@ -185,6 +188,12 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
       case actor::ToolId::kTranslatePage:
         TranslatePage(tool_request.arguments, std::move(callback));
         return;
+      case actor::ToolId::kPromptGeminiPanel:
+        PromptGeminiPanel(tool_request.arguments, std::move(callback));
+        return;
+      case actor::ToolId::kCloseGeminiPanel:
+        CloseGeminiPanel(std::move(callback));
+        return;
       case actor::ToolId::kCloseTab:
         CloseCurrentTab(std::move(callback));
         return;
@@ -258,6 +267,8 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
       actor::ToolId::kPauseVideo,
       actor::ToolId::kSeekToTimestamp,
       actor::ToolId::kTranslatePage,
+      actor::ToolId::kPromptGeminiPanel,
+      actor::ToolId::kCloseGeminiPanel,
       actor::ToolId::kCloseTab,
       actor::ToolId::kSwitchTab,
 #if !BUILDFLAG(IS_ANDROID)
@@ -888,6 +899,37 @@ void ToolController::OnGetScreenshotFetched(
       base::Base64Encode(std::move(screenshot_result.screenshot_data)));
   result_dict.Set("mime_type", screenshot_result.mime_type);
   std::move(callback).Run(ToolResponse::Success(std::move(result_dict)));
+}
+
+void ToolController::PromptGeminiPanel(const base::DictValue& arguments,
+                                       ToolResponseCallback callback) {
+  const std::string* prompt =
+      arguments.FindString(actor::PromptGeminiPanelToolRequest::kPromptParam);
+  if (!prompt || prompt->empty()) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing or empty prompt argument"));
+    return;
+  }
+
+  PerformActionOnTrackedContents(
+      [&prompt](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::PromptGeminiPanelToolRequest>(
+            glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+            actor_surface_handle, *prompt);
+      },
+      std::move(callback));
+}
+
+void ToolController::CloseGeminiPanel(ToolResponseCallback callback) {
+  PerformActionOnTrackedContents(
+      [](actor::ActorSurfaceHandle actor_surface_handle)
+          -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::CloseGeminiPanelToolRequest>(
+            actor_surface_handle);
+      },
+      std::move(callback));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

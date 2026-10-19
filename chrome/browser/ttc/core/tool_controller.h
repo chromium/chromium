@@ -88,6 +88,9 @@ class ToolController {
       base::expected<
           std::unique_ptr<page_content_annotations::FetchPageContextResult>,
           page_content_annotations::FetchPageContextErrorDetails> result);
+  void PromptGeminiPanel(const base::DictValue& arguments,
+                         ToolResponseCallback callback);
+  void CloseGeminiPanel(ToolResponseCallback callback);
   void CloseCurrentTab(ToolResponseCallback callback);
   void SwitchTab(const base::DictValue& arguments,
                  ToolResponseCallback callback);

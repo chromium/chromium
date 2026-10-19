@@ -22,6 +22,7 @@
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
+#include "chrome/browser/actor/tools/gemini_panel_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
@@ -545,6 +546,30 @@ TEST(ToolRegistryTest, ScriptToolDefinition) {
   EXPECT_THAT(*definition,
               RequiresParam(ScriptToolRequest::kInputArgumentsParam));
 }
+TEST(ToolRegistryTest, PromptGeminiPanelToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      PromptGeminiPanelToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kPromptGeminiPanel);
+  EXPECT_EQ(definition->name, PromptGeminiPanelToolRequest::kModelFacingName);
+  EXPECT_THAT(
+      *definition,
+      HasParamOfType(PromptGeminiPanelToolRequest::kPromptParam, "string"));
+  EXPECT_THAT(*definition,
+              RequiresParam(PromptGeminiPanelToolRequest::kPromptParam));
+}
+
+TEST(ToolRegistryTest, CloseGeminiPanelToolDefinition) {
+  const std::optional<ToolDefinition> definition =
+      CloseGeminiPanelToolRequest::GetToolDefinition();
+  ASSERT_TRUE(definition.has_value());
+  EXPECT_EQ(definition->id, ToolId::kCloseGeminiPanel);
+  EXPECT_EQ(definition->name, CloseGeminiPanelToolRequest::kModelFacingName);
+  EXPECT_THAT(definition->parameters_json_schema,
+              base::test::DictionaryHasValue("properties",
+                                             base::Value(base::DictValue())));
+}
+
 TEST(ToolRegistryTest, GetAllToolsContainsNavigateTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -877,6 +902,30 @@ TEST(ToolRegistryTest, GetAllToolsContainsFindAndHighlightTool) {
 
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kFindAndHighlight,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsPromptGeminiPanelTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kPromptGeminiPanel,
+                                    &ToolDefinition::id));
+}
+
+TEST(ToolRegistryTest, GetAllToolsContainsCloseGeminiPanelTool) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  ActorKeyedService* service = ActorKeyedService::Get(&profile);
+  CHECK(service);
+
+  EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
+                                    ToolId::kCloseGeminiPanel,
                                     &ToolDefinition::id));
 }
 

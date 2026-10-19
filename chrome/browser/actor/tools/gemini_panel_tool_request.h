@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_GEMINI_PANEL_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_GEMINI_PANEL_TOOL_REQUEST_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -22,6 +23,11 @@ class ToolRequestVisitorFunctor;
 class PromptGeminiPanelToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "PromptGeminiPanel";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "prompt_gemini_panel";
+  // JSON argument key for the prompt parameter.
+  static constexpr std::string_view kPromptParam = "prompt";
 
   PromptGeminiPanelToolRequest(glic::InvokeWithAutoSubmitPasskey passkey,
                                ActorSurfaceHandle actor_surface_handle,
@@ -29,6 +35,9 @@ class PromptGeminiPanelToolRequest : public ToolRequest {
   ~PromptGeminiPanelToolRequest() override;
   PromptGeminiPanelToolRequest(const PromptGeminiPanelToolRequest&);
   PromptGeminiPanelToolRequest& operator=(const PromptGeminiPanelToolRequest&);
+
+  // Returns the `ToolId::kPromptGeminiPanel` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   GURL GetURLForJournal() const override;
@@ -52,11 +61,17 @@ class PromptGeminiPanelToolRequest : public ToolRequest {
 class CloseGeminiPanelToolRequest : public ToolRequest {
  public:
   static constexpr char kName[] = "CloseGeminiPanel";
+  // Canonical model-facing name exposed in LLM prompt schemas and indexed by
+  // `ToolRegistry` for lookup and routing via `GetToolDefinition()`.
+  static constexpr std::string_view kModelFacingName = "close_gemini_panel";
 
   explicit CloseGeminiPanelToolRequest(ActorSurfaceHandle actor_surface_handle);
   ~CloseGeminiPanelToolRequest() override;
   CloseGeminiPanelToolRequest(const CloseGeminiPanelToolRequest&);
   CloseGeminiPanelToolRequest& operator=(const CloseGeminiPanelToolRequest&);
+
+  // Returns the `ToolId::kCloseGeminiPanel` tool schema definition.
+  static std::optional<ToolDefinition> GetToolDefinition();
 
   // ToolRequest:
   GURL GetURLForJournal() const override;
