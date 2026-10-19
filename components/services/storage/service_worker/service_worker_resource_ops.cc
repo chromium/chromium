@@ -412,7 +412,7 @@ class ServiceWorkerResourceReaderImpl::DataReader {
 ServiceWorkerResourceReaderImpl::ServiceWorkerResourceReaderImpl(
     int64_t resource_id,
     base::WeakPtr<ServiceWorkerDiskCache> disk_cache,
-    mojo::PendingReceiver<storage::mojom::ServiceWorkerResourceReader> receiver,
+    mojo::PendingReceiver<mojom::ServiceWorkerResourceReader> receiver,
     base::OnceClosure disconnect_handler,
     const std::optional<const net::SHA256HashValue>& sha256_checksum)
     : entry_opener_(resource_id, std::move(disk_cache)),

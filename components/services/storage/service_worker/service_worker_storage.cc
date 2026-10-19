@@ -1345,14 +1345,14 @@ ServiceWorkerStorage::ServiceWorkerStorage(
 base::FilePath ServiceWorkerStorage::GetDatabasePath() {
   if (user_data_directory_.empty())
     return base::FilePath();
-  return user_data_directory_.Append(storage::kServiceWorkerDirectory)
+  return user_data_directory_.Append(kServiceWorkerDirectory)
       .Append(kDatabaseName);
 }
 
 base::FilePath ServiceWorkerStorage::GetDiskCachePath() {
   if (user_data_directory_.empty())
     return base::FilePath();
-  return user_data_directory_.Append(storage::kServiceWorkerDirectory)
+  return user_data_directory_.Append(kServiceWorkerDirectory)
       .Append(kDiskCacheName);
 }
 

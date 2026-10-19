@@ -168,7 +168,7 @@ using RouterSourceType = network::mojom::ServiceWorkerRouterSourceType;
 
 class ServiceWorkerEnv : public leveldb_env::ChromiumEnv {
  public:
-  ServiceWorkerEnv() : ChromiumEnv(storage::CreateFilesystemProxy()) {}
+  ServiceWorkerEnv() : ChromiumEnv(CreateFilesystemProxy()) {}
 
   // Returns a shared instance of ServiceWorkerEnv. This is thread-safe.
   static ServiceWorkerEnv* GetInstance() {
@@ -305,7 +305,7 @@ base::ByteSize AccumulateResourceSizeInBytes(
 
 std::optional<std::vector<liburlpattern::Part>> ConvertToBlinkParts(
     const google::protobuf::RepeatedPtrField<
-        storage::ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
             URLPattern::Part>& parts) {
   std::vector<liburlpattern::Part> ret;
   for (const auto& input_part : parts) {
@@ -365,7 +365,7 @@ std::optional<std::vector<liburlpattern::Part>> ConvertToBlinkParts(
 void ConvertToProtoParts(
     const std::vector<liburlpattern::Part> parts,
     google::protobuf::RepeatedPtrField<
-        storage::ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
+        ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::
             URLPattern::Part>* out_parts) {
   for (const auto& p : parts) {
     ServiceWorkerRegistrationData::RouterRules::RuleV1::Condition::URLPattern::

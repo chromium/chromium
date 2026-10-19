@@ -38,11 +38,11 @@ class ServiceWorkerStorageControlImpl
   static mojo::SelfOwnedReceiverRef<mojom::ServiceWorkerStorageControl> Create(
       mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver,
       const base::FilePath& user_data_directory,
-      scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+      scoped_refptr<ServiceWorkerStorage::StorageSharedBuffer>
           storage_shared_buffer);
   ServiceWorkerStorageControlImpl(
       const base::FilePath& user_data_directory,
-      scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+      scoped_refptr<ServiceWorkerStorage::StorageSharedBuffer>
           storage_shared_buffer,
       mojo::PendingReceiver<mojom::ServiceWorkerStorageControl> receiver);
 
@@ -60,7 +60,7 @@ class ServiceWorkerStorageControlImpl
  private:
   ServiceWorkerStorageControlImpl(
       const base::FilePath& user_data_directory,
-      scoped_refptr<storage::ServiceWorkerStorage::StorageSharedBuffer>
+      scoped_refptr<ServiceWorkerStorage::StorageSharedBuffer>
           storage_shared_buffer);
   // mojom::ServiceWorkerStorageControl implementations:
   void Disable(DisableCallback callback) override;
