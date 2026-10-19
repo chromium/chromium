@@ -5,12 +5,14 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_ONE_TIME_TOKENS_GMAIL_OTP_OPT_IN_BUBBLE_CONTROLLER_H_
 #define CHROME_BROWSER_UI_AUTOFILL_ONE_TIME_TOKENS_GMAIL_OTP_OPT_IN_BUBBLE_CONTROLLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
+#include "ui/actions/action_id.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace content {
@@ -59,6 +61,7 @@ class GmailOtpOptInBubbleController : public AutofillBubbleControllerBase {
 
   const std::u16string& account_email() const { return account_email_; }
   tabs::TabInterface& tab() const { return *tab_; }
+  using AutofillBubbleControllerBase::bubble_view;
 
   // Overrides the factory used to create and show the bubble view in tests so
   // the controller can be unit-tested without instantiating `views` widgets.
@@ -68,6 +71,7 @@ class GmailOtpOptInBubbleController : public AutofillBubbleControllerBase {
   base::WeakPtr<GmailOtpOptInBubbleController> GetWeakPtr();
 
   // AutofillBubbleControllerBase:
+  void HideBubble(bool initiated_by_bubble_manager) override;
   void OnBubbleDiscarded() override;
   BubbleType GetBubbleType() const override;
   bool ShouldReshowOnTabVisible() const override;
@@ -76,6 +80,7 @@ class GmailOtpOptInBubbleController : public AutofillBubbleControllerBase {
  protected:
   // AutofillBubbleControllerBase:
   void DoShowBubble() override;
+  std::optional<actions::ActionId> GetActionIdForPageAction() override;
 
  private:
   const raw_ref<tabs::TabInterface> tab_;

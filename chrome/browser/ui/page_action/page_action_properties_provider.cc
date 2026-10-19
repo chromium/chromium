@@ -342,6 +342,14 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
             .element_identifier = kPageActionWalletReminderNoticeElementId,
         },
     },
+    {
+        kActionGmailOtpOptIn,
+        {
+            .histogram_name = "GmailOtpOptIn",
+            .type = PageActionIconType::kGmailOtpOptIn,
+            .element_identifier = kPageActionGmailOtpOptInElementId,
+        },
+    },
 });
 // LINT.ThenChange(//components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom:PageActionId,//chrome/browser/ui/page_action/action_ids.h:kActionIds)
 

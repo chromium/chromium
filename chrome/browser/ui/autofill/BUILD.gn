@@ -292,6 +292,7 @@ source_set("impl") {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:chrome_pages",
       "//chrome/browser/ui:singleton_tabs",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/autofill/autofill_ai:impl",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/desktop_to_mobile_promos:utils",
@@ -299,6 +300,7 @@ source_set("impl") {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts/api:toasts",
       "//chrome/browser/ui/user_education",
+      "//chrome/browser/ui/views:bubble_anchor_util_views",
       "//chrome/browser/ui/views/autofill/autofill_ai",
       "//chrome/browser/ui/views/autofill/one_time_tokens",
       "//chrome/browser/ui/views/autofill/popup:popup_view_views",
@@ -436,8 +438,10 @@ source_set("unit_tests") {
     ]
     deps += [
       "//chrome/browser/glic/test_support",
+      "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/page_action:test_support",
       "//chrome/browser/ui/user_education",
       "//chrome/test/user_education:impl",
       "//components/tabs:test_support",

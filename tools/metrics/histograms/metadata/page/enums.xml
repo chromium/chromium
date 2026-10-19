@@ -292,6 +292,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Payments Churned Users"/>
   <int value="48" label="Fake Page Action For Debug"/>
   <int value="49" label="Wallet Reminder Notice"/>
+  <int value="50" label="Gmail OTP Opt-In"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_icon_type.h:PageActionIconType) -->

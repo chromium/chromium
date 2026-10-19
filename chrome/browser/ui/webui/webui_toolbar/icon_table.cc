@@ -285,6 +285,8 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
            {"webui-toolbar:location_on", IconType::kIconSet}},
           {{&vector_icons::kLocationOnIcon},
            {"webui-toolbar:location_on", IconType::kIconSet}},
+          {{&vector_icons::kMailAsteriskIcon},
+           {"webui-toolbar:mail_asterisk", IconType::kIconSet}},
           {{&vector_icons::kMediaRouterActiveChromeRefreshOldIcon},
            {"webui-toolbar:cast_connected", IconType::kIconSet}},
           {{&vector_icons::kMediaRouterIdleChromeRefreshOldIcon},

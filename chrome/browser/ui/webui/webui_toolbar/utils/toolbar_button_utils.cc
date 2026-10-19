@@ -557,6 +557,8 @@ actions::ActionId MojomPageActionIdToActionId(
       return kActionFakePageActionForDebug;
     case MojomPageActionId::kActionWalletReminderNotice:
       return kActionWalletReminderNotice;
+    case MojomPageActionId::kActionGmailOtpOptIn:
+      return kActionGmailOtpOptIn;
   }
   NOTREACHED();
 }
@@ -633,6 +635,8 @@ MojomPageActionId ActionIdToMojomPageActionId(actions::ActionId action_id) {
       return MojomPageActionId::kActionFakePageActionForDebug;
     case kActionWalletReminderNotice:
       return MojomPageActionId::kActionWalletReminderNotice;
+    case kActionGmailOtpOptIn:
+      return MojomPageActionId::kActionGmailOtpOptIn;
   }
   NOTREACHED();
 }

@@ -38,8 +38,9 @@ source_set("browser_tests") {
 
   deps = [
     ":one_time_tokens",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/autofill",
-    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/interaction",
     "//chrome/test:test_support_ui",
   ]
 }

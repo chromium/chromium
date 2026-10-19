@@ -571,6 +571,7 @@
   E(kActionShowAiOverlayDialog) \
   E(kActionAutofillPayment) \
   E(kActionWalletReminderNotice) \
+  E(kActionGmailOtpOptIn) \
   E(kActionTtcToolbar) \
 
 #define SUBMENU_ACTION_IDS                                                     \

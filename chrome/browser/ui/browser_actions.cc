@@ -5108,6 +5108,14 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             .Build());
   }
 
+  root_action_item_->AddChild(actions::ActionItem::Builder()
+                                  .SetActionId(kActionGmailOtpOptIn)
+                                  .SetTooltipText(l10n_util::GetStringUTF16(
+                                      IDS_AUTOFILL_GMAIL_OTP_OPT_IN_TITLE))
+                                  .SetImage(ui::ImageModel::FromVectorIcon(
+                                      vector_icons::kMailAsteriskIcon))
+                                  .Build());
+
   if (ttc::TtcKeyedService* service =
           ttc::TtcKeyedService::Get(bwi->GetProfile());
       service && service->IsEnabled()) {

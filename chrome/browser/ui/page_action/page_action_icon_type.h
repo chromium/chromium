@@ -62,7 +62,8 @@ enum class PageActionIconType {
   kPaymentsChurnedUsers = 47,
   kFakePageActionForDebug = 48,
   kWalletReminderNotice = 49,
-  kMaxValue = kWalletReminderNotice,
+  kGmailOtpOptIn = 50,
+  kMaxValue = kGmailOtpOptIn,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:PageActionIconType)
 

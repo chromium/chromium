@@ -12,9 +12,12 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/bubble_manager.h"
 #include "chrome/browser/ui/autofill/bubble_manager_impl.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
+#include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/gmail_otp_opt_in_result.h"
@@ -24,6 +27,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace autofill {
@@ -82,7 +86,9 @@ class FakeTabInterface : public tabs::MockTabInterface {
  public:
   FakeTabInterface(TestingProfile* testing_profile,
                    tabs::TabFeatures* tab_features)
-      : tab_features_(tab_features) {
+      : tab_features_(tab_features),
+        scoped_page_action_controller_(unowned_user_data_host_,
+                                       page_action_controller_) {
     if (testing_profile) {
       web_contents_factory_ =
           std::make_unique<content::TestWebContentsFactory>();
@@ -91,6 +97,10 @@ class FakeTabInterface : public tabs::MockTabInterface {
     }
   }
   ~FakeTabInterface() override = default;
+
+  page_actions::MockPageActionController& page_action_controller() {
+    return page_action_controller_;
+  }
 
   tabs::TabFeatures* GetTabFeatures() override { return tab_features_; }
   const tabs::TabFeatures* GetTabFeatures() const override {
@@ -133,6 +143,9 @@ class FakeTabInterface : public tabs::MockTabInterface {
   raw_ptr<content::WebContents> web_contents_ = nullptr;
   raw_ptr<tabs::TabFeatures> tab_features_ = nullptr;
   ui::UnownedUserDataHost unowned_user_data_host_;
+  NiceMock<page_actions::MockPageActionController> page_action_controller_;
+  ui::ScopedUnownedUserData<page_actions::PageActionController>
+      scoped_page_action_controller_;
   bool is_activated_ = false;
   base::RepeatingCallbackList<void(TabInterface*)> activation_callbacks_;
   base::RepeatingCallbackList<void(TabInterface*)> deactivation_callbacks_;
@@ -164,6 +177,9 @@ class GmailOtpOptInBubbleControllerTest : public ::testing::Test {
 
   GmailOtpOptInBubbleController* controller() { return controller_.get(); }
   FakeTabInterface* tab_interface() { return tab_interface_.get(); }
+  page_actions::MockPageActionController& page_action_controller() {
+    return tab_interface_->page_action_controller();
+  }
   BubbleManager* bubble_manager() {
     return tab_features_.autofill_bubble_manager();
   }
@@ -197,6 +213,7 @@ TEST_F(GmailOtpOptInBubbleControllerTest, GetBubbleControllerBaseWeakPtr) {
 TEST_F(GmailOtpOptInBubbleControllerTest,
        SetUpAndShowBubble_ShowsBubbleImmediately) {
   EXPECT_FALSE(controller()->IsShowingBubble());
+  EXPECT_CALL(page_action_controller(), Show(kActionGmailOtpOptIn));
 
   controller()->SetUpAndShowBubble(u"user@gmail.com", base::DoNothing());
 
@@ -233,8 +250,29 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   ASSERT_FALSE(wallet_controller.IsShowingBubble());
 
   EXPECT_CALL(mock_bubble_, Hide());
+  EXPECT_CALL(page_action_controller(), Hide(kActionGmailOtpOptIn));
   EXPECT_CALL(wallet_controller, ShowBubble());
   controller()->HideBubble(/*initiated_by_bubble_manager=*/false);
+
+  EXPECT_FALSE(controller()->IsShowingBubble());
+  EXPECT_TRUE(wallet_controller.IsShowingBubble());
+}
+
+TEST_F(GmailOtpOptInBubbleControllerTest,
+       OnBubbleClosed_HidesPageActionAndInformsBubbleManager) {
+  controller()->SetUpAndShowBubble(u"user@gmail.com", base::DoNothing());
+  ASSERT_TRUE(controller()->IsShowingBubble());
+
+  // Queue a lower-priority bubble while the Gmail OTP opt-in bubble is active.
+  NiceMock<MockOtherBubbleController> wallet_controller(
+      BubbleType::kWalletablePassConsent);
+  bubble_manager()->RequestShowController(wallet_controller,
+                                          /*force_show=*/false);
+  ASSERT_FALSE(wallet_controller.IsShowingBubble());
+
+  EXPECT_CALL(page_action_controller(), Hide(kActionGmailOtpOptIn));
+  EXPECT_CALL(wallet_controller, ShowBubble());
+  controller()->OnBubbleClosed(GmailOtpOptInResult::kClosed);
 
   EXPECT_FALSE(controller()->IsShowingBubble());
   EXPECT_TRUE(wallet_controller.IsShowingBubble());
@@ -247,6 +285,7 @@ TEST_F(GmailOtpOptInBubbleControllerTest,
   ASSERT_TRUE(controller()->IsShowingBubble());
 
   EXPECT_CALL(mock_bubble_, Hide());
+  EXPECT_CALL(page_action_controller(), Hide(kActionGmailOtpOptIn));
   controller_.reset();
   EXPECT_EQ(future.Get(), GmailOtpOptInResult::kDiscarded);
 }
