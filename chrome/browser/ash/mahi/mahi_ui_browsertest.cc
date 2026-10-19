@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -23,16 +24,23 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/mahi/mahi_test_util.h"
 #include "chrome/browser/ash/mahi/mahi_ui_browser_test_base.h"
+#include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
+#include "chrome/browser/ui/ash/magic_boost/magic_boost_opt_in_card.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
@@ -527,6 +535,170 @@ IN_PROC_BROWSER_TEST_P(MahiUiWithDisclaimerViewBrowserTest,
                         mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
                     ->GetText()),
             GetMahiDefaultTestAnswer());
+}
+
+// MahiUiMinorRestrictionsBrowserTest ------------------------------------------
+
+// Tests Mahi UI eligibility end-to-end without `kMahiRestrictionsOverride` so
+// that minor / U13 account capability restrictions are evaluated.
+class MahiUiMinorRestrictionsBrowserTest : public MahiUiBrowserTestBase {
+ public:
+  MahiUiMinorRestrictionsBrowserTest()
+      : MahiUiBrowserTestBase(/*apply_restrictions_override=*/false) {}
+
+ protected:
+  void RightClickAndExpectNoMahiOrOptInWidgets() {
+    content::WebContents* const web_contents =
+        chrome_test_utils::GetActiveWebContents(this);
+    ASSERT_TRUE(web_contents);
+
+    base::RunLoop menu_shown_loop;
+    RenderViewContextMenu* shown_menu = nullptr;
+    RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
+        base::BindLambdaForTesting([&](RenderViewContextMenu* context_menu) {
+          shown_menu = context_menu;
+          menu_shown_loop.Quit();
+        }));
+
+    event_generator().MoveMouseTo(web_contents->GetViewBounds().CenterPoint());
+    event_generator().ClickRightButton();
+    menu_shown_loop.Run();
+    ASSERT_TRUE(shown_menu);
+
+    // Flush the `RequestTextSurroundingSelection` IPC to the renderer and back
+    // so `ReadWriteCardObserver::OnTextSurroundingSelectionAvailable` has
+    // completed before checking for Mahi / Magic Boost widgets.
+    content::RenderFrameHost* const focused_frame =
+        web_contents->GetFocusedFrame();
+    if (focused_frame) {
+      base::RunLoop text_surrounding_loop;
+      focused_frame->RequestTextSurroundingSelection(
+          base::BindLambdaForTesting(
+              [&](const std::u16string&, uint32_t, uint32_t) {
+                text_surrounding_loop.Quit();
+              }),
+          /*max_length=*/100);
+      text_surrounding_loop.Run();
+    }
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_FALSE(
+        FindWidgetWithName(chromeos::mahi::MahiMenuView::GetWidgetName()));
+    EXPECT_FALSE(FindWidgetWithName(
+        chromeos::MagicBoostOptInCard::GetWidgetNameForTest()));
+    EXPECT_FALSE(
+        FindWidgetWithName(chromeos::ReadWriteCardsUiController::kWidgetName));
+    EXPECT_FALSE(FindWidgetWithName(MagicBoostDisclaimerView::GetWidgetName()));
+    EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
+
+    shown_menu->Cancel();
+    base::RunLoop().RunUntilIdle();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MahiUiMinorRestrictionsBrowserTest,
+                       MinorAccountCannotAccessMahiUi) {
+  SetCanUseMantaService(false);
+  QuickAnswersState::Get()->SetEligibilityForTesting(false);
+
+  EXPECT_FALSE(
+      chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
+
+  // 1. With pending consent (`kPendingDisclaimer`), a minor / U13 account must
+  // not be able to open the Mahi menu, Magic Boost opt-in card, or disclaimer.
+  chromeos::MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
+  EXPECT_FALSE(chromeos::MahiManager::Get()->IsEnabled());
+  RightClickAndExpectNoMahiOrOptInWidgets();
+
+  // 2. Even if HMR prefs are enabled and approved (`kApproved`), a minor / U13
+  // account must not be able to enable or open Mahi UI on unselected content.
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
+  EXPECT_FALSE(chromeos::MahiManager::Get()->IsEnabled());
+  RightClickAndExpectNoMahiOrOptInWidgets();
+
+  // 3. Even when text is selected on the page, right-clicking must not open the
+  // full or condensed Mahi menu (`ReadWriteCardsWidget`).
+  ASSERT_TRUE(content::ExecJs(
+      chrome_test_utils::GetActiveWebContents(this),
+      "window.getSelection().selectAllChildren(document.body);"));
+  RightClickAndExpectNoMahiOrOptInWidgets();
+}
+
+IN_PROC_BROWSER_TEST_F(MahiUiMinorRestrictionsBrowserTest,
+                       UnknownCapabilityAccountCannotAccessMahiUi) {
+  SetCanUseMantaService(std::nullopt);
+  QuickAnswersState::Get()->SetEligibilityForTesting(false);
+
+  EXPECT_FALSE(
+      chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
+
+  chromeos::MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kPendingDisclaimer);
+  EXPECT_FALSE(chromeos::MahiManager::Get()->IsEnabled());
+  RightClickAndExpectNoMahiOrOptInWidgets();
+
+  chromeos::MagicBoostState::Get()->AsyncWriteConsentStatus(
+      chromeos::HMRConsentStatus::kApproved);
+  EXPECT_FALSE(chromeos::MahiManager::Get()->IsEnabled());
+  RightClickAndExpectNoMahiOrOptInWidgets();
+
+  ASSERT_TRUE(content::ExecJs(
+      chrome_test_utils::GetActiveWebContents(this),
+      "window.getSelection().selectAllChildren(document.body);"));
+  RightClickAndExpectNoMahiOrOptInWidgets();
+}
+
+IN_PROC_BROWSER_TEST_F(MahiUiMinorRestrictionsBrowserTest,
+                       EligibleAccountCanAccessMahiUi) {
+  SetCanUseMantaService(true);
+
+  EXPECT_TRUE(
+      chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures());
+
+  chromeos::MagicBoostState::Get()->AsyncWriteHMREnabled(true);
+  ApplyHMRConsentStatusAndWait(chromeos::HMRConsentStatus::kApproved);
+  EXPECT_TRUE(chromeos::MahiManager::Get()->IsEnabled());
+
+  event_generator().MoveMouseTo(chrome_test_utils::GetActiveWebContents(this)
+                                    ->GetViewBounds()
+                                    .CenterPoint());
+  event_generator().ClickRightButton();
+  views::Widget* const mahi_menu_widget = FindWidgetWithNameAndWaitIfNeeded(
+      chromeos::mahi::MahiMenuView::GetWidgetName());
+  ASSERT_TRUE(mahi_menu_widget);
+
+  gfx::ScopedAnimationDurationScaleMode zero_duration(
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  const views::View* const summary_button =
+      mahi_menu_widget->GetContentsView()->GetViewByID(
+          chromeos::mahi::ViewID::kSummaryButton);
+  ASSERT_TRUE(summary_button);
+  event_generator().MoveMouseTo(
+      summary_button->GetBoundsInScreen().CenterPoint());
+  event_generator().ClickLeftButton();
+
+  UiUpdateRecorder update_recorder(GetMahiUiController());
+  WaitUntilMahiMenuClosed(mahi_menu_widget);
+
+  views::Widget* const panel_widget =
+      FindWidgetWithNameAndWaitIfNeeded(MahiPanelWidget::GetName());
+  ASSERT_TRUE(panel_widget);
+
+  if (!update_recorder.HasUpdate(MahiUiUpdateType::kSummaryLoaded)) {
+    WaitUntilUiUpdateReceived(MahiUiUpdateType::kSummaryLoaded);
+  }
+
+  const auto* const summary_label = views::AsViewClass<views::Label>(
+      panel_widget->GetContentsView()->GetViewByID(
+          mahi_constants::ViewId::kSummaryLabel));
+  ASSERT_TRUE(summary_label);
+  EXPECT_EQ(base::UTF16ToUTF8(summary_label->GetText()),
+            GetMahiDefaultTestSummary());
 }
 
 }  // namespace ash

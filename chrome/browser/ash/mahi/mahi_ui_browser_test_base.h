@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_MAHI_MAHI_UI_BROWSER_TEST_BASE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +24,7 @@ namespace ash {
 
 class MahiUiBrowserTestBase : public SystemWebAppBrowserTestBase {
  public:
-  MahiUiBrowserTestBase();
+  explicit MahiUiBrowserTestBase(bool apply_restrictions_override = true);
   MahiUiBrowserTestBase(const MahiUiBrowserTestBase&) = delete;
   MahiUiBrowserTestBase& operator=(const MahiUiBrowserTestBase&) = delete;
   ~MahiUiBrowserTestBase() override;
@@ -33,6 +34,11 @@ class MahiUiBrowserTestBase : public SystemWebAppBrowserTestBase {
  protected:
   // SystemWebAppBrowserTestBase:
   void SetUpOnMainThread() override;
+
+  // Sets the primary account's `can_use_manta_service` capability, or leaves it
+  // in an unknown (`signin::Tribool::kUnknown`) state if `can_use` is
+  // `std::nullopt`.
+  void SetCanUseMantaService(std::optional<bool> can_use);
 
   // Mouse clicks on the disclaimer view's accept button or the declination
   // button, specified by `accept`.
@@ -46,6 +52,7 @@ class MahiUiBrowserTestBase : public SystemWebAppBrowserTestBase {
   ui::test::EventGenerator& event_generator() { return *event_generator_; }
 
  private:
+  const bool apply_restrictions_override_;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   mahi::FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
   chromeos::ScopedMahiWebContentsManagerOverride
