@@ -31,5 +31,13 @@ id<VoiceSearchController> CreateVoiceSearchController(Browser* browser) {
   return nil;
 }
 
+ChromeCoordinator* CreateVoiceSearchCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    id<VoiceSearchCoordinatorDelegate> delegate) {
+  // Voice Search is disabled in Chromium.
+  return nil;
+}
+
 }  // namespace provider
 }  // namespace ios

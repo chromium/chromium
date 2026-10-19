@@ -11,6 +11,9 @@
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
 class Browser;
+@class ChromeCoordinator;
+@class UIViewController;
+@protocol VoiceSearchCoordinatorDelegate;
 
 namespace ios {
 namespace provider {
@@ -22,7 +25,15 @@ bool IsVoiceSearchEnabled();
 NSArray<VoiceSearchLanguage*>* GetAvailableLanguages();
 
 // Creates a new VoiceSearchController instance.
+// TODO(crbug.com/549858749): Remove once the legacy Voice Search UI is removed.
 id<VoiceSearchController> CreateVoiceSearchController(Browser* browser);
+
+// Creates a coordinator presenting the Voice Plate on `base_view_controller`.
+// The outcome of the session is reported to `delegate`.
+ChromeCoordinator* CreateVoiceSearchCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    id<VoiceSearchCoordinatorDelegate> delegate);
 
 }  // namespace provider
 }  // namespace ios

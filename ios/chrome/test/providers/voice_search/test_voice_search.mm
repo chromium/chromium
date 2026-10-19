@@ -40,5 +40,12 @@ id<VoiceSearchController> CreateVoiceSearchController(Browser* browser) {
   return nil;
 }
 
+ChromeCoordinator* CreateVoiceSearchCoordinator(
+    UIViewController* base_view_controller,
+    Browser* browser,
+    id<VoiceSearchCoordinatorDelegate> delegate) {
+  return nil;
+}
+
 }  // namespace provider
 }  // namespace ios
