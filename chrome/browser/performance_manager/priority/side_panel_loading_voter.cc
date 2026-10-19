@@ -4,7 +4,6 @@
 
 #include "chrome/browser/performance_manager/priority/side_panel_loading_voter.h"
 
-#include "chrome/common/webui_url_constants.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "url/gurl.h"
 
@@ -22,12 +21,10 @@ void SidePanelLoadingVoter::MarkAsSidePanel(const PageNode* page_node) {
   CHECK(page_node->GetPrimaryMainFrameNode());
 
   // This is possible for a preloaded Side Panel. The navigation has already
-  // committed and the page is visible.
+  // committed, so there is no initial load left to prioritize. The page may be
+  // hidden at this point (e.g. a preloaded WebUI is hidden until it is ready
+  // to show), but it is shown as soon as it is added to the Side Panel.
   if (!page_node->GetMainFrameUrl().is_empty()) {
-    if (page_node->GetMainFrameUrl() !=
-        GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)) {
-      CHECK(page_node->IsVisible());
-    }
     return;
   }
 

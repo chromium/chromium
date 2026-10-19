@@ -94,4 +94,28 @@ TEST_F(SidePanelLoadingVoterTest, NotMarked) {
   EXPECT_FALSE(observer().HasVote(voter_id(), frame.get()));
 }
 
+// A preloaded Side Panel has already committed its navigation when it is
+// marked, and may be hidden. Its priority is not increased.
+TEST_F(SidePanelLoadingVoterTest, MarkedAfterCommitWhileHidden) {
+  auto process(TestNodeWrapper<TestProcessNodeImpl>::Create(graph()));
+  auto page(TestNodeWrapper<PageNodeImpl>::Create(graph()));
+  auto frame(graph()->CreateFrameNodeAutoId(process.get(), page.get()));
+
+  page->OnMainFrameNavigationCommitted(
+      /*same_document=*/false, base::TimeTicks::Now(),
+      /*navigation_id=*/1u, GURL("https://example.com/"), "text/html",
+      std::nullopt);
+  ASSERT_FALSE(page->GetMainFrameUrl().is_empty());
+  ASSERT_FALSE(page->IsVisible());
+
+  MarkAsSidePanel(page.get());
+
+  EXPECT_FALSE(observer().HasVote(voter_id(), frame.get()));
+
+  // Making the page visible.
+  page->SetIsVisible(true);
+
+  EXPECT_FALSE(observer().HasVote(voter_id(), frame.get()));
+}
+
 }  // namespace performance_manager::priority
