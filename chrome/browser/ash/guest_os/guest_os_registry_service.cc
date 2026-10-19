@@ -229,8 +229,9 @@ bool EqualsExcludingTimestamps(const base::DictValue& left,
       ++right_iter;
       continue;
     }
-    if (*left_iter != *right_iter)
+    if (*left_iter != *right_iter) {
       return false;
+    }
     ++left_iter;
     ++right_iter;
   }
@@ -1151,7 +1152,7 @@ void GuestOsRegistryService::OnContainerAppIcon(
     return;
   }
 
-  if (icons.empty()) {
+  if (icons.empty() || icons[0].content.empty()) {
     VLOG(1) << "No icon in container for app: " << app_id;
     InvokeActiveIconCallbacks(app_id, scale_factor, std::string());
     return;

@@ -6,16 +6,21 @@
 
 #include <stddef.h>
 
+#include "base/files/file_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
@@ -29,7 +34,8 @@ using vm_tools::apps::ApplicationList;
 
 namespace guest_os {
 
-class GuestOsRegistryServiceTest : public testing::Test {
+class GuestOsRegistryServiceTest : public testing::Test,
+                                   protected FakeVmServicesHelper {
  public:
   GuestOsRegistryServiceTest() : crostini_test_helper_(&profile_) {
     RecreateService();
@@ -147,8 +153,9 @@ TEST_F(GuestOsRegistryServiceTest, SetAndGetRegistration) {
     }
   }
 
-  for (const std::string& mime_type : mime_types)
+  for (const std::string& mime_type : mime_types) {
     app->add_mime_types(mime_type);
+  }
 
   service()->UpdateApplicationList(app_list);
   std::optional<GuestOsRegistryService::Registration> result =
@@ -517,6 +524,32 @@ TEST_F(GuestOsRegistryServiceTest, GetEnabledApps) {
   fake_crostini_features.set_enabled(false);
   EXPECT_THAT(GetRegisteredAppIds(), testing::UnorderedElementsAre(c));
   EXPECT_THAT(GetEnabledAppIds(), testing::IsEmpty());
+}
+
+TEST_F(GuestOsRegistryServiceTest, RequestIconWithEmptyContent) {
+  std::string app_id =
+      crostini::CrostiniTestHelper::GenerateAppId("app", "vm", "container");
+  ApplicationList app_list =
+      crostini::CrostiniTestHelper::BasicAppList("app", "vm", "container");
+  service()->UpdateApplicationList(app_list);
+
+  for (auto format : {vm_tools::cicerone::DesktopIcon::PNG,
+                      vm_tools::cicerone::DesktopIcon::SVG}) {
+    vm_tools::cicerone::ContainerAppIconResponse response;
+    auto* icon = response.add_icons();
+    icon->set_desktop_file_id("app");
+    icon->set_format(format);
+    icon->set_icon("");
+    FakeCiceroneClient()->set_container_app_icon_response(response);
+
+    base::test::TestFuture<std::string> result;
+    service()->RequestIcon(app_id, ui::k100Percent, result.GetCallback());
+    EXPECT_TRUE(result.Get().empty());
+    EXPECT_FALSE(
+        base::PathExists(service()->GetIconPath(app_id, ui::k100Percent)));
+    EXPECT_FALSE(
+        base::PathExists(service()->GetIconPath(app_id, ui::kScaleFactorNone)));
+  }
 }
 
 }  // namespace guest_os
