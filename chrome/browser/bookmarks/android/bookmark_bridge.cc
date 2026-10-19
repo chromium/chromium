@@ -455,7 +455,9 @@ void BookmarkBridge::GetTopLevelFolderIds(
     int32_t j_force_visible_mask,
     const JavaRef<jobject>& j_result_obj) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/574121399): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
 
   AddBookmarkNodesToBookmarkIdList(
       env, j_result_obj,
