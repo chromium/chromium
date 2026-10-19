@@ -94,7 +94,6 @@ if (!is_android) {
     sources = [
       "chrome_color_provider_utils_unittest.cc",
       "material_new_tab_page_color_mixer_unittest.cc",
-      "material_tab_strip_color_mixer_unittest.cc",
       "new_tab_page_color_mixer_unittest.cc",
     ]
 

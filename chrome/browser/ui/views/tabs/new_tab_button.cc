@@ -10,10 +10,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/tabs/shared/new_tab_button_menu_model.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/view_class_properties.h"
 
@@ -30,6 +28,7 @@ NewTabButton::NewTabButton(PressedCallback callback,
       browser_(browser) {
   set_context_menu_controller(this);
   SetProperty(views::kElementIdentifierKey, kNewTabButtonElementId);
+  set_paint_transparent_for_glass(true);
 }
 
 NewTabButton::~NewTabButton() = default;
@@ -51,14 +50,4 @@ void NewTabButton::ShowContextMenuForViewImpl(
         source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
         views::MenuAnchorPosition::kTopLeft, source_type);
   }
-}
-
-void NewTabButton::UpdateBackground() {
-  auto* const glass_frame_service = GlassFrameService::GetInstance();
-  if (glass_frame_service &&
-      glass_frame_service->IsBrowserWindowEligible(browser_)) {
-    SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-    return;
-  }
-  TabStripControlButton::UpdateBackground();
 }

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/glass_frame_service.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
@@ -246,11 +247,23 @@ void TabStripControlButton::AddedToWidget() {
   paint_as_active_subscription_ =
       GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &TabStripControlButton::UpdateColors, base::Unretained(this)));
+  // Only subscribe to glass frame eligibility changes if this button's
+  // background becomes transparent for glass frames.
+  auto* const glass_frame_service = GlassFrameService::GetInstance();
+  if (paint_transparent_for_glass_ && glass_frame_service) {
+    glass_frame_subscription_ =
+        glass_frame_service->RegisterGlassFrameEligibilityChangedCallback(
+            browser_window_interface_,
+            base::BindRepeating(
+                &TabStripControlButton::OnGlassFrameEligibilityChanged,
+                base::Unretained(this)));
+  }
   UpdateColors();
 }
 
 void TabStripControlButton::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
+  glass_frame_subscription_ = {};
 }
 
 void TabStripControlButton::OnThemeChanged() {
@@ -348,8 +361,13 @@ void TabStripControlButton::UpdateBackground() {
                                BrowserFrameActiveState::kUseCurrent)
                          : std::nullopt;
 
-  // Paint the background as transparent for image based themes.
-  if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {
+  // Paint the background as transparent for image based themes or glass frames.
+  auto* const glass_frame_service = GlassFrameService::GetInstance();
+  const bool paint_transparent_for_glass =
+      paint_transparent_for_glass_ && glass_frame_service &&
+      glass_frame_service->IsBrowserWindowEligible(browser_window_interface_);
+  if ((bg_id.has_value() && paint_transparent_for_custom_image_theme_) ||
+      paint_transparent_for_glass) {
     SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
   } else {
     const float right_corner_radius =
@@ -373,6 +391,10 @@ void TabStripControlButton::UpdateInkDrop() {
 
   CreateToolbarInkdropCallbacks(this, inkdrop_hover_color_id_,
                                 inkdrop_ripple_color_id_);
+}
+
+void TabStripControlButton::OnGlassFrameEligibilityChanged(bool is_eligible) {
+  UpdateColors();
 }
 
 bool TabStripControlButton::IsWidgetAlive() const {
