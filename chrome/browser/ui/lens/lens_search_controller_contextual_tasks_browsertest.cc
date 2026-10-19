@@ -1458,6 +1458,14 @@ class LensSearchControllerStartZeroStateSessionTest
     return LensSearchController::From(browser()->GetActiveTabInterface());
   }
 
+  // Lens overlay takes a screenshot of the tab. In order to take a screenshot
+  // the tab must not be about:blank and must be painted.
+  void WaitForPaint() {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
+    lens::WaitForPaint(browser(), url);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1535,6 +1543,7 @@ IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
 
 IN_PROC_BROWSER_TEST_F(LensSearchControllerStartZeroStateSessionTest,
                        OpensLensOverlayWhenRequested) {
+  WaitForPaint();
   ASSERT_TRUE(browser()->tab_strip_model()->GetActiveWebContents());
   auto* controller = GetLensSearchController();
   ASSERT_TRUE(controller);
