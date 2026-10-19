@@ -2143,6 +2143,9 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
       oof_data ? oof_data->GetRememberedScrollOffsets() : nullptr);
 
   do {
+    if (forced_index.has_value()) {
+      break;
+    }
     unsigned attempts_left = kMaxTryAttempts;
     do {
       NonOverflowingScrollRange non_overflowing_range;

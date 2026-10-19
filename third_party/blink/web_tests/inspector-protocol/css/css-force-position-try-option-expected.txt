@@ -104,3 +104,24 @@ Dumping CSS position-try rules:
 }
 index of active position-try-fallback: 1
 
+--- Force index 1 with non-normal position-try-order (most-height) ---
+w: 250, h: 250, child color: rgb(0, 255, 0)
+Dumping CSS position-try rules: 
+@position-try --medium (inactive) {
+    width: 100px; @[27:2-27:15]
+    height: 100px; @[28:2-28:16]
+    top: anchor(--anchor top); @[29:2-29:28]
+    width: 100px; @[undefined-undefined]
+    height: 100px; @[undefined-undefined]
+    top: anchor(--anchor top); @[undefined-undefined]
+}
+@position-try --large (inactive) {
+    width: 300px; @[33:2-33:15]
+    height: 300px; @[34:2-34:16]
+    top: anchor(--anchor bottom); @[35:2-35:31]
+    width: 300px; @[undefined-undefined]
+    height: 300px; @[undefined-undefined]
+    top: anchor(--anchor bottom); @[undefined-undefined]
+}
+index of active position-try-fallback: 0
+

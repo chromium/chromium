@@ -116,5 +116,13 @@
   testRunner.log(await session.evaluate(`getAnchoredElementInfo()`));
   await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
 
+  testRunner.log(
+      '\n--- Force index 1 with non-normal position-try-order (most-height) ---');
+  await session.evaluate(
+      `document.getElementById('anchored-element').style.positionTryOrder = 'most-height'`);
+  await dp.CSS.forcePositionTryOption({nodeId, index: 1});
+  testRunner.log(await session.evaluate(`getAnchoredElementInfo()`));
+  await cssHelper.loadAndDumpCSSPositionTryForNode(nodeId);
+
   testRunner.completeTest();
 });
