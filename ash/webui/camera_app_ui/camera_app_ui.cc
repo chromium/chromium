@@ -11,7 +11,6 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_camera_app_resources_map.h"
-#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -141,13 +140,21 @@ void GotSalt(
 
 // Translates the renderer-side source ID to video device id.
 void TranslateVideoDeviceId(
+    content::BrowserContext* browser_context,
     media_device_salt::MediaDeviceSaltService* salt_service,
     const url::Origin& origin,
     const std::string& source_id,
     base::OnceCallback<void(const std::optional<std::string>&)> callback) {
-  salt_service->GetSalt(
-      blink::StorageKey::CreateFirstParty(origin),
-      base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
+  if (salt_service) {
+    salt_service->GetSalt(
+        blink::StorageKey::CreateFirstParty(origin),
+        base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
+  } else {
+    // If the embedder does not provide a salt service, use the browser
+    // context's unique ID as salt.
+    GotSalt(origin, source_id, std::move(callback),
+            browser_context->UniqueId());
+  }
 }
 
 void HandleCameraResult(
@@ -172,6 +179,7 @@ void SendNewCaptureBroadcast(content::BrowserContext* context,
 
 std::unique_ptr<media::CameraAppDeviceProviderImpl>
 CreateCameraAppDeviceProvider(
+    content::BrowserContext* browser_context,
     media_device_salt::MediaDeviceSaltService* salt_service,
     const url::Origin& security_origin) {
   auto connect_to_bridge_callback = base::BindRepeating(
@@ -181,8 +189,9 @@ CreateCameraAppDeviceProvider(
         content::GetVideoCaptureService().ConnectToCameraAppDeviceBridge(
             std::move(device_bridge_receiver));
       });
-  auto mapping_callback = base::BindRepeating(
-      &TranslateVideoDeviceId, salt_service, std::move(security_origin));
+  auto mapping_callback =
+      base::BindRepeating(&TranslateVideoDeviceId, browser_context,
+                          salt_service, std::move(security_origin));
 
   return std::make_unique<media::CameraAppDeviceProviderImpl>(
       std::move(connect_to_bridge_callback), std::move(mapping_callback));
@@ -229,13 +238,9 @@ bool CameraAppUIShouldEnableLocalOverride(const std::string& url) {
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-CameraAppUI::CameraAppUI(
-    content::WebUI* web_ui,
-    std::unique_ptr<CameraAppUIDelegate> delegate,
-    media_device_salt::MediaDeviceSaltService* media_device_salt_service)
-    : ui::MojoWebUIController(web_ui),
-      delegate_(std::move(delegate)),
-      media_device_salt_service_(CHECK_DEREF(media_device_salt_service)) {
+CameraAppUI::CameraAppUI(content::WebUI* web_ui,
+                         std::unique_ptr<CameraAppUIDelegate> delegate)
+    : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
 
@@ -281,8 +286,10 @@ CameraAppUI::~CameraAppUI() {
 
 void CameraAppUI::BindInterface(
     mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver) {
+  content::BrowserContext* browser_context =
+      web_ui()->GetWebContents()->GetBrowserContext();
   provider_ = CreateCameraAppDeviceProvider(
-      &media_device_salt_service_.get(),
+      browser_context, delegate_->GetMediaDeviceSaltService(browser_context),
       url::Origin::Create(GURL(kChromeUICameraAppURL)));
   provider_->Bind(std::move(receiver));
 }

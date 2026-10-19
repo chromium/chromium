@@ -269,21 +269,6 @@ std::unique_ptr<content::WebUIConfig> MakeHelpAppUIConfig(
   return std::make_unique<HelpAppUIConfig>(create_controller_func);
 }
 
-std::unique_ptr<content::WebUIConfig> MakeCameraAppUIConfig() {
-  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
-      [](content::WebUI* web_ui,
-         const GURL& url) -> std::unique_ptr<content::WebUIController> {
-        Profile* profile = Profile::FromWebUI(web_ui);
-        const AccountId& account_id =
-            CHECK_DEREF(AnnotatedAccountId::Get(profile->GetOriginalProfile()));
-        return std::make_unique<CameraAppUI>(
-            web_ui, std::make_unique<ChromeCameraAppUIDelegate>(web_ui),
-            MediaDeviceSaltServiceProvider::Get().Find(account_id));
-      });
-
-  return std::make_unique<CameraAppUIConfig>(create_controller_func);
-}
-
 // `local_state` and `application_locale_storage` must not be null and must
 // outlive the returned config.
 std::unique_ptr<content::WebUIConfig> MakeRecorderAppUIConfig(
@@ -424,7 +409,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   // All `WebUIConfig`s should be registered here, irrespective of whether their
   // `WebUI` is enabled or not. To conditionally enable/disable a WebUI,
   // developers should override `WebUIConfig::IsWebUIEnabled()`.
-  AddWebUIConfig(MakeCameraAppUIConfig());
+  AddWebUIConfig(MakeComponentConfigWithDelegate<CameraAppUIConfig, CameraAppUI,
+                                                 ChromeCameraAppUIDelegate>());
   AddWebUIConfig(std::make_unique<cellular_setup::MobileSetupUIConfig>(
       &application_locale_storage_.get()));
   AddWebUIConfig(std::make_unique<chromeos::ChromeURLDisabledUIConfig>());
