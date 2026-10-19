@@ -55,7 +55,9 @@ def GenerateConversionContents(words):
       if not first:
         building_string += ' + std::string(" ") + '
       if isinstance(part, str):
-        building_string += 'std::string("' + part + '")'
+        # Escape ?? to avoid C++ trigraph warnings (e.g. ??=).
+        safe_part = part.replace('??', r'\?\?')
+        building_string += 'std::string("' + safe_part + '")'
       else:
         if part > max_part:
           max_part = part

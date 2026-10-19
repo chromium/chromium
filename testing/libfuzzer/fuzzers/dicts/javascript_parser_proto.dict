@@ -19,10 +19,13 @@
 "."
 "..."
 "?"
+"?."
+"??"
 "++"
 "--"
 "=>"
 "!"
+"~"
 "="
 "|="
 "^="
@@ -36,6 +39,9 @@
 "/="
 "%="
 "**="
+"||="
+"&&="
+"??="
 ","
 "||"
 "&&"
@@ -59,16 +65,18 @@
 ">"
 "<="
 ">="
-"!"
-"~"
 "#"
 ".#"
+"?.#"
+"@"
 
 # Keywords, contextual keywords, literals, reserved words.
 "__proto__"
+"accessor"
 "anonymous"
 "arguments"
 "as"
+"assert"
 "async"
 "await"
 "break"
@@ -93,11 +101,13 @@
 "from"
 "function"
 "get"
+"globalThis"
 "if"
 "import"
 "in"
 "instanceof"
 "let"
+"meta"
 "name"
 "new"
 "null"
@@ -116,12 +126,52 @@
 "try"
 "typeof"
 "undefined"
+"using"
 "var"
 "void"
 "while"
+"window"
 "with"
 
-# TODO(marja): Add names of known classes.
+# Known built-in objects and classes
+"Object"
+"Array"
+"Function"
+"String"
+"Number"
+"Boolean"
+"Symbol"
+"BigInt"
+"Math"
+"Date"
+"RegExp"
+"Map"
+"Set"
+"WeakMap"
+"WeakSet"
+"ArrayBuffer"
+"SharedArrayBuffer"
+"DataView"
+"Promise"
+"Proxy"
+"Reflect"
+"JSON"
+"Atomics"
+"Intl"
+"Error"
+"TypeError"
+"SyntaxError"
+"RangeError"
+"ReferenceError"
+"EvalError"
+"URIError"
+"AggregateError"
+"Uint8Array"
+"Int32Array"
+"Float64Array"
+"FinalizationRegistry"
+"WeakRef"
+"Iterator"
 
 # Separators
 "\n"
@@ -138,35 +188,107 @@ $0 "," $1
 "a"
 "b"
 "c"
+"x"
+"y"
+"z"
+
+# Private identifiers
+"#foo"
+"#bar"
+"#a"
+"#b"
+"#c"
+"#x"
 
 # Other literals
 "0"
 "0.0"
+"1"
+"-1"
+"0x1f"
+"0b1010"
+"0o777"
+"1_000_000"
+"0b10_01"
+"0x1f_2e"
+"1e5"
+"1e-5"
+"NaN"
+"Infinity"
 
-# TODO(marja): Add strings and numbers! And quotes.
+# BigInt literals
+"0n"
+"1n"
+"100n"
+"0x1fn"
+"0b1010n"
+"0o777n"
+"1_000n"
 
-# Other meaningful words from the spec
+# String literals
+"''"
+"'foo'"
+"'bar'"
+"'a'"
+"'1'"
+"'use strict'"
+
+# Meaningful words from the spec
 "new.target"
+"import.meta"
+"import.meta.url"
+"import.meta.resolve"
 
 # More complicated building blocks
 
 # Block, object, or binding pattern
 "{" $0 "}"
 "{" $0 ": " $1 "}"
+"{" "[" $0 "]" ": " $1 "}"
+"{" "[" $0 "]" "(" $1 ") {" $2 "}" "}"
+"{" "..." $0 "}"
+"{" $0 "," "..." $1 "}"
+"{" "get" $0 "() {" $1 "}" "}"
+"{" "set" $0 "(" $1 ") {" $2 "}" "}"
+"{" "async" $0 "(" $1 ") {" $2 "}" "}"
+"{" "*" $0 "(" $1 ") {" $2 "}" "}"
+"{" "async *" $0 "(" $1 ") {" $2 "}" "}"
+"{" $0 "=" $1 "}"
 
 # Array or array binding pattern
 "[" $0 "]"
+"[" "..." $0 "]"
+"[" $0 "," "..." $1 "]"
+"[" $0 ",," $1 "]"
+"[" $0 "=" $1 "]"
 
 # Rest element or rest parameter
 "..."
 "..." $0
 
 # Variable declarations
+"let" $0 ";"
+"var" $0 ";"
 "let" $0 "=" $1 ";"
 "const " $0 "=" $1 ";"
 "var" $0 "=" $1 ";"
+"let" $0 "," $1 ";"
+"var" $0 "," $1 ";"
+"const" $0 "=" $1 "," $2 "=" $3 ";"
+"let" $0 "=" $1 "," $2 "=" $3 ";"
+"var" $0 "=" $1 "," $2 "=" $3 ";"
+
+# Explicit resource management
+"using" $0 "=" $1 ";"
+"await using" $0 "=" $1 ";"
+"using" $0 "=" $1 "," $2 "=" $3 ";"
+"await using" $0 "=" $1 "," $2 "=" $3 ";"
+"{ using" $0 "=" $1 ";" $2 "}"
+"{ await using" $0 "=" $1 ";" $2 "}"
 
 # Return statements
+"return"
+"return;"
 "return" $0
 "return" $0 ";"
 
@@ -186,6 +308,20 @@ $0 "," $1
 "for (" $0 "of" $1 ") {" $2 "}"
 "for (" $0 ";" $1 ";" $2 ")" $3
 "for (" $0 ";" $1 ";" $2 ") {" $3 "}"
+"for (let" $0 "of" $1 ")" $2
+"for (let" $0 "of" $1 ") {" $2 "}"
+"for (const" $0 "of" $1 ")" $2
+"for (const" $0 "of" $1 ") {" $2 "}"
+"for (var" $0 "of" $1 ")" $2
+"for (var" $0 "of" $1 ") {" $2 "}"
+"for (using" $0 "of" $1 ")" $2
+"for (using" $0 "of" $1 ") {" $2 "}"
+"for (let" $0 "in" $1 ")" $2
+"for (let" $0 "in" $1 ") {" $2 "}"
+"for (const" $0 "in" $1 ")" $2
+"for (const" $0 "in" $1 ") {" $2 "}"
+"for (var" $0 "in" $1 ")" $2
+"for (var" $0 "in" $1 ") {" $2 "}"
 "for await (" $0 ")" $1
 "for await (" $0 ") {" $1 " }"
 "for await (" $0 "in" $1 ")" $2
@@ -194,6 +330,12 @@ $0 "," $1
 "for await (" $0 "of" $1 ") {" $2 "}"
 "for await (" $0 ";" $1 ";" $2 ")" $3
 "for await (" $0 ";" $1 ";" $2 ") {" $3 "}"
+"for await (let" $0 "of" $1 ")" $2
+"for await (let" $0 "of" $1 ") {" $2 "}"
+"for await (const" $0 "of" $1 ")" $2
+"for await (const" $0 "of" $1 ") {" $2 "}"
+"for await (await using" $0 "of" $1 ")" $2
+"for await (await using" $0 "of" $1 ") {" $2 "}"
 "while (" $0 ")" $1
 "while (" $0 ") {" $1 "}"
 "continue"
@@ -217,18 +359,24 @@ $0 "," $1
 # Try-catch statements
 "try" $0 "catch (" $1 ")" $2
 "try {" $0 "} catch (" $1 ") {" $2 "}"
+"try" $0 "catch" $1
+"try {" $0 "} catch {" $1 "}"
 "try" $0 "finally (" $1 ")" $2
 "try {" $0 "} finally (" $1 ") {" $2 "}"
 "try" $0 "catch (" $1 ")" $2 "finally" $3
 "try {" $0 "} catch (" $1 ") {" $2 "} finally {" $3 "}"
+"try" $0 "catch" $1 "finally" $2
+"try {" $0 "} catch {" $1 "} finally {" $2 "}"
 
 # Functions and arrow functions
 "function" $0 "(" $1 ") {" $2 "}"
 "function" "(" $0 ") {" $1 "}"
+"function" $0 "(" $0 "=" $1 ") {" $2 "}"
 $0 "=>" $1
 $0 "=> {" $1 "}"
 "(" $0 ") => {" $1 "}"
 "(" $0 ") =>" $1
+"(" $0 "=" $1 ") => {" $2 "}"
 
 # Strict functions and arrow functions
 "function" $0 "(" $1 ") { 'use strict';" $2 "}"
@@ -237,17 +385,25 @@ $0 "=> { 'use strict';" $1 "}"
 "(" $0 ") => { 'use strict'; " $1 "}"
 
 # Methods
-$0 "(" $1 ") {" $1 "}"
-"get" $0 "(" $1 ") {" $1 "}"
-"set" $0 "(" $1 ") {" $1 "}"
-"static" $0 "(" $1 ") {" $1 "}"
-"static get" $0 "(" $1 ") {" $1 "}"
-"static set" $0 "(" $1 ") {" $1 "}"
+$0 "(" $1 ") {" $2 "}"
+"get" $0 "() {" $1 "}"
+"set" $0 "(" $1 ") {" $2 "}"
+"static" $0 "(" $1 ") {" $2 "}"
+"static get" $0 "() {" $1 "}"
+"static set" $0 "(" $1 ") {" $2 "}"
+"[" $0 "](" $1 ") {" $2 "}"
+"static [" $0 "](" $1 ") {" $2 "}"
+"get [" $0 "]() {" $1 "}"
+"set [" $0 "](" $1 ") {" $2 "}"
+"static get [" $0 "]() {" $1 "}"
+"static set [" $0 "](" $1 ") {" $2 "}"
 
 # Generators
 "*" $0 "(" $1 ") {" $2 "}"
 "function *" $0 "(" $1 ") {" $2 "}"
 "function * (" $1 ") {" $2 "}"
+"yield"
+"yield;"
 "yield" $0
 "yield *" $0
 
@@ -255,9 +411,86 @@ $0 "(" $1 ") {" $1 "}"
 "function *" $0 "(" $1 ") {'use strict'; " $2 "}"
 "function * (" $1 ") { 'use strict'; " $2 "}"
 
+# Async generators
+"async function *" $0 "(" $1 ") {" $2 "}"
+"async function * (" $1 ") {" $2 "}"
+"async function *" $0 "(" $1 ") { 'use strict'; " $2 "}"
+"async function * (" $1 ") { 'use strict'; " $2 "}"
+"async *" $0 "(" $1 ") {" $2 "}"
+"static async *" $0 "(" $1 ") {" $2 "}"
+
 # Classes
 "class" $0 "{" $1 "}"
 "class" $0 "extends" $1 "{" $2 "}"
+"class {" $0 "}"
+"class extends" $0 "{" $1 "}"
+
+# Class public fields
+$0 ";"
+$0 "=" $1 ";"
+"static" $0 ";"
+"static" $0 "=" $1 ";"
+
+# Class private fields
+"#foo;"
+"#foo = " $0 ";"
+"#a;"
+"#a = " $0 ";"
+"static #foo;"
+"static #foo = " $0 ";"
+"static #a;"
+"static #a = " $0 ";"
+
+# Class private methods and accessors
+"#foo (" $0 ") {" $1 "}"
+"#a (" $0 ") {" $1 "}"
+"static #foo (" $0 ") {" $1 "}"
+"static #a (" $0 ") {" $1 "}"
+"get #foo () {" $0 "}"
+"get #a () {" $0 "}"
+"set #foo (" $0 ") {" $1 "}"
+"set #a (" $0 ") {" $1 "}"
+"static get #foo () {" $0 "}"
+"static set #foo (" $0 ") {" $1 "}"
+"async #foo (" $0 ") {" $1 "}"
+"static async #foo (" $0 ") {" $1 "}"
+"* #foo (" $0 ") {" $1 "}"
+"static * #foo (" $0 ") {" $1 "}"
+"async * #foo (" $0 ") {" $1 "}"
+"static async * #foo (" $0 ") {" $1 "}"
+
+# Ergonomic brand checks (private name in object)
+"#foo in" $0
+"#a in" $0
+"#foo in this"
+"! (#foo in" $0 ")"
+
+# Private member access
+$0 ".#foo"
+$0 ".#a"
+$0 ".#foo (" $1 ")"
+$0 ".#a (" $1 ")"
+"this.#foo"
+"this.#a"
+"this.#foo =" $0 ";"
+"this.#a =" $0 ";"
+
+# Class static initialization blocks
+"static {" $0 "}"
+
+# Decorators and auto-accessors
+"accessor" $0 ";"
+"accessor" $0 "=" $1 ";"
+"static accessor" $0 ";"
+"static accessor" $0 "=" $1 ";"
+"accessor #foo;"
+"accessor #foo =" $0 ";"
+"static accessor #foo;"
+"static accessor #foo =" $0 ";"
+"@" $0
+"@" $0 "(" $1 ")"
+"@" $0 "class" $1 "{" $2 "}"
+"@" $0 "class {" $1 "}"
 
 # Async functions, async methods, async arrow functions
 "async function" $0 "(" $1 ") {" $2 "}"
@@ -268,42 +501,203 @@ $0 "(" $1 ") {" $1 "}"
 "async(" $0 ") => {" $1 "}"
 "async(" $0 ") =>" $1
 "await" $0
+"await" $0 ";"
 
-# Strict async functions.
+# Strict async functions
 "async function" $0 "(" $1 ") { 'use strict'; " $2 "}"
 "async function" "(" $0 ") { 'use strict'; " $1 "}"
 "async" $0 "(" $1 ") { 'use strict'; " $2 "}"
 "async" $0 "=> { 'use strict'; " $1 "}"
 "async(" $0 ") => { 'use strict';" $1 "}"
 
-# Call expressions
+# Call expressions & member expressions
 $0 "[" $1 "]"
 $0 "(" $1 ")"
+$0 "." $1
+$0 "." $1 ";"
+
+# Optional chaining
+$0 "?." $1
+$0 "?." $1 ";"
+$0 "?." "[" $1 "]"
+$0 "?." "[" $1 "];"
+$0 "?." "(" $1 ")"
+$0 "?." "(" $1 ");"
+$0 "?." $1 "(" $2 ")"
+$0 "?." $1 "(" $2 ");"
+$0 "?." $1 "[" $2 "]"
+$0 "?." $1 "[" $2 "];"
+$0 "?.#" $1
+$0 "?.#foo"
+$0 "?.#a"
 
 # Template literals
 "`foo`"
 $0 "`foo`"
-# TODO(marja): add more
+"`" $0 "`"
+"`foo ${" $0 "} bar`"
+"`foo ${" $0 "} bar ${" $1 "} baz`"
+$0 "`" $1 "`"
+$0 "`foo ${" $1 "} bar`"
+"String.raw`foo`"
+"String.raw`" $0 "`"
 
 # Strict directive
 "'use strict';"
 
 # Regexps
 "/foo/"
-# TODO(marja): add more
+"/foo/g"
+"/foo/i"
+"/foo/m"
+"/foo/s"
+"/foo/u"
+"/foo/v"
+"/foo/d"
+"/foo/y"
+"/foo/gv"
+"/foo/suy"
+"/(?<name>foo)/"
+"/(?<=foo)bar/"
+"/(?<!foo)bar/"
+"/\\p{Letter}/u"
+"/\\p{ASCII}/v"
+"/(?:foo)/"
+"/[a-z--[e]]/v"
+"/[a-z&&[e]]/v"
 
 # Conditional expression
 $0 "?" $1 ":" $2
 $0 "?" $1 ":" $2 ";"
 
+# Nullish coalescing and logical assignments
+$0 "??" $1
+$0 "??" $1 ";"
+$0 "||=" $1
+$0 "||=" $1 ";"
+$0 "&&=" $1
+$0 "&&=" $1 ";"
+$0 "??=" $1
+$0 "??=" $1 ";"
+
 # Assignment expressions
 $0 "=" $1
 $0 "=" $1 ";"
+$0 "+=" $1
+$0 "+=" $1 ";"
+$0 "-=" $1
+$0 "-=" $1 ";"
+$0 "*=" $1
+$0 "*=" $1 ";"
+$0 "/=" $1
+$0 "/=" $1 ";"
+$0 "%=" $1
+$0 "%=" $1 ";"
+$0 "**=" $1
+$0 "**=" $1 ";"
+$0 "<<=" $1
+$0 "<<=" $1 ";"
+$0 ">>=" $1
+$0 ">>=" $1 ";"
+$0 ">>>=" $1
+$0 ">>>=" $1 ";"
+$0 "&=" $1
+$0 "&=" $1 ";"
+$0 "^=" $1
+$0 "^=" $1 ";"
+$0 "|=" $1
+$0 "|=" $1 ";"
 
-# Import / export (for modules)
+# Dynamic import
+"import(" $0 ")"
+"import(" $0 ");"
+"import(" $0 "," $1 ")"
+"import(" $0 "," $1 ");"
+"import(" $0 ", { with: {" $1 "} })"
+"import(" $0 ", { assert: {" $1 "} })"
+
+# Module import declarations
 "import" $0 ";"
+"import" $0 "from" $1 ";"
+"import {" $0 "} from" $1 ";"
+"import {" $0 "as" $1 "} from" $2 ";"
+"import * as" $0 "from" $1 ";"
+"import" $0 "," "{" $1 "} from" $2 ";"
+"import" $0 "," "* as" $1 "from" $2 ";"
+"import" $0 "from" $1 "with {" $2 "};"
+"import" $0 "from" $1 "with { type: 'json' };"
+"import" $0 "from" $1 "assert {" $2 "};"
+"import" $0 "from" $1 "assert { type: 'json' };"
+"import {" $0 "} from" $1 "with { type: 'json' };"
+
+# Module export declarations
 "export" $0 ";"
+"export default" $0 ";"
+"export default function" $0 "(" $1 ") {" $2 "}"
+"export default function (" $0 ") {" $1 "}"
+"export default async function" $0 "(" $1 ") {" $2 "}"
+"export default async function (" $0 ") {" $1 "}"
+"export default class" $0 "{" $1 "}"
+"export default class {" $0 "}"
+"export {" $0 "} from" $1 ";"
+"export {" $0 "as" $1 "} from" $2 ";"
+"export * from" $0 ";"
+"export * as" $0 "from" $1 ";"
+"export * as" $0 "from" $1 "with {" $2 "};"
+"export {" $0 "} from" $1 "with {" $2 "};"
+"export const" $0 "=" $1 ";"
+"export let" $0 "=" $1 ";"
+"export var" $0 "=" $1 ";"
+"export function" $0 "(" $1 ") {" $2 "}"
+"export async function" $0 "(" $1 ") {" $2 "}"
+"export class" $0 "{" $1 "}"
 
-# Misc.
+# Eval statements and expressions
 "eval('');"
+"eval(" $0 ")"
+"eval(" $0 ");"
+"eval(" $0 "," $1 ")"
+"(0, eval)(" $0 ")"
+"(0, eval)(" $0 ");"
+"(eval)(" $0 ")"
+"(eval)(" $0 ");"
+"eval?.(" $0 ")"
+"eval?.(" $0 ");"
+"(1 ? eval : 0)(" $0 ")"
+"globalThis.eval(" $0 ")"
+"globalThis.eval(" $0 ");"
+"window.eval(" $0 ")"
+"window.eval(" $0 ");"
+"eval`" $0 "`"
+"eval`" $0 "${" $1 "}" $2 "`"
 
+# Eval in parameter defaults
+"function" $0 "(x = eval(" $1 ")) {" $2 "}"
+"function" $0 "(eval = " $1 ") {" $2 "}"
+"function" $0 "(a, b = eval(" $1 ")) {" $2 "}"
+"(" $0 "= eval(" $1 ")) => {" $2 "}"
+"async function" $0 "(x = eval(" $1 ")) {" $2 "}"
+
+# Eval in class members
+"class" $0 "{" "x = eval(" $1 ");" "}"
+"class" $0 "{" "static x = eval(" $1 ");" "}"
+"class" $0 "{" "static {" "eval(" $1 ");" "}" "}"
+"class" $0 "{" "#foo = eval(" $1 ");" "}"
+
+# Eval variable declarations & bindings
+"var eval;"
+"var eval = " $0 ";"
+"let eval;"
+"let eval = " $0 ";"
+"const eval = " $0 ";"
+"function eval(" $0 ") {" $1 "}"
+"function" $0 "(eval) {" $1 "}"
+"try {" $0 "} catch (eval) {" $1 "}"
+"eval = " $0 ";"
+"eval ++;"
+"++ eval;"
+"eval --;"
+"-- eval;"
+
+# Eval in with-statements
+"with (" $0 ") { eval(" $1 "); }"
