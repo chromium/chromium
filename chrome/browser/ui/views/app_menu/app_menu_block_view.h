@@ -18,6 +18,7 @@ class ActionItem;
 
 namespace views {
 class ActionViewController;
+class MenuItemView;
 }  // namespace views
 
 // A view containing the block-style section elements (e.g. New Tab, New Window,
@@ -30,6 +31,7 @@ class AppMenuBlockView : public views::BoxLayoutView {
       base::RepeatingCallback<void(actions::ActionId, int)>;
 
   AppMenuBlockView(
+      views::MenuItemView* parent_menu_item,
       actions::ActionItem* block_action_item,
       views::ActionViewController* action_view_controller,
       base::flat_map<int, raw_ptr<actions::BaseAction>>* command_to_action_map,

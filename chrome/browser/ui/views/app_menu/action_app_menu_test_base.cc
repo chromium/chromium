@@ -102,11 +102,11 @@ void ActionAppMenuTestBase::SetUp() {
   add_action(kActionNewIncognitoWindow,
              BrowserActions::GetCleanTitleAndTooltipText(
                  l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)),
-             l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO));
+             l10n_util::GetStringUTF16(IDS_APP_MENU_BLOCK_INCOGNITO));
   add_action(kActionNewIsolatedWindow,
              BrowserActions::GetCleanTitleAndTooltipText(
                  l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_WINDOW)),
-             l10n_util::GetStringUTF16(IDS_ISOLATED));
+             l10n_util::GetStringUTF16(IDS_APP_MENU_BLOCK_ISOLATED));
   add_action(kActionProfileSubmenu, u"Profile");
   add_action(kActionManageGoogleAccount, u"Manage your Google Account");
   add_action(kActionCustomizeChrome, u"Customize Chrome");

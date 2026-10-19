@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/actions/actions.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -50,7 +51,8 @@ class AppMenuFooterButtonTest : public ChromeViewsTestBase {
  protected:
   // Creates a pill-style footer button with an icon.
   void CreatePillButton() {
-    button_ = widget_->SetContentsView(std::make_unique<AppMenuFooterButton>());
+    button_ = widget_->SetContentsView(std::make_unique<AppMenuFooterButton>(
+        root_menu_item_.get(), action_item_.get(), /*submenu_item=*/nullptr));
     button_->SetText(u"Settings");
     button_->SetImageModel(ui::ImageModel::FromVectorIcon(kCircleFilledIcon));
     button_->SetUseRowStyle(false);
@@ -58,7 +60,8 @@ class AppMenuFooterButtonTest : public ChromeViewsTestBase {
 
   // Creates a row-style footer button, like the managed-browser footer item.
   void CreateRowButton() {
-    button_ = widget_->SetContentsView(std::make_unique<AppMenuFooterButton>());
+    button_ = widget_->SetContentsView(std::make_unique<AppMenuFooterButton>(
+        root_menu_item_.get(), action_item_.get(), /*submenu_item=*/nullptr));
     button_->SetText(u"Managed by your organization");
     button_->SetUseRowStyle(true);
   }
@@ -67,8 +70,8 @@ class AppMenuFooterButtonTest : public ChromeViewsTestBase {
   views::MenuItemView* CreateSubmenuButton() {
     views::MenuItemView* submenu_item =
         root_menu_item_->AppendSubMenu(1, u"Help");
-    button_ = widget_->SetContentsView(
-        std::make_unique<AppMenuFooterButton>(submenu_item));
+    button_ = widget_->SetContentsView(std::make_unique<AppMenuFooterButton>(
+        root_menu_item_.get(), action_item_.get(), submenu_item));
     button_->SetText(u"Help");
     button_->SetUseRowStyle(false);
     return submenu_item;
@@ -112,6 +115,8 @@ class AppMenuFooterButtonTest : public ChromeViewsTestBase {
     return views::InkDrop::Get(button_)->GetMode();
   }
 
+  std::unique_ptr<actions::ActionItem> action_item_ =
+      actions::ActionItem::Builder().Build();
   std::unique_ptr<views::TestMenuItemView> root_menu_item_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<AppMenuFooterButton> button_ = nullptr;

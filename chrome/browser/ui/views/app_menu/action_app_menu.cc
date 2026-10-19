@@ -324,11 +324,10 @@ void ActionAppMenu::OnMenuClosed(views::MenuItemView* menu) {
     on_menu_closed_callback_.Run();
   }
 
-  // `search_controller_` owns `search_results_root_`, which contains
-  // `IndirectActionItem`s holding `raw_ptr`s to `ActionItem`s owned by
-  // `menu_manager_`. Reset `search_controller_` and execute any pending action
-  // before `menu_manager_->OnMenuClosed()` tears down the `ActionItem` tree,
-  // preventing dangling raw_ptrs and use-after-free.
+  // menu_manager_->OnMenuClosed() deletes the menu's ActionItems. The
+  // action yet to be executed and the search results can point to those
+  // ActionItems, so execute the action first and reset search_controller
+  // to avoid dangling pointers.
   if (action_to_execute) {
     action_to_execute->InvokeAction(std::move(action_context));
   }
@@ -859,7 +858,8 @@ void ActionAppMenu::PopulateBlockSection(
   }
 
   auto block_view = std::make_unique<AppMenuBlockView>(
-      block_action_item, &action_view_controller_, &command_to_action_map_,
+      block_item, block_action_item, &action_view_controller_,
+      &command_to_action_map_,
       base::BindRepeating(&ActionAppMenu::CancelAndEvaluate,
                           base::Unretained(this)));
   block_view->SetProperty(views::kMarginsKey, margins);

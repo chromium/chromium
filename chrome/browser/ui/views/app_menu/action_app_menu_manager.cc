@@ -581,10 +581,10 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
         Profile* profile = browser_window_interface_->GetProfile();
         std::optional<std::u16string> new_tab_text_override;
         if (profile->IsEnterpriseIsolatedModeProfile()) {
-          new_tab_text_override = BrowserActions::GetCleanTitleAndTooltipText(
+          new_tab_text_override = BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_NEW_ISOLATED_TAB));
         } else if (profile->IsIncognitoProfile()) {
-          new_tab_text_override = BrowserActions::GetCleanTitleAndTooltipText(
+          new_tab_text_override = BrowserActions::GetMnemonicTitleText(
               l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_TAB));
         }
         section
@@ -607,7 +607,7 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
                  .text_override =
                      profile->IsEnterpriseIsolatedModeProfile()
                          ? std::make_optional(
-                               BrowserActions::GetCleanTitleAndTooltipText(
+                               BrowserActions::GetMnemonicTitleText(
                                    l10n_util::GetStringUTF16(
                                        IDS_NEW_ISOLATED_WINDOW)))
                          : std::nullopt});
@@ -618,7 +618,7 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
                  .text_override =
                      profile->IsIncognitoProfile()
                          ? std::make_optional(
-                               BrowserActions::GetCleanTitleAndTooltipText(
+                               BrowserActions::GetMnemonicTitleText(
                                    l10n_util::GetStringUTF16(
                                        IDS_NEW_INCOGNITO_WINDOW)))
                          : std::nullopt,
