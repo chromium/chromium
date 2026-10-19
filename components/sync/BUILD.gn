@@ -161,6 +161,7 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/gcm_driver:test_support",
     "//components/gcm_driver/instance_id:test_support",
     "//components/os_crypt/browser:test_support",
     "//components/pref_registry",
