@@ -534,6 +534,45 @@ suite('TabPickerTest', () => {
   });
 
   test(
+      'Flips unbounded flyout menu to the left when near right screen edge',
+      async () => {
+        app.style.width = '200px';
+        const availLeft =
+            (window.screen as Screen & {availLeft?: number}).availLeft ?? 0;
+        const availTop =
+            (window.screen as Screen & {availTop?: number}).availTop ?? 0;
+        const dialog = app.$.tabMenu.getDialog();
+
+        // Simulate trigger near the left side of the screen: menu opens to the
+        // right of the trigger.
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter', {
+          screenX: availLeft + 100,
+          clientX: 50,
+          screenY: availTop + 200,
+          clientY: 10,
+        }));
+        await microtasksFinished();
+        assertTrue(app.$.tabMenu.open);
+        assertTrue(parseFloat(dialog.style.left) >= 0);
+
+        app.$.tabMenu.close();
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+
+        // Simulate trigger near the right edge of the screen (side panel docked
+        // on the right): menu flips to the left of the trigger.
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter', {
+          screenX: availLeft + window.screen.availWidth - 50,
+          clientX: 50,
+          screenY: availTop + 200,
+          clientY: 10,
+        }));
+        await microtasksFinished();
+        assertTrue(app.$.tabMenu.open);
+        assertTrue(parseFloat(dialog.style.left) < 0);
+      });
+
+  test(
       'Tab selection remains sticky across menu close and reopen', async () => {
         app.$.shareTabsTrigger.click();
         await microtasksFinished();
