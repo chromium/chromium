@@ -226,7 +226,7 @@ void DefaultBrowserManager::OnDefaultBrowserCheckResult(
     DefaultBrowserState default_state) {
   if (default_state == shell_integration::IS_DEFAULT ||
       default_state == shell_integration::NOT_DEFAULT) {
-    if (base::FeatureList::IsEnabled(kPerformDefaultBrowserCheckValidations)) {
+    if (IsPerformDefaultBrowserCheckValidationsEnabled()) {
       PerformDefaultBrowserCheckValidations(default_state);
     }
   }

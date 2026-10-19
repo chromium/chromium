@@ -23,6 +23,10 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_os_info_override_win.h"
+#endif
+
 class DefaultBrowserPromptManagerTest : public testing::Test {
  public:
   DefaultBrowserPromptManagerTest()
@@ -146,6 +150,9 @@ constexpr int kMaxPromptCount = 5;
 constexpr int kRepromptDurationDays = 21;
 
 TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
+  scoped_feature_list_.InitAndDisableFeature(
+      default_browser::kDefaultBrowserPromptSurfaces);
+
   // Show if the declined count is less than the max prompt count.
   TestShouldShowInfoBarPrompt(
       /*last_declined_time_delta=*/base::Days(kRepromptDurationDays) +
@@ -160,6 +167,9 @@ TEST_F(DefaultBrowserPromptManagerTest, InfoBarMaxPromptCount) {
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, InfoBarRepromptDuration) {
+  scoped_feature_list_.InitAndDisableFeature(
+      default_browser::kDefaultBrowserPromptSurfaces);
+
   // After the prompt is declined once, show the prompt again if the time since
   // the last time the prompt was declined is strictly longer than the base
   // reprompt duration.
@@ -202,8 +212,13 @@ constexpr int kFrameworkMaxPromptCount = 5;
 constexpr int kFrameworkRepromptDurationDays = 14;
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarMaxPromptCount) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{default_browser::kDefaultBrowserPromptSurfaces},
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{default_browser::kDefaultBrowserPromptSurfaces,
+                             {{default_browser::
+                                   kDefaultBrowserPromptSurfaceParam.name,
+                               "infobar"}}}},
       /*disabled_features=*/{features::kSeparateDefaultAndPinPrompt});
 
   // Show if the declined count is less than the max prompt count.
@@ -222,8 +237,13 @@ TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarMaxPromptCount) {
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarRepromptDuration) {
-  scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{default_browser::kDefaultBrowserPromptSurfaces},
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{default_browser::kDefaultBrowserPromptSurfaces,
+                             {{default_browser::
+                                   kDefaultBrowserPromptSurfaceParam.name,
+                               "infobar"}}}},
       /*disabled_features=*/{features::kSeparateDefaultAndPinPrompt});
 
   // After the prompt is declined once, show the prompt again if the time since
@@ -270,6 +290,8 @@ TEST_F(DefaultBrowserPromptManagerTest, FrameworkInfoBarRepromptDuration) {
 }
 
 TEST_F(DefaultBrowserPromptManagerTest, FrameworkPromptSurfaceBecomesInfoBar) {
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/{{default_browser::kDefaultBrowserPromptSurfaces,
                              {{default_browser::

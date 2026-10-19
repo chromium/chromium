@@ -28,6 +28,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_os_info_override_win.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -126,6 +127,8 @@ class DefaultBrowserManagerTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 #if BUILDFLAG(IS_WIN)
+  base::test::ScopedOSInfoOverride win11_os_{
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro};
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
 

@@ -11,9 +11,17 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_os_info_override_win.h"
+#endif
+
 namespace default_browser {
 
 TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+#endif
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(kDefaultBrowserPromptSurfaces);
@@ -26,7 +34,9 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
   {
     // The sticky modal experiment alone does not enable prompt surfaces.
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(kDefaultBrowserStickyModal);
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{kDefaultBrowserStickyModal},
+        /*disabled_features=*/{kDefaultBrowserPromptSurfaces});
     EXPECT_FALSE(IsDefaultBrowserPromptSurfacesEnabled());
   }
   {
@@ -35,6 +45,15 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserPromptSurfacesEnabled) {
         {}, {kDefaultBrowserPromptSurfaces, kDefaultBrowserStickyModal});
     EXPECT_FALSE(IsDefaultBrowserPromptSurfacesEnabled());
   }
+#if BUILDFLAG(IS_WIN)
+  {
+    base::test::ScopedOSInfoOverride win10_os(
+        base::test::ScopedOSInfoOverride::Type::kWin10Pro);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kDefaultBrowserPromptSurfaces);
+    EXPECT_FALSE(IsDefaultBrowserPromptSurfacesEnabled());
+  }
+#endif
 }
 
 TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserModalSticky) {
@@ -70,6 +89,10 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserModalSticky) {
 }
 
 TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserChangedOsNotificationEnabled) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+#endif
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(kDefaultBrowserChangedOsNotification);
@@ -84,11 +107,55 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserChangedOsNotificationEnabled) {
     feature_list.InitAndDisableFeature(kDefaultBrowserChangedOsNotification);
     EXPECT_FALSE(IsDefaultBrowserChangedOsNotificationEnabled());
   }
+#if BUILDFLAG(IS_WIN)
+  {
+    base::test::ScopedOSInfoOverride win10_os(
+        base::test::ScopedOSInfoOverride::Type::kWin10Pro);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kDefaultBrowserChangedOsNotification);
+    EXPECT_FALSE(IsDefaultBrowserChangedOsNotificationEnabled());
+  }
+#endif
+}
+
+TEST(DefaultBrowserFeaturesTest,
+     IsPerformDefaultBrowserCheckValidationsEnabled) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+#endif
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kPerformDefaultBrowserCheckValidations);
+#if BUILDFLAG(IS_WIN)
+    EXPECT_TRUE(IsPerformDefaultBrowserCheckValidationsEnabled());
+#else
+    EXPECT_FALSE(IsPerformDefaultBrowserCheckValidationsEnabled());
+#endif
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kPerformDefaultBrowserCheckValidations);
+    EXPECT_FALSE(IsPerformDefaultBrowserCheckValidationsEnabled());
+  }
+#if BUILDFLAG(IS_WIN)
+  {
+    base::test::ScopedOSInfoOverride win10_os(
+        base::test::ScopedOSInfoOverride::Type::kWin10Pro);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kPerformDefaultBrowserCheckValidations);
+    EXPECT_FALSE(IsPerformDefaultBrowserCheckValidationsEnabled());
+  }
+#endif
 }
 
 // Tests for GetDefaultBrowserPromptSurface behavior with prompt surfaces and
 // setter selection.
 TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+#endif
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeaturesAndParameters(
@@ -149,7 +216,7 @@ TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
     feature_list.InitWithFeaturesAndParameters(
         {{kDefaultBrowserStickyModal,
           {{"IsSticky", "true"}, {"WithSettingsIllustration", "false"}}}},
-        {});
+        {kDefaultBrowserPromptSurfaces});
     EXPECT_EQ(GetDefaultBrowserPromptSurface(),
               DefaultBrowserPromptSurface::kInfobar);
   }
@@ -198,6 +265,10 @@ TEST(DefaultBrowserFeaturesTest, GetDefaultBrowserPromptSurface) {
 // prompt surface has been selected.
 TEST(DefaultBrowserFeaturesTest,
      GetDefaultBrowserPromptSurfaceActivatesStickyModalOnlyForModal) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedOSInfoOverride win11_os(
+      base::test::ScopedOSInfoOverride::Type::kWin11Pro);
+#endif
   const std::string sticky_trial_name =
       std::string("scoped_feature_list_trial_for_") +
       kDefaultBrowserStickyModal.name;
