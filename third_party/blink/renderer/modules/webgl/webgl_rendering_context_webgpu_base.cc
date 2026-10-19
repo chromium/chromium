@@ -1532,8 +1532,11 @@ ScriptValue WebGLRenderingContextWebGPUBase::getVertexAttrib(ScriptState*,
 
 int64_t WebGLRenderingContextWebGPUBase::getVertexAttribOffset(GLuint index,
                                                                GLenum pname) {
-  NOTIMPLEMENTED();
-  return 0;
+  void* pointer = nullptr;
+  RETURN_IF_GL_ERROR(driver_gl_.fn.glGetVertexAttribPointervRobustANGLEFn(
+                         index, pname, 1, nullptr, &pointer),
+                     0);
+  return static_cast<int64_t>(reinterpret_cast<intptr_t>(pointer));
 }
 
 void WebGLRenderingContextWebGPUBase::hint(GLenum target, GLenum mode) {
