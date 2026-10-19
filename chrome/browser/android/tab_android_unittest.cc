@@ -14,7 +14,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "cc/slim/layer.h"
@@ -424,8 +423,7 @@ TEST_F(TabWebContentsDelegateBeforeUnloadTest, MarkSurvivesSameDocument) {
   ASSERT_TRUE(IsSuppressed(web_contents.get()));
 
   content::NavigationSimulator::CreateRendererInitiated(
-      GURL("https://example.com#fragment"),
-      web_contents->GetPrimaryMainFrame())
+      GURL("https://example.com#fragment"), web_contents->GetPrimaryMainFrame())
       ->CommitSameDocument();
 
   EXPECT_TRUE(IsSuppressed(web_contents.get()));
@@ -698,7 +696,6 @@ TEST_F(TabAndroidTest, ReverseInitializationOrder) {
   EXPECT_TRUE(reset_layer->children().empty());
 }
 
-
 TEST_F(TabAndroidTest, CollectionDestructionClearsParentPointer) {
   EXPECT_EQ(tab_android_->GetParentCollection(), nullptr);
 
@@ -781,17 +778,15 @@ class TabAndroidOpenFileTest : public TabAndroidTest {
                                           std::vector<std::u16string>())));
     listener->FileSelected(std::move(files), base::FilePath(),
                            blink::mojom::FileChooserParams::Mode::kOpen);
-    // The MIME type is resolved asynchronously on the thread pool, so wait for
-    // the resulting navigation. A new WebContents already has an initial
-    // NavigationEntry, so wait for a non-initial one.
-    content::NavigationController& controller = web_contents->GetController();
-    EXPECT_TRUE(base::test::RunUntil([&]() {
-      content::NavigationEntry* visible_entry = controller.GetVisibleEntry();
-      return visible_entry && !visible_entry->IsInitialEntry();
-    }));
+    // The MIME type is resolved asynchronously on the thread pool, so drain any
+    // posted tasks and check the resulting visible NavigationEntry. A new
+    // WebContents already has an initial NavigationEntry, so only return the
+    // URL if a non-initial entry was created.
+    task_environment_.RunUntilIdle();
 
+    content::NavigationController& controller = web_contents->GetController();
     content::NavigationEntry* entry = controller.GetVisibleEntry();
-    GURL url = entry ? entry->GetURL() : GURL();
+    GURL url = (entry && !entry->IsInitialEntry()) ? entry->GetURL() : GURL();
     web_contents->SetDelegate(nullptr);
     return url;
   }
@@ -825,6 +820,30 @@ TEST_F(TabAndroidOpenFileTest, LoadsRawUrlForNonPdfFile) {
             OpenFileAndGetLoadedUrl(
                 &pdf_profile, base::FilePath("/sdcard/Download/sample.txt")));
   histogram_tester.ExpectTotalCount("Android.Pdf.DownloadUrlEncoded", 0);
+}
+
+TEST_F(TabAndroidOpenFileTest, LoadsContentUri) {
+  TestingProfile profile;
+  EXPECT_EQ(GURL("content://media/external/file/123"),
+            OpenFileAndGetLoadedUrl(
+                &profile, base::FilePath("content://media/external/file/123")));
+}
+
+TEST_F(TabAndroidOpenFileTest, IgnoresNonFileAndNonContentPaths) {
+  PdfTestingProfile pdf_profile;
+  EXPECT_EQ(GURL(), OpenFileAndGetLoadedUrl(
+                        &pdf_profile, base::FilePath("relative/sample.txt")));
+  EXPECT_EQ(GURL(),
+            OpenFileAndGetLoadedUrl(
+                &pdf_profile, base::FilePath("https://example.com/file.txt")));
+  EXPECT_EQ(GURL(), OpenFileAndGetLoadedUrl(&pdf_profile,
+                                            base::FilePath("about:blank")));
+  EXPECT_EQ(GURL(),
+            OpenFileAndGetLoadedUrl(
+                &pdf_profile, base::FilePath("content://host:invalid/file")));
+  EXPECT_EQ(GURL(), OpenFileAndGetLoadedUrl(
+                        &pdf_profile,
+                        base::FilePath("content:/media/external/file/123")));
 }
 
 DEFINE_JNI(TabAndroidTestHelper)
