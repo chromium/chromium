@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Saves all launch urls consumed by this document. This is fetched by the tests
-// in web_app_link_capturing_parameterized_browsertest.cc to determine all of
+// in web_app_navigation_capturing_parameterized_browsertest.cc to determine all of
 // the launches that occurred for this document.
 var launchParamsTargetUrls = [];
 

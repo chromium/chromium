@@ -151,7 +151,7 @@ Browser tests for navigation capturing are located in:
 - Specific test suites like
   `navigation_capturing_browser_navigator_browsertest.cc`,
   `navigation_capturing_forced_off_browsertest.cc`,
-  `web_app_link_capturing_parameterized_browsertest.cc`, etc., in
+  `web_app_navigation_capturing_parameterized_browsertest.cc`, etc., in
   `chrome/browser/web_applications/`.
 
 These tests verify capturing behavior across various combinations of:
