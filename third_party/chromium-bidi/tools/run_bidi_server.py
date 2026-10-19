@@ -146,6 +146,11 @@ class BiDiServerProcess:
             env=env,
             cwd=self.repo_root,
             text=True,
+            # ChromeDriver writes UTF-8. Without an explicit encoding, Python
+            # uses the locale encoding (cp1252 on Windows) and `readline`
+            # raises `UnicodeDecodeError` on non-latin log lines.
+            encoding="utf-8",
+            errors="replace",
             bufsize=1,
         )
 
@@ -181,8 +186,14 @@ class BiDiServerProcess:
                     out = sys.stdout if name == "stdout" else sys.stderr
                     out.write(line)
                     out.flush()
-        except Exception:
-            pass
+        except Exception as e:
+            # If this thread stops, nobody drains the pipe. The pipe buffer
+            # fills up and the server blocks on the next log write. Make the
+            # failure visible instead of silently exiting.
+            print(
+                f"(run_bidi_server.py) Reader thread for {name} failed: {e!r}",
+                file=sys.stderr,
+            )
 
     def wait_until_ready(self, timeout: float = 10.0) -> bool:
         ready = self._ready_event.wait(timeout=timeout)
