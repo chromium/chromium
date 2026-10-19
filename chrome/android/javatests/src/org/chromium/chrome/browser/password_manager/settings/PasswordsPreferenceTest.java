@@ -22,9 +22,7 @@ import org.chromium.base.test.transit.EntryPointSentinelStation;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridge;
 import org.chromium.chrome.browser.password_manager.LoginDbDeprecationUtilBridgeJni;
@@ -48,7 +46,6 @@ import java.io.IOException;
         reason =
                 "The tests can't be batched because the functionality under test is set up during"
                         + " Chrome start up.")
-@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
 public class PasswordsPreferenceTest {
     private static final int RENDER_TEST_REVISION = 2;
 
