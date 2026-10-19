@@ -896,18 +896,8 @@ void GPUCanvasContext::CopyToSwapTexture() {
 bool GPUCanvasContext::CopyTextureToResourceProvider(
     const wgpu::Texture& texture,
     CanvasNon2DResourceProvider* resource_provider) const {
-#if BUILDFLAG(USE_DAWN)
   DCHECK(resource_provider);
   CHECK(!resource_provider->IsSoftware());
-
-  gfx::Size size(texture.GetWidth(), texture.GetHeight());
-  DCHECK_EQ(resource_provider->Size(), size);
-
-  // This method will copy the contents of `texture` to `resource_provider`'s
-  // backing SharedImage via the WebGPU interface. Hence, WEBGPU_WRITE usage
-  // must be included on that backing SharedImage.
-  DCHECK(resource_provider->GetSharedImageUsageFlags().Has(
-      gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
@@ -921,8 +911,34 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     return false;
   }
 
-  if (!GetContextProviderWeakPtr()) {
+  std::optional<gpu::SyncToken> completion_sync_token =
+      CopyTextureToSharedImage(texture, std::move(dst_client_si), sync_token);
+  if (!completion_sync_token) {
     return false;
+  }
+
+  resource_provider->EndExternalWrite(completion_sync_token.value());
+
+  return true;
+}
+
+std::optional<gpu::SyncToken> GPUCanvasContext::CopyTextureToSharedImage(
+    const wgpu::Texture& texture,
+    scoped_refptr<gpu::ClientSharedImage> dst_client_si,
+    const gpu::SyncToken& acquire_sync_token) const {
+#if BUILDFLAG(USE_DAWN)
+  CHECK(dst_client_si);
+
+  gfx::Size size(texture.GetWidth(), texture.GetHeight());
+  DCHECK_EQ(dst_client_si->size(), size);
+
+  // This method will copy the contents of `texture` to `dst_client_si` via the
+  // WebGPU interface. Hence, WEBGPU_WRITE usage must be included on
+  // `dst_client_si`.
+  DCHECK(dst_client_si->usage().Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
+
+  if (!GetContextProviderWeakPtr()) {
+    return std::nullopt;
   }
 
   gpu::webgpu::WebGPUInterface* webgpu =
@@ -932,7 +948,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
       wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::RenderAttachment;
   std::unique_ptr<gpu::WebGPUTextureScopedAccess> scoped_access =
       dst_client_si->BeginWebGPUTextureAccess(
-          webgpu, sync_token, device_->GetHandle(),
+          webgpu, acquire_sync_token, device_->GetHandle(),
           wgpu::TextureDescriptor{.usage = usage}, 0,
           gpu::webgpu::WEBGPU_MAILBOX_NONE);
   wgpu::TexelCopyTextureInfo source = {
@@ -952,8 +968,8 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   bool isOpaque = alpha_mode_ == V8GPUCanvasAlphaMode::Enum::kOpaque;
 
   // If either the texture is opaque or the texture format does not match the
-  // resource provider's format then CopyTextureForBrowser will be used, which
-  // performs a blit and can fix up the texture data during the copy.
+  // destination SharedImage's format then CopyTextureForBrowser will be used,
+  // which performs a blit and can fix up the texture data during the copy.
   if (isOpaque || copy_to_swap_texture_required_) {
     wgpu::AlphaMode srcAlphaMode =
         isOpaque ? wgpu::AlphaMode::Opaque : wgpu::AlphaMode::Premultiplied;
@@ -962,7 +978,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     // There is a special step for srcAlphaMode == wgpu::AlphaMode::Opaque that
     // clears alpha channel to one.
     wgpu::AlphaMode dstAlphaMode;
-    switch (resource_provider->GetAlphaType()) {
+    switch (dst_client_si->alpha_type()) {
       case SkAlphaType::kPremul_SkAlphaType:
         dstAlphaMode = wgpu::AlphaMode::Premultiplied;
         break;
@@ -1007,12 +1023,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     device_->queue()->GetHandle().Submit(1u, &command_buffer);
     command_buffer = nullptr;
   }
-  sync_token =
-      gpu::WebGPUTextureScopedAccess::EndAccess(std::move(scoped_access));
-
-  resource_provider->EndExternalWrite(sync_token);
-
-  return true;
+  return gpu::WebGPUTextureScopedAccess::EndAccess(std::move(scoped_access));
 #else
   NOTREACHED();
 #endif

@@ -134,6 +134,10 @@ class GPUCanvasContext : public ScriptWrappable,
   bool CopyTextureToResourceProvider(
       const wgpu::Texture& texture,
       CanvasNon2DResourceProvider* resource_provider) const;
+  std::optional<gpu::SyncToken> CopyTextureToSharedImage(
+      const wgpu::Texture& texture,
+      scoped_refptr<gpu::ClientSharedImage> dst_client_si,
+      const gpu::SyncToken& acquire_sync_token) const;
 
   void CopyToSwapTexture();
 
