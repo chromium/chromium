@@ -136,7 +136,6 @@ import {PanelOpenState} from '../host/types.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {GlicBrowserHostTools} from '../tools/tools_client.js';
 import {assertNever, ResponseExtras} from '../transport/messaging.js';
-import type {createDirectMessagingPair, PostMessageRouter} from '../transport/post_message_transport.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
@@ -152,8 +151,6 @@ import type {                              //
              ResumeActorTaskResultPrivate, //
              TabContextResultPrivate,      //
              TabDataPrivate,               //
-             WebClient,                    //
-             WebClientHost,                //
 } from './../request_types.js';
 import {createDelegationProxy} from './glic_client_common.js';
 import {rgbaImageToBlob} from './image_utils.js';
@@ -165,14 +162,11 @@ import {TabObservable, TabObservableSet} from './observable_set_by_tab_id.js';
 export class GlicHostRegistryImpl implements GlicHostRegistry {
   private host: GlicBrowserHostImpl|undefined;
   constructor(
-      private directPair: ReturnType<
-          typeof createDirectMessagingPair<WebClientHost, WebClient>>,
       private hostApi: GlicApiHost,
   ) {}
 
   async registerWebClient(webClient: GlicWebClient): Promise<void> {
-    this.host =
-        new GlicBrowserHostImpl(webClient, this.directPair, this.hostApi);
+    this.host = new GlicBrowserHostImpl(webClient, this.hostApi);
     const clientCapabilities = webClient.getClientCapabilities?.() ?? new Set();
     await this.host.webClientCreated(clientCapabilities);
     let success = false;
@@ -190,8 +184,6 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
 
 export class GlicBrowserHostImpl implements GlicBrowserHost,
                                             WebClientInterface {
-  readonly router: PostMessageRouter;
-
   readonly actorClient: GlicBrowserHostActor;
   readonly annotationClient: GlicBrowserHostAnnotation;
   readonly skillsClient: GlicBrowserHostSkills;
@@ -254,12 +246,9 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   constructor(
       public webClient: GlicWebClient,
-      directPair: ReturnType<
-          typeof createDirectMessagingPair<WebClientHost, WebClient>>,
       private hostApi: GlicApiHost,
   ) {
     this.handler = hostApi.handler;
-    this.router = directPair.client.router;
 
     this.actorClient = new GlicBrowserHostActor();
     this.annotationClient = new GlicBrowserHostAnnotation();
@@ -318,7 +307,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
       this.webClientReceiver.$.close();
       this.webClientReceiver = undefined;
     }
-    this.router.destroy();
   }
 
   async webClientCreated(clientCapabilities: Set<ClientCapabilities>) {
