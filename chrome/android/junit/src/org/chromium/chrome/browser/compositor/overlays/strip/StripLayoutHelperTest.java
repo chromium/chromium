@@ -7362,12 +7362,39 @@ public class StripLayoutHelperTest {
         stripLayoutHelper.finishAnimations();
     }
 
-    @Test
-    public void testHandleLinkDrop_opensNewTabAtEnd() {
-        initializeTest(/* tabIndex= */ 0);
-        int expectedIndex = mModel.getCount();
+    // Link drag and drop.
 
-        mStripLayoutHelper.handleLinkDrop(/* xDp= */ 100f, JUnitTestGURLs.EXAMPLE_URL);
+    private static float getLinkDropLeftEdge(StripLayoutView view) {
+        return view instanceof StripLayoutTab tab ? tab.getTouchTargetLeft() : view.getDrawX();
+    }
+
+    private static float getLinkDropRightEdge(StripLayoutView view) {
+        return view instanceof StripLayoutTab tab
+                ? tab.getTouchTargetRight()
+                : view.getDrawX() + view.getWidth();
+    }
+
+    private static float getLinkDropLeadingEdge(StripLayoutView view) {
+        return LocalizationUtils.isLayoutRtl()
+                ? getLinkDropRightEdge(view)
+                : getLinkDropLeftEdge(view);
+    }
+
+    private static float getLinkDropTrailingEdge(StripLayoutView view) {
+        return LocalizationUtils.isLayoutRtl()
+                ? getLinkDropLeftEdge(view)
+                : getLinkDropRightEdge(view);
+    }
+
+    /** Returns the x-coordinate at {@code fraction} of the view's width from its leading edge. */
+    private static float getLinkDropX(StripLayoutView view, float fraction) {
+        float leading = getLinkDropLeadingEdge(view);
+        return leading + fraction * (getLinkDropTrailingEdge(view) - leading);
+    }
+
+    /** Verifies that a link dropped at {@code xDp} opens in a new tab at {@code expectedIndex}. */
+    private void verifyLinkDropInsertsAt(float xDp, int expectedIndex) {
+        mStripLayoutHelper.handleLinkDrop(xDp, JUnitTestGURLs.EXAMPLE_URL);
 
         ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
         verify(mTabCreator)
@@ -7377,6 +7404,124 @@ public class StripLayoutHelperTest {
                         isNull(),
                         eq(expectedIndex));
         assertEquals(JUnitTestGURLs.EXAMPLE_URL.getSpec(), captor.getValue().getUrl());
+    }
+
+    @Test
+    public void testGetLinkInsertionView_OverTab() {
+        doTestGetLinkInsertionViewOverTab(/* rtl= */ false);
+    }
+
+    @Test
+    public void testGetLinkInsertionView_OverTab_Rtl() {
+        doTestGetLinkInsertionViewOverTab(/* rtl= */ true);
+    }
+
+    private void doTestGetLinkInsertionViewOverTab(boolean rtl) {
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // The leading half inserts before the tab.
+        assertEquals(
+                views[2], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[2], 0.1f)));
+        assertEquals(
+                views[2], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[2], 0.4f)));
+
+        // The trailing half inserts after the tab.
+        assertEquals(
+                views[3], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[2], 0.6f)));
+        assertEquals(
+                views[3], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[2], 0.9f)));
+    }
+
+    @Test
+    public void testGetLinkInsertionView_OutsideViews() {
+        doTestGetLinkInsertionViewOutsideViews(/* rtl= */ false);
+    }
+
+    @Test
+    public void testGetLinkInsertionView_OutsideViews_Rtl() {
+        doTestGetLinkInsertionViewOutsideViews(/* rtl= */ true);
+    }
+
+    private void doTestGetLinkInsertionViewOutsideViews(boolean rtl) {
+        initializeTest(rtl, /* incognito= */ false, /* tabIndex= */ 0, /* numTabs= */ 5);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        float towardEnd = rtl ? -1f : 1f;
+
+        // Before the first view inserts at the start.
+        assertEquals(
+                views[0],
+                mStripLayoutHelper.getLinkInsertionView(
+                        getLinkDropLeadingEdge(views[0]) - towardEnd * 5f));
+
+        // Past the last view inserts at the end.
+        assertNull(
+                mStripLayoutHelper.getLinkInsertionView(
+                        getLinkDropTrailingEdge(views[views.length - 1]) + towardEnd * 20f));
+    }
+
+    @Test
+    public void testGetLinkInsertionView_OverGroupTitle() {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        // Views: tab 0, group title, tab 1, tab 2, tab 3, tab 4.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        assertTrue(views[1] instanceof StripLayoutGroupTitle);
+
+        // The leading half of the title inserts before it, and the trailing half after it.
+        assertEquals(
+                views[1], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[1], 0.25f)));
+        assertEquals(
+                views[2], mStripLayoutHelper.getLinkInsertionView(getLinkDropX(views[1], 0.75f)));
+    }
+
+    @Test
+    public void testGetLinkInsertionView_ZeroWidthView() {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        // Views: tab 0, group title, tab 1, tab 2, tab 3, tab 4.
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+        StripLayoutView title = views[1];
+        title.setWidth(0f);
+
+        // A view with no width is skipped, so drops on either side of it insert after it.
+        assertEquals(views[2], mStripLayoutHelper.getLinkInsertionView(title.getDrawX() - 1f));
+        assertEquals(views[2], mStripLayoutHelper.getLinkInsertionView(title.getDrawX() + 1f));
+    }
+
+    @Test
+    public void testHandleLinkDrop_InsertsAtDropPosition() {
+        initializeTest(/* tabIndex= */ 0);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        verifyLinkDropInsertsAt(getLinkDropX(views[2], 0.1f), /* expectedIndex= */ 2);
+    }
+
+    @Test
+    public void testHandleLinkDrop_InsertsBeforeGroup() {
+        initializeTest(/* tabIndex= */ 0);
+        groupTabs(1, 3, TAB_GROUP_ID_1);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        // The group title maps to the index of the group's first tab.
+        verifyLinkDropInsertsAt(getLinkDropX(views[1], 0.25f), /* expectedIndex= */ 1);
+    }
+
+    @Test
+    public void testHandleLinkDrop_InsertsAtEnd() {
+        initializeTest(/* tabIndex= */ 0);
+        resizeStripAndUpdateLayout(STRIP_WIDTH);
+        StripLayoutView[] views = mStripLayoutHelper.getStripLayoutViewsForTesting();
+
+        verifyLinkDropInsertsAt(
+                getLinkDropTrailingEdge(views[views.length - 1]) + 20f,
+                /* expectedIndex= */ mModel.getCount());
     }
 
     private class TestTabRemover implements TabRemover {

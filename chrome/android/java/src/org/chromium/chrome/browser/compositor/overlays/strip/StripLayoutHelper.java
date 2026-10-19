@@ -114,6 +114,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -5835,22 +5836,89 @@ public class StripLayoutHelper
     }
 
     /**
-     * Handles a link dropped onto the tab strip by opening it in a new, selected tab at the end of
-     * the strip.
+     * Handles a link dropped onto the tab strip by opening it in a new, selected tab at the drop
+     * position. See {@link #getLinkInsertionView(float)}.
      *
      * @param xDp The x-coordinate of the drop event in dp.
      * @param url The URL extracted from the drop data.
      */
     public void handleLinkDrop(float xDp, GURL url) {
-        // TODO(crbug.com/568820678): Use xDp to insert at, or load into, the tab under the drop.
-        if (mModel == null || mTabCreator == null) return;
+        if (mModel == null || mTabCreator == null || !mTabStateInitialized) return;
         // Use FROM_CHROME_UI rather than FROM_LINK, which ignores the index and opens the tab next
-        // to the current tab.
+        // to the current tab. The tab model moves new tabs that would land among the pinned tabs to
+        // right after them, since link tabs are never pinned.
         mTabCreator.createNewTab(
                 new LoadUrlParams(url, PageTransition.LINK),
                 TabLaunchType.FROM_CHROME_UI,
                 /* parent= */ null,
-                mModel.getCount());
+                getLinkInsertIndex(getLinkInsertionView(xDp)));
+    }
+
+    /**
+     * Returns the view that a new tab for a link dropped at the given position should be inserted
+     * right before, which is the first view whose midpoint is past the drop. So over a tab or a
+     * group title, the leading half inserts before it and the trailing half inserts after it.
+     *
+     * @param xDp The x-coordinate of the drop in dp.
+     * @return The view to insert before, or {@code null} to insert at the end of the strip.
+     */
+    @VisibleForTesting
+    @Nullable StripLayoutView getLinkInsertionView(float xDp) {
+        // TODO(crbug.com/568820678): Add new tabs inserted next to a group's tabs to that group.
+        for (StripLayoutView view : mStripViews) {
+            if (isLinkDropCandidate(view) && getLinkDropFraction(view, xDp) < 0.5f) return view;
+        }
+        return null;
+    }
+
+    /**
+     * Returns the model index for a new tab inserted right before {@code next}, or at the end if
+     * {@code next} is null.
+     */
+    private int getLinkInsertIndex(@Nullable StripLayoutView next) {
+        assumeNonNull(mModel);
+        if (next == null) return mModel.getCount();
+        Tab tab;
+        if (next instanceof StripLayoutTab stripTab) {
+            tab = mModel.getTabById(stripTab.getTabId());
+        } else {
+            List<Tab> tabsInGroup =
+                    mModel.getTabsInGroup(((StripLayoutGroupTitle) next).getTabGroupId());
+            tab = tabsInGroup.isEmpty() ? null : tabsInGroup.get(0);
+        }
+        int index = mModel.indexOf(tab);
+        return index == TabList.INVALID_TAB_INDEX ? mModel.getCount() : index;
+    }
+
+    /** Returns whether a link can be dropped next to the given view. */
+    private boolean isLinkDropCandidate(StripLayoutView view) {
+        if (view instanceof StripLayoutTab tab) return isLiveTab(tab);
+        return !view.isDying() && !view.isDraggedOffStrip();
+    }
+
+    /**
+     * Returns how far the given position is past the view's leading edge, as a fraction of the
+     * view's width. This is negative before the view and greater than 1 after it.
+     */
+    private static float getLinkDropFraction(StripLayoutView view, float xDp) {
+        float left = getLinkDropLeftEdge(view);
+        float width = getLinkDropRightEdge(view) - left;
+        // A view can have no width, e.g. while it's animating in or out. Treat it as being past
+        // the drop, so that links are never inserted before it or loaded into it.
+        if (width <= 0f) return 1f;
+        float fraction = (xDp - left) / width;
+        // In RTL, the leading edge is the right edge.
+        return LocalizationUtils.isLayoutRtl() ? 1f - fraction : fraction;
+    }
+
+    private static float getLinkDropLeftEdge(StripLayoutView view) {
+        return view instanceof StripLayoutTab tab ? tab.getTouchTargetLeft() : view.getDrawX();
+    }
+
+    private static float getLinkDropRightEdge(StripLayoutView view) {
+        return view instanceof StripLayoutTab tab
+                ? tab.getTouchTargetRight()
+                : view.getDrawX() + view.getWidth();
     }
 
     public void handleDragEnter(
