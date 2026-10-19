@@ -109,7 +109,12 @@ def cq_build_perf_builder(description_html, **kwargs):
     # Use CQ RBE instance and high remote_jobs/cores to simulate CQ builds.
     if not "siso_configs" in kwargs:
         kwargs["siso_configs"] = ["builder", "remote-link"]
-    props = {}
+
+    # Run the extra missing-deps check build (crbug.com/346429448) on all
+    # platforms by default; builders can opt out by passing
+    # enable_missing_deps_check = False in properties.
+    props = {"enable_missing_deps_check": True}
+    props.update(kwargs.pop("properties", {}))
     if not kwargs.get("siso_enabled", True):
         props["$build/reclient"] = {
             "instance": siso.project.DEFAULT_UNTRUSTED,
@@ -276,6 +281,10 @@ cq_build_perf_builder(
         category = "build perf|linux",
         short_name = "svc",
     ),
+    properties = {
+        # Only the baseline clean and incremental build times matter here.
+        "enable_missing_deps_check": False,
+    },
     siso_profile_mode = "local",
 )
 
@@ -460,6 +469,9 @@ cq_build_perf_builder(
 
 def developer_build_perf_builder(description_html, reclient_jobs = None, **kwargs):
     props = {
+        # Run the extra missing-deps check build (crbug.com/346429448) on all
+        # platforms.
+        "enable_missing_deps_check": True,
         "$build/reclient": {
             "instance": siso.project.DEFAULT_UNTRUSTED,
             "jobs": reclient_jobs,
@@ -723,6 +735,9 @@ def cq_rbe_test_builder(**kwargs):
         builderless = True,
         execution_timeout = 10 * time.hour,
         priority = ci_constants.DEFAULT_FYI_PRIORITY,
+        # Keep running the extra missing-deps check build (crbug.com/346429448)
+        # like the build-perf builders do.
+        properties = {"enable_missing_deps_check": True},
         siso_configs = ["builder"],
         siso_project = siso.project.TEST_UNTRUSTED,
         siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,

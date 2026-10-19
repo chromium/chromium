@@ -73,5 +73,6 @@
     ]
   },
   "builder_group": "chromium.build",
+  "enable_missing_deps_check": true,
   "recipe": "chrome_build/build_perf_siso"
 }
