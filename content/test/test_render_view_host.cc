@@ -485,11 +485,11 @@ MockRenderProcessHost* TestRenderViewHost::GetProcess() const {
 }
 
 void TestRenderViewHost::SimulateWasHidden() {
-  GetWidget()->WasHidden();
+  GetWidget()->GetView()->Hide();
 }
 
 void TestRenderViewHost::SimulateWasShown() {
-  GetWidget()->WasShown({} /* record_tab_switch_time_request */);
+  GetWidget()->GetView()->ShowWithVisibility(PageVisibilityState::kVisible);
 }
 
 blink::web_pref::WebPreferences

@@ -4122,8 +4122,14 @@ PageVisibilityState RenderFrameHostImpl::GetVisibilityState() {
     return PageVisibilityState::kHidden;
   }
 
-  return GetRenderWidgetHost()->IsHidden() ? PageVisibilityState::kHidden
-                                           : PageVisibilityState::kVisible;
+  if (base::FeatureList::IsEnabled(features::kRFHHiddenWhenHiddenButPainting)) {
+    RenderWidgetHostView* view = render_view_host_->GetWidget()->GetView();
+    return view && view->IsShowing() ? PageVisibilityState::kVisible
+                                     : PageVisibilityState::kHidden;
+  } else {
+    return GetRenderWidgetHost()->IsHidden() ? PageVisibilityState::kHidden
+                                             : PageVisibilityState::kVisible;
+  }
 }
 
 void RenderFrameHostImpl::OnAssociatedInterfaceRequest(

@@ -986,6 +986,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kRestrictThreadPoolInBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When the View for a RenderFrameHost is HiddenButPainting, report the
+// RenderFrameHost VisibilityState as Hidden.
+BASE_FEATURE(kRFHHiddenWhenHiddenButPainting, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, sends the spare renderer information when setting the
 // priority of renderers. Currently only Android handles the spare renderer
 // information in priority.

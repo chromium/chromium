@@ -758,6 +758,8 @@ public abstract class ChromeFeatureList {
             "ReportNotificationContentDetectionData";
     public static final String RESET_NATIVE_POINTER_IN_CREDIT_CARD_AUTH_DIALOG =
             "ResetNativePointerInCreditCardAuthDialog";
+    public static final String RFH_HIDDEN_WHEN_HIDDEN_BUT_PAINTING =
+            "RFHHiddenWhenHiddenButPainting";
     public static final String ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL =
             "RobustWindowManagementExperimental";
     public static final String SAFETY_FRE_PROMO = "SafetyFrePromo";
