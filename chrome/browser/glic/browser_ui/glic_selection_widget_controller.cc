@@ -149,6 +149,9 @@ GlicSelectionWidgetController::GlicSelectionWidgetController(
 GlicSelectionWidgetController::~GlicSelectionWidgetController() = default;
 
 void GlicSelectionWidgetController::OnAskGemini() {
+  if (!web_contents()) {
+    return;
+  }
   if (base::FeatureList::IsEnabled(features::kGlicSelectionSmallChip)) {
     Dismiss(DismissReason::kActionTaken);
     ShowSelectionOverlay();
@@ -161,6 +164,9 @@ void GlicSelectionWidgetController::OnAskGemini() {
 }
 
 void GlicSelectionWidgetController::OnCopy() {
+  if (!web_contents()) {
+    return;
+  }
   Dismiss(DismissReason::kActionTaken);
   web_contents()->Copy();
 }
@@ -173,6 +179,9 @@ void GlicSelectionWidgetController::OnHide() {
 }
 
 void GlicSelectionWidgetController::OnSettings() {
+  if (!web_contents()) {
+    return;
+  }
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
   if (tab_interface) {
@@ -224,6 +233,9 @@ void GlicSelectionWidgetController::Dismiss(DismissReason reason) {
 
 GlicSelectionWidgetController::ShowResult GlicSelectionWidgetController::Show(
     const std::u16string& selected_text) {
+  if (!web_contents()) {
+    return ShowResult::kSkipped;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -350,6 +362,9 @@ bool GlicSelectionWidgetController::ShouldShowSelectionWidget() {
 }
 
 void GlicSelectionWidgetController::UpdatePageBlockedState() {
+  if (!web_contents()) {
+    return;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   is_site_blocked_on_current_page_ =

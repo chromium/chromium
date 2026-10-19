@@ -406,4 +406,20 @@ TEST_F(GlicSelectionWidgetControllerTest,
   EXPECT_TRUE(controller_->ShouldShowSelectionWidget());
 }
 
+TEST_F(GlicSelectionWidgetControllerTest,
+       DoesNotCrashAfterWebContentsDestroyed) {
+  DeleteContents();
+
+  controller_->OnAskGemini();
+  controller_->OnCopy();
+  controller_->OnSettings();
+  EXPECT_EQ(GlicSelectionWidgetController::ShowResult::kSkipped,
+            controller_->Show(u"Sample selected text"));
+  // Calls `UpdatePageBlockedState()` through `OnContentSettingChanged()`.
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetContentSettingDefaultScope(
+          GURL("https://example.com"), GURL("https://example.com"),
+          ContentSettingsType::INLINE_CUE_MENU, CONTENT_SETTING_BLOCK);
+}
+
 }  // namespace glic
