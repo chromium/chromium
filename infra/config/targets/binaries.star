@@ -2541,6 +2541,13 @@ targets.binaries.generated_script(
     module_scheme = "single",
 )
 
+targets.binaries.generated_script(
+    name = "views_examples_mac_signing_tests",
+    label = "//chrome/views_examples/mac/signing:views_examples_mac_signing_tests",
+    skip_usage_check = True,
+    module_scheme = "pyunit",
+)
+
 targets.binaries.windowed_test_launcher(
     name = "views_examples_unittests",
     label = "//ui/views/examples:views_examples_unittests",

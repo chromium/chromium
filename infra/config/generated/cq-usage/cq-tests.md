@@ -1744,6 +1744,9 @@
 * [linux-chromeos-compile-dbg](https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-compile-dbg) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-chromeos-compile-dbg%5C%22%22))
 * [linux-chromeos-rel](https://ci.chromium.org/ui/p/chromium/builders/try/linux-chromeos-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22linux-chromeos-rel%5C%22%22))
 
+### views_examples_mac_signing_tests
+* [mac-rel](https://ci.chromium.org/ui/p/chromium/builders/try/mac-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22mac-rel%5C%22%22))
+
 ### views_examples_unittests
 * [fuchsia-x64-cast-receiver-rel](https://ci.chromium.org/ui/p/chromium/builders/try/fuchsia-x64-cast-receiver-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22fuchsia-x64-cast-receiver-rel%5C%22%22))
 * [win-rel](https://ci.chromium.org/ui/p/chromium/builders/try/win-rel) ([definition](https://cs.chromium.org/search?q=file:/try/.*%5C.star$%20%22name%20=%20%5C%22win-rel%5C%22%22))

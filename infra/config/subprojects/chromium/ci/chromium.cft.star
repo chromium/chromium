@@ -173,6 +173,9 @@ ci.builder(
             "telemetry_perf_unittests": targets.mixin(
                 ci_only = True,
             ),
+            "views_examples_mac_signing_tests": targets.remove(
+                reason = "Signing is not part of the CfT config.",
+            ),
         },
     ),
     cores = None,

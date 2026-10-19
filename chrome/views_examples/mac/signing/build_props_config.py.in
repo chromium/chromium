@@ -1,0 +1,39 @@
+# @GEN_HEADER@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+from .config import CodeSignConfig
+
+
+class BuildPropsCodeSignConfig(CodeSignConfig):
+    """The BuildPropsCodeSignConfig is processed by GN to inject build-time
+    properties from the branding and version data.
+    """
+
+    @staticmethod
+    def is_chrome_branded():
+        return False
+
+    @property
+    def app_product(self):
+        return '@PRODUCT_FULLNAME@'
+
+    @property
+    def product(self):
+        return '@PRODUCT_FULLNAME@'
+
+    @property
+    def version(self):
+        return '@MAJOR@.@MINOR@.@BUILD@.@PATCH@'
+
+    @property
+    def base_bundle_id(self):
+        return '@MAC_BUNDLE_ID@'
+
+    @property
+    def framework_dir(self):
+        """Returns the path to the app's framework directory."""
+        return '{0.app_dir}/Contents/Frameworks/@FRAMEWORK_FULLNAME@'.format(
+            self
+        )

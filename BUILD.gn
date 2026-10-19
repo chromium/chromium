@@ -318,8 +318,8 @@ group("gn_all") {
 
     if (toolkit_views) {
       deps += [
+        ":views_examples",
         "//ui/views:views_unittests",
-        "//ui/views/examples:views_examples",
         "//ui/views/examples:views_examples_unittests",
         "//ui/views/examples:views_examples_with_content",
       ]
@@ -872,6 +872,18 @@ group("all_rust") {
 
   if (!is_cronet_build) {
     deps += [ "//skia" ]
+  }
+}
+
+if (toolkit_views) {
+  group("views_examples") {
+    testonly = true
+
+    deps = [ "//ui/views/examples:views_examples" ]
+
+    if (is_mac) {
+      deps += [ "//chrome/views_examples/mac/signing" ]
+    }
   }
 }
 

@@ -5931,6 +5931,7 @@ targets.bundle(
     name = "mac_specific_isolated_scripts",
     targets = [
         "mac_signing_tests",
+        "views_examples_mac_signing_tests",
     ],
 )
 

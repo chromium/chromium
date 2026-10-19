@@ -1578,6 +1578,23 @@
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
       },
       {
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "module_name": "//chrome/views_examples/mac/signing:views_examples_mac_signing_tests",
+        "module_scheme": "pyunit",
+        "name": "views_examples_mac_signing_tests",
+        "swarming": {
+          "dimensions": {
+            "cpu": "arm64",
+            "os": "Mac-27"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "views_examples_mac_signing_tests",
+        "test_id_prefix": "ninja://chrome/views_examples/mac/signing:views_examples_mac_signing_tests/"
+      },
+      {
         "args": [
           "--gtest-benchmark-name=views_perftests"
         ],

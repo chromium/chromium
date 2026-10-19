@@ -1,0 +1,8 @@
+# The files in this directory are copied into, and extend, the Python package
+# from //chrome/installer/mac/signing, so keep the same formatting as
+# //chrome/installer/mac/.ruff.toml rather than the //chrome default.
+line-length = 80
+indent-width = 4
+
+[format]
+quote-style = "preserve"

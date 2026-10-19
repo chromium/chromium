@@ -2659,6 +2659,10 @@ targets.tests.isolated_script_test(
     binary = "variations_desktop_smoke_tests",
 )
 
+targets.tests.isolated_script_test(
+    name = "views_examples_mac_signing_tests",
+)
+
 targets.tests.gtest_test(
     name = "views_examples_unittests",
 )

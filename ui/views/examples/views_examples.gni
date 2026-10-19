@@ -1,0 +1,12 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Name and version of the Views Examples app bundle on Mac. These are shared
+# between //ui/views/examples (which builds the bundle) and
+# //chrome/views_examples/mac/signing (which packages and signs it).
+#
+# Update examples_main_mac_support.mm if the below changes.
+views_examples_app_name = "Views Examples"
+views_examples_version = "1.0.0.0"
+views_examples_framework_name = "$views_examples_app_name Framework"

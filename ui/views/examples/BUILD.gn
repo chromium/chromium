@@ -10,6 +10,7 @@ import("//ui/gl/features.gni")
 if (is_mac) {
   import("//build/apple/tweak_info_plist.gni")
   import("//build/config/mac/rules.gni")
+  import("views_examples.gni")
 }
 
 component("views_examples_lib") {
@@ -266,10 +267,8 @@ if (is_mac) {
     deps = [ "//base" ]
   }
 
-  # Update views_examples_mac_support.mm if the below changes.
-  views_examples_app_name = "Views Examples"
-  views_examples_version = "1.0.0.0"
-  views_examples_framework_name = "$views_examples_app_name Framework"
+  # views_examples_app_name, views_examples_version and
+  # views_examples_framework_name come from views_examples.gni.
 
   tweak_info_plist("views_examples_plist") {
     testonly = true

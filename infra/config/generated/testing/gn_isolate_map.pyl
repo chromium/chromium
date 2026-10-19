@@ -2264,6 +2264,12 @@
     "module_scheme": "gtest",
     "skip_usage_check": True,
   },
+  "views_examples_mac_signing_tests": {
+    "label": "//chrome/views_examples/mac/signing:views_examples_mac_signing_tests",
+    "type": "generated_script",
+    "module_scheme": "pyunit",
+    "skip_usage_check": True,
+  },
   "views_examples_unittests": {
     "label": "//ui/views/examples:views_examples_unittests",
     "type": "windowed_test_launcher",
