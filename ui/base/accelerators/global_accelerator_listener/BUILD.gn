@@ -8,7 +8,9 @@ import("//build/config/ui.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 # TODO(crbug.com/378487333): Look into renaming from accelerator to hotkey.
-source_set("global_accelerator_listener") {
+component("global_accelerator_listener") {
+  defines = [ "IS_GLOBAL_ACCELERATOR_LISTENER_IMPL" ]
+
   sources = [
     "global_accelerator_listener.cc",
     "global_accelerator_listener.h",
@@ -37,6 +39,11 @@ source_set("global_accelerator_listener") {
     sources += [
       "global_accelerator_listener_mac.h",
       "global_accelerator_listener_mac.mm",
+    ]
+    frameworks = [
+      "AppKit.framework",
+      "Carbon.framework",
+      "Foundation.framework",
     ]
   }
 

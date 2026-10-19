@@ -37,7 +37,6 @@
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
 #include "ui/ozone/platform/x11/linux_ui_delegate_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
-#include "ui/ozone/platform/x11/x11_global_shortcut_listener_ozone.h"
 #include "ui/ozone/platform/x11/x11_keyboard_hook.h"
 #include "ui/ozone/platform/x11/x11_menu_utils.h"
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
@@ -59,6 +58,7 @@
 #else
 #include "ui/base/ime/linux/input_method_auralinux.h"
 #include "ui/ozone/platform/x11/os_exchange_data_provider_x11.h"
+#include "ui/ozone/platform/x11/x11_global_shortcut_listener_ozone.h"
 #endif
 
 namespace ui {
@@ -149,6 +149,7 @@ class OzonePlatformX11 : public OzonePlatform,
 
   PlatformUtils* GetPlatformUtils() override { return x11_utils_.get(); }
 
+#if !BUILDFLAG(IS_CHROMEOS)
   PlatformGlobalShortcutListener* GetPlatformGlobalShortcutListener(
       PlatformGlobalShortcutListenerDelegate* delegate) override {
     if (!global_shortcut_listener_) {
@@ -157,6 +158,7 @@ class OzonePlatformX11 : public OzonePlatform,
     }
     return global_shortcut_listener_.get();
   }
+#endif
 
   std::unique_ptr<PlatformKeyboardHook> CreateKeyboardHook(
       PlatformKeyboardHookTypes type,
@@ -353,7 +355,9 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<X11MenuUtils> menu_utils_;
   std::unique_ptr<X11Utils> x11_utils_;
+#if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<PlatformGlobalShortcutListener> global_shortcut_listener_;
+#endif
 
   // Objects in the GPU process.
   std::unique_ptr<X11SurfaceFactory> surface_factory_ozone_;

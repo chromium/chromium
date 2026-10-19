@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -44,7 +45,8 @@ namespace ui {
 // session to activate shortcuts, and every BindShortcuts call replaces the set
 // of shortcuts stored for the app. This class binds only global commands, and
 // keeps listed shortcuts of accelerator groups that aren't loaded.
-class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
+class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
+    GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
  public:
   GlobalAcceleratorListenerLinux(scoped_refptr<dbus::Bus> bus,
                                  const std::string& session_token);

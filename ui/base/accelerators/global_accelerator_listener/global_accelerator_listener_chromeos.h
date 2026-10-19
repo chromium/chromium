@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/types/pass_key.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
@@ -15,8 +16,9 @@
 namespace ui {
 
 // ChromeOS-specific implementation of the GlobalAcceleratorListener interface.
-class GlobalAcceleratorListenerChromeOS : public GlobalAcceleratorListener,
-                                          public ui::AcceleratorTarget {
+class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER)
+    GlobalAcceleratorListenerChromeOS : public GlobalAcceleratorListener,
+                                        public ui::AcceleratorTarget {
  public:
   class Delegate {
    public:

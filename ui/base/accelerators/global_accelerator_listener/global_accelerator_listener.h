@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/command.h"
@@ -19,7 +20,7 @@ class Accelerator;
 // Platform-neutral implementation of a class that keeps track of observers and
 // monitors keystrokes. It relays messages to the appropriate observer when a
 // global accelerator has been struck by the user.
-class GlobalAcceleratorListener {
+class COMPONENT_EXPORT(GLOBAL_ACCELERATOR_LISTENER) GlobalAcceleratorListener {
  public:
   class Observer {
    public:
