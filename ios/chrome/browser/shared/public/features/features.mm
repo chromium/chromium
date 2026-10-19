@@ -1261,3 +1261,10 @@ bool IsClearRootViewControllerAfterSceneDisconnectEnabled() {
   return base::FeatureList::IsEnabled(
       kClearRootViewControllerAfterSceneDisconnect);
 }
+
+BASE_FEATURE(kLocationBarPerformanceImprovements,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsLocationBarPerformanceImprovementsEnabled() {
+  return base::FeatureList::IsEnabled(kLocationBarPerformanceImprovements);
+}

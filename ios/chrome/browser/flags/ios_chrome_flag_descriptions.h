@@ -1357,6 +1357,11 @@ inline constexpr char kLocationBarBadgeMigrationName[] =
 inline constexpr char kLocationBarBadgeMigrationDescription[] =
     "Enables the LocationBarBadgeMigration feature.";
 
+inline constexpr char kLocationBarPerformanceImprovementsName[] =
+    "LocationBarPerformanceImprovements";
+inline constexpr char kLocationBarPerformanceImprovementsDescription[] =
+    "Enables performance improvements for the location bar.";
+
 inline constexpr char kLockBottomToolbarName[] = "Lock bottom toolbar";
 inline constexpr char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
