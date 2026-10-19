@@ -42,6 +42,16 @@ source_set("device_identifier_api") {
   deps = []
 }
 
+source_set("embedded_reauth_api") {
+  sources = [
+    "embedded_reauth_api.h",
+    "embedded_reauth_interaction_manager.h",
+    "embedded_reauth_interaction_manager.mm",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("trusted_vault_api") {
   sources = [ "trusted_vault_api.h" ]
   deps = [ "//ios/chrome/browser/signin/model/trusted_vault" ]

@@ -19,6 +19,15 @@ source_set("chromium_device_identifier") {
   ]
 }
 
+source_set("chromium_embedded_reauth") {
+  sources = [ "chromium_embedded_reauth.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/signin:embedded_reauth_api",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("chromium_signin_error") {
   sources = [ "chromium_signin_error.mm" ]
   deps = [

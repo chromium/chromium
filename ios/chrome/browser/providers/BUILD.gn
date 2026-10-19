@@ -51,6 +51,7 @@ group("chromium_providers") {
     "//ios/chrome/browser/providers/share_kit:chromium_share_kit",
     "//ios/chrome/browser/providers/signin:chromium_choice",
     "//ios/chrome/browser/providers/signin:chromium_device_identifier",
+    "//ios/chrome/browser/providers/signin:chromium_embedded_reauth",
     "//ios/chrome/browser/providers/signin:chromium_signin_error",
     "//ios/chrome/browser/providers/signin:chromium_signin_identity",
     "//ios/chrome/browser/providers/signin:chromium_signin_resources",
