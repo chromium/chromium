@@ -5,18 +5,13 @@
 #ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
 #define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_MAC_H_
 
-#include <CoreFoundation/CoreFoundation.h>
 #include <dispatch/dispatch.h>
 
 #include <memory>
 
-#include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_dispatch_object.h"
-#include "base/files/file_path.h"
-#include "base/message_loop/message_pump_apple.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/system/sys_info.h"
-#include "base/timer/timer.h"
 #include "components/memory_pressure/memory_pressure_level_reporter.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator.h"
@@ -48,19 +43,11 @@ class SystemMemoryPressureEvaluator
   // unit testing.
   virtual int GetMacMemoryPressureLevel();
 
-  // Updates |last_pressure_level_| with the current memory pressure level.
+  // Updates |os_pressure_level_| with the current memory pressure level.
   void UpdatePressureLevel();
 
   // Run |dispatch_callback| on memory pressure notifications from the OS.
   void OnMemoryPressureChanged();
-
-  // Periodically checks the amount of free disk space.
-  void CheckDiskSpace();
-
-  // Callback for the disk space check. Updates the pressure level based on the
-  // amount of free space.
-  void OnDiskSpaceCheckComplete(
-      std::optional<base::SysInfo::DiskSpaceInfo> disk_space_info);
 
   // Updates the pressure level and sends the current vote if it changed.
   void UpdatePressureAndManageNotifications();
@@ -69,22 +56,9 @@ class SystemMemoryPressureEvaluator
   base::apple::ScopedDispatchObject<dispatch_source_t>
       memory_level_event_source_;
 
-  // A task runner that can be used for blocking tasks.
-  scoped_refptr<base::SequencedTaskRunner> disk_check_task_runner_;
-
-  // The timer that periodically triggers a disk space check.
-  base::RepeatingTimer disk_space_check_timer_;
-
-  // The pressure level calculated from the available disk space.
-  base::MemoryPressureLevel disk_pressure_vote_ =
-      base::MEMORY_PRESSURE_LEVEL_NONE;
-
   // The last computed OS-reported memory pressure level.
   base::MemoryPressureLevel os_pressure_level_ =
       base::MEMORY_PRESSURE_LEVEL_NONE;
-
-  // The path to the user data directory, used for the disk space check.
-  base::FilePath user_data_dir_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

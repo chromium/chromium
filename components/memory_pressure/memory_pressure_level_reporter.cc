@@ -5,7 +5,7 @@
 #include "components/memory_pressure/memory_pressure_level_reporter.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -93,19 +93,23 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
   StartPeriodicTimer();
 }
 
-void MemoryPressureLevelReporter::UpdateDiskPressureState(
-    bool new_is_disk_pressure,
-    base::MemoryPressureLevel new_os_pressure_level) {
-  // Update the OS pressure level even if disk pressure state hasn't changed,
-  // because the OS level may have transitioned while disk pressure was active.
-  if (is_disk_pressure_ == new_is_disk_pressure &&
-      os_pressure_level_ == new_os_pressure_level) {
+void MemoryPressureLevelReporter::SetDiskPressureState(
+    bool new_is_disk_pressure) {
+  if (is_disk_pressure_ == new_is_disk_pressure) {
     return;
   }
-  // Make sure that the data about the last interval gets reported before we
-  // change the disk pressure state.
-  ReportHistogram(base::TimeTicks::Now());
+  const base::TimeTicks now = base::TimeTicks::Now();
+  ReportHistogram(now);
   is_disk_pressure_ = new_is_disk_pressure;
+}
+
+void MemoryPressureLevelReporter::SetOsPressureLevel(
+    base::MemoryPressureLevel new_os_pressure_level) {
+  if (os_pressure_level_ == new_os_pressure_level) {
+    return;
+  }
+  const base::TimeTicks now = base::TimeTicks::Now();
+  ReportHistogram(now);
   os_pressure_level_ = new_os_pressure_level;
 }
 

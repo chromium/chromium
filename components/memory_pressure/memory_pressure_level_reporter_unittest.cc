@@ -262,7 +262,7 @@ TEST(MemoryPressureLevelReporterTest, MemoryPressureHistogramDiskSpace) {
   const char* kHistogram = "Memory.PressureLevel2";
 
   // NONE -> CRITICAL (simulated via disk pressure).
-  reporter->UpdateDiskPressureState(true, base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter->SetDiskPressureState(true);
   reporter->OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   task_environment.AdvanceClock(kDelay);
@@ -284,7 +284,7 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDurationDiskSpace) {
   base::HistogramTester histogram_tester;
 
   // Moderate -> Critical (simulated).
-  reporter.UpdateDiskPressureState(true, base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter.SetDiskPressureState(true);
   task_environment.AdvanceClock(base::Seconds(12));
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
@@ -302,7 +302,7 @@ TEST(MemoryPressureLevelReporterTest, PressureWindowDurationDiskSpace) {
       "Memory.PressureWindowDuration2.CriticalToNone", 0);
 
   // Now set disk pressure inactive.
-  reporter.UpdateDiskPressureState(false, base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter.SetDiskPressureState(false);
 
   // Now do a normal transition: Moderate -> Critical (OS).
   reporter.OnMemoryPressureLevelChanged(base::MEMORY_PRESSURE_LEVEL_MODERATE);
@@ -323,9 +323,10 @@ TEST(MemoryPressureLevelReporterTest, DiskSpacePressureBucket) {
   base::HistogramTester histogram_tester;
 
   // Disk pressure turns on while OS is at NONE.
-  reporter.UpdateDiskPressureState(true, base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter.SetOsPressureLevel(base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter.SetDiskPressureState(true);
   task_environment.AdvanceClock(base::Seconds(10));
-  reporter.UpdateDiskPressureState(false, base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter.SetDiskPressureState(false);
 
   // Time should be attributed to the disk bucket (3), not critical (2).
   histogram_tester.ExpectBucketCount(
@@ -346,16 +347,17 @@ TEST(MemoryPressureLevelReporterTest,
   base::HistogramTester histogram_tester;
 
   // Disk pressure turns on while OS is at NONE — should go to disk bucket.
-  reporter.UpdateDiskPressureState(true, base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter.SetOsPressureLevel(base::MEMORY_PRESSURE_LEVEL_NONE);
+  reporter.SetDiskPressureState(true);
   task_environment.AdvanceClock(base::Seconds(10));
 
   // OS transitions to CRITICAL while disk pressure is still active.
   // The reporter should flush the 10s of disk-only time to bucket 3.
-  reporter.UpdateDiskPressureState(true, base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  reporter.SetOsPressureLevel(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   task_environment.AdvanceClock(base::Seconds(20));
 
   // Disk pressure turns off, OS is still CRITICAL.
-  reporter.UpdateDiskPressureState(false, base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  reporter.SetDiskPressureState(false);
   task_environment.AdvanceClock(base::Seconds(5));
 
   // Flush the remaining 5s by transitioning to NONE.

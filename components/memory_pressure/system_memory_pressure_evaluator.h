@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_H_
 #define COMPONENTS_MEMORY_PRESSURE_SYSTEM_MEMORY_PRESSURE_EVALUATOR_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/memory/memory_pressure_listener.h"
 #include "base/sequence_checker.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
@@ -20,6 +23,12 @@ class SystemMemoryPressureEvaluator {
   // platform in use.
   static std::unique_ptr<SystemMemoryPressureEvaluator>
   CreateDefaultSystemEvaluator(MultiSourceMemoryPressureMonitor* monitor);
+
+  // Used by the MemoryPressureMonitor to create any additional auxiliary
+  // evaluators for the platform in use (e.g., low disk space monitoring on
+  // macOS).
+  static std::vector<std::unique_ptr<SystemMemoryPressureEvaluator>>
+  CreateDefaultAuxiliaryEvaluators(MultiSourceMemoryPressureMonitor* monitor);
 
   virtual ~SystemMemoryPressureEvaluator();
 

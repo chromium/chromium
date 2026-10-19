@@ -4,11 +4,14 @@
 
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 
-#include "base/apple/scoped_cftyperef.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
+#include <memory>
+#include <optional>
+#include <utility>
+
+#include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/memory_pressure/disk_space_memory_pressure_evaluator_mac.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,15 +43,21 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
     SystemMemoryPressureEvaluator::UpdatePressureLevel();
   }
 
-  // Exposes the OnDiskSpaceCheckComplete() method for testing.
-  void TriggerDiskSpaceCheckComplete(
-      std::optional<base::SysInfo::DiskSpaceInfo> disk_space_info) {
-    OnDiskSpaceCheckComplete(disk_space_info);
-  }
-
  private:
   int GetMacMemoryPressureLevel() override {
     return macos_pressure_level_for_testing_;
+  }
+};
+
+class TestMacAuxiliaryDiskEvaluator : public DiskSpaceMemoryPressureEvaluator {
+ public:
+  explicit TestMacAuxiliaryDiskEvaluator(
+      std::unique_ptr<MemoryPressureVoter> voter)
+      : DiskSpaceMemoryPressureEvaluator(std::move(voter)) {}
+
+  void TriggerDiskSpaceCheckComplete(
+      std::optional<base::SysInfo::DiskSpaceInfo> disk_space_info) {
+    OnDiskSpaceCheckComplete(disk_space_info);
   }
 };
 
@@ -117,6 +126,7 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
   base::HistogramTester histogram_tester;
 
   TestSystemMemoryPressureEvaluator evaluator(monitor.CreateVoter());
+  TestMacAuxiliaryDiskEvaluator disk_evaluator(monitor.CreateVoter());
 
   // 1. Simulate OS transition: NONE -> MODERATE.
   evaluator.macos_pressure_level_for_testing_ = DISPATCH_MEMORYPRESSURE_WARN;
@@ -143,14 +153,14 @@ TEST(MacSystemMemoryPressureEvaluatorTest, OSTransitionsOnly) {
   // Disk becomes low (should vote CRITICAL, but OS is already CRITICAL).
   base::SysInfo::DiskSpaceInfo disk_space_info;
   disk_space_info.available = base::MiB(100);
-  evaluator.TriggerDiskSpaceCheckComplete(disk_space_info);
+  disk_evaluator.TriggerDiskSpaceCheckComplete(disk_space_info);
 
   // Advance clock in CRITICAL (both OS and Disk are CRITICAL).
   task_environment.FastForwardBy(base::Seconds(20));
 
   // 4. Simulate Disk pressure goes away, but OS remains CRITICAL.
   disk_space_info.available = base::MiB(500);
-  evaluator.TriggerDiskSpaceCheckComplete(disk_space_info);
+  disk_evaluator.TriggerDiskSpaceCheckComplete(disk_space_info);
 
   // No transition should be reported because OS level didn't change (remained
   // CRITICAL).

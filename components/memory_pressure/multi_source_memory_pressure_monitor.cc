@@ -30,7 +30,7 @@ MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
       aggregator_(this),
       level_reporter_(current_pressure_level_,
                       "Memory.PressureLevel2",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
                       std::nullopt
 #else
                       "Memory.PressureWindowDuration2."
@@ -41,11 +41,12 @@ MultiSourceMemoryPressureMonitor::MultiSourceMemoryPressureMonitor()
 }
 
 MultiSourceMemoryPressureMonitor::~MultiSourceMemoryPressureMonitor() {
-  // Destroy system evaluator early while the remaining members of this class
+  // Destroy system evaluators early while the remaining members of this class
   // still exist. MultiSourceMemoryPressureMonitor implements
   // MemoryPressureVoteAggregator::Delegate, and
   // delegate_->OnMemoryPressureLevelChanged() gets indirectly called during
   // ~SystemMemoryPressureEvaluator().
+  auxiliary_evaluators_.clear();
   system_evaluator_.reset();
 
   CHECK_EQ(g_monitor, this);
@@ -60,6 +61,8 @@ MultiSourceMemoryPressureMonitor* MultiSourceMemoryPressureMonitor::Get() {
 void MultiSourceMemoryPressureMonitor::MaybeStartPlatformVoter() {
   system_evaluator_ =
       SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(this);
+  auxiliary_evaluators_ =
+      SystemMemoryPressureEvaluator::CreateDefaultAuxiliaryEvaluators(this);
 }
 
 std::unique_ptr<MemoryPressureVoter>
@@ -68,12 +71,16 @@ MultiSourceMemoryPressureMonitor::CreateVoter() {
   return aggregator_.CreateVoter();
 }
 
-void MultiSourceMemoryPressureMonitor::UpdateDiskPressureState(
-    bool new_is_disk_pressure,
+void MultiSourceMemoryPressureMonitor::SetDiskPressureState(
+    bool new_is_disk_pressure) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  level_reporter_.SetDiskPressureState(new_is_disk_pressure);
+}
+
+void MultiSourceMemoryPressureMonitor::SetOsPressureLevel(
     base::MemoryPressureLevel new_os_pressure_level) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  level_reporter_.UpdateDiskPressureState(new_is_disk_pressure,
-                                          new_os_pressure_level);
+  level_reporter_.SetOsPressureLevel(new_os_pressure_level);
 }
 
 void MultiSourceMemoryPressureMonitor::OnMemoryPressureLevelChanged(

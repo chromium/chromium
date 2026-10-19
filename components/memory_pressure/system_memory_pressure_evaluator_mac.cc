@@ -4,23 +4,14 @@
 
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 
-#include <CoreFoundation/CoreFoundation.h>
-#include <dlfcn.h>
-#include <stddef.h>
 #include <sys/sysctl.h>
 
-#include <algorithm>
-#include <cmath>
+#include <cstddef>
 
-#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/mac/mac_util.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/path_service.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 
@@ -32,12 +23,6 @@ namespace {
 // level signal from the OS is not always an accurate or useful signal.
 BASE_FEATURE(kSkipModerateMemoryPressureLevelMac,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// The threshold for the critical disk space pressure signal.
-constexpr base::ByteSize kCriticalDiskSpaceThreshold = base::MiB(250);
-
-// How often to check for free disk space.
-constexpr base::TimeDelta kDiskSpaceCheckPeriod = base::Seconds(5);
 }  // namespace
 
 base::MemoryPressureLevel
@@ -66,18 +51,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
           DISPATCH_MEMORYPRESSURE_WARN | DISPATCH_MEMORYPRESSURE_CRITICAL |
               DISPATCH_MEMORYPRESSURE_NORMAL,
           dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0))),
-      disk_check_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       weak_ptr_factory_(this) {
-  // A check for available disk space is necessary to generate a
-  // low-disk-space pressure signal.
-  //
-  // To ensure the correct disk volume is checked, this implementation uses
-  // the user's home directory path, retrieved via `base::PathService`. On
-  // macOS, the browser's data directory is a subdirectory of home, so this
-  // correctly targets the volume most relevant to browser performance.
-  base::PathService::Get(base::DIR_HOME, &user_data_dir_);
-
   // WeakPtr needed because there is no guarantee that |this| is still be alive
   // when the task posted to the TaskRunner or event handler runs.
   base::WeakPtr<SystemMemoryPressureEvaluator> weak_this =
@@ -99,16 +73,13 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     dispatch_resume(memory_level_event_source_.get());
   }
 
-  disk_space_check_timer_.Start(
-      FROM_HERE, kDiskSpaceCheckPeriod,
-      base::BindRepeating(&SystemMemoryPressureEvaluator::CheckDiskSpace,
-                          weak_this));
-  // Perform an initial check on startup.
-  CheckDiskSpace();
-
   // Only update initialization vote, without triggering notifications, to
   // prevent unexpected results from event listeners during initialization
   UpdatePressureLevel();
+
+  if (auto* monitor = MultiSourceMemoryPressureMonitor::Get()) {
+    monitor->SetOsPressureLevel(os_pressure_level_);
+  }
 }
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
@@ -146,43 +117,12 @@ void SystemMemoryPressureEvaluator::UpdatePressureLevel() {
     os_transition_reporter_->OnMemoryPressureLevelChanged(os_pressure_level_);
   }
 
-  // The effective pressure level is the most severe of the OS-reported level
-  // and our disk-space-derived level. If the disk pressure feature is disabled,
-  // `disk_pressure_vote_` will always be `NONE`.
-  auto effective_pressure_level =
-      std::max(os_pressure_level_, disk_pressure_vote_);
-
-  SetCurrentVote(effective_pressure_level);
+  SetCurrentVote(os_pressure_level_);
 }
 
 void SystemMemoryPressureEvaluator::OnMemoryPressureChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UpdatePressureAndManageNotifications();
-}
-
-void SystemMemoryPressureEvaluator::CheckDiskSpace() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  disk_check_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&base::SysInfo::AmountOfDiskSpace, user_data_dir_),
-      base::BindOnce(&SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SystemMemoryPressureEvaluator::OnDiskSpaceCheckComplete(
-    std::optional<base::SysInfo::DiskSpaceInfo> disk_space_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::MemoryPressureLevel new_disk_vote = base::MEMORY_PRESSURE_LEVEL_NONE;
-
-  if (disk_space_info.has_value() &&
-      disk_space_info->available < kCriticalDiskSpaceThreshold) {
-    new_disk_vote = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
-  }
-
-  if (disk_pressure_vote_ != new_disk_vote) {
-    disk_pressure_vote_ = new_disk_vote;
-    UpdatePressureAndManageNotifications();
-  }
 }
 
 void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
@@ -193,13 +133,10 @@ void SystemMemoryPressureEvaluator::UpdatePressureAndManageNotifications() {
   // |current_vote_| and UMA get updated to the current value.
   UpdatePressureLevel();
 
-  // Notify the reporter of disk pressure state changes, including the
-  // current OS pressure level so that time is only attributed to the disk
-  // bucket when the OS is not also critical.
+  // Notify the monitor of the OS pressure level so the reporter can properly
+  // attribute metrics between OS memory pressure and auxiliary disk pressure.
   if (auto* monitor = MultiSourceMemoryPressureMonitor::Get()) {
-    monitor->UpdateDiskPressureState(
-        disk_pressure_vote_ == base::MEMORY_PRESSURE_LEVEL_CRITICAL,
-        os_pressure_level_);
+    monitor->SetOsPressureLevel(os_pressure_level_);
   }
 
   if (current_vote() != old_vote) {

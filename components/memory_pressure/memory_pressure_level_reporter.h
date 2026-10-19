@@ -9,7 +9,7 @@
 #include <optional>
 #include <string>
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -39,11 +39,10 @@ class MemoryPressureLevelReporter {
   // Should be called whenever the current memory pressure level changes.
   void OnMemoryPressureLevelChanged(base::MemoryPressureLevel new_level);
 
-  // Called when disk pressure state changes. |new_os_pressure_level| indicates
-  // the current OS-reported memory pressure level, so that time is only
-  // attributed to the disk bucket when the OS is not also critical.
-  void UpdateDiskPressureState(bool new_is_disk_pressure,
-                               base::MemoryPressureLevel new_os_pressure_level);
+  // Updates disk and OS pressure state. Time is only attributed to the disk
+  // bucket when disk pressure is active and the OS level is not critical.
+  void SetDiskPressureState(bool new_is_disk_pressure);
+  void SetOsPressureLevel(base::MemoryPressureLevel new_os_pressure_level);
 
  private:
   void ReportHistogram(base::TimeTicks now);

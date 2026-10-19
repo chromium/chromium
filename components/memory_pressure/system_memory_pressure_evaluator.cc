@@ -12,6 +12,7 @@
 #if BUILDFLAG(IS_FUCHSIA)
 #include "components/memory_pressure/system_memory_pressure_evaluator_fuchsia.h"
 #elif BUILDFLAG(IS_APPLE)
+#include "components/memory_pressure/disk_space_memory_pressure_evaluator_mac.h"
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 #elif BUILDFLAG(IS_WIN)
 #include "components/memory_pressure/threshold_memory_pressure_evaluator.h"
@@ -37,6 +38,21 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
   // Chrome OS and Chromecast evaluators are created in separate components.
   return nullptr;
 #endif
+}
+
+// static
+std::vector<std::unique_ptr<SystemMemoryPressureEvaluator>>
+SystemMemoryPressureEvaluator::CreateDefaultAuxiliaryEvaluators(
+    MultiSourceMemoryPressureMonitor* monitor) {
+  std::vector<std::unique_ptr<SystemMemoryPressureEvaluator>> evaluators;
+#if BUILDFLAG(IS_APPLE)
+  auto disk_space_evaluator =
+      std::make_unique<memory_pressure::mac::DiskSpaceMemoryPressureEvaluator>(
+          monitor->CreateVoter());
+  disk_space_evaluator->Start();
+  evaluators.push_back(std::move(disk_space_evaluator));
+#endif
+  return evaluators;
 }
 
 SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
