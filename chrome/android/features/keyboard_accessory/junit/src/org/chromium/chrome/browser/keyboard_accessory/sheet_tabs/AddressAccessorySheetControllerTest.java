@@ -60,7 +60,7 @@ public class AddressAccessorySheetControllerTest {
         mView = new AccessorySheetTabView(ContextUtils.getApplicationContext(), null);
         mCoordinator =
                 new AddressAccessorySheetCoordinator(
-                        RuntimeEnvironment.application, mProfile, null);
+                        RuntimeEnvironment.getApplication(), mProfile, null);
         assertNotNull(mCoordinator);
         mSheetDataPieces = mCoordinator.getSheetDataPiecesForTesting();
     }

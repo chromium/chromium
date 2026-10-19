@@ -211,7 +211,7 @@ public class ChromeActionModeHandlerUnitTest {
     @Test
     public void testSelectActionMenuTextProcessingMenus() {
         ShadowPackageManager packageManager =
-                Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager());
+                Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager());
         List<String> browserPackageNames = new ArrayList<>();
         List<String> launcherPackageNames = new ArrayList<>();
         List<String> otherPackageNames = new ArrayList<>();
@@ -232,7 +232,7 @@ public class ChromeActionModeHandlerUnitTest {
         packageManager.addResolveInfoForIntent(
                 PackageManagerUtils.getQueryInstalledHomeLaunchersIntent(), launchersList);
 
-        RoboMenu menu = new RoboMenu(RuntimeEnvironment.application);
+        RoboMenu menu = new RoboMenu(RuntimeEnvironment.getApplication());
 
         List<String> allNames = new ArrayList<>();
         allNames.addAll(browserPackageNames);

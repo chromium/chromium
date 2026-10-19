@@ -64,7 +64,7 @@ public class DisclosureNotificationTest {
 
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
 
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
         mNotification =
                 new DisclosureNotification(context.getResources(), mModel, mLifecycleDispatcher);
     }

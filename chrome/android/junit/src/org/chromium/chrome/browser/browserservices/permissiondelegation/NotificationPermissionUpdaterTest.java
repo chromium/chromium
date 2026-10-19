@@ -60,7 +60,7 @@ public class NotificationPermissionUpdaterTest {
 
     @Before
     public void setUp() {
-        PackageManager pm = RuntimeEnvironment.application.getPackageManager();
+        PackageManager pm = RuntimeEnvironment.getApplication().getPackageManager();
         mShadowPackageManager = shadowOf(pm);
         mShadowPackageManager.installPackage(generateTestPackageInfo(PACKAGE_NAME));
         mShadowPackageManager.installPackage(generateTestPackageInfo(OTHER_PACKAGE_NAME));

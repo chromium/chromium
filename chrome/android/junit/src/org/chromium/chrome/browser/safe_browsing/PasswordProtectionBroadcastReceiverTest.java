@@ -34,7 +34,7 @@ public class PasswordProtectionBroadcastReceiverTest {
 
     @Before
     public void setUp() {
-        mContext = spy(RuntimeEnvironment.application);
+        mContext = spy(RuntimeEnvironment.getApplication());
         ContextUtils.initApplicationContextForTests(mContext);
         mReceiver = new PasswordProtectionBroadcastReceiver();
         mPrefManager = ChromeSharedPreferences.getInstance();

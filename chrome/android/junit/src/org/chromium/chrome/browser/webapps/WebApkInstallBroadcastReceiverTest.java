@@ -56,7 +56,7 @@ public class WebApkInstallBroadcastReceiverTest {
     @Before
     public void setUp() {
 
-        mContext = spy(RuntimeEnvironment.application);
+        mContext = spy(RuntimeEnvironment.getApplication());
         ContextUtils.initApplicationContextForTests(mContext);
 
         mReceiver = new WebApkInstallBroadcastReceiver();

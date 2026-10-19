@@ -524,7 +524,7 @@ public class WebappLauncherActivityTest {
     @Test
     public void testUnauthenticatedNonWebApkIntentOpensInTabAndNotWebappMode() {
         Intent intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.putExtra(WebApkConstants.EXTRA_URL, START_URL);
 
         Activity activity =
@@ -537,7 +537,7 @@ public class WebappLauncherActivityTest {
 
         // And just in case, one with an empty-string WebAPK Package Name.
         intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.putExtra(WebApkConstants.EXTRA_URL, START_URL);
         intent.putExtra(WebApkConstants.EXTRA_WEBAPK_PACKAGE_NAME, "");
 
@@ -557,7 +557,7 @@ public class WebappLauncherActivityTest {
         String macB64 = Base64.encodeToString(mac, Base64.DEFAULT);
 
         Intent intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
         intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_1");
         intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
@@ -582,7 +582,7 @@ public class WebappLauncherActivityTest {
         String macB64 = Base64.encodeToString(legacyMac, Base64.DEFAULT);
 
         Intent intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
         intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_2");
         intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
@@ -608,7 +608,7 @@ public class WebappLauncherActivityTest {
         String macB64 = Base64.encodeToString(mac, Base64.DEFAULT);
 
         Intent intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
         intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_3");
         intent.putExtra(WebappConstants.EXTRA_URL, START_URL);
@@ -633,7 +633,7 @@ public class WebappLauncherActivityTest {
         String macB64 = Base64.encodeToString(mac, Base64.DEFAULT);
 
         Intent intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
         intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_4");
         intent.putExtra(WebappConstants.EXTRA_URL, START_URL + "PREFIX_");
@@ -653,7 +653,7 @@ public class WebappLauncherActivityTest {
     @Test
     public void testWebappLaunchWithMalformedMacOpensInTab() {
         Intent intent = new Intent();
-        intent.setPackage(RuntimeEnvironment.application.getPackageName());
+        intent.setPackage(RuntimeEnvironment.getApplication().getPackageName());
         intent.setAction(WebappLauncherActivity.ACTION_START_WEBAPP);
         intent.putExtra(WebappConstants.EXTRA_ID, "webapp_id_5");
         intent.putExtra(WebappConstants.EXTRA_URL, START_URL);

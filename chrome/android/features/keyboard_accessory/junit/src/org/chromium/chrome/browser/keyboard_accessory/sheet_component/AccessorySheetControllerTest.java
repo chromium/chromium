@@ -131,7 +131,7 @@ public class AccessorySheetControllerTest {
         parent.addView(mView);
         mCoordinator =
                 new AccessorySheetCoordinator(
-                        RuntimeEnvironment.application.getApplicationContext(),
+                        RuntimeEnvironment.getApplication().getApplicationContext(),
                         new FakeViewProvider<>(mView),
                         mSheetVisibilityDelegate);
         mMediator = mCoordinator.getMediatorForTesting();
@@ -232,9 +232,9 @@ public class AccessorySheetControllerTest {
     @Test
     public void testScrollingChangesShadowVisibility() {
         assertThat(mModel.get(TOP_SHADOW_VISIBLE), is(false));
-        RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.application);
+        RecyclerView recyclerView = new RecyclerView(RuntimeEnvironment.getApplication());
         FixedScrollLayoutManager layoutManager =
-                new FixedScrollLayoutManager(RuntimeEnvironment.application);
+                new FixedScrollLayoutManager(RuntimeEnvironment.getApplication());
         recyclerView.setLayoutManager(layoutManager);
 
         // If the list was scrolled far enough that the top is hidden, show the top shadow.
@@ -288,7 +288,7 @@ public class AccessorySheetControllerTest {
 
     @Test
     public void testUndockedStyle() {
-        Resources res = RuntimeEnvironment.application.getApplicationContext().getResources();
+        Resources res = RuntimeEnvironment.getApplication().getApplicationContext().getResources();
         int maxWidth =
                 res.getDimensionPixelSize(
                         R.dimen.keyboard_accessory_sheet_dynamic_positioning_max_width);

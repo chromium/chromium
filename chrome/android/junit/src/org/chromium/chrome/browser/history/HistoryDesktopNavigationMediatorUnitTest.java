@@ -28,7 +28,7 @@ public class HistoryDesktopNavigationMediatorUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mModelList = new ModelList();
         mRunnable = () -> mRunnableInvoked = true;
     }

@@ -44,7 +44,7 @@ public class DisclosureSnackbarTest {
 
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
         new DisclosureSnackbar(
-                RuntimeEnvironment.application.getResources(),
+                RuntimeEnvironment.getApplication().getResources(),
                 () -> mSnackbarManager,
                 mModel,
                 mLifecycleDispatcher);

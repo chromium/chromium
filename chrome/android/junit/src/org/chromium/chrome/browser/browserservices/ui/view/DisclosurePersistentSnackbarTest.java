@@ -48,7 +48,7 @@ public class DisclosurePersistentSnackbarTest {
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
         mSnackbar =
                 new DisclosurePersistentSnackbar(
-                        RuntimeEnvironment.application.getResources(),
+                        RuntimeEnvironment.getApplication().getResources(),
                         () -> mSnackbarManager,
                         mModel,
                         mLifecycleDispatcher);

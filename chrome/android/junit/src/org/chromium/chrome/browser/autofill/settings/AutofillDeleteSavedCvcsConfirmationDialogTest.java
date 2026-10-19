@@ -61,7 +61,7 @@ public class AutofillDeleteSavedCvcsConfirmationDialogTest {
     public void testDialogShowsTitleMessageAndButtonLabels() {
         mDialog.show();
 
-        Context context = RuntimeEnvironment.application.getApplicationContext();
+        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
         CharSequence dialogTitle =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.TITLE);
         assertThat(dialogTitle)

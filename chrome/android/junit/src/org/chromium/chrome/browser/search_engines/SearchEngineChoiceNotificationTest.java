@@ -51,7 +51,7 @@ public final class SearchEngineChoiceNotificationTest {
     private static final String TEST_ALTERNATIVE_ENGINE = "duckduckgo.com";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Spy private Context mContext = RuntimeEnvironment.application.getApplicationContext();
+    @Spy private Context mContext = RuntimeEnvironment.getApplication().getApplicationContext();
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TemplateUrl mInitialSearchEngine;

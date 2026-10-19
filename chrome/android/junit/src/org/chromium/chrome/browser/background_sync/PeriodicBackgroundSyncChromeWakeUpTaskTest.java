@@ -61,7 +61,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
 
         doReturn(true)
                 .when(mTaskScheduler)
-                .schedule(eq(RuntimeEnvironment.application), mTaskInfo.capture());
+                .schedule(eq(RuntimeEnvironment.getApplication()), mTaskInfo.capture());
 
         DeviceConditions.setForTesting(
                 new DeviceConditions(
@@ -82,7 +82,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
         int result =
                 new PeriodicBackgroundSyncChromeWakeUpTask()
                         .onStartTaskBeforeNativeLoaded(
-                                RuntimeEnvironment.application, params, mTaskFinishedCallback);
+                                RuntimeEnvironment.getApplication(), params, mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.RESCHEDULE, result);
 
         // TaskFinishedCallback callback is only called once native code has
@@ -104,7 +104,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
         int result =
                 new PeriodicBackgroundSyncChromeWakeUpTask()
                         .onStartTaskBeforeNativeLoaded(
-                                RuntimeEnvironment.application, params, mTaskFinishedCallback);
+                                RuntimeEnvironment.getApplication(), params, mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
 
         // TaskFinishedCallback callback is only called once native code has
@@ -122,7 +122,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
 
         new PeriodicBackgroundSyncChromeWakeUpTask()
                 .onStartTaskWithNative(
-                        RuntimeEnvironment.application, params, mTaskFinishedCallback);
+                        RuntimeEnvironment.getApplication(), params, mTaskFinishedCallback);
 
         verify(mNativeMock).firePeriodicBackgroundSyncEvents(any(Runnable.class));
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
@@ -138,7 +138,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
                         .build();
 
         new PeriodicBackgroundSyncChromeWakeUpTask()
-                .onStopTaskBeforeNativeLoaded(RuntimeEnvironment.application, params);
+                .onStopTaskBeforeNativeLoaded(RuntimeEnvironment.getApplication(), params);
 
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));
@@ -153,7 +153,7 @@ public class PeriodicBackgroundSyncChromeWakeUpTaskTest {
                         .build();
 
         new PeriodicBackgroundSyncChromeWakeUpTask()
-                .onStopTaskWithNative(RuntimeEnvironment.application, params);
+                .onStopTaskWithNative(RuntimeEnvironment.getApplication(), params);
 
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));

@@ -63,7 +63,7 @@ public class CustomTabObserverUnitTest {
 
     @Before
     public void setUp() {
-        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.application);
+        ContextUtils.initApplicationContextForTests(RuntimeEnvironment.getApplication());
         CustomTabsConnection.setInstanceForTesting(mCustomTabsConnection);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);

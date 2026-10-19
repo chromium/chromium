@@ -63,7 +63,8 @@ public class KeyboardAccessoryChipGroupTest {
         // Set the context theme so that ChipView attributes and macros can be resolved.
         getContext().getTheme().applyStyle(R.style.Theme_BrowserUI_DayNight, true);
         // Make sure that 1dp is mapped to 1 pixel on the screen by converting 100dp to pixels.
-        DisplayMetrics metrics = RuntimeEnvironment.application.getResources().getDisplayMetrics();
+        DisplayMetrics metrics =
+                RuntimeEnvironment.getApplication().getResources().getDisplayMetrics();
         assertEquals(
                 100, (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, metrics));
 
@@ -278,6 +279,6 @@ public class KeyboardAccessoryChipGroupTest {
     }
 
     private Context getContext() {
-        return RuntimeEnvironment.application;
+        return RuntimeEnvironment.getApplication();
     }
 }

@@ -29,7 +29,7 @@ public class AutofillImageFetcherUtilsTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
     }
 
     @Test

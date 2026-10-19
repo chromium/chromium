@@ -61,7 +61,7 @@ public class BackgroundSyncBackgroundTaskTest {
 
         doReturn(true)
                 .when(mTaskScheduler)
-                .schedule(eq(RuntimeEnvironment.application), mTaskInfo.capture());
+                .schedule(eq(RuntimeEnvironment.getApplication()), mTaskInfo.capture());
 
         DeviceConditions.setForTesting(
                 new DeviceConditions(
@@ -82,7 +82,7 @@ public class BackgroundSyncBackgroundTaskTest {
         int result =
                 new BackgroundSyncBackgroundTask()
                         .onStartTaskBeforeNativeLoaded(
-                                RuntimeEnvironment.application, params, mTaskFinishedCallback);
+                                RuntimeEnvironment.getApplication(), params, mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.RESCHEDULE, result);
 
         // TaskFinishedCallback callback is only called once native code has
@@ -104,7 +104,7 @@ public class BackgroundSyncBackgroundTaskTest {
         int result =
                 new BackgroundSyncBackgroundTask()
                         .onStartTaskBeforeNativeLoaded(
-                                RuntimeEnvironment.application, params, mTaskFinishedCallback);
+                                RuntimeEnvironment.getApplication(), params, mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
 
         // TaskFinishedCallback callback is only called once native code has
@@ -122,7 +122,7 @@ public class BackgroundSyncBackgroundTaskTest {
 
         new BackgroundSyncBackgroundTask()
                 .onStartTaskWithNative(
-                        RuntimeEnvironment.application, params, mTaskFinishedCallback);
+                        RuntimeEnvironment.getApplication(), params, mTaskFinishedCallback);
 
         verify(mNativeMock).fireOneShotBackgroundSyncEvents(any(Runnable.class));
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
@@ -138,7 +138,7 @@ public class BackgroundSyncBackgroundTaskTest {
                         .build();
 
         new BackgroundSyncBackgroundTask()
-                .onStopTaskBeforeNativeLoaded(RuntimeEnvironment.application, params);
+                .onStopTaskBeforeNativeLoaded(RuntimeEnvironment.getApplication(), params);
 
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));
@@ -153,7 +153,7 @@ public class BackgroundSyncBackgroundTaskTest {
                         .build();
 
         new BackgroundSyncBackgroundTask()
-                .onStopTaskWithNative(RuntimeEnvironment.application, params);
+                .onStopTaskWithNative(RuntimeEnvironment.getApplication(), params);
 
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));

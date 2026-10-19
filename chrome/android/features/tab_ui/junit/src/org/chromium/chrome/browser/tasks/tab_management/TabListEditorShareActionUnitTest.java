@@ -81,7 +81,7 @@ public class TabListEditorShareActionUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mAction =
                 (TabListEditorShareAction)
                         TabListEditorShareAction.createAction(

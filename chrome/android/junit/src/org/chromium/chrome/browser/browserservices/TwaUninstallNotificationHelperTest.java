@@ -52,7 +52,7 @@ public class TwaUninstallNotificationHelperTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
     }
 

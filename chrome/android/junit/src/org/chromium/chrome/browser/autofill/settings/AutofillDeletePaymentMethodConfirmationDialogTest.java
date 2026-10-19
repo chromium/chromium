@@ -105,7 +105,7 @@ public class AutofillDeletePaymentMethodConfirmationDialogTest {
                             mTitleResId);
             mDialog.show();
 
-            Context context = RuntimeEnvironment.application.getApplicationContext();
+            Context context = RuntimeEnvironment.getApplication().getApplicationContext();
             CharSequence dialogTitle =
                     mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.TITLE);
             assertThat(dialogTitle).isEqualTo(context.getString(mTitleResId));

@@ -155,7 +155,7 @@ public class TrustedWebActivityClientTest {
     public void createLaunchIntentForTwaNonHttpScheme() {
         assertNull(
                 mClient.createLaunchIntentForTwa(
-                        RuntimeEnvironment.application,
+                        RuntimeEnvironment.getApplication(),
                         "mailto:miranda@example.com",
                         new ArrayList<>()));
     }

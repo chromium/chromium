@@ -128,7 +128,7 @@ public final class TabGridViewBinderUnitTest {
         doReturn(mDrawable).when(mDrawable).mutate();
         mContext =
                 new ContextThemeWrapper(
-                        RuntimeEnvironment.application, R.style.Theme_BrowserUI_DayNight);
+                        RuntimeEnvironment.getApplication(), R.style.Theme_BrowserUI_DayNight);
 
         mModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)

@@ -61,11 +61,11 @@ public class CreditCardAccessorySheetControllerTest {
 
     @Before
     public void setUp() {
-        mView = new AccessorySheetTabView(RuntimeEnvironment.application, null);
+        mView = new AccessorySheetTabView(RuntimeEnvironment.getApplication(), null);
         AutofillImageFetcherFactory.setInstanceForTesting(mMockImageFetcher);
         mCoordinator =
                 new CreditCardAccessorySheetCoordinator(
-                        RuntimeEnvironment.application, mMockProfile, null);
+                        RuntimeEnvironment.getApplication(), mMockProfile, null);
         assertNotNull(mCoordinator);
         mSheetDataPieces = mCoordinator.getSheetDataPiecesForTesting();
     }

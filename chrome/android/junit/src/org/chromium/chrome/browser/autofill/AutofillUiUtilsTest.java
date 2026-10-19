@@ -39,7 +39,7 @@ public class AutofillUiUtilsTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mMonthInput = new EditText(mContext);
         mYearInput = new EditText(mContext);
         mThisMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;

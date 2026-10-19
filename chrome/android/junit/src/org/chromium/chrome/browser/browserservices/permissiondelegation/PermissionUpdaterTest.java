@@ -52,7 +52,7 @@ public class PermissionUpdaterTest {
     @Before
     public void setUp() {
 
-        PackageManager pm = RuntimeEnvironment.application.getPackageManager();
+        PackageManager pm = RuntimeEnvironment.getApplication().getPackageManager();
         mShadowPackageManager = shadowOf(pm);
         mShadowPackageManager.installPackage(generateTestPackageInfo(PACKAGE_NAME));
         WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);

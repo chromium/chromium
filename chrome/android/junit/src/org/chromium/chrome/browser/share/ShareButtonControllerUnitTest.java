@@ -75,7 +75,7 @@ public final class ShareButtonControllerUnitTest {
 
         mShareDelegateSupplier = ObservableSuppliers.createMonotonic(mShareDelegate);
 
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         UkmRecorderJni.setInstanceForTesting(mUkmRecorderJniMock);
 
         doReturn(mTab).when(mTabProvider).get();

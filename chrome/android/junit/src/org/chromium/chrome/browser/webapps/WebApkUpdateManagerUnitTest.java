@@ -1361,7 +1361,7 @@ public class WebApkUpdateManagerUnitTest {
     public void testDefaultBackgroundColorHasChangedShouldNotUpgrade() {
         int oldDefaultBackgroundColor = 3;
         int splashLayoutDefaultBackgroundColor =
-                SplashLayout.getDefaultBackgroundColor(RuntimeEnvironment.application);
+                SplashLayout.getDefaultBackgroundColor(RuntimeEnvironment.getApplication());
         assertNotEquals(oldDefaultBackgroundColor, splashLayoutDefaultBackgroundColor);
 
         ManifestData androidManifestData = defaultManifestData();

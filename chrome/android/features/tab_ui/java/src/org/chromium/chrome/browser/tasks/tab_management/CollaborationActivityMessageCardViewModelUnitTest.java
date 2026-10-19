@@ -45,7 +45,7 @@ public class CollaborationActivityMessageCardViewModelUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mModel =
                 new CollaborationActivityMessageCardViewModel(
                         mContext, mActionHandler, mDismissHandler);

@@ -74,7 +74,7 @@ public class PasswordAccessorySheetControllerTest {
         mView = new AccessorySheetTabView(ContextUtils.getApplicationContext(), null);
         mCoordinator =
                 new PasswordAccessorySheetCoordinator(
-                        RuntimeEnvironment.application, mProfile, null);
+                        RuntimeEnvironment.getApplication(), mProfile, null);
         assertNotNull(mCoordinator);
         mSheetDataPieces = mCoordinator.getSheetDataPiecesForTesting();
     }

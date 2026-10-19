@@ -57,7 +57,7 @@ public class PasswordCheckupLauncherTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Spy private Context mContext = RuntimeEnvironment.application.getApplicationContext();
+    @Spy private Context mContext = RuntimeEnvironment.getApplication().getApplicationContext();
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 

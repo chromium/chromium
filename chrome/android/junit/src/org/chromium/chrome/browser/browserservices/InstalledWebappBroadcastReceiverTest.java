@@ -91,7 +91,7 @@ public class InstalledWebappBroadcastReceiverTest {
         BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
 
         mReceiver = new InstalledWebappBroadcastReceiver(mMockStrategy);
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
 
         AppBannerManagerJni.setInstanceForTesting(mMockAppBannerManagerJni);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);

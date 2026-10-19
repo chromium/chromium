@@ -830,7 +830,7 @@ public class TabRemoverImplUnitTest {
         TabModelRemover realRemover =
                 spy(
                         new TabModelRemover(
-                                RuntimeEnvironment.application,
+                                RuntimeEnvironment.getApplication(),
                                 mModalDialogManager,
                                 () -> mTabModel));
         when(realRemover.getActionConfirmationManager()).thenReturn(mActionConfirmationManager);

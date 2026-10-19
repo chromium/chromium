@@ -102,7 +102,7 @@ public class InstalledWebappPermissionManagerTest {
                         mType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS)
                 .apply();
 
-        PackageManager pm = RuntimeEnvironment.application.getPackageManager();
+        PackageManager pm = RuntimeEnvironment.getApplication().getPackageManager();
         mShadowPackageManager = shadowOf(pm);
 
         when(mStore.getDelegatePackageName(eq(mOrigin))).thenReturn(PACKAGE_NAME);

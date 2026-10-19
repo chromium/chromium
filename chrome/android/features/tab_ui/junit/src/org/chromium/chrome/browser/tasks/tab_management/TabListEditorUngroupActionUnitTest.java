@@ -58,7 +58,7 @@ public class TabListEditorUngroupActionUnitTest {
     public void setUp() {
         mAction =
                 TabListEditorUngroupAction.createAction(
-                        RuntimeEnvironment.application,
+                        RuntimeEnvironment.getApplication(),
                         ShowMode.MENU_ONLY,
                         ButtonType.TEXT,
                         IconPosition.START);

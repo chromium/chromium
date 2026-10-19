@@ -418,7 +418,7 @@ public class WebappRegistryTest {
         assertTrue(isRegisteredWebapp(webApkIntentDataProvider));
         assertTrue(isRegisteredWebapp(uninstalledWebApkIntentDataProvider));
 
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(webApkPackage);
 
         // Set the current time such that the task runs.
@@ -455,7 +455,7 @@ public class WebappRegistryTest {
         assertTrue(actual.contains(deprecatedWebApkId));
         assertTrue(actual.contains(webApkIntentDataProvider.getWebappExtras().id));
 
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(webApkPackage);
 
         // Set the current time such that the task runs.
@@ -742,7 +742,7 @@ public class WebappRegistryTest {
         // Still fails because the WebAPK is "no longer installed" according to PackageManager.
         assertFalse(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
 
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(testPackageName);
         assertTrue(WebappRegistry.getInstance().hasAtLeastOneWebApkForOrigin(testOrigin));
 
@@ -751,7 +751,7 @@ public class WebappRegistryTest {
         BrowserServicesIntentDataProvider exampleWebApk =
                 new WebApkIntentDataProviderBuilder(examplePackageName, exampleUrl).build();
         registerWebapp(exampleWebApk);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(examplePackageName);
 
         assertTrue(
@@ -780,7 +780,7 @@ public class WebappRegistryTest {
         BrowserServicesIntentDataProvider companyWebApk =
                 new WebApkIntentDataProviderBuilder(companyPackageName, companyUrl).build();
         registerWebapp(companyWebApk);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(companyPackageName);
 
         assertTrue(
@@ -908,7 +908,7 @@ public class WebappRegistryTest {
                         .setWebApkManifestId(testManifestId)
                         .build();
         registerWebapp(intentDataProvider);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(testPackageName);
 
         assertEquals(
@@ -940,7 +940,7 @@ public class WebappRegistryTest {
         assertNull(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId));
 
         // Install package in PackageManager -> should return package name.
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(testPackageName);
         assertEquals(
                 testPackageName,
@@ -996,7 +996,7 @@ public class WebappRegistryTest {
                         .setWebApkManifestId(testManifestId)
                         .build();
         registerWebapp(intentDataProvider);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(testPackageName);
 
         // It should still be found because it is now registered.
@@ -1124,7 +1124,8 @@ public class WebappRegistryTest {
         BrowserServicesIntentDataProvider webApkA =
                 new WebApkIntentDataProviderBuilder(packageA, scopeA).setScope(scopeA).build();
         registerWebapp(webApkA);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager()).addPackage(packageA);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
+                .addPackage(packageA);
         TwaValidator.setTwaInstalledOverrideForTesting(false);
 
         WebappRegistry registry = WebappRegistry.getInstance();
@@ -1168,7 +1169,8 @@ public class WebappRegistryTest {
                 new WebApkIntentDataProviderBuilder(packageA, scopeA).setScope(scopeA).build());
         registerWebapp(
                 new WebApkIntentDataProviderBuilder(packageB, scopeB).setScope(scopeB).build());
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager()).addPackage(packageA);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
+                .addPackage(packageA);
         // B's package is NOT installed on the device yet.
         TwaValidator.setTwaInstalledOverrideForTesting(false);
 
@@ -1176,7 +1178,8 @@ public class WebappRegistryTest {
         assertTrue(registry.isAppInstalledForUrl(new GURL(scopeA)));
         assertFalse(registry.isAppInstalledForUrl(new GURL(scopeB)));
 
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager()).addPackage(packageB);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
+                .addPackage(packageB);
         assertTrue(registry.isAppInstalledForUrl(new GURL(scopeB)));
     }
 
@@ -1203,16 +1206,16 @@ public class WebappRegistryTest {
         // If the parent WebAPK is not installed in PackageManager (even with uninstallTimestamp
         // == 0) while the child WebAPK is installed, the loop continues past the parent and
         // matches the child for child URLs only.
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(packageChild);
         assertFalse(registry.isAppInstalledForUrl(new GURL(scopeParent)));
         assertTrue(registry.isAppInstalledForUrl(new GURL(scopeChild)));
 
         // Once the parent WebAPK is installed, it covers both its own scope and any nested path,
         // including the child scope even after the child WebAPK is uninstalled.
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .addPackage(packageParent);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager())
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .removePackage(packageChild);
         assertTrue(registry.isAppInstalledForUrl(new GURL(scopeParent)));
         assertTrue(registry.isAppInstalledForUrl(new GURL(scopeChild)));
@@ -1235,7 +1238,8 @@ public class WebappRegistryTest {
         BrowserServicesIntentDataProvider webApkA =
                 new WebApkIntentDataProviderBuilder(packageA, scopeA).setScope(scopeA).build();
         registerWebapp(webApkA);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager()).addPackage(packageA);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
+                .addPackage(packageA);
         TwaValidator.setTwaInstalledOverrideForTesting(false);
 
         WebappRegistry registry = WebappRegistry.getInstance();
@@ -1259,7 +1263,8 @@ public class WebappRegistryTest {
                         .setScope(initialScope)
                         .build();
         registerWebapp(webApkA);
-        Shadows.shadowOf(RuntimeEnvironment.application.getPackageManager()).addPackage(packageA);
+        Shadows.shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
+                .addPackage(packageA);
         TwaValidator.setTwaInstalledOverrideForTesting(false);
 
         WebappRegistry registry = WebappRegistry.getInstance();
