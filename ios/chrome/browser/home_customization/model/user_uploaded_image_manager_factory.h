@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_FACTORY_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_USER_UPLOADED_IMAGE_MANAGER_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class UserUploadedImageManager;
+#import "ios/chrome/browser/home_customization/model/user_uploaded_image_manager.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all UserUploadedImageManagers and associates
 // them with profiles.
-class UserUploadedImageManagerFactory : public ProfileKeyedServiceFactoryIOS {
+class UserUploadedImageManagerFactory
+    : public TypedProfileKeyedServiceFactoryIOS<UserUploadedImageManagerFactory,
+                                                UserUploadedImageManager> {
  public:
-  static UserUploadedImageManager* GetForProfile(ProfileIOS* profile);
-  static UserUploadedImageManagerFactory* GetInstance();
+  explicit UserUploadedImageManagerFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<UserUploadedImageManagerFactory>;
-
-  UserUploadedImageManagerFactory();
-  ~UserUploadedImageManagerFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

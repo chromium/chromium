@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 
-#import "base/no_destructor.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/model/home_background_image_service_factory.h"
@@ -13,31 +12,14 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-HomeBackgroundCustomizationService*
-HomeBackgroundCustomizationServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<HomeBackgroundCustomizationService>(
-          profile, /*create=*/true);
-}
-
-// static
-HomeBackgroundCustomizationServiceFactory*
-HomeBackgroundCustomizationServiceFactory::GetInstance() {
-  static base::NoDestructor<HomeBackgroundCustomizationServiceFactory> instance;
-  return instance.get();
-}
-
 HomeBackgroundCustomizationServiceFactory::
-    HomeBackgroundCustomizationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("HomeBackgroundCustomizationService") {
+    HomeBackgroundCustomizationServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "HomeBackgroundCustomizationService") {
   DependsOn(UserUploadedImageManagerFactory::GetInstance());
   DependsOn(HomeBackgroundImageServiceFactory::GetInstance());
   DependsOn(PromosManagerFactory::GetInstance());
 }
-
-HomeBackgroundCustomizationServiceFactory::
-    ~HomeBackgroundCustomizationServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 HomeBackgroundCustomizationServiceFactory::BuildServiceInstanceFor(

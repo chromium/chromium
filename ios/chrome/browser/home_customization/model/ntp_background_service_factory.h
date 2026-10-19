@@ -5,24 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_NTP_BACKGROUND_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_NTP_BACKGROUND_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class NtpBackgroundService;
+#import "components/themes/ntp_background_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all NtpBackgroundServices and associates them with
 // profile.
-class NtpBackgroundServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class NtpBackgroundServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<NtpBackgroundServiceFactory,
+                                                NtpBackgroundService> {
  public:
-  static NtpBackgroundService* GetForProfile(ProfileIOS* profile);
-  static NtpBackgroundServiceFactory* GetInstance();
+  explicit NtpBackgroundServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<NtpBackgroundServiceFactory>;
-
-  NtpBackgroundServiceFactory();
-  ~NtpBackgroundServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

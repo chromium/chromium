@@ -5,25 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_CUSTOMIZATION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_MODEL_HOME_BACKGROUND_CUSTOMIZATION_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class HomeBackgroundCustomizationService;
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all HomeBackgroundCustomizationServices and associates
 // them with profiles.
 class HomeBackgroundCustomizationServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          HomeBackgroundCustomizationServiceFactory,
+          HomeBackgroundCustomizationService> {
  public:
-  static HomeBackgroundCustomizationService* GetForProfile(ProfileIOS* profile);
-  static HomeBackgroundCustomizationServiceFactory* GetInstance();
+  explicit HomeBackgroundCustomizationServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<HomeBackgroundCustomizationServiceFactory>;
-
-  HomeBackgroundCustomizationServiceFactory();
-  ~HomeBackgroundCustomizationServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
