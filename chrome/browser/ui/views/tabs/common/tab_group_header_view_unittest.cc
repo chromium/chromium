@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -64,6 +65,7 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
   MOCK_METHOD(void, ShiftGroupUp, (), (override));
   MOCK_METHOD(void, ShiftGroupDown, (), (override));
   MOCK_METHOD(bool, IsGroupFocused, (), (const, override));
+  MOCK_METHOD(bool, IsUnfocusButtonFocused, (), (const, override));
   MOCK_METHOD(HorizontalTabClosingHelper*,
               GetTabClosingHelper,
               (),
@@ -735,4 +737,77 @@ TEST_F(TabGroupHeaderViewTest, AnchorPosition_Orientation) {
       delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
   EXPECT_EQ(vertical_header->GetAnchorPosition(),
             views::BubbleBorder::Arrow::LEFT_TOP);
+}
+
+TEST_F(TabGroupHeaderViewTest, HideHoverCardOnBlurWhenUnfocusButtonFocused) {
+  MockDelegate delegate;
+  ON_CALL(delegate, IsFocusInTabStrip()).WillByDefault(testing::Return(true));
+
+  tab_groups::TabGroupVisualData visual_data(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* container = widget->SetContentsView(std::make_unique<views::View>());
+  auto* header = container->AddChildView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data));
+  auto* other_view = container->AddChildView(std::make_unique<views::View>());
+  other_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  widget->Show();
+
+  views::FocusManager* focus_manager = widget->GetFocusManager();
+  ASSERT_NE(nullptr, focus_manager);
+  focus_manager->SetKeyboardAccessible(true);
+
+  EXPECT_CALL(delegate,
+              UpdateHoverCard(TabSlotController::HoverCardUpdateType::kFocus))
+      .Times(1);
+  focus_manager->SetFocusedView(header);
+
+  // Blurring to another hovercard target in the tab strip does not hide the
+  // hovercard.
+  ON_CALL(delegate, IsUnfocusButtonFocused())
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(delegate, HideHoverCard(testing::_)).Times(0);
+  focus_manager->SetFocusedView(other_view);
+
+  EXPECT_CALL(delegate,
+              UpdateHoverCard(TabSlotController::HoverCardUpdateType::kFocus))
+      .Times(1);
+  focus_manager->SetFocusedView(header);
+
+  // Blurring to the unfocus button hides the hovercard even though focus is
+  // still in the tab strip.
+  ON_CALL(delegate, IsUnfocusButtonFocused())
+      .WillByDefault(testing::Return(true));
+  EXPECT_CALL(delegate,
+              HideHoverCard(TabSlotController::HoverCardUpdateType::kFocus))
+      .Times(1);
+  focus_manager->SetFocusedView(other_view);
+}
+
+TEST_F(TabGroupHeaderViewTest, HideHoverCardOnMouseExitInFocusMode) {
+  MockDelegate delegate;
+  ON_CALL(delegate, IsGroupFocused()).WillByDefault(testing::Return(true));
+
+  tab_groups::TabGroupVisualData visual_data(
+      u"Test Group", tab_groups::TabGroupColorId::kBlue, false);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* header = widget->SetContentsView(std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kHorizontal, nullptr, &visual_data));
+  header->SetBounds(0, 0, 100, 24);
+  widget->Show();
+
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  EXPECT_CALL(delegate,
+              UpdateHoverCard(TabSlotController::HoverCardUpdateType::kHover))
+      .Times(1);
+  MoveMouseTo(generator, header, true);
+
+  EXPECT_CALL(delegate,
+              HideHoverCard(TabSlotController::HoverCardUpdateType::kHover))
+      .Times(1);
+  MoveMouseTo(generator, header, false);
 }

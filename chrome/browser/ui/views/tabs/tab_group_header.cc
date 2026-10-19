@@ -357,9 +357,21 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
   tab_slot_controller_->EndDrag(EndDragReason::kComplete);
 }
 
+void TabGroupHeader::OnMouseMoved(const ui::MouseEvent& event) {
+  MaybeUpdateHoverStatus(event);
+}
+
 void TabGroupHeader::OnMouseEntered(const ui::MouseEvent& event) {
-  tab_slot_controller_->UpdateHoverCard(
-      this, TabSlotController::HoverCardUpdateType::kHover);
+  MaybeUpdateHoverStatus(event);
+}
+
+void TabGroupHeader::OnMouseExited(const ui::MouseEvent& event) {
+  is_title_chip_hovered_ = false;
+  if (unfocus_chip_->GetVisible() &&
+      GetMirroredXInView(event.x()) < title_chip_->x()) {
+    tab_slot_controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kHover);
+  }
 }
 
 void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
@@ -400,7 +412,7 @@ void TabGroupHeader::OnFocus() {
 }
 
 void TabGroupHeader::OnBlur() {
-  if (!tab_slot_controller_->IsFocusInTabStrip()) {
+  if (!tab_slot_controller_->IsFocusInTabStrip() || unfocus_chip_->HasFocus()) {
     tab_slot_controller_->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kFocus);
   }
@@ -912,6 +924,23 @@ int TabGroupHeader::GetUnfocusChipWidthWithGap() const {
   return unfocus_chip_->GetPreferredSize(views::SizeBounds({}, GetChipHeight()))
              .width() +
          kFocusedHeadersGap;
+}
+
+void TabGroupHeader::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
+  if (unfocus_chip_->GetVisible() &&
+      GetMirroredXInView(event.x()) < title_chip_->x()) {
+    is_title_chip_hovered_ = false;
+    tab_slot_controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kHover);
+    return;
+  }
+
+  if (is_title_chip_hovered_) {
+    return;
+  }
+  is_title_chip_hovered_ = true;
+  tab_slot_controller_->UpdateHoverCard(
+      this, TabSlotController::HoverCardUpdateType::kHover);
 }
 
 BEGIN_METADATA(TabGroupHeader)

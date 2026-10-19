@@ -67,6 +67,7 @@ class TabGroupHeaderView : public views::FlexLayoutView,
     virtual void ShiftGroupDown() = 0;
 
     virtual bool IsGroupFocused() const = 0;
+    virtual bool IsUnfocusButtonFocused() const = 0;
     virtual HorizontalTabClosingHelper* GetTabClosingHelper() const = 0;
   };
 

@@ -67,7 +67,9 @@ class TabGroupHeader : public TabSlotView,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
+  void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
+  void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnFocus() override;
   void OnBlur() override;
@@ -144,6 +146,7 @@ class TabGroupHeader : public TabSlotView,
   void OnTabGroupDataChanged();
   void ExitFocusMode();
   int GetUnfocusChipWidthWithGap() const;
+  void MaybeUpdateHoverStatus(const ui::MouseEvent& event);
 
   const raw_ref<TabSlotController> tab_slot_controller_;
 
@@ -189,6 +192,7 @@ class TabGroupHeader : public TabSlotView,
   // for collaboration messaging.
   bool needs_attention_ = false;
   bool is_ephemeral_ = false;
+  bool is_title_chip_hovered_ = false;
 
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;

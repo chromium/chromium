@@ -426,6 +426,9 @@ void TabGroupHeaderView::OnMouseExited(const ui::MouseEvent& event) {
 #else
   UpdateEditorBubbleButtonVisibility();
 #endif
+  if (delegate_->IsGroupFocused()) {
+    delegate_->HideHoverCard(TabSlotController::HoverCardUpdateType::kHover);
+  }
 }
 
 void TabGroupHeaderView::OnFocus() {
@@ -435,7 +438,7 @@ void TabGroupHeaderView::OnFocus() {
 
 void TabGroupHeaderView::OnBlur() {
   UpdateEditorBubbleButtonVisibility();
-  if (!delegate_->IsFocusInTabStrip()) {
+  if (!delegate_->IsFocusInTabStrip() || delegate_->IsUnfocusButtonFocused()) {
     delegate_->HideHoverCard(TabSlotController::HoverCardUpdateType::kFocus);
   }
 }
