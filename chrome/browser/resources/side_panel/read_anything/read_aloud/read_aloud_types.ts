@@ -108,14 +108,14 @@ class AxReadAloudNodeImpl extends AxReadAloudNode {
 
 // Represents a node used by read aloud that's based entirely on the DOM.
 export class DomReadAloudNode extends ReadAloudNode {
-  nearestBlockAncestor: Node|undefined = undefined;
+  private readonly nearestBlockAncestor_: Node|undefined;
   private isSuperscript_?: boolean;
 
   protected constructor(protected node: Node) {
     super();
     ReadAloudNodeStore.getInstance().register(this);
-    // lineBreakingItem_ only needs to be set once.
-    this.nearestBlockAncestor = this.getNearestBlockAncestor_();
+    // nearestBlockAncestor_ only needs to be set once.
+    this.nearestBlockAncestor_ = this.getNearestBlockAncestor_();
   }
 
   equals(other: ReadAloudNode|undefined|null): boolean {
@@ -134,10 +134,10 @@ export class DomReadAloudNode extends ReadAloudNode {
   }
 
   // Refresh the DOM node associated with this read aloud node if the original
-  // node has been changed, such as from highlighting.
+  // node has been changed, such as from highlighting. The replacement is in
+  // place, so the block ancestor is unchanged.
   refresh(newNode: Node) {
     this.node = newNode;
-    this.nearestBlockAncestor = this.getNearestBlockAncestor_();
   }
 
   // Returns true if the DOM node associated with this ReadAloudNode is
@@ -167,7 +167,7 @@ export class DomReadAloudNode extends ReadAloudNode {
   // The nearest ancestor to the DOM node associated with this ReadAloudNode
   // that is of a "block" style such that it would constitute a line break.
   getBlockAncestor(): Node|undefined {
-    return this.nearestBlockAncestor;
+    return this.nearestBlockAncestor_;
   }
 
   private getNearestBlockAncestor_(): Node|undefined {

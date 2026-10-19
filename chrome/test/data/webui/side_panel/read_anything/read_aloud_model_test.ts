@@ -1511,6 +1511,35 @@ suite('ReadAloudModel', () => {
       });
 
   test(
+      'getCurrentTextSegments mid-sentence superscript after earlier sentences',
+      async () => {
+        // The first text node spans several sentences, so the node search for
+        // the last sentence must still start at that node and not mistake the
+        // superscript for the start of the sentence.
+        const paragraph = document.createElement('p');
+        paragraph.appendChild(document.createTextNode('First. Second. Third'));
+        paragraph.appendChild(createLinkedCitationSuperscript('1'));
+        paragraph.appendChild(document.createTextNode(' Fourth.'));
+        document.body.appendChild(paragraph);
+
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        assertEquals(
+            'First.', getReadAloudModel().getCurrentTextContent().trim());
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            'Second.', getReadAloudModel().getCurrentTextContent().trim());
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            'Third [1] Fourth.',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
+  test(
       'getCurrentTextSegments all superscript nodes included in current sentence',
       async () => {
         // Create a container element to hold the simplified structure

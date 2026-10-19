@@ -246,7 +246,8 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
       // sentence.
       if (previousSentence) {
         currentSentence = this.maybeMergeSuperscripts_(
-            currentSentence, nodeOffsets, fullText, previousSentence);
+            currentSentence, nodeOffsets, fullText, previousSentence,
+            nodeIndex);
       }
 
       // Add the completed sentence to the segments array
@@ -360,12 +361,15 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   }
 
   // Returns the list of DomReadAloudNodes associated with the provided.
+  // Nodes before `startNodeIndex` must end before the sentence starts.
   private findNodesForSentence_(
-      sentence: Sentence, nodeOffsets: OffsetByNode[]): OffsetByNode[] {
+      sentence: Sentence, nodeOffsets: OffsetByNode[],
+      startNodeIndex: number): OffsetByNode[] {
     const sentenceStart = sentence.index;
     const sentenceEnd = sentence.index + sentence.text.length;
     const nodes: OffsetByNode[] = [];
-    for (const offsetByNode of nodeOffsets) {
+    for (let i = startNodeIndex; i < nodeOffsets.length; i++) {
+      const offsetByNode = nodeOffsets[i]!;
       const nodeLength = offsetByNode.node.getText().length;
       const nodeEndOffset = offsetByNode.startOffset + nodeLength;
       if (offsetByNode.startOffset >= sentenceEnd) {
@@ -387,11 +391,12 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   // Helper method to handle superscript merging
   private maybeMergeSuperscripts_(
       currentSentence: Sentence, nodeOffsets: OffsetByNode[], fullText: string,
-      previousSentence: Sentence): Sentence|null {
+      previousSentence: Sentence, startNodeIndex: number): Sentence|null {
     let finalSentence: Sentence|null = currentSentence;
 
     while (finalSentence) {
-      const nodes = this.findNodesForSentence_(finalSentence, nodeOffsets);
+      const nodes = this.findNodesForSentence_(
+          finalSentence, nodeOffsets, startNodeIndex);
       // If there are no nodes in the current sentence or the first node
       // is not a superscript, no need to continue with postprocessing.
       if (nodes.length === 0 || !nodes[0]!.node.isSuperscript()) {
