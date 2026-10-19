@@ -19,10 +19,12 @@ desc: |-
   Header names must be compliant with RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). Header values must not contain NUL, CR or LF symbols. Individual headers must not exceed 8KB in size. Invalid headers and URL patterns will be ignored.
 
   This policy is limited to a total of 500 URL patterns across all rules. Each rule can contain at most 20 headers. Patterns and headers beyond these thresholds will be ignored.
+
+  Note: If a URL pattern matches unencrypted schemes (http://, ws://, or when the scheme is omitted), the configured headers might be transmitted in plain text over an unencrypted channel and may be exposed to network observers. To protect sensitive or identifying header values, restrict URL patterns to encrypted schemes (https:// or wss://).
 example_value:
 - patterns:
-  - example.com
-  - .example.org
+  - https://example.com
+  - https://.example.org
   headers:
   - name: X-Tenant-ID
     value: '123456'
