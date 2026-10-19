@@ -303,6 +303,21 @@ suite('SplitNewTabPageTest', () => {
     const initialTabSearchItems =
         splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
     assertEquals(0, initialTabSearchItems.length);
+    assertEquals(1, testApiProxy.getCallCount('redirectToNtp'));
+  });
+
+  test('Redirects to NTP when not split', async () => {
+    testApiProxy.setIsSplit(false);
+    await splitNewTabPageSetup();
+    assertEquals(1, testApiProxy.getCallCount('redirectToNtp'));
+  });
+
+  test('Redirects to NTP on unsplit', async () => {
+    await splitNewTabPageSetup();
+    assertEquals(0, testApiProxy.getCallCount('redirectToNtp'));
+    testApiProxy.getCallbackRouterRemote().tabUnsplit();
+    await testApiProxy.whenCalled('redirectToNtp');
+    assertEquals(1, testApiProxy.getCallCount('redirectToNtp'));
   });
 
   test('Initially focuses the first tab in the list', async () => {

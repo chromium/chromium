@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
 import type {ProfileData, SwitchToTabInfo} from './tab_search.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './tab_search.mojom-webui.js';
 
@@ -40,6 +42,8 @@ export interface TabSearchApiProxy {
   saveRecentlyClosedExpandedPref(expanded: boolean): void;
 
   maybeShowUi(): void;
+
+  redirectToNtp(): void;
 }
 
 export class TabSearchApiProxyImpl implements TabSearchApiProxy {
@@ -101,6 +105,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   maybeShowUi() {
     this.handler.maybeShowUI();
+  }
+
+  redirectToNtp() {
+    window.location.replace(loadTimeData.getString('newTabPageUrl'));
   }
 
   static getInstance(): TabSearchApiProxy {

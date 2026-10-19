@@ -265,7 +265,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   }
 
   private redirectToNtp_() {
-    window.location.replace(loadTimeData.getString('newTabPageUrl'));
+    this.apiProxy_.redirectToNtp();
   }
 
   private hostWindowChanged_() {
