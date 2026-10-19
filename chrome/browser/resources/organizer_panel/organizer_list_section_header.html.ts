@@ -14,7 +14,8 @@ export function getHtml(this: OrganizerListSectionHeaderElement) {
   <slot></slot>
 </cr-expand-button>
 <cr-icon-button id="menuButton" iron-icon="cr:more-vert"
-    aria-label="$i18n{tabGroupMoreOptions}" @click="${this.onMenuButtonClick_}">
+    aria-label="$i18n{options}" title="$i18n{options}"
+    @click="${this.onMenuButtonClick_}">
 </cr-icon-button>
 <cr-action-menu id="menu" @open-changed="${this.onMenuOpenChanged_}">
   <button id="showSomeButton" class="dropdown-item" role="menuitemradio"

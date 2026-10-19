@@ -39,6 +39,7 @@ suite('OrganizerPanelAppTest', () => {
       isIncognitoMode: false,
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
+      options: 'Options',
       recentlyClosed: 'Recently Closed',
       recentlyVisited: 'Recently visited',
       searchTabs: 'Search Tabs',

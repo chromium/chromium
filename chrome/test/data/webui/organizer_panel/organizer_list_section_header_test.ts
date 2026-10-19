@@ -20,6 +20,12 @@ suite('OrganizerListSectionHeaderTest', () => {
     await microtasksFinished();
   });
 
+  test('has options tooltip and aria-label on menu button', () => {
+    const menuButton = header.$.menuButton;
+    assertEquals('Options', menuButton.title);
+    assertEquals('Options', menuButton.getAttribute('aria-label'));
+  });
+
   test('toggles expanded state when expand button is clicked', async () => {
     const expandButton = header.$.expandButton;
     const expandIcon = expandButton.$.icon;

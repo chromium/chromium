@@ -10739,6 +10739,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ORGANIZER_PANEL_SHOW_SOME" desc="The label for the menu item in an organizer panel list section header that limits the section to showing a few items.">
         Show some
       </message>
+      <message name="IDS_ORGANIZER_PANEL_OPTIONS" desc="The tooltip for the button in an organizer panel section header that opens the options menu.">
+        Options
+      </message>
       <message name="IDS_ORGANIZER_PANEL_SPLIT_VIEW" desc="The title for a split view item in an organizer panel list section.">
         Split view
       </message>
