@@ -130,6 +130,11 @@ SVGFilterBuilder::SVGFilterBuilder(FilterEffect* source_graphic,
       entry.value->SetOriginTainted();
     }
   }
+  if (source_graphic->ContainsBackdrop()) {
+    for (auto& entry : builtin_effects_) {
+      entry.value->SetContainsBackdrop();
+    }
+  }
   AddBuiltinEffects();
 }
 
@@ -200,6 +205,9 @@ void SVGFilterBuilder::BuildGraph(
         ResolveInterpolationSpace(color_interpolation));
     if (effect->InputsTaintOrigin() || effect_element.TaintsOrigin())
       effect->SetOriginTainted();
+    if (effect->InputsContainBackdrop()) {
+      effect->SetContainsBackdrop();
+    }
 
     Add(AtomicString(effect_element.result()->CurrentValue()->Value()), effect);
   }

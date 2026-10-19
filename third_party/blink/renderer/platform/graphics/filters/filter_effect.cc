@@ -32,11 +32,7 @@
 
 namespace blink {
 
-FilterEffect::FilterEffect(Filter* filter)
-    : filter_(filter),
-      clips_to_bounds_(true),
-      origin_tainted_(false),
-      operating_interpolation_space_(kInterpolationSpaceLinear) {
+FilterEffect::FilterEffect(Filter* filter) : filter_(filter) {
   DCHECK(filter_);
 }
 
@@ -130,6 +126,15 @@ bool FilterEffect::InputsTaintOrigin() const {
   for (const Member<FilterEffect>& effect : input_effects_) {
     if (effect->OriginTainted())
       return true;
+  }
+  return false;
+}
+
+bool FilterEffect::InputsContainBackdrop() const {
+  for (const Member<FilterEffect>& effect : input_effects_) {
+    if (effect->ContainsBackdrop()) {
+      return true;
+    }
   }
   return false;
 }

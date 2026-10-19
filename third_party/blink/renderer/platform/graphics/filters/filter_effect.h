@@ -125,6 +125,11 @@ class PLATFORM_EXPORT FilterEffect : public GarbageCollected<FilterEffect> {
 
   bool InputsTaintOrigin() const;
 
+  bool ContainsBackdrop() const { return contains_backdrop_; }
+  void SetContainsBackdrop() { contains_backdrop_ = true; }
+
+  bool InputsContainBackdrop() const;
+
  protected:
   FilterEffect(Filter*);
 
@@ -160,11 +165,13 @@ class PLATFORM_EXPORT FilterEffect : public GarbageCollected<FilterEffect> {
 
   // Whether the effect should clip to its primitive region, or expand to use
   // the combined region of its inputs.
-  bool clips_to_bounds_;
+  bool clips_to_bounds_ = true;
 
-  bool origin_tainted_;
+  bool origin_tainted_ = false;
 
-  InterpolationSpace operating_interpolation_space_;
+  bool contains_backdrop_ = false;
+
+  InterpolationSpace operating_interpolation_space_ = kInterpolationSpaceLinear;
 
   std::array<sk_sp<PaintFilter>, 4> image_filters_;
 };
