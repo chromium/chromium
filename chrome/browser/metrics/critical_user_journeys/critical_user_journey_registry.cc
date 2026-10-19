@@ -156,7 +156,8 @@ void CriticalUserJourneyRegistry::AddJourneys() {
                       ReadAnythingJourneySteps::kOpenReadAnything)})
           .AddStep(kReadAnythingViewModeElementId,
                    ui::InteractionSequence::StepType::kShown,
-                   ReadAnythingJourneySteps::kReadAnythingViewShown)
+                   ReadAnythingJourneySteps::kReadAnythingViewShown,
+                   ui::InteractionSequence::ContextMode::kAny)
           .LaunchHatsSurveyOnCompletion(read_anything_hats_params)
           .Build());
 

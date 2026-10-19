@@ -105,14 +105,18 @@ class CriticalUserJourney {
     Builder& AddStep(
         std::variant<ui::ElementIdentifier, ui::CustomElementEventType> event,
         ui::InteractionSequence::StepType type,
-        int metric_id);
+        int metric_id,
+        ui::InteractionSequence::ContextMode context_mode =
+            ui::InteractionSequence::ContextMode::kInitial);
 
     template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
     Builder& AddStep(
         std::variant<ui::ElementIdentifier, ui::CustomElementEventType> event,
         ui::InteractionSequence::StepType type,
-        T metric_id) {
-      return AddStep(event, type, static_cast<int>(metric_id));
+        T metric_id,
+        ui::InteractionSequence::ContextMode context_mode =
+            ui::InteractionSequence::ContextMode::kInitial) {
+      return AddStep(event, type, static_cast<int>(metric_id), context_mode);
     }
 
     Builder& AddAnyOf(const std::vector<Branch>& branches);

@@ -48,7 +48,32 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
     const auto& step = journey->steps()[i];
     if (i == 0 && initial_element) {
       // If we have an initial element, use it to start the sequence.
-      builder.AddStep(ui::InteractionSequence::WithInitialElement(
+      // `WithInitialElement()` assumes a `kShown` step and sets
+      // `must_remain_visible = true`. Determine the actual trigger `StepType`
+      // so non-`kShown` triggers (e.g. a page action icon that hides as soon as
+      // it is activated) do not abort the sequence when the trigger element
+      // disappears before the next step.
+      // TODO(crbug.com/574458689): Consider whether `InteractionSequence`
+      // should auto-detect `must_remain_visible` for non-`kShown` initial
+      // triggers directly instead of handling this in CUJ.
+      ui::InteractionSequence::StepType trigger_type = step->type;
+      if (!step->branches.empty()) {
+        // When Step 0 is an `AddAnyOf()` group, `step->type` is `kSubsequence`
+        // and the trigger `StepType` lives on the matching branch's first step
+        // (matched by element ID, or by `first_step_metric_id` for custom
+        // event triggers).
+        for (const auto& branch : step->branches) {
+          if (!branch->steps().empty() &&
+              (branch->steps()[0]->id == initial_element->identifier() ||
+               (first_step_metric_id.has_value() &&
+                branch->steps()[0]->metric_id == *first_step_metric_id))) {
+            trigger_type = branch->steps()[0]->type;
+            break;
+          }
+        }
+      }
+
+      auto initial_step = ui::InteractionSequence::WithInitialElement(
           initial_element,
           base::BindOnce(
               [](base::WeakPtr<CriticalUserJourneySession> self, int metric_id,
@@ -63,7 +88,11 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
               weak_factory_.GetWeakPtr(),
               first_step_metric_id.value_or(step->metric_id),
               step->time_out_duration, step->is_exit_branch,
-              step->min_dwell_duration)));
+              step->min_dwell_duration));
+      if (trigger_type != ui::InteractionSequence::StepType::kShown) {
+        initial_step->must_remain_visible = false;
+      }
+      builder.AddStep(std::move(initial_step));
       continue;
     }
 

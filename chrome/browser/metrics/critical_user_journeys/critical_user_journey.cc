@@ -36,11 +36,16 @@ CriticalUserJourney::Builder::~Builder() = default;
 CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddStep(
     std::variant<ui::ElementIdentifier, ui::CustomElementEventType> event,
     ui::InteractionSequence::StepType type,
-    int metric_id) {
+    int metric_id,
+    ui::InteractionSequence::ContextMode context_mode) {
   auto step = std::make_unique<CriticalUserJourneyStep>();
   step->metric_id = metric_id;
   step->type = type;
   step->time_out_duration = base::Minutes(2);
+  step->context = context_mode;
+  if (context_mode == ui::InteractionSequence::ContextMode::kAny) {
+    step->in_any_context = true;
+  }
 
   if (std::holds_alternative<ui::CustomElementEventType>(event)) {
     CHECK_EQ(type, ui::InteractionSequence::StepType::kCustomEvent)
