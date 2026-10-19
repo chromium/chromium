@@ -818,8 +818,7 @@ class BottomSheetMediator implements TouchHandler {
             @Px int e2eBottomInset) {
         // The browser controls offset is added here so that the sheet's toolbar behaves like the
         // browser controls do.
-        int bottomInsetAdjustment =
-                (mTargetState == SheetState.HIDDEN || currentOffsetPx <= 0) ? 0 : e2eBottomInset;
+        int bottomInsetAdjustment = (mTargetState == SheetState.HIDDEN) ? 0 : e2eBottomInset;
         float translationY =
                 (containerHeight - currentOffsetPx) + browserControlsOffset - bottomInsetAdjustment;
         return Math.max(0f, translationY);
