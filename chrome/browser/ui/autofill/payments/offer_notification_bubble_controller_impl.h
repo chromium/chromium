@@ -140,8 +140,8 @@ class OfferNotificationBubbleControllerImpl
   // Determines the appropriate hover tooltip for the button.
   bool promo_code_button_clicked_ = false;
 
-  // Records the current state of the bubble.
-  BubbleState bubble_state_ = BubbleState::kHidden;
+  // Whether the omnibox icon for the bubble should be visible.
+  bool is_icon_visible_ = false;
 
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 

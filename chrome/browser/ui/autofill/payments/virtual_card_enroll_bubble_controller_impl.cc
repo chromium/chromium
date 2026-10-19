@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/visibility.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -180,7 +179,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnAcceptButton(
         ui_model_->enrollment_fields().virtual_card_enrollment_source,
         is_user_gesture_, ui_model_->enrollment_fields().previously_declined);
   } else {
-    bubble_state_ = BubbleState::kHidden;
+    is_icon_visible_ = false;
     LogVirtualCardEnrollmentLoadingViewShown(/*is_shown=*/false);
   }
 #endif
@@ -191,7 +190,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnDeclineButton() {
   accept_virtual_card_callback_.Reset();
 
 #if !BUILDFLAG(IS_ANDROID)
-  bubble_state_ = BubbleState::kHidden;
+  is_icon_visible_ = false;
 #endif
 }
 
@@ -202,10 +201,6 @@ void VirtualCardEnrollBubbleControllerImpl::OnLinkClicked(
 
   VirtualCardEnrollMetricsLogger::OnLinkClicked(
       link_type, ui_model_->enrollment_fields().virtual_card_enrollment_source);
-
-#if !BUILDFLAG(IS_ANDROID)
-  bubble_state_ = BubbleState::kShowingIconAndBubble;
-#endif
 
   web_contents()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                               url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -312,37 +307,13 @@ bool VirtualCardEnrollBubbleControllerImpl::IsIconVisible() const {
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
-  return bubble_state_ != BubbleState::kHidden;
-#endif
-}
-
-void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
-    content::Visibility visibility) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (IsBubbleManagerEnabled()) {
-    if (visibility == content::Visibility::HIDDEN &&
-        bubble_state_ != BubbleState::kShowingIcon) {
-      bubble_state_ = BubbleState::kHidden;
-    }
-    // BubbleManager will handle the effects of tab changes.
-    return;
-  }
-
-  if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
-      bubble_state_ == BubbleState::kShowingIconAndBubble) {
-    QueueOrShowBubble();
-  } else if (visibility == content::Visibility::HIDDEN) {
-    HideBubble(/*initiated_by_bubble_manager=*/false);
-    if (bubble_state_ != BubbleState::kShowingIcon) {
-      bubble_state_ = BubbleState::kHidden;
-    }
-  }
+  return is_icon_visible_;
 #endif
 }
 
 bool VirtualCardEnrollBubbleControllerImpl::ShouldReshowOnTabVisible() const {
 #if !BUILDFLAG(IS_ANDROID)
-  return bubble_state_ == BubbleState::kShowingIconAndBubble;
+  return reprompt_required_;
 #else
   return false;
 #endif
@@ -374,7 +345,7 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
     HideBubble(/*initiated_by_bubble_manager=*/false);
   }
 
-  bubble_state_ = BubbleState::kShowingIconAndBubble;
+  is_icon_visible_ = true;
   if (!IsWebContentsActive()) {
     return;
   }
@@ -398,12 +369,6 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
                                                      user_gesture_reprompt));
   }
   CHECK(bubble_view(), base::NotFatalUntil::M162);
-  // Update |bubble_state_| after bubble is shown once. In OnVisibilityChanged()
-  // we display the bubble if the the state is kShowingIconAndBubble. Once we
-  // open the bubble here once, we set |bubble_state_| to kShowingIcon to make
-  // sure further OnVisibilityChanged() don't trigger opening the bubble because
-  // we don't want to re-show it every time the web contents become visible.
-  bubble_state_ = BubbleState::kShowingIcon;
 
   // Metrics for showing virtual card enroll bubble are logged once when
   // enrollment is offered, do not log the same metrics again while showing
@@ -460,7 +425,8 @@ bool VirtualCardEnrollBubbleControllerImpl::IsWebContentsActive() {
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ResetBubble() {
-  bubble_state_ = BubbleState::kHidden;
+  is_icon_visible_ = false;
+  reprompt_required_ = false;
   enrollment_status_ = EnrollmentStatus::kNone;
   confirmation_ui_params_.reset();
 }
