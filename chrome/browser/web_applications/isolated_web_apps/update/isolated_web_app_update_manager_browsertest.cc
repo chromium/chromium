@@ -4,16 +4,21 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <variant>
+#include <vector>
 
 #include "base/base64.h"
+#include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -42,8 +47,10 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/non_installed_bundle_inspection_context.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/fake_iwa_runtime_data_provider_mixin.h"
@@ -73,9 +80,14 @@
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
@@ -159,6 +171,11 @@ constexpr std::string_view kRegisterServiceWorkerScript = R"(
 constexpr std::string_view kServiceWorkerScript = R"(
   self.addEventListener('install', (event) => {
     self.skipWaiting();
+  });
+  self.addEventListener('message', (event) => {
+    if (event.data === 'keep-alive') {
+      event.waitUntil(new Promise(() => {}));
+    }
   });
   self.addEventListener("fetch", (event) => {
     console.log("SW: used fetch: " + event.request.url);
@@ -1657,6 +1674,175 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                               /*pending_update_info=*/Eq(std::nullopt),
                               /*integrity_block_data=*/_)));
 }
+
+class UpdateInstallPageProcessObserver {
+ public:
+  UpdateInstallPageProcessObserver() {
+    creation_subscription_ =
+        content::RegisterWebContentsCreationCallback(base::BindRepeating(
+            &UpdateInstallPageProcessObserver::OnWebContentsCreated,
+            base::Unretained(this)));
+  }
+
+  ~UpdateInstallPageProcessObserver() = default;
+
+  const std::vector<int>& observed_update_install_page_process_ids() const {
+    return observed_update_install_page_process_ids_;
+  }
+
+ private:
+  class InstallPageWebContentsObserver : public content::WebContentsObserver {
+   public:
+    InstallPageWebContentsObserver(content::WebContents* web_contents,
+                                   UpdateInstallPageProcessObserver* owner)
+        : content::WebContentsObserver(web_contents), owner_(owner) {}
+
+    void ReadyToCommitNavigation(
+        content::NavigationHandle* navigation_handle) override {
+      if (!navigation_handle->IsInPrimaryMainFrame() ||
+          navigation_handle->GetURL().GetPath() !=
+              "/.well-known/_generated_install_page.html") {
+        return;
+      }
+      const auto* context =
+          NonInstalledBundleInspectionContext::FromWebContents(web_contents());
+      if (!context ||
+          !std::holds_alternative<IwaUpdateOperation>(context->operation())) {
+        return;
+      }
+
+      content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
+      owner_->observed_update_install_page_process_ids_.push_back(
+          rfh->GetProcess()->GetDeprecatedID());
+    }
+
+   private:
+    raw_ptr<UpdateInstallPageProcessObserver> owner_;
+  };
+
+  void OnWebContentsCreated(content::WebContents* web_contents) {
+    observers_.push_back(
+        std::make_unique<InstallPageWebContentsObserver>(web_contents, this));
+  }
+
+  std::vector<int> observed_update_install_page_process_ids_;
+  std::vector<std::unique_ptr<InstallPageWebContentsObserver>> observers_;
+  base::CallbackListSubscription creation_subscription_;
+};
+
+class IsolatedWebAppUpdateProcessIsolationBrowserTest
+    : public IsolatedWebAppUpdateManagerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  IsolatedWebAppUpdateProcessIsolationBrowserTest() {
+    feature_list_.InitWithFeatureState(kIsolatedWebAppIsolateInstallPageProcess,
+                                       GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Regression test for b/574788166:
+// When an IWA window is closed to apply a pending update while its Service
+// Worker keeps the renderer process alive, the hidden `PrepareInstallInfoJob`
+// install page must not reuse the app's existing renderer process when
+// `kIsolatedWebAppIsolateInstallPageProcess` is enabled (and reuses it when
+// disabled).
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppUpdateProcessIsolationBrowserTest,
+                       ApplyUpdateDoesNotReuseServiceWorkerProcess) {
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::ListValue().Append(
+          iwa_test_update_server_.CreateForceInstallPolicyEntry(
+              GetWebBundleId())));
+
+  web_app::WebAppTestInstallObserver(browser()->GetProfile())
+      .BeginListeningAndWait({GetAppId()});
+  AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
+
+  // Open the app and register the Service Worker.
+  content::RenderFrameHost* app_frame = OpenApp(GetAppId(), "?register-sw=1");
+  ASSERT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(1ul));
+
+  content::StoragePartition* storage_partition =
+      app_frame->GetStoragePartition();
+  ServiceWorkerVersionStartedRunningWaiter waiter(storage_partition);
+  waiter.AwaitStartedRunning();
+  test::CheckServiceWorkerStatus(
+      GetAppOrigin().GetURL(), storage_partition,
+      content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+
+  // Park an unsettled `waitUntil()` promise in the Service Worker so it keeps
+  // `worker_ref_count_ > 0` on the app's `RenderProcessHost` after the window
+  // closes.
+  ASSERT_TRUE(content::ExecJs(app_frame, R"(
+    (async () => {
+      const reg = await navigator.serviceWorker.ready;
+      reg.active.postMessage('keep-alive');
+    })();
+  )"));
+
+  const int app_process_id = app_frame->GetProcess()->GetDeprecatedID();
+  UpdateInstallPageProcessObserver process_observer;
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({GetAppId()});
+
+  EXPECT_THAT(provider()
+                  .isolated_web_app_update_manager()
+                  .DiscoverAndPrepareUpdatesNow(),
+              Eq(1ul));
+
+  // Wait until the update is prepared and pending window closure.
+  ASSERT_TRUE(base::test::RunUntil([this]() {
+    const WebApp* app = GetIsolatedWebApp(GetAppId());
+    return app->isolation_data()->pending_update_info().has_value();
+  }));
+
+  ASSERT_THAT(
+      process_observer.observed_update_install_page_process_ids().size(),
+      Eq(1ul));
+  EXPECT_NE(process_observer.observed_update_install_page_process_ids()[0],
+            app_process_id);
+
+  // Close the app window to trigger `IsolatedWebAppApplyUpdateCommand`.
+  BrowserWindowInterface* app_browser = GetBrowserFromFrame(app_frame);
+  ui_test_utils::BrowserDestroyedObserver observer(app_browser);
+  app_browser->GetWindow()->Close();
+  observer.Wait();
+  EXPECT_THAT(provider().ui_manager().GetNumWindowsForApp(GetAppId()), Eq(0ul));
+
+  manifest_updated_observer.Wait();
+
+  ASSERT_THAT(
+      process_observer.observed_update_install_page_process_ids().size(),
+      Eq(2ul));
+  if (GetParam()) {
+    // With `kIsolatedWebAppIsolateInstallPageProcess` enabled, the apply step
+    // must not reuse `app_process_id` or the prepare step's process.
+    EXPECT_NE(process_observer.observed_update_install_page_process_ids()[1],
+              app_process_id);
+    EXPECT_NE(process_observer.observed_update_install_page_process_ids()[1],
+              process_observer.observed_update_install_page_process_ids()[0]);
+  } else {
+    // With `kIsolatedWebAppIsolateInstallPageProcess` disabled, the apply step
+    // reuses `app_process_id` (kept alive by the Service Worker after window
+    // closure).
+    EXPECT_EQ(process_observer.observed_update_install_page_process_ids()[1],
+              app_process_id);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IsolatedWebAppUpdateProcessIsolationBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param
+                                      ? "IsolateInstallPageProcessEnabled"
+                                      : "IsolateInstallPageProcessDisabled";
+                         });
 
 // Session restore related tests that can only be run in ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)

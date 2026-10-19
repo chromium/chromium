@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
@@ -27,6 +28,9 @@
 #include "ui/base/page_transition_types.h"
 
 namespace web_app {
+
+BASE_FEATURE(kIsolatedWebAppIsolateInstallPageProcess,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
 
@@ -127,6 +131,12 @@ void PrepareInstallInfoJob::LoadInstallUrl(
   content::NavigationController::LoadURLParams load_params(install_page_url);
   load_params.transition_type = ui::PAGE_TRANSITION_GENERATED;
   load_params.reload_type = content::ReloadType::BYPASSING_CACHE;
+  if (base::FeatureList::IsEnabled(kIsolatedWebAppIsolateInstallPageProcess)) {
+    // Isolate the generated install page into a unique renderer instance so it
+    // never reuses an existing renderer process for the same IWA origin (such
+    // as one kept alive by a Service Worker when applying an update).
+    load_params.requests_unique_instance_isolation = true;
+  }
 
   url_loader_->LoadUrl(
       std::move(load_params), web_contents_.get(),

@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -32,6 +33,8 @@
 class Profile;
 
 namespace web_app {
+
+BASE_DECLARE_FEATURE(kIsolatedWebAppIsolateInstallPageProcess);
 
 // Loads the manifest from the bundle and assembles `WebAppInstallInfo`.
 class PrepareInstallInfoJob : public ProfileObserver {
