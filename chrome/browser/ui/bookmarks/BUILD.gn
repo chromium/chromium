@@ -36,7 +36,6 @@ source_set("bookmarks") {
     "//components/prefs",
     "//components/profile_metrics",
     "//components/tab_groups",
-    "//components/tabs:public",
     "//content/public/browser",
     "//skia",
     "//ui/base",

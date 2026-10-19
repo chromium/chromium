@@ -67,7 +67,7 @@ class BookmarkPageActionController : public BookmarkTabHelperObserver,
                          content::WebContents* old_contents,
                          content::WebContents* new_contents) override;
 
-  void ObserveBookmarkTabHelper();
+  void ObserveBookmarkTabHelper(content::WebContents* contents);
 
   void UpdatePageActionVisibility();
   bool ShouldShowPageAction() const;

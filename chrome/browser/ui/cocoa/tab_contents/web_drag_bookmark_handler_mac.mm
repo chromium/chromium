@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/cocoa/tab_contents/web_drag_bookmark_handler_mac.h"
 
 #include "base/functional/callback_helpers.h"
-#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
+#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "content/public/browser/web_contents.h"
@@ -13,16 +13,15 @@
 
 using content::WebContents;
 
-WebDragBookmarkHandlerMac::WebDragBookmarkHandlerMac() = default;
+WebDragBookmarkHandlerMac::WebDragBookmarkHandlerMac()
+    : bookmark_tab_helper_(nullptr), web_contents_(nullptr) {}
 
-WebDragBookmarkHandlerMac::~WebDragBookmarkHandlerMac() = default;
+WebDragBookmarkHandlerMac::~WebDragBookmarkHandlerMac() {}
 
 void WebDragBookmarkHandlerMac::DragInitialize(WebContents* contents) {
   web_contents_ = contents;
-  if (!bookmark_drag_) {
-    bookmark_drag_ =
-        extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
-            contents);
+  if (!bookmark_tab_helper_) {
+    bookmark_tab_helper_ = BookmarkTabHelper::FromWebContents(contents);
   }
 
   // This operation is synchronous on Mac.
@@ -39,22 +38,27 @@ void WebDragBookmarkHandlerMac::DragInitialize(WebContents* contents) {
 }
 
 void WebDragBookmarkHandlerMac::OnDragOver() {
-  if (bookmark_drag_) {
-    bookmark_drag_->OnDragOver(bookmark_drag_data_);
+  if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
+    bookmark_tab_helper_->bookmark_drag_delegate()->OnDragOver(
+        bookmark_drag_data_);
   }
 }
 
 void WebDragBookmarkHandlerMac::OnDragEnter() {
-  if (bookmark_drag_) {
-    bookmark_drag_->OnDragEnter(bookmark_drag_data_);
+  if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
+    bookmark_tab_helper_->bookmark_drag_delegate()->OnDragEnter(
+        bookmark_drag_data_);
   }
 }
 
 void WebDragBookmarkHandlerMac::OnDrop() {
   // This is non-null if the web_contents_ is showing an ExtensionUrlOverrides
   // with support for (at the moment experimental) drag and drop extensions.
-  if (bookmark_drag_) {
-    bookmark_drag_->OnDrop(bookmark_drag_data_);
+  if (bookmark_tab_helper_) {
+    if (bookmark_tab_helper_->bookmark_drag_delegate()) {
+      bookmark_tab_helper_->bookmark_drag_delegate()->OnDrop(
+          bookmark_drag_data_);
+    }
 
     // Focus the target browser.
     BrowserWindowInterface* browser =
@@ -67,7 +71,8 @@ void WebDragBookmarkHandlerMac::OnDrop() {
 }
 
 void WebDragBookmarkHandlerMac::OnDragLeave() {
-  if (bookmark_drag_) {
-    bookmark_drag_->OnDragLeave(bookmark_drag_data_);
+  if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
+    bookmark_tab_helper_->bookmark_drag_delegate()->OnDragLeave(
+        bookmark_drag_data_);
   }
 }

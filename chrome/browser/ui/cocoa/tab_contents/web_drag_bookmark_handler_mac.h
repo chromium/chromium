@@ -9,13 +9,11 @@
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 
+class BookmarkTabHelper;
+
 namespace content {
 class WebContents;
 }
-
-namespace extensions {
-class BookmarkManagerPrivateDragEventRouter;
-}  // namespace extensions
 
 // Chrome needs to intercept content drag events so it can dispatch them to the
 // bookmarks and extensions system.
@@ -37,13 +35,12 @@ class WebDragBookmarkHandlerMac : public content::WebDragDestDelegate {
   void OnDragLeave() override;
 
  private:
-  // The BookmarkManagerPrivateDragEventRouter.
+  // The BookmarkTabHelper.
   // Weak reference; may be NULL if the contents don't have a
-  // BookmarkManagerPrivateDragEventRouter (e.g. WebUI dialogs).
-  raw_ptr<extensions::BookmarkManagerPrivateDragEventRouter> bookmark_drag_ =
-      nullptr;
+  // BookmarkTabHelper (e.g. WebUI dialogs).
+  raw_ptr<BookmarkTabHelper> bookmark_tab_helper_;
 
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_;
 
   // The bookmark data for the current tab. This will be empty if there is not
   // a native bookmark drag.

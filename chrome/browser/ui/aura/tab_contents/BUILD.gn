@@ -18,7 +18,7 @@ source_set("tab_contents") {
   sources = [ "web_drag_bookmark_handler_aura.cc" ]
 
   deps = [
-    "//chrome/browser/extensions",
+    "//chrome/browser/ui/bookmarks",
     "//chrome/browser/ui/browser_window",
     "//ui/base",
   ]

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/aura/tab_contents/web_drag_bookmark_handler_aura.h"
 
-#include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
+#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -14,34 +14,35 @@
 
 using content::WebContents;
 
-WebDragBookmarkHandlerAura::WebDragBookmarkHandlerAura() = default;
+WebDragBookmarkHandlerAura::WebDragBookmarkHandlerAura()
+    : bookmark_tab_helper_(nullptr), web_contents_(nullptr) {}
 
 WebDragBookmarkHandlerAura::~WebDragBookmarkHandlerAura() = default;
 
 void WebDragBookmarkHandlerAura::DragInitialize(WebContents* contents) {
-  // Ideally we would want to initialize the
-  // BookmarkManagerPrivateDragEventRouter member in the constructor. We cannot
-  // do that as the WebDragDest object is created during the construction of the
-  // WebContents object. The BookmarkManagerPrivateDragEventRouter is created
-  // much later.
+  // Ideally we would want to initialize the the BookmarkTabHelper member in
+  // the constructor. We cannot do that as the WebDragDest object is
+  // created during the construction of the WebContents object.  The
+  // BookmarkTabHelper is created much later.
   web_contents_ = contents;
-  if (!bookmark_drag_) {
-    bookmark_drag_ =
-        extensions::BookmarkManagerPrivateDragEventRouter::FromWebContents(
-            contents);
+  if (!bookmark_tab_helper_) {
+    bookmark_tab_helper_ = BookmarkTabHelper::FromWebContents(contents);
   }
 }
 
 void WebDragBookmarkHandlerAura::OnDragOver() {
   DCHECK(web_contents_);
-  if (bookmark_drag_ && bookmark_drag_data_.is_valid()) {
-    bookmark_drag_->OnDragOver(bookmark_drag_data_);
+  if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
+    if (bookmark_drag_data_.is_valid()) {
+      bookmark_tab_helper_->bookmark_drag_delegate()->OnDragOver(
+          bookmark_drag_data_);
+    }
   }
 }
 
 void WebDragBookmarkHandlerAura::OnReceiveDragData(
     const ui::OSExchangeData& data) {
-  if (bookmark_drag_) {
+  if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
     // Read the bookmark drag data and save it for use in later events in this
     // drag.
     bookmark_drag_data_.Read(data);
@@ -49,15 +50,21 @@ void WebDragBookmarkHandlerAura::OnReceiveDragData(
 }
 
 void WebDragBookmarkHandlerAura::OnDragEnter() {
-  if (bookmark_drag_ && bookmark_drag_data_.is_valid()) {
-    bookmark_drag_->OnDragEnter(bookmark_drag_data_);
+  if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
+    if (bookmark_drag_data_.is_valid()) {
+      bookmark_tab_helper_->bookmark_drag_delegate()->OnDragEnter(
+          bookmark_drag_data_);
+    }
   }
 }
 
 void WebDragBookmarkHandlerAura::OnDrop() {
-  if (bookmark_drag_) {
-    if (bookmark_drag_data_.is_valid()) {
-      bookmark_drag_->OnDrop(bookmark_drag_data_);
+  if (bookmark_tab_helper_) {
+    if (bookmark_tab_helper_->bookmark_drag_delegate()) {
+      if (bookmark_drag_data_.is_valid()) {
+        bookmark_tab_helper_->bookmark_drag_delegate()->OnDrop(
+            bookmark_drag_data_);
+      }
     }
 
     // Focus the target browser.
@@ -73,8 +80,11 @@ void WebDragBookmarkHandlerAura::OnDrop() {
 }
 
 void WebDragBookmarkHandlerAura::OnDragLeave() {
-  if (bookmark_drag_ && bookmark_drag_data_.is_valid()) {
-    bookmark_drag_->OnDragLeave(bookmark_drag_data_);
+  if (bookmark_tab_helper_ && bookmark_tab_helper_->bookmark_drag_delegate()) {
+    if (bookmark_drag_data_.is_valid()) {
+      bookmark_tab_helper_->bookmark_drag_delegate()->OnDragLeave(
+          bookmark_drag_data_);
+    }
   }
 
   bookmark_drag_data_.Clear();

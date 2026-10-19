@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/api/bookmarks_core/bookmarks_function.h"
+#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
@@ -110,7 +111,8 @@ struct BrowserContextFactoryDependencies<BookmarkManagerPrivateAPI> {
 // Class that handles the drag and drop related chrome.bookmarkManagerPrivate
 // events. This class has one instance per bookmark manager tab.
 class BookmarkManagerPrivateDragEventRouter
-    : public content::WebContentsUserData<
+    : public BookmarkTabHelper::BookmarkDrag,
+      public content::WebContentsUserData<
           BookmarkManagerPrivateDragEventRouter> {
  public:
   explicit BookmarkManagerPrivateDragEventRouter(
@@ -121,10 +123,11 @@ class BookmarkManagerPrivateDragEventRouter
       const BookmarkManagerPrivateDragEventRouter&) = delete;
   ~BookmarkManagerPrivateDragEventRouter() override;
 
-  void OnDragEnter(const bookmarks::BookmarkNodeData& data);
-  void OnDragOver(const bookmarks::BookmarkNodeData& data);
-  void OnDragLeave(const bookmarks::BookmarkNodeData& data);
-  void OnDrop(const bookmarks::BookmarkNodeData& data);
+  // BookmarkTabHelper::BookmarkDrag interface
+  void OnDragEnter(const bookmarks::BookmarkNodeData& data) override;
+  void OnDragOver(const bookmarks::BookmarkNodeData& data) override;
+  void OnDragLeave(const bookmarks::BookmarkNodeData& data) override;
+  void OnDrop(const bookmarks::BookmarkNodeData& data) override;
 
   // The bookmark drag and drop data. This gets set after a drop was done on
   // the page. This returns nullptr if no data is available.

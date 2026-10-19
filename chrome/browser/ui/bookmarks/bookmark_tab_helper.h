@@ -10,39 +10,49 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 class BookmarkTabHelperObserver;
 
 namespace bookmarks {
 class BookmarkModel;
+struct BookmarkNodeData;
 }  // namespace bookmarks
 
 namespace content {
 class WebContents;
 }
 
-namespace tabs {
-class TabInterface;
-}  // namespace tabs
-
 // Per-tab class to manage bookmarks.
-class BookmarkTabHelper : public bookmarks::BaseBookmarkModelObserver,
-                          public content::WebContentsObserver {
+class BookmarkTabHelper
+    : public bookmarks::BaseBookmarkModelObserver,
+      public content::WebContentsObserver,
+      public content::WebContentsUserData<BookmarkTabHelper> {
  public:
-  DECLARE_USER_DATA(BookmarkTabHelper);
+  // Interface for forwarding bookmark drag and drop to extenstions.
+  class BookmarkDrag {
+   public:
+    virtual void OnDragEnter(const bookmarks::BookmarkNodeData& data) = 0;
+    virtual void OnDragOver(const bookmarks::BookmarkNodeData& data) = 0;
+    virtual void OnDragLeave(const bookmarks::BookmarkNodeData& data) = 0;
+    virtual void OnDrop(const bookmarks::BookmarkNodeData& data) = 0;
 
-  explicit BookmarkTabHelper(tabs::TabInterface& tab);
+   protected:
+    virtual ~BookmarkDrag() = default;
+  };
 
   BookmarkTabHelper(const BookmarkTabHelper&) = delete;
   BookmarkTabHelper& operator=(const BookmarkTabHelper&) = delete;
 
   ~BookmarkTabHelper() override;
 
-  static BookmarkTabHelper* From(tabs::TabInterface* tab);
-  static BookmarkTabHelper* FromWebContents(content::WebContents* web_contents);
-
-  void DiscardContents(content::WebContents* new_contents);
+  // It is up to callers to call set_bookmark_drag_delegate(NULL) when
+  // |bookmark_drag| is deleted since this class does not take ownership of
+  // |bookmark_drag|.
+  void set_bookmark_drag_delegate(BookmarkDrag* bookmark_drag) {
+    bookmark_drag_ = bookmark_drag;
+  }
+  BookmarkDrag* bookmark_drag_delegate() { return bookmark_drag_; }
 
   bool is_starred() const { return is_starred_; }
 
@@ -51,6 +61,10 @@ class BookmarkTabHelper : public bookmarks::BaseBookmarkModelObserver,
   bool HasObserver(BookmarkTabHelperObserver* observer) const;
 
  private:
+  friend class content::WebContentsUserData<BookmarkTabHelper>;
+
+  explicit BookmarkTabHelper(content::WebContents* web_contents);
+
   // Updates the starred state from the BookmarkModel. If the state has changed,
   // the delegate is notified.
   void UpdateStarredStateForCurrentURL();
@@ -77,15 +91,18 @@ class BookmarkTabHelper : public bookmarks::BaseBookmarkModelObserver,
       content::NavigationHandle* navigation_handle) override;
 
   // Whether the current URL is starred.
-  bool is_starred_ = false;
+  bool is_starred_;
 
-  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_ =
-      nullptr;
+  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
 
-  // A list of observers notified when the url starred state changes.
+  // A list of observers notified when when the url starred changed.
   base::ObserverList<BookmarkTabHelperObserver>::Unchecked observers_;
 
-  ui::ScopedUnownedUserData<BookmarkTabHelper> scoped_unowned_user_data_;
+  // The BookmarkDrag is used to forward bookmark drag and drop events to
+  // extensions.
+  raw_ptr<BookmarkDrag, AcrossTasksDanglingUntriaged> bookmark_drag_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_BOOKMARKS_BOOKMARK_TAB_HELPER_H_
