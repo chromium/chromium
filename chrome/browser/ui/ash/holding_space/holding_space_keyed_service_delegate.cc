@@ -9,7 +9,7 @@ namespace ash {
 HoldingSpaceKeyedServiceDelegate::~HoldingSpaceKeyedServiceDelegate() = default;
 
 void HoldingSpaceKeyedServiceDelegate::NotifyPersistenceRestored() {
-  DCHECK(is_restoring_persistence_);
+  CHECK(is_restoring_persistence_, base::NotFatalUntil::M162);
   is_restoring_persistence_ = false;
   OnPersistenceRestored();
 }

@@ -68,7 +68,7 @@ const BookmarkNode* GetNodeByUuid(const BookmarkModel* model,
 void DoOpenBookmark(Profile* profile,
                     WindowOpenDisposition disposition,
                     const BookmarkNode* node) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   BrowserWindowInterface* browser =
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
           /*match_original_profiles=*/true);
@@ -197,7 +197,7 @@ void OpenBookmarkByGUID(WindowOpenDisposition disposition,
 - (instancetype)initWithBridge:(BookmarkMenuBridge*)bridge {
   if ((self = [super init])) {
     _bridge = bridge;
-    DCHECK(_bridge);
+    CHECK(_bridge, base::NotFatalUntil::M162);
   }
   return self;
 }

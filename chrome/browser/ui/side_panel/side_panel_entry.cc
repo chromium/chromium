@@ -33,7 +33,7 @@ SidePanelEntry::SidePanelEntry(
       more_info_callback_(std::move(more_info_callback)),
       default_content_width_callback_(
           std::move(default_content_width_callback)) {
-  DCHECK(create_content_callback_);
+  CHECK(create_content_callback_, base::NotFatalUntil::M162);
 }
 
 SidePanelEntry::SidePanelEntry(
@@ -48,7 +48,7 @@ SidePanelEntry::SidePanelEntry(
       more_info_callback_(base::NullCallback()),
       default_content_width_callback_(
           std::move(default_content_width_callback)) {
-  DCHECK(create_content_callback_);
+  CHECK(create_content_callback_, base::NotFatalUntil::M162);
 }
 
 SidePanelEntry::SidePanelEntry(

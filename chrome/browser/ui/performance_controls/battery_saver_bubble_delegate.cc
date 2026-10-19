@@ -12,7 +12,7 @@
 BatterySaverBubbleDelegate::BatterySaverBubbleDelegate(
     BatterySaverBubbleObserver* observer)
     : observer_(observer) {
-  DCHECK(observer);
+  CHECK(observer, base::NotFatalUntil::M162);
 }
 
 void BatterySaverBubbleDelegate::OnWindowClosing() {

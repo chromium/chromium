@@ -212,8 +212,8 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
         !suggestion_labels.empty()) {
       // Verify that there is a single line of label, and it contains a single
       // item.
-      DCHECK_EQ(suggestion_labels.size(), 1U);
-      DCHECK_EQ(suggestion_labels[0].size(), 1U);
+      CHECK_EQ(suggestion_labels.size(), 1U, base::NotFatalUntil::M162);
+      CHECK_EQ(suggestion_labels[0].size(), 1U, base::NotFatalUntil::M162);
 
       // Since the keyboard accessory chips support showing only 2 strings, the
       // minor_text and the suggestion_labels are concatenated.

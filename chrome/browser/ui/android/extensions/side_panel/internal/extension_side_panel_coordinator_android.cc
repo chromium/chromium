@@ -50,9 +50,10 @@ class ExtensionSidePanelCoordinatorAndroid
   SidePanelNativeView CreateView(SidePanelEntryScope& scope) override {
     ExtensionViewHost* host = coordinator_->host();
     if (!host) {
-      DCHECK(!ExtensionRegistry::Get(coordinator_->profile())
-                  ->enabled_extensions()
-                  .GetByID(coordinator_->extension()->id()));
+      CHECK(!ExtensionRegistry::Get(coordinator_->profile())
+                 ->enabled_extensions()
+                 .GetByID(coordinator_->extension()->id()),
+            base::NotFatalUntil::M162);
       return nullptr;
     }
 

@@ -137,7 +137,7 @@ void HoldingSpacePersistenceDelegate::OnHoldingSpaceItemUpdated(
 }
 
 void HoldingSpacePersistenceDelegate::RestoreModelFromPersistence() {
-  DCHECK(model()->items().empty());
+  CHECK(model()->items().empty(), base::NotFatalUntil::M162);
 
   // Remove items from persistent storage that should not be restored to the
   // in-memory holding space model.

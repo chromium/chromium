@@ -199,7 +199,7 @@ constexpr struct {
 }
 
 - (void)updateIcon {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
   constexpr base::TimeDelta kUpdateFrequencyCap = base::Hertz(5);
 
@@ -216,7 +216,7 @@ constexpr struct {
 }
 
 - (void)setDownloads:(int)downloads {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   DockTileView* dockTileView =
       base::apple::ObjCCast<DockTileView>(NSApp.dockTile.contentView);
 
@@ -227,7 +227,7 @@ constexpr struct {
 }
 
 - (void)setIndeterminate:(BOOL)indeterminate {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   DockTileView* dockTileView =
       base::apple::ObjCCast<DockTileView>(NSApp.dockTile.contentView);
 
@@ -238,7 +238,7 @@ constexpr struct {
 }
 
 - (void)setProgress:(float)progress {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   DockTileView* dockTileView =
       base::apple::ObjCCast<DockTileView>(NSApp.dockTile.contentView);
 

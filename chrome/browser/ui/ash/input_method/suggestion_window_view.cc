@@ -192,7 +192,7 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
                                            AssistiveDelegate* delegate,
                                            Orientation orientation)
     : delegate_(delegate->GetWeakPtr()) {
-  DCHECK(parent);
+  CHECK(parent, base::NotFatalUntil::M162);
   // AccessibleRole determines whether the content is announced on pop-up.
   // Inner content should not be announced when the window appears since this
   // is handled by AssistiveAccessibilityView to announce a custom string.

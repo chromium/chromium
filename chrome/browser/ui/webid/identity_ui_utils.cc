@@ -61,8 +61,10 @@ gfx::ImageSkia CreateBadgedImageSkia(const gfx::ImageSkia& base_image,
     // Cannot perform the operations, return `base_image` as fallback.
     return base_image;
   }
-  DCHECK_EQ(base_skbitmap.width(), base_skbitmap.height());
-  DCHECK_EQ(badge_skbitmap.width(), badge_skbitmap.height());
+  CHECK_EQ(base_skbitmap.width(), base_skbitmap.height(),
+           base::NotFatalUntil::M162);
+  CHECK_EQ(badge_skbitmap.width(), badge_skbitmap.height(),
+           base::NotFatalUntil::M162);
 
   // Pixel dimensions of the bitmaps obtained for the target scale.
   int base_size_px = base_skbitmap.width();

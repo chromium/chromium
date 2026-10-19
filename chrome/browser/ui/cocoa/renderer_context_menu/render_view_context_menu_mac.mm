@@ -160,7 +160,7 @@ bool RenderViewContextMenuMac::IsTextDirectionChecked(
 
 void RenderViewContextMenuMac::UpdateTextDirection(
     base::i18n::TextDirection direction) {
-  DCHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION);
+  CHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION, base::NotFatalUntil::M162);
 
   int command_id = IDC_WRITING_DIRECTION_LTR;
   if (direction == base::i18n::RIGHT_TO_LEFT) {

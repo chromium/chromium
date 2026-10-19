@@ -28,7 +28,7 @@ SaveUpdateAddressProfilePromptViewAndroid::
     SaveUpdateAddressProfilePromptViewAndroid(
         content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
 }
 
 SaveUpdateAddressProfilePromptViewAndroid::
@@ -43,7 +43,7 @@ bool SaveUpdateAddressProfilePromptViewAndroid::Show(
     SaveUpdateAddressProfilePromptController* controller,
     const AutofillProfile& autofill_profile,
     SaveUpdateAddressProfilePromptMode prompt_mode) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
   if (!web_contents_->GetTopLevelNativeWindow()) {
     return false;  // No window attached (yet or anymore).
   }
@@ -78,8 +78,8 @@ void SaveUpdateAddressProfilePromptViewAndroid::SetContent(
     SaveUpdateAddressProfilePromptController* controller,
     signin::IdentityManager* identity_manager,
     SaveUpdateAddressProfilePromptMode prompt_mode) {
-  DCHECK(controller);
-  DCHECK(java_object_);
+  CHECK(controller, base::NotFatalUntil::M162);
+  CHECK(java_object_, base::NotFatalUntil::M162);
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SaveUpdateAddressProfilePrompt_setDialogDetails(

@@ -14,7 +14,7 @@
 
 HandoffObserver::HandoffObserver(NSObject<HandoffObserverDelegate>* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M162);
   auto* const browser_collection = GlobalBrowserCollection::GetInstance();
   browser_collection_observation_.Observe(browser_collection);
   SetActiveBrowser(browser_collection->GetLastActiveBrowser());
@@ -82,7 +82,7 @@ void HandoffObserver::SetActiveBrowser(BrowserWindowInterface* active_browser) {
 
 void HandoffObserver::StartObservingWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M162);
   Observe(web_contents);
 }
 

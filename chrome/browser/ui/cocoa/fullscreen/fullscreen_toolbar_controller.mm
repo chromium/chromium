@@ -50,7 +50,7 @@
 }
 
 - (void)dealloc {
-  DCHECK(!_inFullscreenMode);
+  CHECK(!_inFullscreenMode, base::NotFatalUntil::M162);
 }
 
 - (void)enterFullscreenMode {

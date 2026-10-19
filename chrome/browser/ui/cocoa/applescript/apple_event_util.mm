@@ -116,7 +116,7 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value& value) {
 }
 
 bool IsJavaScriptEnabledForProfile(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   PrefService* prefs = profile->GetPrefs();
   return prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents);
 }

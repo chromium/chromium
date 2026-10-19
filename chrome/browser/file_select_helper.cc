@@ -134,7 +134,7 @@ void DeleteFiles(std::vector<base::FilePath> paths) {
 }
 
 bool IsValidProfile(Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   if (!profile) {
     return false;
   }
@@ -483,10 +483,11 @@ void FileSelectHelper::ContentAnalysisCompletionCallback(
   if (AbortIfWebContentsDestroyed())
     return;
 
-  DCHECK_EQ(data.text.size(), 0u);
-  DCHECK_EQ(result.text_results.size(), 0u);
-  DCHECK_EQ(data.paths.size(), result.paths_results.size());
-  DCHECK_GE(list.size(), result.paths_results.size());
+  CHECK_EQ(data.text.size(), 0u, base::NotFatalUntil::M162);
+  CHECK_EQ(result.text_results.size(), 0u, base::NotFatalUntil::M162);
+  CHECK_EQ(data.paths.size(), result.paths_results.size(),
+           base::NotFatalUntil::M162);
+  CHECK_GE(list.size(), result.paths_results.size(), base::NotFatalUntil::M162);
 
   // If the user chooses to upload a folder and the folder contains sensitive
   // files, block the entire folder and update `result` to reflect the block
@@ -573,8 +574,8 @@ bool FileSelectHelper::AbortIfWebContentsDestroyed() {
 
 void FileSelectHelper::SetFileSelectListenerForTesting(
     scoped_refptr<content::FileSelectListener> listener) {
-  DCHECK(listener);
-  DCHECK(!listener_);
+  CHECK(listener, base::NotFatalUntil::M162);
+  CHECK(!listener_, base::NotFatalUntil::M162);
   listener_ = std::move(listener);
 }
 
@@ -682,10 +683,10 @@ void FileSelectHelper::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,
     FileChooserParamsPtr params) {
-  DCHECK(!render_frame_host_);
-  DCHECK(!web_contents_);
-  DCHECK(listener);
-  DCHECK(!listener_);
+  CHECK(!render_frame_host_, base::NotFatalUntil::M162);
+  CHECK(!web_contents_, base::NotFatalUntil::M162);
+  CHECK(listener, base::NotFatalUntil::M162);
+  CHECK(!listener_, base::NotFatalUntil::M162);
   DCHECK(params->default_file_name.empty() ||
          params->mode == FileChooserParams::Mode::kSave)
       << "The default_file_name parameter should only be specified for Save "
@@ -748,8 +749,8 @@ void FileSelectHelper::GetSanitizedFilenameOnUIThread(
 void FileSelectHelper::RunFileChooserOnUIThread(
     const base::FilePath& default_file_path,
     FileChooserParamsPtr params) {
-  DCHECK(params);
-  DCHECK(!select_file_dialog_);
+  CHECK(params, base::NotFatalUntil::M162);
+  CHECK(!select_file_dialog_, base::NotFatalUntil::M162);
   if (AbortIfWebContentsDestroyed())
     return;
 

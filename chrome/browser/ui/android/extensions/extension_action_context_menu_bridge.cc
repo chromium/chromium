@@ -37,7 +37,7 @@ ExtensionActionContextMenuBridge::ExtensionActionContextMenuBridge(
   auto* registry = extensions::ExtensionRegistry::Get(profile);
   scoped_refptr<const extensions::Extension> extension =
       registry->enabled_extensions().GetByID(action_id);
-  DCHECK(extension);
+  CHECK(extension, base::NotFatalUntil::M162);
 
   auto* container = ExtensionsContainer::From(*browser);
   CHECK(container);

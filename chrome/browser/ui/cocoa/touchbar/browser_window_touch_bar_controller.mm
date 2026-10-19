@@ -30,7 +30,7 @@
 - (instancetype)initWithBrowser:(BrowserWindowInterface*)browser
                          window:(NSWindow*)window {
   if ((self = [super init])) {
-    DCHECK(browser);
+    CHECK(browser, base::NotFatalUntil::M162);
     _window = window;
 
     _defaultTouchBar = [[BrowserWindowDefaultTouchBar alloc] init];

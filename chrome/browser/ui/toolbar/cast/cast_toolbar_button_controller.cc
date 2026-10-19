@@ -100,7 +100,7 @@ void CastToolbarButtonController::OnDialogShown() {
 }
 
 void CastToolbarButtonController::OnDialogHidden() {
-  DCHECK_GT(dialog_count_, 0u);
+  CHECK_GT(dialog_count_, 0u, base::NotFatalUntil::M162);
   if (dialog_count_) {
     dialog_count_--;
   }
@@ -128,7 +128,7 @@ void CastToolbarButtonController::UpdateIcon() {
 }
 
 void CastToolbarButtonController::KeepIconShownOnPressed() {
-  DCHECK(!keep_visible_for_right_click_or_hold_);
+  CHECK(!keep_visible_for_right_click_or_hold_, base::NotFatalUntil::M162);
   keep_visible_for_right_click_or_hold_ = true;
   MaybeToggleIconVisibility();
 }

@@ -87,7 +87,7 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
   TRACE_EVENT0(
       "passwords",
       "ManualFillingViewAndroid::ConvertAccessorySheetDataToJavaObject");
-  DCHECK(java_object);
+  CHECK(java_object, base::NotFatalUntil::M162);
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaGlobalRef<jobject> j_tab_data;
   j_tab_data.Reset(Java_ManualFillingComponentBridge_createAccessorySheetData(

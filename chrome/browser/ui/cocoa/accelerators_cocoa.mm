@@ -142,14 +142,14 @@ AcceleratorsCocoa::AcceleratorsCocoa() {
 
     auto result =
         accelerators_.insert(std::make_pair(entry.command_id, accelerator));
-    DCHECK(result.second);
+    CHECK(result.second, base::NotFatalUntil::M162);
   }
 
   accelerators_[IDC_CLOSE_WINDOW] = AcceleratorForCloseWindow();
 
   auto result = accelerators_.insert(
       std::make_pair(IDC_FULLSCREEN, AcceleratorForEnterFullscreen()));
-  DCHECK(result.second);
+  CHECK(result.second, base::NotFatalUntil::M162);
 
   if (!base::i18n::IsRTL()) {
     return;

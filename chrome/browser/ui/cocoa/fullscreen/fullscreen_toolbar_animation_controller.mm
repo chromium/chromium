@@ -132,7 +132,7 @@ void FullscreenToolbarAnimationController::AnimationEnded(
 // FullscreenToolbarAnimationController, private:
 
 void FullscreenToolbarAnimationController::StartHideTimerIfPossible() {
-  DCHECK(animation_.IsShowing());
+  CHECK(animation_.IsShowing(), base::NotFatalUntil::M162);
   if (should_hide_toolbar_after_delay_) {
     hide_toolbar_timer_.Reset();
     should_hide_toolbar_after_delay_ = false;

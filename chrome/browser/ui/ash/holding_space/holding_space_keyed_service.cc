@@ -163,7 +163,7 @@ void HoldingSpaceKeyedService::AddPinnedFiles(
     }
   }
 
-  DCHECK_EQ(items.size(), items_to_record.size());
+  CHECK_EQ(items.size(), items_to_record.size(), base::NotFatalUntil::M162);
   if (items.empty()) {
     return;
   }
@@ -207,7 +207,7 @@ void HoldingSpaceKeyedService::RemovePinnedFiles(
             .value_or(item));
   }
 
-  DCHECK_EQ(items.size(), items_to_record.size());
+  CHECK_EQ(items.size(), items_to_record.size(), base::NotFatalUntil::M162);
   if (items.empty()) {
     return;
   }

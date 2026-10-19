@@ -250,7 +250,7 @@ SkBitmap ExtensionsToolbarAndroid::GetIcon(
 
   ToolbarActionViewModel* action =
       toolbar_view_model_->GetActionModelForId(action_id);
-  DCHECK(action);
+  CHECK(action, base::NotFatalUntil::M162);
   ui::ImageModel model = action->GetIcon(web_contents, size);
 
   if (model.IsEmpty() || !model.IsImage()) {
@@ -383,7 +383,7 @@ void ExtensionsToolbarAndroid::RegisterIconObserverForAction(
     const ToolbarActionsModel::ActionId& action_id) {
   ToolbarActionViewModel* action_model =
       toolbar_view_model_->GetActionModelForId(action_id);
-  DCHECK(action_model);
+  CHECK(action_model, base::NotFatalUntil::M162);
 
   icon_subscriptions_.insert_or_assign(
       action_id, action_model->RegisterIconUpdateObserver(base::BindRepeating(

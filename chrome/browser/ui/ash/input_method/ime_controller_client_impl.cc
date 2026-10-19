@@ -28,7 +28,7 @@ ImeControllerClientImpl* g_ime_controller_client_instance = nullptr;
 
 ImeControllerClientImpl::ImeControllerClientImpl(InputMethodManager* manager)
     : input_method_manager_(manager) {
-  DCHECK(input_method_manager_);
+  CHECK(input_method_manager_, base::NotFatalUntil::M162);
   input_method_manager_->AddObserver(this);
   input_method_manager_->AddImeMenuObserver(this);
   if (input_method_manager_->GetImeKeyboard()) {
@@ -39,13 +39,13 @@ ImeControllerClientImpl::ImeControllerClientImpl(InputMethodManager* manager)
   // This does not need to send the initial state to ash because that happens
   // via observers when the InputMethodManager initializes its list of IMEs.
 
-  DCHECK(!g_ime_controller_client_instance);
+  CHECK(!g_ime_controller_client_instance, base::NotFatalUntil::M162);
   g_ime_controller_client_instance = this;
 }
 
 ImeControllerClientImpl::~ImeControllerClientImpl() {
   ime_controller_->SetClient(nullptr);
-  DCHECK_EQ(this, g_ime_controller_client_instance);
+  CHECK_EQ(this, g_ime_controller_client_instance, base::NotFatalUntil::M162);
   g_ime_controller_client_instance = nullptr;
 
   InputMethodMenuManager::GetInstance()->RemoveObserver(this);
@@ -56,7 +56,7 @@ ImeControllerClientImpl::~ImeControllerClientImpl() {
 void ImeControllerClientImpl::Init() {
   // Connect to the controller in ash.
   ime_controller_ = ash::ImeController::Get();
-  DCHECK(ime_controller_);
+  CHECK(ime_controller_, base::NotFatalUntil::M162);
   InitAndSetClient();
 }
 

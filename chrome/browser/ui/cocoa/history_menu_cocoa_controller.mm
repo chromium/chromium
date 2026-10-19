@@ -45,7 +45,7 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
   if (node.session_id.is_valid()) {
     app_controller_mac::TabRestorer::RestoreByID(profile, node.session_id);
   } else {
-    DCHECK(node.url.is_valid());
+    CHECK(node.url.is_valid(), base::NotFatalUntil::M162);
     Profile* target_profile = profile;
 
     // Allow a history menu item to open in an active incognito window.
@@ -77,7 +77,7 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
 - (instancetype)initWithBridge:(HistoryMenuBridge*)bridge {
   if ((self = [super init])) {
     _bridge = bridge;
-    DCHECK(_bridge);
+    CHECK(_bridge, base::NotFatalUntil::M162);
   }
   return self;
 }

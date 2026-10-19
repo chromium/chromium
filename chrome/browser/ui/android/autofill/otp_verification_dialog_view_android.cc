@@ -21,7 +21,7 @@ namespace autofill {
 OtpVerificationDialogViewAndroid::OtpVerificationDialogViewAndroid(
     base::WeakPtr<CardUnmaskOtpInputDialogController> controller)
     : controller_(controller) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
 }
 
 OtpVerificationDialogViewAndroid::~OtpVerificationDialogViewAndroid() = default;
@@ -34,7 +34,7 @@ void OtpVerificationDialogViewAndroid::ShowPendingState() {
 
 void OtpVerificationDialogViewAndroid::ShowInvalidState(
     const std::u16string& invalid_label_text) {
-  DCHECK(java_object_);
+  CHECK(java_object_, base::NotFatalUntil::M162);
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_OtpVerificationDialogBridge_showOtpErrorMessage(env, java_object_,
                                                        invalid_label_text);
@@ -44,7 +44,7 @@ void OtpVerificationDialogViewAndroid::Dismiss(
     bool show_confirmation_before_closing,
     bool user_closed_dialog) {
   if (controller_ && show_confirmation_before_closing) {
-    DCHECK(!user_closed_dialog);
+    CHECK(!user_closed_dialog, base::NotFatalUntil::M162);
 
     std::u16string confirmation_message = controller_->GetConfirmationMessage();
     controller_->OnDialogClosed(/*user_closed_dialog=*/false,

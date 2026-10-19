@@ -121,7 +121,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
 }
 
 - (void)setWebContents:(content::WebContents*)webContents {
-  DCHECK(webContents);
+  CHECK(webContents, base::NotFatalUntil::M162);
   _webContents = webContents->GetWeakPtr();
 
   sessions::SessionTabHelper* session_tab_helper =

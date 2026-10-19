@@ -76,7 +76,7 @@ HistoryMenuBridge::HistoryItem::~HistoryItem() = default;
 HistoryMenuBridge::HistoryMenuBridge(Profile* profile)
     : controller_([[HistoryMenuCocoaController alloc] initWithBridge:this]),
       profile_(profile) {
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M162);
   profile_dir_ = profile_->GetPath();
 
   if (auto* profile_manager = g_browser_process->profile_manager()) {
@@ -203,7 +203,7 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
 
 void HistoryMenuBridge::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
-  DCHECK_EQ(service, tab_restore_service_);
+  CHECK_EQ(service, tab_restore_service_, base::NotFatalUntil::M162);
   tab_restore_service_observation_.Reset();
   tab_restore_service_ = nullptr;
 }
@@ -220,7 +220,7 @@ void HistoryMenuBridge::ResetMenu() {
   NSMenu* menu = HistoryMenu();
   ClearMenuSection(menu, kVisited);
   ClearMenuSection(menu, kRecentlyClosed);
-  DCHECK(menu_item_map_.empty());
+  CHECK(menu_item_map_.empty(), base::NotFatalUntil::M162);
 }
 
 void HistoryMenuBridge::BuildMenu() {
@@ -517,7 +517,7 @@ int HistoryMenuBridge::AddTabsToSubmenu(
 }
 
 void HistoryMenuBridge::Init() {
-  DCHECK(history_service_);
+  CHECK(history_service_, base::NotFatalUntil::M162);
   need_recreate_ = true;
   CreateMenu();
 }
@@ -622,7 +622,7 @@ void HistoryMenuBridge::OnVisitedHistoryResults(history::QueryResults results) {
 std::unique_ptr<HistoryMenuBridge::HistoryItem>
 HistoryMenuBridge::HistoryItemForTab(const sessions::tab_restore::Tab& entry,
                                      bool attach_group_icon) {
-  DCHECK(!entry.navigations.empty());
+  CHECK(!entry.navigations.empty(), base::NotFatalUntil::M162);
 
   const sessions::SerializedNavigationEntry& current_navigation =
       entry.navigations.at(entry.current_navigation_index);
@@ -655,9 +655,9 @@ void HistoryMenuBridge::GotFaviconData(
     HistoryItem* item,
     const favicon_base::FaviconImageResult& image_result) {
   // Since we're going to do Cocoa-y things, make sure this is the main thread.
-  DCHECK([NSThread isMainThread]);
+  CHECK([NSThread isMainThread], base::NotFatalUntil::M162);
 
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M162);
   item->icon_requested = false;
   item->icon_task_id = base::CancelableTaskTracker::kBadTaskId;
 
@@ -673,7 +673,7 @@ void HistoryMenuBridge::GotFaviconData(
 }
 
 void HistoryMenuBridge::CancelFaviconRequest(HistoryItem* item) {
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M162);
   if (item->icon_requested) {
     cancelable_task_tracker_.TryCancel(item->icon_task_id);
     item->icon_requested = false;

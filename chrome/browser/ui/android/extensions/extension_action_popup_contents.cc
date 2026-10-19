@@ -100,7 +100,7 @@ void ExtensionActionPopupContents::RenderFrameHostChanged(
   // yet. If the DCHECK fires, then we would need to handle the initial main
   // frame when it its renderer frame is created.
   if (!old_host) {
-    DCHECK(!new_host->IsRenderFrameLive());
+    CHECK(!new_host->IsRenderFrameLive(), base::NotFatalUntil::M162);
     return;
   }
 
@@ -158,7 +158,7 @@ void ExtensionActionPopupContents::SetUpNewMainFrame(
 
 void ExtensionActionPopupContents::HandleCloseExtensionHost(
     ExtensionHost* host) {
-  DCHECK_EQ(host, host_.get());
+  CHECK_EQ(host, host_.get(), base::NotFatalUntil::M162);
   Java_ExtensionActionPopupContents_onClose(AttachCurrentThread(),
                                             java_object_);
 }

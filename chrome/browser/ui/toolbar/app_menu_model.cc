@@ -1255,7 +1255,7 @@ AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
       browser_(browser),
       app_menu_icon_controller_(app_menu_icon_controller),
       alert_item_(alert_item) {
-  DCHECK(browser_);
+  CHECK(browser_, base::NotFatalUntil::M162);
 }
 
 AppMenuModel::~AppMenuModel() = default;
@@ -2125,7 +2125,7 @@ void AppMenuModel::LogMenuAction(AppMenuAction action_id) {
 // - Browser relaunch, quit.
 void AppMenuModel::Build() {
   // Build (and, by extension, Init) should only be called once.
-  DCHECK_EQ(0u, GetItemCount());
+  CHECK_EQ(0u, GetItemCount(), base::NotFatalUntil::M162);
 
   bool has_scheduled_restart_item = false;
   if (app_menu_icon_controller_ &&
@@ -2592,7 +2592,7 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
           ->errors();
   bool menu_items_added = false;
   for (GlobalError* error : errors) {
-    DCHECK(error);
+    CHECK(error, base::NotFatalUntil::M162);
     if (error->HasMenuItem()) {
       AddItem(error->MenuItemCommandID(), error->MenuItemLabel());
       SetIconForCommandId(error->MenuItemCommandID(), error->MenuItemIcon());

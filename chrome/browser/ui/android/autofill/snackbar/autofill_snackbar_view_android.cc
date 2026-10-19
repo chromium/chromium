@@ -27,7 +27,7 @@ void AutofillSnackbarViewAndroid::Show() {
   JNIEnv* env = jni_zero::AttachCurrentThread();
   ui::ViewAndroid* view_android =
       controller_->GetWebContents()->GetNativeView();
-  DCHECK(view_android);
+  CHECK(view_android, base::NotFatalUntil::M162);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
   if (!window_android) {
     return;

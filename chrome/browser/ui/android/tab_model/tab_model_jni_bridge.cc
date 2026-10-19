@@ -367,9 +367,10 @@ tabs::TabInterface* TabModelJniBridge::CreateTab(
 
 void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
                                               NavigateParams* params) {
-  DCHECK_EQ(params->source_contents, parent->web_contents());
-  DCHECK(!params->contents_to_insert);
-  DCHECK(!params->switch_to_singleton_tab);
+  CHECK_EQ(params->source_contents, parent->web_contents(),
+           base::NotFatalUntil::M162);
+  CHECK(!params->contents_to_insert, base::NotFatalUntil::M162);
+  CHECK(!params->switch_to_singleton_tab, base::NotFatalUntil::M162);
 
   WindowOpenDisposition disposition = params->disposition;
   bool supported = disposition == WindowOpenDisposition::NEW_POPUP ||

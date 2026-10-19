@@ -570,7 +570,7 @@ void IdentityDialogController::ShowUrl(LinkType type, const GURL& url) {
     return;
   }
   // Cannot be invoked if FedCM UI is being shown.
-  DCHECK(ShouldShowFedCmUi());
+  CHECK(ShouldShowFedCmUi(), base::NotFatalUntil::M162);
   account_view_->ShowUrl(type, url);
 }
 

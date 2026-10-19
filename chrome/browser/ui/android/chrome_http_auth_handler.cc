@@ -52,7 +52,7 @@ ChromeHttpAuthHandler::~ChromeHttpAuthHandler() {
 void ChromeHttpAuthHandler::Init(LoginHandler* observer) {
   observer_ = observer;
 
-  DCHECK(java_chrome_http_auth_handler_.is_null());
+  CHECK(java_chrome_http_auth_handler_.is_null(), base::NotFatalUntil::M162);
   JNIEnv* env = AttachCurrentThread();
   java_chrome_http_auth_handler_.Reset(
       Java_ChromeHttpAuthHandler_create(env, reinterpret_cast<intptr_t>(this)));
@@ -74,7 +74,7 @@ void ChromeHttpAuthHandler::CloseDialog() {
 void ChromeHttpAuthHandler::OnAutofillDataAvailable(
     std::u16string_view username,
     std::u16string_view password) {
-  DCHECK(java_chrome_http_auth_handler_.obj());
+  CHECK(java_chrome_http_auth_handler_.obj(), base::NotFatalUntil::M162);
   JNIEnv* env = AttachCurrentThread();
   Java_ChromeHttpAuthHandler_onAutofillDataAvailable(
       env, java_chrome_http_auth_handler_, username, password);

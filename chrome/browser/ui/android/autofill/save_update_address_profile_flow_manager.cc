@@ -42,7 +42,7 @@ void SaveUpdateAddressProfileFlowManager::OfferSave(
     const AutofillProfile* original_profile,
     SaveUpdateAddressProfilePromptMode prompt_mode,
     AutofillClient::AddressProfileSavePromptCallback callback) {
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
 
   // If the message is already shown, suppress the incoming offer.
   if (is_message_displayed_ || save_update_address_profile_prompt_controller_) {

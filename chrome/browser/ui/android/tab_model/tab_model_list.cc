@@ -24,7 +24,7 @@ TabModelList::TabModelList() = default;
 TabModelList::~TabModelList() = default;
 
 void TabModelList::AddTabModel(TabModel* tab_model) {
-  DCHECK(tab_model);
+  CHECK(tab_model, base::NotFatalUntil::M162);
   GetInstance().models_.push_back(tab_model);
 
   for (TabModelListObserver& observer : GetInstance().observers_) {
@@ -33,7 +33,7 @@ void TabModelList::AddTabModel(TabModel* tab_model) {
 }
 
 void TabModelList::RemoveTabModel(TabModel* tab_model) {
-  DCHECK(tab_model);
+  CHECK(tab_model, base::NotFatalUntil::M162);
   if (GetInstance().archived_tab_model_ == tab_model) {
     GetInstance().archived_tab_model_ = nullptr;
   }
@@ -57,7 +57,7 @@ void TabModelList::HandlePopupNavigation(NavigateParams* params) {
   TabAndroid* tab = TabAndroid::FromWebContents(params->source_contents);
 
   // NOTE: If this fails contact dtrainor@.
-  DCHECK(tab);
+  CHECK(tab, base::NotFatalUntil::M162);
   TabModel* model = FindTabModelWithWindowSessionId(tab->GetWindowId());
   if (model) {
     model->HandlePopupNavigation(tab, params);

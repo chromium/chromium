@@ -50,8 +50,8 @@ gfx::ImageSkia CreateErrorPlaceholderImageSkia(
     const gfx::Size& size,
     cros_styles::ColorName color_name,
     const std::optional<bool>& dark_background) {
-  DCHECK_GE(size.width(), kHoldingSpaceIconSize);
-  DCHECK_GE(size.height(), kHoldingSpaceIconSize);
+  CHECK_GE(size.width(), kHoldingSpaceIconSize, base::NotFatalUntil::M162);
+  CHECK_GE(size.height(), kHoldingSpaceIconSize, base::NotFatalUntil::M162);
   return gfx::ImageSkiaOperations::CreateSuperimposedImage(
       image_util::CreateEmptyImage(size),
       gfx::CreateVectorIcon(
@@ -106,7 +106,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
         is_dangerous_(IsDangerous()),
         is_insecure_(IsInsecure()),
         might_be_malicious_(MightBeMalicious()) {
-    DCHECK(IsInProgress(download_item_));
+    CHECK(IsInProgress(download_item_), base::NotFatalUntil::M162);
     download_item_observation_.Observe(download_item_);
   }
 
@@ -235,7 +235,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
   // Associates this in-progress download with the specified in-progress
   // `holding_space_item`. NOTE: This association may be performed only once.
   void SetHoldingSpaceItem(const HoldingSpaceItem* holding_space_item) {
-    DCHECK(!holding_space_item_);
+    CHECK(!holding_space_item_, base::NotFatalUntil::M162);
     holding_space_item_ = holding_space_item;
   }
 
@@ -489,7 +489,8 @@ HoldingSpaceDownloadsDelegate::~HoldingSpaceDownloadsDelegate() = default;
 
 std::optional<holding_space_metrics::ItemLaunchFailureReason>
 HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
-  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
+  CHECK(HoldingSpaceItem::IsDownloadType(item->type()),
+        base::NotFatalUntil::M162);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       return in_progress_download->OpenWhenComplete();
@@ -525,7 +526,7 @@ void HoldingSpaceDownloadsDelegate::OnHoldingSpaceItemsRemoved(
 
 void HoldingSpaceDownloadsDelegate::OnManagerInitialized(
     content::DownloadManager* manager) {
-  DCHECK(!is_restoring_persistence());
+  CHECK(!is_restoring_persistence(), base::NotFatalUntil::M162);
   download::SimpleDownloadManager::DownloadVector downloads;
   manager->GetAllDownloads(&downloads);
   for (download::DownloadItem* download : downloads) {
@@ -554,7 +555,7 @@ void HoldingSpaceDownloadsDelegate::OnManagerGoingDown(
 void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
     content::DownloadManager* manager,
     download::DownloadItem* download_item) {
-  DCHECK(!is_restoring_persistence());
+  CHECK(!is_restoring_persistence(), base::NotFatalUntil::M162);
   if (IsInProgress(download_item)) {
     in_progress_downloads_.emplace(
         std::make_unique<InProgressDownload>(this, manager, download_item));
@@ -639,7 +640,8 @@ void HoldingSpaceDownloadsDelegate::OnDownloadFailed(
     // NOTE: Removing `item` from the `model()` will result in the
     // `in_progress_download` being erased.
     model()->RemoveItem(item->id());
-    DCHECK(!in_progress_downloads_.contains(in_progress_download));
+    CHECK(!in_progress_downloads_.contains(in_progress_download),
+          base::NotFatalUntil::M162);
     return;
   }
   EraseDownload(in_progress_download);
@@ -648,7 +650,7 @@ void HoldingSpaceDownloadsDelegate::OnDownloadFailed(
 void HoldingSpaceDownloadsDelegate::EraseDownload(
     const InProgressDownload* in_progress_download) {
   auto it = in_progress_downloads_.find(in_progress_download);
-  DCHECK(it != in_progress_downloads_.end());
+  CHECK(it != in_progress_downloads_.end(), base::NotFatalUntil::M162);
   in_progress_downloads_.erase(it);
 }
 
@@ -722,8 +724,10 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
 
 void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item,
                                            HoldingSpaceCommandId command_id) {
-  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
-  DCHECK_EQ(HoldingSpaceCommandId::kCancelItem, command_id);
+  CHECK(HoldingSpaceItem::IsDownloadType(item->type()),
+        base::NotFatalUntil::M162);
+  CHECK_EQ(HoldingSpaceCommandId::kCancelItem, command_id,
+           base::NotFatalUntil::M162);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
@@ -736,8 +740,10 @@ void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item,
 
 void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item,
                                           HoldingSpaceCommandId command_id) {
-  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
-  DCHECK_EQ(HoldingSpaceCommandId::kPauseItem, command_id);
+  CHECK(HoldingSpaceItem::IsDownloadType(item->type()),
+        base::NotFatalUntil::M162);
+  CHECK_EQ(HoldingSpaceCommandId::kPauseItem, command_id,
+           base::NotFatalUntil::M162);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
@@ -750,8 +756,10 @@ void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item,
 
 void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item,
                                            HoldingSpaceCommandId command_id) {
-  DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
-  DCHECK_EQ(HoldingSpaceCommandId::kResumeItem, command_id);
+  CHECK(HoldingSpaceItem::IsDownloadType(item->type()),
+        base::NotFatalUntil::M162);
+  CHECK_EQ(HoldingSpaceCommandId::kResumeItem, command_id,
+           base::NotFatalUntil::M162);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(

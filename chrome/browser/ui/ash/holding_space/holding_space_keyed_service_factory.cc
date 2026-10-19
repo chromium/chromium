@@ -93,7 +93,8 @@ std::unique_ptr<KeyedService>
 HoldingSpaceKeyedServiceFactory::BuildServiceInstanceForInternal(
     content::BrowserContext* context) {
   Profile* const profile = Profile::FromBrowserContext(context);
-  DCHECK_EQ(profile->IsGuestSession(), profile->IsOffTheRecord());
+  CHECK_EQ(profile->IsGuestSession(), profile->IsOffTheRecord(),
+           base::NotFatalUntil::M162);
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {

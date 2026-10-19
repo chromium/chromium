@@ -40,7 +40,7 @@ void AutofillProgressDialogViewAndroid::Dismiss(
   if (controller_ && show_confirmation_before_closing) {
     // If the confirmation is shown, the dialog must have been dismissed
     // automatically without user actions.
-    DCHECK(!is_canceled_by_user);
+    CHECK(!is_canceled_by_user, base::NotFatalUntil::M162);
     std::u16string confirmation_message = controller_->GetConfirmationMessage();
     ShowConfirmation(confirmation_message);
     // Call to OnDismissed will destroy `this`.
@@ -84,7 +84,7 @@ bool AutofillProgressDialogViewAndroid::ShowDialog(
     content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::ViewAndroid* view_android = web_contents->GetNativeView();
-  DCHECK(view_android);
+  CHECK(view_android, base::NotFatalUntil::M162);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
   if (!window_android) {
     return false;

@@ -19,7 +19,7 @@
 + (TitlebarBackgroundView*)addToNSWindow:(NSWindow*)window
                              activeColor:(SkColor)activeColor
                            inactiveColor:(SkColor)inactiveColor {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M162);
   // AppKit only officially supports adding subviews to the window's
   // contentView and not its superview (an NSNextStepFrame). The 10.10 SDK
   // allows adding an NSTitlebarAccessoryViewController to a window, but the

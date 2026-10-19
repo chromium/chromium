@@ -21,7 +21,7 @@ std::u16string RpIdToElidedHost(const std::string& relying_party_id,
                                 gfx::FontList font_list) {
   GURL relying_party_id_url(base::StrCat(
       {url::kHttpsScheme, url::kStandardSchemeSeparator, relying_party_id}));
-  DCHECK(relying_party_id_url.is_valid());
+  CHECK(relying_party_id_url.is_valid(), base::NotFatalUntil::M162);
   return url_formatter::ElideHost(relying_party_id_url, font_list, width);
 }
 

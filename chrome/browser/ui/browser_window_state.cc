@@ -65,7 +65,7 @@ base::DictValue& GetWindowPlacementDictionaryReadWrite(
     const std::string& window_name,
     PrefService* prefs,
     std::unique_ptr<ScopedDictPrefUpdate>& scoped_update) {
-  DCHECK(!window_name.empty());
+  CHECK(!window_name.empty(), base::NotFatalUntil::M162);
   // Non-app window placements each use their own per-window-name dictionary
   // preference, so can make a ScopedDictPrefUpdate for the relevant preference,
   // and return its dictionary directly.
@@ -93,7 +93,7 @@ base::DictValue& GetWindowPlacementDictionaryReadWrite(
 const base::DictValue* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs) {
-  DCHECK(!window_name.empty());
+  CHECK(!window_name.empty(), base::NotFatalUntil::M162);
   if (prefs->FindPreference(window_name)) {
     return &prefs->GetDict(window_name);
   }
@@ -155,9 +155,9 @@ void SaveWindowVisibleOnAllWorkspaces(BrowserWindowInterface* browser,
 void GetSavedWindowBoundsAndShowState(BrowserWindowInterface* browser,
                                       gfx::Rect* bounds,
                                       ui::mojom::WindowShowState* show_state) {
-  DCHECK(browser);
-  DCHECK(bounds);
-  DCHECK(show_state);
+  CHECK(browser, base::NotFatalUntil::M162);
+  CHECK(bounds, base::NotFatalUntil::M162);
+  CHECK(show_state, base::NotFatalUntil::M162);
   *bounds = BrowserInitState::From(browser)->override_bounds();
   WindowSizer::GetBrowserWindowBoundsAndShowState(*bounds, browser, bounds,
                                                   show_state);

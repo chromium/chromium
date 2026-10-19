@@ -59,7 +59,7 @@ void ExclusiveAccessManagerAndroid::ExitFullscreenModeForTab(
     const jni_zero::JavaRef<jobject>& jweb_contents) {
   content::WebContents* wc =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(wc != nullptr);
+  CHECK(wc != nullptr, base::NotFatalUntil::M162);
   eam_.fullscreen_controller()->ExitFullscreenModeForTab(wc);
 }
 
@@ -74,7 +74,7 @@ bool ExclusiveAccessManagerAndroid::IsFullscreenForTabOrPending(
     const jni_zero::JavaRef<jobject>& jweb_contents) {
   content::WebContents* wc =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(wc != nullptr);
+  CHECK(wc != nullptr, base::NotFatalUntil::M162);
 
   auto state = eam_.fullscreen_controller()->GetFullscreenState(wc);
 
@@ -95,7 +95,7 @@ void ExclusiveAccessManagerAndroid::RequestKeyboardLock(
     bool escKeyLocked) {
   content::WebContents* wc =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK_NE(wc, nullptr);
+  CHECK_NE(wc, nullptr, base::NotFatalUntil::M162);
   eam_.keyboard_lock_controller()->RequestKeyboardLock(wc, escKeyLocked);
 }
 
@@ -104,7 +104,7 @@ void ExclusiveAccessManagerAndroid::CancelKeyboardLockRequest(
     const jni_zero::JavaRef<jobject>& jweb_contents) {
   content::WebContents* wc =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK_NE(wc, nullptr);
+  CHECK_NE(wc, nullptr, base::NotFatalUntil::M162);
   eam_.keyboard_lock_controller()->CancelKeyboardLockRequest(wc);
 }
 
@@ -119,7 +119,7 @@ void ExclusiveAccessManagerAndroid::RequestPointerLock(
     bool last_unlocked_by_target) {
   content::WebContents* wc =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  DCHECK(wc != nullptr);
+  CHECK(wc != nullptr, base::NotFatalUntil::M162);
   eam_.pointer_lock_controller()->RequestToLockPointer(wc, user_gesture,
                                                        last_unlocked_by_target);
 }

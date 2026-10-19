@@ -103,7 +103,7 @@ void HoldingSpaceSuggestionsDelegate::OnPersistenceRestored() {
   // Initialize `suggestions_by_type_` with the restored suggestions. The model
   // items are iterated reversely so that the suggestions of the same category
   // in `suggestions_by_type_` follow the relevance order.
-  DCHECK(suggestions_by_type_.empty());
+  CHECK(suggestions_by_type_.empty(), base::NotFatalUntil::M162);
   for (const auto& item : std::views::reverse(model()->items())) {
     // Skip if `item` is not a suggestion.
     if (HoldingSpaceItem::IsSuggestionType(item->type())) {
@@ -159,7 +159,7 @@ void HoldingSpaceSuggestionsDelegate::OnSuggestionsFetched(
     const std::optional<std::vector<FileSuggestData>>& suggestions) {
   // Mark that the suggestions of `type` have been fetched.
   size_t deleted_size = pending_fetches_.erase(type);
-  DCHECK_EQ(1u, deleted_size);
+  CHECK_EQ(1u, deleted_size, base::NotFatalUntil::M162);
 
   if (!suggestions) {
     return;

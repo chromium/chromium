@@ -13,8 +13,8 @@ BatterySaverButtonController::~BatterySaverButtonController() = default;
 
 void BatterySaverButtonController::Init(
     BatterySaverButtonControllerDelegate* delegate) {
-  DCHECK(delegate);
-  DCHECK(!battery_saver_observer_.IsObserving());
+  CHECK(delegate, base::NotFatalUntil::M162);
+  CHECK(!battery_saver_observer_.IsObserving(), base::NotFatalUntil::M162);
 
   delegate_ = delegate;
 

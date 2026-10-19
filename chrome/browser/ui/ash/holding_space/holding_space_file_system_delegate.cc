@@ -91,7 +91,7 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
  public:
   explicit FileSystemWatcher(base::FilePathWatcher::Callback callback)
       : callback_(callback) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
@@ -159,11 +159,11 @@ HoldingSpaceFileSystemDelegate::HoldingSpaceFileSystemDelegate(
     : HoldingSpaceKeyedServiceDelegate(service, model),
       file_system_watcher_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 }
 
 HoldingSpaceFileSystemDelegate::~HoldingSpaceFileSystemDelegate() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   weak_factory_.InvalidateWeakPtrs();
   file_system_watcher_runner_->DeleteSoon(FROM_HERE,
                                           file_system_watcher_.release());
@@ -186,7 +186,7 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
 
 void HoldingSpaceFileSystemDelegate::OnFilesChanged(
     const std::vector<drivefs::mojom::FileChange>& changes) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Validate all changes before applying any of them.
   for (const auto& change : changes) {
@@ -267,7 +267,7 @@ void HoldingSpaceFileSystemDelegate::OnFilesChanged(
 }
 
 void HoldingSpaceFileSystemDelegate::Init() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   file_system_watcher_ = std::make_unique<FileSystemWatcher>(
       base::BindRepeating(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
                           weak_factory_.GetWeakPtr()));
@@ -306,7 +306,7 @@ void HoldingSpaceFileSystemDelegate::Init() {
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   const bool arc_file_system_disconnected =
       IsArcFileSystemDisconnected(profile());
@@ -360,7 +360,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   for (const HoldingSpaceItem* item : items) {
     MaybeRemoveWatch(item->file().file_path.DirName());
   }
@@ -369,7 +369,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
     const HoldingSpaceItem* item,
     const HoldingSpaceItemUpdatedFields& updated_fields) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // In-progress items are not subject to validity checks.
   if (item->progress().IsComplete()) {
@@ -379,14 +379,14 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   AddWatchForParent(item->file().file_path);
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
     MountError error_code,
     const file_manager::Volume& volume) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   holding_space_util::FilePathsWithValidityRequirements
       file_paths_with_requirements;
   // Check validity of partially initialized items under the volume's mount
@@ -409,7 +409,7 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
 void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
     MountError error_code,
     const file_manager::Volume& volume) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Drive FS may restart from time to time, so only remove items if drive is
   // disabled.
@@ -436,7 +436,7 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
 void HoldingSpaceFileSystemDelegate::OnFileCreatedFromShowSaveFilePicker(
     const GURL& file_picker_binding_context,
     const storage::FileSystemURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   holding_space_metrics::RecordFileCreatedFromShowSaveFilePicker(
       file_picker_binding_context, url.path());
@@ -448,22 +448,22 @@ void HoldingSpaceFileSystemDelegate::OnFileCreatedFromShowSaveFilePicker(
 
 void HoldingSpaceFileSystemDelegate::OnFileModified(
     const storage::FileSystemURL& url) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   OnFilePathModified(url.path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFileMoved(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   OnFilePathMoved(src.path(), dst.path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
     const base::FilePath& file_path,
     bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!error);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(!error, base::NotFatalUntil::M162);
 
   // The `file_path` that changed is a directory containing backing files for
   // one or more holding space items. Changes to this directory may indicate
@@ -480,7 +480,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
 
 void HoldingSpaceFileSystemDelegate::OnFilePathModified(
     const base::FilePath& file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   model()->InvalidateItemImageIf(base::BindRepeating(
       [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
         return item->file().file_path == file_path;
@@ -491,7 +491,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathModified(
 void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
     const base::FilePath& src,
     const base::FilePath& dst) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Collect items that should be moved to a new path. This includes:
   // *   Items whose path matches the source path.
@@ -582,7 +582,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
 
 void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
     holding_space_util::FilePathWithValidityRequirement requirement) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   pending_file_path_validity_checks_.push_back(std::move(requirement));
   if (file_path_validity_checks_scheduled_) {
     return;
@@ -601,7 +601,7 @@ void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
 }
 
 void HoldingSpaceFileSystemDelegate::RunPendingFilePathValidityChecks() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   holding_space_util::FilePathsWithValidityRequirements requirements;
   requirements.swap(pending_file_path_validity_checks_);
 
@@ -616,7 +616,7 @@ void HoldingSpaceFileSystemDelegate::RunPendingFilePathValidityChecks() {
 void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
     std::vector<base::FilePath> valid_paths,
     std::vector<base::FilePath> invalid_paths) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   const bool arc_file_system_disconnected =
       IsArcFileSystemDisconnected(profile());
@@ -671,7 +671,7 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
 
 void HoldingSpaceFileSystemDelegate::AddWatchForParent(
     const base::FilePath& file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   file_system_watcher_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileSystemWatcher::AddWatchForParent,
                                 file_system_watcher_->GetWeakPtr(), file_path));
@@ -679,7 +679,7 @@ void HoldingSpaceFileSystemDelegate::AddWatchForParent(
 
 void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
     const base::FilePath& file_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   // The watch for `file_path` should only be removed if no holding space items
   // exist in the model which are backed by files it directly parents.
   const bool remove_watch =
@@ -699,7 +699,7 @@ void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
 
 void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
     const base::FilePath& parent_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   model()->RemoveIf(base::BindRepeating(
       [](const base::FilePath& parent_path, const HoldingSpaceItem* item) {
         return parent_path.IsParent(item->file().file_path);
@@ -708,7 +708,7 @@ void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
 }
 
 void HoldingSpaceFileSystemDelegate::ClearNonInitializedItems() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
   model()->RemoveIf(base::BindRepeating(
       [](Profile* profile, const HoldingSpaceItem* item) {
         if (item->IsInitialized()) {

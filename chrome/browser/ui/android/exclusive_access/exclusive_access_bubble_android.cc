@@ -147,8 +147,8 @@ void ExclusiveAccessBubbleAndroid::HideImmediately() {
 void ExclusiveAccessBubbleAndroid::Update(
     const ExclusiveAccessBubbleParams& params,
     ExclusiveAccessBubbleHideCallback first_hide_callback) {
-  DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
-         params.has_download);
+  CHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type || params.has_download,
+        base::NotFatalUntil::M162);
   bool already_shown = IsVisible();
   if (params_.type == params.type && params_.origin == params.origin &&
       params_.has_download == params.has_download && !params.force_update &&
@@ -192,8 +192,9 @@ void ExclusiveAccessBubbleAndroid::Update(
 
 void ExclusiveAccessBubbleAndroid::UpdateBubbleContent(
     ExclusiveAccessBubbleType bubble_type) {
-  DCHECK(params_.has_download ||
-         EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type);
+  CHECK(
+      params_.has_download || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type,
+      base::NotFatalUntil::M162);
 
   bool keyboard_connected = bridge_->IsKeyboardConnected();
   std::u16string text = GetBubbleText(bubble_type, keyboard_connected);

@@ -57,7 +57,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   }
   auto* bridge =
       remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(targetWindow);
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M162);
   return bridge;
 }
 
@@ -77,7 +77,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
 
   auto* bridge =
       remote_cocoa::NativeWidgetNSWindowBridge::GetFromNSWindow(window);
-  DCHECK(bridge);
+  CHECK(bridge, base::NotFatalUntil::M162);
 
   remote_cocoa::mojom::ValidateUserInterfaceItemResultPtr result;
   if (!bridge->host()->ValidateUserInterfaceItem([item tag], &result)) {
@@ -106,18 +106,18 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
 }
 
 - (void)commandDispatch:(id)sender window:(NSWindow*)window {
-  DCHECK(sender);
+  CHECK(sender, base::NotFatalUntil::M162);
   int command = [sender tag];
   bool was_executed = false;
   FindBridgeForSender(sender, window)
       ->host()
       ->ExecuteCommand(command, WindowOpenDisposition::CURRENT_TAB,
                        /*is_before_first_responder=*/false, &was_executed);
-  DCHECK(was_executed);
+  CHECK(was_executed, base::NotFatalUntil::M162);
 }
 
 - (void)commandDispatchUsingKeyModifiers:(id)sender window:(NSWindow*)window {
-  DCHECK(sender);
+  CHECK(sender, base::NotFatalUntil::M162);
 
   if (![sender isEnabled]) {
     // This code is reachable e.g. if the user mashes the back button, queuing
@@ -148,7 +148,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
                        ui::WindowOpenDispositionFromNSEventWithFlags(
                            [NSApp currentEvent], modifierFlags),
                        /*is_before_first_responder=*/false, &was_executed);
-  DCHECK(was_executed);
+  CHECK(was_executed, base::NotFatalUntil::M162);
 }
 
 @end

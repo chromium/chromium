@@ -43,7 +43,7 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
     : delegate_(delegate->GetWeakPtr()) {
   DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetCanActivate(false);
-  DCHECK(parent);
+  CHECK(parent, base::NotFatalUntil::M162);
   set_parent_window(parent);
   set_margins(gfx::Insets::TLBR(kGrammarPaddingSize, kGrammarPaddingSize,
                                 kGrammarPaddingSize, kGrammarPaddingSize));

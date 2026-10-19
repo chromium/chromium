@@ -107,7 +107,7 @@ void OpenURLAfterCheckIsDefaultBrowser(
   // If it is the default, open the URL directly instead of asking the system to
   // open it.
   Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (!profile) {
     return;
   }
@@ -195,7 +195,7 @@ ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab(
         break;
       }
     }
-    DCHECK(owned_source);
+    CHECK(owned_source, base::NotFatalUntil::M162);
 
     // Object lifetime notes: StartCheckIsDefault() takes lifetime ownership of
     // check_if_default_browser_worker and will clean up after the asynchronous
@@ -264,10 +264,10 @@ void ChromeAppDelegate::RenderFrameCreated(
     // See http://crbug.com/40400194 for more details.
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame_host);
-    DCHECK(web_contents);
+    CHECK(web_contents, base::NotFatalUntil::M162);
     content::HostZoomMap* zoom_map =
         content::HostZoomMap::GetForWebContents(web_contents);
-    DCHECK(zoom_map);
+    CHECK(zoom_map, base::NotFatalUntil::M162);
     zoom_map->SetZoomLevelForHost(web_contents->GetURL().GetHost(), 0);
   }
 }

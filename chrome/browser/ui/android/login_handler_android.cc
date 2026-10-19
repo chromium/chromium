@@ -48,7 +48,7 @@ class LoginHandlerAndroid : public LoginHandler {
   bool BuildViewImpl(const std::u16string& authority,
                      const std::u16string& explanation,
                      LoginModelData* login_model_data) override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
 
     content::WebContents* contents =
         web_contents() ? web_contents()->GetResponsibleWebContents() : nullptr;

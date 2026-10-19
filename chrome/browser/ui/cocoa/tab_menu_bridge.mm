@@ -241,7 +241,7 @@ void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
     return;
   }
 
-  DCHECK_EQ(item.target, menu_listener_);
+  CHECK_EQ(item.target, menu_listener_, base::NotFatalUntil::M162);
   auto it = menu_item_to_tab_.find(item);
   if (it == menu_item_to_tab_.end()) {
     return;
@@ -261,8 +261,8 @@ void TabMenuBridge::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  DCHECK(tab_strip_model);
-  DCHECK_EQ(tab_strip_model, model_);
+  CHECK(tab_strip_model, base::NotFatalUntil::M162);
+  CHECK_EQ(tab_strip_model, model_, base::NotFatalUntil::M162);
 
   if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
     [menu_listener_ setRebuildMenu:YES];
@@ -297,7 +297,7 @@ void TabMenuBridge::OnTabStripModelChanged(
 
 void TabMenuBridge::OnTabChangedAt(tabs::TabInterface* tab,
                                    TabChangeType change_type) {
-  DCHECK(model_);
+  CHECK(model_, base::NotFatalUntil::M162);
 
   // Ignore loading state changes - they happen very often during page load and
   // are used to drive the load spinner, which is not interesting to this menu.
@@ -340,8 +340,8 @@ void TabMenuBridge::TabGroupedStateChanged(
     std::optional<tab_groups::TabGroupId> new_group,
     tabs::TabInterface* tab,
     int index) {
-  DCHECK(tab_strip_model);
-  DCHECK_EQ(tab_strip_model, model_);
+  CHECK(tab_strip_model, base::NotFatalUntil::M162);
+  CHECK_EQ(tab_strip_model, model_, base::NotFatalUntil::M162);
 
   if (!force_rebuild_menu_ && ![menu_listener_ isMenuOpen]) {
     [menu_listener_ setRebuildMenu:YES];

@@ -97,7 +97,7 @@ void SharingHubBubbleControllerChromeOsImpl::OnVisibilityChanged(
 
 void SharingHubBubbleControllerChromeOsImpl::ShowSharesheet(
     views::Button* highlighted_button) {
-  DCHECK(highlighted_button);
+  CHECK(highlighted_button, base::NotFatalUntil::M162);
   highlighted_button_tracker_.SetView(highlighted_button);
 
   ShowSharesheetAsh();

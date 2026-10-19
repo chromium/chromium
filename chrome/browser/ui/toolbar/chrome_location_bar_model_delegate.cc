@@ -70,7 +70,7 @@ ChromeLocationBarModelDelegate::FormattedStringWithEquivalentMeaning(
 }
 
 bool ChromeLocationBarModelDelegate::GetURL(GURL* url) const {
-  DCHECK(url);
+  CHECK(url, base::NotFatalUntil::M162);
   content::NavigationEntry* entry = GetNavigationEntry();
   if (!entry || entry->IsInitialEntry()) {
     return false;

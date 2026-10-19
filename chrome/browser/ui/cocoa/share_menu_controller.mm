@@ -336,7 +336,7 @@ bool CanShare() {
   ui::Accelerator accelerator;
   bool found = GetDefaultMacAcceleratorForCommandId(IDC_EMAIL_PAGE_LOCATION,
                                                     &accelerator);
-  DCHECK(found);
+  CHECK(found, base::NotFatalUntil::M162);
   return GetKeyEquivalentAndModifierMaskFromAccelerator(accelerator)
       .keyEquivalent;
 }

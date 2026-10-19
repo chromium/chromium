@@ -19,8 +19,8 @@ MemorySaverBubbleDelegate::MemorySaverBubbleDelegate(
     BrowserWindowInterface* browser,
     MemorySaverBubbleObserver* observer)
     : browser_(browser), observer_(observer) {
-  DCHECK(browser);
-  DCHECK(observer);
+  CHECK(browser, base::NotFatalUntil::M162);
+  CHECK(observer, base::NotFatalUntil::M162);
 }
 
 void MemorySaverBubbleDelegate::OnSettingsClicked() {

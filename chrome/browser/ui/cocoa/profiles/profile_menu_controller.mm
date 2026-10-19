@@ -156,7 +156,7 @@ class Observer : public BrowserCollectionObserver, public AvatarMenuObserver {
 - (IBAction)editProfile:(id)sender {
   std::optional<size_t> active_profile_index =
       _avatarMenu->GetActiveProfileIndex();
-  DCHECK(active_profile_index);
+  CHECK(active_profile_index, base::NotFatalUntil::M162);
   _avatarMenu->EditProfile(*active_profile_index);
 }
 

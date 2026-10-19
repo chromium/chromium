@@ -95,7 +95,7 @@ int TabContentsSyncedTabDelegate::GetEntryCount() const {
 }
 
 GURL TabContentsSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
-  DCHECK(web_contents_);
+  CHECK(web_contents_, base::NotFatalUntil::M162);
   NavigationEntry* entry = GetPossiblyPendingEntryAtIndex(web_contents_, i);
   return entry ? entry->GetVirtualURL() : GURL();
 }
@@ -103,7 +103,7 @@ GURL TabContentsSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
 void TabContentsSyncedTabDelegate::GetSerializedNavigationAtIndex(
     int i,
     sessions::SerializedNavigationEntry* serialized_entry) const {
-  DCHECK(web_contents_);
+  CHECK(web_contents_, base::NotFatalUntil::M162);
   NavigationEntry* entry = GetPossiblyPendingEntryAtIndex(web_contents_, i);
   if (entry) {
     // Explicitly exclude page state when serializing the navigation entry.
@@ -136,7 +136,7 @@ TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
     return nullptr;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  DCHECK(navigation_observer);
+  CHECK(navigation_observer, base::NotFatalUntil::M162);
 
   return &navigation_observer->blocked_navigations();
 }

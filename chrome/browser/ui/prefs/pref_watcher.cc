@@ -102,7 +102,7 @@ const char* const kWebPrefsToObserve[] = {
 class PrimaryPastePrefHelper : public ui::PrimaryPastePrefObserver {
  public:
   explicit PrimaryPastePrefHelper(PrefWatcher* watcher) : watcher_(watcher) {
-    DCHECK(watcher);
+    CHECK(watcher, base::NotFatalUntil::M162);
 
     if (auto* linux_ui = ui::LinuxUi::instance()) {
       primary_paste_pref_observation_.Observe(linux_ui);

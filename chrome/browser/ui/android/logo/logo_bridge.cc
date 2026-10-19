@@ -107,7 +107,7 @@ static int64_t JNI_LogoBridge_Init(Profile* profile) {
 LogoBridge::LogoBridge(Profile* profile)
     : url_loader_factory_(profile->GetURLLoaderFactory()),
       logo_service_(nullptr) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   logo_service_ = LogoServiceFactory::GetForProfile(profile);
 }

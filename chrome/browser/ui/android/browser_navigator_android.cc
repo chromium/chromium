@@ -120,7 +120,7 @@ void TrySwitchToMatchingTab(NavigateParams* params) {
 
   auto [bwi, index] =
       GetIndexAndBrowserOfMatchingTab(params->initiating_profile, *params);
-  DCHECK(bwi && index >= 0);
+  CHECK(bwi && index >= 0, base::NotFatalUntil::M162);
   auto* tab_list = TabListInterface::From(bwi);
   tabs::TabInterface* tab = tab_list->GetTab(index);
 
@@ -153,13 +153,13 @@ void TrySwitchToMatchingTab(NavigateParams* params) {
 // Returns true if all fields in `NavigateParams` can be adjusted to a valid and
 // consistent state so that the navigation can start. Otherwise, return false.
 bool AdjustNavigateParams(NavigateParams* params) {
-  DCHECK(!params->navigated_or_inserted_contents);
-  DCHECK(!params->switch_to_singleton_tab);
+  CHECK(!params->navigated_or_inserted_contents, base::NotFatalUntil::M162);
+  CHECK(!params->switch_to_singleton_tab, base::NotFatalUntil::M162);
 
   if (params->browser) {
     params->initiating_profile = params->browser->GetProfile();
   }
-  DCHECK(params->initiating_profile);
+  CHECK(params->initiating_profile, base::NotFatalUntil::M162);
 
   if (params->initiating_profile->ShutdownStarted()) {
     // Don't navigate when the profile is shutting down.
@@ -473,7 +473,8 @@ base::WeakPtr<content::NavigationHandle> GetTabAndPerformNavigation(
   }
 
   if (is_contents_inserted) {
-    DCHECK_EQ(params->navigated_or_inserted_contents, tab->GetContents());
+    CHECK_EQ(params->navigated_or_inserted_contents, tab->GetContents(),
+             base::NotFatalUntil::M162);
   }
 
   params->navigated_or_inserted_contents = tab->GetContents();

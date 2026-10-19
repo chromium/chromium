@@ -313,7 +313,7 @@ void RegisterLocalizedFontPref(user_prefs::PrefRegistrySyncable* registry,
   int val = 0;
   bool success =
       base::StringToInt(l10n_util::GetStringUTF8(default_message_id), &val);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   registry->RegisterIntegerPref(path, val);
 }
 #endif

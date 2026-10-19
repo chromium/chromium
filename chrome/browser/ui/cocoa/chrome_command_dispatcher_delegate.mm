@@ -173,7 +173,7 @@
       bridge->host()->ExecuteCommand(
           result.chrome_command, WindowOpenDisposition::CURRENT_TAB,
           /*is_before_first_responder=*/false, &was_executed);
-      DCHECK(was_executed);
+      CHECK(was_executed, base::NotFatalUntil::M162);
       return ui::PerformKeyEquivalentResult::kHandled;
     }
   }

@@ -69,7 +69,8 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
         return AppMenuIconController::Severity::kHigh;
     }
   }
-  DCHECK_EQ(level, UpgradeDetector::UPGRADE_ANNOYANCE_NONE);
+  CHECK_EQ(level, UpgradeDetector::UPGRADE_ANNOYANCE_NONE,
+           base::NotFatalUntil::M162);
 
   return AppMenuIconController::Severity::kNone;
 }
@@ -122,8 +123,8 @@ AppMenuIconController::AppMenuIconController(UpgradeDetector* upgrade_detector,
       upgrade_detector_(upgrade_detector),
       profile_(profile),
       delegate_(delegate) {
-  DCHECK(profile_);
-  DCHECK(delegate_);
+  CHECK(profile_, base::NotFatalUntil::M162);
+  CHECK(delegate_, base::NotFatalUntil::M162);
 
   global_error_observation_.Observe(
       GlobalErrorServiceFactory::GetForProfile(profile_));

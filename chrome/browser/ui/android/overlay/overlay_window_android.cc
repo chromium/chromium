@@ -191,7 +191,7 @@ void OverlayWindowAndroid::CompositorViewCreated(
     const base::android::JavaRef<jobject>& compositor_view) {
   compositor_view_ =
       thin_webview::android::CompositorView::FromJavaObject(compositor_view);
-  DCHECK(compositor_view_);
+  CHECK(compositor_view_, base::NotFatalUntil::M162);
   compositor_view_->SetRootLayer(surface_layer_);
 }
 
@@ -371,7 +371,7 @@ void OverlayWindowAndroid::CloseInternal() {
     return;
   }
 
-  DCHECK(window_android_);
+  CHECK(window_android_, base::NotFatalUntil::M162);
   window_android_->RemoveObserver(this);
   window_android_ = nullptr;
   CloseJava();

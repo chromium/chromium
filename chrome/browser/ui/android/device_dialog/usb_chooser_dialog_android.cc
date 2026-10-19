@@ -84,11 +84,11 @@ UsbChooserDialogAndroid::CreateInternal(
 
   Profile* profile =
       Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   base::android::ScopedJavaLocalRef<jobject> j_profile_android =
       profile->GetJavaObject();
-  DCHECK(!j_profile_android.is_null());
+  CHECK(!j_profile_android.is_null(), base::NotFatalUntil::M162);
 
   auto dialog = std::make_unique<UsbChooserDialogAndroid>(std::move(controller),
                                                           std::move(on_close));
@@ -132,7 +132,7 @@ void UsbChooserDialogAndroid::OnOptionsInitialized() {
 void UsbChooserDialogAndroid::OnOptionAdded(size_t index) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DCHECK_LE(index, item_id_map_.size());
+  CHECK_LE(index, item_id_map_.size(), base::NotFatalUntil::M162);
   int item_id = next_item_id_++;
   std::string item_id_str = base::NumberToString(item_id);
   item_id_map_.insert(item_id_map_.begin() + index, item_id_str);
@@ -144,7 +144,7 @@ void UsbChooserDialogAndroid::OnOptionAdded(size_t index) {
 void UsbChooserDialogAndroid::OnOptionRemoved(size_t index) {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  DCHECK_LT(index, item_id_map_.size());
+  CHECK_LT(index, item_id_map_.size(), base::NotFatalUntil::M162);
   std::string item_id = item_id_map_[index];
   item_id_map_.erase(item_id_map_.begin() + index);
 

@@ -56,7 +56,7 @@ class MenuItemBuilder {
   // Converts the item to a separator. Only tag() and hidden() are also
   // applicable.
   MenuItemBuilder& is_separator() {
-    DCHECK_EQ(string_id_, 0);
+    CHECK_EQ(string_id_, 0, base::NotFatalUntil::M162);
     is_separator_ = true;
     return *this;
   }
@@ -67,7 +67,7 @@ class MenuItemBuilder {
   }
 
   MenuItemBuilder& action(SEL action) {
-    DCHECK(!action_);
+    CHECK(!action_, base::NotFatalUntil::M162);
     action_ = action;
     return *this;
   }

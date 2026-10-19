@@ -33,7 +33,7 @@ AuthenticatorSelectionDialogViewAndroid::
     AuthenticatorSelectionDialogViewAndroid(
         CardUnmaskAuthenticationSelectionDialogController* controller)
     : controller_(controller) {
-  DCHECK(controller);
+  CHECK(controller, base::NotFatalUntil::M162);
 }
 
 AuthenticatorSelectionDialogViewAndroid::
@@ -77,7 +77,7 @@ void AuthenticatorSelectionDialogViewAndroid::OnDismissed() {
 bool AuthenticatorSelectionDialogViewAndroid::ShowDialog(
     ui::WindowAndroid* window_android) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  DCHECK(window_android);
+  CHECK(window_android, base::NotFatalUntil::M162);
 
   std::vector<CardUnmaskChallengeOption> options =
       controller_->GetChallengeOptions();

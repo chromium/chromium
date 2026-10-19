@@ -59,7 +59,7 @@ const char QuitWithAppsController::kQuitWithAppsNotificationID[] =
     "quit-with-apps";
 
 QuitWithAppsController::QuitWithAppsController() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   message_center::ButtonInfo quit_apps_button_info(
       l10n_util::GetStringUTF16(IDS_QUIT_WITH_APPS_QUIT_LABEL));
@@ -118,7 +118,7 @@ void QuitWithAppsController::Click(const std::optional<int>& button_index,
 }
 
 bool QuitWithAppsController::ShouldQuit() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
 
   // Quit immediately if this is a test.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType) &&
@@ -150,10 +150,10 @@ bool QuitWithAppsController::ShouldQuit() {
   }
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  DCHECK(profile_manager);
+  CHECK(profile_manager, base::NotFatalUntil::M162);
 
   std::vector<Profile*> profiles(profile_manager->GetLoadedProfiles());
-  DCHECK(profiles.size());
+  CHECK(profiles.size(), base::NotFatalUntil::M162);
 
   // Delete any existing notification to ensure this one is shown. If
   // notification_profile_ is NULL then it must be that no notification has been
