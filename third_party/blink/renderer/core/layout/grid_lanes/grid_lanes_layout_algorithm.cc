@@ -1284,7 +1284,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
         // start.
         (is_for_columns ? item_offset.block_offset
                         : item_offset.inline_offset) -=
-            candidate->available_alignment_space;
+            candidate->AvailableAlignmentSpace();
       }
 
       // During pre-fragmentation collection, persist the total stretch size
@@ -1294,7 +1294,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
         CHECK(grid_lanes_placement_data);
         grid_lanes_placement_data->stretch_size_in_stacking_axis =
             candidate->original_stacking_size +
-            candidate->available_alignment_space;
+            candidate->AvailableAlignmentSpace();
         grid_lanes_placement_data->placement_data.offset = item_offset;
         continue;
       }
@@ -1337,7 +1337,7 @@ void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
       }
     }
     const LayoutUnit alignment_offset_adjustment = AlignmentOffset(
-        candidate->available_alignment_space, /*size=*/LayoutUnit(),
+        candidate->AvailableAlignmentSpace(), /*size=*/LayoutUnit(),
         /*margin_start=*/LayoutUnit(), /*margin_end=*/LayoutUnit(),
         /*baseline_offset=*/LayoutUnit(), stacking_axis_alignment,
         /*is_overflow_safe=*/false);
@@ -1381,7 +1381,7 @@ ConstraintSpace GridLanesLayoutAlgorithm::CreateConstraintSpaceForStretch(
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   const bool is_for_columns = grid_axis_direction == kForColumns;
   const LayoutUnit stretched_size =
-      candidate.original_stacking_size + candidate.available_alignment_space;
+      candidate.original_stacking_size + candidate.AvailableAlignmentSpace();
 
   // Get the original fragment from the builder for its grid-axis size.
   const auto& fragment = To<PhysicalBoxFragment>(

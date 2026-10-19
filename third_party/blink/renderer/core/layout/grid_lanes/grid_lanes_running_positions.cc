@@ -143,13 +143,16 @@ ItemIndexPath NewItemIndexPath(const ItemIndexPath& item_below_index_path,
 
 GridLanesRunningPositions::AlignmentCandidate::AlignmentCandidate(
     GridItemData* item,
+    AlignmentSpace* alignment_space,
     LayoutUnit original_stacking_size,
     wtf_size_t item_index,
     GridLayoutSubtree* layout_subtree,
     const ItemIndexPath* item_index_path)
     : item(item),
+      alignment_space(alignment_space),
       layout_subtree(layout_subtree),
       original_stacking_size(original_stacking_size) {
+  CHECK(alignment_space);
   if (item_index_path) {
     CHECK(!item_index_path->empty());
     this->item_index_path = *item_index_path;
@@ -235,6 +238,11 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
                          span.StartLine(), *grid_lanes);
   }
 
+  // Share one alignment space object across all lanes spanned by this item.
+  AlignmentSpace* item_alignment_space =
+      is_stacking_axis_alignment_set_ ? MakeGarbageCollected<AlignmentSpace>()
+                                      : nullptr;
+
   for (auto track_idx = span.StartLine(); track_idx < end_line; ++track_idx) {
     TrackOpening& last_track_opening = GetLastTrackOpening(track_idx);
     CHECK_EQ(last_track_opening.end_position, LayoutUnit::Max());
@@ -250,6 +258,13 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
       CHECK_LT(track_idx, track_collection_openings_.size());
       last_track_opening.start_position = current_running_position;
       last_track_opening.end_position = *max_running_position_for_span;
+
+      // The opening now has its size, so set up the initial available alignment
+      // space in the stacking axis for the item above the opening.
+      if (last_track_opening.alignment_candidate.IsValid()) {
+        last_track_opening.alignment_candidate.alignment_space
+            ->AccommodateNewOpeningSize(last_track_opening.Size());
+      }
 
       // This opening is directly above the current item. Record where the item
       // will be stored so a later densely packed item can refer to it during
@@ -272,17 +287,25 @@ void GridLanesRunningPositions::UpdateRunningPositionsForSpan(
       if (is_stacking_axis_alignment_set_) {
         track_collection_openings_[track_idx].back().alignment_candidate =
             AlignmentCandidate(
-                &grid_lanes_item, original_stacking_size, item_index,
-                layout_subtree,
+                &grid_lanes_item, item_alignment_space, original_stacking_size,
+                item_index, layout_subtree,
                 grid_lanes ? &item_index_path_in_start_lane : nullptr);
       }
     } else {
       // No new opening formed -- update the item above the last unbounded
       // opening in this track to the placed item.
       if (is_stacking_axis_alignment_set_) {
+        // The previous item is now directly above the placed item, with no
+        // opening between them. This means that the previous alignment
+        // candidate has no further available alignment space in any track it
+        // spans.
+        if (last_track_opening.alignment_candidate.IsValid()) {
+          last_track_opening.alignment_candidate.alignment_space
+              ->AccommodateNewOpeningSize(LayoutUnit());
+        }
         last_track_opening.alignment_candidate = AlignmentCandidate(
-            &grid_lanes_item, original_stacking_size, item_index,
-            layout_subtree,
+            &grid_lanes_item, item_alignment_space, original_stacking_size,
+            item_index, layout_subtree,
             grid_lanes ? &item_index_path_in_start_lane : nullptr);
       }
 
@@ -309,33 +332,11 @@ void GridLanesRunningPositions::FinalizeTrackOpeningsForStackingAxisAlignment(
     DCHECK_EQ(last_opening.end_position, LayoutUnit::Max());
     last_opening.start_position -= stacking_axis_gap;
     last_opening.end_position = stacking_axis_size;
-  }
-}
-
-LayoutUnit GridLanesRunningPositions::GetAvailableAlignmentSpaceForItem(
-    const GridItemData* item,
-    const GridSpan& span) const {
-  DCHECK(is_stacking_axis_alignment_set_);
-
-  LayoutUnit min_opening_size = LayoutUnit::Max();
-  const auto end_line = span.EndLine();
-
-  for (auto track_idx = span.StartLine(); track_idx < end_line; ++track_idx) {
-    const auto& openings = track_collection_openings_[track_idx];
-    bool found_consecutive_opening = false;
-    for (const auto& opening : openings) {
-      if (opening.alignment_candidate.item == item) {
-        min_opening_size = std::min(min_opening_size, opening.Size());
-        found_consecutive_opening = true;
-        break;
-      }
-    }
-    if (!found_consecutive_opening) {
-      return LayoutUnit();
+    if (last_opening.alignment_candidate.IsValid()) {
+      last_opening.alignment_candidate.alignment_space
+          ->AccommodateNewOpeningSize(last_opening.Size());
     }
   }
-
-  return min_opening_size;
 }
 
 GridLanesRunningPositions::AlignmentCandidateIterator::
@@ -362,15 +363,8 @@ GridLanesRunningPositions::AlignmentCandidateIterator::Next() {
         continue;
       }
 
-      const LayoutUnit alignment_space =
-          running_positions_.GetAvailableAlignmentSpaceForItem(
-              opening.alignment_candidate.item,
-              opening.alignment_candidate.item->resolved_position.Span(
-                  running_positions_.grid_axis_direction_));
-      if (alignment_space > LayoutUnit()) {
-        AlignmentCandidate candidate = opening.alignment_candidate;
-        candidate.available_alignment_space = alignment_space;
-        return candidate;
+      if (opening.alignment_candidate.HasAvailableAlignmentSpace()) {
+        return opening.alignment_candidate;
       }
     }
 
@@ -627,6 +621,11 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
   const EligibleTrackOpeningPath& first_eligible_track_opening_result =
       eligible_track_opening_results[*chosen_opening_index];
 
+  // Share one alignment space object across all lanes spanned by this item.
+  AlignmentSpace* item_alignment_space =
+      is_stacking_axis_alignment_set_ ? MakeGarbageCollected<AlignmentSpace>()
+                                      : nullptr;
+
   ItemIndexPath item_index_path_in_start_lane;
   if (parent_item_index_path_per_lane) {
     parent_item_index_path_per_lane->resize(span_size);
@@ -691,6 +690,24 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
                            current_track_index, *grid_lanes);
     }
 
+    // The alignment space of the item that was directly above the opening
+    // before this placement.
+    AlignmentSpace* previous_item_alignment_space =
+        current_track_opening.alignment_candidate.alignment_space.Get();
+
+    // If there is no space above the densely packed item, the previous item is
+    // directly above it. If there is no space below the densely packed item,
+    // it is directly above the next item. In both cases, the upper of the two
+    // items has no available alignment space in this lane.
+    if (is_stacking_axis_alignment_set_) {
+      if (previous_item_alignment_space && !has_opening_above) {
+        previous_item_alignment_space->AccommodateNewOpeningSize(LayoutUnit());
+      }
+      if (!has_opening_below) {
+        item_alignment_space->AccommodateNewOpeningSize(LayoutUnit());
+      }
+    }
+
     if (has_opening_above) {
       if (has_opening_below) {
         // With space both above and below, split the opening into upper and
@@ -709,6 +726,10 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
         if (is_stacking_axis_alignment_set_) {
           new_opening_above_item.alignment_candidate =
               current_track_opening.alignment_candidate;
+          if (previous_item_alignment_space) {
+            previous_item_alignment_space->AccommodateNewOpeningSize(
+                new_opening_above_item.Size());
+          }
         }
         track_collection_openings_[current_track_index].insert(
             track_opening_index, new_opening_above_item);
@@ -723,6 +744,11 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
 
         if (parent_item_index_path_per_lane) {
           opening_above_item.item_below_index_path = current_item_index_path;
+        }
+
+        if (is_stacking_axis_alignment_set_ && previous_item_alignment_space) {
+          previous_item_alignment_space->AccommodateNewOpeningSize(
+              opening_above_item.Size());
         }
         continue;
       }
@@ -740,9 +766,15 @@ GridLanesRunningPositions::GetEligibleTrackOpeningAndUpdateGridLanesItemSpan(
     // The dense item is directly above the lower remainder.
     if (is_stacking_axis_alignment_set_) {
       lower_opening.alignment_candidate = AlignmentCandidate(
-          &grid_lanes_item, original_stacking_size, item_index, layout_subtree,
+          &grid_lanes_item, item_alignment_space, original_stacking_size,
+          item_index, layout_subtree,
           parent_item_index_path_per_lane ? &item_index_path_in_start_lane
                                           : nullptr);
+      // If the lower opening is still unbounded, its size is recorded when the
+      // track openings are finalized.
+      if (lower_opening.end_position != LayoutUnit::Max()) {
+        item_alignment_space->AccommodateNewOpeningSize(lower_opening.Size());
+      }
     }
   }
 

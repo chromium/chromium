@@ -32,6 +32,30 @@ class CORE_EXPORT GridLanesRunningPositions {
   STACK_ALLOCATED();
 
  public:
+  // Available alignment space of one item. It is shared by the item's
+  // alignment candidates in all of the lanes that the item spans, and is
+  // updated while the track openings change. It is the smallest opening
+  // directly below the item across those lanes, or zero if one of those lanes
+  // has no opening directly below the item.
+  class AlignmentSpace final : public GarbageCollected<AlignmentSpace> {
+   public:
+    // Updates the available alignment space with an opening directly below the
+    // item, keeping the smallest size.
+    void AccommodateNewOpeningSize(LayoutUnit opening_size) {
+      alignment_space_ = std::min(alignment_space_, opening_size);
+    }
+
+    LayoutUnit Value() const {
+      DCHECK_NE(alignment_space_, LayoutUnit::Max());
+      return alignment_space_;
+    }
+
+    void Trace(Visitor*) const {}
+
+   private:
+    LayoutUnit alignment_space_ = LayoutUnit::Max();
+  };
+
   // Holds per-item data needed for stacking-axis alignment adjustment. More on
   // stacking-axis alignment here:
   // https://drafts.csswg.org/css-grid-3/#stacking-self-alignment
@@ -41,6 +65,7 @@ class CORE_EXPORT GridLanesRunningPositions {
    public:
     AlignmentCandidate() = default;
     AlignmentCandidate(GridItemData* item,
+                       AlignmentSpace* alignment_space,
                        LayoutUnit original_stacking_size,
                        wtf_size_t item_index,
                        GridLayoutSubtree* layout_subtree,
@@ -48,12 +73,24 @@ class CORE_EXPORT GridLanesRunningPositions {
 
     bool IsValid() const { return item != nullptr; }
 
+    LayoutUnit AvailableAlignmentSpace() const {
+      return alignment_space->Value();
+    }
+
+    bool HasAvailableAlignmentSpace() const {
+      return AvailableAlignmentSpace() > LayoutUnit();
+    }
+
     void Trace(Visitor* visitor) const {
       visitor->Trace(item);
+      visitor->Trace(alignment_space);
       visitor->Trace(layout_subtree);
     }
 
     Member<GridItemData> item;
+    // Shared by every copy of this candidate, one in each lane that the item
+    // spans.
+    Member<AlignmentSpace> alignment_space;
     // Without a lane graph, the single index identifies a child in the fragment
     // builder. With a lane graph, the path identifies the item in its start
     // lane.
@@ -65,8 +102,6 @@ class CORE_EXPORT GridLanesRunningPositions {
     // The candidate's stacking axis size before any stretch alignment
     // adjustments.
     LayoutUnit original_stacking_size;
-
-    LayoutUnit available_alignment_space;
   };
 
   // Struct used to represent openings that occur in the tracks as a result of
@@ -283,7 +318,9 @@ class CORE_EXPORT GridLanesRunningPositions {
   // Clamp the end position of the last (unbounded) `TrackOpening` in each
   // track to the actual stacking axis size, and subtract the trailing gap
   // from the start position in the last opening of each track, since we account
-  // for an extra gap behind each item when we update track openings.
+  // for an extra gap behind each item when we update track openings. This also
+  // records the size of the last (unbounded) `TrackOpening` in the alignment
+  // space of the item above it.
   void FinalizeTrackOpeningsForStackingAxisAlignment(
       LayoutUnit stacking_axis_size,
       LayoutUnit stacking_axis_gap);
@@ -323,11 +360,6 @@ class CORE_EXPORT GridLanesRunningPositions {
 
  private:
   friend class GridLanesLayoutAlgorithmTest;
-
-  // Returns the minimum alignment space available for `item` across all tracks
-  // in `span`.
-  LayoutUnit GetAvailableAlignmentSpaceForItem(const GridItemData* item,
-                                               const GridSpan& span) const;
 
   // This struct is used to hold a path of eligible track openings.
   // `starting_track_index` refers to the first track index in the path, and
