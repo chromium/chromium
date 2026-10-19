@@ -25,29 +25,21 @@ import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetPropert
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.TextWithClickableLinkProperties.TEXT;
 import static org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.VISIBLE;
 
-import android.os.Bundle;
-
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
@@ -567,8 +559,7 @@ public class AtMemoryBottomSheetMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
-    public void testNoticeSettingsClicked_withYourSavedInfoEnabled() {
+    public void testNoticeSettingsClicked() {
         UserActionTester userActionTester = new UserActionTester();
         AutofillSuggestion noticeSuggestion =
                 new AutofillSuggestion.Builder()
@@ -597,44 +588,6 @@ public class AtMemoryBottomSheetMediatorTest {
                         eq(AutofillPersonalContextFragment.class),
                         isNull(),
                         eq(true));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
-    public void testNoticeSettingsClicked_withYourSavedInfoDisabled() {
-        UserActionTester userActionTester = new UserActionTester();
-        AutofillSuggestion noticeSuggestion =
-                new AutofillSuggestion.Builder()
-                        .setSuggestionType(SuggestionType.PERSONAL_CONTEXT_NOTICE)
-                        .setSubLabel("")
-                        .build();
-        mMediator.show(List.of(noticeSuggestion), /* searchBarInitialValue= */ null);
-
-        Runnable settingsClickListener =
-                mModelList
-                        .get(0)
-                        .model
-                        .get(
-                                AtMemoryBottomSheetProperties.NoticeItemProperties
-                                        .ON_SETTINGS_CLICKED);
-        assertNotNull(settingsClickListener);
-        settingsClickListener.run();
-
-        assertTrue(
-                userActionTester
-                        .getActions()
-                        .contains("PersonalContext.AtMemory.Notice.SettingsLinkClick"));
-
-        ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
-        verify(mSettingsNavigation)
-                .startSettings(
-                        eq(ApplicationProvider.getApplicationContext()),
-                        eq(AutofillOptionsFragment.class),
-                        bundleCaptor.capture(),
-                        eq(true));
-        assertEquals(
-                AutofillOptionsReferrer.PERSONAL_CONTEXT_ATMEMORY_NOTICE,
-                bundleCaptor.getValue().getInt(AutofillOptionsFragment.AUTOFILL_OPTIONS_REFERRER));
     }
 
     @Test
@@ -707,7 +660,6 @@ public class AtMemoryBottomSheetMediatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testAiDisclosureSuggestion() {
         AutofillSuggestion disclosure =
                 new AutofillSuggestion.Builder()

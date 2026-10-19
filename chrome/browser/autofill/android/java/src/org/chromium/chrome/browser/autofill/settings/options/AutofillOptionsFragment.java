@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.settings.options;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.os.Bundle;
 
@@ -21,7 +19,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.settings.AutofillHelpMenuProvider;
-import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -48,14 +45,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
     public static final String PREF_AUTOFILL_AI_CATEGORY = "autofill_ai_category";
     public static final String PREF_AUTOFILL_SERVICE_PROVIDER_CETEGORY =
             "autofill_service_provider_category";
-    public static final String PREF_AUTOFILL_PERSONAL_CONTEXT_SWITCH =
-            "autofill_personal_context_switch";
-    public static final String PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS =
-            "autofill_personal_context_manage_connected_apps";
-    public static final String PREF_AUTOFILL_PERSONAL_CONTEXT_CATEGORY =
-            "autofill_personal_context_category";
-    public static final String PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE =
-            "personal_context_notice_preference";
 
     private @AutofillOptionsReferrer int mReferrer;
 
@@ -93,22 +82,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
 
     @Nullable Preference getAutofillAiCategory() {
         return findPreference(PREF_AUTOFILL_AI_CATEGORY);
-    }
-
-    ChromeSwitchPreference getAutofillPersonalContextSwitch() {
-        return assumeNonNull(findPreference(PREF_AUTOFILL_PERSONAL_CONTEXT_SWITCH));
-    }
-
-    Preference getAutofillPersonalContextManageConnectedApps() {
-        return assumeNonNull(findPreference(PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
-    }
-
-    Preference getAutofillPersonalContextCategory() {
-        return assumeNonNull(findPreference(PREF_AUTOFILL_PERSONAL_CONTEXT_CATEGORY));
-    }
-
-    Preference getAutofillPersonalContextNoticePreference() {
-        return assumeNonNull(findPreference(PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE));
     }
 
     @Nullable Preference getAutofillServiceProviderCategory() {
@@ -206,11 +179,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_REAUTH_REQUIRED);
     }
 
-    public static boolean shouldShowPersonalContext(Profile profile) {
-        return !ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
-                && AutofillPersonalContextFragment.isPersonalContextEligible(profile);
-    }
-
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     AutofillOptionsFragment.class.getName(), R.xml.autofill_options_preferences) {
@@ -241,12 +209,6 @@ public class AutofillOptionsFragment extends ChromeBaseSettingsFragment {
                             indexData.removeEntry(
                                     getUniqueId(PREF_AUTOFILL_AI_AUTHENTICATION_SWITCH));
                         }
-                    }
-                    if (!AutofillOptionsFragment.shouldShowPersonalContext(profile)) {
-                        indexData.removeEntry(getUniqueId(PREF_AUTOFILL_PERSONAL_CONTEXT_SWITCH));
-                        indexData.removeEntry(
-                                getUniqueId(PREF_AUTOFILL_PERSONAL_CONTEXT_MANAGE_CONNECTED_APPS));
-                        indexData.removeEntry(getUniqueId(PREF_PERSONAL_CONTEXT_NOTICE_PREFERENCE));
                     }
                 }
             };

@@ -35,10 +35,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
 /** Unit tests for {@link AutofillPersonalContextFragment}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-    ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-})
+@EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
 public class AutofillPersonalContextTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -94,7 +91,6 @@ public class AutofillPersonalContextTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testPersonalContextSwitchToggleOn() {
         when(mMockEntityDataManagerJni.isPersonalContextEnabled(0L)).thenReturn(false);
 
@@ -152,10 +148,7 @@ public class AutofillPersonalContextTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
-    })
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testSearchIndexWhenFeaturesDisabled() {
         AutofillPersonalContextFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
                 RuntimeEnvironment.getApplication(), mSearchIndexDataMock, mProfile);

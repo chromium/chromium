@@ -17,7 +17,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.settings.PersonalContextSettingsLauncher;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.HomeProperties;
@@ -225,8 +224,7 @@ class AtMemoryBottomSheetMediator implements AtMemorySearchBarView.Delegate {
 
     private void onNoticeSettingsClicked() {
         RecordUserAction.record("PersonalContext.AtMemory.Notice.SettingsLinkClick");
-        PersonalContextSettingsLauncher.showPersonalContextSettings(
-                mContext, AutofillOptionsReferrer.PERSONAL_CONTEXT_ATMEMORY_NOTICE);
+        PersonalContextSettingsLauncher.showPersonalContextSettings(mContext);
     }
 
     private void onSuggestionAccepted(AutofillSuggestion suggestion, int position) {

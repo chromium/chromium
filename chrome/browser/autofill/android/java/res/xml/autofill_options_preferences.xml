@@ -26,39 +26,9 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
-        android:id="@+id/autofill_personal_context_category"
-        android:key="autofill_personal_context_category"
-        android:order="3"
-        android:title="@string/personal_context_autofill_settings_title_android"
-        app:isPreferenceVisible="false">
-        <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-            android:id="@+id/autofill_personal_context_switch"
-            android:key="autofill_personal_context_switch"
-            android:order="0"
-            android:title="@string/personal_context_autofill_settings_switch_title_android"
-            android:summary="@string/personal_context_autofill_settings_switch_summary_android" />
-
-        <org.chromium.components.browser_ui.settings.ChromeBasePreference
-            android:id="@+id/autofill_personal_context_manage_connected_apps"
-            android:key="autofill_personal_context_manage_connected_apps"
-            android:order="1"
-            android:title="@string/personal_context_autofill_settings_manage_connected_apps_title_android"
-            android:summary="@string/personal_context_autofill_settings_manage_connected_apps_summary_android"
-            android:widgetLayout="@layout/preference_widget_open_in_new" />
-
-        <org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextNoticePreference
-            android:key="personal_context_notice_preference"
-            android:order="2"
-            android:title="@string/personal_context_autofill_settings_helping_improve_notice_android"
-            android:summary="@string/personal_context_autofill_settings_helping_improve_notice_android_summary"
-            app:backgroundStyle="card"
-            app:expandedContentLayout="@layout/autofill_personal_context_expandable_notice" />
-    </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
-
-    <org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory
         android:id="@+id/autofill_ai_category"
         android:key="autofill_ai_category"
-        android:order="4"
+        android:order="3"
         android:title="@string/settings_autofill_ai_page_title"
         app:isPreferenceVisible="false">
 

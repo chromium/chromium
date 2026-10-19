@@ -15,7 +15,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -27,12 +26,10 @@ public class SettingsNavigationHelper {
      * Tries showing the Autofill and passwords settings page.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @return True if the context is valid, feature enabled and `startSettings` was called.
+     * @return True if the context is valid and `startSettings` was called.
      */
     public static boolean showAutofillAndPasswordsSettings(@Nullable Context context) {
-        if (context == null
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+        if (context == null) {
             return false;
         }
 
@@ -90,9 +87,10 @@ public class SettingsNavigationHelper {
      * @param context The {@link Context} required to start the settings page. Noop without it.
      * @return True if the context is valid and `startSettings` was called.
      */
+    // TODO(crbug.com/513493349): Remove the unused referrer parameter.
     public static boolean showAutofillPersonalContextSettings(
             @Nullable Context context, @AutofillOptionsReferrer int referrer) {
-        return PersonalContextSettingsLauncher.showPersonalContextSettings(context, referrer);
+        return PersonalContextSettingsLauncher.showPersonalContextSettings(context);
     }
 
     /**
