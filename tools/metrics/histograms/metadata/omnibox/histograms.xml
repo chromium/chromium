@@ -4817,13 +4817,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.SuggestionUsed.Search.Experimental.NavigationToFirstMeaningfulPaint"
-    units="ms" expires_after="2026-07-26">
+    units="ms" expires_after="2027-01-14">
   <owner>jdonnelly@chromium.org</owner>
   <owner>mpearson@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Measures the time from navigation start to first meaningful paint. Only
     recorded for a search query suggestion selected from the omnibox.
+
+    Warning: this histogram was expired from 2026-07-26 to 2026-10-19; data may
+    be missing.
   </summary>
 </histogram>
 
