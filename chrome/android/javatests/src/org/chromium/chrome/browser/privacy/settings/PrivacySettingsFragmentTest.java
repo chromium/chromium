@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideInteractions;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.SettingsTestRule;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
@@ -100,7 +101,6 @@ import java.util.concurrent.TimeUnit;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
 public class PrivacySettingsFragmentTest {
     // Name of the histogram to record the entry on Privacy Guide via the S&P link-row.
     public static final String ENTRY_EXIT_HISTOGRAM = "Settings.PrivacyGuide.EntryExit";
@@ -148,7 +148,9 @@ public class PrivacySettingsFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Activity activity = mSettingsActivityTestRule.getActivity();
-                    if (activity.findViewById(R.id.menu_id_targeted_help) == null) {
+                    // Settings in a tab has no help menu item.
+                    if (!SettingsInTab.shouldOpenSettingsInTab()
+                            && activity.findViewById(R.id.menu_id_targeted_help) == null) {
                         return false;
                     }
                     RecyclerView listView = mSettingsActivityTestRule.getFragment().getListView();
