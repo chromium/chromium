@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/to_value_list.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -182,6 +183,23 @@ base::DictValue JourneyToDict(const history::journeys::Journey& journey) {
                                     .Set("prompt", query.prompt));
   }
 
+  // A collection's pages are visits of the Topic, so they're exported as
+  // visit times, which join to `visits`. Redacting a visit thus also hides the
+  // page.
+  base::ListValue collections;
+  collections.reserve(journey.collections.size());
+  for (const history::journeys::JourneyVisitCollection& collection :
+       journey.collections) {
+    base::ListValue visit_times;
+    visit_times.reserve(collection.visits.size());
+    for (const history::journeys::JourneyVisit& visit : collection.visits) {
+      visit_times.Append(FormatTopicsFeedbackTime(visit.visit_time));
+    }
+    collections.Append(base::DictValue()
+                           .Set("title", collection.title)
+                           .Set("visit_times", std::move(visit_times)));
+  }
+
   return base::DictValue()
       .Set("id", journey.journey_id)
       .Set("title", journey.title)
@@ -190,7 +208,8 @@ base::DictValue JourneyToDict(const history::journeys::Journey& journey) {
       .Set("short_overview", journey.short_overview.value_or(""))
       .Set("created_at", FormatTopicsFeedbackTime(journey.creation_time))
       .Set("visits", std::move(visits))
-      .Set("continuation_queries", std::move(continuation_queries));
+      .Set("continuation_queries", std::move(continuation_queries))
+      .Set("collections", std::move(collections));
 }
 
 base::DictValue DuplicateTopicToDict(
@@ -202,21 +221,26 @@ base::DictValue DuplicateTopicToDict(
 }
 
 base::DictValue FeedbackToDict(const mojom::TopicFeedback& feedback) {
-  base::ListValue defects;
-  defects.reserve(feedback.defects.size());
-  for (mojom::TopicDefectCategory defect : feedback.defects) {
-    defects.Append(DefectToString(defect));
-  }
+  base::ListValue defects = base::ToValueList(feedback.defects, DefectToString);
 
-  base::ListValue query_feedbacks;
-  query_feedbacks.reserve(feedback.query_feedbacks.size());
-  for (const mojom::TopicQueryFeedbackPtr& query_feedback :
-       feedback.query_feedbacks) {
-    query_feedbacks.Append(base::DictValue()
-                               .Set("index", query_feedback->index)
-                               .Set("query_text", query_feedback->query_text)
-                               .Set("liked", query_feedback->liked));
-  }
+  base::ListValue query_feedbacks =
+      base::ToValueList(feedback.query_feedbacks,
+                        [](const mojom::TopicQueryFeedbackPtr& query_feedback) {
+                          return base::DictValue()
+                              .Set("index", query_feedback->index)
+                              .Set("query_text", query_feedback->query_text)
+                              .Set("liked", query_feedback->liked);
+                        });
+
+  base::ListValue collection_feedbacks = base::ToValueList(
+      feedback.collection_feedbacks,
+      [](const mojom::TopicCollectionFeedbackPtr& collection_feedback) {
+        return base::DictValue()
+            .Set("title", collection_feedback->title)
+            .Set("rating", RatingToString(collection_feedback->rating))
+            .Set("rejected_item_visits",
+                 TimesToList(collection_feedback->rejected_item_visits));
+      });
 
   const mojom::TopicSnapshot& snapshot = *feedback.snapshot;
   return base::DictValue()
@@ -239,7 +263,8 @@ base::DictValue FeedbackToDict(const mojom::TopicFeedback& feedback) {
       .Set("duplicate_of",
            feedback.duplicate_of
                ? base::Value(DuplicateTopicToDict(*feedback.duplicate_of))
-               : base::Value());
+               : base::Value())
+      .Set("collection_feedbacks", std::move(collection_feedbacks));
 }
 
 }  // namespace

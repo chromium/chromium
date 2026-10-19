@@ -377,7 +377,8 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_FeedbackDuplicateOf) {
       "id": "topic-2",
       "title": "Topic 2",
       "visit_times": ["2026-09-22T10:05:00.000000Z"]
-    }
+    },
+    "collection_feedbacks": []
   }])"));
 }
 
@@ -388,7 +389,12 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
       {JourneyVisit("https://example.com/a#frag", kTime1),
        JourneyVisit("https://other.com/x", kTime0, /*is_foreign=*/true)},
       {history::journeys::JourneyContinuationQuery("Query title",
-                                                   "Query prompt")}));
+                                                   "Query prompt")},
+      {history::journeys::JourneyVisitCollection(
+          "Pages you compared",
+          {JourneyVisit("https://example.com/a#frag", kTime1),
+           JourneyVisit("https://other.com/x", kTime0,
+                        /*is_foreign=*/true)})}));
   data.visits = {
       Visit("https://docs.google.com/doc", u"Doc", kTime3),
       Visit("https://news.com/?token=abc&q=1", u"News", kTime2,
@@ -411,6 +417,9 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
   feedback->query_feedbacks.push_back(
       mojom::TopicQueryFeedback::New(0, "Query title", true));
   feedback->rejected_visits = {kTime0};
+  feedback->collection_feedbacks.push_back(mojom::TopicCollectionFeedback::New(
+      "Pages you compared", mojom::TopicRating::kDisliked,
+      std::vector{kTime0}));
   data.feedbacks.push_back(std::move(feedback));
 
   TopicsFeedbackExportContext context;
@@ -429,7 +438,7 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
   options->missing_topics = "A topic about my garden.";
 
   EXPECT_THAT(BuildTopicsFeedbackBundle(data, context, *options), IsJson(R"({
-    "schema_version": 1,
+    "schema_version": 2,
     "exported_at": "2026-09-24T21:00:00.000000Z",
     "chrome": {"version": "155.0.8043.0", "channel": "canary"},
     "feature_params": {"Topics": {"fishfood_feedback": "true"}},
@@ -459,7 +468,14 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
       ],
       "continuation_queries": [
         {"title": "Query title", "prompt": "Query prompt"}
-      ]
+      ],
+      "collections": [{
+        "title": "Pages you compared",
+        "visit_times": [
+          "2026-09-22T10:01:02.123456Z",
+          "2026-09-10T08:00:00.000000Z"
+        ]
+      }]
     }],
     "visits": [
       {
@@ -505,7 +521,12 @@ TEST_F(TopicsFeedbackExporterTest, Bundle_MatchesSchema) {
           {"index": 0, "query_text": "Query title", "liked": true}
         ],
         "rejected_visits": ["2026-09-10T08:00:00.000000Z"],
-        "duplicate_of": null
+        "duplicate_of": null,
+        "collection_feedbacks": [{
+          "title": "Pages you compared",
+          "rating": "disliked",
+          "rejected_item_visits": ["2026-09-10T08:00:00.000000Z"]
+        }]
       }],
       "missing_topics": "A topic about my garden."
     }

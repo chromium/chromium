@@ -23,8 +23,9 @@
 
 namespace context_hub {
 
-// Version of the exported JSON bundle format.
-inline constexpr int kTopicsFeedbackSchemaVersion = 1;
+// Version of the exported JSON bundle format. 2 added the Topics' collections
+// and the feedback on them.
+inline constexpr int kTopicsFeedbackSchemaVersion = 2;
 
 // Bounds and default of the number of days of history in the export window.
 inline constexpr int kMinTopicsFeedbackWindowDays = 1;
