@@ -70,9 +70,6 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::CapabilitiesDataView,
       const gpu::Capabilities& cap) {
     return cap.context_supports_distance_field_text;
   }
-  static bool using_vulkan_context(const gpu::Capabilities& cap) {
-    return cap.using_vulkan_context;
-  }
   static bool use_deferred_graphite_submit(const gpu::Capabilities& cap) {
     return cap.use_deferred_graphite_submit;
   }
