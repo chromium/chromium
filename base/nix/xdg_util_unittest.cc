@@ -454,29 +454,45 @@ TEST(XDGUtilTest, ExtractXdgActivationTokenFromEnv) {
   EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
 }
 
-TEST(XDGUtilTest, ExtractXdgActivationTokenFromCmdLineNotSet) {
-  CommandLine command_line(CommandLine::NO_PROGRAM);
-  ExtractXdgActivationTokenFromCmdLine(command_line);
-  EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
-}
+TEST(XDGUtilTest, GetXdgActivationTokenFromCommandLine) {
+  absl::Cleanup clear_token = [] { TakeXdgActivationToken(); };
+  const struct {
+    const char* xdg_token;
+    const char* legacy_token;
+    std::optional<std::string> expected_token;
+  } kTestCases[] = {
+      {nullptr, nullptr, std::nullopt},
+      {nullptr, "", std::nullopt},
+      {nullptr, "legacy-token", "legacy-token"},
+      {"", nullptr, std::nullopt},
+      {"", "", std::nullopt},
+      {"", "legacy-token", "legacy-token"},
+      {kXdgActivationTokenFromCmdLine, nullptr, kXdgActivationTokenFromCmdLine},
+      {kXdgActivationTokenFromCmdLine, "", kXdgActivationTokenFromCmdLine},
+      {kXdgActivationTokenFromCmdLine, "legacy-token",
+       kXdgActivationTokenFromCmdLine},
+  };
+  for (const auto& test_case : kTestCases) {
+    CommandLine command_line(CommandLine::NO_PROGRAM);
+    if (test_case.xdg_token) {
+      command_line.AppendSwitchASCII(kXdgActivationTokenSwitch,
+                                     test_case.xdg_token);
+    }
+    if (test_case.legacy_token) {
+      command_line.AppendSwitchASCII(kDesktopStartupIdSwitch,
+                                     test_case.legacy_token);
+    }
+    const auto initial_switches = command_line.GetSwitches();
+    SCOPED_TRACE(command_line.GetCommandLineString());
+    SetActivationToken("global-token");
 
-TEST(XDGUtilTest, ExtractXdgActivationTokenFromCmdLine) {
-  CommandLine command_line(CommandLine::NO_PROGRAM);
-  MockEnvironment getter;
-  // Extract activation token initially from env.
-  EXPECT_CALL(getter, GetVar(StrEq("XDG_ACTIVATION_TOKEN")))
-      .WillOnce(Return(kXdgActivationTokenFromEnv));
-  EXPECT_CALL(getter, UnSetVar(StrEq("XDG_ACTIVATION_TOKEN")));
-  EXPECT_EQ(kXdgActivationTokenFromEnv,
-            ExtractXdgActivationTokenFromEnv(getter));
-  // Now extract token from command line.
-  command_line.AppendSwitchASCII(kXdgActivationTokenSwitch,
-                                 kXdgActivationTokenFromCmdLine);
-  ExtractXdgActivationTokenFromCmdLine(command_line);
-  // It should match the one from command line, not env.
-  EXPECT_EQ(kXdgActivationTokenFromCmdLine, TakeXdgActivationToken());
-  // Should be cleared after the token is taken once.
-  EXPECT_EQ(std::nullopt, TakeXdgActivationToken());
+    EXPECT_EQ(GetXdgActivationTokenFromCommandLine(command_line),
+              test_case.expected_token);
+    EXPECT_EQ(GetXdgActivationTokenFromCommandLine(command_line),
+              test_case.expected_token);
+    EXPECT_EQ(command_line.GetSwitches(), initial_switches);
+    EXPECT_EQ(TakeXdgActivationToken(), "global-token");
+  }
 }
 
 TEST(XDGUtilTest, ScopedXdgActivationTokenInjector) {

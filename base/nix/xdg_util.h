@@ -87,6 +87,10 @@ inline constexpr char kDesktopStartupIdEnvVar[] = "DESKTOP_STARTUP_ID";
 // process and an existing browser process.
 inline constexpr char kXdgActivationTokenSwitch[] = "xdg-activation-token";
 
+// Legacy switch through which X11 launchers can pass a startup ID. Chromium no
+// longer sets it itself but still accepts it.
+inline constexpr char kDesktopStartupIdSwitch[] = "desktop-startup-id";
+
 // Utility function for getting XDG directories.
 // |env_name| is the name of an environment variable that we want to use to get
 // a directory path. |fallback_dir| is the directory relative to $HOME that we
@@ -135,13 +139,12 @@ BASE_EXPORT SessionType GetSessionType(Environment& env);
 BASE_EXPORT std::optional<std::string> ExtractXdgActivationTokenFromEnv(
     Environment& env);
 
-// Sets the global activation token from the command line if it exists and
-// removes it from the command line.
-BASE_EXPORT void ExtractXdgActivationTokenFromCmdLine(
-    base::CommandLine& cmd_line);
+// Reads kXdgActivationTokenSwitch, falling back to kDesktopStartupIdSwitch.
+// Returns nullopt if neither supplies a nonempty token.
+[[nodiscard]] BASE_EXPORT std::optional<std::string>
+GetXdgActivationTokenFromCommandLine(const CommandLine& command_line);
 
-// Sets the global activation token not received from the command line or as
-// an environment variable, e.g. from notification D-BUS API.
+// Sets the global activation token, e.g. from a notification D-Bus event.
 BASE_EXPORT void SetActivationToken(std::string token);
 
 // Transfers ownership of the currently set global activation token if set.

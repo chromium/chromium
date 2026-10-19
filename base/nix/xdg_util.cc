@@ -312,12 +312,17 @@ std::optional<std::string> ExtractXdgActivationTokenFromEnv(Environment& env) {
   return GetXdgActivationToken();
 }
 
-void ExtractXdgActivationTokenFromCmdLine(base::CommandLine& cmd_line) {
-  std::string token = cmd_line.GetSwitchValueASCII(kXdgActivationTokenSwitch);
-  if (!token.empty()) {
-    GetXdgActivationToken() = std::move(token);
-    cmd_line.RemoveSwitch(kXdgActivationTokenSwitch);
+std::optional<std::string> GetXdgActivationTokenFromCommandLine(
+    const CommandLine& command_line) {
+  std::string token =
+      command_line.GetSwitchValueASCII(kXdgActivationTokenSwitch);
+  if (token.empty()) {
+    token = command_line.GetSwitchValueASCII(kDesktopStartupIdSwitch);
   }
+  if (token.empty()) {
+    return std::nullopt;
+  }
+  return token;
 }
 
 void SetActivationToken(std::string token) {
@@ -325,9 +330,7 @@ void SetActivationToken(std::string token) {
 }
 
 std::optional<std::string> TakeXdgActivationToken() {
-  auto token = GetXdgActivationToken();
-  GetXdgActivationToken().reset();
-  return token;
+  return std::exchange(GetXdgActivationToken(), std::nullopt);
 }
 
 void SetXdgActivationTokenCreator(XdgActivationTokenCreator token_creator) {

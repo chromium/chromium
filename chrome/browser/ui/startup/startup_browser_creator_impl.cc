@@ -309,16 +309,11 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
   }
 
 #if BUILDFLAG(IS_LINUX)
-  std::string startup_id =
-      command_line_->GetSwitchValueASCII(base::nix::kXdgActivationTokenSwitch);
-  if (startup_id.empty()) {
-    startup_id = command_line_->GetSwitchValueASCII("desktop-startup-id");
+  auto token = base::nix::GetXdgActivationTokenFromCommandLine(*command_line_);
+  if (!token) {
+    token = base::nix::TakeXdgActivationToken();
   }
-  if (startup_id.empty()) {
-    if (auto token = base::nix::TakeXdgActivationToken()) {
-      startup_id = *token;
-    }
-  }
+  std::string startup_id = std::move(token).value_or("");
 #endif
 
   // Launchers that only need to hand a URL to an already-running browser can
