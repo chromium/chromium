@@ -289,7 +289,7 @@ OffscreenCanvasRenderingContext2D::ProduceCanvasResource(FlushReason reason) {
 
   FlushCanvas(reason);
   scoped_refptr<CanvasResource> frame =
-      GetSharedImageProvider()->ProduceCanvasResource();
+      GetSharedImageProvider()->ProduceCanvasResource(GetSoftwareSurface());
   if (!frame)
     return nullptr;
 

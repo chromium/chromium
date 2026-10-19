@@ -363,6 +363,7 @@ class MODULES_EXPORT BaseRenderingContext2D
                                  FlushReason reason) {}
 
   Canvas2DResourceProvider* GetSharedImageProvider() const;
+  SkSurface* GetSoftwareSurface() const { return surface_.get(); }
   void CreateSharedImageProvider(
       RasterMode raster_mode,
       gpu::SharedImageUsageSet shared_image_usage_flags);

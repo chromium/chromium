@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRect.h"
-#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
@@ -307,19 +306,19 @@ void Canvas2DResourceProvider::OnContextDestroyed() {
   }
 }
 
-scoped_refptr<CanvasResource>
-Canvas2DResourceProvider::ProduceCanvasResource() {
+scoped_refptr<CanvasResource> Canvas2DResourceProvider::ProduceCanvasResource(
+    SkSurface* surface) {
   TRACE_EVENT0("blink", "Canvas2DResourceProvider::ProduceCanvasResource");
 
   if (IsSoftware()) {
-    DCHECK(GetSkSurface());
+    DCHECK(surface);
     scoped_refptr<CanvasResourceSharedImage> output_resource =
         NewOrRecycledResource();
     if (!output_resource) {
       return nullptr;
     }
 
-    output_resource->UploadSoftwareRenderingResults(GetSkSurface());
+    output_resource->UploadSoftwareRenderingResults(surface);
 
     return output_resource;
   }
@@ -331,7 +330,7 @@ Canvas2DResourceProvider::ProduceCanvasResource() {
   // We are about to give the caller read access to this resource (and its
   // backing SharedImage). Hence, we must make sure that we give up any write
   // access.
-  EndWriteAccess();
+  EndWriteAccess(surface);
 
   return resource_;
 }
@@ -366,7 +365,7 @@ void Canvas2DResourceProvider::EnsureWriteAccess() {
   current_resource_has_write_access_ = true;
 }
 
-void Canvas2DResourceProvider::EndWriteAccess() {
+void Canvas2DResourceProvider::EndWriteAccess(SkSurface* surface) {
   DCHECK(!resource()->is_cross_thread());
 
   if (!current_resource_has_write_access_ || IsGpuContextLost()) {
@@ -382,10 +381,10 @@ void Canvas2DResourceProvider::EndWriteAccess() {
     if (!resource() || resource()->IsLost() || !resource()->HasOneRef()) {
       resource_ = NewOrRecycledResource();
     }
-    if (!resource() || !GetSkSurface()) {
+    if (!resource() || !surface) {
       return;
     }
-    resource()->UploadSoftwareRenderingResults(GetSkSurface());
+    resource()->UploadSoftwareRenderingResults(surface);
   }
 
   current_resource_has_write_access_ = false;
@@ -399,7 +398,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProvider::Snapshot() {
   }
 
   if (!cached_snapshot_) {
-    EndWriteAccess();
+    EndWriteAccess(/*surface=*/nullptr);
     cached_snapshot_ = resource_->Bitmap();
 
     // We'll record its content_id to be used by the FlushForImageListener.
@@ -499,10 +498,6 @@ void Canvas2DResourceProvider::OnMemoryDump(
 
   std::string cached_path = path + "/cached";
   image_pool_->OnMemoryDump(pmd, cached_path);
-}
-
-SkSurface* Canvas2DResourceProvider::GetSkSurface() const {
-  return surface_.get();
 }
 
 std::unique_ptr<Canvas2DResourceProvider>

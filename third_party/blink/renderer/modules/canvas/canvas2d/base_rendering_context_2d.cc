@@ -274,8 +274,6 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
     CreateSoftwareSurface();
     if (!surface_) {
       shared_image_provider_.reset();
-    } else {
-      shared_image_provider_->SetSkSurface(surface_);
     }
     return;
   }
@@ -296,8 +294,6 @@ void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
     CreateSoftwareSurface();
     if (!surface_) {
       shared_image_provider_.reset();
-    } else {
-      shared_image_provider_->SetSkSurface(surface_);
     }
   }
 }

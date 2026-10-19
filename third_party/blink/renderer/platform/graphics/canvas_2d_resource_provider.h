@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace gpu {
@@ -154,11 +153,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   ~Canvas2DResourceProvider() override;
 
-  void SetSkSurface(sk_sp<SkSurface> surface) {
-    CHECK(!is_accelerated_);
-    surface_ = std::move(surface);
-  }
-
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool unused_resources_reclaim_timer_is_running_for_testing() const;
   bool HasUnusedResourcesForTesting() const;
@@ -177,7 +171,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   int NumInflightResourcesForTesting() const { return num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const;
 
-  scoped_refptr<CanvasResource> ProduceCanvasResource();
+  scoped_refptr<CanvasResource> ProduceCanvasResource(SkSurface* surface);
   void OnFlushForImage(cc::PaintImage::ContentId content_id);
 
   bool IsValid() const;
@@ -232,11 +226,9 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void OnDestroyResource() override { --num_inflight_resources_; }
 
   void EnsureWriteAccess();
-  void EndWriteAccess();
+  void EndWriteAccess(SkSurface* surface);
 
   scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
-
-  SkSurface* GetSkSurface() const;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const {
@@ -315,7 +307,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   gfx::HDRMetadata hdr_metadata_;
 
   base::OnceClosure context_lost_callback_;
-  sk_sp<SkSurface> surface_;
 
   base::WeakPtrFactory<Canvas2DResourceProvider> weak_ptr_factory_{this};
 };

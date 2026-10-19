@@ -741,7 +741,7 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
   }
 
   FlushCanvas(reason);
-  return si_provider->ProduceCanvasResource();
+  return si_provider->ProduceCanvasResource(GetSoftwareSurface());
 }
 
 const std::optional<cc::PaintRecord>&

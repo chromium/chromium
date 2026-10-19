@@ -3672,11 +3672,13 @@ TEST_P(CanvasRenderingContext2DTestLowLatency, LowLatencyIsSingleBuffered) {
   EXPECT_TRUE(
       Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
   auto frame1_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
+          /*surface=*/nullptr);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
+          /*surface=*/nullptr);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
@@ -3715,11 +3717,13 @@ TEST_P(CanvasRenderingContext2DTestSwapChain, LowLatencyIsSingleBuffered) {
   EXPECT_TRUE(
       Context2D()->GetSharedImageProviderForTesting()->IsSingleBuffered());
   auto frame1_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
+          /*surface=*/nullptr);
   EXPECT_TRUE(frame1_resource);
   DrawSomething();
   auto frame2_resource =
-      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource();
+      Context2D()->GetSharedImageProviderForTesting()->ProduceCanvasResource(
+          /*surface=*/nullptr);
   EXPECT_TRUE(frame2_resource);
   EXPECT_EQ(frame1_resource.get(), frame2_resource.get());
 }
