@@ -104,8 +104,6 @@ const GLint TestHelper::kMaxUniformBufferBindings;
 const GLint TestHelper::kUniformBufferOffsetAlignment;
 #endif
 
-std::vector<std::string> TestHelper::split_extensions_;
-
 void TestHelper::SetupTextureInitializationExpectations(
     ::gl::MockGLInterface* gl,
     GLenum target,
@@ -467,9 +465,6 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
       context_type == CONTEXT_TYPE_OPENGLES3;
 
   gfx::ExtensionSet extension_set(gfx::MakeExtensionSet(extensions));
-  // Persistent storage is needed for the split extension string.
-  split_extensions_ =
-      std::vector<std::string>(extension_set.begin(), extension_set.end());
   gl::GLVersionInfo gl_info(gl_version, gl_renderer, extension_set);
   EXPECT_CALL(*gl, GetString(GL_EXTENSIONS))
       .WillOnce(Return(reinterpret_cast<const uint8_t*>(extensions)))

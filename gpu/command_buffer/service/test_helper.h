@@ -237,7 +237,6 @@ class TestHelper {
                                                   GLenum target,
                                                   bool use_default_textures);
 
-  static std::vector<std::string> split_extensions_;
 };
 
 }  // namespace gles2
