@@ -42,6 +42,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_handle.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -613,6 +615,198 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries_NoReadAccess) {
   EXPECT_EQ(result->status,
             blink::mojom::FileSystemAccessStatus::kPermissionDenied);
   EXPECT_TRUE(entries.empty());
+}
+
+// Verifies that `GetFile()` is blocked in a third-party context and returns
+// `kSecurityError` with an invalid remote.
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetFile_ThirdPartyContext_Blocked) {
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://example.com/")),
+      net::SchemefulSite(GURL("https://other.com/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+  auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kThirdPartyBindingContext, url,
+      FileSystemAccessManagerImpl::SharedHandleState(deny_grant_, deny_grant_));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      future;
+  handle->GetFile("child", /*create=*/false, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+  EXPECT_FALSE(future.Get<1>().is_valid());
+}
+
+// Verifies that `GetDirectory()` is blocked in a third-party context and
+// returns `kSecurityError` with an invalid remote.
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetDirectory_ThirdPartyContext_Blocked) {
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://example.com/")),
+      net::SchemefulSite(GURL("https://other.com/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+  auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kThirdPartyBindingContext, url,
+      FileSystemAccessManagerImpl::SharedHandleState(deny_grant_, deny_grant_));
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>>
+      future;
+  handle->GetDirectory("child", /*create=*/false, future.GetCallback());
+  EXPECT_EQ(future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+  EXPECT_FALSE(future.Get<1>().is_valid());
+}
+
+// Verifies that `GetEntries()` is blocked in a third-party context and
+// returns `kSecurityError` with an empty entries list.
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetEntries_ThirdPartyContext_Blocked) {
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://example.com/")),
+      net::SchemefulSite(GURL("https://other.com/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+  auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kThirdPartyBindingContext, url,
+      FileSystemAccessManagerImpl::SharedHandleState(deny_grant_, deny_grant_));
+
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
+  base::RunLoop loop;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
+      listener;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
+          &entries, &result, loop.QuitClosure()),
+      listener.InitWithNewPipeAndPassReceiver());
+  handle->GetEntries(std::move(listener));
+  loop.Run();
+
+  EXPECT_EQ(result->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+  EXPECT_TRUE(entries.empty());
+}
+
+// Verifies that `GetEntries()` is allowed in a third-party context if the
+// handle originated from a drag-and-drop operation.
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetEntries_ThirdPartyContext_DragAndDrop_Allowed) {
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://example.com/")),
+      net::SchemefulSite(GURL("https://other.com/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+  auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kThirdPartyBindingContext, url,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     deny_grant_));
+
+  std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
+  blink::mojom::FileSystemAccessErrorPtr result;
+  base::RunLoop loop;
+  mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
+      listener;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
+          &entries, &result, loop.QuitClosure()),
+      listener.InitWithNewPipeAndPassReceiver());
+  handle->GetEntries(std::move(listener));
+  loop.Run();
+
+  EXPECT_EQ(result->status, blink::mojom::FileSystemAccessStatus::kOk);
+}
+
+// Verifies that `GetFile()` is allowed on a dropped directory in a third-party
+// context and reading the child file succeeds.
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       GetFile_ThirdPartyContext_DragAndDrop_Allowed) {
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://example.com/")),
+      net::SchemefulSite(GURL("https://other.com/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+  auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kThirdPartyBindingContext, url,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     deny_grant_));
+
+  base::FilePath child_file_path = dir_.GetPath().AppendASCII("child_file.txt");
+  ASSERT_TRUE(base::WriteFile(child_file_path, "child file contents"));
+
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessDirectoryIterationBlocklistCheck)) {
+    EXPECT_CALL(permission_context_,
+                ConfirmSensitiveEntryAccess_(
+                    _, _, HandleType::kFile, AccessTrigger::kProgrammaticRead,
+                    kThirdPartyBindingContext.frame_id, _))
+        .WillOnce(
+            base::test::RunOnceCallback<5>(SensitiveEntryResult::kAllowed));
+  }
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>>
+      get_file_future;
+  handle->GetFile("child_file.txt", /*create=*/false,
+                  get_file_future.GetCallback());
+  EXPECT_EQ(get_file_future.Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+  auto [status, child_remote] = get_file_future.Take();
+  EXPECT_TRUE(child_remote.is_valid());
+
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle(
+      std::move(child_remote));
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         const base::File::Info&,
+                         blink::mojom::SerializedBlobPtr>
+      as_blob_future;
+  file_handle->AsBlob(as_blob_future.GetCallback());
+  EXPECT_EQ(as_blob_future.template Get<0>()->status,
+            blink::mojom::FileSystemAccessStatus::kOk);
+  EXPECT_FALSE(as_blob_future.template Get<2>().is_null());
+}
+
+// Verifies that `RemoveEntry()` is blocked with `kSecurityError` on a dropped
+// directory in a third-party context.
+TEST_F(FileSystemAccessDirectoryHandleImplTest,
+       RemoveEntry_ThirdPartyContext_DragAndDrop_Blocked) {
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      url::Origin::Create(GURL("https://example.com/")),
+      net::SchemefulSite(GURL("https://other.com/")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext kThirdPartyBindingContext =
+      {kThirdPartyStorageKey, test_src_url_, /*worker_process_id=*/1};
+  auto url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_.GetPath()));
+  auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
+      manager_.get(), kThirdPartyBindingContext, url,
+      FileSystemAccessManagerImpl::SharedHandleState(allow_grant_,
+                                                     deny_grant_));
+
+  base::FilePath child_file_path = dir_.GetPath().AppendASCII("child_file.txt");
+  ASSERT_TRUE(base::WriteFile(child_file_path, "child file contents"));
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr> future;
+  handle->RemoveEntry("child_file.txt", /*recurse=*/false,
+                      future.GetCallback());
+  EXPECT_EQ(future.Get()->status,
+            blink::mojom::FileSystemAccessStatus::kSecurityError);
+  EXPECT_TRUE(base::PathExists(child_file_path));
 }
 
 TEST_F(FileSystemAccessDirectoryHandleImplTest, InvalidPathComponent) {

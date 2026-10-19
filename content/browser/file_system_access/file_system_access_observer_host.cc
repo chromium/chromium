@@ -14,6 +14,7 @@
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_observer_observation.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
@@ -24,6 +25,7 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
@@ -80,6 +82,16 @@ void FileSystemAccessObserverHost::DidResolveTransferTokenToObserve(
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kInvalidArgument),
+        mojo::NullReceiver());
+    return;
+  }
+
+  if (FileSystemAccessHandleBase::IsThirdPartyContext(
+          resolved_token->url(), binding_context_.storage_key)) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kSecurityError,
+            "Not allowed to observe file system in a third-party context."),
         mojo::NullReceiver());
     return;
   }
