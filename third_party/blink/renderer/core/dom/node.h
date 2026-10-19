@@ -1181,8 +1181,16 @@ class CORE_EXPORT Node : public EventTarget {
   HTMLSlotElement* ManuallyAssignedSlot();
 
   // For Element.
-  void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
-  bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
+  void SetHasDisplayLockContext() {
+    // See definition of kHasDisplayLockContext.
+    DCHECK(IsElementNode());
+    SetFlag(kHasDisplayLockContext);
+  }
+  bool HasDisplayLockContext() const {
+    // See definition of kHasDisplayLockContext.
+    DCHECK(IsElementNode());
+    return GetFlag(kHasDisplayLockContext);
+  }
 
   // Converts |node_unions| from bindings into actual Nodes by converting
   // strings and script into text nodes, and if more than one node resulted,
@@ -1275,7 +1283,14 @@ class CORE_EXPORT Node : public EventTarget {
 
     kForceReattachLayoutTree = 1u << 25,
 
+    // kHasDisplayLockContext and kIsParkableCharacterDataFlag share a single
+    // bit index. They are only accessible in separate C++ type hierarchies.
+    //
+    // kHasDisplayLockContext is used by Element and its subclasses.
     kHasDisplayLockContext = 1u << 26,
+    // kIsParkableCharacterDataFlag is used by CharacterData.
+    // Selects a union member between parkable_data_ and data_.
+    kIsParkableCharacterDataFlag = kHasDisplayLockContext,
 
     kSelfOrAncestorHasDirAutoAttribute = 1u << 27,
     kCachedDirectionalityIsRtl = 1u << 28,
@@ -1378,6 +1393,17 @@ class CORE_EXPORT Node : public EventTarget {
 
   void SetHasShadowRoot() { SetFlag(kHasShadowRootFlag); }
   bool HasShadowRoot() const { return GetFlag(kHasShadowRootFlag); }
+
+  bool IsParkableCharacterData() const {
+    // See definition of kIsParkableCharacterDataFlag.
+    DCHECK(IsCharacterDataNode());
+    return GetFlag(kIsParkableCharacterDataFlag);
+  }
+  void SetParkableCharacterData(bool flag) {
+    // See definition of kIsParkableCharacterDataFlag.
+    DCHECK(IsCharacterDataNode());
+    SetFlag(flag, kIsParkableCharacterDataFlag);
+  }
 
   void InvalidateIfHasEffectiveAppearance() const;
 

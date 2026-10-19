@@ -41,14 +41,14 @@
 namespace blink {
 
 void CharacterData::MakeParkable() {
-  if (is_parkable_) {
+  if (IsParkableCharacterData()) {
     return;
   }
 
   auto released = data_.ReleaseImpl();
   data_.~String();
   new (&parkable_data_) ParkableString(std::move(released));
-  is_parkable_ = true;
+  SetParkableCharacterData(true);
 }
 
 void CharacterData::setData(const String& data) {
