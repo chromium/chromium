@@ -29,28 +29,10 @@
 
 namespace commerce {
 
-// static
-ShoppingServiceFactory* ShoppingServiceFactory::GetInstance() {
-  static base::NoDestructor<ShoppingServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-ShoppingService* ShoppingServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ShoppingService>(
-      profile, /*create=*/true);
-}
-
-// static
-ShoppingService* ShoppingServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ShoppingService>(
-      profile, /*create=*/false);
-}
-
-ShoppingServiceFactory::ShoppingServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ShoppingService",
-                                    TestingCreation::kNoServiceForTests) {
+ShoppingServiceFactory::ShoppingServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "ShoppingService",
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::BookmarkModelFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
