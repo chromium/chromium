@@ -4,13 +4,12 @@
 
 #include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
 
-#include <initializer_list>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include "base/containers/flat_set.h"
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
@@ -18,6 +17,13 @@
 
 namespace policy {
 namespace {
+
+constexpr auto kTopLevelKeyAllowList = base::MakeFixedFlatSet<std::string_view>(
+    {reporting::json_keys::kAttachEncryptionSettings,
+     reporting::json_keys::kBrowser,
+     reporting::json_keys::kConfigurationFileVersion,
+     reporting::json_keys::kDevice, reporting::json_keys::kEncryptedRecordList,
+     reporting::json_keys::kRequestId, reporting::json_keys::kSource});
 
 DMAuth GetAuthData(const std::string& dm_token) {
   if (dm_token.empty()) {
@@ -74,7 +80,7 @@ EncryptedReportingJobConfiguration::~EncryptedReportingJobConfiguration() {
 void EncryptedReportingJobConfiguration::UpdatePayloadBeforeGetInternal() {
   for (auto it = payload_.begin(); it != payload_.end();) {
     const auto& [key, value] = *it;
-    if (!GetTopLevelKeyAllowList().contains(key)) {
+    if (!kTopLevelKeyAllowList.contains(key)) {
       it = payload_.erase(it);
       continue;
     }
@@ -113,19 +119,5 @@ std::string EncryptedReportingJobConfiguration::GetUmaString() const {
     return "Browser.ERP.Managed";
   }
   return "Browser.ERP.Unmanaged";
-}
-
-// static
-const base::flat_set<std::string>&
-EncryptedReportingJobConfiguration::GetTopLevelKeyAllowList() {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      kTopLevelKeyAllowList{std::initializer_list<std::string>{
-          reporting::json_keys::kAttachEncryptionSettings,
-          reporting::json_keys::kBrowser,
-          reporting::json_keys::kConfigurationFileVersion,
-          reporting::json_keys::kDevice,
-          reporting::json_keys::kEncryptedRecordList,
-          reporting::json_keys::kRequestId, reporting::json_keys::kSource}};
-  return *kTopLevelKeyAllowList;
 }
 }  // namespace policy

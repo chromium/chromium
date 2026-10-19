@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -120,7 +119,6 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
   std::string GetUmaString() const override;
 
  private:
-  static const base::flat_set<std::string>& GetTopLevelKeyAllowList();
   const bool is_device_managed_;
 
   UploadResponseCallback response_cb_;
