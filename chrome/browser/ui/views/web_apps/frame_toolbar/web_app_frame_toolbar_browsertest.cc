@@ -337,6 +337,20 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest,
   EXPECT_TRUE(
       base::test::RunUntil([&]() { return content_settings->GetVisible(); }));
   EXPECT_GT(content_settings->width(), 0);
+
+  // The content setting icons should match the height of the other titlebar
+  // buttons rather than filling the full titlebar height.
+  views::test::RunScheduledLayout(helper()->browser_view());
+  const int button_height =
+      helper()->web_app_frame_toolbar()->GetToolbarButtonSize().height();
+  EXPECT_LT(button_height, toolbar_right_container->height());
+  EXPECT_EQ(content_settings->height(), button_height);
+  for (ContentSettingImageView* view :
+       content_settings->get_content_setting_views()) {
+    if (view->GetVisible()) {
+      EXPECT_EQ(view->height(), button_height);
+    }
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
