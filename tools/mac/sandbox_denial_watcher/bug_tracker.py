@@ -28,6 +28,14 @@ _MAX_BUG_URL_LENGTH = 8000
 # sections of the bug description.
 _MAX_DENIAL_LOGS_ENCODED_LENGTH = _MAX_BUG_URL_LENGTH - 1000
 
+# Maximum length of the generated pre-filled issue URL to avoid exceeding
+# browser or server URL length limits when many denials are detected.
+_MAX_BUG_URL_LENGTH = 8000
+
+# Reserve ~1,000 URL-encoded chars for the base URL, title, and non-log
+# sections of the bug description.
+_MAX_DENIAL_LOGS_ENCODED_LENGTH = _MAX_BUG_URL_LENGTH - 1000
+
 _CONTEXT_QUESTION = "What were you doing when this notification was triggered?"
 _CONTEXT_PLACEHOLDER = (
     "<Please describe what you were doing, e.g., the page you were on and the "

@@ -71,10 +71,9 @@ If a newly observed denial is determined to be expected:
 
 1. Open `tools/mac/sandbox_denial_watcher/sandbox_denial_watcher.py`.
 2. Add the target to the appropriate dictionary:
-   - **Exact pattern** (default; matches only the exact action and target,
-     not subpaths):
+   - **Target pattern** (default; matches only the target itself, not subpaths):
      Add the target string to the corresponding action's frozenset in
-     `_KNOWN_EXACT_DENIALS`:
+     `_KNOWN_TARGET_DENIALS`:
      ```python
      "mach-lookup": frozenset((
          "com.apple.some.service",
@@ -89,6 +88,10 @@ If a newly observed denial is determined to be expected:
          "/Library/Managed Preferences/",
      )),
      ```
+   - Both dictionaries support `*` wildcards to match characters within a single
+     path segment (e.g., `tmp.*` or `scoped_dir*`), as well as placeholder
+     constants such as `_DARWIN_USER_DIR`, `_CHROME_APP_SUPPORT_DIR`, and
+     `_CHROME_BUNDLE_DIR`.
 3. Keep entries sorted alphabetically within their respective category section.
-   Entries built from `_HOME_DIR` depend on the local machine, so they are
-   grouped separately at the end of the file reads section.
+   Entries built from placeholder constants or `_HOME_DIR` are grouped
+   separately at the end of their section.

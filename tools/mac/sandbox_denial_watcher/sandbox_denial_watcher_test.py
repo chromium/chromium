@@ -174,7 +174,7 @@ class FilteringTest(WatcherTestCase):
         mock_report.assert_not_called()
 
     @patch.object(SandboxDenialWatcher, "_report_denial")
-    def test_known_denials_exact_and_subpath_matching(self, mock_report):
+    def test_known_denials_target_and_subpath_matching(self, mock_report):
         self.feed(
             _denial_line(
                 "mach-lookup com.apple.diagnosticd", process="Google Chrome"
@@ -189,7 +189,7 @@ class FilteringTest(WatcherTestCase):
         )
         mock_report.assert_not_called()
 
-        # Subpaths of exact rules and sibling directories of subpath
+        # Subpaths of target rules and sibling directories of subpath
         # rules are still reported.
         self.feed(_denial_line("file-read-data /unexpected/path/to/file"))
         self.feed(
@@ -335,7 +335,7 @@ class DenialFilterTest(WatcherTestCase):
             "\n".join(cm.output),
         )
 
-    def test_exact_match(self):
+    def test_target_match(self):
         self.assertTrue(
             self.denial_filter.should_ignore(
                 _denial("mach-lookup com.apple.diagnosticd")
@@ -347,7 +347,7 @@ class DenialFilterTest(WatcherTestCase):
             )
         )
 
-    def test_exact_match_root_path(self):
+    def test_target_match_root_path(self):
         self.assertTrue(
             self.denial_filter.should_ignore(_denial("file-read-data /"))
         )
@@ -355,7 +355,7 @@ class DenialFilterTest(WatcherTestCase):
             self.denial_filter.should_ignore(_denial("file-read-data /tmp"))
         )
 
-    def test_exact_match_directory_with_trailing_slash(self):
+    def test_target_match_directory_with_trailing_slash(self):
         self.assertTrue(
             self.denial_filter.should_ignore(
                 _denial(f"file-read-data {_HOME_DIR}/Desktop/")
@@ -484,6 +484,74 @@ class DenialFilterTest(WatcherTestCase):
         )
         self.denial_filter.suppress(canary_denial, 100)
         self.assertTrue(self.denial_filter.should_ignore(chromium_denial))
+
+    def test_darwin_user_dir_target_wildcard_matching(self):
+        user1_tmp = "/private/var/folders/tr/6v8rtgkn5399hj49myh4zh3m00czwq/T"
+        user2_tmp = "/private/var/folders/lf/6xnpwtqx06xg8dcxbrdlpwqw005_lc/T"
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-create {user1_tmp}/tmp.Tq7AOs")
+            )
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-create {user2_tmp}/tmp.12345")
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-create {user1_tmp}/tmp.Tq7AOs/nested")
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-create {user1_tmp}/other.Tq7AOs")
+            )
+        )
+
+    def test_darwin_user_dir_subpath_wildcard_matching(self):
+        user_root = "/private/var/folders/lf/6xnpwtqx06xg8dcxbrdlpwqw005_lc"
+        crx_dir = f"{user_root}/T/scoped_dirgy10KM/CRX_INSTALL"
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-mode {crx_dir}")
+            )
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-mode {crx_dir}/")
+            )
+        )
+        self.assertTrue(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-mode {crx_dir}/manifest.json")
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(f"file-write-mode {crx_dir}_OTHER/manifest.json")
+            )
+        )
+        self.assertFalse(
+            self.denial_filter.should_ignore(
+                _denial(
+                    f"file-write-mode {user_root}/T/scoped_dirgy10KM/nested/"
+                    "CRX_INSTALL/manifest.json"
+                )
+            )
+        )
+
+    def test_suppression_applies_across_darwin_user_dirs(self):
+        user1_denial = _denial(
+            "file-read-data /private/var/folders/tr/"
+            "6v8rtgkn5399hj49myh4zh3m00czwq/0/unexpected"
+        )
+        user2_denial = _denial(
+            "file-read-data /private/var/folders/lf/"
+            "6xnpwtqx06xg8dcxbrdlpwqw005_lc/0/unexpected"
+        )
+        self.denial_filter.suppress(user1_denial, 100)
+        self.assertTrue(self.denial_filter.should_ignore(user2_denial))
 
     def test_non_positive_duration_does_not_suppress(self):
         denial = _denial("mach-lookup com.apple.unknown")

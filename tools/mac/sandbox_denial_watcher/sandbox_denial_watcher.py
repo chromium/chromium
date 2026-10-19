@@ -26,9 +26,11 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import replace
+import functools
 import logging
 import math
 from pathlib import Path
+import re
 import shlex
 import subprocess
 import sys
@@ -114,6 +116,18 @@ _CHROME_BUNDLE_PREFIXES = tuple(
     f"/Applications/{app_name}" for app_name in _CHROME_APP_NAMES
 )
 
+# Placeholder representing the parent directory of a user's Darwin directories
+# (`/private/var/folders/<bucket>/<user hash>`) after target normalization.
+_DARWIN_USER_DIR = "<DARWIN_USER_DIR>"
+
+# Matches the three Darwin user dirs (user, temp, cache), which live at
+# `/private/var/folders/<bucket>/<user hash>/[0|C|T]`, e.g.:
+#   /private/var/folders/tr/6v8rtgkn5399hj49myh4zh3m00czwq/T/tmp.123
+#   -> <DARWIN_USER_DIR>/T/tmp.123
+_DARWIN_USER_DIR_PATTERN = re.compile(
+    r"^/private/var/folders/[^/]+/[^/]+(?=/[0CT](?=/|$))"
+)
+
 # Prefixes of the process names whose denials are reported.
 _INTERESTING_PROCS = (
     "Chromium",
@@ -126,8 +140,9 @@ _INTERESTING_PROCS = (
     "MTLCompilerService",
 )
 
-# Known expected denials grouped by action. Targets are matched exactly.
-_KNOWN_EXACT_DENIALS: dict[str, frozenset[str]] = {
+# Known expected denials grouped by action. Rules match the target itself (not
+# subpaths) and may use `*` wildcards within a single path segment.
+_KNOWN_TARGET_DENIALS: dict[str, frozenset[str]] = {
     "sysctl-read": frozenset(
         (
             "kern.bootargs",
@@ -147,6 +162,7 @@ _KNOWN_EXACT_DENIALS: dict[str, frozenset[str]] = {
             f"{_HOME_DIR}/Desktop",
         )
     ),
+    "file-write-create": frozenset((f"{_DARWIN_USER_DIR}/T/tmp.*",)),
     "mach-lookup": frozenset(
         (
             "com.apple.CoreServices.coreservicesd",
@@ -183,6 +199,7 @@ _KNOWN_EXACT_DENIALS: dict[str, frozenset[str]] = {
 }
 
 # Directory prefixes for operations that allow subpaths (e.g. file reads).
+# Rules may use `*` wildcards within a single path segment.
 _KNOWN_SUBPATH_DENIALS: dict[str, frozenset[str]] = {
     "file-issue-extension": frozenset((f"target:{_CHROME_BUNDLE_DIR}/",)),
     "file-read-data": frozenset(
@@ -192,11 +209,18 @@ _KNOWN_SUBPATH_DENIALS: dict[str, frozenset[str]] = {
             "/System/Library/ExtensionKit/ExtensionPoints/",
             "/System/iOSSupport/System/Library/ExtensionKit/ExtensionPoints/",
             "/private/var/db/cmiodalassistants/Library/Preferences/",
+            f"{_DARWIN_USER_DIR}/C/*.helper/com.apple.metal/",
             f"{_HOME_DIR}/Library/Preferences/",
         )
     ),
+    "file-write-mode": frozenset(
+        (f"{_DARWIN_USER_DIR}/T/scoped_dir*/CRX_INSTALL/",)
+    ),
     "file-write-times": frozenset(
-        (f"{_CHROME_APP_SUPPORT_DIR}/optimization_guide_model_store/",)
+        (
+            f"{_CHROME_APP_SUPPORT_DIR}/optimization_guide_model_store/",
+            f"{_DARWIN_USER_DIR}/T/scoped_dir*/CRX_INSTALL/",
+        )
     ),
 }
 
@@ -224,7 +248,38 @@ def _normalize_target(target: str) -> str:
     normalized = _replace_prefix(
         normalized, _CHROME_BUNDLE_PREFIXES, _CHROME_BUNDLE_DIR
     )
+    normalized = _DARWIN_USER_DIR_PATTERN.sub(_DARWIN_USER_DIR, normalized)
     return f"{prefix}{normalized}"
+
+
+@functools.lru_cache(maxsize=None)
+def _compile_glob_regex(pattern: str, match_subpaths: bool) -> re.Pattern[str]:
+    """Compiles a target pattern with `*` wildcards into a regex.
+
+    Each `*` matches zero or more characters within a single path segment
+    (`[^/]*`). If `match_subpaths` is True, the pattern matches both the
+    directory itself and any path beneath it.
+    """
+    body = r"[^/]*".join(re.escape(part) for part in pattern.split("*"))
+    suffix = r"(?:/.*)?$" if match_subpaths else r"$"
+    return re.compile(f"^{body}{suffix}")
+
+
+def _matches_target_rule(target: str, rule: str) -> bool:
+    """Returns True if `target` matches the single-target `rule`."""
+    if "*" not in rule:
+        return target == rule
+    return bool(_compile_glob_regex(rule, match_subpaths=False).match(target))
+
+
+def _matches_subpath_rule(target: str, prefix: str) -> bool:
+    """Returns True if `target` is `prefix` or a path beneath it."""
+    dir_path = prefix.rstrip("/")
+    if "*" not in dir_path:
+        return target == dir_path or target.startswith(f"{dir_path}/")
+    return bool(
+        _compile_glob_regex(dir_path, match_subpaths=True).match(target)
+    )
 
 
 class DenialFilter:
@@ -250,24 +305,22 @@ class DenialFilter:
         action = denial_event.action
         target = _normalize_target(denial_event.target)
 
-        if target in _KNOWN_EXACT_DENIALS.get(action, ()):
-            self._logger.debug(
-                "Filtered known denial matching '%s %s': %s",
-                action,
-                target,
-                denial_event.event_message,
-            )
-            return True
-
-        for prefix in _KNOWN_SUBPATH_DENIALS.get(action, ()):
-            normalized_prefix = prefix if prefix.endswith("/") else f"{prefix}/"
-            if target == normalized_prefix.rstrip("/") or target.startswith(
-                normalized_prefix
-            ):
+        for rule in _KNOWN_TARGET_DENIALS.get(action, ()):
+            if _matches_target_rule(target, rule):
                 self._logger.debug(
                     "Filtered known denial matching '%s %s': %s",
                     action,
-                    normalized_prefix,
+                    rule,
+                    denial_event.event_message,
+                )
+                return True
+
+        for prefix in _KNOWN_SUBPATH_DENIALS.get(action, ()):
+            if _matches_subpath_rule(target, prefix):
+                self._logger.debug(
+                    "Filtered known denial matching '%s %s': %s",
+                    action,
+                    prefix,
                     denial_event.event_message,
                 )
                 return True
