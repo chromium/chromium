@@ -8,26 +8,21 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/suggestions/zero_state_suggestions_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
 
 ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
-    signin::IdentityManager* identity_manager,
     const optimization_guide::proto::ZeroStateSuggestionsRequest&
         pending_base_request,
     const std::vector<raw_ptr<content::WebContents>>& requested_tabs,
@@ -35,8 +30,7 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     : begin_time_(base::TimeTicks::Now()),
       pending_base_request_(pending_base_request),
       requested_tabs_(requested_tabs),
-      optimization_guide_keyed_service_(optimization_guide_keyed_service),
-      identity_manager_(identity_manager) {
+      optimization_guide_keyed_service_(optimization_guide_keyed_service) {
   MODEL_EXECUTION_LOG(base::StringPrintf(
       "ZeroStateSuggestionsRequest: Creating new zero state suggestions "
       "request for %llu tabs",
@@ -166,30 +160,9 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
       "suggestions. Is-mulitab request: %s",
       pending_base_request_.has_page_context_list() ? "true" : "false"));
 
-  // Accounts without the can_use_model_execution_features() capability are not
-  // currently able to use contextual ZSS suggestions. For these accounts, also
-  // disable ZSS PrivateAi, so that the server can correctly detect account
-  // capabilities to respond with static ZSS suggestions.
-  //
-  // This account check is done before the kZeroStateSuggestionsUsePrivateAi is
-  // read, so that the experiment flag is only read for affected users.
-  CoreAccountInfo primary_account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  AccountInfo extended_info =
-      identity_manager_->FindExtendedAccountInfoByAccountId(
-          primary_account.account_id);
-  const bool account_can_use_private_ai =
-      GlicEnabling::CanUseAdultFeatures(extended_info.GetAccountCapabilities());
-
-  optimization_guide::ModelExecutionServiceType service_type =
-      account_can_use_private_ai &&
-              base::FeatureList::IsEnabled(kZeroStateSuggestionsUsePrivateAi)
-          ? optimization_guide::ModelExecutionServiceType::kPrivateAi
-          : optimization_guide::ModelExecutionServiceType::kDefault;
-
   optimization_guide_keyed_service_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kZeroStateSuggestions,
-      pending_base_request_, {.service_type = service_type},
+      pending_base_request_, {},
       base::BindOnce(&ZeroStateSuggestionsRequest::OnModelExecutionResponse,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }

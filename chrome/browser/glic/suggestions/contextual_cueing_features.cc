@@ -16,9 +16,6 @@ BASE_FEATURE(kContextualCueing, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kZeroStateSuggestionsUsePrivateAi,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableAutoOpenGlicSidePanel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsContextualCueingEnabled() {
@@ -152,11 +149,5 @@ const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions(
     &kGlicZeroStateSuggestions,
     "ZSSMaxPinnedPagesForTriggeringSuggestions",
     10);
-
-const base::FeatureParam<base::TimeDelta>
-    kZeroStateSuggestionsPrivateAiPrewarmDelay(
-        &kZeroStateSuggestionsUsePrivateAi,
-        "ZSSPrivateAiPrewarmDelay",
-        base::Milliseconds(150));
 
 }  // namespace glic

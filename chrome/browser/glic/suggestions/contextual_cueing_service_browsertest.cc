@@ -60,7 +60,7 @@ class ContextualCueingServiceBrowserTestZSSFlag
             {kGlicZeroStateSuggestions,
              {{"ZSSAllowContextualSuggestionsForSearchResultsPages", "false"}}},
         },
-        {{kZeroStateSuggestionsUsePrivateAi}});
+        {});
     // Initialize `scoped_prewarm_feature_list_` after the
     // `scoped_feature_list_` that will be removed in the parent class's
     // destructor, so that these instances are destroyed in the reversed order.
@@ -351,7 +351,7 @@ class ContextualCueingServiceBrowserTestAllowZSSForSrp
         {{kGlicZeroStateSuggestions,
           {{"ZSSAllowContextualSuggestionsForSearchResultsPages", "true"}}},
          {features::kGlic, {}}},
-        {{kZeroStateSuggestionsUsePrivateAi}});
+        {});
   }
 
   void SetUpOnMainThread() override {

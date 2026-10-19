@@ -13,7 +13,6 @@
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace glic {
@@ -43,7 +42,6 @@ ContextualCueingServiceFactory::ContextualCueingServiceFactory()
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(predictors::LoadingPredictorFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
-  DependsOn(IdentityManagerFactory::GetInstance());
 }
 
 ContextualCueingServiceFactory::~ContextualCueingServiceFactory() = default;
@@ -61,8 +59,7 @@ ContextualCueingServiceFactory::BuildServiceInstanceForBrowserContext(
           GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       predictors::LoadingPredictorFactory::GetForProfile(profile),
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs(),
-      TemplateURLServiceFactory::GetForProfile(profile));
+      profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 bool ContextualCueingServiceFactory::ServiceIsCreatedWithBrowserContext()

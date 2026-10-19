@@ -14566,24 +14566,6 @@
             ]
         }
     ],
-    "PrivateAI": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ZeroStateSuggestionsUsePrivateAi"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrivateInsights": [
         {
             "platforms": [

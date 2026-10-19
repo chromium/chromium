@@ -11,7 +11,6 @@ MockContextualCueingService::MockContextualCueingService()
           /*page_content_extraction_service=*/nullptr,
           /*optimization_guide_keyed_service=*/nullptr,
           /*loading_predictor=*/nullptr,
-          /*identity_manager=*/nullptr,
           /*pref_service=*/nullptr,
           /*template_url_service=*/nullptr) {}
 
