@@ -5,12 +5,12 @@
 #include "components/lookalikes/core/lookalike_url_util.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
 #include "base/i18n/char_iterator.h"
@@ -79,8 +79,7 @@ constexpr const char* kPrivateRegistriesTreatedAsPublic[] = {"com.de",
 
 TopBucketDomainsParams* GetTopDomainParams() {
   static TopBucketDomainsParams params{
-      top_bucket_domains::kTopBucketEditDistanceSkeletons,
-      top_bucket_domains::kNumTopBucketEditDistanceSkeletons};
+      top_bucket_domains::kTopBucketEditDistanceSkeletons};
   return &params;
 }
 
@@ -110,7 +109,7 @@ const int kDefaultLaunchPercentageOnBeta = 50;
 // (components/url_formatter/tools/format_url.cc)
 // TODO(crbug.com/40855941): Generate skeletons of hard coded brand names in
 // Chrome initialization and remove manual adding of skeletons to this list.
-constexpr std::string_view kBrandNamesForCSQ[][2] = {
+constexpr std::array<std::string_view, 2> kBrandNamesForCSQ[] = {
     {"adobe", "adobe"},
     {"airbnb", "airbnb"},
     {"alibaba", "alibaba"},
@@ -222,10 +221,8 @@ bool GetSimilarDomainFromTopBucket(
     LookalikeUrlMatchType* match_type) {
   TopBucketDomainsParams* top_bucket_domain_params = GetTopDomainParams();
   for (const std::string& navigated_skeleton : navigated_domain.skeletons) {
-    for (size_t i = 0;
-         i < top_bucket_domain_params->num_edit_distance_skeletons; i++) {
-      const char* const top_domain_skeleton =
-          UNSAFE_TODO(top_bucket_domain_params->edit_distance_skeletons[i]);
+    for (const char* const top_domain_skeleton :
+         top_bucket_domain_params->edit_distance_skeletons) {
       DCHECK(strlen(top_domain_skeleton));
       // Check edit distance on skeletons.
       if (IsEditDistanceAtMostOne(base::UTF8ToUTF16(navigated_skeleton),
@@ -1148,8 +1145,8 @@ TargetEmbeddingType SearchForEmbeddings(
   // possible embedded domains that end in that eTLD (i.e. all possible start
   // points from the beginning of the string onward).
   for (size_t end = hostname_tokens.size(); end > 0; --end) {
-    base::span<const std::string_view> UNSAFE_TODO(
-        etld_check_span(hostname_tokens.data(), end));
+    base::span<const std::string_view> etld_check_span =
+        base::span(hostname_tokens).first(end);
     std::string etld_check_host = base::JoinString(etld_check_span, ".");
     auto etld_check_dominfo = GetDomainInfo(etld_check_host);
 
@@ -1197,8 +1194,8 @@ TargetEmbeddingType SearchForEmbeddings(
     // Check for exact matches against engaged sites, among all possible
     // subdomains ending at |end|.
     for (size_t start = 0; start < end - 1; ++start) {
-      const base::span<const std::string_view> UNSAFE_TODO(
-          span(hostname_tokens.data() + start, end - start));
+      const base::span<const std::string_view> span =
+          etld_check_span.subspan(start);
       auto embedded_hostname = base::JoinString(span, ".");
       auto embedded_dominfo = GetDomainInfo(embedded_hostname);
 
@@ -1384,8 +1381,7 @@ void SetTopBucketDomainsParamsForTesting(const TopBucketDomainsParams& params) {
 
 void ResetTopBucketDomainsParamsForTesting() {
   TopBucketDomainsParams* params = GetTopDomainParams();
-  *params = {top_bucket_domains::kTopBucketEditDistanceSkeletons,
-             top_bucket_domains::kNumTopBucketEditDistanceSkeletons};
+  *params = {top_bucket_domains::kTopBucketEditDistanceSkeletons};
 }
 
 bool IsHeuristicEnabledForHostname(
@@ -1443,9 +1439,9 @@ ComboSquattingType GetComboSquattingType(
 
   // First check Combo Squatting with hard coded brand names.
   std::vector<std::pair<std::string, std::string>> brand_names;
-  for (auto* it : combo_squatting_params->brand_names) {
-    brand_names.emplace_back(std::string(it[0]),
-                             std::string(UNSAFE_TODO(it[1])));
+  for (const auto& [brand_name, skeleton] :
+       combo_squatting_params->brand_names) {
+    brand_names.emplace_back(brand_name, skeleton);
   }
   if (IsComboSquatting(brand_names, *combo_squatting_params, navigated_domain,
                        engaged_sites, matched_domain,

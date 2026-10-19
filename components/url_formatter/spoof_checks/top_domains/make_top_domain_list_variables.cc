@@ -2,22 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This binary generates two C arrays of useful information related to top
-// domains, which we embed directly into
-// the final Chrome binary.  The input is a list of the top domains. The first
-// output is named kTopBucketEditDistanceSkeletons,
-// containing the skeletons of the top bucket domains suitable for use in the
-// edit distance heuristic. The second output is named kTopKeywords,
-// containing the top bucket keywords suitable for use with the keyword matching
-// heuristic (for instance, www.google.com -> google). Both outputs are written
-// to the same file, which will be formatted as c++ source file with valid
-// syntax.
+// This binary generates a C++ source file containing the skeletons of the top
+// bucket domains suitable for use in the edit distance heuristic, which we
+// embed directly into the final Chrome binary. The input is a list of the top
+// domains. The output is a single array of skeletons, exposed as
+// `base::span<const char* const> kTopBucketEditDistanceSkeletons`.
 
-// The C-strings in both of the output arrays are guaranteed to be in
-// lexicographically sorted order.
+// The C-strings in the output array are guaranteed to be in lexicographically
+// sorted order.
 
-// IMPORTANT: This binary asserts that there are at least enough sites in the
-// input file to generate 500 skeletons and 500 keywords.
+// IMPORTANT: This binary asserts that the output has at most 500 skeletons.
 
 #include <algorithm>
 #include <iostream>
@@ -47,15 +41,15 @@
 
 namespace {
 
-// The size of the top domain array generated in top-bucket-domains-inc.cc. Must
-// match that in top_bucket_domains.h. If the file has fewer than kMaxDomains
-// eligible top bucket domains marked (e.g. because some are too short), the
-// generated array may be padded with blank entries up to kMaxDomains.
+// The maximum size of the skeleton array generated in
+// top-bucket-domains-inc.cc. If the input has fewer than kMaxDomains eligible
+// top bucket domains (e.g. because some are too short), the generated array is
+// smaller.
 const size_t kMaxDomains = 500;
 const char* kTopBucketSeparator = "###END_TOP_BUCKET###";
 
-// Similar to kMaxDomains, but for kTopKeywords. Unlike the top domain array,
-// this array is a fixed length, and we also output a kNumTopKeywords variable.
+// Similar to kMaxDomains, but for keywords. Keywords are collected but not
+// written to the output.
 const size_t kMaxKeywords = 500;
 
 // The minimum length for a keyword for it to be included.
@@ -171,6 +165,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  // The generated array can't be empty: zero-length arrays are ill-formed.
+  CHECK(!skeletons.empty());
   CHECK_LE(skeletons.size(), kMaxDomains);
   CHECK_LE(keywords.size(), kMaxKeywords);
 
@@ -185,17 +181,20 @@ int main(int argc, char* argv[]) {
       << namespace_str << R"(.h"
 namespace )"
       << namespace_str << R"( {
-const char* const kTopBucketEditDistanceSkeletons[] = {
+namespace {
+const char* const kTopBucketEditDistanceSkeletonsArray[] = {
 )";
 
   for (const std::string& skeleton : sorted_skeletons) {
     output_stream << base::StrCat({"\"", skeleton, "\"", ",\n"});
   }
   output_stream << R"(};
-  constexpr size_t kNumTopBucketEditDistanceSkeletons = )"
-                << sorted_skeletons.size() << R"(;
+}  // namespace
 
-  } // namespace
+extern constexpr base::span<const char* const>
+    kTopBucketEditDistanceSkeletons = kTopBucketEditDistanceSkeletonsArray;
+
+}  // namespace
 )";
 
   std::string output = output_stream.str();

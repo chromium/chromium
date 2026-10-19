@@ -4,6 +4,9 @@
 
 #include "components/lookalikes/core/lookalike_url_util.h"
 
+#include <array>
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -29,11 +32,12 @@ using version_info::Channel;
 namespace {
 // Tests lists for Combo Squatting. Some of these entries are intended to test
 // for various edge cases and aren't realistic for production.
-constexpr std::string_view kBrandNames[][2] = {{"google", "google"},
-                                               {"youtube", "youtube"},
-                                               {"sample", "sarnple"},
-                                               {"example", "exarnple"},
-                                               {"vices", "vices"}};
+constexpr std::array<std::string_view, 2> kBrandNames[] = {
+    {"google", "google"},
+    {"youtube", "youtube"},
+    {"sample", "sarnple"},
+    {"example", "exarnple"},
+    {"vices", "vices"}};
 constexpr std::string_view kPopularKeywords[] = {
     "online", "login", "account", "arnple", "services", "test", "security"};
 const ComboSquattingParams kComboSquattingParams{kBrandNames, kPopularKeywords};
@@ -69,8 +73,7 @@ class LookalikeUrlUtilTest : public testing::Test {
 
     // Use test top bucket domain skeletons instead of the actual list.
     lookalikes::TopBucketDomainsParams top_bucket_params{
-        test_top_bucket_domains::kTopBucketEditDistanceSkeletons,
-        test_top_bucket_domains::kNumTopBucketEditDistanceSkeletons};
+        test_top_bucket_domains::kTopBucketEditDistanceSkeletons};
     lookalikes::SetTopBucketDomainsParamsForTesting(top_bucket_params);
 
     url_formatter::common_words::SetCommonWordDAFSAForTesting(test::kDafsa);

@@ -29,8 +29,7 @@ void LookalikeTestHelper::SetUpLookalikeTestParams() {
 
   // Use test top bucket domain skeletons instead of the actual list.
   lookalikes::TopBucketDomainsParams top_bucket_params{
-      test_top_bucket_domains::kTopBucketEditDistanceSkeletons,
-      test_top_bucket_domains::kNumTopBucketEditDistanceSkeletons};
+      test_top_bucket_domains::kTopBucketEditDistanceSkeletons};
   lookalikes::SetTopBucketDomainsParamsForTesting(top_bucket_params);
 
   lookalikes::InitializeSafetyTipConfig();
