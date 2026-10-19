@@ -152,6 +152,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "DefaultPassthroughCommandDecoder", "Use the passthrough GLES2 command decoder."),
         Flag.baseFeature(
+                "DefaultANGLEVulkan", "Use the Vulkan backend of ANGLE."),
+        Flag.baseFeature(
                 GpuFeatures.GPU_PERSISTENT_CACHE,
                 "Use GpuPersistentCache for GPU blob caching in memory and on disk (if "
                         + "enabled separately by enabling GpuShaderDiskCache)"),

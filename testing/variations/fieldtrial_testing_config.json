@@ -5491,7 +5491,8 @@
     "DefaultANGLEVulkan": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "form_factors": [
                 "phone",
