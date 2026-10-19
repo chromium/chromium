@@ -1129,7 +1129,7 @@ void LocalPersistentMemoryAllocator::DeallocateLocalMemory(void* memory,
 
   DCHECK_EQ(MEM_VIRTUAL, type);
 #if BUILDFLAG(IS_WIN)
-  BOOL success = ::VirtualFree(memory, 0, MEM_DECOMMIT);
+  BOOL success = ::VirtualFree(memory, 0, MEM_RELEASE);
   DCHECK(success);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   int result = ::munmap(memory, size);
