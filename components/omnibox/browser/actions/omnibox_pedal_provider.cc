@@ -56,8 +56,6 @@ OmniboxPedalProvider::OmniboxPedalProvider(
       pedals_(std::move(pedals)),
       ignore_group_(false, false, 0),
       match_tokens_(kMaxTokens) {
-  LoadPedalConcepts();
-
   // Cull Pedals with incomplete data; they won't trigger if not enabled,
   // but there's no need to keep them in the collection (iterated frequently).
   std::erase_if(pedals_, [](const auto& it) {
@@ -81,6 +79,12 @@ size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
 
 OmniboxPedal* OmniboxPedalProvider::FindPedalMatch(
     const std::u16string& match_text) {
+  if (!concepts_loaded_) {
+    LoadPedalConcepts();
+  }
+  if (match_text.empty()) {
+    return nullptr;
+  }
   Tokenize(match_tokens_, match_text);
   if (match_tokens_.Size() == 0) {
     return nullptr;
@@ -222,6 +226,11 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
 }
 
 void OmniboxPedalProvider::LoadPedalConcepts() {
+  if (concepts_loaded_) {
+    return;
+  }
+  concepts_loaded_ = true;
+
   // The locale is a two-letter language code, possibly followed by a dash and
   // country code. English locales include "en", "en-US", and "en-GB" while
   // non-English locales never start with "en".

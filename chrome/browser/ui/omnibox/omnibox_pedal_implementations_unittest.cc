@@ -18087,6 +18087,7 @@ TEST_F(OmniboxPedalImplementationsTest, PedalLaunchIncognitoStrings) {
 }
 
 TEST_F(OmniboxPedalImplementationsTest, MemoryUsageIsModerate) {
+  provider()->FindPedalMatch(u"");
   // Note: This allowance is a soft limit that may be tweaked depending on
   // how usefulness is weighed against memory cost. The goal of the test is
   // just to prove a reasonable bound.

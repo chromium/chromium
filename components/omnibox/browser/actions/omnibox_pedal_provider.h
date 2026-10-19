@@ -105,6 +105,10 @@ class OmniboxPedalProvider {
 
   // This holds the tokens currently being matched against.
   OmniboxPedal::TokenSequence match_tokens_;
+
+  // Whether `LoadPedalConcepts()` has populated `dictionary_`, `ignore_group_`,
+  // and pedal synonym groups.
+  bool concepts_loaded_ = false;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_ACTIONS_OMNIBOX_PEDAL_PROVIDER_H_
