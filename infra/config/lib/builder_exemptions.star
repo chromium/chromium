@@ -6,7 +6,7 @@
 
 ************************************WARNING*************************************
 NOTHING in this file should be added to. The builders here are merely those that
-got grandfathered into being exempted from newer restrictions. So the amount of
+existed before newer restrictions and were exempted from them. So the amount of
 builders listed here should not grow, and should *only* decrease.
 ************************************WARNING*************************************
 
