@@ -1219,6 +1219,75 @@ public class SelectFileDialogTest {
     }
 
     @Test
+    @DisableFeatures({UiAndroidFeatures.CHECK_INTENT_CALLER_PERMISSION})
+    public void testFileSchemeRejectsOpaqueAndRelativeUris() throws IOException {
+        File validFile = mTempFolder.newFile("valid.jpg");
+
+        // Even if realpath() were to resolve a non-hierarchical or relative path to an existing
+        // regular file, opaque file: URIs (such as "file:content://...") and relative paths must
+        // be rejected before reaching FileUtils.getAbsoluteFilePath().
+        Mockito.lenient()
+                .doReturn(validFile.getCanonicalPath())
+                .when(mFileUtilsMocks)
+                .getAbsoluteFilePath(any());
+
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        Uri[] opaqueAndRelativeUris =
+                new Uri[] {
+                    Uri.parse("file:content://com.android.chrome.FileProvider/images/pic.jpg"),
+                    Uri.parse("FILE:content://com.android.chrome.FileProvider/images/pic.jpg"),
+                    Uri.parse("file:valid.jpg"),
+                    Uri.fromParts("file", "valid.jpg", null),
+                };
+        for (Uri uri : opaqueAndRelativeUris) {
+            SelectFileDialog.GetDisplayNameTask task =
+                    selectFileDialog
+                    .new GetDisplayNameTask(
+                            ContextUtils.getApplicationContext(),
+                            /* isMultiple= */ false,
+                            new Uri[] {uri});
+            assertEquals("Expected null for " + uri, null, task.doInBackground());
+        }
+
+        SelectFileDialog.FilePathSelectedTask relativePathTask =
+                selectFileDialog
+                .new FilePathSelectedTask(ContextUtils.getApplicationContext(), "valid.jpg", null);
+        assertFalse(relativePathTask.doInBackground());
+
+        // End-to-end onIntentCompleted checks with opaque file:content:// URI in ClipData and data.
+        TestSelectFileDialog testDialog = new TestSelectFileDialog(0);
+        Uri opaqueContentUri =
+                Uri.parse("file:content://com.android.chrome.FileProvider/images/pic.jpg");
+        Intent clipIntent = new Intent();
+        clipIntent.setClipData(
+                new ClipData("label", new String[0], new ClipData.Item(opaqueContentUri)));
+        testDialog.onIntentCompleted(Activity.RESULT_OK, clipIntent);
+        runAllAsyncTasks();
+        assertEquals(0, testDialog.mFileSelectionSuccess);
+        assertEquals(1, testDialog.mFileSelectionAborted);
+        testDialog.resetFileSelectionAttempts();
+
+        Intent dataIntent = new Intent(Intent.ACTION_VIEW, opaqueContentUri);
+        testDialog.onIntentCompleted(Activity.RESULT_OK, dataIntent);
+        runAllAsyncTasks();
+        assertEquals(0, testDialog.mFileSelectionSuccess);
+        assertEquals(1, testDialog.mFileSelectionAborted);
+        testDialog.resetFileSelectionAttempts();
+        Mockito.verify(mFileUtilsMocks, Mockito.never()).getAbsoluteFilePath(any());
+
+        // Valid hierarchical file:/// URI still succeeds.
+        SelectFileDialog.GetDisplayNameTask validTask =
+                selectFileDialog
+                .new GetDisplayNameTask(
+                        ContextUtils.getApplicationContext(),
+                        /* isMultiple= */ false,
+                        new Uri[] {Uri.fromFile(validFile)});
+        assertTrue(validTask.doInBackground() != null);
+        Mockito.verify(mFileUtilsMocks).getAbsoluteFilePath(validFile.getPath());
+        assertEquals(validFile.getCanonicalPath(), validTask.mFilePaths[0]);
+    }
+
+    @Test
     public void testShowTypes() {
         ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
         shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");

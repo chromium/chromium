@@ -1028,11 +1028,12 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     }
 
     /**
-     * Canonicalises a caller-supplied file path with realpath() and returns it only if it names an
-     * existing regular file that is not in procfs. Returns null otherwise.
+     * Canonicalises a caller-supplied file path with realpath() and returns it only if it is an
+     * absolute path that names an existing regular file that is not in procfs. Returns null
+     * otherwise.
      */
-    private static @Nullable String resolveRegularFilePath(String path) {
-        if (TextUtils.isEmpty(path)) return null;
+    private static @Nullable String resolveRegularFilePath(@Nullable String path) {
+        if (TextUtils.isEmpty(path) || !path.startsWith("/")) return null;
         String resolved = FileUtils.getAbsoluteFilePath(path);
         // Reject paths such as /proc/self/maps that resolve into procfs.
         if (resolved.isEmpty() || resolved.startsWith("/proc/") || !new File(resolved).isFile()) {
@@ -1401,12 +1402,17 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                     // device was observed to return a file:// URI instead, so convert if necessary.
                     // See https://crbug.com/752834 for context.
                     if (ContentResolver.SCHEME_FILE.equals(mUris[i].getScheme())) {
+                        // Only hierarchical file:///path URIs are acceptable here. An opaque
+                        // file: URI such as "file:content://authority/path" has no path, and its
+                        // scheme-specific part is a bare content URI that native would open
+                        // through ContentResolver, bypassing the content URI checks below.
+                        //
                         // Resolve the path *once* (realpath, follows /proc/self/fd/N magic
                         // links and symlinks) and forward the resolved path instead of the
                         // caller-supplied alias, so that later opens by the browser cannot be
                         // redirected to a different file. Reject anything that does not
                         // resolve to an existing regular file outside the app data dir.
-                        String resolved = resolveRegularFilePath(mUris[i].getSchemeSpecificPart());
+                        String resolved = resolveRegularFilePath(mUris[i].getPath());
                         if (resolved == null || isPathUnderAppDir(resolved, mContext)) {
                             return null;
                         }
