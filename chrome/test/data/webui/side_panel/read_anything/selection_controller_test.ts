@@ -621,7 +621,7 @@ suite('SelectionController', () => {
 
         selectNodesInMainPanel(
             node.id, expectedAnchorOffset, node.id, expectedFocusOffset);
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         assertEquals(node.node, selection.anchorNode);
         assertEquals(node.node, selection.focusNode);
@@ -635,7 +635,7 @@ suite('SelectionController', () => {
 
       test('does nothing when ids are unknown in readability', () => {
         selectNodesInMainPanel(0, 2, 0, 10);
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         assertFalse(!!selection.anchorNode);
         assertFalse(!!selection.focusNode);
@@ -661,7 +661,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(startNode, startId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             assertFalse(!!selection.anchorNode);
             assertFalse(!!selection.focusNode);
@@ -682,7 +682,7 @@ suite('SelectionController', () => {
         nodeStore.setDomNode(contentNode, startId);
         document.body.appendChild(p);
 
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         assertEquals(content, selection.anchorNode!.textContent);
         assertEquals(content, selection.focusNode!.textContent);
@@ -704,7 +704,7 @@ suite('SelectionController', () => {
         nodeStore.setDomNode(contentNode, startId);
         document.body.appendChild(p);
 
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         // The offsets should still be the same as before.
         assertEquals(content, selection.anchorNode!.textContent);
@@ -733,7 +733,7 @@ suite('SelectionController', () => {
         nodeStore.setAxNodeOffset(contentNode, axNodeOffset);
         document.body.appendChild(p);
 
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         assertEquals(expectedSelection, selection.toString());
         assertEquals(expectedAnchorOffset, selection.anchorOffset);
@@ -758,7 +758,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(contentNode, startId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             // The offsets should still be the same as before.
             assertEquals(content, selection.anchorNode!.textContent, 'anchor');
@@ -784,7 +784,7 @@ suite('SelectionController', () => {
         p.appendChild(document.createTextNode(afterContent));
         document.body.appendChild(p);
 
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         assertEquals(content, selection.anchorNode!.textContent);
         assertEquals(content, selection.focusNode!.textContent);
@@ -805,7 +805,7 @@ suite('SelectionController', () => {
         nodeStore.setDomNode(contentNode, startId);
         document.body.appendChild(p);
 
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         assertEquals(content, selection.anchorNode!.textContent);
         assertEquals(content, selection.focusNode!.textContent);
@@ -835,7 +835,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(endNode, endId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             assertEquals(startContent, selection.anchorNode!.textContent);
             assertEquals(endContent, selection.focusNode!.textContent);
@@ -868,7 +868,7 @@ suite('SelectionController', () => {
         nodeStore.setDomNode(endNode, endId);
         document.body.appendChild(p);
 
-        selectionController.updateSelection(selection, document.body);
+        selectionController.updateSelection(selection);
 
         assertEquals(expectedSelection, selection.toString());
         assertEquals(expectedAnchorOffset, selection.anchorOffset);
@@ -898,7 +898,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(endNode, endId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             assertEquals(startContent, selection.anchorNode!.textContent);
             assertEquals(endContent, selection.focusNode!.textContent);
@@ -929,7 +929,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(endNode, endId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             assertEquals(startContent, selection.anchorNode!.textContent);
             assertEquals(endContent, selection.focusNode!.textContent);
@@ -962,7 +962,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(endNode, endId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             assertEquals(startContent, selection.anchorNode!.textContent);
             assertEquals(endContent, selection.focusNode!.textContent);
@@ -994,7 +994,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(endNode, endId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             assertEquals(startContent, selection.anchorNode!.textContent);
             assertEquals(endContent, selection.focusNode!.textContent);
@@ -1027,7 +1027,7 @@ suite('SelectionController', () => {
             nodeStore.setDomNode(endNode, endId);
             document.body.appendChild(p);
 
-            selectionController.updateSelection(selection, document.body);
+            selectionController.updateSelection(selection);
 
             assertEquals(startContent, selection.anchorNode!.textContent);
             assertEquals(endContent, selection.focusNode!.textContent);
@@ -1038,7 +1038,7 @@ suite('SelectionController', () => {
 
     test('does nothing when ids are unknown', () => {
       selectNodesInMainPanel(0, 2, 0, 10);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertFalse(!!selection.anchorNode);
       assertFalse(!!selection.focusNode);
@@ -1047,7 +1047,7 @@ suite('SelectionController', () => {
     test('does nothing when selection is invalid', () => {
       selectNodesInMainPanel(100, 2, 101, 10);
       contentBrowserProxy.hasValidSelectionVal = false;
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertFalse(!!selection.anchorNode);
       assertFalse(!!selection.focusNode);
@@ -1061,7 +1061,7 @@ suite('SelectionController', () => {
 
       selectNodesInMainPanel(
           node.id, expectedAnchorOffset, node.id, expectedFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node.node, selection.anchorNode);
       assertEquals(node.node, selection.focusNode);
@@ -1073,7 +1073,7 @@ suite('SelectionController', () => {
       const node = getNodeAt(1);
 
       selectNodesInMainPanel(node.id, 2, node.id, 10);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertFalse(!!selection.anchorNode);
       assertFalse(!!selection.focusNode);
@@ -1086,7 +1086,7 @@ suite('SelectionController', () => {
 
       selectNodesInMainPanel(
           parentId, expectedAnchorOffset, parentId, expectedFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node.text, selection.anchorNode?.textContent);
       assertEquals(node.text, selection.focusNode?.textContent);
@@ -1104,7 +1104,7 @@ suite('SelectionController', () => {
       // The main panel selection is relative to the paragraph.
       selectNodesInMainPanel(
           parentId, relativeAnchorOffset, parentId, selectedFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node1.text, selection.anchorNode?.textContent);
       assertEquals(node2.text, selection.focusNode?.textContent);
@@ -1124,7 +1124,7 @@ suite('SelectionController', () => {
       // The main panel selection is relative to the paragraph.
       selectNodesInMainPanel(
           parentId, selectedAnchorOffset, parentId, selectedFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node2.text, selection.anchorNode?.textContent);
       assertEquals(node2.text, selection.focusNode?.textContent);
@@ -1146,7 +1146,7 @@ suite('SelectionController', () => {
       // The main panel selection is relative to the paragraph.
       selectNodesInMainPanel(
           parentId, selectedAnchorOffset, parentId, selectedFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node2.text, selection.anchorNode?.textContent);
       assertEquals(node3.text, selection.focusNode?.textContent);
@@ -1164,7 +1164,7 @@ suite('SelectionController', () => {
 
       selectNodesInMainPanel(
           parentId, relativeAnchorOffset, node2.id, relativeFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node1.text, selection.anchorNode?.textContent);
       assertEquals(node2.text, selection.focusNode?.textContent);
@@ -1182,7 +1182,7 @@ suite('SelectionController', () => {
 
       selectNodesInMainPanel(
           node1.id, relativeAnchorOffset, parentId, selectedFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node1.text, selection.anchorNode?.textContent);
       assertEquals(node2.text, selection.focusNode?.textContent);
@@ -1201,7 +1201,7 @@ suite('SelectionController', () => {
 
       selectNodesInMainPanel(
           parentId, selectedAnchorOffset, node3.id, relativeFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node2.text, selection.anchorNode?.textContent);
       assertEquals(node3.text, selection.focusNode?.textContent);
@@ -1221,7 +1221,7 @@ suite('SelectionController', () => {
 
       selectNodesInMainPanel(
           node2.id, relativeAnchorOffset, parentId, selectedFocusOffset);
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node2.text, selection.anchorNode?.textContent);
       assertEquals(node3.text, selection.focusNode?.textContent);
@@ -1241,7 +1241,7 @@ suite('SelectionController', () => {
       selectNodesInMainPanel(
           node.id, mainAnchorOffset, node.id, mainFocusOffset);
 
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertEquals(node.node, selection.anchorNode);
       assertEquals(0, selection.anchorOffset);  // 17 - 17
@@ -1261,7 +1261,7 @@ suite('SelectionController', () => {
       selectNodesInMainPanel(
           node.id, mainAnchorOffset, node.id, mainFocusOffset);
 
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertFalse(!!selection.anchorNode);
     });
@@ -1279,7 +1279,7 @@ suite('SelectionController', () => {
       selectNodesInMainPanel(
           node.id, mainAnchorOffset, node.id, mainFocusOffset);
 
-      selectionController.updateSelection(selection, document.body);
+      selectionController.updateSelection(selection);
 
       assertFalse(!!selection.anchorNode);
     });

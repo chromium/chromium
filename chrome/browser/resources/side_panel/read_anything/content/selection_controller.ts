@@ -173,7 +173,7 @@ export class SelectionController {
   }
 
   // Updates the reading mode selection to match the main panel selection.
-  updateSelection(selectionToUpdate: Selection|null, container: Node) {
+  updateSelection(selectionToUpdate: Selection|null) {
     if (!selectionToUpdate) {
       return;
     }
@@ -193,7 +193,7 @@ export class SelectionController {
           /*fromSidePanel=*/ false);
     }
 
-    const newSelection = this.getNewSelection_(container);
+    const newSelection = this.getNewSelection_();
     if (!newSelection) {
       return;
     }
@@ -230,87 +230,11 @@ export class SelectionController {
     });
   }
 
-  private getNewSelection_(container: Node): ReadingModeSelection|null {
-    const selectionIds = {
-      anchorNodeId: this.contentBrowserProxy_.getStartNodeId(),
-      anchorOffset: this.contentBrowserProxy_.getStartOffset(),
-      focusNodeId: this.contentBrowserProxy_.getEndNodeId(),
-      focusOffset: this.contentBrowserProxy_.getEndOffset(),
-    };
-
-    if (isDistilledByReadability()) {
-      return this.contentBrowserProxy_.isReadabilityEnabled() ?
-          this.getNewSelectionWithAxIds_(selectionIds) :
-          this.getNewSelectionWithoutAxIds_(container, selectionIds);
-    }
-
-    return this.getNewSelectionWithAxIds_(selectionIds);
-  }
-
-  private getNewSelectionWithoutAxIds_(
-      container: Node,
-      selectionIds: SelectionWithIds): ReadingModeSelection|null {
-    const {anchorNodeId, focusNodeId} = selectionIds;
-    let {anchorOffset, focusOffset} = selectionIds;
-    if (!anchorNodeId || !focusNodeId) {
-      return null;
-    }
-
-    const anchorContent =
-        this.contentBrowserProxy_.getTextContent(anchorNodeId);
-    const focusContent = this.contentBrowserProxy_.getTextContent(focusNodeId);
-
-    // If the nodes don't have valid text content, they shouldn't be used
-    // for selection.
-    if (!anchorContent || !focusContent) {
-      return null;
-    }
-
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
-    const anchorContext = {
-      prefix: this.contentBrowserProxy_.getPrefixText(anchorNodeId),
-      content: anchorContent,
-    };
-    const focusContext = {
-      prefix: this.contentBrowserProxy_.getPrefixText(focusNodeId),
-      content: focusContent,
-    };
-
-    const result = this.findTargetNodes_(walker, anchorContext, focusContext);
-    if (!result) {
-      return null;
-    }
-
-    const anchorNode = result.startNode;
-    const focusNode = result.endNode;
-    const isSameNode = anchorNodeId === focusNodeId;
-    const originalFocus =
-        isSameNode ? focusOffset : anchorContext.content.length;
-    const originalContent =
-        anchorContext.content.substring(anchorOffset, originalFocus);
-    const actualContent =
-        anchorNode.textContent?.substring(anchorOffset, originalFocus);
-    // If the actually selected text matches the found Reading mode text, use
-    // the original offsets. Otherwise, search for the selected text within
-    // the Reading mode node and use that as the offset.
-    if (actualContent !== originalContent) {
-      const foundIndex = anchorNode.textContent?.indexOf(originalContent) ?? -1;
-      if (foundIndex < 0) {
-        return null;
-      }
-
-      anchorOffset = foundIndex;
-      focusOffset =
-          isSameNode ? (foundIndex + originalContent.length) : focusOffset;
-    }
-
-    return {anchorNode, anchorOffset, focusNode, focusOffset};
-  }
-
-  private getNewSelectionWithAxIds_(selectionIds: SelectionWithIds):
-      ReadingModeSelection|null {
-    const {anchorNodeId, focusNodeId} = selectionIds;
-    let {anchorOffset, focusOffset} = selectionIds;
+  private getNewSelection_(): ReadingModeSelection|null {
+    const anchorNodeId = this.contentBrowserProxy_.getStartNodeId();
+    const focusNodeId = this.contentBrowserProxy_.getEndNodeId();
+    let anchorOffset = this.contentBrowserProxy_.getStartOffset();
+    let focusOffset = this.contentBrowserProxy_.getEndOffset();
     if (!anchorNodeId || !focusNodeId) {
       return null;
     }
@@ -349,58 +273,6 @@ export class SelectionController {
     focusOffset -= adjustedFocus.offset;
 
     return {anchorNode, anchorOffset, focusNode, focusOffset};
-  }
-
-  // Locates selection nodes based on their text content and prefix text.
-  // Assumptions made:
-  // - start content is <= end content (i.e. either earlier in the document or
-  //   the same content) (see PostProcessSelection in read_anything_app_model.cc
-  //   which always sends a forward selection)
-  // - start prefix is either a superset of the start content or strictly
-  //   earlier in the document (see GetPrefixText in
-  //   read_anything_node_utils.cc)
-  // - end prefix is either a superset of the end content or strictly
-  //   earlier in the document
-  // Unknowns:
-  // - The end prefix may be anywhere relative to the start node depending on
-  //   how the prefix is calculated. It could be before the start node if the
-  //   start content is too short to be a reliable prefix. It could be the same
-  //   as the start node if its content is long enough. Or it could be later
-  //   than the start node if the end node is very far after the start node.
-  private findTargetNodes_(
-      walker: TreeWalker, startContext: {prefix: string, content: string},
-      endContext: {prefix: string, content: string}):
-      {startNode: Node, endNode: Node}|null {
-    let startNode: Node|undefined;
-    let endNode: Node|undefined;
-    // If the prefix contains the content (i.e. it is a parent of the target
-    // node), then skip looking for a prefix.
-    let foundStartPrefix = startContext.prefix.includes(startContext.content);
-    let foundEndPrefix = endContext.prefix.includes(endContext.content);
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      if (foundStartPrefix && node.nodeValue?.includes(startContext.content)) {
-        startNode = node;
-      }
-      if (foundEndPrefix && node.nodeValue?.includes(endContext.content)) {
-        endNode = node;
-      }
-
-      // Look for the prefix first in order to reduce the risk of matching the
-      // same text earlier in the document.
-      if (node.nodeValue?.includes(startContext.prefix)) {
-        foundStartPrefix = true;
-      }
-      if (node.nodeValue?.includes(endContext.prefix)) {
-        foundEndPrefix = true;
-      }
-
-      if (startNode && endNode) {
-        return {startNode, endNode};
-      }
-    }
-
-    return null;
   }
 
   // Returns true if the node maps to a valid AX ID in the NodeStore.
