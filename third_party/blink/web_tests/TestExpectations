@@ -8730,3 +8730,6 @@ crbug.com/551670645 [ Linux ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.htt
 crbug.com/551670645 [ Mac ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
 crbug.com/551670645 [ Win10.20h2 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
 crbug.com/551670645 [ Win11 ] external/wpt/fedcm/fedcm-disconnect-iframe.sub.https.html [ Failure Pass ]
+
+# Gardener 2026-10-19
+crbug.com/570886829 [ Mac ] external/wpt/css/css-contain/contain-size-flexbox-002.html [ Failure Pass ]
