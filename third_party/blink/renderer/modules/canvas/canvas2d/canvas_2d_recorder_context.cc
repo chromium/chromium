@@ -994,8 +994,11 @@ ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
     const String& color_string,
     Color& color) const {
   const ColorParseResult parse_result = ParseCanvasColorString(
-      color_string, color_scheme_, color, GetColorProvider(),
-      /*can_expose_accent_color=*/IsInWebAppScope(),
+      color_string, color,
+      /*theme_info=*/
+      {.color_provider = GetColorProvider(),
+       .color_scheme = color_scheme_,
+       .can_expose_system_accent_color = CanExposeSystemAccentColor()},
       /*has_style_context=*/HostAsHTMLCanvasElement() != nullptr);
   if (parse_result == ColorParseResult::kCurrentColor) {
     color = GetCurrentColor();
@@ -1018,9 +1021,10 @@ ColorParseResult Canvas2DRecorderContext::ParseColorOrCurrentColor(
     const ResolveColorValueContext context{
         .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
         .text_link_colors = text_link_colors,
-        .used_color_scheme = color_scheme_,
-        .color_provider = GetColorProvider(),
-        .can_expose_accent_color = IsInWebAppScope()};
+        .theme_info = {
+            .color_provider = GetColorProvider(),
+            .color_scheme = color_scheme_,
+            .can_expose_system_accent_color = CanExposeSystemAccentColor()}};
     const StyleColor style_color = ResolveColorValue(*color_value, context);
     color = style_color.Resolve(GetCurrentColor(), color_scheme_);
     return ColorParseResult::kColor;
@@ -1036,9 +1040,10 @@ const ui::ColorProvider* Canvas2DRecorderContext::GetColorProvider() const {
   return nullptr;
 }
 
-bool Canvas2DRecorderContext::IsInWebAppScope() const {
+bool Canvas2DRecorderContext::CanExposeSystemAccentColor() const {
   if (HTMLCanvasElement* canvas = HostAsHTMLCanvasElement()) {
-    return canvas->GetDocument().IsInWebAppScope();
+    const Document& document = canvas->GetDocument();
+    return document.IsInWebAppScope() && document.IsInitialProfile();
   }
   return false;
 }

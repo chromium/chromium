@@ -36,9 +36,10 @@ void SetCanvasAndColorScheme(const Document& document,
   // that the background color here follows that.
   const ui::ColorProvider* color_provider =
       document.GetColorProviderForPainting(color_scheme);
-  Color color = StyleColor::ColorFromKeyword(CSSValueID::kCanvas, color_scheme,
-                                             color_provider,
-                                             /*can_expose_accent_color=*/false);
+  Color color = StyleColor::ColorFromKeyword(
+      CSSValueID::kCanvas,
+      /*theme_info=*/
+      {.color_provider = color_provider, .color_scheme = color_scheme});
   builder.SetDarkColorScheme(color_scheme == mojom::blink::ColorScheme::kDark);
   builder.SetBackgroundColor(StyleColor(color, CSSValueID::kCanvas));
 }

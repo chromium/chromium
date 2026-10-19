@@ -5,19 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_COLOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_COLOR_H_
 
-#include <memory>
-
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/base_interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
-namespace ui {
-class ColorProvider;
-}  // namespace ui
-
 namespace blink {
+
+struct ColorThemeInfo;
 
 // InterpolableColors are created and manipulated by CSSColorInterpolationType.
 // They store the three params and alpha from a blink::Color for interpolation,
@@ -47,8 +43,7 @@ class CORE_EXPORT InterpolableColor final : public BaseInterpolableColor {
   static InterpolableColor* Create(Color color);
   static InterpolableColor* Create(ColorKeyword color_keyword);
   static InterpolableColor* Create(CSSValueID keyword,
-                                   mojom::blink::ColorScheme color_scheme,
-                                   const ui::ColorProvider* color_provider);
+                                   const ColorThemeInfo& theme_info);
 
   Color GetColor() const;
   bool IsColor() const final { return true; }

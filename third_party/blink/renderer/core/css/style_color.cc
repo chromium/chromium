@@ -499,23 +499,18 @@ Color StyleColor::Resolve(const Color& current_color,
     return current_color;
   }
   if (EffectiveColorKeyword() != CSSValueID::kInvalid) {
-    // It is okay to pass nullptr for color_provider here because system colors
-    // are now resolved before used value time.
+    // System colors are resolved before used value time, so this path does not
+    // use the color provider, accent color, or accent exposure policy.
     CHECK(!IsSystemColorIncludingDeprecated());
-    return ColorFromKeyword(color_keyword_, color_scheme,
-                            /*color_provider=*/nullptr,
-                            /*can_expose_accent_color=*/false);
+    return ColorFromKeyword(color_keyword_, {.color_scheme = color_scheme});
   }
   return GetColor();
 }
 
 StyleColor StyleColor::ResolveSystemColor(
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider,
-    bool can_expose_accent_color) const {
+    const ColorThemeInfo& theme_info) const {
   CHECK(IsSystemColor());
-  Color color = ColorFromKeyword(color_keyword_, color_scheme, color_provider,
-                                 can_expose_accent_color);
+  Color color = ColorFromKeyword(color_keyword_, theme_info);
   return StyleColor(color, color_keyword_);
 }
 
@@ -530,16 +525,13 @@ const CSSValue* StyleColor::ToCSSValue() const {
 }
 
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
-                                   mojom::blink::ColorScheme color_scheme,
-                                   const ui::ColorProvider* color_provider,
-                                   bool can_expose_accent_color) {
+                                   const ColorThemeInfo& theme_info) {
   std::string_view value_name = GetCSSValueName(keyword);
   if (const NamedColor* named_color = FindColor(value_name)) {
     return Color::FromRGBA32(named_color->argb_value);
   }
 
-  return LayoutTheme::GetTheme().SystemColor(
-      keyword, color_scheme, color_provider, can_expose_accent_color);
+  return LayoutTheme::GetTheme().SystemColor(keyword, theme_info);
 }
 
 bool StyleColor::IsColorKeyword(CSSValueID id) {

@@ -4,12 +4,11 @@
 
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 
-#include <cmath>
-#include <memory>
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/css_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 
 namespace {
@@ -105,10 +104,8 @@ InterpolableColor* InterpolableColor::Create(ColorKeyword color_keyword) {
   return result;
 }
 
-InterpolableColor* InterpolableColor::Create(
-    CSSValueID keyword,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) {
+InterpolableColor* InterpolableColor::Create(CSSValueID keyword,
+                                             const ColorThemeInfo& theme_info) {
   switch (keyword) {
     case CSSValueID::kCurrentcolor:
       return Create(ColorKeyword::kCurrentcolor);
@@ -119,14 +116,11 @@ InterpolableColor* InterpolableColor::Create(
     case CSSValueID::kInternalQuirkInherit:
       return Create(ColorKeyword::kQuirkInherit);
     case CSSValueID::kWebkitFocusRingColor:
-      return Create(LayoutTheme::GetTheme().FocusRingColor(color_scheme));
+      return Create(
+          LayoutTheme::GetTheme().FocusRingColor(theme_info.color_scheme));
     default:
       DCHECK(StyleColor::IsColorKeyword(keyword));
-      // TODO(crbug.com/40229450): Pass down if within installed webapp scope
-      // from Document.
-      return Create(
-          StyleColor::ColorFromKeyword(keyword, color_scheme, color_provider,
-                                       /*can_expose_accent_color=*/false));
+      return Create(StyleColor::ColorFromKeyword(keyword, theme_info));
   }
 }
 

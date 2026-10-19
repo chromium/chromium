@@ -315,11 +315,16 @@ std::optional<SkColor> GetAccentColor(
   if (!accent_color->IsOpaque()) {
     SkColor background_color =
         layout_theme
-            .SystemColor(CSSValueID::kCanvas, color_scheme,
-                         document.GetColorProviderForPainting(color_scheme),
-                         document.IsInWebAppScope() &&
-                             document.IsInitialProfile() &&
-                             !paint_info.IsReadBackAllowedRendering())
+            .SystemColor(
+                CSSValueID::kCanvas,
+                /*theme_info=*/
+                {.color_provider =
+                     document.GetColorProviderForPainting(color_scheme),
+                 .color_scheme = color_scheme,
+                 .can_expose_system_accent_color =
+                     document.IsInWebAppScope() &&
+                     document.IsInitialProfile() &&
+                     !paint_info.IsReadBackAllowedRendering()})
             .Rgb();
     return color_utils::GetResultingPaintColor(accent_color->Rgb(),
                                                background_color);

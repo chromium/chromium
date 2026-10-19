@@ -41,6 +41,8 @@ class ColorProvider;
 
 namespace blink {
 
+struct ColorThemeInfo;
+
 class ComputedStyle;
 class ComputedStyleBuilder;
 class Element;
@@ -123,14 +125,10 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   Color PlatformTextSearchHighlightColor(
       bool active_match,
       bool in_forced_colors,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider,
-      bool can_expose_accent_color) const;
+      const ColorThemeInfo& theme_info) const;
   Color PlatformTextSearchColor(bool active_match,
                                 bool in_forced_colors,
-                                mojom::blink::ColorScheme color_scheme,
-                                const ui::ColorProvider* color_provider,
-                                bool can_expose_accent_color) const;
+                                const ColorThemeInfo& theme_info) const;
 
   virtual Color FocusRingColor(mojom::blink::ColorScheme color_scheme) const;
   void SetCustomFocusRingColor(const Color&);
@@ -147,10 +145,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   virtual base::TimeDelta CaretBlinkInterval() const;
 
   // System colors for CSS.
-  virtual Color SystemColor(CSSValueID,
-                            mojom::blink::ColorScheme color_scheme,
-                            const ui::ColorProvider* color_provider,
-                            bool can_expose_accent_color) const;
+  virtual Color SystemColor(CSSValueID, const ColorThemeInfo& theme_info) const;
 
   void AdjustSliderThumbSize(ComputedStyleBuilder&) const;
 
@@ -183,12 +178,8 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
   // GetAccentColorOrDefault will return GetAccentColor if there is a value from
   // the OS and if it is within an installed WebApp scope, otherwise it will
   // return the default accent color.
-  Color GetAccentColorOrDefault(mojom::blink::ColorScheme color_scheme,
-                                bool can_expose_accent_color) const;
-  // GetAccentColorText returns black or white depending on which can be
-  // rendered with enough contrast on the result of GetAccentColorOrDefault.
-  Color GetAccentColorText(mojom::blink::ColorScheme color_scheme,
-                           bool can_expose_accent_color) const;
+  Color GetAccentColorOrDefault(const ColorThemeInfo& theme_info) const;
+  Color GetAccentColorText(const ColorThemeInfo& theme_info) const;
 
   virtual Color SystemHighlightFromColorProvider(
       mojom::blink::ColorScheme color_scheme,
@@ -238,14 +229,9 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
     return custom_focus_ring_color_;
   }
 
-  Color DefaultSystemColor(CSSValueID,
-                           mojom::blink::ColorScheme color_scheme,
-                           const ui::ColorProvider* color_provider,
-                           bool can_expose_accent_color) const;
+  Color DefaultSystemColor(CSSValueID, const ColorThemeInfo& theme_info) const;
   Color SystemColorFromColorProvider(CSSValueID,
-                                     mojom::blink::ColorScheme color_scheme,
-                                     const ui::ColorProvider* color_provider,
-                                     bool can_expose_accent_color) const;
+                                     const ColorThemeInfo& theme_info) const;
 
  private:
   // This function is to be implemented in your platform-specific theme

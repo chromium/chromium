@@ -463,8 +463,8 @@ class MODULES_EXPORT Canvas2DRecorderContext : public CanvasPath {
   // Returns the color provider stored in the Page via the Document.
   const ui::ColorProvider* GetColorProvider() const;
 
-  // Returns if the current Document is within installed WebApp scope.
-  bool IsInWebAppScope() const;
+  // Returns whether the current Document may expose the system accent color.
+  bool CanExposeSystemAccentColor() const;
 
   virtual RespectImageOrientationEnum RespectImageOrientation() const = 0;
 

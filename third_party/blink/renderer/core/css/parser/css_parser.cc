@@ -437,16 +437,13 @@ bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
 
 bool CSSParser::ParseSystemColor(Color& color,
                                  const String& color_string,
-                                 mojom::blink::ColorScheme color_scheme,
-                                 const ui::ColorProvider* color_provider,
-                                 bool can_expose_accent_color) {
+                                 const ColorThemeInfo& theme_info) {
   CSSValueID id = CssValueKeywordID(color_string);
   if (!StyleColor::IsSystemColorIncludingDeprecated(id)) {
     return false;
   }
 
-  color = LayoutTheme::GetTheme().SystemColor(id, color_scheme, color_provider,
-                                              can_expose_accent_color);
+  color = LayoutTheme::GetTheme().SystemColor(id, theme_info);
   return true;
 }
 

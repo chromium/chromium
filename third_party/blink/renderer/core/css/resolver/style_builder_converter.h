@@ -604,10 +604,7 @@ struct ResolveColorValueContext {
  public:
   const CSSLengthResolver& length_resolver;
   const TextLinkColors& text_link_colors;
-  const mojom::blink::ColorScheme used_color_scheme =
-      mojom::blink::ColorScheme::kLight;
-  const ui::ColorProvider* color_provider = nullptr;
-  const bool can_expose_accent_color = false;
+  const ColorThemeInfo theme_info;
   const bool for_visited_link = false;
 };
 

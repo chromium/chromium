@@ -1055,10 +1055,11 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
       mojom::blink::PreferredColorScheme::kDark) {
     color_scheme = mojom::blink::ColorScheme::kDark;
   }
-  const ui::ColorProvider* color_provider =
-      document.GetColorProviderForPainting(color_scheme);
-  auto can_expose_accent_color =
-      document.IsInWebAppScope() && document.IsInitialProfile();
+  const ColorThemeInfo theme_info{
+      .color_provider = document.GetColorProviderForPainting(color_scheme),
+      .color_scheme = color_scheme,
+      .can_expose_system_accent_color =
+          document.IsInWebAppScope() && document.IsInitialProfile()};
 
   // Re-resolve some internal forced color properties whose initial
   // values are system colors. This is necessary to ensure we get
@@ -1066,8 +1067,7 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   // system color when the theme changes.
   if (builder.InternalForcedBackgroundColor().IsSystemColor()) {
     builder.SetInternalForcedBackgroundColor(
-        builder.InternalForcedBackgroundColor().ResolveSystemColor(
-            color_scheme, color_provider, can_expose_accent_color));
+        builder.InternalForcedBackgroundColor().ResolveSystemColor(theme_info));
   }
   // Per the CSS Color Adjustment specification [1]:
   // In forced-colors mode, if 'font-variant-emoji' computes to 'normal' or
@@ -1081,13 +1081,11 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder,
   }
   if (builder.InternalForcedColor().IsSystemColor()) {
     builder.SetInternalForcedColor(
-        builder.InternalForcedColor().ResolveSystemColor(
-            color_scheme, color_provider, can_expose_accent_color));
+        builder.InternalForcedColor().ResolveSystemColor(theme_info));
   }
   if (builder.InternalForcedVisitedColor().IsSystemColor()) {
     builder.SetInternalForcedVisitedColor(
-        builder.InternalForcedVisitedColor().ResolveSystemColor(
-            color_scheme, color_provider, can_expose_accent_color));
+        builder.InternalForcedVisitedColor().ResolveSystemColor(theme_info));
   }
 }
 

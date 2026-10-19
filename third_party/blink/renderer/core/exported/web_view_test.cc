@@ -651,10 +651,13 @@ TEST_F(WebViewTest, SetBaseBackgroundColorWithColorScheme) {
 
   mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
   Color system_background_color = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, color_scheme,
-      web_view->GetPage()->GetColorProviderForPainting(
-          color_scheme, /*in_forced_colors=*/true),
-      document->IsInWebAppScope() && document->IsInitialProfile());
+      CSSValueID::kCanvas,
+      /*theme_info=*/
+      {.color_provider = web_view->GetPage()->GetColorProviderForPainting(
+           color_scheme, /*in_forced_colors=*/true),
+       .color_scheme = color_scheme,
+       .can_expose_system_accent_color =
+           document->IsInWebAppScope() && document->IsInitialProfile()});
   EXPECT_EQ(system_background_color, frame_view->BaseBackgroundColor());
 
   color_scheme_helper.SetInForcedColors(*document, /*in_forced_colors=*/false);

@@ -41,6 +41,7 @@
 namespace blink {
 
 class AnchorEvaluator;
+struct ColorThemeInfo;
 class ComputedStyle;
 class FontDescription;
 class PseudoElement;
@@ -69,6 +70,8 @@ class CORE_EXPORT StyleResolverState {
   // grab the document from.  This is why we have to store the document
   // separately.
   Document& GetDocument() const { return *document_; }
+  bool CanExposeSystemAccentColor() const;
+  ColorThemeInfo GetColorThemeInfo() const;
   // Returns the element we are computing style for. This returns the same as
   // GetElement() unless this is a pseudo-element request or we are resolving
   // style for an SVG element instantiated in a <use> shadow tree. This method

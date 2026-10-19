@@ -199,9 +199,12 @@ TextPaintStyle TextPaintStyleForTextMatch(const TextMatchMarker& marker,
   const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
   const Color platform_text_color =
       LayoutTheme::GetTheme().PlatformTextSearchColor(
-          marker.IsActiveMatch(), document.InForcedColorsMode(), color_scheme,
-          document.GetColorProviderForPainting(color_scheme),
-          document.IsInWebAppScope() && document.IsInitialProfile());
+          marker.IsActiveMatch(), document.InForcedColorsMode(),
+          /*theme_info=*/
+          {.color_provider = document.GetColorProviderForPainting(color_scheme),
+           .color_scheme = color_scheme,
+           .can_expose_system_accent_color =
+               document.IsInWebAppScope() && document.IsInitialProfile()});
   // Comparing against the value of the 'color' property doesn't always make
   // sense (for example for SVG <text> which paints using 'fill' and 'stroke').
   if (!ignore_current_color) {
@@ -581,10 +584,13 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
               LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
                   text_match_marker.IsActiveMatch(),
                   document.InForcedColorsMode(),
-                  originating_style_.UsedColorScheme(),
-                  document.GetColorProviderForPainting(
-                      originating_style_.UsedColorScheme()),
-                  document.IsInWebAppScope() && document.IsInitialProfile());
+                  /*theme_info=*/
+                  {.color_provider = document.GetColorProviderForPainting(
+                       originating_style_.UsedColorScheme()),
+                   .color_scheme = originating_style_.UsedColorScheme(),
+                   .can_expose_system_accent_color =
+                       document.IsInWebAppScope() &&
+                       document.IsInitialProfile()});
           PaintRect(
               paint_info_.context,
               ComputeBackgroundRect(text, paint_start_offset, paint_end_offset),

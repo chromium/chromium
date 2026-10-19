@@ -89,8 +89,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
     const FilterOperation& filter,
     const CSSProperty& property,
     double zoom,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) {
+    const ColorThemeInfo& theme_info) {
   InterpolableValue* value = nullptr;
   FilterOperation::OperationType type = filter.GetType();
   switch (type) {
@@ -129,8 +128,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
 
     case FilterOperation::OperationType::kDropShadow:
       value = InterpolableShadow::Create(
-          To<DropShadowFilterOperation>(filter).Shadow(), zoom, color_scheme,
-          color_provider);
+          To<DropShadowFilterOperation>(filter).Shadow(), zoom, theme_info);
       break;
 
     case FilterOperation::OperationType::kReference:

@@ -43,14 +43,11 @@
 
 // IWYU pragma: no_include "third_party/blink/renderer/platform/heap/visitor.h"
 
-namespace ui {
-class ColorProvider;
-}  // namespace ui
-
 namespace blink {
 
 class CanvasGradient;
 class CanvasPattern;
+struct ColorThemeInfo;
 
 class CanvasStyle final {
   DISALLOW_NEW();
@@ -160,10 +157,8 @@ enum class ColorParseResult {
 // Parses the canvas color string and returns the result. If the result is
 // `kParsedColor`, `parsed_color` is set appropriately.
 ColorParseResult ParseCanvasColorString(const String& color_string,
-                                        mojom::blink::ColorScheme color_scheme,
                                         Color& parsed_color,
-                                        const ui::ColorProvider* color_provider,
-                                        bool can_expose_accent_color,
+                                        const ColorThemeInfo& theme_info,
                                         bool has_style_context);
 
 // Parses the canvas color string, returning true on success. If `color_string`

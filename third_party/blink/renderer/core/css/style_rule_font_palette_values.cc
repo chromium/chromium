@@ -87,10 +87,12 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector(
   const ResolveColorValueContext color_context{
       .length_resolver = *media_values,
       .text_link_colors = document.GetTextLinkColors(),
-      .used_color_scheme = used_color_scheme,
-      .color_provider = document.GetColorProviderForPainting(used_color_scheme),
-      .can_expose_accent_color =
-          document.IsInWebAppScope() && document.IsInitialProfile(),
+      .theme_info = {.color_provider = document.GetColorProviderForPainting(
+                         used_color_scheme),
+                     .color_scheme = used_color_scheme,
+                     .can_expose_system_accent_color =
+                         document.IsInWebAppScope() &&
+                         document.IsInitialProfile()},
       .for_visited_link = false};
 
   auto ConvertToColor =
@@ -101,9 +103,8 @@ StyleRuleFontPaletteValues::GetOverrideColorsAsVector(
     if (color_value.IsIdentifierValue()) {
       const CSSIdentifierValue& color_identifier =
           To<CSSIdentifierValue>(color_value);
-      return StyleColor::ColorFromKeyword(
-          color_identifier.GetValueID(), color_context.used_color_scheme,
-          color_context.color_provider, color_context.can_expose_accent_color);
+      return StyleColor::ColorFromKeyword(color_identifier.GetValueID(),
+                                          color_context.theme_info);
     }
     if (const cssvalue::CSSColor* css_color =
             DynamicTo<cssvalue::CSSColor>(color_value)) {

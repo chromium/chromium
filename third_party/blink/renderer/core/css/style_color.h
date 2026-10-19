@@ -34,8 +34,9 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/values_equivalent.h"
-#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -53,6 +54,17 @@ namespace blink {
 class CalculationValue;
 class CSSLengthResolver;
 class CSSValue;
+
+// Bundles the theme-related inputs needed to resolve a system-color keyword to
+// a concrete color.
+struct ColorThemeInfo {
+  raw_ptr<const ui::ColorProvider> color_provider = nullptr;
+  mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
+  // Whether the OS accent color may be exposed to this document. This is
+  // restricted to installed web apps in the initial browser profile to limit
+  // fingerprinting.
+  bool can_expose_system_accent_color = false;
+};
 
 class CORE_EXPORT StyleColor {
   DISALLOW_NEW();
@@ -286,9 +298,7 @@ class CORE_EXPORT StyleColor {
   // as forced colors mode because initial values for some internal forced
   // colors properties are system colors so we need to re-resolve them to ensure
   // they pick up the correct color on theme change.
-  StyleColor ResolveSystemColor(mojom::blink::ColorScheme color_scheme,
-                                const ui::ColorProvider* color_provider,
-                                bool can_expose_accent_color) const;
+  StyleColor ResolveSystemColor(const ColorThemeInfo& theme_info) const;
 
   const CSSValue* ToCSSValue() const;
 
@@ -296,10 +306,7 @@ class CORE_EXPORT StyleColor {
     return EffectiveColorKeyword() == CSSValueID::kInvalid;
   }
 
-  static Color ColorFromKeyword(CSSValueID,
-                                mojom::blink::ColorScheme color_scheme,
-                                const ui::ColorProvider* color_provider,
-                                bool can_expose_accent_color);
+  static Color ColorFromKeyword(CSSValueID, const ColorThemeInfo& theme_info);
   static bool IsColorKeyword(CSSValueID);
   static bool IsSystemColorIncludingDeprecated(CSSValueID);
   static bool IsSystemColor(CSSValueID);

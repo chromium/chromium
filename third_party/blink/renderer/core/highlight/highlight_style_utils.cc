@@ -43,10 +43,7 @@ mojom::blink::ColorScheme UsedColorScheme(
 }
 
 // Returns the forced foreground color for the given |pseudo|.
-Color ForcedForegroundColor(PseudoId pseudo,
-                            mojom::blink::ColorScheme color_scheme,
-                            const ui::ColorProvider* color_provider,
-                            bool can_expose_accent_color) {
+Color ForcedForegroundColor(PseudoId pseudo, const ColorThemeInfo& theme_info) {
   CSSValueID keyword = CSSValueID::kHighlighttext;
   switch (pseudo) {
     case kPseudoIdSearchText:
@@ -69,15 +66,11 @@ Color ForcedForegroundColor(PseudoId pseudo,
     default:
       NOTREACHED();
   }
-  return LayoutTheme::GetTheme().SystemColor(
-      keyword, color_scheme, color_provider, can_expose_accent_color);
+  return LayoutTheme::GetTheme().SystemColor(keyword, theme_info);
 }
 
 // Returns the forced 'background-color' for the given |pseudo|.
-Color ForcedBackgroundColor(PseudoId pseudo,
-                            mojom::blink::ColorScheme color_scheme,
-                            const ui::ColorProvider* color_provider,
-                            bool can_expose_accent_color) {
+Color ForcedBackgroundColor(PseudoId pseudo, const ColorThemeInfo& theme_info) {
   CSSValueID keyword = CSSValueID::kHighlight;
   switch (pseudo) {
     case kPseudoIdSearchText:
@@ -100,8 +93,7 @@ Color ForcedBackgroundColor(PseudoId pseudo,
     default:
       NOTREACHED();
   }
-  return LayoutTheme::GetTheme().SystemColor(
-      keyword, color_scheme, color_provider, can_expose_accent_color);
+  return LayoutTheme::GetTheme().SystemColor(keyword, theme_info);
 }
 
 // Returns the forced background color if |property| is ‘background-color’,
@@ -112,15 +104,15 @@ Color ForcedColor(const ComputedStyle& originating_style,
                   PseudoId pseudo,
                   const CSSProperty& property,
                   const ui::ColorProvider* color_provider,
-                  bool can_expose_accent_color) {
-  mojom::blink::ColorScheme color_scheme =
-      UsedColorScheme(originating_style, pseudo_style);
+                  bool can_expose_system_accent_color) {
+  const ColorThemeInfo theme_info{
+      .color_provider = color_provider,
+      .color_scheme = UsedColorScheme(originating_style, pseudo_style),
+      .can_expose_system_accent_color = can_expose_system_accent_color};
   if (property.IDEquals(CSSPropertyID::kBackgroundColor)) {
-    return ForcedBackgroundColor(pseudo, color_scheme, color_provider,
-                                 can_expose_accent_color);
+    return ForcedBackgroundColor(pseudo, theme_info);
   }
-  return ForcedForegroundColor(pseudo, color_scheme, color_provider,
-                               can_expose_accent_color);
+  return ForcedForegroundColor(pseudo, theme_info);
 }
 
 // Returns the UA default ‘color’ for the given |pseudo|.
@@ -135,8 +127,11 @@ std::optional<Color> DefaultForegroundColor(
     case kPseudoIdSelection:
       if (is_read_back_allowed_rendering) {
         return LayoutTheme::GetTheme().SystemColor(
-            CSSValueID::kHighlighttext, color_scheme,
-            document.GetColorProviderForPainting(color_scheme), false);
+            CSSValueID::kHighlighttext,
+            /*theme_info=*/
+            {.color_provider =
+                 document.GetColorProviderForPainting(color_scheme),
+             .color_scheme = color_scheme});
       }
       if (!LayoutTheme::GetTheme().SupportsSelectionForegroundColors()) {
         if (originating_style.VisitedDependentColor(GetCSSPropertyColor())
@@ -158,14 +153,20 @@ std::optional<Color> DefaultForegroundColor(
     case kPseudoIdSearchText:
       return LayoutTheme::GetTheme().PlatformTextSearchColor(
           search_text_is_active_match == SearchTextIsActiveMatch::kYes,
-          document.InForcedColorsMode(), color_scheme,
-          document.GetColorProviderForPainting(color_scheme),
-          document.IsInWebAppScope() && document.IsInitialProfile());
+          document.InForcedColorsMode(),
+          /*theme_info=*/
+          {.color_provider = document.GetColorProviderForPainting(color_scheme),
+           .color_scheme = color_scheme,
+           .can_expose_system_accent_color =
+               document.IsInWebAppScope() && document.IsInitialProfile()});
     case kPseudoIdTargetText:
       return LayoutTheme::GetTheme().PlatformTextSearchColor(
-          false /* active match */, document.InForcedColorsMode(), color_scheme,
-          document.GetColorProviderForPainting(color_scheme),
-          document.IsInWebAppScope() && document.IsInitialProfile());
+          false /* active match */, document.InForcedColorsMode(),
+          /*theme_info=*/
+          {.color_provider = document.GetColorProviderForPainting(color_scheme),
+           .color_scheme = color_scheme,
+           .can_expose_system_accent_color =
+               document.IsInWebAppScope() && document.IsInitialProfile()});
     case kPseudoIdSpellingError:
     case kPseudoIdGrammarError:
     case kPseudoIdHighlight:
@@ -186,8 +187,11 @@ Color DefaultBackgroundColor(
     case kPseudoIdSelection:
       if (is_read_back_allowed_rendering) {
         return LayoutTheme::GetTheme().SystemColor(
-            CSSValueID::kHighlight, color_scheme,
-            document.GetColorProviderForPainting(color_scheme), false);
+            CSSValueID::kHighlight,
+            /*theme_info=*/
+            {.color_provider =
+                 document.GetColorProviderForPainting(color_scheme),
+             .color_scheme = color_scheme});
       }
       return document.GetFrame()->Selection().FrameIsFocusedAndActive()
                  ? LayoutTheme::GetTheme().ActiveSelectionBackgroundColor(
@@ -197,9 +201,12 @@ Color DefaultBackgroundColor(
     case kPseudoIdSearchText:
       return LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
           search_text_is_active_match == SearchTextIsActiveMatch::kYes,
-          document.InForcedColorsMode(), color_scheme,
-          document.GetColorProviderForPainting(color_scheme),
-          document.IsInWebAppScope() && document.IsInitialProfile());
+          document.InForcedColorsMode(),
+          /*theme_info=*/
+          {.color_provider = document.GetColorProviderForPainting(color_scheme),
+           .color_scheme = color_scheme,
+           .can_expose_system_accent_color =
+               document.IsInWebAppScope() && document.IsInitialProfile()});
     case kPseudoIdTargetText:
       return Color::FromRGBA32(
           shared_highlighting::kFragmentTextBackgroundColorARGB);

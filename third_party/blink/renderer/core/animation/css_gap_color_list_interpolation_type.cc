@@ -24,25 +24,25 @@ namespace {
 
 InterpolationValue GetInterpolationValueFromGapData(
     const GapData<StyleColor>& data,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider = nullptr) {
+    const ColorThemeInfo& theme_info) {
   if (data.IsRepeaterData()) {
     // At this stage, the GapData list should be fully expanded, so any
     // remaining repeater must be an auto repeater.
     CHECK(data.GetValueRepeater()->IsAutoRepeater());
     return InterpolationValue(InterpolableGapColorAutoRepeater::Create(
-        data.GetValueRepeater(), color_scheme));
+        data.GetValueRepeater(), theme_info));
   }
 
   return InterpolationValue(
-      CSSColorInterpolationType::CreateBaseInterpolableColor(
-          data.GetValue(), color_scheme, color_provider));
+      CSSColorInterpolationType::CreateBaseInterpolableColor(data.GetValue(),
+                                                             theme_info));
 }
 
 InterpolationValue GetInterpolationValueFromCSSValue(
     const CSSValue* value,
     const StyleResolverState& state,
-    mojom::blink::ColorScheme color_scheme) {
+    const ColorThemeInfo& theme_info,
+    CSSInterpolationType::ConversionCheckers& conversion_checkers) {
   CHECK(value);
   if (auto* gap_repeat_value = DynamicTo<cssvalue::CSSRepeatValue>(value)) {
     CHECK(gap_repeat_value->IsAutoRepeatValue());
@@ -57,7 +57,7 @@ InterpolationValue GetInterpolationValueFromCSSValue(
         MakeGarbageCollected<ValueRepeater<StyleColor>>(
             std::move(gap_values), /*repeat_count=*/std::nullopt);
     return InterpolationValue(
-        InterpolableGapColorAutoRepeater::Create(value_repeater, color_scheme));
+        InterpolableGapColorAutoRepeater::Create(value_repeater, theme_info));
   }
 
   return InterpolationValue(
@@ -127,11 +127,10 @@ CSSGapColorListInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   GapDataList<StyleColor> list = GetProperty(style);
   const GapDataList<StyleColor>::GapDataVector& values =
       CSSGapDecorationUtils::GetExpandedGapDataList(list);
-  const mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
-
+  const ColorThemeInfo theme_info{.color_scheme = style.UsedColorScheme()};
   return ListInterpolationFunctions::CreateList(
-      values.size(), [&values, color_scheme](wtf_size_t i) {
-        return GetInterpolationValueFromGapData(values[i], color_scheme);
+      values.size(), [&values, &theme_info](wtf_size_t i) {
+        return GetInterpolationValueFromGapData(values[i], theme_info);
       });
 }
 
@@ -255,16 +254,13 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertInitial(
   CHECK(initial_list.HasSingleValue());
   const StyleColor initial_color = initial_list.GetSingleValue();
 
-  mojom::blink::ColorScheme color_scheme =
-      state.StyleBuilder().UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      state.GetDocument().GetColorProviderForPainting(color_scheme);
+  const ColorThemeInfo theme_info = state.GetColorThemeInfo();
 
   return ListInterpolationFunctions::CreateList(
-      1, [&initial_color, &color_scheme, &color_provider](wtf_size_t) {
+      1, [&initial_color, &theme_info](wtf_size_t) {
         return InterpolationValue(
             CSSColorInterpolationType::CreateBaseInterpolableColor(
-                initial_color, color_scheme, color_provider));
+                initial_color, theme_info));
       });
 }
 
@@ -315,24 +311,20 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertInherit(
     return nullptr;
   }
 
-  const mojom::blink::ColorScheme color_scheme =
-      state.StyleBuilder().UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      state.GetDocument().GetColorProviderForPainting(color_scheme);
+  const ColorThemeInfo theme_info = state.GetColorThemeInfo();
 
   return ListInterpolationFunctions::CreateList(
       inherited_gap_data_vector.size(),
-      [&inherited_gap_data_vector, color_scheme,
-       color_provider](wtf_size_t index) {
+      [&inherited_gap_data_vector, &theme_info](wtf_size_t index) {
         return GetInterpolationValueFromGapData(
-            inherited_gap_data_vector[index], color_scheme, color_provider);
+            inherited_gap_data_vector[index], theme_info);
       });
 }
 
 InterpolationValue CSSGapColorListInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers&) const {
+    ConversionCheckers& conversion_checkers) const {
   // The `color` property might still be represented as a single CSSValue when
   // parsed via the fast path rather than the standard `ParseSingleValue()`
   // method. Wrap single values for consistent handling.
@@ -350,14 +342,13 @@ InterpolationValue CSSGapColorListInterpolationType::MaybeConvertValue(
 
   const CSSValueList* expanded_list =
       CSSGapDecorationUtils::GetExpandedCSSValueListForGapData(*list, state);
-  const mojom::blink::ColorScheme color_scheme =
-      state.StyleBuilder().UsedColorScheme();
-
+  const ColorThemeInfo theme_info = state.GetColorThemeInfo();
   return ListInterpolationFunctions::CreateList(
-      expanded_list->length(),
-      [expanded_list, &state, color_scheme](wtf_size_t index) {
+      expanded_list->length(), [expanded_list, &state, &theme_info,
+                                &conversion_checkers](wtf_size_t index) {
         return GetInterpolationValueFromCSSValue(&expanded_list->Item(index),
-                                                 state, color_scheme);
+                                                 state, theme_info,
+                                                 conversion_checkers);
       });
 }
 

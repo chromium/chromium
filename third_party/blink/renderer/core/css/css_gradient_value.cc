@@ -400,10 +400,11 @@ static Color ResolveStopColor(const CSSToLengthConversionData& conversion_data,
   const ResolveColorValueContext context{
       .length_resolver = conversion_data,
       .text_link_colors = document.GetTextLinkColors(),
-      .used_color_scheme = color_scheme,
-      .color_provider = document.GetColorProviderForPainting(color_scheme),
-      .can_expose_accent_color =
-          document.IsInWebAppScope() && document.IsInitialProfile()};
+      .theme_info = {
+          .color_provider = document.GetColorProviderForPainting(color_scheme),
+          .color_scheme = color_scheme,
+          .can_expose_system_accent_color =
+              document.IsInWebAppScope() && document.IsInitialProfile()}};
   const StyleColor style_stop_color = ResolveColorValue(stop_color, context);
   return style_stop_color.Resolve(
       style.VisitedDependentColor(GetCSSPropertyColor()), color_scheme);
@@ -456,7 +457,7 @@ static const CSSValue* GetComputedStopColor(const CSSValue& color,
   const ResolveColorValueContext context{
       .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
       .text_link_colors = TextLinkColors(),
-      .used_color_scheme = color_scheme};
+      .theme_info = {.color_scheme = color_scheme}};
   const StyleColor style_stop_color = ResolveColorValue(color, context);
   const Color current_color =
       style.VisitedDependentColor(GetCSSPropertyColor());

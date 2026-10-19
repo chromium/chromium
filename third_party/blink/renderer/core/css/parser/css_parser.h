@@ -16,10 +16,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
-namespace ui {
-class ColorProvider;
-}  // namespace ui
-
 namespace blink {
 
 class Color;
@@ -38,6 +34,7 @@ class CSSPrimitiveValue;
 class CSSParserLocalContext;
 enum class ParseSheetResult;
 enum class SecureContextMode;
+struct ColorThemeInfo;
 struct KeyframeOffset;
 
 // This class serves as the public API for the css/parser subsystem
@@ -152,9 +149,7 @@ class CORE_EXPORT CSSParser {
   static bool ParseColor(Color&, const String&, bool strict = true);
   static bool ParseSystemColor(Color&,
                                const String&,
-                               mojom::blink::ColorScheme color_scheme,
-                               const ui::ColorProvider* color_provider,
-                               bool can_expose_accent_color);
+                               const ColorThemeInfo& theme_info);
 
   static void ParseSheetForInspector(const CSSParserContext*,
                                      StyleSheetContents*,

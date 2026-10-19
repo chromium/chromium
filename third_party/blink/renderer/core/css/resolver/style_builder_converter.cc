@@ -2937,12 +2937,10 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
     }
     if (IsQuirkOrLinkOrFocusRingColor(value_id)) {
       return StyleColor(ResolveQuirkOrLinkOrFocusRingColor(
-          value_id, context.text_link_colors, context.used_color_scheme,
+          value_id, context.text_link_colors, context.theme_info.color_scheme,
           context.for_visited_link));
     }
-    Color color = StyleColor::ColorFromKeyword(
-        value_id, context.used_color_scheme, context.color_provider,
-        context.can_expose_accent_color);
+    Color color = StyleColor::ColorFromKeyword(value_id, context.theme_info);
     // Preserve the identifier for system colors since this is needed by
     // 'forced colors mode'.
     if (StyleColor::IsSystemColorIncludingDeprecated(value_id)) {
@@ -3037,7 +3035,7 @@ StyleColor ResolveColorValueImpl(const CSSValue& value,
 const CSSValue& ResolveLightDarkPair(
     const CSSLightDarkValuePair& light_dark_pair,
     const ResolveColorValueContext& context) {
-  return context.used_color_scheme == mojom::blink::ColorScheme::kLight
+  return context.theme_info.color_scheme == mojom::blink::ColorScheme::kLight
              ? light_dark_pair.First()
              : light_dark_pair.Second();
 }
@@ -3087,11 +3085,14 @@ StyleColor StyleBuilderConverter::ConvertStyleColor(
   const ResolveColorValueContext context{
       .length_resolver = state.CssToLengthConversionData(),
       .text_link_colors = document.GetTextLinkColors(),
-      .used_color_scheme = color_scheme,
-      .color_provider = document.GetColorProviderForPainting(color_scheme),
-      .can_expose_accent_color =
-          document.IsInWebAppScope() && document.IsInitialProfile(),
-      .for_visited_link = for_visited_link};
+      .theme_info = {.color_provider =
+                         document.GetColorProviderForPainting(color_scheme),
+                     .color_scheme = color_scheme,
+                     .can_expose_system_accent_color =
+                         document.IsInWebAppScope() &&
+                         document.IsInitialProfile()},
+      .for_visited_link = for_visited_link,
+  };
   return ResolveColorValue(value, context);
 }
 
@@ -3542,10 +3543,12 @@ static const CSSValue& ComputeColorValue(
   const ResolveColorValueContext context{
       .length_resolver = conversion_data,
       .text_link_colors = document.GetTextLinkColors(),
-      .used_color_scheme = color_scheme,
-      .color_provider = document.GetColorProviderForPainting(color_scheme),
-      .can_expose_accent_color =
-          document.IsInWebAppScope() && document.IsInitialProfile(),
+      .theme_info = {.color_provider =
+                         document.GetColorProviderForPainting(color_scheme),
+                     .color_scheme = color_scheme,
+                     .can_expose_system_accent_color =
+                         document.IsInWebAppScope() &&
+                         document.IsInitialProfile()},
       .for_visited_link = false};
   const StyleColor style_color = ResolveColorValue(color_value, context);
   return *style_color.ToCSSValue();

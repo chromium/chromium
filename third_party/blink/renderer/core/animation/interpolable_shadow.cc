@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/interpolable_shadow.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/interpolable_color.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
@@ -31,14 +32,10 @@ InterpolableColor* MaybeConvertColor(const CSSValue* value,
     return DynamicTo<InterpolableColor>(
         CSSColorInterpolationType::MaybeCreateInterpolableColor(*value, state));
   }
-  mojom::blink::ColorScheme color_scheme =
-      state ? state->StyleBuilder().UsedColorScheme()
-            : mojom::blink::ColorScheme::kLight;
-  const ui::ColorProvider* color_provider =
-      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-            : nullptr;
+  const ColorThemeInfo theme_info =
+      state ? state->GetColorThemeInfo() : ColorThemeInfo{};
   return CSSColorInterpolationType::CreateInterpolableColor(
-      StyleColor::CurrentColor(), color_scheme, color_provider);
+      StyleColor::CurrentColor(), theme_info);
 }
 }  // namespace
 
@@ -65,26 +62,22 @@ InterpolableShadow::InterpolableShadow(InterpolableLength* x,
 InterpolableShadow* InterpolableShadow::Create(
     const ShadowData& shadow_data,
     double zoom,
-    mojom::blink::ColorScheme color_scheme,
-    const ui::ColorProvider* color_provider) {
+    const ColorThemeInfo& theme_info) {
   return MakeGarbageCollected<InterpolableShadow>(
       InterpolableLength::CreatePixels(shadow_data.X() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Y() / zoom),
       InterpolableLength::CreatePixels(shadow_data.BlurValue() / zoom),
       InterpolableLength::CreatePixels(shadow_data.Spread() / zoom),
-      CSSColorInterpolationType::CreateInterpolableColor(
-          shadow_data.GetColor(), color_scheme, color_provider),
+      CSSColorInterpolationType::CreateInterpolableColor(shadow_data.GetColor(),
+                                                         theme_info),
       shadow_data.Style());
 }
 
 // static
 InterpolableShadow* InterpolableShadow::CreateNeutral() {
-  // It is okay to pass in `kLight` for `color_scheme` and nullptr for
-  // `color_provider` because the neutral color value for shadow data is
-  // guaranteed not to be a system color.
-  return Create(ShadowData::NeutralValue(), 1,
-                /*color_scheme=*/mojom::blink::ColorScheme::kLight,
-                /*color_provider=*/nullptr);
+  // The neutral color value for shadow data is guaranteed not to be a system
+  // color, so the theme information is not used.
+  return Create(ShadowData::NeutralValue(), 1, ColorThemeInfo{});
 }
 
 // static

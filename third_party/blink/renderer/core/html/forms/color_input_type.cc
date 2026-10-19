@@ -174,10 +174,8 @@ String ColorInputType::SanitizeValue(const String& proposed_value) const {
     if (CssValueKeywordID(proposed_value) == CSSValueID::kCurrentcolor) {
       color = Color::kBlack;
     } else if (!CSSParser::ParseColor(color, proposed_value) &&
-               !CSSParser::ParseSystemColor(
-                   color, proposed_value, mojom::blink::ColorScheme::kLight,
-                   /*color_provider=*/nullptr,
-                   /*can_expose_accent_color=*/false)) {
+               !CSSParser::ParseSystemColor(color, proposed_value,
+                                            ColorThemeInfo{})) {
       // An unparsable value falls back to opaque black.
       color = Color::kBlack;
     }
@@ -194,10 +192,7 @@ String ColorInputType::SanitizeValue(const String& proposed_value) const {
     // Handle most color formats (hex, rgb, hsl, etc.) and System Colors (e.g.
     // "ActiveBorder").
     if (CSSParser::ParseColor(color, proposed_value) ||
-        CSSParser::ParseSystemColor(color, proposed_value,
-                                    mojom::blink::ColorScheme::kLight,
-                                    /*color_provider=*/nullptr,
-                                    /*can_expose_accent_color=*/false)) {
+        CSSParser::ParseSystemColor(color, proposed_value, ColorThemeInfo{})) {
       // If the input color has transparency, we drop the alpha channel (make
       // it opaque). Convert to sRGB and serialize as #rrggbb.
       return Color::FromRGBA32(color.MakeOpaque().Rgb())

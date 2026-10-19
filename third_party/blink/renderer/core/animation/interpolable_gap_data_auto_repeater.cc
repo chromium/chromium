@@ -92,14 +92,14 @@ void InterpolableGapLengthAutoRepeater::Composite(
 
 InterpolableGapColorAutoRepeater* InterpolableGapColorAutoRepeater::Create(
     const ValueRepeater<StyleColor>* repeater,
-    mojom::blink::ColorScheme color_scheme) {
+    const ColorThemeInfo& theme_info) {
   CHECK(repeater);
 
   InterpolableList* values =
       MakeGarbageCollected<InterpolableList>(repeater->RepeatedValues().size());
   for (wtf_size_t i = 0; i < repeater->RepeatedValues().size(); ++i) {
     InterpolableValue* result =
-        CreateItem(repeater->RepeatedValues()[i], color_scheme);
+        CreateItem(repeater->RepeatedValues()[i], theme_info);
     DCHECK(result);
     values->Set(i, std::move(result));
   }
@@ -159,9 +159,9 @@ GapData<StyleColor> InterpolableGapColorAutoRepeater::CreateGapData(
 
 InterpolableValue* InterpolableGapColorAutoRepeater::CreateItem(
     const StyleColor& value,
-    mojom::blink::ColorScheme color_scheme) {
-  return CSSColorInterpolationType::CreateBaseInterpolableColor(
-      value, color_scheme, /*color_provider=*/nullptr);
+    const ColorThemeInfo& theme_info) {
+  return CSSColorInterpolationType::CreateBaseInterpolableColor(value,
+                                                                theme_info);
 }
 
 void InterpolableGapColorAutoRepeater::Composite(

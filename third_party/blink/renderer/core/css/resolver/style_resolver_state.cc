@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -143,6 +144,19 @@ StyleResolverState::~StyleResolverState() {
   // For performance reasons, explicitly clear HeapVectors and
   // HeapHashMaps to avoid giving a pressure on Oilpan's GC.
   animation_update_.Clear();
+}
+
+bool StyleResolverState::CanExposeSystemAccentColor() const {
+  return GetDocument().IsInWebAppScope() && GetDocument().IsInitialProfile();
+}
+
+ColorThemeInfo StyleResolverState::GetColorThemeInfo() const {
+  const mojom::blink::ColorScheme color_scheme =
+      StyleBuilder().UsedColorScheme();
+  return {
+      .color_provider = GetDocument().GetColorProviderForPainting(color_scheme),
+      .color_scheme = color_scheme,
+      .can_expose_system_accent_color = CanExposeSystemAccentColor()};
 }
 
 bool StyleResolverState::IsInheritedForUnset(

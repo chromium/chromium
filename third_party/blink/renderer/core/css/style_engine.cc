@@ -4780,10 +4780,11 @@ void StyleEngine::UpdateForcedBackgroundColor() {
   CHECK(GetDocument().GetPage());
   mojom::blink::ColorScheme color_scheme = mojom::blink::ColorScheme::kLight;
   forced_background_color_ = LayoutTheme::GetTheme().SystemColor(
-      CSSValueID::kCanvas, color_scheme,
-      GetDocument().GetPage()->GetColorProviderForPainting(
-          color_scheme, forced_colors_ != ForcedColors::kNone),
-      GetDocument().IsInWebAppScope() && GetDocument().IsInitialProfile());
+      CSSValueID::kCanvas,
+      /*theme_info=*/
+      {.color_provider = GetDocument().GetPage()->GetColorProviderForPainting(
+           color_scheme, forced_colors_ != ForcedColors::kNone),
+       .color_scheme = color_scheme});
 }
 
 mojom::blink::ColorScheme StyleEngine::AdjustAboutBlankColorScheme(

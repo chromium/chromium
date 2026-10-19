@@ -16,6 +16,7 @@ namespace blink {
 class CSSProperty;
 class CSSValue;
 class StyleResolverState;
+struct ColorThemeInfo;
 
 // Represents a blink::FilterOperation, converted into a form that can be
 // interpolated from/to.
@@ -29,12 +30,10 @@ class CORE_EXPORT InterpolableFilter final : public InterpolableValue {
     DCHECK(value_);
   }
 
-  static InterpolableFilter* MaybeCreate(
-      const FilterOperation&,
-      const CSSProperty& property,
-      double zoom,
-      mojom::blink::ColorScheme color_scheme,
-      const ui::ColorProvider* color_provider);
+  static InterpolableFilter* MaybeCreate(const FilterOperation&,
+                                         const CSSProperty& property,
+                                         double zoom,
+                                         const ColorThemeInfo&);
   static InterpolableFilter* MaybeConvertCSSValue(const CSSValue&,
                                                   const StyleResolverState&);
 

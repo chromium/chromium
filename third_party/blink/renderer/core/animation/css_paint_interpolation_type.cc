@@ -58,12 +58,8 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInitial(
                 initial_color))
     return nullptr;
 
-  mojom::blink::ColorScheme color_scheme =
-      state.StyleBuilder().UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      state.GetDocument().GetColorProviderForPainting(color_scheme);
   return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
-      initial_color, color_scheme, color_provider));
+      initial_color, state.GetColorThemeInfo()));
 }
 
 PairwiseInterpolationValue CSSPaintInterpolationType::MaybeMergeSingles(
@@ -120,18 +116,14 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInherit(
   }
   conversion_checkers.push_back(
       MakeGarbageCollected<InheritedPaintChecker>(CssProperty(), parent_color));
-  mojom::blink::ColorScheme color_scheme =
-      state.StyleBuilder().UsedColorScheme();
-  const ui::ColorProvider* color_provider =
-      state.GetDocument().GetColorProviderForPainting(color_scheme);
   return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
-      parent_color, color_scheme, color_provider));
+      parent_color, state.GetColorThemeInfo()));
 }
 
 InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState& state,
-    ConversionCheckers&) const {
+    ConversionCheckers& conversion_checkers) const {
   InterpolableValue* interpolable_color =
       CSSColorInterpolationType::MaybeCreateInterpolableColor(value, &state);
   if (!interpolable_color)
@@ -148,8 +140,10 @@ CSSPaintInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
   if (!GetColor(CssProperty(), style, underlying_color))
     return nullptr;
   // TODO(crbug.com/1231644): Need to pass an appropriate color provider here.
-  return InterpolationValue(CSSColorInterpolationType::CreateInterpolableColor(
-      underlying_color, style.UsedColorScheme(), /*color_provider=*/nullptr));
+  return InterpolationValue(
+      CSSColorInterpolationType::CreateBaseInterpolableColor(
+          underlying_color,
+          ColorThemeInfo{.color_scheme = style.UsedColorScheme()}));
 }
 
 void CSSPaintInterpolationType::ApplyStandardPropertyValue(
