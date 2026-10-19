@@ -305,10 +305,6 @@ inline constexpr char kAndroidHistoryClusteringName[] =
 inline constexpr char kAndroidHistoryClusteringDescription[] =
     "Enables history clustering UI on Android.";
 
-inline constexpr char kAnnotatorModeName[] = "Enable annotator tool";
-inline constexpr char kAnnotatorModeDescription[] =
-    "Enables the tool for annotating across the OS.";
-
 inline constexpr char kAudioRendererMixerImmediatePauseName[] =
     "AudioRendererMixer Immediate Pause";
 inline constexpr char kAudioRendererMixerImmediatePauseDescription[] =

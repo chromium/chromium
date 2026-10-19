@@ -51,9 +51,6 @@ BASE_FEATURE(kAmbientModeDevUseProdFeature,
 // Adds support for allowing or disabling APN modification by policy.
 BASE_FEATURE(kAllowApnModificationPolicy, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the annotator feature is enabled in ChromeOS.
-BASE_FEATURE(kAnnotatorMode, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kApnRevamp, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether proxy settings from policy or extensions are applied
@@ -1932,10 +1929,6 @@ bool IsAmbientEQDefaultOff() {
 
 bool IsAmbientModeDevUseProdEnabled() {
   return base::FeatureList::IsEnabled(kAmbientModeDevUseProdFeature);
-}
-
-bool IsAnnotatorModeEnabled() {
-  return base::FeatureList::IsEnabled(kAnnotatorMode);
 }
 
 bool IsAllowApnModificationPolicyEnabled() {

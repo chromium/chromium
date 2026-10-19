@@ -5,7 +5,6 @@
 #include "ash/annotator/annotator_test_util.h"
 
 #include "ash/annotator/annotator_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +86,6 @@ AnnotatorIntegrationHelper::AnnotatorIntegrationHelper() = default;
 void AnnotatorIntegrationHelper::SetUp() {
   auto* annotator_controller = Shell::Get()->annotator_controller();
   annotator_controller->SetToolClient(&annotator_client_);
-  scoped_feature_list_.InitAndEnableFeature(ash::features::kAnnotatorMode);
 }
 
 }  // namespace ash

@@ -9691,9 +9691,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kProjectorAppDebugDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kProjectorAppDebug)},
 
-    {"enable-annotator-mode", flag_descriptions::kAnnotatorModeName,
-     flag_descriptions::kAnnotatorModeDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAnnotatorMode)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

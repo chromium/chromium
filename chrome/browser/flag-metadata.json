@@ -3600,11 +3600,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-annotator-mode",
-    "owners": [ "sanjaperisic@chromium.org", "cros-edu-eng@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "enable-arabic-indic-digit-input",
     "owners": [ "johna@microsoft.com", "gerchiko@microsoft.com" ],
     "expiry_milestone": 160

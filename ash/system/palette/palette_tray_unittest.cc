@@ -854,9 +854,7 @@ TEST_F(PaletteTrayTestWithProjector,
 
 class PaletteTrayTestWithAnnotator : public PaletteTrayTest {
  public:
-  PaletteTrayTestWithAnnotator() {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kAnnotatorMode);
-  }
+  PaletteTrayTestWithAnnotator() = default;
 
   PaletteTrayTestWithAnnotator(const PaletteTrayTestWithAnnotator&) = delete;
   PaletteTrayTestWithAnnotator& operator=(const PaletteTrayTestWithAnnotator&) =
@@ -881,7 +879,6 @@ class PaletteTrayTestWithAnnotator : public PaletteTrayTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   MockAnnotatorClient annotator_client_;
 };
 

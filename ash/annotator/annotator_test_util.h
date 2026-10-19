@@ -7,7 +7,6 @@
 
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/webui/annotator/test/mock_annotator_client.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace aura {
 class Window;
@@ -53,7 +52,6 @@ class AnnotatorIntegrationHelper {
 
  private:
   MockAnnotatorClient annotator_client_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 }  // namespace ash
 

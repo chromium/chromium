@@ -8,8 +8,6 @@
 #include "ash/annotator/annotation_tray.h"
 #include "ash/annotator/annotations_overlay_controller.h"
 #include "ash/annotator/annotator_metrics.h"
-#include "ash/capture_mode/capture_mode_controller.h"
-#include "ash/constants/ash_features.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/public/cpp/annotator/annotations_overlay_view.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
@@ -17,7 +15,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -225,11 +222,7 @@ void AnnotatorController::UpdateTrayEnabledState() {
 }
 
 void AnnotatorController::ToggleAnnotatorCanvas() {
-  auto* capture_mode_controller = CaptureModeController::Get();
-  if (base::FeatureList::IsEnabled(ash::features::kAnnotatorMode) ||
-      capture_mode_controller->is_recording_in_progress()) {
-    annotations_overlay_controller_->Toggle();
-  }
+  annotations_overlay_controller_->Toggle();
 }
 
 void AnnotatorController::NotifyStateChanged() {
