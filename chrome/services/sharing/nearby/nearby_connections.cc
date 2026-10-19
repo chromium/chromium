@@ -18,6 +18,7 @@
 #include "components/cross_device/nearby/nearby_features.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "third_party/nearby/src/connections/core.h"
+#include "third_party/nearby/src/internal/platform/feature_flags.h"
 
 namespace nearby::connections {
 
@@ -516,6 +517,10 @@ Core* NearbyConnections::GetCore(const std::string& service_id) {
     // |service_controller_router| instance, but this value is expected to be
     // null for the first GetCore() call during normal operation.
     if (!service_controller_router_) {
+      if (features::IsNearbyBleV2Enabled()) {
+        const_cast<nearby::FeatureFlags&>(nearby::FeatureFlags::GetInstance())
+            .SetFlags({.enable_ble_v2_async_scanning = true});
+      }
       service_controller_router_ = std::make_unique<ServiceControllerRouter>(
           /*enable_ble_v2=*/features::IsNearbyBleV2Enabled());
     }

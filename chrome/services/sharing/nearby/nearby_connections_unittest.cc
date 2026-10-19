@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/nearby/src/connections/implementation/mock_service_controller_router.h"
 #include "third_party/nearby/src/connections/implementation/service_controller_router.h"
+#include "third_party/nearby/src/internal/platform/feature_flags.h"
 
 namespace nearby::connections {
 
@@ -1334,6 +1335,30 @@ TEST_F(NearbyConnectionsTest, ReceiveStreamPayload) {
        .bytes_transferred = expected_payload_size});
 
   payload_run_loop.Run();
+}
+
+TEST_F(NearbyConnectionsTest,
+       CreateServiceControllerRouterSetsBleV2AsyncScanning) {
+  const_cast<nearby::FeatureFlags&>(nearby::FeatureFlags::GetInstance())
+      .SetFlags({.enable_ble_v2_async_scanning = false});
+  ASSERT_FALSE(nearby::FeatureFlags::GetInstance()
+                   .GetFlags()
+                   .enable_ble_v2_async_scanning);
+
+  service_controller_router_ptr_ = nullptr;
+  nearby_connections_->SetServiceControllerRouterForTesting(nullptr);
+
+  base::RunLoop stop_all_endpoints_run_loop;
+  nearby_connections_->StopAllEndpoints(
+      kServiceId, base::BindLambdaForTesting([&](mojom::Status status) {
+        EXPECT_EQ(mojom::Status::kSuccess, status);
+        stop_all_endpoints_run_loop.Quit();
+      }));
+  stop_all_endpoints_run_loop.Run();
+
+  EXPECT_TRUE(nearby::FeatureFlags::GetInstance()
+                  .GetFlags()
+                  .enable_ble_v2_async_scanning);
 }
 
 }  // namespace nearby::connections
