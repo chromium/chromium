@@ -1280,7 +1280,6 @@ if (!is_android) {
   test("browser_tests") {
     use_xvfb = use_xvfb_in_this_config
 
-    configs += [ "//build/config:precompiled_headers" ]
     configs += [ ":disable_thinlto_cache_flags" ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
@@ -2206,9 +2205,9 @@ if (!is_android) {
       deps += [ "//ui/webui/resources:code_cache_resources" ]
     }
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+    # All browser_tests sources have been migrated into per-feature
+    # source_sets. Do not add new sources to //chrome/test:browser_tests.
+    sources = []
   }
 }
 
