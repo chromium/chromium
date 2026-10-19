@@ -901,14 +901,18 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
     size_ = new_size;
     RenderingContext()->SizeChanged();
 
-    DiscardResources();
+    ResetLayer();
+    UpdateMemoryUsage();
+    dirty_rect_ = gfx::Rect();
     if (context_->isContextLost()) {
       context_->RestoreFromInvalidSizeIfNeeded();
     }
   } else if (IsWebGL()) {
     size_ = new_size;
     RenderingContext()->SizeChanged();
-    DiscardResources();
+    ResetLayer();
+    UpdateMemoryUsage();
+    dirty_rect_ = gfx::Rect();
 
     if (old_size != Size()) {
       context_->Reshape(width(), height());
@@ -916,15 +920,22 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
   } else if (IsWebGPU()) {
     size_ = new_size;
     RenderingContext()->SizeChanged();
-    DiscardResources();
+    ResetLayer();
+    UpdateMemoryUsage();
+    dirty_rect_ = gfx::Rect();
     context_->Reshape(width(), height());
   } else if (IsImageBitmapRenderingContext()) {
     size_ = new_size;
     RenderingContext()->SizeChanged();
-    DiscardResources();
+    ResetLayer();
+    UpdateMemoryUsage();
+    dirty_rect_ = gfx::Rect();
   } else {
     size_ = new_size;
-    DiscardResources();
+    ResetLayer();
+    UpdateMemoryUsage();
+    dirty_rect_ = gfx::Rect();
+
     CHECK(!context_);
   }
 
