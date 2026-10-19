@@ -11,10 +11,10 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/carousel_item.h"
 #import "ios/chrome/browser/omnibox/ui/popup/carousel/omnibox_popup_carousel_control.h"
+#import "ios/chrome/browser/omnibox/ui/popup/omnibox_popup_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -27,8 +27,8 @@ const CGFloat kStackLeadingMargin = 16.0f;
 /// Minimum spacing between items in the StackView.
 const CGFloat kMinStackSpacing = 8.0f;
 
-UIColor* CarouselBackgroundColor() {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+UIColor* CarouselBackgroundColor(UITraitCollection* traitCollection) {
+  if (ShouldApplyOmniboxPopoutLayout(traitCollection)) {
     return [UIColor colorNamed:kPrimaryBackgroundColor];
   }
   return [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
@@ -40,7 +40,6 @@ UIScrollView* CarouselScrollView() {
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   scrollView.showsVerticalScrollIndicator = NO;
   scrollView.showsHorizontalScrollIndicator = NO;
-  scrollView.backgroundColor = CarouselBackgroundColor();
   return scrollView;
 }
 
@@ -52,7 +51,6 @@ UIStackView* CarouselStackView() {
   stackView.alignment = UIStackViewAlignmentTop;
   stackView.distribution = UIStackViewDistributionEqualSpacing;
   stackView.spacing = kMinStackSpacing;
-  stackView.backgroundColor = CarouselBackgroundColor();
   return stackView;
 }
 
@@ -85,14 +83,20 @@ UIStackView* CarouselStackView() {
     _suggestionsStackView = CarouselStackView();
     self.isAccessibilityElement = NO;
     self.contentView.isAccessibilityElement = NO;
-    self.backgroundColor = CarouselBackgroundColor();
+    [self updateBackgroundColors];
     self.accessibilityIdentifier = kOmniboxCarouselCellAccessibilityIdentifier;
+    [self registerForTraitChanges:@[
+      UITraitHorizontalSizeClass.self, UITraitVerticalSizeClass.self
+    ]
+                       withAction:@selector(updateBackgroundColors)];
   }
   return self;
 }
 
 - (void)didMoveToWindow {
+  [super didMoveToWindow];
   if (self.window) {
+    [self updateBackgroundColors];
     // Reset scroll to the left edge.
     CGRect scrollViewLeft = CGRectMake(0, 0, 1, 1);
     [self.scrollView scrollRectToVisible:scrollViewLeft animated:NO];
@@ -309,6 +313,13 @@ UIStackView* CarouselStackView() {
 }
 
 #pragma mark - Private methods
+
+- (void)updateBackgroundColors {
+  UIColor* backgroundColor = CarouselBackgroundColor(self.traitCollection);
+  self.backgroundColor = backgroundColor;
+  _scrollView.backgroundColor = backgroundColor;
+  _suggestionsStackView.backgroundColor = backgroundColor;
+}
 
 - (void)didTapCarouselControl:(OmniboxPopupCarouselControl*)control {
   DCHECK(control.carouselItem);

@@ -22,7 +22,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#import "ui/base/device_form_factor.h"
 
 namespace {
 
@@ -168,10 +167,6 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
     _separator = [[UIView alloc] initWithFrame:CGRectZero];
     _separator.translatesAutoresizingMaskIntoConstraints = NO;
     _separator.hidden = YES;
-    _separator.backgroundColor = [UIColor
-        colorNamed:ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-                       ? kOmniboxPopoutSuggestionRowSeparatorColor
-                       : kOmniboxSuggestionRowSeparatorColor];
     [self addSubview:_separator];
 
     // Top space should be at least the given top margin, but can be more if
@@ -365,6 +360,10 @@ const CGFloat kActionScrollViewSeparatorSpace = 8;
 
   // Separator.
   _separator.hidden = !configuration.showSeparator;
+  _separator.backgroundColor =
+      configuration.isPopoutOmnibox
+          ? [UIColor colorNamed:kOmniboxPopoutSuggestionRowSeparatorColor]
+          : [UIColor colorNamed:kOmniboxSuggestionRowSeparatorColor];
 
   // Text margins.
   if (configuration.primaryTextNumberOfLines > 1) {
