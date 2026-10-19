@@ -614,9 +614,6 @@ public final class ProductionSupportedFlagList {
                 BaseFeatures.PARTITION_ALLOC_TIGHTER_ALIGNED_ALLOC_BOUND,
                 "Allocates less memory for aligned allocations."),
         Flag.baseFeature(
-                "PartitionAllocUseSmallSingleSlotSpans",
-                "Uses a more nuanced heuristic to classify small single-slot spans."),
-        Flag.baseFeature(
                 "MemoryCoordinatorLastResortGC",
                 "Clears strong references in the MemoryCache in last resort GC."),
         Flag.baseFeature(

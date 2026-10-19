@@ -204,12 +204,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(
     int,
     kPartitionAllocBackgroundEmptySlotSpanRingSize);
 
-// When enabled, uses a more nuanced heuristic to determine if slot
-// spans can be treated as "single-slot."
-//
-// See also: https://crbug.com/333443437
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans);
-
 #if PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUsePriorityInheritanceLocks);
 #endif  // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE)
