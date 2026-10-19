@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/file_system_provider/service_worker_lifetime_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/extensions/common/api/file_system_provider.h"
 #include "storage/browser/file_system/watcher_manager.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -303,13 +302,14 @@ FileSystemProviderInternalRespondToMountRequestFunction::Run() {
   std::optional<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  auto* profile = Profile::FromBrowserContext(browser_context());
   auto* sw_lifetime_manager =
-      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(profile);
+      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(
+          browser_context());
   sw_lifetime_manager->FinishRequest(
       {extension_id(), /*file_system_id=*/std::string(), params->request_id});
 
-  auto& service = CHECK_DEREF(ash::file_system_provider::Service::Get(profile));
+  auto& service =
+      CHECK_DEREF(ash::file_system_provider::Service::Get(browser_context()));
   auto* provider = service.GetProvider(
       ash::file_system_provider::ProviderId::CreateFromExtensionId(
           extension_id()));
@@ -341,9 +341,9 @@ FileSystemProviderInternal::ForwardOperationResult(
     int64_t request_id,
     const ash::file_system_provider::RequestValue& value,
     std::variant<bool /*has_more*/, base::File::Error /*error*/> arg) {
-  auto* profile = Profile::FromBrowserContext(browser_context());
   auto* sw_lifetime_manager =
-      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(profile);
+      ash::file_system_provider::ServiceWorkerLifetimeManager::Get(
+          browser_context());
   auto provider_id = GetProviderId();
   sw_lifetime_manager->FinishRequest({provider_id, file_system_id, request_id});
 

@@ -16,7 +16,6 @@ static_library("sys_internals") {
     "//ash/constants",
     "//base",
     "//chrome/browser:resources",
-    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/sys_internals:resources",
     "//content/public/browser",
     "//content/public/common",

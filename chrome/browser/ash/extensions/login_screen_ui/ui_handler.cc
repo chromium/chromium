@@ -11,10 +11,9 @@
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ui/ash/login/login_screen_extension_ui/window.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -64,7 +63,7 @@ std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
 
 bool CanUseLoginScreenUiApi(const extensions::Extension* extension) {
   return extensions::ExtensionRegistry::Get(
-             ash::ProfileHelper::GetSigninProfile())
+             ash::BrowserContextHelper::Get()->GetSigninBrowserContext())
              ->enabled_extensions()
              .Contains(extension->id()) &&
          extension->permissions_data()->HasAPIPermission(
@@ -105,7 +104,7 @@ UiHandler::UiHandler(std::unique_ptr<WindowFactory> window_factory)
   UpdateSessionState();
   session_manager_observation_.Observe(session_manager::SessionManager::Get());
   extension_registry_observation_.Observe(extensions::ExtensionRegistry::Get(
-      ash::ProfileHelper::GetSigninProfile()));
+      ash::BrowserContextHelper::Get()->GetSigninBrowserContext()));
 }
 
 UiHandler::~UiHandler() = default;

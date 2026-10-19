@@ -10,10 +10,10 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/sys_internals/sys_internals_message_handler.h"
 #include "chrome/grit/sys_internals_resources.h"
 #include "chrome/grit/sys_internals_resources_map.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -27,8 +27,9 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<SysInternalsMessageHandler>());
 
   content::WebUIDataSource* html_source =
-      content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
-                                             ash::kChromeUISysInternalsHost);
+      content::WebUIDataSource::CreateAndAdd(
+          web_ui->GetWebContents()->GetBrowserContext(),
+          ash::kChromeUISysInternalsHost);
   webui::EnableTrustedTypesCSP(html_source);
 
   html_source->OverrideContentSecurityPolicy(
