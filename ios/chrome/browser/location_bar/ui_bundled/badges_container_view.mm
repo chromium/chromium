@@ -60,9 +60,7 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
   UIView* _placeholderViewWrapper;
   BOOL _disableProactiveOverlay;
 
-  /// Whether the contextual panel entrypoint should be visible. The placeholder
-  /// view trumps the entrypoint when kLensOverlayPriceInsightsCounterfactual is
-  /// enabled.
+  /// Whether the contextual panel entrypoint should be visible.
   BOOL _contextualPanelEntrypointShouldBeVisible;
   /// The type of the contextual panel entrypoint.
   std::optional<ContextualPanelItemType> _contextualPanelItemType;
@@ -421,16 +419,11 @@ const CGFloat kSeparatorVerticalPadding = 12.0;
       !!placeholderViewShouldBeVisibleFinal != !_placeholderView.hidden) {
     _placeholderView.hidden = !placeholderViewShouldBeVisibleFinal;
 
-    // Records why the placeholder view is hidden. These are not mutually
-    // exclusive, price tracking will take precedence over messages.
+    // Records why the placeholder view is hidden.
     if (!placeholderViewShouldBeVisibleFinal) {
       if (contextualPanelEntrypointShouldBeVisibleFinal) {
         if (_contextualPanelItemType) {
           switch (_contextualPanelItemType.value()) {
-            case ContextualPanelItemType::PriceInsightsItem:
-              RecordLensEntrypointHidden(
-                  IOSLocationBarLeadingIconType::kPriceTracking);
-              break;
             case ContextualPanelItemType::ReaderModeItem:
               RecordLensEntrypointHidden(
                   IOSLocationBarLeadingIconType::kReaderMode);

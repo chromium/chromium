@@ -33,10 +33,9 @@ enum class LocationBarBadgeType {
   kPermissionsMicrophone,
   // Badge type for the Contextual Panel entrypoint.
   kContextualPanelEntryPointSample = 10,
-  // Badge type for Price insight from Contextual Panel entrypoint.
-  kPriceInsights = 11,
+  // kPriceInsights = 11,  // Obsolete.
   // Badge type for Reader mode from Contextual Panel entrypoint.
-  kReaderMode,
+  kReaderMode = 12,
   // Chip type for Gemini contextual cue chip.
   kGeminiContextualCueChip = 13,
 

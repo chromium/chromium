@@ -384,7 +384,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
       break;
     }
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
-    case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode:
       [self contextualPanelEntrypointBadgeTapped];
       break;
@@ -500,7 +499,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   LocationBarBadgeType badgeType = badgeConfig.badgeType;
   switch (badgeType) {
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
-    case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode: {
       // Special case for first entrypoint appearances where an IPH is shown
       // instead of the large entrypoint. If showing the IPH fails, will
@@ -655,7 +653,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
   LocationBarBadgeType badgeType = badgeConfig.badgeType;
   switch (badgeType) {
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
-    case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode: {
       ContextualPanelTabHelper* contextualPanelTabHelper =
           ContextualPanelTabHelper::FromWebState(
@@ -675,7 +672,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 - (BOOL)shouldShowIPH:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
-    case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode: {
       ContextualPanelTabHelper* contextualPanelTabHelper =
           ContextualPanelTabHelper::FromWebState(
@@ -693,7 +689,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 - (void)badgeShown:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
-    case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode: {
       ContextualPanelTabHelper* contextualPanelTabHelper =
           ContextualPanelTabHelper::FromWebState(
@@ -714,7 +709,6 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
 - (void)chipShown:(LocationBarBadgeType)badgeType {
   switch (badgeType) {
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
-    case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode: {
       ContextualPanelTabHelper* contextualPanelTabHelper =
           ContextualPanelTabHelper::FromWebState(
@@ -876,8 +870,7 @@ constexpr base::TimeDelta kStartCollapseTransitionTime = base::Seconds(5);
       badgeType = LocationBarBadgeType::kContextualPanelEntryPointSample;
       break;
     case ContextualPanelItemType::PriceInsightsItem:
-      badgeType = LocationBarBadgeType::kPriceInsights;
-      break;
+      NOTREACHED();
     case ContextualPanelItemType::ReaderModeItem:
       badgeType = LocationBarBadgeType::kReaderMode;
       break;

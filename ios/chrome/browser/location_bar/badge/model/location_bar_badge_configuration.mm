@@ -29,7 +29,6 @@
 - (BOOL)isContextualPanelEntrypointBadge {
   switch (self.badgeType) {
     case LocationBarBadgeType::kContextualPanelEntryPointSample:
-    case LocationBarBadgeType::kPriceInsights:
     case LocationBarBadgeType::kReaderMode:
       return YES;
     default:

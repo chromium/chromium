@@ -1367,7 +1367,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="PermissionsCamera"/>
   <int value="9" label="PermissionsMicrophone"/>
   <int value="10" label="ContextualPanelEntryPointSample"/>
-  <int value="11" label="PriceInsights"/>
+  <int value="11" label="(Obsolete) PriceInsights"/>
   <int value="12" label="ReaderMode"/>
   <int value="13" label="GeminiContextualCueChip"/>
 </enum>

@@ -445,7 +445,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestHideBadgeForType) {
 
   // Calling hide for an unrelated badge type should not hide the badge.
   [[mock_consumer_ reject] hideBadge];
-  [mediator_ hideBadgeForType:LocationBarBadgeType::kPriceInsights];
+  [mediator_ hideBadgeForType:LocationBarBadgeType::kReaderMode];
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
 
   // Reset consumer to clear previous reject expectation before testing hide.
