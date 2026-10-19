@@ -32,9 +32,6 @@ class MiniMapService : public KeyedService, public TemplateURLServiceObserver {
   // Whether GoogleMaps is installed.
   bool IsGoogleMapsInstalled();
 
-  // Whether the experiment flag for bypassing Native Preview is enabled.
-  bool IsMapsNativePreviewBypassEnabled();
-
   // KeyedService
   void Shutdown() override;
 
@@ -62,9 +59,6 @@ class MiniMapService : public KeyedService, public TemplateURLServiceObserver {
   BooleanPrefMember mini_map_enabled_pref_;
   // Whether the mini map feature is currently enabled.
   bool is_mini_map_enabled_ = false;
-
-  // Whether the experiment flag for bypassing Native Preview is enabled.
-  bool is_maps_native_preview_bypass_enabled_ = false;
 
   // An observer for App scoped data.
   class MiniMapAppObserver {
