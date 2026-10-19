@@ -559,6 +559,7 @@
 #define IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI           54018
 #define IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU               54019
 #define IDC_OMNIBOX_CONTEXT_SMART_TAB_SHARING                 54020
+#define IDC_OMNIBOX_CONTEXT_SINGLE_TAB                        54023
 
 // Skills commands
 #define IDC_MANAGE_SKILLS                                     54021

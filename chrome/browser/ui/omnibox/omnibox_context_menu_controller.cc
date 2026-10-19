@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <iterator>
 #include <map>
 #include <memory>
 #include <optional>
@@ -164,6 +165,7 @@ bool IsStaticOmniboxCommandId(int command_id) {
     case IDC_OMNIBOX_CONTEXT_SET_MODEL_REGULAR:
     case IDC_OMNIBOX_CONTEXT_SET_MODEL_PRO_NO_GEN_UI:
     case IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU:
+    case IDC_OMNIBOX_CONTEXT_SINGLE_TAB:
       return true;
     default:
       return false;
@@ -262,6 +264,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
                                       kFileUploadMenuItemIdForTesting);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
                                       kSharedTabsSubmenuIdForTesting);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
+                                      kSingleTabMenuItemIdForTesting);
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     OmniboxPopupFileSelector* file_selector,
@@ -338,6 +342,7 @@ void OmniboxContextMenuController::BuildMenu() {
   input_type_for_command_id_.clear();
   tool_for_command_id_.clear();
   model_for_command_id_.clear();
+  single_tab_command_id_.reset();
   next_command_id_ = kMinOmniboxContextMenuRecentTabsCommandId;
   std::optional<size_t> max_suggestions = GetMaxTabSuggestions();
   min_tools_and_models_command_id_ =
@@ -448,6 +453,11 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   ui::SimpleMenuModel* target_menu_model;
   size_t first_tab_index;
 
+  // Index of the tab that is labelled "Current tab" / "Recent tab" in the
+  // flyout and surfaced in the main menu when the single tab menu item arm is
+  // enabled.
+  const std::optional<size_t> single_tab_index = GetSingleTabIndex(tabs);
+
   // `target_menu_model` will either become the submenu, or a section in main
   // menu.
   if (include_tabs_submenu) {
@@ -456,6 +466,14 @@ void OmniboxContextMenuController::AddRecentTabItems() {
     shared_tabs_menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
     target_menu_model = shared_tabs_menu_model_.get();
     first_tab_index = 0;
+
+    // Surface the current/recent tab directly in the main menu, above the
+    // "Add tabs" row, so it can be toggled without opening the flyout.
+    if (omnibox::IsSingleTabMenuItemInComposeboxEnabled() &&
+        single_tab_index.has_value()) {
+      AddSingleTabItem(tabs[*single_tab_index],
+                       next_command_id_ + static_cast<int>(*single_tab_index));
+    }
 
     // If Smart Tab Sharing is enabled but NOT active, put the toggle at the
     // top of the submenu.
@@ -491,23 +509,16 @@ void OmniboxContextMenuController::AddRecentTabItems() {
   }
 
   // Add tabs to the target destination in UI.
-  bool has_active_tab = std::ranges::any_of(
-      tabs, [](const TabInfo& tab) { return tab.is_active_tab; });
-
   size_t tab_index = 0;
   for (const auto& tab : tabs) {
     target_menu_model->AddItemWithIcon(next_command_id_, tab.title,
                                        favicon::GetDefaultFaviconModel());
-    if (include_tabs_submenu) {
-      if (tab.is_active_tab) {
-        target_menu_model->SetMinorText(
-            target_menu_model->GetItemCount() - 1,
-            l10n_util::GetStringUTF16(IDS_COMPOSE_CURRENT_TAB));
-      } else if (!has_active_tab && tab_index == 0) {
-        target_menu_model->SetMinorText(
-            target_menu_model->GetItemCount() - 1,
-            l10n_util::GetStringUTF16(IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX));
-      }
+    if (include_tabs_submenu && single_tab_index == tab_index) {
+      target_menu_model->SetMinorText(
+          target_menu_model->GetItemCount() - 1,
+          l10n_util::GetStringUTF16(
+              tab.is_active_tab ? IDS_COMPOSE_CURRENT_TAB
+                                : IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX));
     }
     AddTabFavicon(next_command_id_, tab.url, tab.title);
     input_type_for_command_id_[next_command_id_] =
@@ -578,6 +589,48 @@ void OmniboxContextMenuController::AddRecentTabItems() {
       (!tabs.empty() || include_tabs_submenu)) {
     AddSeparator();
   }
+}
+
+std::optional<size_t> OmniboxContextMenuController::GetSingleTabIndex(
+    const std::vector<TabInfo>& tabs) const {
+  if (tabs.empty()) {
+    return std::nullopt;
+  }
+  auto active_it = std::ranges::find_if(tabs, &TabInfo::is_active_tab);
+  if (active_it != tabs.end()) {
+    return static_cast<size_t>(std::distance(tabs.begin(), active_it));
+  }
+  // No valid active tab (e.g. the NTP is focused), so fall back to the first
+  // suggestion.
+  return 0;
+}
+
+void OmniboxContextMenuController::AddSingleTabItem(const TabInfo& tab,
+                                                    int tab_command_id) {
+  menu_model_->AddItemWithIcon(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, tab.title,
+                               favicon::GetDefaultFaviconModel());
+  const size_t index = menu_model_->GetItemCount() - 1;
+  if (tab.is_checked) {
+    menu_model_->SetMinorIcon(
+        index,
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? kCheckSmallIcon : kCheckOldIcon,
+            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+    menu_model_->SetMinorIconOnRight(
+        ui::MenuModel::MinorIconOnRightPasskey(index),
+        /*minor_icon_on_right=*/true);
+  }
+  menu_model_->SetElementIdentifierAt(index, kSingleTabMenuItemIdForTesting);
+  AddTabFavicon(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, tab.url, tab.title);
+  single_tab_command_id_ = tab_command_id;
+}
+
+int OmniboxContextMenuController::ResolveCommandId(int command_id) const {
+  if (command_id == IDC_OMNIBOX_CONTEXT_SINGLE_TAB &&
+      single_tab_command_id_.has_value()) {
+    return *single_tab_command_id_;
+  }
+  return command_id;
 }
 
 void OmniboxContextMenuController::AddContextualInputItems() {
@@ -1182,6 +1235,7 @@ bool OmniboxContextMenuController::IsTabCommandId(int command_id) const {
 
 omnibox::ContextType OmniboxContextMenuController::CommandIdToEnum(
     int command_id) const {
+  command_id = ResolveCommandId(command_id);
   // Translate to generic omnibox type for logging, etc.
   if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
     if (auto it = input_type_for_command_id_.find(command_id);
@@ -1604,6 +1658,9 @@ OmniboxPopupUI* OmniboxContextMenuController::GetOmniboxPopupUI() const {
 }
 
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
+  // The standalone single tab row behaves exactly like the flyout row for the
+  // same tab, so route it through that tab's command.
+  id = ResolveCommandId(id);
   if (id == IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU) {
     // Shared tabs does not do anything as a button.
     return;
@@ -1884,6 +1941,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 }
 
 bool OmniboxContextMenuController::IsCommandIdEnabled(int command_id) const {
+  command_id = ResolveCommandId(command_id);
   // `IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU` is a structural submenu item
   // that behaves as a placeholder rather than an actionable clickable command.
   // It must be handled early to bypass the standard actionable command
@@ -2093,6 +2151,7 @@ bool OmniboxContextMenuController::IsCommandIdEnabledHelper(
 }
 
 bool OmniboxContextMenuController::IsCommandIdVisible(int command_id) const {
+  command_id = ResolveCommandId(command_id);
   // `IDC_OMNIBOX_CONTEXT_SHARED_TABS_SUBMENU` is a structural submenu item
   // that behaves as a placeholder rather than a clickable command. It must be
   // handled early to bypass the standard actionable command verification
