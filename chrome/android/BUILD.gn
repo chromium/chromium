@@ -2147,6 +2147,15 @@ if (_is_default_toolchain) {
 
   chrome_public_bundle("chrome_public_bundle") {
     bundle_name = "ChromePublic"
+    if (enable_manifest_verification) {
+      expected_android_manifest_template = "expectations/chrome_public_bundle__SPLIT_NAME.AndroidManifest.expected"
+      expected_proguard_config =
+          "expectations/chrome_public_bundle.proguard_flags.expected"
+    }
+    if (enable_libs_and_assets_verification) {
+      expected_libs_and_assets =
+          "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+    }
   }
 
   create_app_bundle_minimal_apks("chrome_public_minimal_apks") {
@@ -2158,6 +2167,15 @@ if (_is_default_toolchain) {
     chrome_public_bundle("chrome_public_32_bundle") {
       bundle_name = "ChromePublic32"
       is_64_bit_browser = false
+      if (enable_manifest_verification) {
+        # chrome_public_bundle verifies all bundle modules, so only check base
+        # module here.
+        expected_android_manifest = "expectations/chrome_public_32_bundle__base.AndroidManifest.expected"
+      }
+      if (enable_libs_and_assets_verification) {
+        expected_libs_and_assets =
+            "expectations/$target_name.$target_cpu.libs_and_assets.expected"
+      }
     }
 
     create_app_bundle_minimal_apks("chrome_public_32_minimal_apks") {
@@ -3443,6 +3461,8 @@ if (_is_default_toolchain &&
         ":trichrome_library_32_apk_validate_libs_and_assets",
         ":trichrome_library_64_32_apk_validate_libs_and_assets",
         ":trichrome_library_64_apk_validate_libs_and_assets",
+        ":chrome_public_32_bundle_validate_libs_and_assets",
+        ":chrome_public_bundle_validate_libs_and_assets",
         "//android_webview:system_webview_32_64_bundle_validate_libs_and_assets",
         "//android_webview:system_webview_32_bundle_validate_libs_and_assets",
         "//android_webview:system_webview_64_32_bundle_validate_libs_and_assets",
@@ -3461,6 +3481,10 @@ if (_is_default_toolchain &&
         ":trichrome_library_32_apk_validate_android_manifest",
         ":trichrome_library_64_32_apk_validate_android_manifest",
         ":trichrome_library_64_apk_validate_android_manifest",
+        ":chrome_public_32_bundle__base_bundle_module_validate_android_manifest",
+        ":chrome_public_bundle__base_bundle_module_validate_android_manifest",
+        ":chrome_public_bundle_validate_manifests",
+        ":chrome_public_bundle_validate_proguard_config",
         "//android_webview:system_webview_32_64_base_bundle_module_validate_android_manifest",
         "//android_webview:system_webview_32_base_bundle_module_validate_android_manifest",
         "//android_webview:system_webview_64_32_base_bundle_module_validate_android_manifest",
