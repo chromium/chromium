@@ -5736,6 +5736,111 @@ suite('OmniboxPopupSearchboxTest', function() {
    assertDeepEquals(emphasis, searchbox.$.input.urlEmphasis);
  });
 
+ // The #mirror (which renders unselected text with URL emphasis) sits beneath
+ // the input (which renders the caret and selected text). Both layers must
+ // share the same horizontal box and scroll offset, or else long text that
+ // overflows the input ends up drawn twice, misaligned. In RTL UIs, URLs are
+ // still laid out LTR (the input and #mirror get dir="ltr"), so these tests
+ // also check that the input stays flush with the icon on the leading side.
+
+ // Sets a URL long enough to overflow the input, with the caret at its end
+ // (which scrolls the input to its max scroll offset).
+ async function setLongUrlWithCaretAtEnd() {
+   const text = 'https://example.com/' +
+       'foo/bar/baz/eggs/spam/'.repeat(20);
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text,
+     urlEmphasis: {
+       deemphasisMode: UrlDeemphasisMode.kAllButHost,
+       textIsUrl: true,
+       schemeRange: {start: 0, end: 5},
+       hostRange: {start: 8, end: 19},
+       schemeStrikeThrough: false,
+       schemeDangerous: false,
+     },
+     selection: {start: text.length, end: text.length},
+     isFocused: true,
+   }));
+   await microtasksFinished();
+ }
+
+ function assertMirrorAlignedWithInput(uiDir: string, step: string) {
+   const input = searchbox.$.input.inputElement;
+   const mirror = $$<HTMLElement>(searchbox.$.input, '#mirror');
+   assertTrue(!!mirror, step);
+   assertTrue(isVisible(mirror), step);
+   // The UI direction applies to the container, while the URL itself is laid
+   // out LTR.
+   assertEquals(uiDir, getComputedStyle(mirror.parentElement!).direction, step);
+   assertEquals('ltr', getComputedStyle(input).direction, step);
+   assertEquals('ltr', getComputedStyle(mirror).direction, step);
+   assertTrue(input.scrollLeft > 0, `${step}: input should be scrolled`);
+
+   const iconRect = searchbox.$.input.$.icon.getBoundingClientRect();
+   const inputRect = input.getBoundingClientRect();
+   const mirrorRect = mirror.getBoundingClientRect();
+   assertEquals(
+       uiDir === 'ltr' ? iconRect.right : iconRect.left,
+       uiDir === 'ltr' ? inputRect.left : inputRect.right,
+       `${step}: leading edge`);
+   assertEquals(inputRect.left, mirrorRect.left, `${step}: left edge`);
+   assertEquals(inputRect.right, mirrorRect.right, `${step}: right edge`);
+   assertEquals(input.clientWidth, mirror.clientWidth, `${step}: clientWidth`);
+   assertEquals(input.scrollLeft, mirror.scrollLeft, `${step}: scrollLeft`);
+ }
+
+ [false, true].forEach(aimButtonVisible => {
+   ['ltr', 'rtl'].forEach(uiDir => {
+     test(
+         `MirrorAlignsWithScrolledInput_AimButton${
+             aimButtonVisible ? 'Visible' : 'Hidden'}_${uiDir.toUpperCase()}`,
+         async () => {
+           // `searchbox` is recreated for every test, so this doesn't leak.
+           searchbox.dir = uiDir;
+           testProxy.page.setAimButtonVisible(aimButtonVisible);
+           await microtasksFinished();
+
+           await setLongUrlWithCaretAtEnd();
+           assertEquals(aimButtonVisible, isVisible(searchbox.$.composeButton));
+
+           // The caret is at the end of the overflowing text, so the input is
+           // scrolled to (about) its max scroll offset. scrollLeft can be
+           // fractional while scrollWidth and clientWidth are rounded.
+           const input = searchbox.$.input.inputElement;
+           assertTrue(
+               input.scrollLeft >= input.scrollWidth - input.clientWidth - 1);
+           assertMirrorAlignedWithInput(uiDir, 'caret at end');
+         });
+   });
+ });
+
+ // The AIM button can be shown/hidden while a URL is already displayed (e.g.
+ // by toggling "Always show AI Mode" in the omnibox context menu), which
+ // resizes the input (and thus may re-clamp its scroll offset) in place.
+ ['ltr', 'rtl'].forEach(uiDir => {
+   test(
+       `MirrorAlignsWithScrolledInputWhenAimButtonToggled_${
+           uiDir.toUpperCase()}`,
+       async () => {
+         searchbox.dir = uiDir;
+         testProxy.page.setAimButtonVisible(true);
+         await microtasksFinished();
+         await setLongUrlWithCaretAtEnd();
+         assertTrue(isVisible(searchbox.$.composeButton));
+         assertMirrorAlignedWithInput(uiDir, 'initially visible');
+
+         testProxy.page.setAimButtonVisible(false);
+         await microtasksFinished();
+         assertFalse(isVisible(searchbox.$.composeButton));
+         assertMirrorAlignedWithInput(uiDir, 'after hiding');
+
+         testProxy.page.setAimButtonVisible(true);
+         await microtasksFinished();
+         assertTrue(isVisible(searchbox.$.composeButton));
+         assertMirrorAlignedWithInput(uiDir, 'after showing again');
+       });
+ });
+
  test('UpdatesUrlEmphasisFromAutocompleteMatchOnTextInput', async () => {
    const matchEmphasis: UrlEmphasis = {
      deemphasisMode: UrlDeemphasisMode.kAllButHost,
