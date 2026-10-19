@@ -58,10 +58,12 @@ NSString* const kVerifiedAccessChallenge =
     @"gZm84q0ylm0ybs6TFjdgLvSViAIp0Z9p/An/u3W4CMboCswxIxNYRCGrIIVPElE3Yb4QS65m"
     @"Krg=\"}'";
 
-// Outcome of a `getAttestation()` call, as observed by the page.
+// Outcome of a `getAttestation()` call, as observed by the page. `detail` is
+// only set when the rejection carries an attestation error detail.
 struct AttestationError {
   std::string code;
   std::string message;
+  std::optional<std::string> detail;
 };
 
 // Allowlists `host` for the user-level Device Trust connector. The policy is
@@ -100,6 +102,9 @@ void CallGetAttestation(NSString* challengeExpression) {
            "      window.deviceTrustResult = {"
            "        code: String(error.code), message: String(error.message)"
            "      };"
+           "      if (error.detail !== undefined) {"
+           "        window.deviceTrustResult.detail = String(error.detail);"
+           "      }"
            "    });"
            "})();",
           challengeExpression];
@@ -124,7 +129,11 @@ AttestationError WaitForAttestationError() {
   const std::string* code = result.FindString("code");
   const std::string* message = result.FindString("message");
   GREYAssertTrue(code && message, @"`getAttestation()` should have rejected");
-  return {*code, *message};
+  AttestationError error = {*code, *message, std::nullopt};
+  if (const std::string* detail = result.FindString("detail")) {
+    error.detail = *detail;
+  }
+  return error;
 }
 
 // Waits for the last `getAttestation()` call to settle and returns the payload
@@ -293,7 +302,8 @@ AttestationError GetAttestationError(NSString* challengeExpression) {
 }
 
 // Verifies that a challenge which is not a JSON challenge request reaches the
-// native side and is rejected there.
+// native side and is rejected there, without an attestation error detail since
+// attestation never ran.
 - (void)testRejectsMalformedChallengeNatively {
   [self loadAllowlistedPage];
   AttestationError error = GetAttestationError(@"'not-a-json-challenge'");
@@ -301,15 +311,22 @@ AttestationError GetAttestationError(NSString* challengeExpression) {
                   @"Unexpected error code for a malformed challenge");
   GREYAssertEqual(std::string("Failed to parse challenge."), error.message,
                   @"Malformed challenge should be rejected by the native side");
+  GREYAssertFalse(error.detail.has_value(),
+                  @"Pre-attestation rejections should carry no detail");
 }
 
 // Verifies that a well-formed challenge which was not issued by Verified
-// Access goes through the whole attestation pipeline and is rejected.
+// Access goes through the whole attestation pipeline and is rejected, with the
+// failing attestation step surfaced as `detail`.
 - (void)testRejectsUnverifiedChallenge {
   [self loadAllowlistedPage];
   AttestationError error = GetAttestationError(kUnverifiedChallenge);
   GREYAssertEqual(std::string("INTERNAL_ERROR"), error.code,
                   @"Unexpected error code for an unverified challenge");
+  GREYAssertTrue(error.detail.has_value(),
+                 @"Attestation rejections should carry a detail");
+  GREYAssertEqual(std::string("bad_challenge_source"), *error.detail,
+                  @"Unexpected detail for an unverified challenge");
 }
 
 // Verifies that a challenge issued by Verified Access goes through the whole

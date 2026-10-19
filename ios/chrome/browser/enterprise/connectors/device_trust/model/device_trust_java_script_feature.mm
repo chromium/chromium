@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
 
+#import <optional>
 #import <utility>
 
 #import "base/functional/bind.h"
@@ -120,14 +121,32 @@ const char* ScriptMessageErrorToErrorMessage(ScriptMessageError error) {
 }
 
 // Rejects the originating JS promise with an error code and message for a
-// DeviceTrustError.
-void RejectAttestationRequest(ReplyCallback callback,
-                              enterprise_connectors::DeviceTrustError error) {
+// DeviceTrustError. When `attestation_result` holds a failure, its name is
+// attached as `errorDetail` to identify the specific attestation step that
+// failed, matching the `code` field of the desktop response header.
+void RejectAttestationRequest(
+    ReplyCallback callback,
+    enterprise_connectors::DeviceTrustError error,
+    std::optional<enterprise_connectors::DTAttestationResult>
+        attestation_result) {
   base::DictValue reply;
   reply.Set("errorCode", DeviceTrustErrorToJsErrorCode(error));
   reply.Set("errorMessage", DeviceTrustErrorToJsErrorMessage(error));
+  if (attestation_result.has_value() &&
+      !enterprise_connectors::IsSuccessAttestationResult(*attestation_result)) {
+    reply.Set("errorDetail", enterprise_connectors::AttestationErrorToString(
+                                 *attestation_result));
+  }
   base::Value reply_value(std::move(reply));
   std::move(callback).Run(&reply_value, nil);
+}
+
+// Rejects the originating JS promise for a DeviceTrustError raised before
+// attestation ran, so no attestation result is available.
+void RejectAttestationRequest(ReplyCallback callback,
+                              enterprise_connectors::DeviceTrustError error) {
+  RejectAttestationRequest(std::move(callback), error,
+                           /*attestation_result=*/std::nullopt);
 }
 
 // Rejects the originating JS promise with an error code and message for a
@@ -146,7 +165,8 @@ void OnAttestationResponse(
     ReplyCallback callback,
     const enterprise_connectors::DeviceTrustResponse& response) {
   if (response.error.has_value()) {
-    RejectAttestationRequest(std::move(callback), *response.error);
+    RejectAttestationRequest(std::move(callback), *response.error,
+                             response.attestation_result);
     return;
   }
 
@@ -154,7 +174,8 @@ void OnAttestationResponse(
     // An empty response with no error indicates an unexpected internal failure,
     // appropriately represented by kUnknown.
     RejectAttestationRequest(std::move(callback),
-                             enterprise_connectors::DeviceTrustError::kUnknown);
+                             enterprise_connectors::DeviceTrustError::kUnknown,
+                             response.attestation_result);
     return;
   }
 

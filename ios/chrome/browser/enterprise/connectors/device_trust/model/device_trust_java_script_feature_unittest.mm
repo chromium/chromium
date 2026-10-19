@@ -459,6 +459,85 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
   DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
 }
 
+// Verifies that a service error carrying a failed attestation result rejects
+// the promise with the generic error code and the specific attestation error
+// as the detail.
+TEST_F(DeviceTrustJavaScriptFeatureTest,
+       DefaultRoutingRejectsWithAttestationErrorDetail) {
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
+      enterprise_connectors::DTCPolicyLevel::kUser};
+  EXPECT_CALL(*mock_service(), Watches(GURL(kExampleUrl)))
+      .WillOnce(testing::Return(levels));
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(kChallenge, levels, testing::_))
+      .WillOnce([](const std::string&,
+                   const std::set<enterprise_connectors::DTCPolicyLevel>&,
+                   enterprise_connectors::DeviceTrustService::
+                       DeviceTrustCallback callback) {
+        enterprise_connectors::DeviceTrustResponse response;
+        response.error =
+            enterprise_connectors::DeviceTrustError::kFailedToCreateResponse;
+        response.attestation_result =
+            enterprise_connectors::DTAttestationResult::kMissingSigningKey;
+        std::move(callback).Run(response);
+      });
+  ResetReply();
+  web::ScriptMessage message(
+      MakeMessageBody(base::Value(kChallenge)),
+      /*is_user_interacting=*/false,
+      /*is_main_frame=*/true,
+      /*request_url=*/std::nullopt,
+      /*security_origin=*/url::Origin::Create(GURL(kExampleUrl)));
+  feature_.ScriptMessageReceivedWithReply(web_state(), message,
+                                          CaptureReplyCallback());
+  ExpectErrorReply("INTERNAL_ERROR");
+  ASSERT_TRUE(reply_.has_value());
+  const std::string* detail = reply_->GetDict().FindString("errorDetail");
+  ASSERT_TRUE(detail);
+  EXPECT_EQ(*detail, "missing_signing_key");
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
+}
+
+// Verifies that a service error whose attestation result is a success code
+// does not attach an attestation error detail.
+TEST_F(DeviceTrustJavaScriptFeatureTest,
+       DefaultRoutingRejectsWithoutDetailForSuccessAttestationResult) {
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
+  const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
+      enterprise_connectors::DTCPolicyLevel::kUser};
+  EXPECT_CALL(*mock_service(), Watches(GURL(kExampleUrl)))
+      .WillOnce(testing::Return(levels));
+  EXPECT_CALL(*mock_service(),
+              BuildChallengeResponse(kChallenge, levels, testing::_))
+      .WillOnce([](const std::string&,
+                   const std::set<enterprise_connectors::DTCPolicyLevel>&,
+                   enterprise_connectors::DeviceTrustService::
+                       DeviceTrustCallback callback) {
+        enterprise_connectors::DeviceTrustResponse response;
+        response.error =
+            enterprise_connectors::DeviceTrustError::kFailedToCreateResponse;
+        response.attestation_result =
+            enterprise_connectors::DTAttestationResult::kSuccessNoSignature;
+        std::move(callback).Run(response);
+      });
+  ResetReply();
+  web::ScriptMessage message(
+      MakeMessageBody(base::Value(kChallenge)),
+      /*is_user_interacting=*/false,
+      /*is_main_frame=*/true,
+      /*request_url=*/std::nullopt,
+      /*security_origin=*/url::Origin::Create(GURL(kExampleUrl)));
+  feature_.ScriptMessageReceivedWithReply(web_state(), message,
+                                          CaptureReplyCallback());
+  ExpectErrorReply("INTERNAL_ERROR");
+  ASSERT_TRUE(reply_.has_value());
+  EXPECT_EQ(reply_->GetDict().FindString("errorDetail"), nullptr);
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state());
+}
+
 // Verifies that when the service takes longer than the timeout threshold to
 // respond, the originating script message reply is rejected with
 // ATTESTATION_TIMEOUT.

@@ -218,7 +218,7 @@ TEST_F(DeviceTrustJsAPIEnabledTest, ResolvesSuccessfully) {
 }
 
 // Verifies that native error replies reject the promise with structured error
-// code and message.
+// code and message, and no detail when none is provided.
 TEST_F(DeviceTrustJsAPIEnabledTest, RejectsFromNative) {
   ASSERT_TRUE([web::test::ExecuteJavaScript(
       web_view(),
@@ -228,6 +228,7 @@ TEST_F(DeviceTrustJsAPIEnabledTest, RejectsFromNative) {
       @"  window.testError = e.code; "
       @"  window.testErrorMessage = e.message; "
       @"  window.testErrorName = e.name; "
+      @"  window.testErrorDetailType = typeof e.detail; "
       @"});"
       @"true;") boolValue]);
 
@@ -241,6 +242,30 @@ TEST_F(DeviceTrustJsAPIEnabledTest, RejectsFromNative) {
   EXPECT_NSEQ(@"CUSTOM_ERR", GetJsVar(@"window.testError"));
   EXPECT_NSEQ(@"Native failed", GetJsVar(@"window.testErrorMessage"));
   EXPECT_NSEQ(@"DeviceTrustError", GetJsVar(@"window.testErrorName"));
+  EXPECT_NSEQ(@"undefined", GetJsVar(@"window.testErrorDetailType"));
+}
+
+// Verifies that a native error detail is exposed on the rejection error.
+TEST_F(DeviceTrustJsAPIEnabledTest, RejectsFromNativeWithDetail) {
+  ASSERT_TRUE([web::test::ExecuteJavaScript(
+      web_view(),
+      @"window.chrome.enterprise.deviceTrust.getAttestation('valid_challenge')."
+      @"catch(e => { "
+      @"  window.testError = e.code; "
+      @"  window.testErrorDetail = e.detail; "
+      @"});"
+      @"true;") boolValue]);
+
+  ASSERT_TRUE(WaitForMessageCount(1));
+  [handler_ replyToNextMessage:@{
+    @"errorCode" : @"INTERNAL_ERROR",
+    @"errorMessage" : @"Device attestation is not available.",
+    @"errorDetail" : @"bad_challenge_source",
+  }];
+
+  EXPECT_TRUE(WaitForJsString(@"window.testError"));
+  EXPECT_NSEQ(@"INTERNAL_ERROR", GetJsVar(@"window.testError"));
+  EXPECT_NSEQ(@"bad_challenge_source", GetJsVar(@"window.testErrorDetail"));
 }
 
 // Verifies that default error codes and messages are assigned if native reply

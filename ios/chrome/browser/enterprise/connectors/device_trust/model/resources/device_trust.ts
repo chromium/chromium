@@ -14,10 +14,14 @@ interface AttestationReply {
   signedPayload?: unknown;
   errorCode?: unknown;
   errorMessage?: unknown;
+  errorDetail?: unknown;
 }
 
 class DeviceTrustError extends Error {
-  constructor(readonly code: string, message: string) {
+  // `code` identifies the error category. `detail`, when present, names the
+  // specific attestation step that failed (e.g. 'missing_signing_key').
+  constructor(
+      readonly code: string, message: string, readonly detail?: string) {
     super(message);
     this.name = 'DeviceTrustError';
   }
@@ -43,7 +47,12 @@ function parseAttestationReply(reply: unknown): string {
       attestationReply.errorMessage :
       'Unknown internal error occurred.';
 
-  throw new DeviceTrustError(errorCode, errorMessage);
+  const errorDetail = typeof attestationReply.errorDetail === 'string' &&
+          attestationReply.errorDetail.length > 0 ?
+      attestationReply.errorDetail :
+      undefined;
+
+  throw new DeviceTrustError(errorCode, errorMessage, errorDetail);
 }
 
 const DeviceTrustAPI = {
