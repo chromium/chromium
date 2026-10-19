@@ -5,6 +5,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 
 #include <cstdint>
+#include <utility>
 
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
@@ -12,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/optimization_guide/content/browser/mock_autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -1396,6 +1398,90 @@ TEST_F(PageContentProtoUtilTest, ConvertDialogAttributeTypes) {
                 .content_attributes()
                 .attribute_type(),
             optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODELESS);
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertMathData) {
+  auto root_content = CreatePageContent();
+  auto math_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kMath);
+  math_node->content_attributes->math_data =
+      blink::mojom::AIPageContentMathData::New();
+  math_node->content_attributes->math_data->stripped_mathml =
+      "<math><mfrac><mi>x</mi><mn>2</mn></mfrac></math>";
+  math_node->content_attributes->math_data->is_block = true;
+  root_content->root_node->children_nodes.emplace_back(std::move(math_node));
+
+  auto math_node_omitted =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kMath);
+  math_node_omitted->content_attributes->math_data =
+      blink::mojom::AIPageContentMathData::New();
+  math_node_omitted->content_attributes->math_data->is_block = false;
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(math_node_omitted));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  EXPECT_EQ(page_content.proto.version(),
+            optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 2);
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(0)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_MATH);
+  const auto& math_data = page_content.proto.root_node()
+                              .children_nodes(0)
+                              .content_attributes()
+                              .math_data();
+  EXPECT_TRUE(math_data.has_stripped_mathml());
+  EXPECT_EQ(math_data.stripped_mathml(),
+            "<math><mfrac><mi>x</mi><mn>2</mn></mfrac></math>");
+  EXPECT_TRUE(math_data.is_block());
+
+  EXPECT_EQ(page_content.proto.root_node()
+                .children_nodes(1)
+                .content_attributes()
+                .attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_MATH);
+  const auto& math_data_omitted = page_content.proto.root_node()
+                                      .children_nodes(1)
+                                      .content_attributes()
+                                      .math_data();
+  EXPECT_FALSE(math_data_omitted.has_stripped_mathml());
+  EXPECT_FALSE(math_data_omitted.is_block());
+}
+
+TEST_F(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_MathNode) {
+  auto root_content = CreatePageContent();
+  auto math_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kMath);
+  math_node->content_attributes->text_info =
+      blink::mojom::AIPageContentTextInfo::New();
+  root_content->root_node->children_nodes.emplace_back(std::move(math_node));
+
+  AIPageContentResult page_content;
+  EXPECT_THAT(ConvertAIPageContentToProto(root_content, page_content),
+              base::test::ErrorIs(AIPageContentError{
+                  AIPageContentExtractionStatus::kAttributeTypeMismatch,
+                  "text_info present, but node isn't kText"}));
+}
+
+TEST_F(PageContentProtoUtilTest, AttributeTypeDoesNotMatchData_MathData) {
+  auto root_content = CreatePageContent();
+  auto container_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kContainer);
+  container_node->content_attributes->math_data =
+      blink::mojom::AIPageContentMathData::New();
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(container_node));
+
+  AIPageContentResult page_content;
+  EXPECT_THAT(ConvertAIPageContentToProto(root_content, page_content),
+              base::test::ErrorIs(AIPageContentError{
+                  AIPageContentExtractionStatus::kAttributeTypeMismatch,
+                  "math_data present, but node isn't kMath"}));
 }
 
 TEST_F(PageContentProtoUtilTest, ConvertFormData) {

@@ -939,6 +939,113 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, Video) {
       url::Origin::Create(video_url));
 }
 
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, MathML) {
+  LoadPage(https_server()->GetURL("/mathml.html"));
+
+  // The visibility:hidden formula in mathml.html is omitted.
+  ASSERT_EQ(page_content().root_node().children_nodes_size(), 3);
+
+  // 1. MathML formula (fraction)
+  const auto& math_node = page_content().root_node().children_nodes(0);
+  ASSERT_TRUE(math_node.content_attributes().has_math_data());
+  EXPECT_EQ(math_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_MATH);
+  EXPECT_EQ(math_node.content_attributes().math_data().stripped_mathml(),
+            "<math><mfrac><mrow><mi>x</mi></mrow><mrow><mi>y</mi><mo>+</mo><mn>"
+            "1</mn></mrow></mfrac></math>");
+  EXPECT_TRUE(math_node.content_attributes().math_data().is_block());
+
+  // Descendant text nodes are still emitted as children for backward
+  // compatibility.
+  ASSERT_EQ(math_node.children_nodes_size(), 4);
+  const auto& frac_child0 = math_node.children_nodes(0);
+  EXPECT_EQ(frac_child0.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(frac_child0.content_attributes().text_data().text_content(),
+            "\xf0\x9d\x91\xa5");  // Mathematical italic small x (U+1D465)
+
+  const auto& frac_child1 = math_node.children_nodes(1);
+  EXPECT_EQ(frac_child1.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(frac_child1.content_attributes().text_data().text_content(),
+            "\xf0\x9d\x91\xa6");  // Mathematical italic small y (U+1D466)
+
+  const auto& frac_child2 = math_node.children_nodes(2);
+  EXPECT_EQ(frac_child2.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(frac_child2.content_attributes().text_data().text_content(), "+");
+
+  const auto& frac_child3 = math_node.children_nodes(3);
+  EXPECT_EQ(frac_child3.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(frac_child3.content_attributes().text_data().text_content(), "1");
+
+  // 2. Standalone MathML Matrix
+  const auto& matrix_math = page_content().root_node().children_nodes(1);
+  ASSERT_TRUE(matrix_math.content_attributes().has_math_data());
+  EXPECT_EQ(matrix_math.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_MATH);
+  EXPECT_EQ(matrix_math.content_attributes().math_data().stripped_mathml(),
+            "<math><mtable><mtr><mtd><mn>1</mn></mtd></mtr></mtable></math>");
+  EXPECT_FALSE(matrix_math.content_attributes().math_data().is_block());
+
+  // Descendant <mtable>/<mtr>/<mtd> elements also extract as standard table
+  // nodes.
+  ASSERT_EQ(matrix_math.children_nodes_size(), 1);
+  const auto& matrix_table = matrix_math.children_nodes(0);
+  EXPECT_EQ(matrix_table.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE);
+  ASSERT_EQ(matrix_table.children_nodes_size(), 1);
+
+  const auto& matrix_row = matrix_table.children_nodes(0);
+  EXPECT_EQ(matrix_row.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_ROW);
+  ASSERT_EQ(matrix_row.children_nodes_size(), 1);
+
+  const auto& matrix_cell = matrix_row.children_nodes(0);
+  EXPECT_EQ(matrix_cell.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TABLE_CELL);
+  ASSERT_EQ(matrix_cell.children_nodes_size(), 1);
+
+  const auto& matrix_text = matrix_cell.children_nodes(0);
+  EXPECT_EQ(matrix_text.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(matrix_text.content_attributes().text_data().text_content(), "1");
+
+  // 3. Formula wrapped in an anchor
+  const auto& anchor_node = page_content().root_node().children_nodes(2);
+  EXPECT_EQ(anchor_node.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR);
+  EXPECT_EQ(anchor_node.content_attributes().anchor_data().url(),
+            "https://example.com/equation");
+  ASSERT_EQ(anchor_node.children_nodes_size(), 1);
+
+  const auto& linked_math = anchor_node.children_nodes(0);
+  ASSERT_TRUE(linked_math.content_attributes().has_math_data());
+  EXPECT_EQ(linked_math.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_MATH);
+  EXPECT_EQ(linked_math.content_attributes().math_data().stripped_mathml(),
+            "<math><mrow><mi>z</mi><mo>=</mo><mn>0</mn></mrow></math>");
+  EXPECT_FALSE(linked_math.content_attributes().math_data().is_block());
+
+  ASSERT_EQ(linked_math.children_nodes_size(), 3);
+  const auto& linked_child0 = linked_math.children_nodes(0);
+  EXPECT_EQ(linked_child0.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(linked_child0.content_attributes().text_data().text_content(),
+            "\xf0\x9d\x91\xa7");  // Mathematical italic small z (U+1D467)
+
+  const auto& linked_child1 = linked_math.children_nodes(1);
+  EXPECT_EQ(linked_child1.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(linked_child1.content_attributes().text_data().text_content(), "=");
+
+  const auto& linked_child2 = linked_math.children_nodes(2);
+  EXPECT_EQ(linked_child2.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT);
+  EXPECT_EQ(linked_child2.content_attributes().text_data().text_content(), "0");
+}
+
 namespace {
 
 std::string GetFilePathWithHostAndPortReplacement(

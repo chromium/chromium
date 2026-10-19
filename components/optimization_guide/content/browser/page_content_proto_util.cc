@@ -325,6 +325,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODAL;
     case blink::mojom::AIPageContentAttributeType::kDialogModeless:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_DIALOG_MODELESS;
+    case blink::mojom::AIPageContentAttributeType::kMath:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_MATH;
   }
   NOTREACHED();
 }
@@ -820,6 +822,14 @@ void ConvertTableRowData(
   }
 }
 
+void ConvertMathData(const blink::mojom::AIPageContentMathData& mojom_math_data,
+                     optimization_guide::proto::MathData* proto_math_data) {
+  if (mojom_math_data.stripped_mathml) {
+    proto_math_data->set_stripped_mathml(*mojom_math_data.stripped_mathml);
+  }
+  proto_math_data->set_is_block(mojom_math_data.is_block);
+}
+
 // `source_frame_token` is std::nullopt for documents inside popup windows since
 // they're not associated with a `RenderFrameHost`.
 base::expected<void, AIPageContentError> ConvertAttributes(
@@ -954,6 +964,15 @@ base::expected<void, AIPageContentError> ConvertAttributes(
     }
     ConvertTableRowData(*mojom_attributes.table_row_data,
                         proto_attributes->mutable_table_row_data());
+  } else if (mojom_attributes.math_data) {
+    if (mojom_attributes.attribute_type !=
+        blink::mojom::AIPageContentAttributeType::kMath) {
+      return base::unexpected(AIPageContentError{
+          AIPageContentExtractionStatus::kAttributeTypeMismatch,
+          "math_data present, but node isn't kMath"});
+    }
+    ConvertMathData(*mojom_attributes.math_data,
+                    proto_attributes->mutable_math_data());
   }
   if (mojom_attributes.label) {
     proto_attributes->set_label(*mojom_attributes.label);
