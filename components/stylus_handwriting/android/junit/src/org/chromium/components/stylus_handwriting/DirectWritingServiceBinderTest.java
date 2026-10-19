@@ -42,7 +42,7 @@ public class DirectWritingServiceBinderTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         doReturn(mDwCallback).when(mTriggerCallback).getServiceCallback();
     }
 

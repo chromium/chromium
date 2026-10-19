@@ -89,7 +89,7 @@ public class CafMediaRouteProviderTest {
 
         MediaRouterClient.setInstance(new TestMediaRouterClient());
 
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         ShadowCastContext.setInstance(mCastContext);
         CastMediaSource.setMockBuilderForTesting(mMockCastMediaSource);
         mMediaRouterHelper = new MediaRouterTestHelper();

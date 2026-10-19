@@ -18,7 +18,8 @@ public class PickerBitmapViewTest {
     @Test
     public void testPrematureOnSelectionStateChanged() {
         PickerBitmapView view =
-                new PickerBitmapView(RuntimeEnvironment.application.getApplicationContext(), null);
+                new PickerBitmapView(
+                        RuntimeEnvironment.getApplication().getApplicationContext(), null);
         // Simulate crash scenario in crbug.com/1006823, where an event occurred before
         // PickerBitmapView has been initialized.
         view.onSelectionStateChange(Collections.emptyList());

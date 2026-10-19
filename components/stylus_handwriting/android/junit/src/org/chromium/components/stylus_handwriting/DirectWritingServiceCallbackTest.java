@@ -161,7 +161,7 @@ public class DirectWritingServiceCallbackTest {
 
     @Before
     public void setup() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mContainerView = new FrameLayout(mContext);
         doReturn(mContainerView).when(mImeCallback).getContainerView();
     }

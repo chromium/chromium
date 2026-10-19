@@ -61,7 +61,7 @@ public class DirectWritingTriggerTest {
     public void setUp() {
         mDwTrigger = spy(new DirectWritingTrigger());
         mDwTrigger.setServiceBinderForTest(mDwServiceBinder);
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mContainerView = new FrameLayout(mContext);
         doReturn(mContainerView).when(mStylusWritingImeCallback).getContainerView();
 

@@ -53,10 +53,10 @@ public class BackgroundTaskSchedulerImplTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testScheduleTaskSuccessful() {
-        doReturn(true).when(mDelegate).schedule(eq(RuntimeEnvironment.application), eq(mTask));
+        doReturn(true).when(mDelegate).schedule(eq(RuntimeEnvironment.getApplication()), eq(mTask));
         BackgroundTaskSchedulerFactoryInternal.getScheduler()
-                .schedule(RuntimeEnvironment.application, mTask);
-        verify(mDelegate, times(1)).schedule(eq(RuntimeEnvironment.application), eq(mTask));
+                .schedule(RuntimeEnvironment.getApplication(), mTask);
+        verify(mDelegate, times(1)).schedule(eq(RuntimeEnvironment.getApplication()), eq(mTask));
         verify(mBackgroundTaskSchedulerUma, times(1))
                 .reportTaskScheduled(eq(TaskIds.TEST), eq(true));
     }
@@ -64,18 +64,23 @@ public class BackgroundTaskSchedulerImplTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testScheduleTaskFailed() {
-        doReturn(false).when(mDelegate).schedule(eq(RuntimeEnvironment.application), eq(mTask));
+        doReturn(false)
+                .when(mDelegate)
+                .schedule(eq(RuntimeEnvironment.getApplication()), eq(mTask));
         BackgroundTaskSchedulerFactoryInternal.getScheduler()
-                .schedule(RuntimeEnvironment.application, mTask);
-        verify(mDelegate, times(1)).schedule(eq(RuntimeEnvironment.application), eq(mTask));
+                .schedule(RuntimeEnvironment.getApplication(), mTask);
+        verify(mDelegate, times(1)).schedule(eq(RuntimeEnvironment.getApplication()), eq(mTask));
     }
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testCancel() {
-        doNothing().when(mDelegate).cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
+        doNothing()
+                .when(mDelegate)
+                .cancel(eq(RuntimeEnvironment.getApplication()), eq(TaskIds.TEST));
         BackgroundTaskSchedulerFactoryInternal.getScheduler()
-                .cancel(RuntimeEnvironment.application, TaskIds.TEST);
-        verify(mDelegate, times(1)).cancel(eq(RuntimeEnvironment.application), eq(TaskIds.TEST));
+                .cancel(RuntimeEnvironment.getApplication(), TaskIds.TEST);
+        verify(mDelegate, times(1))
+                .cancel(eq(RuntimeEnvironment.getApplication()), eq(TaskIds.TEST));
     }
 }

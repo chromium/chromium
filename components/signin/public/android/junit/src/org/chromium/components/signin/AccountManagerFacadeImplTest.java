@@ -107,7 +107,7 @@ public class AccountManagerFacadeImplTest {
 
     @Mock private AccountsChangeObserver mObserverMock;
 
-    private final Context mContext = RuntimeEnvironment.application;
+    private final Context mContext = RuntimeEnvironment.getApplication();
     private ShadowUserManager mShadowUserManager;
     private ShadowAccountManager mShadowAccountManager;
 

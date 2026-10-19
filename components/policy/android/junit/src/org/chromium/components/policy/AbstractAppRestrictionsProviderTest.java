@@ -125,7 +125,7 @@ public class AbstractAppRestrictionsProviderTest {
     /** Test method for {@link AbstractAppRestrictionsProvider#refresh()}. */
     @Test
     public void testRefresh() {
-        Context context = RuntimeEnvironment.application;
+        Context context = RuntimeEnvironment.getApplication();
 
         // Clear the preferences
         ContextUtils.getAppSharedPreferences().edit().clear();

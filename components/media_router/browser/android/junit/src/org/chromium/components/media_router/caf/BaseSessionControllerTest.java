@@ -79,7 +79,7 @@ public class BaseSessionControllerTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
         mMediaRouterHelper = new MediaRouterTestHelper();
         MediaRouterClient.setInstance(new TestMediaRouterClient());
         ShadowCastContext.setInstance(mCastContext);

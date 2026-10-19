@@ -34,7 +34,7 @@ public class RoundedCornerOutlineProviderUnitTest {
 
     @Before
     public void setUp() {
-        mContext = RuntimeEnvironment.application;
+        mContext = RuntimeEnvironment.getApplication();
 
         // Permit RTL tests.
         // Note that without this, all LayoutDirection changes will be ignored Views
