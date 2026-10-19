@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/proofreader.h"
 
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
@@ -307,17 +308,9 @@ Proofreader::Proofreader(
     : ExecutionContextClient(ExecutionContext::From(script_state)),
       remote_(GetExecutionContext()),
       options_(std::move(options)),
-      destruction_abort_controller_(AbortController::Create(script_state)),
-      create_abort_signal_(options_->getSignalOr(nullptr)),
+      abort_manager_(script_state, options_->getSignalOr(nullptr), this),
       task_runner_(std::move(task_runner)) {
   remote_.Bind(std::move(pending_remote), task_runner_);
-
-  if (create_abort_signal_) {
-    CHECK(!create_abort_signal_->aborted());
-    create_abort_handle_ = create_abort_signal_->AddAlgorithm(
-        BindOnce(&Proofreader::OnCreateAbortSignalAborted,
-                 WrapWeakPersistent(this), WrapWeakPersistent(script_state)));
-  }
 }
 
 void Proofreader::Trace(Visitor* visitor) const {
@@ -325,9 +318,7 @@ void Proofreader::Trace(Visitor* visitor) const {
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(remote_);
   visitor->Trace(options_);
-  visitor->Trace(destruction_abort_controller_);
-  visitor->Trace(create_abort_signal_);
-  visitor->Trace(create_abort_handle_);
+  visitor->Trace(abort_manager_);
 }
 
 ScriptPromise<V8Availability> Proofreader::availability(
@@ -423,9 +414,9 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
     return ScriptPromise<ProofreadResult>();
   }
 
-  CHECK(options);
-  AbortSignal* composite_signal = CreateCompositeSignal(script_state, options);
-  if (HandleAbortSignal(composite_signal, script_state, exception_state)) {
+  auto* signal = abort_manager_.CreateSignal(
+      script_state, CHECK_DEREF(options).getSignalOr(nullptr), exception_state);
+  if (!signal) {
     return EmptyPromise();
   }
 
@@ -454,17 +445,17 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
   // Step 1: Prompt the model to proofread and return fully corrected text.
   // Pass persistent refs to keep this instance alive during the response.
   auto pending_remote = CreateModelExecutionResponder(
-      script_state, composite_signal, task_runner_,
+      script_state, signal, task_runner_,
       AIMetrics::AISessionType::kProofreader,
       BindOnce(&Proofreader::OnProofreadComplete, WrapPersistent(this),
                WrapPersistent(resolver), WrapPersistent(script_state),
-               WrapPersistent(composite_signal), input),
+               WrapPersistent(signal), input),
       /*tool_call_callback=*/base::NullCallback(),
       /*overflow_callback=*/base::DoNothingWithBoundArgs(WrapPersistent(this)),
       BindOnce(&Proofreader::OnProofreadError, WrapPersistent(this),
                WrapPersistent(resolver)),
       BindOnce(&Proofreader::OnProofreadAbort, WrapPersistent(this),
-               WrapPersistent(resolver), WrapPersistent(composite_signal),
+               WrapPersistent(resolver), WrapPersistent(signal),
                WrapPersistent(script_state)));
   remote_->Proofread(input, std::move(pending_remote));
 
@@ -473,48 +464,9 @@ ScriptPromise<ProofreadResult> Proofreader::proofread(
 
 void Proofreader::destroy(ScriptState* script_state,
                           ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    ThrowInvalidContextException(exception_state);
-    return;
+  if (abort_manager_.OnDestroy(script_state, exception_state)) {
+    remote_.reset();
   }
-
-  remote_.reset();
-  destruction_abort_controller_->abort(script_state);
-  DestroyImpl();
-}
-
-// TODO(crbug.com424659255): Consolidate with AIWritingAssistanceBase.
-
-void Proofreader::DestroyImpl() {
-  remote_.reset();
-
-  if (create_abort_handle_) {
-    create_abort_signal_->RemoveAlgorithm(create_abort_handle_);
-    create_abort_handle_ = nullptr;
-  }
-}
-
-void Proofreader::OnCreateAbortSignalAborted(ScriptState* script_state) {
-  if (script_state) {
-    destruction_abort_controller_->abort(
-        script_state, create_abort_signal_->reason(script_state));
-  }
-  DestroyImpl();
-}
-
-AbortSignal* Proofreader::CreateCompositeSignal(
-    ScriptState* script_state,
-    const ProofreaderProofreadOptions* options) {
-  HeapVector<Member<AbortSignal>> signals;
-
-  signals.push_back(destruction_abort_controller_->signal());
-
-  CHECK(options);
-  if (options->hasSignal()) {
-    signals.push_back(options->signal());
-  }
-
-  return MakeGarbageCollected<AbortSignal>(script_state, signals);
 }
 
 bool Proofreader::ValidateAndCanonicalizeOptionLanguages(

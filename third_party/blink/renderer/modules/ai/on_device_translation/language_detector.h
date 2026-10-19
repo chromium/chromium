@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detection_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detector_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_detector_detect_options.h"
+#include "third_party/blink/renderer/modules/ai/abort_manager.h"
 #include "third_party/blink/renderer/modules/ai/resolver_with_abort_signal.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -72,18 +73,9 @@ class MODULES_EXPORT LanguageDetector final : public ScriptWrappable {
                      DetectLanguageError> result);
 
  private:
-  void DestroyImpl();
-
-  void OnCreateAbortSignalAborted(ScriptState* script_state);
-
-  AbortSignal* CreateCompositeSignal(ScriptState* script_state,
-                                     LanguageDetectorDetectOptions* options);
-
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   Member<LanguageDetectionModel> language_detection_model_;
-  Member<AbortController> destruction_abort_controller_;
-  Member<AbortSignal> create_abort_signal_;
-  Member<AbortSignal::AlgorithmHandle> create_abort_handle_;
+  AbortManager abort_manager_;
   std::optional<Vector<String>> expected_input_languages_;
 };
 

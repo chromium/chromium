@@ -16,8 +16,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofread_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_create_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_proofreader_proofread_options.h"
-#include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/abort_manager.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_utils.h"
 #include "third_party/blink/renderer/modules/ai/availability.h"
@@ -89,11 +89,6 @@ class Proofreader final : public ScriptWrappable,
   }
 
  private:
-  void DestroyImpl();
-  void OnCreateAbortSignalAborted(ScriptState* script_state);
-  AbortSignal* CreateCompositeSignal(
-      ScriptState* script_state,
-      const ProofreaderProofreadOptions* options);
   static bool ValidateAndCanonicalizeOptionLanguages(
       v8::Isolate* isolate,
       ProofreaderCreateCoreOptions* options);
@@ -133,9 +128,7 @@ class Proofreader final : public ScriptWrappable,
 
   HeapMojoRemote<mojom::blink::AIProofreader> remote_;
   Member<ProofreaderCreateOptions> options_;
-  Member<AbortController> destruction_abort_controller_;
-  Member<AbortSignal> create_abort_signal_;
-  Member<AbortSignal::AlgorithmHandle> create_abort_handle_;
+  AbortManager abort_manager_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 

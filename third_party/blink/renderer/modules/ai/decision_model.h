@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decision_model_decide_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_performance_preference.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/modules/ai/abort_manager.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -59,6 +60,7 @@ class MODULES_EXPORT DecisionModel final : public ScriptWrappable,
  private:
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   HeapMojoRemote<mojom::blink::AIDecisionModel> decision_model_remote_;
+  AbortManager abort_manager_;
   V8PerformancePreference preference_{V8PerformancePreference::Enum::kAuto};
 };
 

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ai/decision_model.h"
 
+#include "base/check_deref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -390,6 +391,9 @@ DecisionModel::DecisionModel(
     : ExecutionContextClient(ExecutionContext::From(script_state)),
       task_runner_(std::move(task_runner)),
       decision_model_remote_(ExecutionContext::From(script_state)),
+      abort_manager_(script_state,
+                     options ? options->getSignalOr(nullptr) : nullptr,
+                     this),
       // `DecisionModelCreateCoreOptions.preference` defaults to `"auto"` at the
       // WebIDL layer (matching `SummarizerCreateCoreOptions`), with `kAuto` as
       // a fallback when constructed with null options in C++ unit tests.
@@ -403,6 +407,7 @@ void DecisionModel::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   visitor->Trace(decision_model_remote_);
+  visitor->Trace(abort_manager_);
 }
 
 // static
@@ -516,8 +521,15 @@ DecisionModel::decide(ScriptState* script_state,
     return ScriptPromise<IDLRecord<IDLString, DecisionModelDecision>>();
   }
 
-  AbortSignal* signal = options ? options->getSignalOr(nullptr) : nullptr;
-  if (HandleAbortSignal(signal, script_state, exception_state)) {
+  auto* signal = abort_manager_.CreateSignal(
+      script_state, CHECK_DEREF(options).getSignalOr(nullptr), exception_state);
+  if (!signal) {
+    return EmptyPromise();
+  }
+
+  if (!decision_model_remote_.is_bound() ||
+      !decision_model_remote_.is_connected()) {
+    ThrowSessionDestroyedException(exception_state);
     return EmptyPromise();
   }
 
@@ -531,11 +543,6 @@ DecisionModel::decide(ScriptState* script_state,
   auto* resolver = MakeGarbageCollected<ResolverWithAbortSignal<DecideResult>>(
       script_state, signal);
   auto promise = resolver->Promise();
-  if (!decision_model_remote_.is_bound() ||
-      !decision_model_remote_.is_connected()) {
-    resolver->Reject(CreateSessionDestroyedException());
-    return promise;
-  }
 
   // Pass a persistent reference to `this` so the DecisionModel and its
   // `decision_model_remote_` stay alive while `Decide()` is in flight.
@@ -592,7 +599,9 @@ DecisionModel::decide(ScriptState* script_state,
 
 void DecisionModel::destroy(ScriptState* script_state,
                             ExceptionState& exception_state) {
-  decision_model_remote_.reset();
+  if (abort_manager_.OnDestroy(script_state, exception_state)) {
+    decision_model_remote_.reset();
+  }
 }
 
 }  // namespace blink

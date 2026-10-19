@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/modules/ai/decision_model.h"
 
-#include "base/test/run_until.h"
 #include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -23,10 +22,22 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
+namespace {
+
+void ExpectDOMException(V8TestingScope& scope,
+                        v8::Local<v8::Value> value,
+                        const char* expected_name) {
+  auto* dom_exception = V8DOMException::ToWrappable(scope.GetIsolate(), value);
+  ASSERT_TRUE(dom_exception);
+  EXPECT_EQ(dom_exception->name(), expected_name);
+}
+
+}  // namespace
 
 class MockAIDecisionModel : public mojom::blink::AIDecisionModel {
  public:
@@ -209,12 +220,14 @@ TEST_F(DecisionModelTest, DecideWithAbortedSignalRejects) {
       DecisionModelDecideOptions::Create();
   pre_options->setSignal(pre_aborted->signal());
 
-  {
+  // An aborted signal takes precedence over empty-input TypeError validation.
+  for (const char* input : {"Aborted input", ""}) {
     v8::TryCatch try_catch(scope.GetIsolate());
-    auto empty_promise = model->decide(scope.GetScriptState(), "Aborted input",
+    auto empty_promise = model->decide(scope.GetScriptState(), input,
                                        pre_options, exception_state);
     EXPECT_TRUE(empty_promise.IsEmpty());
-    EXPECT_TRUE(try_catch.HasCaught());
+    ASSERT_TRUE(try_catch.HasCaught());
+    ExpectDOMException(scope, try_catch.Exception(), "AbortError");
   }
   EXPECT_EQ(mock_remote_->call_count(), 0);
 
@@ -226,11 +239,15 @@ TEST_F(DecisionModelTest, DecideWithAbortedSignalRejects) {
   auto promise =
       model->decide(scope.GetScriptState(), "In-flight aborted input",
                     in_flight_options, exception_state);
+  [[maybe_unused]] auto* handle = in_flight->signal()->AddAlgorithm(BindOnce(
+      &DecisionModel::destroy, WrapPersistent(model),
+      WrapPersistent(scope.GetScriptState()), std::ref(exception_state)));
   in_flight->abort(scope.GetScriptState());
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
 
-  EXPECT_TRUE(tester.IsRejected());
+  ASSERT_TRUE(tester.IsRejected());
+  ExpectDOMException(scope, tester.Value().V8Value(), "AbortError");
 }
 
 TEST_F(DecisionModelTest, DecideRejectsEmptyInput) {
@@ -251,16 +268,66 @@ TEST_F(DecisionModelTest, DestroyRejectsSubsequentDecide) {
   DecisionModel* model = CreateDecisionModel(scope.GetScriptState());
 
   DummyExceptionStateForTesting exception_state;
+  DecisionModelDecideOptions* options = DecisionModelDecideOptions::Create();
+  auto pending_promise = model->decide(scope.GetScriptState(), "Pending input",
+                                       options, exception_state);
   model->destroy(scope.GetScriptState(), exception_state);
 
-  DecisionModelDecideOptions* options = DecisionModelDecideOptions::Create();
-  auto promise =
-      model->decide(scope.GetScriptState(), "Test input after destroy", options,
-                    exception_state);
-  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  ScriptPromiseTester tester(scope.GetScriptState(), pending_promise);
   tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsRejected());
+  ExpectDOMException(scope, tester.Value().V8Value(), "AbortError");
 
+  for (const char* input : {"Test input after destroy", ""}) {
+    v8::TryCatch try_catch(scope.GetIsolate());
+    auto promise =
+        model->decide(scope.GetScriptState(), input, options, exception_state);
+    EXPECT_TRUE(promise.IsEmpty());
+    ASSERT_TRUE(try_catch.HasCaught());
+    ExpectDOMException(scope, try_catch.Exception(), "AbortError");
+  }
+
+  DecisionModel* disconnected = CreateDecisionModel(scope.GetScriptState());
+  mock_remote_.reset();
+  task_environment_.RunUntilIdle();
+  disconnected->decide(scope.GetScriptState(), "Disconnected input", options,
+                       exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_EQ(exception_state.CodeAs<DOMExceptionCode>(),
+            DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_F(DecisionModelTest, CreateAbortSignalAbortedAfterCreateRejectsDecide) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  AbortController* create_controller = AbortController::Create(script_state);
+  DecisionModelCreateOptions* create_options =
+      DecisionModelCreateOptions::Create();
+  create_options->setSignal(create_controller->signal());
+  DecisionModel* model = CreateDecisionModel(script_state, create_options);
+
+  DummyExceptionStateForTesting exception_state;
+  DecisionModelDecideOptions* options = DecisionModelDecideOptions::Create();
+  auto pending_promise =
+      model->decide(script_state, "Pending input", options, exception_state);
+  create_controller->abort(
+      script_state,
+      ScriptValue(scope.GetIsolate(),
+                  V8String(scope.GetIsolate(), "create abort reason")));
+
+  ScriptPromiseTester tester(script_state, pending_promise);
+  tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsRejected());
+  EXPECT_EQ(tester.ValueAsString(), "create abort reason");
+
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto empty_promise = model->decide(script_state, "Input after create abort",
+                                     options, exception_state);
+  EXPECT_TRUE(empty_promise.IsEmpty());
+  ASSERT_TRUE(try_catch.HasCaught());
+  EXPECT_EQ(
+      ToCoreString(scope.GetIsolate(), try_catch.Exception().As<v8::String>()),
+      "create abort reason");
 }
 
 TEST_F(DecisionModelTest, DecideRejectsInputTooLargeWithQuotaExceededError) {
@@ -278,10 +345,7 @@ TEST_F(DecisionModelTest, DecideRejectsInputTooLargeWithQuotaExceededError) {
   tester.WaitUntilSettled();
 
   ASSERT_TRUE(tester.IsRejected());
-  auto* dom_exception =
-      V8DOMException::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
-  ASSERT_TRUE(dom_exception);
-  EXPECT_EQ(dom_exception->name(), "QuotaExceededError");
+  ExpectDOMException(scope, tester.Value().V8Value(), "QuotaExceededError");
 }
 
 TEST_F(DecisionModelTest, DecideKeepsModelAliveAcrossGC) {
