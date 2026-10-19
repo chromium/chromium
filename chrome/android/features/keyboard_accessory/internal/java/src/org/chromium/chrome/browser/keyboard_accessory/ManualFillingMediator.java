@@ -47,7 +47,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.autofill_ai.AutofillAiSourceAttributionCoordinator;
 import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -924,9 +923,7 @@ class ManualFillingMediator
                             mActivity,
                             view ->
                                     SettingsNavigationHelper.showAutofillPersonalContextSettings(
-                                            mActivity,
-                                            AutofillOptionsReferrer
-                                                    .PERSONAL_CONTEXT_AMBIENT_AUTOFILL_NOTICE));
+                                            mActivity));
             spanInfos.add(
                     new SpanApplier.SpanInfo(
                             MANAGE_LINK_OPEN_TAG, MANAGE_LINK_CLOSE_TAG, manageSpan));

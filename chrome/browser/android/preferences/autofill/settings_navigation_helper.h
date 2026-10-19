@@ -42,11 +42,8 @@ enum class AutofillOptionsReferrer {
   // Private inference notice.
   kPrivateInferenceNotice = 8,
 
-  // Personal context AtMemory notice.
-  kPersonalContextAtmemoryNotice = 9,
-
-  // Personal context ambient autofill notice.
-  kPersonalContextAmbientAutofillNotice = 10,
+  // Obsolete: kPersonalContextAtmemoryNotice = 9,
+  // Obsolete: kPersonalContextAmbientAutofillNotice = 10,
 
   // Settings search in Chrome settings.
   kSettingsSearch = 11,
@@ -71,8 +68,7 @@ void ShowAutofillTravelSettings(content::WebContents* web_contents);
 void ShowAutofillShoppingSettings(content::WebContents* web_contents);
 
 // Opens the autofill settings page for personal context.
-void ShowAutofillPersonalContextSettings(content::WebContents* web_contents,
-                                         AutofillOptionsReferrer referrer);
+void ShowAutofillPersonalContextSettings(content::WebContents* web_contents);
 
 // Open the autofill settings page.
 void ShowAutofillSettingsPage(content::WebContents* web_contents);

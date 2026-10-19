@@ -179,8 +179,7 @@ public class AutofillAndPasswordsFragment extends ChromeBaseSettingsFragment {
                     RecordUserAction.record(
                             AutofillPersonalContextFragment
                                     .ACTION_ENTRY_FROM_AUTOFILL_AND_PASSWORDS);
-                    SettingsNavigationHelper.showAutofillPersonalContextSettings(
-                            getActivity(), AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT);
+                    SettingsNavigationHelper.showAutofillPersonalContextSettings(getActivity());
                     return true;
                 });
 

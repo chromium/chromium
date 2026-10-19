@@ -87,9 +87,7 @@ public class SettingsNavigationHelper {
      * @param context The {@link Context} required to start the settings page. Noop without it.
      * @return True if the context is valid and `startSettings` was called.
      */
-    // TODO(crbug.com/513493349): Remove the unused referrer parameter.
-    public static boolean showAutofillPersonalContextSettings(
-            @Nullable Context context, @AutofillOptionsReferrer int referrer) {
+    public static boolean showAutofillPersonalContextSettings(@Nullable Context context) {
         return PersonalContextSettingsLauncher.showPersonalContextSettings(context);
     }
 
@@ -235,11 +233,10 @@ public class SettingsNavigationHelper {
     }
 
     @CalledByNative
-    private static void showAutofillPersonalContextSettings(
-            WebContents webContents, @AutofillOptionsReferrer int referrer) {
+    private static void showAutofillPersonalContextSettings(WebContents webContents) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return;
-        showAutofillPersonalContextSettings(windowAndroid.getActivity().get(), referrer);
+        showAutofillPersonalContextSettings(windowAndroid.getActivity().get());
     }
 
     @CalledByNative

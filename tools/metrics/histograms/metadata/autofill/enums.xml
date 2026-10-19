@@ -3246,11 +3246,11 @@ Called by update_autofill_enums.py.-->
   <int value="8"
       label="User entered the autofill options via private inference notice."/>
   <int value="9"
-      label="User entered the autofill options via personal context atmemory
-             notice."/>
+      label="(Obsolete) User entered the autofill options via personal
+             context atmemory notice."/>
   <int value="10"
-      label="User entered the autofill options via personal context ambient
-             autofill notice."/>
+      label="(Obsolete) User entered the autofill options via personal
+             context ambient autofill notice."/>
   <int value="11"
       label="User entered the autofill options via settings search."/>
 </enum>

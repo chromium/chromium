@@ -776,9 +776,7 @@ void ChromeAutofillClient::ShowAutofillSettings(
       return;
     case SuggestionType::kManageAutofillAi:
     case SuggestionType::kManageEnhancedAutofill:
-      ShowAutofillPersonalContextSettings(
-          web_contents(),
-          AutofillOptionsReferrer::kPersonalContextAtmemoryNotice);
+      ShowAutofillPersonalContextSettings(web_contents());
       return;
     default:
       break;

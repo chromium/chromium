@@ -27,7 +27,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.UserActionTester;
-import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
@@ -106,9 +105,7 @@ public class SettingsNavigationHelperTest {
 
     @Test
     public void testShowAutofillPersonalContextSettingsLaunchesPersonalContext() {
-        assertTrue(
-                SettingsNavigationHelper.showAutofillPersonalContextSettings(
-                        mMockContext, AutofillOptionsReferrer.PRIVATE_INFERENCE_NOTICE));
+        assertTrue(SettingsNavigationHelper.showAutofillPersonalContextSettings(mMockContext));
         verify(mMockLauncher)
                 .startSettings(mMockContext, AutofillPersonalContextFragment.class, null, true);
     }

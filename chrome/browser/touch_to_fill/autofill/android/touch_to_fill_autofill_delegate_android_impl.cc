@@ -271,9 +271,7 @@ void TouchToFillAutofillDelegateAndroidImpl::OnSettingsLinkClicked() {
       if (content::WebContents* web_contents =
               static_cast<ContentAutofillClient&>(manager_->client())
                   .web_contents()) {
-        ShowAutofillPersonalContextSettings(
-            web_contents,
-            AutofillOptionsReferrer::kPersonalContextAmbientAutofillNotice);
+        ShowAutofillPersonalContextSettings(web_contents);
       }
       break;
     case NoticeType::kPrivateInference:

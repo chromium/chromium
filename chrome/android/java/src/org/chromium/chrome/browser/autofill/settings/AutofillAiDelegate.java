@@ -362,8 +362,7 @@ public class AutofillAiDelegate {
                         }
 
                         SettingsNavigationHelper.showAutofillPersonalContextSettings(
-                                mFragment.requireActivity(),
-                                AutofillOptionsReferrer.AUTOFILL_AND_PASSWORDS_FRAGMENT);
+                                mFragment.requireActivity());
                         return true;
                     });
 
