@@ -1396,6 +1396,63 @@ TEST_F(PortsTest, PendingMergeRejectsUnexpectedNode) {
   EXPECT_TRUE(node2.node().CanShutdownCleanly());
 }
 
+TEST_F(PortsTest, UnexpectedMergeDoesNotCloseTargetPort) {
+  // A MergePort event targeting a port which is not pending a merge must be
+  // rejected without side effects on the targeted port, and the port accepted
+  // from the event must not be leaked.
+
+  TestNode node0(0);
+  AddNode(&node0);
+
+  TestNode node1(1);
+  AddNode(&node1);
+
+  // Setup two independent port pairs, A-B on node0 and C-D on node1.
+  PortRef A, B, C, D;
+  EXPECT_EQ(OK, node0.node().CreatePortPair(&A, &B));
+  EXPECT_EQ(OK, node1.node().CreatePortPair(&C, &D));
+
+  base::test::MockLog log;
+  log.StartCapturingLogs();
+
+  EXPECT_CALL(
+      log, Log(logging::LOGGING_ERROR, ::testing::_, ::testing::_, ::testing::_,
+               ::testing::HasSubstr("MergePort called on unexpected")))
+      .Times(1);
+
+  // C is not expecting a merge, so this merge must be rejected.
+  EXPECT_EQ(OK, node0.node().MergePorts(B, node1.name(), C.name()));
+
+  WaitForIdle();
+
+  log.StopCapturingLogs();
+
+  // C must still be open and connected to D.
+  PortStatus status;
+  ASSERT_EQ(OK, node1.node().GetStatus(D, &status));
+  EXPECT_FALSE(status.peer_closed);
+  EXPECT_EQ(OK, node1.SendStringMessage(C, "hey"));
+  ScopedMessage message;
+  ASSERT_TRUE(node1.ReadMessage(D, &message));
+  EXPECT_TRUE(MessageEquals(message, "hey"));
+
+  // The port accepted from the rejected merge was closed instead, so A
+  // observes its peer closure and the B proxy goes away.
+  ASSERT_EQ(OK, node0.node().GetStatus(A, &status));
+  EXPECT_TRUE(status.peer_closed);
+  EXPECT_EQ(ERROR_PORT_UNKNOWN, node0.node().GetPort(B.name(), &B));
+
+  EXPECT_EQ(OK, node0.node().ClosePort(A));
+  EXPECT_EQ(OK, node1.node().ClosePort(C));
+  EXPECT_EQ(OK, node1.node().ClosePort(D));
+
+  WaitForIdle();
+
+  // No ports should be leaked.
+  EXPECT_TRUE(node0.node().CanShutdownCleanly());
+  EXPECT_TRUE(node1.node().CanShutdownCleanly());
+}
+
 TEST_F(PortsTest, MergePortWithClosedPeer1) {
   // This tests that the right thing happens when initiating a merge on a port
   // whose peer has already been closed.

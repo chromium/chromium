@@ -1082,7 +1082,11 @@ int Node::OnMergePort(const PortRef& port_ref,
     }
   }
   if (!peer_allowed) {
-    ClosePort(port_ref);
+    // The targeted port was never expecting a merge, so the sender is not
+    // authorized to affect it. Leave it untouched and instead close the port
+    // that was just accepted from the sender's descriptor, so it cannot linger
+    // with sender-controlled routing state.
+    ClosePort(new_port_ref);
     return ERROR_PORT_STATE_UNEXPECTED;
   }
   if (!sender_allowed) {
