@@ -425,6 +425,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/intelligence/actor/tools/public:unit_tests",
     "//ios/chrome/browser/intelligence/actor/tools/utils:unit_tests",
     "//ios/chrome/browser/intelligence/actor/ui:unit_tests",
+    "//ios/chrome/browser/intelligence/actor/util:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/coordinator:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/first_run/coordinator:unit_tests",
     "//ios/chrome/browser/intelligence/bwg/first_run/ui:unit_tests",

@@ -1196,8 +1196,9 @@ TEST_F(ActorServiceTest, TaskLifecycleObserverStopsTaskFromStart) {
 
   // Delivers the start, from which the observer stops the task, posting the
   // stop.
-  FlushCurrentSequence();
+  RunAlreadyPostedTasks();
   EXPECT_EQ(1, observer.startedCount);
+  EXPECT_EQ(0, observer.stoppedCount);
 
   // Delivers the stop.
   FlushCurrentSequence();

@@ -560,8 +560,9 @@ TEST_F(ToolControllerTest, CancelDropsPostedValidationResult) {
         FAIL() << "Callback should not be called when cancelled.";
       }));
 
-  // Runs the posted validation, which posts its result.
-  FlushCurrentSequence();
+  // Runs only the posted validation, so that its posted result is still pending
+  // when the controller is cancelled.
+  RunAlreadyPostedTasks();
   ASSERT_EQ(ToolController::State::kInvokable, controller_->state());
 
   controller_->Cancel();

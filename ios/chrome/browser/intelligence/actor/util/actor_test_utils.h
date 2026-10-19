@@ -197,10 +197,15 @@ std::optional<std::string> FindJournalDetail(const mojom::JournalEntry& entry,
 testing::AssertionResult IsStrictlyNestedPerTrack(
     const std::vector<mojom::JournalEntryPtr>& entries);
 
-// Runs the tasks already posted to the current sequence. Tasks posted by those
-// tasks in turn are not run; use `base::test::RunUntil()` to wait on such
-// chains.
+// Runs the tasks posted to the current sequence, including the tasks they post
+// in turn, until it is idle. Never advances mock time or waits for delayed
+// tasks or other threads, so it is deterministic for single-sequence code.
 void FlushCurrentSequence();
+
+// Runs only the tasks already posted to the current sequence, not the tasks
+// they post in turn, e.g. to observe an intermediate state. Same guarantees as
+// `FlushCurrentSequence()`.
+void RunAlreadyPostedTasks();
 
 }  // namespace actor
 

@@ -25,3 +25,14 @@ source_set("test_support") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "actor_test_utils_unittest.mm" ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

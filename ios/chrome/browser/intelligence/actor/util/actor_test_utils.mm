@@ -290,6 +290,14 @@ testing::AssertionResult IsStrictlyNestedPerTrack(
 }
 
 void FlushCurrentSequence() {
+  // Only drains the current thread, which is deterministic as the actor code
+  // runs on a single sequence.
+  base::RunLoop().RunUntilIdle();
+}
+
+void RunAlreadyPostedTasks() {
+  // Quits once the tasks posted before it have run, so the tasks they post
+  // stay pending.
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
