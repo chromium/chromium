@@ -35,9 +35,12 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_container_consumer.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
@@ -311,12 +314,32 @@ class FakeGeminiSharedTabsDelegate : public GeminiSharedTabsDelegate {
     last_updated_active_web_state_ = active_web_state;
     update_shared_tabs_for_active_web_state_call_count_++;
   }
+  void DetachTabWithID(NSString* tab_id) override {
+    last_detached_tab_id_ = tab_id;
+  }
+  void UpdateLocalTabAttachmentState(
+      NSString* tab_id,
+      ios::provider::GeminiPageContextAttachmentState new_state) override {
+    last_local_attachment_tab_id_ = tab_id;
+    last_local_attachment_state_ = new_state;
+  }
+  NSUInteger SharedTabsCount() const override { return shared_tabs_count_; }
+  void OnTabPickerSelectionChanged(
+      std::set<web::WebStateID> selected_tabs) override {}
+  std::set<web::WebStateID> GetSelectedTabsForTabPicker() const override {
+    return {};
+  }
 
   NSArray<GeminiPageContext*>* inactive_shared_tabs_ = @[];
   GeminiPageContext* last_saved_active_page_context_ = nil;
   int save_active_page_context_call_count_ = 0;
   raw_ptr<web::WebState> last_updated_active_web_state_ = nullptr;
   int update_shared_tabs_for_active_web_state_call_count_ = 0;
+  NSString* last_detached_tab_id_ = nil;
+  NSString* last_local_attachment_tab_id_ = nil;
+  std::optional<ios::provider::GeminiPageContextAttachmentState>
+      last_local_attachment_state_;
+  NSUInteger shared_tabs_count_ = 0;
 };
 
 class GeminiContainerMediatorTest : public PlatformTest {
@@ -1976,6 +1999,54 @@ TEST_F(GeminiContainerMediatorTest, TestLensOverlayDismissesContainer) {
   [[mock_gemini_handler_ reject] dismissGeminiFlowWithCompletion:nil];
   [scene_state_.lensOverlayStateNotifier lensOverlayDidPrepare];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
+}
+
+// Tests that `GeminiViewStateDelegate` tab methods on `GeminiContainerMediator`
+// route tab attachment and multi-tab queries to `sharedTabsDelegate`.
+TEST_F(GeminiContainerMediatorTest,
+       TestViewStateDelegateTabMethodsRouteToSharedTabsDelegate) {
+  [mediator_ didRequestToDetachTabWithID:@"123"];
+  EXPECT_NSEQ(@"123", shared_tabs_delegate_.last_detached_tab_id_);
+
+  [mediator_ didAttachTabWithID:@"456"];
+  EXPECT_NSEQ(@"456", shared_tabs_delegate_.last_local_attachment_tab_id_);
+  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kAttached,
+            shared_tabs_delegate_.last_local_attachment_state_);
+
+  [mediator_ didDetachTabWithID:@"789"];
+  EXPECT_NSEQ(@"789", shared_tabs_delegate_.last_local_attachment_tab_id_);
+  EXPECT_EQ(ios::provider::GeminiPageContextAttachmentState::kDetached,
+            shared_tabs_delegate_.last_local_attachment_state_);
+
+  shared_tabs_delegate_.shared_tabs_count_ = 3u;
+  EXPECT_EQ(3u, [mediator_ attachedTabsCount]);
+
+  GeminiPageContext* inactive_context = [[GeminiPageContext alloc] init];
+  shared_tabs_delegate_.inactive_shared_tabs_ = @[ inactive_context ];
+  EXPECT_TRUE([mediator_ isMultiTabUsed]);
+}
+
+// Tests that `sharedTabsDelegate` passed to `GeminiContainerMediator` is
+// forwarded to `gatewayManager.tabPickerHandler`.
+TEST_F(GeminiContainerMediatorTest,
+       TestSharedTabsDelegateForwardedToTabPickerHandler) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  GeminiContainerMediator* multi_tab_mediator = [[GeminiContainerMediator alloc]
+            initWithBrowser:browser_.get()
+               actorService:nullptr
+      authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                profile_.get())
+               eventHandler:&delegate_
+         sharedTabsDelegate:&shared_tabs_delegate_
+      sessionMetricsManager:session_metrics_manager_];
+
+  EXPECT_EQ(
+      &shared_tabs_delegate_,
+      multi_tab_mediator.gatewayManager.tabPickerHandler.sharedTabsDelegate);
+  [multi_tab_mediator disconnect];
 }
 
 }  // namespace

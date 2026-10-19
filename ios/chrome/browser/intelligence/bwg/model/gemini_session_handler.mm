@@ -295,13 +295,12 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
                    longPressImage:(BOOL)longPressImage
               pageContextAttached:(BOOL)pageContextAttached {
   NSUInteger tabsAttachedCount = 0;
-  if (IsGeminiMultiTabContextEnabled() && self.attachedTabsCountProvider) {
-    tabsAttachedCount = self.attachedTabsCountProvider();
+  if (self.geminiViewStateDelegate && IsGeminiMultiTabContextEnabled()) {
+    tabsAttachedCount = [self.geminiViewStateDelegate attachedTabsCount];
   } else {
     tabsAttachedCount = pageContextAttached ? 1 : 0;
   }
-  BOOL usedMultiTab =
-      self.isMultiTabUsedProvider ? self.isMultiTabUsedProvider() : NO;
+  BOOL usedMultiTab = [self.geminiViewStateDelegate isMultiTabUsed];
 
   _totalPromptsInSession++;
 
@@ -406,21 +405,15 @@ IOSGeminiSessionCancellationReason HistogramEnumFromGeminiCancelType(
 }
 
 - (void)didRequestToDetachTabWithID:(NSString*)tabID {
-  if (self.tabDetachRequestCallback) {
-    self.tabDetachRequestCallback(tabID);
-  }
+  [self.geminiViewStateDelegate didRequestToDetachTabWithID:tabID];
 }
 
 - (void)didAttachTabWithID:(NSString*)tabID {
-  if (self.tabAttachedCallback) {
-    self.tabAttachedCallback(tabID);
-  }
+  [self.geminiViewStateDelegate didAttachTabWithID:tabID];
 }
 
 - (void)didDetachTabWithID:(NSString*)tabID {
-  if (self.tabDetachedCallback) {
-    self.tabDetachedCallback(tabID);
-  }
+  [self.geminiViewStateDelegate didDetachTabWithID:tabID];
 }
 
 - (void)geminiLiveUserDidBargeIn {

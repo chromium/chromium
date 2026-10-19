@@ -59,6 +59,21 @@ typedef NS_ENUM(NSInteger, GeminiCancelType);
 - (void)didFinishLoadingConversationWithID:(NSString*)conversationID
                                      error:(NSError*)error;
 
+// Called when a request to detach a tab with the given ID is made.
+- (void)didRequestToDetachTabWithID:(NSString*)tabID;
+
+// Called when a tab with the given ID has been attached by the Floaty.
+- (void)didAttachTabWithID:(NSString*)tabID;
+
+// Called when a tab with the given ID has been detached by the Floaty.
+- (void)didDetachTabWithID:(NSString*)tabID;
+
+// Returns the number of currently attached tabs.
+- (NSUInteger)attachedTabsCount;
+
+// Returns whether a multi-tab prompt is used.
+- (BOOL)isMultiTabUsed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_DELEGATE_H_

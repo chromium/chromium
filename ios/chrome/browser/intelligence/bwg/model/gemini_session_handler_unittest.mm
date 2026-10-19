@@ -933,3 +933,45 @@ TEST_F(GeminiSessionHandlerTest,
 
   [mock_delegate verify];
 }
+
+// Tests that tab attachment and detachment events notify
+// `geminiViewStateDelegate`.
+TEST_F(GeminiSessionHandlerTest,
+       TestTabAttachmentEventsNotifyViewStateDelegate) {
+  id mock_delegate = OCMProtocolMock(@protocol(GeminiViewStateDelegate));
+  session_handler_.geminiViewStateDelegate = mock_delegate;
+
+  OCMExpect([mock_delegate didRequestToDetachTabWithID:@"tab_1"]);
+  [session_handler_ didRequestToDetachTabWithID:@"tab_1"];
+
+  OCMExpect([mock_delegate didAttachTabWithID:@"tab_2"]);
+  [session_handler_ didAttachTabWithID:@"tab_2"];
+
+  OCMExpect([mock_delegate didDetachTabWithID:@"tab_3"]);
+  [session_handler_ didDetachTabWithID:@"tab_3"];
+
+  [mock_delegate verify];
+}
+
+// Tests that `didSendQueryWithInputType:` queries `attachedTabsCount` and
+// `isMultiTabUsed` from `geminiViewStateDelegate` when multi-tab context is
+// enabled.
+TEST_F(GeminiSessionHandlerTest, TestQueryMetricsRecorded_WithMultiTabContext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kGeminiMultiTabContext, kPageActionMenu}, {});
+
+  id mock_delegate = OCMProtocolMock(@protocol(GeminiViewStateDelegate));
+  session_handler_.geminiViewStateDelegate = mock_delegate;
+
+  OCMExpect([mock_delegate attachedTabsCount]).andReturn(3u);
+  OCMExpect([mock_delegate isMultiTabUsed]).andReturn(YES);
+
+  [session_handler_ didSendQueryWithInputType:gemini::InputType::kText
+                     isNanoBananaToolSelected:NO
+                          imagesAttachedCount:0
+                               longPressImage:NO
+                          pageContextAttached:YES];
+
+  histogram_tester_.ExpectUniqueSample(kPromptTabsAttachedCountHistogram, 3, 1);
+  [mock_delegate verify];
+}

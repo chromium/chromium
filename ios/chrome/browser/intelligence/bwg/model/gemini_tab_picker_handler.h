@@ -5,33 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_TAB_PICKER_HANDLER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_TAB_PICKER_HANDLER_H_
 
-#import <set>
-
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_delegate.h"
-#import "ios/web/public/web_state_id.h"
 
+class GeminiSharedTabsDelegate;
 @protocol SnackbarCommands;
 @protocol TabPickerCommands;
-
-// Callback type invoked when the tab picker selection changes.
-typedef void (^GeminiTabPickerSelectionCallback)(
-    std::set<web::WebStateID> selectedIDs);
-
-// Callback type invoked to determine which tabs to pre-select.
-typedef std::set<web::WebStateID> (^GeminiTabPickerSelectedTabsProvider)();
 
 // The handler for Gemini Tab Picker actions. Configures and presents the Tab
 // Picker UI in response to GeminiTabPickerDelegate actions.
 @interface GeminiTabPickerHandler : NSObject <GeminiTabPickerDelegate>
 
-// Callback invoked when the user changes their selected tabs via the Tab
-// Picker.
-@property(nonatomic, copy) GeminiTabPickerSelectionCallback selectionCallback;
-
-// Provider invoked when the tab picker is opened to determine the pre-selected
-// tabs.
-@property(nonatomic, copy)
-    GeminiTabPickerSelectedTabsProvider selectedTabsProvider;
+// Delegate for shared tabs in a Gemini session.
+@property(nonatomic, assign) GeminiSharedTabsDelegate* sharedTabsDelegate;
 
 // The handler used to present the Tab Picker UI.
 @property(nonatomic, weak) id<TabPickerCommands> tabPickerHandler;

@@ -58,7 +58,6 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_picker_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -88,7 +87,6 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/commands/tab_picker_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -417,73 +415,6 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                eventHandler:this
          sharedTabsDelegate:this
       sessionMetricsManager:session_metrics_manager_];
-
-  // TODO(crbug.com/537761575): Move tab managment related work to into a
-  // dedicated helper/service class GeminiTabSessionManager.
-  if (gemini_container_mediator_.gateway) {
-    base::WeakPtr<GeminiBrowserAgent> weak_this = weak_factory_.GetWeakPtr();
-    GeminiSessionHandler* session_handler =
-        gemini_container_mediator_.gatewayManager.sessionHandler;
-    if (session_handler) {
-      session_handler.tabDetachRequestCallback = ^(NSString* tabID) {
-        if (weak_this) {
-          weak_this->DetachTabWithID(tabID);
-        }
-      };
-      session_handler.tabAttachedCallback = ^(NSString* tab_id) {
-        if (weak_this) {
-          weak_this->UpdateLocalTabAttachmentState(
-              tab_id,
-              ios::provider::GeminiPageContextAttachmentState::kAttached);
-        }
-      };
-      session_handler.tabDetachedCallback = ^(NSString* tab_id) {
-        if (weak_this) {
-          weak_this->UpdateLocalTabAttachmentState(
-              tab_id,
-              ios::provider::GeminiPageContextAttachmentState::kDetached);
-        }
-      };
-      session_handler.attachedTabsCountProvider = ^{
-        if (weak_this) {
-          return weak_this->SharedTabsCount();
-        }
-        return (NSUInteger)0;
-      };
-      session_handler.isMultiTabUsedProvider = ^{
-        if (weak_this) {
-          return weak_this->GetInactiveSharedTabs().count > 0;
-        }
-        return NO;
-      };
-    }
-
-    GeminiTabPickerHandler* tab_picker_handler =
-        gemini_container_mediator_.gatewayManager.tabPickerHandler;
-    if (tab_picker_handler) {
-      tab_picker_handler.selectionCallback =
-          ^(std::set<web::WebStateID> selected_tabs) {
-            if (weak_this) {
-              weak_this->OnTabPickerSelectionChanged(selected_tabs);
-            }
-          };
-      tab_picker_handler.selectedTabsProvider = ^{
-        if (weak_this) {
-          std::set<web::WebStateID> eligible_tabs;
-          for (const auto& [tab_id, context] : weak_this->shared_tabs_) {
-            if (IsPageContextEligibleForTabPicker(context) &&
-                context.geminiPageContextAttachmentState ==
-                    ios::provider::GeminiPageContextAttachmentState::
-                        kAttached) {
-              eligible_tabs.insert(tab_id);
-            }
-          }
-          return eligible_tabs;
-        }
-        return std::set<web::WebStateID>();
-      };
-    }
-  }
 }
 
 GeminiBrowserAgent::~GeminiBrowserAgent() {
@@ -1541,6 +1472,19 @@ void GeminiBrowserAgent::OnTabPickerSelectionChanged(
 
   ios::provider::UpdateActivePageContext(active_page_context,
                                          GetInactiveSharedTabs());
+}
+
+std::set<web::WebStateID> GeminiBrowserAgent::GetSelectedTabsForTabPicker()
+    const {
+  std::set<web::WebStateID> eligible_tabs;
+  for (const auto& [tab_id, context] : shared_tabs_) {
+    if (IsPageContextEligibleForTabPicker(context) &&
+        context.geminiPageContextAttachmentState ==
+            ios::provider::GeminiPageContextAttachmentState::kAttached) {
+      eligible_tabs.insert(tab_id);
+    }
+  }
+  return eligible_tabs;
 }
 
 void GeminiBrowserAgent::UpdateSharedTabContexts(
