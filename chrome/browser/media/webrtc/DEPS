@@ -24,14 +24,8 @@ specific_include_rules = {
   "media_stream_focus_delegate.cc": [
     "+modules/desktop_capture/desktop_capture_options.h",
   ],
-  "get_all_screen_media_browsertest\\.cc": [
-    "+ash/shell.h",
-  ],
   ".*_unittest\\.cc": [
     "+ash/test/ash_test_base.h",
-  ],
-  "get_all_screens_media_browsertest\\.cc": [
-    "+ash/shell.h",
   ],
   "rtc_diagnostic_logging_unittest\\.cc": [
     "+chrome/renderer/media/webrtc_logging_agent_impl.h",
