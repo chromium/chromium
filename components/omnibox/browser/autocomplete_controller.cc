@@ -884,8 +884,10 @@ void AutocompleteController::OnProviderUpdate(
   }
 
   // Ignore updates from providers that shouldn't run for the current input.
-  // This can happen if a provider was started for a previous input and an async
-  // update arrived after a new input began (e.g. entering keyword mode).
+  // Excluded providers should have been stopped in `Start()`, and
+  // `ShouldRunProvider()` is almost completely constant during the lifecycle of
+  // an autocomplete pass except if `TemplateURLService` is synced in the
+  // background.
   if (provider && !ShouldRunProvider(provider)) {
     return;
   }
