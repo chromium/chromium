@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/net",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
@@ -28,9 +27,11 @@ specific_include_rules = {
     "+chrome/browser/ash/app_mode",
     "+chrome/browser/ash/ownership",
     "+chrome/browser/ash/policy/server_backed_state",
+    "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
   ],
   "enrollment_screen_browsertest\\.cc": [
+    "+chrome/browser/browser_process.h",
     "+chrome/common/chrome_paths.h",
   ],
   "enrollment_screen_unittest\\.cc": [

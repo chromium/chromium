@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -47,6 +46,7 @@
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/device_management/install_attributes_util.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/session/process_shutdown.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -173,7 +173,7 @@ EnrollmentScreen::EnrollmentScreen(
 
 EnrollmentScreen::~EnrollmentScreen() {
   scoped_network_observation_.Reset();
-  CHECK(!enrollment_launcher_ || g_browser_process->IsShuttingDown() ||
+  CHECK(!enrollment_launcher_ || IsProcessShuttingDown() ||
             ash::BrowserController::GetInstance()->IsTryingToQuit() ||
             DBusThreadManager::Get()->IsUsingFakes(),
         base::NotFatalUntil::M161);

@@ -39,13 +39,13 @@
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 #include "chrome/browser/ash/input_method/candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/input_method_persistence.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/ui/ash/input_method/assistive_delegate.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_item.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
+#include "chromeos/ash/components/login/session/process_shutdown.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -131,10 +131,6 @@ std::string KeysetToString(ImeKeyset keyset) {
     case ImeKeyset::kVoice:
       return "voice";
   }
-}
-
-bool IsShuttingDown() {
-  return !g_browser_process || g_browser_process->IsShuttingDown();
 }
 
 }  // namespace
@@ -257,7 +253,7 @@ InputMethodManagerImpl::StateImpl::GetInputMethodFromId(
 void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
     const base::i18n::LanguageTag& language_code,
     const std::vector<std::string>& initial_layouts) {
-  if (IsShuttingDown()) {
+  if (IsProcessShuttingDown()) {
     return;
   }
 
@@ -315,7 +311,7 @@ void InputMethodManagerImpl::StateImpl::EnableLoginLayouts(
 void InputMethodManagerImpl::StateImpl::EnableOobeInputMethods(
     const base::i18n::LanguageTag& language_code,
     const std::vector<std::string>& initial_input_methods) {
-  if (IsShuttingDown()) {
+  if (IsProcessShuttingDown()) {
     return;
   }
 
@@ -449,7 +445,7 @@ bool InputMethodManagerImpl::StateImpl::EnableInputMethod(
 
 bool InputMethodManagerImpl::StateImpl::ReplaceEnabledInputMethods(
     const std::vector<std::string>& new_enabled_input_method_ids) {
-  if (IsShuttingDown()) {
+  if (IsProcessShuttingDown()) {
     return false;
   }
 
@@ -551,7 +547,7 @@ InputMethodManagerImpl::StateImpl::GetAllowedFallBackKeyboardLayout() const {
 void InputMethodManagerImpl::StateImpl::ChangeInputMethod(
     const std::string& input_method_id,
     bool show_message) {
-  if (IsShuttingDown()) {
+  if (IsProcessShuttingDown()) {
     return;
   }
 
@@ -621,7 +617,7 @@ void InputMethodManagerImpl::StateImpl::AddInputMethodExtension(
     const std::string& extension_id,
     const InputMethodDescriptors& descriptors,
     TextInputMethod* engine) {
-  if (IsShuttingDown()) {
+  if (IsProcessShuttingDown()) {
     return;
   }
 
@@ -1165,7 +1161,7 @@ void InputMethodManagerImpl::ChangeInputMethodInternalFromActiveState(
     bool show_message,
     bool notify_menu) {
   // No need to switch input method when terminating.
-  if (IsShuttingDown()) {
+  if (IsProcessShuttingDown()) {
     VLOG(1) << "No need to switch input method when terminating.";
     return;
   }

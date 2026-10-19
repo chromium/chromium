@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/login/session/scoped_process_shutting_down_override_for_testing.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -102,7 +103,10 @@ class EnrollmentScreenBaseTest : public testing::Test {
 
   ~EnrollmentScreenBaseTest() override {
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
-    TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
+    // ~EnrollmentScreen() CHECKs that it owns an EnrollmentLauncher only during
+    // shutdown.
+    ScopedProcessShuttingDownOverrideForTesting shutting_down_override;
+    enrollment_screen_.reset();
   }
 
   // Creates the EnrollmentScreen and sets required parameters.

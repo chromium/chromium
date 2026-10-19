@@ -36,7 +36,6 @@ static_library("enrollment") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/login/demo_mode",
@@ -49,6 +48,7 @@ static_library("enrollment") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/attestation",
     "//chromeos/ash/components/dbus/device_management",
+    "//chromeos/ash/components/login/session:process_shutdown",
     "//chromeos/ash/components/system",
     "//chromeos/dbus/common",
     "//components/user_manager",
@@ -167,6 +167,7 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/install_attributes:test_support",
+    "//chromeos/ash/components/login/session:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/system",
     "//components/policy/core/common:common_constants",

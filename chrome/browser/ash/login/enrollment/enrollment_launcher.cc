@@ -40,10 +40,10 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
+#include "chromeos/ash/components/login/session/process_shutdown.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -193,8 +193,7 @@ EnrollmentLauncherImpl::EnrollmentLauncherImpl(
 }
 
 EnrollmentLauncherImpl::~EnrollmentLauncherImpl() {
-  CHECK(g_browser_process->IsShuttingDown() ||
-            oauth_status_ == OAUTH_NOT_STARTED ||
+  CHECK(IsProcessShuttingDown() || oauth_status_ == OAUTH_NOT_STARTED ||
             (oauth_status_ == OAUTH_FINISHED &&
              (success_ || oauth_data_cleared_)),
         base::NotFatalUntil::M161);
