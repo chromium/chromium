@@ -26,9 +26,12 @@ source_set("unit_tests") {
   ]
   deps = [
     ":metrics",
+    "//base",
     "//base/test:test_support",
     "//components/contextual_cueing",
     "//components/optimization_guide/core",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/public/provider/chrome/browser/bwg:gemini_api",
+    "//testing/gtest",
   ]
 }

@@ -701,7 +701,7 @@ TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
                                     profile_.get())
                    eventHandler:nullptr
              sharedTabsDelegate:nullptr
-          sessionMetricsManager:nil];
+          sessionMetricsManager:session_metrics_manager_];
 
   // Verify that calling delegate methods does not crash when delegate is null.
   [null_delegate_mediator
@@ -720,6 +720,31 @@ TEST_F(GeminiContainerMediatorTest, TestDisconnectDelegate) {
 
   [mediator_ geminiLiveUserDidBargeIn];
   EXPECT_FALSE(delegate_.barge_in_called_);
+}
+
+// Tests that `disconnect` records session dismissal metrics when the bottom
+// sheet migration is enabled.
+TEST_F(GeminiContainerMediatorTest,
+       TestDisconnectRecordsSessionDismissMetrics) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration}, {});
+  base::HistogramTester histogram_tester;
+
+  AppendActiveWebState();
+  [mediator_ connect];
+
+  // Switch active web state once during the session.
+  auto web_state2 = std::make_unique<web::FakeWebState>();
+  web_state2->SetBrowserState(profile_.get());
+  GeminiTabHelper::CreateForWebState(web_state2.get());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state2),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  [mediator_ disconnect];
+
+  histogram_tester.ExpectUniqueSample(kSessionTabSwitchCountHistogram, 1, 1);
 }
 
 // Tests that the mediator correctly notifies the delegate when the user barges

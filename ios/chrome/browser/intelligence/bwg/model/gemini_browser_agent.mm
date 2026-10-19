@@ -13,8 +13,6 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
-#import "base/metrics/histogram_functions.h"
-#import "base/metrics/user_metrics.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -1086,7 +1084,6 @@ void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
   ios::provider::StartGeminiOverlay(config);
   last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
   is_floaty_invoked_ = true;
-  floaty_tab_switch_count_ = 0;
   CHECK(gemini_container_mediator_, base::NotFatalUntil::M155);
   [gemini_container_mediator_ onFloatyInvoked];
   if (IsChromeNextIaEnabled()) {
@@ -1469,11 +1466,8 @@ void GeminiBrowserAgent::DismissFloaty() {
     }
   }
 
-  RecordFloatyDismissedState(last_shown_view_state_);
-
-  // Record and reset tab switch metrics for the ending Floaty session.
-  RecordSessionTabSwitchCount(floaty_tab_switch_count_);
-  floaty_tab_switch_count_ = 0;
+  [session_metrics_manager_
+      sessionDismissedWithViewState:last_shown_view_state_];
 
   is_floaty_invoked_ = false;
   for (auto& observer : observers_) {
@@ -1763,15 +1757,6 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
   // A pending presentation was requested for `old_active` and must not present
   // its prompt on `new_active`.
   CancelPendingPresentation();
-
-  // Track tab switches during an active Floaty session for session metrics and
-  // user actions.
-  if (is_floaty_invoked_ && old_active && new_active &&
-      old_active != new_active) {
-    floaty_tab_switch_count_++;
-    base::RecordAction(
-        base::UserMetricsAction("MobileGeminiFloatyTabSwitched"));
-  }
 
   if (old_active) {
     GeminiTabHelper* old_tab_helper = GeminiTabHelper::FromWebState(old_active);

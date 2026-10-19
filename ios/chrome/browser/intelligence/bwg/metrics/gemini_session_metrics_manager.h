@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace ios::provider {
+enum class GeminiViewState;
+}  // namespace ios::provider
+
 // The instance responsible for tracking Gemini session state for metrics
 // (timestamps, durations, counts) and recording UMA histograms.
 @interface GeminiSessionMetricsManager : NSObject
@@ -20,6 +24,19 @@
 // Called when the Gemini flow has started, recording startup latency from the
 // prior `geminiWillStart` call.
 - (void)geminiStarted:(BOOL)isFirstSession;
+
+// Called when the Gemini Floaty session is dismissed in `viewState`. Records
+// end-of-session metrics and resets session state.
+- (void)sessionDismissedWithViewState:(ios::provider::GeminiViewState)viewState;
+
+// Called when the Gemini container session is dismissed. Records end-of-session
+// metrics and resets session state.
+- (void)sessionDismissed;
+
+#pragma mark - Tab Switching
+
+// Called when the active tab is switched during an active session.
+- (void)activeTabSwitched;
 
 @end
 

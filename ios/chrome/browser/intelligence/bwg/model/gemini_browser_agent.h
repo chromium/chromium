@@ -491,10 +491,6 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // context, since the floaty reports its expansion as soon as it appears.
   bool skip_page_context_generation_on_expansion_ = false;
 
-  // Tracks the number of times the active tab was switched while the floaty
-  // was invoked.
-  int floaty_tab_switch_count_ = 0;
-
   // Whether the floaty is temporarily hidden. Used to hide the floaty without
   // triggering logic related to ending floaty persistence.
   bool is_floaty_temporarily_hidden_ = false;

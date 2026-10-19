@@ -277,11 +277,6 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // Getter for `is_floaty_invoked_`.
   bool IsFloatyInvoked() { return gemini_browser_agent_->is_floaty_invoked_; }
 
-  // Getter for `floaty_tab_switch_count_`.
-  int GetFloatyTabSwitchCount() {
-    return gemini_browser_agent_->floaty_tab_switch_count_;
-  }
-
   // Getter for `is_floaty_temporarily_hidden_`.
   bool IsFloatyTemporarilyHidden() {
     return gemini_browser_agent_->is_floaty_temporarily_hidden_;
@@ -631,9 +626,8 @@ TEST_F(GeminiBrowserAgentTest, TestActiveWebStateChanged) {
   EXPECT_TRUE(helper2->HasObserver(agent));
 }
 
-// Tests that switching active web states while floaty is invoked increments
-// `floaty_tab_switch_count_`, records a user action, and records session
-// metrics when dismissed.
+// Tests that switching active web states while floaty is invoked records a user
+// action and records session metrics when dismissed.
 TEST_F(GeminiBrowserAgentTest, TestFloatyTabSwitchMetrics) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
@@ -641,7 +635,6 @@ TEST_F(GeminiBrowserAgentTest, TestFloatyTabSwitchMetrics) {
   // Invoke floaty when `web_state_` is active.
   GeminiConfiguration* config = [[GeminiConfiguration alloc] init];
   InvokeFloaty(config);
-  EXPECT_EQ(0, GetFloatyTabSwitchCount());
 
   // Insert and activate a second tab while floaty is invoked.
   std::unique_ptr<web::FakeWebState> web_state2 =
@@ -653,13 +646,11 @@ TEST_F(GeminiBrowserAgentTest, TestFloatyTabSwitchMetrics) {
       std::move(web_state2),
       WebStateList::InsertionParams::Automatic().Activate(true));
 
-  EXPECT_EQ(1, GetFloatyTabSwitchCount());
   EXPECT_EQ(1,
             user_action_tester.GetActionCount("MobileGeminiFloatyTabSwitched"));
 
-  // Dismiss floaty and verify histograms are recorded and count is reset.
+  // Dismiss floaty and verify histograms are recorded.
   gemini_browser_agent_->DismissFloaty();
-  EXPECT_EQ(0, GetFloatyTabSwitchCount());
   histogram_tester.ExpectUniqueSample(kSessionTabSwitchCountHistogram, 1, 1);
 }
 

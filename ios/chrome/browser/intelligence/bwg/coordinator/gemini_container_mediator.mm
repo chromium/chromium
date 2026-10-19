@@ -316,6 +316,10 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 - (void)onFloatyDismiss {
+  if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [_sessionMetricsManager sessionDismissed];
+  }
+
   feature_engagement::Tracker* tracker =
       _profile ? feature_engagement::TrackerFactory::GetForProfile(_profile)
                : nullptr;
@@ -977,6 +981,9 @@ class GeminiContainerMediatorTabHelperObserver
 
 - (void)onActiveWebStateChanged:(web::WebState*)oldActive
                       newActive:(web::WebState*)newActive {
+  if (oldActive && newActive && oldActive != newActive) {
+    [_sessionMetricsManager activeTabSwitched];
+  }
   if (oldActive) {
     GeminiTabHelper* oldTabHelper = GeminiTabHelper::FromWebState(oldActive);
     if (oldTabHelper && _tabHelperObserver) {
