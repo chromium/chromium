@@ -4,6 +4,10 @@
 
 #include "chrome/browser/task_manager/common/task_manager_features.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #include "build/android_buildflags.h"
 
 namespace features {
@@ -16,6 +20,11 @@ BASE_FEATURE(kTaskManagerClank,
 
 // Enables the Task Manager Toolbar (chips and search) on Android.
 BASE_FEATURE(kTaskManagerToolbar, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsTaskManagerClankEnabled() {
+  return base::android::device_info::is_desktop() ||
+         base::FeatureList::IsEnabled(kTaskManagerClank);
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features

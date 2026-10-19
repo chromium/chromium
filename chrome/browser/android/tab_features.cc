@@ -109,6 +109,7 @@
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
 #include "chrome/browser/tab_contents/navigation_metrics_recorder.h"
+#include "chrome/browser/task_manager/common/task_manager_features.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/trusted_vault/trusted_vault_encryption_keys_tab_helper.h"
@@ -610,7 +611,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       GetUserDataFactory().CreateInstance<ChainedBackNavigationTracker>(
           *tab, *tab, web_contents);
 
-  task_manager::WebContentsTags::CreateForTabContents(web_contents);
+  // On Clank, Task Manager is not active on mobile phone/tablet form factors.
+  // Only attach WebContentsTags if the Clank task manager feature is enabled
+  // or if running on desktop form factors (e.g. desktop windowing / Dex).
+  if (features::IsTaskManagerClankEnabled()) {
+    task_manager::WebContentsTags::CreateForTabContents(web_contents);
+  }
 
   media_state_observer_ = std::make_unique<MediaStateObserver>(web_contents);
 

@@ -12,6 +12,10 @@ namespace features {
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kTaskManagerClank);
 BASE_DECLARE_FEATURE(kTaskManagerToolbar);
+
+// Returns true if Task Manager is enabled on Android.
+// Mirrors org.chromium.chrome.browser.task_manager.TaskManager.isEnabled().
+bool IsTaskManagerClankEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
