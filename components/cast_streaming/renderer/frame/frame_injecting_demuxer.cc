@@ -239,7 +239,10 @@ class FrameInjectingDemuxerStream
   }
 
   void EnableBitstreamConverter() final {
-    DCHECK(buffer_requester_);
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!buffer_requester_) {
+      return;
+    }
     is_bitstream_enable_in_progress_ = true;
     buffer_requester_->EnableBitstreamConverterAsync(base::BindOnce(
         &FrameInjectingDemuxerStream::OnBitstreamConverterEnabled,
