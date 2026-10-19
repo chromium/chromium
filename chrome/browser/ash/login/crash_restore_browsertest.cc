@@ -96,9 +96,12 @@ class CrashRestoreSimpleTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(CrashRestoreSimpleTest, RestoreSessionForOneUser) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  user_manager::User* user = user_manager->GetActiveUser();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  EXPECT_EQ(account_id1_, active_session->account_id());
+  const user_manager::User* user = user_manager->FindUser(account_id1_);
   ASSERT_TRUE(user);
-  EXPECT_EQ(account_id1_, user->GetAccountId());
   EXPECT_EQ(UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id1_),
             user->username_hash());
   EXPECT_EQ(1UL, user_manager->GetLoggedInUsers().size());
@@ -236,9 +239,12 @@ IN_PROC_BROWSER_TEST_F(CrashRestoreComplexTest,
   // User that is last in the user sessions map becomes active. This behavior
   // will become better defined once each user gets a separate user desktop.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  user_manager::User* user = user_manager->GetActiveUser();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  EXPECT_EQ(account_id3_, active_session->account_id());
+  const user_manager::User* user = user_manager->FindUser(account_id3_);
   ASSERT_TRUE(user);
-  EXPECT_EQ(account_id3_, user->GetAccountId());
   EXPECT_EQ(UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id3_),
             user->username_hash());
   const user_manager::UserList& users = user_manager->GetLRULoggedInUsers();

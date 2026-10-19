@@ -39,6 +39,8 @@
 #include "chromeos/ash/experiences/login/login_screen_shown_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -552,8 +554,10 @@ IN_PROC_BROWSER_TEST_F(EphemeralUserKeyboardTest, PersistToProfile) {
   login_manager_.LoginAsNewRegularUser();
   login_manager_.WaitForActiveSession();
 
-  const AccountId& account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const AccountId& account_id = active_session->account_id();
   user_manager::KnownUser known_user(g_browser_process->local_state());
   // Should be empty because known_user does not persist data for ephemeral
   // users.

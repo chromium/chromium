@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -170,8 +171,10 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingCompletedVersion) {
   login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 
-  AccountId account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  AccountId account_id = active_session->account_id();
   EXPECT_EQ(user_manager::KnownUser(g_browser_process->local_state())
                 .GetOnboardingCompletedVersion(account_id),
             version_info::GetVersion());
@@ -189,8 +192,10 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, PRE_OnboardingCompletedVersionBackfill) {
   login_mixin_.SkipPostLoginScreens();
   login_mixin_.WaitForActiveSession();
 
-  AccountId account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  AccountId account_id = active_session->account_id();
   user_manager::KnownUser(g_browser_process->local_state())
       .RemoveOnboardingCompletedVersionForTests(account_id);
 }
@@ -200,8 +205,10 @@ IN_PROC_BROWSER_TEST_F(OnboardingTest, OnboardingCompletedVersionBackfill) {
                                      /*check_if_submittable=*/false);
   login_mixin_.WaitForActiveSession();
 
-  AccountId account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  AccountId account_id = active_session->account_id();
   EXPECT_EQ(user_manager::KnownUser(g_browser_process->local_state())
                 .GetOnboardingCompletedVersion(account_id),
             base::Version(kOnboardingBackfillVersion));

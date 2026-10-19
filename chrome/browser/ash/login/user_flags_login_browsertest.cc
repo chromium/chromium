@@ -15,7 +15,9 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
-#include "components/user_manager/user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/webui/flags/feature_entry_macros.h"
 #include "components/webui/flags/flags_state.h"
 #include "components/webui/flags/pref_service_flags_storage.h"
@@ -103,8 +105,10 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, FlagsNotAppliedForSecondary) {
   auto context =
       LoginManagerMixin::CreateDefaultUserContext(login_manager_.users()[0]);
   ASSERT_TRUE(login_manager_.LoginAndWaitForActiveSession(context));
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  const user_manager::User* primary_user = user_manager->GetActiveUser();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(primary_session);
+  const AccountId primary_account_id = primary_session->account_id();
 
   // Adds a secondary user.
   UserAddingScreen::Get()->Start();
@@ -114,8 +118,11 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, FlagsNotAppliedForSecondary) {
 
   // Current active user should be the secondary user, which is different from
   // the primary user.
-  const user_manager::User* secondary_user = user_manager->GetActiveUser();
-  ASSERT_NE(primary_user, secondary_user);
+  const session_manager::Session* secondary_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(secondary_session);
+  const AccountId secondary_account_id = secondary_session->account_id();
+  ASSERT_NE(primary_account_id, secondary_account_id);
 
   // Sets the flags for the secondary user.
   PrefService* secondary_user_prefs =
@@ -131,8 +138,7 @@ IN_PROC_BROWSER_TEST_F(UserFlagsLoginTest, FlagsNotAppliedForSecondary) {
 
   // Session manager client should not get flags for secondary user.
   EXPECT_FALSE(FakeSessionManagerClient::Get()->GetFlagsForUser(
-      cryptohome::CreateAccountIdentifierFromAccountId(
-          secondary_user->GetAccountId()),
+      cryptohome::CreateAccountIdentifierFromAccountId(secondary_account_id),
       nullptr));
 }
 

@@ -34,9 +34,9 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/user.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "google_apis/gaia/gaia_switches.h"
@@ -113,8 +113,10 @@ IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
                                 FakeGaiaMixin::kEmptyUserServices);
   test::WaitForPrimaryUserSessionStart();
 
-  const AccountId account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const AccountId account_id = active_session->account_id();
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
   EXPECT_FALSE(known_user.GetIsUsingSAMLPrincipalsAPI(account_id));

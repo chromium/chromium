@@ -15,6 +15,8 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -150,9 +152,10 @@ IN_PROC_BROWSER_TEST_F(DeviceMaxUserProfilesBrowserTest,
   SetDeviceMaxUserProfilesPolicy(1);
 
   // No users are trimmed while a user session is active.
-  const auto* active_user = user_manager->GetActiveUser();
-  ASSERT_TRUE(active_user);
-  EXPECT_EQ(active_user->GetAccountId(), user4_.account_id);
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  EXPECT_EQ(active_session->account_id(), user4_.account_id);
   EXPECT_EQ(user_manager->GetPersistedUsers().size(), 4u);
   EXPECT_TRUE(user_manager->IsKnownUser(user1_.account_id));
   EXPECT_TRUE(user_manager->IsKnownUser(user2_.account_id));

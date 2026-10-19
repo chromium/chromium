@@ -13,6 +13,7 @@
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -44,6 +45,8 @@
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/auth/stub_authenticator.h"
 #include "components/account_id/account_id.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -455,11 +458,14 @@ class PasswordChangeTokenCheck : public PasswordChangeTest {
   }
 
   const message_center::Notification* FindProfileSigninNotification() {
-    const user_manager::User* active_user =
-        user_manager::UserManager::Get()->GetActiveUser();
+    const AccountId& account_id =
+        CHECK_DEREF(session_manager::SessionManager::Get()->GetActiveSession())
+            .account_id();
+    const user_manager::User& active_user =
+        CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id));
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
         CreateUserScopedNotificationId(kProfileSigninNotificationId,
-                                       active_user->username_hash()));
+                                       active_user.username_hash()));
   }
 
   AccountId user_with_invalid_token_;

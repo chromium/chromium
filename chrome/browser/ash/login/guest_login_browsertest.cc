@@ -31,6 +31,9 @@
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webui/flags/feature_entry_macros.h"
 #include "content/public/test/browser_test.h"
@@ -131,7 +134,11 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
 
   // Checks User::GetProfilePrefs() uses the correct instance.
-  user_manager::User* user = user_manager->GetActiveUser();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const user_manager::User* user =
+      user_manager->FindUser(active_session->account_id());
   ASSERT_TRUE(user);
   EXPECT_EQ(user_manager::UserType::kGuest, user->GetType());
   EXPECT_EQ(Profile::FromBrowserContext(

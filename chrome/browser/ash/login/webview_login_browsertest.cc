@@ -98,6 +98,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/trusted_vault/securebox.h"
@@ -105,6 +107,7 @@
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -2578,9 +2581,13 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentBeforeAuthFinished) {
 
   test::WaitForPrimaryUserSessionStart();
 
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  EXPECT_TRUE(user_manager->GetActiveUser()->IsChild());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(active_session->account_id());
+  ASSERT_TRUE(user);
+  EXPECT_TRUE(user->IsChild());
 }
 
 // Test verfies that user info message sent after authentication is finished
@@ -2606,9 +2613,13 @@ IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentAfterTimerSet) {
 
   test::WaitForPrimaryUserSessionStart();
 
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  EXPECT_TRUE(user_manager->GetActiveUser()->IsChild());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(active_session->account_id());
+  ASSERT_TRUE(user);
+  EXPECT_TRUE(user->IsChild());
 }
 
 // Verifies flow when user info message is never sent.
@@ -2636,9 +2647,13 @@ IN_PROC_BROWSER_TEST_P(WebviewCloseViewLoginTest, UserInfoNeverSent) {
   histogram_tester_.ExpectUniqueSample("ChromeOS.Gaia.Message.Gaia.UserInfo",
                                        false, 1);
 
-  const user_manager::UserManager* const user_manager =
-      user_manager::UserManager::Get();
-  EXPECT_FALSE(user_manager->GetActiveUser()->IsChild());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(active_session->account_id());
+  ASSERT_TRUE(user);
+  EXPECT_FALSE(user->IsChild());
 }
 
 class WebviewLoginEnrolledTest : public WebviewLoginTest {
