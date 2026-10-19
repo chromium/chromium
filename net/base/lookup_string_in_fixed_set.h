@@ -26,8 +26,6 @@ namespace net {
 // byte array which should be supplied via the |graph| parameter.  The return
 // value is `std::nullopt`, or the int code associated with the input key in the
 // DAFSA.
-//
-// TODO(nick): Replace this with FixedSetIncrementalLookup everywhere.
 NET_EXPORT std::optional<int> LookupStringInFixedSet(
     base::span<const uint8_t> graph,
     std::string_view key);
