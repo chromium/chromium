@@ -42,6 +42,14 @@ BOOL URLHasCampaignToken(const GURL& url) {
   return NO;
 }
 
+BOOL IsMapsNativePreviewBypassEnabled() {
+  if ([g_mini_map_controller_factory
+          respondsToSelector:@selector(isMapsNativePreviewBypassEnabled)]) {
+    return [g_mini_map_controller_factory isMapsNativePreviewBypassEnabled];
+  }
+  return NO;
+}
+
 namespace test {
 
 void SetMiniMapControllerFactory(id<MiniMapControllerFactory> factory) {

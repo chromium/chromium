@@ -27,5 +27,9 @@ BOOL URLHasCampaignToken(const GURL& url) {
   return NO;
 }
 
+BOOL IsMapsNativePreviewBypassEnabled() {
+  return NO;
+}
+
 }  // namespace provider
 }  // namespace ios

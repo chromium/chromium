@@ -99,6 +99,10 @@ GURL URLByAppendingCampaignTokenIfNeeded(const GURL& url);
 // Returns whether `url` has a campaign token matching the configured one.
 BOOL URLHasCampaignToken(const GURL& url);
 
+// Returns true if the experiment flag for bypassing Google Maps Native Preview
+// is enabled.
+BOOL IsMapsNativePreviewBypassEnabled();
+
 }  // namespace provider
 }  // namespace ios
 

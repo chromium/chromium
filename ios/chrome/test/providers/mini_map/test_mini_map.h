@@ -19,6 +19,7 @@ class GURL;
 @optional
 - (GURL)URLByAppendingCampaignTokenIfNeeded:(const GURL&)url;
 - (BOOL)URLHasCampaignToken:(const GURL&)url;
+- (BOOL)isMapsNativePreviewBypassEnabled;
 
 @end
 
