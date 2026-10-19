@@ -455,7 +455,7 @@ suite('PrefService', function() {
   });
 
   test('SetSyntheticPrefValueSuccess', async function() {
-    const key = 'synthetic.settings.dummy_pref';
+    const key = 'synthetic.settings.category_default.ads';
     const pref = service.getPref<string>(key);
     assertEquals('default', pref.value);
     assertEquals(chrome.settingsPrivate.PrefType.STRING, pref.type);
@@ -489,7 +489,7 @@ suite('PrefService', function() {
   });
 
   test('SetSyntheticPrefSuccess', async function() {
-    const key = 'synthetic.settings.dummy_pref';
+    const key = 'synthetic.settings.category_default.ads';
 
     let calledCount = 0;
     let observedPref: chrome.settingsPrivate.PrefObject<string>|null = null;
@@ -554,7 +554,7 @@ suite('PrefService', function() {
   });
 
   test('RefreshPrefFromBackendThrowsForSyntheticPref', async function() {
-    const key = 'synthetic.settings.dummy_pref';
+    const key = 'synthetic.settings.category_default.ads';
 
     let thrownError: Error|null = null;
     try {

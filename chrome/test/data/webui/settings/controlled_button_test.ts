@@ -15,99 +15,17 @@ import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('controlled button', function() {
   let controlledButton: ControlledButtonElement;
-
-  const uncontrolledPref: chrome.settingsPrivate.PrefObject = {
-    key: 'test',
-    type: chrome.settingsPrivate.PrefType.BOOLEAN,
-    value: true,
-  };
-
-  const extensionControlledPref: chrome.settingsPrivate.PrefObject =
-      Object.assign(
-          {
-            controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
-            enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-          },
-          uncontrolledPref);
-
-  const policyControlledPref: chrome.settingsPrivate.PrefObject = Object.assign(
-      {
-        controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
-        enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      },
-      uncontrolledPref);
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    controlledButton = document.createElement('controlled-button');
-    controlledButton.pref = uncontrolledPref;
-    document.body.appendChild(controlledButton);
-  });
-
-  test('controlled prefs', async function() {
-    assertFalse(controlledButton.$.button.disabled);
-    assertFalse(!!controlledButton.shadowRoot.querySelector(
-        'cr-policy-pref-indicator'));
-
-    controlledButton.pref = extensionControlledPref;
-    await microtasksFinished();
-    assertTrue(controlledButton.$.button.disabled);
-    assertTrue(!!controlledButton.shadowRoot.querySelector(
-        'cr-policy-pref-indicator'));
-
-    controlledButton.pref = policyControlledPref;
-    await microtasksFinished();
-    assertTrue(controlledButton.$.button.disabled);
-    const indicator =
-        controlledButton.shadowRoot.querySelector('cr-policy-pref-indicator');
-    assertTrue(!!indicator);
-    assertGT(indicator.clientHeight, 0);
-
-    controlledButton.pref = uncontrolledPref;
-    await microtasksFinished();
-    assertFalse(controlledButton.$.button.disabled);
-    assertFalse(!!controlledButton.shadowRoot.querySelector(
-        'cr-policy-pref-indicator'));
-  });
-
-  test('null pref', async function() {
-    controlledButton.pref = extensionControlledPref;
-    await microtasksFinished();
-    assertTrue(controlledButton.$.button.disabled);
-    assertTrue(!!controlledButton.shadowRoot.querySelector(
-        'cr-policy-pref-indicator'));
-
-    controlledButton.pref = undefined;
-    await microtasksFinished();
-    assertFalse(controlledButton.$.button.disabled);
-    assertFalse(!!controlledButton.shadowRoot.querySelector(
-        'cr-policy-pref-indicator'));
-  });
-
-  test('action-button', function() {
-    assertNotEquals('action-button', controlledButton.$.button.className);
-
-    const controlledActionButton = document.createElement('controlled-button');
-    controlledActionButton.pref = uncontrolledPref;
-    controlledActionButton.className = 'action-button';
-    document.body.appendChild(controlledActionButton);
-    assertEquals('action-button', controlledActionButton.$.button.className);
-  });
-});
-
-suite('ControlledButtonPrefKey', () => {
-  let controlledButton: ControlledButtonElement;
   let prefsBrowserProxy: TestPrefsBrowserProxy;
 
   const initialPrefs = [
     {
-      key: 'test_boolean',
+      key: 'test',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
       value: true,
     },
   ];
 
-  setup(async () => {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     prefsBrowserProxy = new TestPrefsBrowserProxy(initialPrefs);
@@ -116,25 +34,60 @@ suite('ControlledButtonPrefKey', () => {
     await PrefService.getInstance().whenInitialized();
 
     controlledButton = document.createElement('controlled-button');
-    controlledButton.prefKey = 'test_boolean';
+    controlledButton.prefKey = 'test';
     document.body.appendChild(controlledButton);
+    await microtasksFinished();
   });
 
-  test('disablesWhenPrefIsManaged', async () => {
+  test('controlled prefs', async function() {
     assertFalse(controlledButton.$.button.disabled);
     assertFalse(!!controlledButton.shadowRoot.querySelector(
         'cr-policy-pref-indicator'));
 
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
-      key: 'test_boolean',
+      key: 'test',
       value: true,
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
       enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
-      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
     }]);
     await microtasksFinished();
-
     assertTrue(controlledButton.$.button.disabled);
     assertTrue(!!controlledButton.shadowRoot.querySelector(
         'cr-policy-pref-indicator'));
+
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'test',
+      value: true,
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    }]);
+    await microtasksFinished();
+    assertTrue(controlledButton.$.button.disabled);
+    const indicator =
+        controlledButton.shadowRoot.querySelector('cr-policy-pref-indicator');
+    assertTrue(!!indicator);
+    assertGT(indicator.clientHeight, 0);
+
+    prefsBrowserProxy.fakeApi.sendPrefChanges([{
+      key: 'test',
+      value: true,
+      controlledBy: undefined,
+      enforcement: undefined,
+    }]);
+    await microtasksFinished();
+    assertFalse(controlledButton.$.button.disabled);
+    assertFalse(!!controlledButton.shadowRoot.querySelector(
+        'cr-policy-pref-indicator'));
+  });
+
+  test('action-button', async function() {
+    assertNotEquals('action-button', controlledButton.$.button.className);
+
+    const controlledActionButton = document.createElement('controlled-button');
+    controlledActionButton.prefKey = 'test';
+    controlledActionButton.className = 'action-button';
+    document.body.appendChild(controlledActionButton);
+    await microtasksFinished();
+    assertEquals('action-button', controlledActionButton.$.button.className);
   });
 });

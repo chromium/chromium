@@ -45,15 +45,6 @@ export class SettingsAiPolicyIndicatorElement extends
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      pref: {type: Object},
-    };
-  }
-
-  protected accessor pref: chrome.settingsPrivate.PrefObject|undefined =
-      undefined;
-
   protected isFeatureDisabledByPolicy_(): boolean {
     return isFeatureDisabledByPolicy(this.pref);
   }

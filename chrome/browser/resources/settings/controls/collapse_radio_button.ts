@@ -9,7 +9,6 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style.css
 import '../settings_shared.css.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import {CrRadioButtonMixin} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
 import {CrRippleMixinPolymer} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin_polymer.js';
@@ -25,7 +24,7 @@ export interface SettingsCollapseRadioButtonElement {
   };
 }
 const SettingsCollapseRadioButtonElementBase = PrefKeyObserverMixin(
-    CrRippleMixinPolymer(CrRadioButtonMixin(PrefControlMixin(PolymerElement))));
+    CrRippleMixinPolymer(CrRadioButtonMixin(PolymerElement)));
 
 export class SettingsCollapseRadioButtonElement extends
     SettingsCollapseRadioButtonElementBase {

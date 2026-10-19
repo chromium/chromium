@@ -20,10 +20,14 @@ export const PrefKeyObserverMixinLit =
         static get properties() {
           return {
             prefKey: {type: String},
+            pref: {type: Object},
           };
         }
 
         accessor prefKey: string = '';
+        accessor pref: chrome.settingsPrivate.PrefObject|undefined = undefined;
+        private observedPref_: chrome.settingsPrivate.PrefObject|undefined =
+            undefined;
 
         override willUpdate(changedProperties: PropertyValues<this>) {
           super.willUpdate(changedProperties);
@@ -31,6 +35,11 @@ export const PrefKeyObserverMixinLit =
           if (changedProperties.has('prefKey')) {
             this.onPrefKeyChanged_(
                 this.prefKey, changedProperties.get('prefKey'));
+          }
+
+          if (changedProperties.has('pref')) {
+            // Disallow setting `pref` directly instead of via `prefKey`.
+            assert(this.pref === this.observedPref_);
           }
         }
 
@@ -41,7 +50,10 @@ export const PrefKeyObserverMixinLit =
 
           // Disallow re-assigning the prefKey after initial assignment.
           assert(!oldKey);
-          this.mirrorPref(newKey, 'pref');
+          this.addPrefObserver(newKey, pref => {
+            this.observedPref_ = pref;
+            this.pref = pref;
+          });
         }
       }
 
@@ -51,4 +63,5 @@ export const PrefKeyObserverMixinLit =
 export interface PrefKeyObserverMixinLitInterface extends
     PrefServiceObserverMixinLitInterface {
   prefKey: string;
+  pref: chrome.settingsPrivate.PrefObject|undefined;
 }

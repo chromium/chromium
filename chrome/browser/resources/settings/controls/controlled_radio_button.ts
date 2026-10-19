@@ -31,21 +31,10 @@ export class ControlledRadioButtonElement extends
     return getHtml.bind(this)();
   }
 
-  static override get properties() {
-    return {
-      pref: {type: Object},
-    };
-  }
-
-  protected accessor pref: chrome.settingsPrivate.PrefObject|undefined =
-      undefined;
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('pref')) {
+    if (changedProperties.has('pref')) {
       this.disabled = this.pref?.enforcement ===
           chrome.settingsPrivate.Enforcement.ENFORCED;
     }

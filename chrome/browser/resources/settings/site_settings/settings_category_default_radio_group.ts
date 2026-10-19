@@ -10,6 +10,8 @@
 import '../controls/collapse_radio_button.js';
 import '../controls/settings_radio_group.js';
 
+import {PrefService} from '/shared/settings/prefs2/pref_service.js';
+import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -19,11 +21,12 @@ import type {SettingsCollapseRadioButtonElement} from '../controls/collapse_radi
 import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {loadTimeData} from '../i18n_setup.js';
 
-import {ContentSetting, ContentSettingsTypes} from './constants.js';
+import {ContentSettingsTypes} from './constants.js';
+import type {ContentSetting} from './constants.js';
 import {getCss} from './settings_category_default_radio_group.css.js';
 import {getHtml} from './settings_category_default_radio_group.html.js';
-import type {DefaultContentSetting} from './site_settings_browser_proxy.js';
 import {DefaultSettingSource} from './site_settings_browser_proxy.js';
+import type {DefaultContentSetting} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixinLit} from './site_settings_mixin_lit.js';
 
 export interface SettingsCategoryDefaultRadioGroupElement {
@@ -36,7 +39,8 @@ export interface SettingsCategoryDefaultRadioGroupElement {
 }
 
 const SettingsCategoryDefaultRadioGroupElementBase =
-    SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement));
+    PrefServiceObserverMixinLit(
+        SiteSettingsMixinLit(WebUiListenerMixinLit(CrLitElement)));
 
 export class SettingsCategoryDefaultRadioGroupElement extends
     SettingsCategoryDefaultRadioGroupElementBase {
@@ -80,10 +84,10 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       },
 
       /**
-       * Preference object used to keep track of the selected content setting
-       * option.
+       * Key of the synthetic preference used to keep track of the selected
+       * content setting option.
        */
-      pref_: {type: Object},
+      prefKey_: {type: String},
     };
   }
 
@@ -101,33 +105,43 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   accessor blockOptionSubLabel: string = '';
   accessor blockOptionIcon: string = '';
   accessor selectedValue: string = '';
-  protected accessor pref_:
-      chrome.settingsPrivate.PrefObject<ContentSetting> = {
-    key: '',
-    type: chrome.settingsPrivate.PrefType.STRING,
-    value: ContentSetting.DEFAULT,
-  };
+  protected accessor prefKey_: string = '';
 
   override connectedCallback() {
     super.connectedCallback();
 
     this.addWebUiListener(
         'contentSettingCategoryChanged',
-        (category: ContentSettingsTypes) => this.onCategoryChanged_(category));
+        async (category: ContentSettingsTypes) => {
+          if (category === this.category) {
+            const defaultValue =
+                await this.browserProxy.getDefaultValueForContentType(
+                    this.category);
+            this.updatePref_(defaultValue);
+          }
+        });
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('category')) {
-      this.onCategoryChanged_(this.category);
+    if (changedProperties.has('category') && this.category !== undefined) {
+      assert(!changedProperties.get('category'));
+      this.initializePref_();
     }
+  }
 
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('pref_')) {
-      this.selectedValue = this.pref_.value;
-    }
+  private async initializePref_() {
+    assert(this.category);
+    this.prefKey_ = `synthetic.settings.category_default.${this.category}`;
+    this.addPrefObserver<ContentSetting>(this.prefKey_, pref => {
+      this.selectedValue = pref.value;
+    });
+    const [defaultValue] = await Promise.all([
+      this.browserProxy.getDefaultValueForContentType(this.category),
+      PrefService.getInstance().whenInitialized(),
+    ]);
+    this.updatePref_(defaultValue);
   }
 
   protected getButtonClass_(subLabel: string): string {
@@ -135,24 +149,24 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   }
 
   protected onSelectedRadioChange_() {
-    const radioGroup = this.shadowRoot.querySelector('settings-radio-group');
-    assert(radioGroup);
-    assert(
-        this.pref_.enforcement !== chrome.settingsPrivate.Enforcement.ENFORCED);
-    const value =
-        (radioGroup.pref?.value || radioGroup.selected) as ContentSetting;
-    this.pref_ = {...this.pref_, value};
+    assert(this.prefKey_);
+    const pref =
+        PrefService.getInstance().getPref<ContentSetting>(this.prefKey_);
+    assert(pref.enforcement !== chrome.settingsPrivate.Enforcement.ENFORCED);
     assert(this.category);
-    this.browserProxy.setDefaultValueForContentType(this.category, value);
+    this.browserProxy.setDefaultValueForContentType(this.category, pref.value);
   }
 
   /**
    * Update the pref values from the content settings.
-   * @param update The updated content setting value.
    */
   private updatePref_(update: DefaultContentSetting) {
+    if (!this.isConnected) {
+      return;
+    }
+
     const pref: chrome.settingsPrivate.PrefObject<ContentSetting> = {
-      key: '',
+      key: this.prefKey_,
       type: chrome.settingsPrivate.PrefType.STRING,
       value: update.setting,
     };
@@ -177,16 +191,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
       pref.controlledBy = controlledBy;
     }
 
-    this.pref_ = pref;
-  }
-
-  private async onCategoryChanged_(category: ContentSettingsTypes|undefined) {
-    if (this.category === undefined || category !== this.category) {
-      return;
-    }
-    const defaultValue =
-        await this.browserProxy.getDefaultValueForContentType(this.category);
-    this.updatePref_(defaultValue);
+    PrefService.getInstance().setSyntheticPref(pref);
   }
 
   /**

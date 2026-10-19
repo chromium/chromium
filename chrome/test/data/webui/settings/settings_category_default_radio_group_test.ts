@@ -5,9 +5,11 @@
 // clang-format off
 import type {SettingsCategoryDefaultRadioGroupElement, SettingsCollapseRadioButtonElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, ContentSettingsTypes, DefaultSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
 import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
@@ -26,18 +28,17 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
   let browserProxy: TestSiteSettingsBrowserProxy;
 
   // Initialize a settings-category-default-radio-group before each test.
-  setup(function() {
+  setup(async function() {
     browserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
+    PrefsBrowserProxy.setInstance(new TestPrefsBrowserProxy([]));
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement =
         document.createElement('settings-category-default-radio-group');
     document.body.appendChild(testElement);
     return microtasksFinished();
-  });
-
-  teardown(function() {
-    testElement.remove();
   });
 
   /**

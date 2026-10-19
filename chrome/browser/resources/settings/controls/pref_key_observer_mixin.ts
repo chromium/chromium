@@ -24,10 +24,13 @@ export const PrefKeyObserverMixin = dedupingMixin(
               value: '',
               observer: 'onPrefKeyChanged_',
             },
+
+            pref: Object,
           };
         }
 
         declare prefKey: string;
+        declare pref?: chrome.settingsPrivate.PrefObject;
 
         private onPrefKeyChanged_(newKey: string, oldKey: string|undefined) {
           if (newKey === '' && oldKey === undefined) {
@@ -46,4 +49,5 @@ export const PrefKeyObserverMixin = dedupingMixin(
 export interface PrefKeyObserverMixinInterface extends
     PrefServiceObserverMixinInterface {
   prefKey: string;
+  pref?: chrome.settingsPrivate.PrefObject;
 }

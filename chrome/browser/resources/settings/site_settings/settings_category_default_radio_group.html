@@ -9,7 +9,7 @@ import {ContentSetting} from './constants.js';
   </div>
   <settings-radio-group
       id="settingsCategoryDefaultRadioGroup"
-      .pref="${this.pref_}"
+      pref-key="${this.prefKey_}"
       selectable-elements="settings-collapse-radio-button"
       @change="${this.onSelectedRadioChange_}"
       group-aria-label="${this.header}">
@@ -17,7 +17,7 @@ import {ContentSetting} from './constants.js';
         id="allowRadioOption"
         class="${this.getButtonClass_(this.allowOptionSubLabel)}"
         name="${ContentSetting.ALLOW}"
-        .pref="${this.pref_}"
+        pref-key="${this.prefKey_}"
         label="${this.allowOptionLabel}"
         sub-label="${this.allowOptionSubLabel}"
         ?disabled="${this.isRadioGroupDisabled_()}"
@@ -29,7 +29,7 @@ import {ContentSetting} from './constants.js';
         id="askRadioOption"
         class="${this.getButtonClass_(this.askOptionSubLabel)}"
         name="${ContentSetting.ASK}"
-        .pref="${this.pref_}"
+        pref-key="${this.prefKey_}"
         label="${this.askOptionLabel}"
         sub-label="${this.askOptionSubLabel}"
         ?disabled="${this.isRadioGroupDisabled_()}"
@@ -41,7 +41,7 @@ import {ContentSetting} from './constants.js';
         id="blockRadioOption"
         class="${this.getButtonClass_(this.blockOptionSubLabel)}"
         name="${ContentSetting.BLOCK}"
-        .pref="${this.pref_}"
+        pref-key="${this.prefKey_}"
         label="${this.blockOptionLabel}"
         sub-label="${this.blockOptionSubLabel}"
         ?disabled="${this.isRadioGroupDisabled_()}"

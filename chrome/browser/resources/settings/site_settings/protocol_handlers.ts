@@ -16,7 +16,6 @@ import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/collapse_radio_button.js';
-import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
 import '../privacy_icons.html.js';
 import '../settings_page/settings_subpage.js';
@@ -128,14 +127,9 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
        */
       ignoredProtocols: Array,
 
-      handlersEnabledPref_: {
-        type: Object,
-        value() {
-          return {
-            type: chrome.settingsPrivate.PrefType.BOOLEAN,
-            value: false,
-          };
-        },
+      handlersEnabled_: {
+        type: Boolean,
+        value: false,
       },
 
     };
@@ -149,8 +143,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   declare toggleOffLabel: string;
   declare toggleOnLabel: string;
   declare ignoredProtocols: HandlerEntry[];
-  declare private handlersEnabledPref_:
-      chrome.settingsPrivate.PrefObject<boolean>;
+  declare private handlersEnabled_: boolean;
 
   override ready() {
     super.ready();
@@ -182,8 +175,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
    * @return The description to use.
    */
   private computeHandlersDescription_(): string {
-    return this.handlersEnabledPref_.value ? this.toggleOnLabel :
-                                             this.toggleOffLabel;
+    return this.handlersEnabled_ ? this.toggleOnLabel : this.toggleOffLabel;
   }
 
   /**
@@ -191,7 +183,7 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
    * @param enabled The state to set.
    */
   private setHandlersEnabled_(enabled: boolean) {
-    this.set('handlersEnabledPref_.value', enabled);
+    this.handlersEnabled_ = enabled;
   }
 
   /**
@@ -249,11 +241,15 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
   }
 
   /**
-   * A handler when the toggle is flipped.
+   * A handler when the radio group selection changes.
    */
-  private onToggleChange_() {
-    this.browserProxy.setProtocolHandlerDefault(
-        this.handlersEnabledPref_.value);
+  private onRadioGroupChange_(e: CustomEvent<{value: string}>) {
+    const enabled = e.detail.value === 'true';
+    if (enabled === this.handlersEnabled_) {
+      return;
+    }
+    this.handlersEnabled_ = enabled;
+    this.browserProxy.setProtocolHandlerDefault(this.handlersEnabled_);
   }
 
   /**

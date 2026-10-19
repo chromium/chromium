@@ -10,14 +10,57 @@ import {PrefsBrowserProxy} from './prefs_browser_proxy.js';
 
 type PrefObject<T> = chrome.settingsPrivate.PrefObject<T>;
 
+// Categories from the ContentSettingsTypes enum in
+// chrome/browser/resources/settings/site_settings/constants.ts that use
+// settings-category-default-radio-group.
+const CATEGORY_DEFAULT_SYNTHETIC_PREFS: string[] = [
+  'ads',
+  'ar',
+  'auto-picture-in-picture',
+  'background-sync',
+  'bluetooth-devices',
+  'bluetooth-scanning',
+  'captured-surface-control',
+  'clipboard',
+  'federated-identity-api',
+  'file-system-write',
+  'hand-tracking',
+  'hid-devices',
+  'idle-detection',
+  'images',
+  'javascript',
+  'keyboard-lock',
+  'local-fonts',
+  'local-network',
+  'location',
+  'loopback-network',
+  'media-stream-camera',
+  'media-stream-mic',
+  'midi-sysex',
+  'multiple-automatic-downloads',
+  'notifications',
+  'payment-handler',
+  'popups',
+  'protected-content',
+  'sensors',
+  'serial-ports',
+  'smart-card-readers',
+  'sound',
+  'storage-access',
+  'usb-devices',
+  'vr',
+  'web-app-installation',
+  'web-printing',
+  'window-management',
+];
+
 function getSyntheticPrefs(): chrome.settingsPrivate.PrefObject[] {
-  return [
-    {
-      key: 'synthetic.settings.dummy_pref',
-      type: chrome.settingsPrivate.PrefType.STRING,
-      value: 'default',
-    },
-  ];
+  return CATEGORY_DEFAULT_SYNTHETIC_PREFS.map(
+      category => ({
+        key: `synthetic.settings.category_default.${category}`,
+        type: chrome.settingsPrivate.PrefType.STRING,
+        value: 'default',
+      }));
 }
 
 export class PrefService {

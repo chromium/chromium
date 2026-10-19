@@ -16,7 +16,6 @@ import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PrefControlMixin} from '/shared/settings/controls/pref_control_mixin.js';
 import {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -24,8 +23,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
 import {getTemplate} from './settings_radio_group.html.js';
 
-const SettingsRadioGroupElementBase =
-    PrefKeyObserverMixin(PrefControlMixin(PolymerElement));
+const SettingsRadioGroupElementBase = PrefKeyObserverMixin(PolymerElement);
 
 export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   static get is() {
@@ -93,17 +91,9 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
 
   /** Update the pref to the current selected value. */
   sendPrefChange() {
-    if (this.prefKey) {
-      assert(this.pref);
-      PrefService.getInstance().setPrefValue(
-          this.prefKey, stringToPrefValue(this.selected || '', this.pref));
-      return;
-    }
-
-    if (!this.pref) {
-      return;
-    }
-    this.set('pref.value', stringToPrefValue(this.selected || '', this.pref));
+    assert(this.pref);
+    PrefService.getInstance().setPrefValue(
+        this.prefKey, stringToPrefValue(this.selected || '', this.pref));
   }
 
   private onSelectedChanged_() {

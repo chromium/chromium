@@ -73,8 +73,6 @@ export class SettingsDropdownMenuElement extends
         reflect: true,
       },
 
-      pref: {type: Object},
-
       /**
        * If true, do not automatically set the preference value. This allows the
        * container to confirm the change first then call either sendPrefChange
@@ -95,8 +93,6 @@ export class SettingsDropdownMenuElement extends
 
   accessor menuOptions: DropdownMenuOption[] = [];
   accessor disabled: boolean = false;
-  override accessor pref: chrome.settingsPrivate.PrefObject|undefined =
-      undefined;
   accessor noSetPref: boolean = false;
   accessor notFoundValue: string = 'SETTINGS_DROPDOWN_NOT_FOUND_ITEM';
   accessor label: string = '';

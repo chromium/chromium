@@ -41,13 +41,10 @@ export class SettingsAiLoggingInfoBulletElement extends
 
   static override get properties() {
     return {
-      pref: {type: Object},
       loggingManagedDisabledCustomLabel: {type: String},
     };
   }
 
-  protected accessor pref: chrome.settingsPrivate.PrefObject|undefined =
-      undefined;
   accessor loggingManagedDisabledCustomLabel: string|null = null;
 
   protected isLoggingDisabledByPolicy_(): boolean {
