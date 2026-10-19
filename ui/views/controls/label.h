@@ -53,6 +53,17 @@ class VIEWS_EXPORT Label : public View,
     kLastCommandId = kSelectAll,
   };
 
+  // Ways in which '&' mnemonic markers are handled.
+  // Unless the mode is kNone, single '&'s are removed and "&&" is shown as "&".
+  enum class MnemonicMode {
+    // '&' is shown as is.
+    kNone,
+    // Mnemonic markers are removed.
+    kHide,
+    // Mnemonic markers are removed and the mnemonic is underlined.
+    kUnderline,
+  };
+
   // Helper to construct a Label that doesn't use the views typography spec.
   // Using this causes Label to obtain colors from ui::NativeTheme and line
   // spacing from gfx::FontList::GetHeight().
@@ -97,7 +108,8 @@ class VIEWS_EXPORT Label : public View,
   // TODO(tapted): Replace this with a private method, e.g., OnFontChanged().
   virtual void SetFontList(const gfx::FontList& font_list);
 
-  // Get or set the label text.
+  // Get or set the label text. Unless GetMnemonicMode() is kNone, GetText()
+  // returns the text without its mnemonic markers.
   std::u16string_view GetText() const;
   virtual void SetText(std::u16string_view text);
 
@@ -117,6 +129,11 @@ class VIEWS_EXPORT Label : public View,
   // Applies |style| to a specific |range|.  This is unimplemented for styles
   // that vary from the global text style by anything besides weight.
   void SetTextStyleRange(int style, const gfx::Range& range);
+
+  // Get or set how mnemonic markers in the text are handled. Defaults to
+  // MnemonicMode::kNone.
+  MnemonicMode GetMnemonicMode() const;
+  void SetMnemonicMode(MnemonicMode mode);
 
   // Apply the baseline style range across the entire label.
   void ApplyBaselineTextStyle();
@@ -396,6 +413,10 @@ class VIEWS_EXPORT Label : public View,
   FRIEND_TEST_ALL_PREFIXES(LabelTest, ResetRenderTextData);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, MultilineSupportedRenderText);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, TextChangeWithoutLayout);
+  FRIEND_TEST_ALL_PREFIXES(LabelTest, MnemonicModeHideRemovesMarkers);
+  FRIEND_TEST_ALL_PREFIXES(LabelTest, MnemonicModeUnderlineUnderlinesMnemonic);
+  FRIEND_TEST_ALL_PREFIXES(LabelTest, MnemonicUnderlineSurvivesTextStyleChange);
+  FRIEND_TEST_ALL_PREFIXES(LabelTest, MnemonicUnderlineFollowsText);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, EmptyLabel);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, FocusBounds);
   FRIEND_TEST_ALL_PREFIXES(LabelTest, MultiLineSizingWithElide);
@@ -482,6 +503,10 @@ class VIEWS_EXPORT Label : public View,
   // RenderText.
   void ClearDisplayText();
 
+  // Updates `full_text_` and `mnemonic_range_` from `raw_text_` and the
+  // mnemonic mode.
+  void UpdateText();
+
   // Returns the currently selected text.
   std::u16string_view GetSelectedText() const;
 
@@ -514,6 +539,13 @@ class VIEWS_EXPORT Label : public View,
 
   // An un-elided and single-line RenderText object used for preferred sizing.
   std::unique_ptr<gfx::RenderText> full_text_;
+
+  // The text as passed to SetText(), with its mnemonic markers.
+  std::u16string raw_text_;
+  MnemonicMode mnemonic_mode_ = MnemonicMode::kNone;
+  // Where the mnemonic is in GetText(), or an invalid range if there is none or
+  // the mode is kNone.
+  gfx::Range mnemonic_range_ = gfx::Range::InvalidRange();
 
   // The RenderText instance used for drawing.
   mutable std::unique_ptr<gfx::RenderText> display_text_;
@@ -573,6 +605,7 @@ class VIEWS_EXPORT Label : public View,
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Label, View)
 VIEW_BUILDER_PROPERTY(const gfx::FontList&, FontList)
 VIEW_BUILDER_PROPERTY(std::u16string, Text)
+VIEW_BUILDER_PROPERTY(Label::MnemonicMode, MnemonicMode)
 VIEW_BUILDER_PROPERTY(int, TextStyle)
 VIEW_BUILDER_PROPERTY(int, TextContext)
 VIEW_BUILDER_PROPERTY(bool, AutoColorReadabilityEnabled)
