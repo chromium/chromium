@@ -23,6 +23,11 @@ constexpr char kOktaIdentityProvider[] = "okta";
 constexpr char kOktaSsoExtensionId[] = "com.okta.mobile.auth-service-extension";
 constexpr char kOktaSsoTeamId[] = "B7F62B65BN";
 
+constexpr char kPingIdentityProvider[] = "ping";
+constexpr char kPingSsoExtensionId[] =
+    "com.pingidentity.pingid.desktop.pingssoe";
+constexpr char kPingSsoTeamId[] = "6U3RF4C84N";
+
 constexpr auto kSupportedIdPs = std::to_array<SsoExtensionMetadata>({
     {.idp_name = kMicrosoftIdentityProvider,
      .team_id = kMicrosoftSsoTeamId,
@@ -30,6 +35,9 @@ constexpr auto kSupportedIdPs = std::to_array<SsoExtensionMetadata>({
     {.idp_name = kOktaIdentityProvider,
      .team_id = kOktaSsoTeamId,
      .extension_id = kOktaSsoExtensionId},
+    {.idp_name = kPingIdentityProvider,
+     .team_id = kPingSsoTeamId,
+     .extension_id = kPingSsoExtensionId},
 });
 
 base::span<const SsoExtensionMetadata> GetSupportedIdentityProviders() {
