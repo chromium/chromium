@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
+#include "base/no_destructor.h"
 
 namespace base {
 
@@ -16,8 +17,8 @@ FieldTrialParamAssociator::~FieldTrialParamAssociator() = default;
 
 // static
 FieldTrialParamAssociator* FieldTrialParamAssociator::GetInstance() {
-  return Singleton<FieldTrialParamAssociator,
-                   LeakySingletonTraits<FieldTrialParamAssociator>>::get();
+  static NoDestructor<FieldTrialParamAssociator> instance;
+  return instance.get();
 }
 
 bool FieldTrialParamAssociator::AssociateFieldTrialParams(
