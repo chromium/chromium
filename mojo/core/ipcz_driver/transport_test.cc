@@ -90,7 +90,7 @@ class MojoIpczTransportTest : public test::MojoTestBase {
         WrapPlatformHandle(channel.TakeRemoteEndpoint().TakePlatformHandle())
             .release()
             .value();
-    WriteMessageWithHandles(pipe, "", &transport_for_client, 1);
+    WriteMessageWithHandle(pipe, "", transport_for_client);
     return Transport::Create(
         {.source = Transport::kBroker, .destination = Transport::kNonBroker},
         channel.TakeLocalEndpoint(), process.Duplicate(), process_trust);
@@ -105,7 +105,7 @@ class MojoIpczTransportTest : public test::MojoTestBase {
           {.source = Transport::kNonBroker, .destination = Transport::kBroker},
       Transport::ProcessTrust process_trust = Transport::ProcessTrust{}) {
     MojoHandle transport_for_client;
-    ReadMessageWithHandles(pipe, &transport_for_client, 1);
+    ReadMessageWithHandle(pipe, &transport_for_client);
     PlatformHandle handle =
         UnwrapPlatformHandle(ScopedHandle(Handle(transport_for_client)));
     return Transport::Create(endpoint_types,
@@ -946,7 +946,7 @@ TEST_F(MojoIpczTransportTest, RecipientHandleFromUntrustedBrokerToBroker) {
                 channel.TakeRemoteEndpoint().TakePlatformHandle())
                 .release()
                 .value();
-        WriteMessageWithHandles(c.pipe(), "", &transport_for_client, 1);
+        WriteMessageWithHandle(c.pipe(), "", transport_for_client);
         scoped_refptr<Transport> transport = Transport::Create(
             {.source = Transport::kBroker, .destination = Transport::kBroker},
             channel.TakeLocalEndpoint(), c.process().Duplicate());
@@ -1018,7 +1018,7 @@ TEST_F(MojoIpczTransportTest, SenderHandleToUntrustingBroker) {
                 channel.TakeRemoteEndpoint().TakePlatformHandle())
                 .release()
                 .value();
-        WriteMessageWithHandles(c.pipe(), "", &transport_for_client, 1);
+        WriteMessageWithHandle(c.pipe(), "", transport_for_client);
         scoped_refptr<Transport> transport = Transport::Create(
             {.source = Transport::kBroker, .destination = Transport::kBroker},
             channel.TakeLocalEndpoint(), c.process().Duplicate());
@@ -1280,7 +1280,7 @@ TEST_F(MojoIpczTransportTest, TransportFromUntrustedBroker) {
                 channel.TakeRemoteEndpoint().TakePlatformHandle())
                 .release()
                 .value();
-        WriteMessageWithHandles(c.pipe(), "", &transport_for_client, 1);
+        WriteMessageWithHandle(c.pipe(), "", transport_for_client);
 #if BUILDFLAG(IS_WIN)
         constexpr auto kClientProcessTrust =
             Transport::ProcessTrust::kUntrusted;

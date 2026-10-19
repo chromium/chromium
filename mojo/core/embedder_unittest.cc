@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -91,11 +92,11 @@ TEST_F(EmbedderTest, SendMessagePipeWithWriteQueue) {
   }
 
   // Now send client2.
-  WriteMessageWithHandles(server_mp, "hey", &client_mp2, 1);
+  WriteMessageWithHandle(server_mp, "hey", client_mp2);
   client_mp2 = MOJO_HANDLE_INVALID;
 
   // Read client2 just so we can close it later.
-  EXPECT_EQ("hey", ReadMessageWithHandles(client_mp, &client_mp2, 1));
+  EXPECT_EQ("hey", ReadMessageWithHandle(client_mp, &client_mp2));
   EXPECT_NE(MOJO_HANDLE_INVALID, client_mp2);
 
   // Now verify that all the messages that were written were sent correctly.
@@ -124,7 +125,7 @@ TEST_F(EmbedderTest, ChannelsHandlePassing) {
 
   // Write one message to |server_mp|, attaching |h1|.
   const std::string kWorld = "world!!!";
-  WriteMessageWithHandles(server_mp, kWorld, &h1, 1);
+  WriteMessageWithHandle(server_mp, kWorld, h1);
   h1 = MOJO_HANDLE_INVALID;
 
   // Write another message to |h0|.
@@ -132,7 +133,7 @@ TEST_F(EmbedderTest, ChannelsHandlePassing) {
   WriteMessage(h0, kFoo);
 
   // Wait for |client_mp| to become readable and read a message from it.
-  EXPECT_EQ(kWorld, ReadMessageWithHandles(client_mp, &h1, 1));
+  EXPECT_EQ(kWorld, ReadMessageWithHandle(client_mp, &h1));
   EXPECT_NE(h1, MOJO_HANDLE_INVALID);
 
   // Wait for |h1| to become readable and read a message from it.
@@ -187,12 +188,12 @@ TEST_F(EmbedderTest, MultiprocessChannels) {
     WriteMessage(mp0, "FOO");
 
     // 5. Write a message to |server_mp|, attaching |mp1|.
-    WriteMessageWithHandles(server_mp, "Bar", &mp1, 1);
+    WriteMessageWithHandle(server_mp, "Bar", mp1);
     mp1 = MOJO_HANDLE_INVALID;
 
     // 6. Read a message from |mp0|, which should have |mp2| attached.
     MojoHandle mp2 = MOJO_HANDLE_INVALID;
-    EXPECT_EQ("quux", ReadMessageWithHandles(mp0, &mp2, 1));
+    EXPECT_EQ("quux", ReadMessageWithHandle(mp0, &mp2));
 
     // 7. Read a message from |mp2|.
     EXPECT_EQ("baz", ReadMessage(mp2));
@@ -226,7 +227,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessChannelsClient,
 
   // 4. Read a message from |client_mp|, which should have |mp1| attached.
   MojoHandle mp1;
-  EXPECT_EQ("Bar", ReadMessageWithHandles(client_mp, &mp1, 1));
+  EXPECT_EQ("Bar", ReadMessageWithHandle(client_mp, &mp1));
 
   // 5. Create a new message pipe (endpoints |mp2| and |mp3|).
   MojoHandle mp2, mp3;
@@ -239,7 +240,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessChannelsClient,
   ASSERT_EQ(MOJO_RESULT_OK, MojoClose(mp3));
 
   // 8. Write a message to |mp1|, attaching |mp2|.
-  WriteMessageWithHandles(mp1, "quux", &mp2, 1);
+  WriteMessageWithHandle(mp1, "quux", mp2);
   mp2 = MOJO_HANDLE_INVALID;
 
   // 9. Read a message from |mp1|.
@@ -278,7 +279,7 @@ TEST_F(EmbedderTest, MultiprocessBaseSharedMemory) {
     MojoHandle sb2 = MOJO_HANDLE_INVALID;
     EXPECT_EQ(MOJO_RESULT_OK, MojoDuplicateBufferHandle(sb1, nullptr, &sb2));
     EXPECT_NE(MOJO_HANDLE_INVALID, sb2);
-    WriteMessageWithHandles(server_mp, "hello", &sb2, 1);
+    WriteMessageWithHandle(server_mp, "hello", sb2);
 
     // 4. Read a message from |server_mp|.
     EXPECT_EQ("hey", ReadMessage(server_mp));
@@ -305,7 +306,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessSharedMemoryClient,
   // 1. Read the first message from |client_mp|, which should have |sb1| which
   // should be a shared buffer handle.
   MojoHandle sb1;
-  EXPECT_EQ("hello", ReadMessageWithHandles(client_mp, &sb1, 1));
+  EXPECT_EQ("hello", ReadMessageWithHandle(client_mp, &sb1));
 
   // 2. Map |sb1|.
   char* buffer = nullptr;
@@ -341,21 +342,21 @@ enum class HandleType {
   MACH,
 };
 
-const HandleType kTestHandleTypes[] = {
+constexpr auto kTestHandleTypes = std::to_array({
     HandleType::MACH,
     HandleType::POSIX,
     HandleType::POSIX,
     HandleType::MACH,
-};
+});
 
 // Test that we can mix file descriptors and mach port handles.
 TEST_F(EmbedderTest, MultiprocessMixMachAndFds) {
   const size_t kShmSize = 1234;
   RunTestClient("MultiprocessMixMachAndFdsClient", [&](MojoHandle server_mp) {
     // 1. Create fds or Mach objects and mojo handles from them.
-    MojoHandle platform_handles[std::size(kTestHandleTypes)];
-    for (size_t i = 0; i < std::size(kTestHandleTypes); i++) {
-      const auto type = UNSAFE_TODO(kTestHandleTypes[i]);
+    std::array<MojoHandle, kTestHandleTypes.size()> platform_handles = {};
+    for (size_t i = 0; i < kTestHandleTypes.size(); i++) {
+      const auto type = kTestHandleTypes[i];
       PlatformHandle scoped_handle;
       if (type == HandleType::POSIX) {
         // The easiest source of fds is opening /dev/null.
@@ -374,13 +375,12 @@ TEST_F(EmbedderTest, MultiprocessMixMachAndFds) {
         scoped_handle = PlatformHandle(std::move(shm_handle));
         ASSERT_TRUE(scoped_handle.is_valid_mach_port());
       }
-      UNSAFE_TODO(platform_handles[i]) =
+      platform_handles[i] =
           WrapPlatformHandle(std::move(scoped_handle)).release().value();
     }
 
     // 2. Send all the handles to the child.
-    WriteMessageWithHandles(server_mp, "hello", platform_handles,
-                            std::size(kTestHandleTypes));
+    WriteMessageWithHandles(server_mp, "hello", platform_handles);
 
     // 3. Read a message from |server_mp|.
     EXPECT_EQ("bye", ReadMessage(server_mp));
@@ -390,19 +390,17 @@ TEST_F(EmbedderTest, MultiprocessMixMachAndFds) {
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessMixMachAndFdsClient,
                                   EmbedderTest,
                                   client_mp) {
-  const int kNumHandles = std::size(kTestHandleTypes);
-  MojoHandle platform_handles[kNumHandles];
+  std::array<MojoHandle, kTestHandleTypes.size()> platform_handles = {};
 
   // 1. Read from |client_mp|, which should have a message containing
   // |kNumHandles| handles.
-  EXPECT_EQ("hello",
-            ReadMessageWithHandles(client_mp, platform_handles, kNumHandles));
+  EXPECT_EQ("hello", ReadMessageWithHandles(client_mp, platform_handles));
 
   // 2. Extract each handle, and verify the type.
-  for (int i = 0; i < kNumHandles; i++) {
-    const auto type = UNSAFE_TODO(kTestHandleTypes[i]);
-    PlatformHandle scoped_handle = UnwrapPlatformHandle(
-        ScopedHandle(Handle(UNSAFE_TODO(platform_handles[i]))));
+  for (size_t i = 0; i < platform_handles.size(); i++) {
+    const auto type = kTestHandleTypes[i];
+    PlatformHandle scoped_handle =
+        UnwrapPlatformHandle(ScopedHandle(Handle(platform_handles[i])));
     if (type == HandleType::POSIX) {
       EXPECT_TRUE(scoped_handle.is_valid_fd());
     } else {

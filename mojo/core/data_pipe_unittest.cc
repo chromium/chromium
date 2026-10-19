@@ -1673,8 +1673,8 @@ TEST_F(DataPipeTest, NoSpuriousEvents) {
       MojoHandle host_to_client;
       MojoHandle client_to_host;
       MojoCreateMessagePipe(nullptr, &host_to_client, &client_to_host);
-      WriteMessageWithHandles(host, "x", &host_to_client, 1);
-      WriteMessageWithHandles(client, "x", &client_to_host, 1);
+      WriteMessageWithHandle(host, "x", host_to_client);
+      WriteMessageWithHandle(client, "x", client_to_host);
       EXPECT_EQ("done", ReadMessage(client));
       WriteMessage(client, "bye");
     });
@@ -1687,7 +1687,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoSpuriousEventsHost, DataPipeTest, parent) {
   const std::vector<uint8_t> kData(512, 'x');
 
   MojoHandle client;
-  EXPECT_EQ("x", ReadMessageWithHandles(parent, &client, 1));
+  EXPECT_EQ("x", ReadMessageWithHandle(parent, &client));
 
   for (size_t j = 0; j < kNoSpuriousEvents_NumIterations; ++j) {
     ScopedDataPipeProducerHandle producer;
@@ -1695,7 +1695,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoSpuriousEventsHost, DataPipeTest, parent) {
     CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(2048, producer, consumer));
 
     MojoHandle ch = consumer.release().value();
-    WriteMessageWithHandles(client, "hi", &ch, 1);
+    WriteMessageWithHandle(client, "hi", ch);
 
     for (size_t i = 0; i < 9; ++i) {
       WaitForSignals(producer.get().value(), MOJO_HANDLE_SIGNAL_WRITABLE);
@@ -1717,12 +1717,12 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoSpuriousEventsClient,
   base::test::TaskEnvironment task_environment;
 
   MojoHandle host;
-  EXPECT_EQ("x", ReadMessageWithHandles(parent, &host, 1));
+  EXPECT_EQ("x", ReadMessageWithHandle(parent, &host));
 
   size_t num_spurious_events = 0;
   for (size_t j = 0; j < kNoSpuriousEvents_NumIterations; ++j) {
     MojoHandle ch;
-    ASSERT_EQ("hi", ReadMessageWithHandles(host, &ch, 1));
+    ASSERT_EQ("hi", ReadMessageWithHandle(host, &ch));
     ScopedDataPipeConsumerHandle consumer(DataPipeConsumerHandle{ch});
 
     SimpleWatcher watcher(FROM_HERE, SimpleWatcher::ArmingPolicy::MANUAL);
@@ -1783,14 +1783,14 @@ TEST_F(DataPipeTest, Multiprocess) {
                               &consumer_, 1, MOJO_WRITE_MESSAGE_FLAG_NONE));
 
     // Send a bunch of data of varying sizes.
-    uint8_t buffer[100];
+    std::array<uint8_t, 100> buffer = {};
     int seq = 0;
     for (int i = 0; i < kMultiprocessMaxIter; ++i) {
       for (uint32_t size = 1; size <= kMultiprocessCapacity; size++) {
         for (unsigned int j = 0; j < size; ++j) {
-          UNSAFE_TODO(buffer[j]) = seq + j;
+          buffer[j] = seq + j;
         }
-        EXPECT_TRUE(WriteAllData(producer_, buffer, size));
+        EXPECT_TRUE(WriteAllData(producer_, buffer.data(), size));
         seq += size;
       }
     }
@@ -1814,9 +1814,9 @@ TEST_F(DataPipeTest, Multiprocess) {
     // Read the test string twice. Once for when we sent it, and once for the
     // other end sending it.
     for (int i = 0; i < 2; ++i) {
-      EXPECT_TRUE(ReadAllData(consumer_, buffer, kTestDataSize, i == 1));
-      UNSAFE_TODO(
-          EXPECT_EQ(0, memcmp(buffer, kMultiprocessTestData, kTestDataSize)));
+      EXPECT_TRUE(ReadAllData(consumer_, buffer.data(), kTestDataSize, i == 1));
+      EXPECT_EQ(base::span(buffer).first(kTestDataSize),
+                base::as_byte_span(kMultiprocessTestData));
     }
 
     WriteMessage(server_mp, "quit");
@@ -1884,7 +1884,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessClient, DataPipeTest, client_mp) {
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(WriteAndCloseProducer, DataPipeTest, h) {
   MojoHandle p;
-  std::string message = ReadMessageWithHandles(h, &p, 1);
+  std::string message = ReadMessageWithHandle(h, &p);
 
   // Write some data to the producer and close it.
   uint32_t num_bytes = static_cast<uint32_t>(message.size());
@@ -1902,7 +1902,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(WriteAndCloseProducer, DataPipeTest, h) {
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndCloseConsumer, DataPipeTest, h) {
   MojoHandle c;
-  std::string expected_message = ReadMessageWithHandles(h, &c, 1);
+  std::string expected_message = ReadMessageWithHandle(h, &c);
 
   // Wait for the consumer to become readable.
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(c, MOJO_HANDLE_SIGNAL_READABLE));
@@ -1931,8 +1931,8 @@ TEST_F(DataPipeTest, SendConsumerAndCloseProducer) {
   RunTestClient("WriteAndCloseProducer", [&](MojoHandle producer_client) {
     RunTestClient("ReadAndCloseConsumer", [&](MojoHandle consumer_client) {
       const std::string kMessage = "Hello, world!";
-      WriteMessageWithHandles(producer_client, kMessage, &p, 1);
-      WriteMessageWithHandles(consumer_client, kMessage, &c, 1);
+      WriteMessageWithHandle(producer_client, kMessage, p);
+      WriteMessageWithHandle(consumer_client, kMessage, c);
 
       WriteMessage(consumer_client, "quit");
     });
@@ -1953,7 +1953,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndWrite, DataPipeTest, h) {
   ASSERT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(&options, &p, &c));
 
   const std::string kMessage = "Hello, world!";
-  WriteMessageWithHandles(h, kMessage, &c, 1);
+  WriteMessageWithHandle(h, kMessage, c);
 
   // Write some data to the producer and close it.
   uint32_t num_bytes = static_cast<uint32_t>(kMessage.size());
@@ -1970,7 +1970,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(CreateAndWrite, DataPipeTest, h) {
 TEST_F(DataPipeTest, CreateInChild) {
   RunTestClient("CreateAndWrite", [&](MojoHandle child) {
     MojoHandle c;
-    std::string expected_message = ReadMessageWithHandles(child, &c, 1);
+    std::string expected_message = ReadMessageWithHandle(child, &c);
 
     // Wait for the consumer to become readable.
     EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(c, MOJO_HANDLE_SIGNAL_READABLE));
@@ -1996,11 +1996,10 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
   // This test verifies that peer closure is detectable through various
   // mechanisms when it races with handle transfer.
 
-  MojoHandle handles[6];
-  EXPECT_EQ("o_O", ReadMessageWithHandles(parent, handles, 6));
+  std::array<MojoHandle, 6> handles = {};
+  EXPECT_EQ("o_O", ReadMessageWithHandles(parent, handles));
   base::span<MojoHandle> producers = handles;
-  base::span<MojoHandle> consumers =
-      base::span<MojoHandle>(handles).subspan(3u);
+  base::span<MojoHandle> consumers = base::span(handles).subspan(3u);
 
   // Wait on producer 0
   EXPECT_EQ(MOJO_RESULT_OK,
@@ -2054,8 +2053,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
   } while (result == MOJO_RESULT_SHOULD_WAIT);
   EXPECT_EQ(MOJO_RESULT_FAILED_PRECONDITION, result);
 
-  for (size_t i = 0; i < 6; ++i) {
-    CloseHandle(UNSAFE_TODO(handles[i]));
+  for (MojoHandle& handle : handles) {
+    CloseHandle(handle);
   }
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(parent));
 }
@@ -2073,7 +2072,7 @@ TEST_F(DataPipeTest, StatusChangeInTransit) {
 
     // Send 3 producers and 3 consumers, and let their transfer race with their
     // peers' closure.
-    WriteMessageWithHandles(child, "o_O", handles, 6);
+    WriteMessageWithHandles(child, "o_O", handles);
 
     for (size_t i = 0; i < 3; ++i) {
       CloseHandle(consumers[i]);
@@ -2238,7 +2237,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(StressTestRacyTrapsClient, DataPipeTest, h) {
 
   constexpr uint32_t kChunkSize = 4096;
   MojoHandle p;
-  EXPECT_EQ("sup", ReadMessageWithHandles(h, &p, 1));
+  EXPECT_EQ("sup", ReadMessageWithHandle(h, &p));
   base::RunLoop loop;
   TestDataProducer producer(
       ScopedDataPipeProducerHandle{DataPipeProducerHandle{p}},
@@ -2274,7 +2273,7 @@ TEST_F(DataPipeTest, DISABLED_StressTestRacyTraps) {
   ASSERT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(&options, &p, &c));
 
   RunTestClient("StressTestRacyTrapsClient", [&](MojoHandle child) {
-    WriteMessageWithHandles(child, "sup", &p, 1);
+    WriteMessageWithHandle(child, "sup", p);
 
     base::RunLoop loop;
     TestDataDrain drain(ScopedDataPipeConsumerHandle{DataPipeConsumerHandle{c}},

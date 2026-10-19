@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -71,26 +72,34 @@ void MojoTestBase::CreateMessagePipe(MojoHandle* p0, MojoHandle* p1) {
 }
 
 // static
-void MojoTestBase::WriteMessageWithHandles(MojoHandle mp,
-                                           const std::string& message,
-                                           const MojoHandle* handles,
-                                           uint32_t num_handles) {
+void MojoTestBase::WriteMessageWithHandles(
+    MojoHandle mp,
+    const std::string& message,
+    base::span<const MojoHandle> handles) {
   CHECK_EQ(WriteMessageRaw(MessagePipeHandle(mp), message.data(),
-                           static_cast<uint32_t>(message.size()), handles,
-                           num_handles, MOJO_WRITE_MESSAGE_FLAG_NONE),
+                           base::checked_cast<uint32_t>(message.size()),
+                           handles.data(),
+                           base::checked_cast<uint32_t>(handles.size()),
+                           MOJO_WRITE_MESSAGE_FLAG_NONE),
            MOJO_RESULT_OK);
 }
 
 // static
+void MojoTestBase::WriteMessageWithHandle(MojoHandle mp,
+                                          const std::string& message,
+                                          MojoHandle handle) {
+  WriteMessageWithHandles(mp, message, base::span_from_ref(handle));
+}
+
+// static
 void MojoTestBase::WriteMessage(MojoHandle mp, const std::string& message) {
-  WriteMessageWithHandles(mp, message, nullptr, 0);
+  WriteMessageWithHandles(mp, message, {});
 }
 
 // static
 std::string MojoTestBase::ReadMessageWithHandles(
     MojoHandle mp,
-    MojoHandle* out_handles,
-    uint32_t expected_num_handles) {
+    base::span<MojoHandle> out_handles) {
   for (;;) {
     CHECK_EQ(WaitForSignals(mp, MOJO_HANDLE_SIGNAL_READABLE), MOJO_RESULT_OK);
 
@@ -105,13 +114,19 @@ std::string MojoTestBase::ReadMessageWithHandles(
     }
 
     CHECK_EQ(MOJO_RESULT_OK, result);
-    CHECK_EQ(expected_num_handles, handles.size());
+    CHECK_EQ(out_handles.size(), handles.size());
     for (size_t i = 0; i < handles.size(); ++i) {
-      UNSAFE_TODO(out_handles[i]) = handles[i].release().value();
+      out_handles[i] = handles[i].release().value();
     }
 
     return std::string(bytes.begin(), bytes.end());
   }
+}
+
+// static
+std::string MojoTestBase::ReadMessageWithHandle(MojoHandle mp,
+                                                MojoHandle* out_handle) {
+  return ReadMessageWithHandles(mp, base::span_from_ref(*out_handle));
 }
 
 // static
@@ -146,7 +161,7 @@ std::string MojoTestBase::ReadMessageWithOptionalHandle(MojoHandle mp,
 
 // static
 std::string MojoTestBase::ReadMessage(MojoHandle mp) {
-  return ReadMessageWithHandles(mp, nullptr, 0);
+  return ReadMessageWithHandles(mp, {});
 }
 
 // static

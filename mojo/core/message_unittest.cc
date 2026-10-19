@@ -303,7 +303,7 @@ TEST_F(MessageTest, MAYBE_SerializeDynamicallySizedMessage) {
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveMessageOneHandle, MessageTest, h) {
   MojoTestBase::WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE);
   MojoHandle h1;
-  auto m = MojoTestBase::ReadMessageWithHandles(h, &h1, 1);
+  auto m = MojoTestBase::ReadMessageWithHandle(h, &h1);
   EXPECT_EQ(kTestMessageWithContext1, m);
   MojoTestBase::WriteMessage(h1, kTestMessageWithContext2);
   EXPECT_EQ(kTestQuitMessage, MojoTestBase::ReadMessage(h));
@@ -334,8 +334,8 @@ TEST_F(MessageTest, MAYBE_SerializeSimpleMessageOneHandleWithContext) {
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReceiveMessageWithHandles, MessageTest, h) {
   MojoTestBase::WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE);
-  MojoHandle handles[4];
-  auto m = MojoTestBase::ReadMessageWithHandles(h, handles, 4);
+  std::array<MojoHandle, 4> handles = {};
+  auto m = MojoTestBase::ReadMessageWithHandles(h, handles);
   EXPECT_EQ(kTestMessageWithContext1, m);
   MojoTestBase::WriteMessage(handles[0], kTestMessageWithContext1);
   MojoTestBase::WriteMessage(handles[1], kTestMessageWithContext2);
@@ -1050,10 +1050,10 @@ TEST_F(MessageTest, MAYBE_ExtendPayloadWithHandlesAttached) {
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadAndIgnoreMessage, MessageTest, h) {
   MojoTestBase::WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE);
 
-  MojoHandle handles[5];
-  MojoTestBase::ReadMessageWithHandles(h, handles, 5);
-  for (size_t i = 0; i < 5; ++i) {
-    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(UNSAFE_TODO(handles[i])));
+  std::array<MojoHandle, 5> handles = {};
+  MojoTestBase::ReadMessageWithHandles(h, handles);
+  for (MojoHandle& handle : handles) {
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(handle));
   }
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
@@ -1118,13 +1118,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadMessageAndCheckPipe, MessageTest, h) {
   MojoTestBase::WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE);
 
   const std::string kTestMessage("hey pipe");
-  MojoHandle handles[5];
-  MojoTestBase::ReadMessageWithHandles(h, handles, 5);
+  std::array<MojoHandle, 5> handles = {};
+  MojoTestBase::ReadMessageWithHandles(h, handles);
   MojoTestBase::WriteMessage(handles[0], kTestMessage);
   MojoTestBase::WaitForSignals(handles[4], MOJO_HANDLE_SIGNAL_READABLE);
   EXPECT_EQ(kTestMessage, MojoTestBase::ReadMessage(handles[4]));
-  for (size_t i = 0; i < 5; ++i) {
-    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(UNSAFE_TODO(handles[i])));
+  for (MojoHandle& handle : handles) {
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(handle));
   }
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }

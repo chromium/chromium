@@ -725,7 +725,7 @@ TEST_F(MAYBE_InvitationTest, MAYBE_NonBrokerToNonBroker) {
   MessagePipe pipe;
   MojoHandle client = pipe.handle0.release().value();
   MojoHandle pipe_for_client = pipe.handle1.release().value();
-  WriteMessageWithHandles(host, "aaa", &pipe_for_client, 1);
+  WriteMessageWithHandle(host, "aaa", pipe_for_client);
 
   // If the host can successfully invite the client, the client will receive
   // this message and we'll eventually receive a message back from it.
@@ -744,7 +744,7 @@ DEFINE_TEST_CLIENT(NonBrokerToNonBrokerHost) {
   MojoHandle test = ExtractPipeFromInvitation(invitation);
 
   MojoHandle pipe_for_client;
-  EXPECT_EQ("aaa", ReadMessageWithHandles(test, &pipe_for_client, 1));
+  EXPECT_EQ("aaa", ReadMessageWithHandle(test, &pipe_for_client));
 
   MojoHandle client;
   base::Process client_process = LaunchChildTestClient(
@@ -754,7 +754,7 @@ DEFINE_TEST_CLIENT(NonBrokerToNonBrokerHost) {
   // Forward the pipe from the test to the client, then wait. We're done
   // whenever the client acks. The success of the test is determined by
   // the outcome of interactions between the test and the client process.
-  WriteMessageWithHandles(client, "ddd", &pipe_for_client, 1);
+  WriteMessageWithHandle(client, "ddd", pipe_for_client);
 
   // Wait for a signal from the test to let us know we can terminate.
   EXPECT_EQ("bye", ReadMessage(test));
@@ -771,7 +771,7 @@ DEFINE_TEST_CLIENT(NonBrokerToNonBrokerClient) {
   MojoHandle host = ExtractPipeFromInvitation(invitation);
 
   MojoHandle pipe_to_test;
-  EXPECT_EQ("ddd", ReadMessageWithHandles(host, &pipe_to_test, 1));
+  EXPECT_EQ("ddd", ReadMessageWithHandle(host, &pipe_to_test));
 
   EXPECT_EQ("bbb", ReadMessage(pipe_to_test));
   WriteMessage(pipe_to_test, "ccc");
@@ -804,8 +804,8 @@ TEST_F(MAYBE_InvitationTest, MultiBrokerNetwork) {
   MessagePipe pipe;
   MojoHandle broker_to_client = pipe.handle0.release().value();
   MojoHandle client_to_broker = pipe.handle1.release().value();
-  WriteMessageWithHandles(secondary_broker, "hi", &broker_to_client, 1);
-  WriteMessageWithHandles(client, "hi", &client_to_broker, 1);
+  WriteMessageWithHandle(secondary_broker, "hi", broker_to_client);
+  WriteMessageWithHandle(client, "hi", client_to_broker);
 
   // Signal to the host that it's OK to terminate, then wait for acks.
   WriteMessage(secondary_broker, "bye");
@@ -842,7 +842,7 @@ DEFINE_TEST_CLIENT(SecondaryBroker) {
   MojoHandle test_runner = ExtractPipeFromInvitation(invitation);
 
   MojoHandle client;
-  EXPECT_EQ("hi", ReadMessageWithHandles(test_runner, &client, 1));
+  EXPECT_EQ("hi", ReadMessageWithHandle(test_runner, &client));
 
   // Note that handle passing can succeed even if communication is broken
   // between non-brokers and secondary brokers, as long as no direct link
@@ -850,8 +850,8 @@ DEFINE_TEST_CLIENT(SecondaryBroker) {
   // handle passing to ensure adequate coverage.
   for (size_t i = 0; i < kNumMultiBrokerMessageIterations; ++i) {
     MojoHandle buffer = CreateMemory("lol");
-    WriteMessageWithHandles(client, "aaa", &buffer, 1);
-    EXPECT_EQ("bbb", ReadMessageWithHandles(client, &buffer, 1));
+    WriteMessageWithHandle(client, "aaa", buffer);
+    EXPECT_EQ("bbb", ReadMessageWithHandle(client, &buffer));
     EXPECT_EQ("lmao", ReadMemory(buffer));
   }
 
@@ -867,12 +867,12 @@ DEFINE_TEST_CLIENT(MultiBrokerNetworkClient) {
   MojoHandle test_runner = ExtractPipeFromInvitation(invitation);
 
   MojoHandle secondary_broker;
-  EXPECT_EQ("hi", ReadMessageWithHandles(test_runner, &secondary_broker, 1));
+  EXPECT_EQ("hi", ReadMessageWithHandle(test_runner, &secondary_broker));
 
   for (size_t i = 0; i < kNumMultiBrokerMessageIterations; ++i) {
     MojoHandle buffer = CreateMemory("lmao");
-    WriteMessageWithHandles(secondary_broker, "bbb", &buffer, 1);
-    EXPECT_EQ("aaa", ReadMessageWithHandles(secondary_broker, &buffer, 1));
+    WriteMessageWithHandle(secondary_broker, "bbb", buffer);
+    EXPECT_EQ("aaa", ReadMessageWithHandle(secondary_broker, &buffer));
     EXPECT_EQ("lol", ReadMemory(buffer));
   }
 

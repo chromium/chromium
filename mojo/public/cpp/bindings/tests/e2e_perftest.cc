@@ -166,7 +166,7 @@ void CreateAndRunService(PendingReceiver<test::EchoService> receiver,
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(PingService, MojoE2EPerftest, mp) {
   MojoHandle service_mp;
-  EXPECT_EQ("hello", ReadMessageWithHandles(mp, &service_mp, 1));
+  EXPECT_EQ("hello", ReadMessageWithHandle(mp, &service_mp));
 
   auto receiver = PendingReceiver<test::EchoService>(
       ScopedMessagePipeHandle(MessagePipeHandle(service_mp)));
@@ -185,7 +185,7 @@ TEST_F(MojoE2EPerftest, MultiProcessEchoMainThread) {
   RunTestClient("PingService", [&](MojoHandle mp) {
     MojoHandle client_mp, service_mp;
     CreateMessagePipe(&client_mp, &service_mp);
-    WriteMessageWithHandles(mp, "hello", &service_mp, 1);
+    WriteMessageWithHandle(mp, "hello", service_mp);
     RunTestOnTaskRunner(task_environment_.GetMainThreadTaskRunner().get(),
                         client_mp, "MultiProcessEchoMainThread");
   });
@@ -195,7 +195,7 @@ TEST_F(MojoE2EPerftest, MultiProcessEchoIoThread) {
   RunTestClient("PingService", [&](MojoHandle mp) {
     MojoHandle client_mp, service_mp;
     CreateMessagePipe(&client_mp, &service_mp);
-    WriteMessageWithHandles(mp, "hello", &service_mp, 1);
+    WriteMessageWithHandle(mp, "hello", service_mp);
     RunTestOnTaskRunner(core::GetIOTaskRunner().get(), client_mp,
                         "MultiProcessEchoIoThread");
   });

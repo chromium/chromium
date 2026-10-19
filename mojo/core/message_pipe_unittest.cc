@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -327,9 +328,9 @@ const size_t kPingPongIterations = 500;
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(HandlePingPong, MessagePipeTest, h) {
   // Waits for a handle to become readable and writes it back to the sender.
   for (size_t i = 0; i < kPingPongIterations; i++) {
-    MojoHandle handles[kPingPongHandlesPerIteration];
-    ReadMessageWithHandles(h, handles, kPingPongHandlesPerIteration);
-    WriteMessageWithHandles(h, "", handles, kPingPongHandlesPerIteration);
+    std::array<MojoHandle, kPingPongHandlesPerIteration> handles = {};
+    ReadMessageWithHandles(h, handles);
+    WriteMessageWithHandles(h, "", handles);
   }
 
   EXPECT_EQ(MOJO_RESULT_OK, WaitForSignals(h, MOJO_HANDLE_SIGNAL_READABLE));
@@ -340,42 +341,42 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(HandlePingPong, MessagePipeTest, h) {
 }
 
 TEST_F(MessagePipeTest, DataPipeConsumerHandlePingPong) {
-  MojoHandle p, c[kPingPongHandlesPerIteration];
+  MojoHandle p;
+  std::array<MojoHandle, kPingPongHandlesPerIteration> c = {};
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    UNSAFE_TODO(
-        EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p, &c[i])));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p, &c[i]));
     MojoClose(p);
   }
 
   RunTestClient("HandlePingPong", [&](MojoHandle h) {
     for (size_t i = 0; i < kPingPongIterations; i++) {
-      WriteMessageWithHandles(h, "", c, kPingPongHandlesPerIteration);
-      ReadMessageWithHandles(h, c, kPingPongHandlesPerIteration);
+      WriteMessageWithHandles(h, "", c);
+      ReadMessageWithHandles(h, c);
     }
     WriteMessage(h, "quit", 4);
   });
-  for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    MojoClose(UNSAFE_TODO(c[i]));
+  for (MojoHandle& handle : c) {
+    MojoClose(handle);
   }
 }
 
 TEST_F(MessagePipeTest, DataPipeProducerHandlePingPong) {
-  MojoHandle p[kPingPongHandlesPerIteration], c;
+  std::array<MojoHandle, kPingPongHandlesPerIteration> p = {};
+  MojoHandle c;
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    UNSAFE_TODO(
-        EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p[i], &c)));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateDataPipe(nullptr, &p[i], &c));
     MojoClose(c);
   }
 
   RunTestClient("HandlePingPong", [&](MojoHandle h) {
     for (size_t i = 0; i < kPingPongIterations; i++) {
-      WriteMessageWithHandles(h, "", p, kPingPongHandlesPerIteration);
-      ReadMessageWithHandles(h, p, kPingPongHandlesPerIteration);
+      WriteMessageWithHandles(h, "", p);
+      ReadMessageWithHandles(h, p);
     }
     WriteMessage(h, "quit", 4);
   });
-  for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    MojoClose(UNSAFE_TODO(p[i]));
+  for (MojoHandle& handle : p) {
+    MojoClose(handle);
   }
 }
 
@@ -386,21 +387,20 @@ TEST_F(MessagePipeTest, DataPipeProducerHandlePingPong) {
 #define MAYBE_SharedBufferHandlePingPong SharedBufferHandlePingPong
 #endif  // BUILDFLAG(IS_IOS)
 TEST_F(MessagePipeTest, MAYBE_SharedBufferHandlePingPong) {
-  MojoHandle buffers[kPingPongHandlesPerIteration];
+  std::array<MojoHandle, kPingPongHandlesPerIteration> buffers = {};
   for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    UNSAFE_TODO(EXPECT_EQ(MOJO_RESULT_OK,
-                          MojoCreateSharedBuffer(1, nullptr, &buffers[i])));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoCreateSharedBuffer(1, nullptr, &buffers[i]));
   }
 
   RunTestClient("HandlePingPong", [&](MojoHandle h) {
     for (size_t i = 0; i < kPingPongIterations; i++) {
-      WriteMessageWithHandles(h, "", buffers, kPingPongHandlesPerIteration);
-      ReadMessageWithHandles(h, buffers, kPingPongHandlesPerIteration);
+      WriteMessageWithHandles(h, "", buffers);
+      ReadMessageWithHandles(h, buffers);
     }
     WriteMessage(h, "quit", 4);
   });
-  for (size_t i = 0; i < kPingPongHandlesPerIteration; ++i) {
-    MojoClose(UNSAFE_TODO(buffers[i]));
+  for (MojoHandle& buffer : buffers) {
+    MojoClose(buffer);
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/bindings/direct_receiver.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -257,7 +258,7 @@ TEST_F(DirectReceiverTest, NoIOThreadHopInBroker) {
 
     // Pass the child its pipe.
     MojoHandle remote_pipe = remote.PassPipe().release().value();
-    WriteMessageWithHandles(child, "", &remote_pipe, 1);
+    WriteMessageWithHandle(child, "", remote_pipe);
 
     // Start the service. This blocks until it has a direct link to the child
     // portal (i.e. no proxies), so any message sent from the child after this
@@ -290,7 +291,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoIOThreadHopInBroker_Child,
   // Before binding to a Remote, wait for the pipe's portal to have a direct
   // link to the service.
   MojoHandle handle;
-  ReadMessageWithHandles(test_pipe->value(), &handle, 1);
+  ReadMessageWithHandle(test_pipe->value(), &handle);
   WaitForDirectRemoteLink(handle);
 
   Remote<mojom::Service> service{PendingRemote<mojom::Service>{
@@ -313,7 +314,7 @@ TEST_F(DirectReceiverTest, NoIOThreadHopInNonBrokerProcess) {
       remote.InitWithNewPipeAndPassReceiver();
   RunTestClient("NoIOThreadHopInNonBroker_Child", [&](MojoHandle child) {
     MojoHandle service_pipe = receiver.PassPipe().release().value();
-    WriteMessageWithHandles(child, "", &service_pipe, 1);
+    WriteMessageWithHandle(child, "", service_pipe);
 
     // Before binding it to a Remote, wait for the pipe's portal to have a
     // direct link to the service portal in the child process.
@@ -340,7 +341,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(NoIOThreadHopInNonBroker_Child,
 
   // First get the service pipe from the test process.
   MojoHandle service_pipe;
-  ReadMessageWithHandles(test_pipe->value(), &service_pipe, 1);
+  ReadMessageWithHandle(test_pipe->value(), &service_pipe);
   PendingReceiver<mojom::Service> receiver{
       ScopedMessagePipeHandle{MessagePipeHandle{service_pipe}}};
 
@@ -382,9 +383,11 @@ TEST_F(DirectReceiverTest, FallbackToIOThreadHopOnFailure) {
         fallback_remote.InitWithNewPipeAndPassReceiver();
 
     // Pass the child its pipes.
-    MojoHandle remote_pipes[] = {direct_remote.PassPipe().release().value(),
-                                 fallback_remote.PassPipe().release().value()};
-    WriteMessageWithHandles(child, "", remote_pipes, 2);
+    std::array<MojoHandle, 2> remote_pipes = {
+        direct_remote.PassPipe().release().value(),
+        fallback_remote.PassPipe().release().value(),
+    };
+    WriteMessageWithHandles(child, "", remote_pipes);
 
     // Start the services. This blocks until they have direct links to the child
     // portal (i.e. no proxies).
@@ -427,8 +430,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(FallbackToIOThreadHopOnFailure_Child,
 
   // Before binding to a Remote, wait for the pipe's portal to have a direct
   // link to the service.
-  MojoHandle handles[2];
-  ReadMessageWithHandles(test_pipe->value(), handles, 2);
+  std::array<MojoHandle, 2> handles = {};
+  ReadMessageWithHandles(test_pipe->value(), handles);
   WaitForDirectRemoteLink(handles[0]);
   WaitForDirectRemoteLink(handles[1]);
 

@@ -983,7 +983,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessReceiverClient,
   // terminates when the InterfaceDropper is disconnected, which happens once
   // the test is done throwing remotes at it.
   MojoHandle dropper_pipe;
-  ReadMessageWithHandles(test_pipe, &dropper_pipe, 1);
+  ReadMessageWithHandle(test_pipe, &dropper_pipe);
   base::RunLoop loop;
   InterfaceDropper dropper{PendingReceiver<mojom::InterfaceDropper>(
       MakeScopedHandle(MessagePipeHandle(dropper_pipe)))};
@@ -1011,7 +1011,7 @@ TEST_F(MultiprocessReceiverTest, MultiprocessReceiver) {
     Remote<mojom::InterfaceDropper> dropper;
     MojoHandle dropper_pipe =
         dropper.BindNewPipeAndPassReceiver().PassPipe().release().value();
-    WriteMessageWithHandles(client, "", &dropper_pipe, 1);
+    WriteMessageWithHandle(client, "", dropper_pipe);
 
     constexpr size_t kNumIterations = 1000;
     constexpr size_t kNumReceiversPerIteration = 10;

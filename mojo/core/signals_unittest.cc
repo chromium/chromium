@@ -109,8 +109,8 @@ TEST_F(SignalsTest, LocalPeers) {
   // Verify that sending a local pipe over a local pipe doesn't change the
   // perceived locality of the peer.
   const char kMessage[] = "ayyy";
-  WriteMessageWithHandles(a, kMessage, &c, 1);
-  EXPECT_EQ(kMessage, ReadMessageWithHandles(b, &c, 1));
+  WriteMessageWithHandle(a, kMessage, c);
+  EXPECT_EQ(kMessage, ReadMessageWithHandle(b, &c));
 
   WriteMessage(c, kMessage);
   EXPECT_EQ(kMessage, ReadMessage(d));

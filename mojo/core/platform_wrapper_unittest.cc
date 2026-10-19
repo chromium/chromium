@@ -95,7 +95,7 @@ TEST_F(PlatformWrapperTest, MAYBE_WrapPlatformHandle) {
     EXPECT_EQ(MOJO_RESULT_OK,
               MojoWrapPlatformHandle(&os_file, nullptr, &wrapped_handle));
 
-    WriteMessageWithHandles(h, kMessage, &wrapped_handle, 1);
+    WriteMessageWithHandle(h, kMessage, wrapped_handle);
   });
 
   base::DeleteFile(temp_file_path);
@@ -104,7 +104,7 @@ TEST_F(PlatformWrapperTest, MAYBE_WrapPlatformHandle) {
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
   // Read a message and a wrapped file handle; unwrap the handle.
   MojoHandle wrapped_handle;
-  std::string message = ReadMessageWithHandles(h, &wrapped_handle, 1);
+  std::string message = ReadMessageWithHandle(h, &wrapped_handle);
 
   MojoPlatformHandle platform_handle;
   platform_handle.struct_size = sizeof(MojoPlatformHandle);
@@ -168,7 +168,7 @@ TEST_F(PlatformWrapperTest, MAYBE_WrapPlatformSharedMemoryRegion) {
                   &os_buffer, 1, kMessage.size(), &mojo_guid,
                   MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE,
                   nullptr, &wrapped_handle));
-    WriteMessageWithHandles(h, kMessage, &wrapped_handle, 1);
+    WriteMessageWithHandle(h, kMessage, wrapped_handle);
 
     // As a sanity check, send the GUID explicitly in a second message. We'll
     // verify that the deserialized buffer handle holds the same GUID on the
@@ -183,7 +183,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
                                   h) {
   // Read a message and a wrapped shared buffer handle.
   MojoHandle wrapped_handle;
-  std::string message = ReadMessageWithHandles(h, &wrapped_handle, 1);
+  std::string message = ReadMessageWithHandle(h, &wrapped_handle);
 
   // Check the message in the buffer
   ExpectBufferContents(wrapped_handle, 0, message);
