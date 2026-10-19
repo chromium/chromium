@@ -208,8 +208,8 @@ class FullCardRequestTest : public testing::Test {
   variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   syncer::TestSyncService sync_service_;
-  MockResultDelegate result_delegate_;
-  MockUIDelegate ui_delegate_;
+  testing::NiceMock<MockResultDelegate> result_delegate_;
+  testing::NiceMock<MockUIDelegate> ui_delegate_;
   TestAutofillClient autofill_client_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;

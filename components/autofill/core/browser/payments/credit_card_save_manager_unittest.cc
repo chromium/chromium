@@ -298,10 +298,11 @@ class MockAutofillClient : public TestAutofillClient {
  public:
   MockAutofillClient() {
     TestPersonalDataManager& pdm = GetPersonalDataManager();
-    pdm.set_payments_data_manager(std::make_unique<MockPaymentsDataManager>());
+    pdm.set_payments_data_manager(
+        std::make_unique<testing::NiceMock<MockPaymentsDataManager>>());
     pdm.test_payments_data_manager().SetPrefService(GetPrefs());
     set_payments_autofill_client(
-        std::make_unique<MockPaymentsAutofillClient>(this));
+        std::make_unique<testing::NiceMock<MockPaymentsAutofillClient>>(this));
   }
   ~MockAutofillClient() override = default;
 };
@@ -312,10 +313,11 @@ class MockAutofillClient : public TestAutofillClient {
 
 class CreditCardSaveManagerTest
     : public testing::Test,
-      public WithTestAutofillClientDriverManager<MockAutofillClient,
-                                                 TestAutofillDriver,
-                                                 TestBrowserAutofillManager,
-                                                 MockPaymentsAutofillClient> {
+      public WithTestAutofillClientDriverManager<
+          MockAutofillClient,
+          TestAutofillDriver,
+          TestBrowserAutofillManager,
+          testing::NiceMock<MockPaymentsAutofillClient>> {
  public:
   void SetUp() override {
     // Change the year to be 20XX.

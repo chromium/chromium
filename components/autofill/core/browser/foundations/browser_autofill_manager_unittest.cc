@@ -588,7 +588,7 @@ class MockAutofillClient : public TestAutofillClient {
 
   void Init(syncer::TestSyncService* sync_service) {
     auto create_payments_autofill_client = [this] {
-      auto x = std::make_unique<MockPaymentsAutofillClient>(this);
+      auto x = std::make_unique<NiceMock<MockPaymentsAutofillClient>>(this);
       x->set_payments_network_interface(
           std::make_unique<payments::TestPaymentsNetworkInterface>(
               GetURLLoaderFactory(), GetIdentityManager(),
@@ -995,12 +995,12 @@ auto FormHasRendererId(FormRendererId form_renderer_id) {
                   Field(&FormGlobalId::renderer_id, form_renderer_id));
 }
 
-class BrowserAutofillManagerTest
-    : public testing::Test,
-      public WithTestAutofillClientDriverManager<NiceMock<MockAutofillClient>,
-                                                 MockAutofillDriver,
-                                                 TestBrowserAutofillManager,
-                                                 MockPaymentsAutofillClient> {
+class BrowserAutofillManagerTest : public testing::Test,
+                                   public WithTestAutofillClientDriverManager<
+                                       NiceMock<MockAutofillClient>,
+                                       NiceMock<MockAutofillDriver>,
+                                       TestBrowserAutofillManager,
+                                       NiceMock<MockPaymentsAutofillClient>> {
  public:
   void SetUp() override {
     // Advance the mock clock to a fixed, arbitrary, somewhat recent date.

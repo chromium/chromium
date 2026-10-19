@@ -122,7 +122,8 @@ class PaymentsFormDataImporterTest
     payments_client().set_virtual_card_enrollment_manager(
         std::move(virtual_card_enrollment_manager));
     auto credit_card_save_manager =
-        std::make_unique<MockCreditCardSaveManager>(&autofill_client());
+        std::make_unique<testing::NiceMock<MockCreditCardSaveManager>>(
+            &autofill_client());
     test_api(form_data_importer().GetPaymentsFormDataImporter())
         .set_credit_card_save_manager(std::move(credit_card_save_manager));
     auto wallet_reminder_notice_manager =
