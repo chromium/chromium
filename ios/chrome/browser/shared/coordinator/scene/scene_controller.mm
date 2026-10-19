@@ -1648,23 +1648,25 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
   // called.
   [self.sceneState.window makeKeyAndVisible];
 
-  // On iPad (iOS 26.4+), observe windowScene Light/Dark trait changes so that
-  // the appearance flip is propagated to any visible popover whose detached
-  // presentation window does not participate in normal trait propagation.
-  // TODO(crbug.com/507265316): Remove once UIKit propagates trait changes to
-  // popover presentation windows (tracked with Apple as FB22646087).
+  // On iPad (iOS 26.4 to < iOS 27), observe windowScene Light/Dark trait
+  // changes so that the appearance flip is propagated to any visible popover
+  // whose detached presentation window does not participate in normal trait
+  // propagation.
+  // TODO(crbug.com/507265316): Remove once the minimum supported version is
+  // iOS 27, where UIKit fixes FB22646087.
   if (@available(iOS 26.4, *)) {
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    if (!@available(iOS 27, *)) {
       UIWindowScene* windowScene = self.sceneState.window.windowScene;
-      if (windowScene) {
+      if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+          windowScene) {
         __weak __typeof(self) weakSelf = self;
+        UITraitChangeHandler handler =
+            ^(id<UITraitEnvironment> env, UITraitCollection* previous) {
+              [weakSelf propagateUserInterfaceStyleToPresentedViewControllers];
+            };
         [windowScene
             registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                        withHandler:^(id<UITraitEnvironment> env,
-                                      UITraitCollection* previous) {
-                          [weakSelf
-                              propagateUserInterfaceStyleToPresentedViewControllers];
-                        }];
+                        withHandler:handler];
       }
     }
   }
@@ -2986,8 +2988,8 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 // overrideUserInterfaceStyle are touched, so that intentional per-VC
 // overrides (e.g. a sheet that wants to stay light) are preserved.
 //
-// TODO(crbug.com/507265316): Remove once UIKit propagates trait changes to
-// popover presentation windows (tracked with Apple as FB22646087).
+// TODO(crbug.com/507265316): Remove once the minimum supported version is
+// iOS 27, where UIKit fixes FB22646087.
 - (void)propagateUserInterfaceStyleToPresentedViewControllers {
   UIWindow* window = self.sceneState.window;
   UIWindowScene* windowScene = window.windowScene;
