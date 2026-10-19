@@ -230,6 +230,10 @@ struct TabAttachment {
   url.mojom.Url url;
   // The source/origin of the tab attachment.
   TabAttachmentSource source;
+  // Whether this tab was attached via the standalone single-tab menu item.
+  bool from_single_tab_menu_item = false;
+  // Whether this tab was the active tab when attached.
+  bool is_active_tab = false;
 };
 
 // Represents a single attachment to the search context, either a file or a tab.

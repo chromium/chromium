@@ -7,7 +7,7 @@ import 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {SearchboxBrowserProxy} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import type {OmniboxComposeboxElement} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
 import {ComposeboxProxyImpl} from 'chrome://omnibox-popup.top-chrome/omnibox_popup.js';
-import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
+import {ComposeboxFile, SingleTabType} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
@@ -377,10 +377,68 @@ suite('OmniboxComposeboxTest', () => {
     // The upload is still in flight at this point, so the tab reports
     // `kUploadStarted` rather than optimistically claiming success.
     assertEquals(ContextUploadStatus.kUploadStarted, addedFile.status);
+    assertEquals(undefined, addedFile.singleTabType);
     // Verify tab ID mapping.
     assertTrue(omniboxComposebox.addedTabsIds.has(42));
     assertEquals(mockToken, omniboxComposebox.addedTabsIds.get(42));
   });
+
+  test(
+      'Add Tab Attachment via addSearchContext sets singleTabType when from ' +
+          'single tab menu item',
+      async () => {
+        const currentTabToken = 'mock-current-tab-token';
+        testProxy.handler.setPromiseResolveFor(
+            'addTabContext', currentTabToken);
+        omniboxComposebox.addSearchContext({
+          input: '',
+          attachments: [{
+            tabAttachment: {
+              tabId: 10,
+              title: 'Current Tab',
+              url: 'https://example.com/current',
+              source: TabAttachmentSource.kContextMenu,
+              fromSingleTabMenuItem: true,
+              isActiveTab: true,
+            },
+          }],
+          toolMode: 0,
+        });
+        await microtasksFinished();
+        await testProxy.handler.whenCalled('addTabContext');
+        await microtasksFinished();
+
+        const currentTabFile =
+            omniboxComposebox.attachedContext.get(currentTabToken);
+        assertTrue(!!currentTabFile);
+        assertEquals(SingleTabType.CURRENT_TAB, currentTabFile.singleTabType);
+
+        testProxy.handler.resetResolver('addTabContext');
+        const recentTabToken = 'mock-recent-tab-token';
+        testProxy.handler.setPromiseResolveFor('addTabContext', recentTabToken);
+        omniboxComposebox.addSearchContext({
+          input: '',
+          attachments: [{
+            tabAttachment: {
+              tabId: 20,
+              title: 'Recent Tab',
+              url: 'https://example.com/recent',
+              source: TabAttachmentSource.kContextMenu,
+              fromSingleTabMenuItem: true,
+              isActiveTab: false,
+            },
+          }],
+          toolMode: 0,
+        });
+        await microtasksFinished();
+        await testProxy.handler.whenCalled('addTabContext');
+        await microtasksFinished();
+
+        const recentTabFile =
+            omniboxComposebox.attachedContext.get(recentTabToken);
+        assertTrue(!!recentTabFile);
+        assertEquals(SingleTabType.RECENT_TAB, recentTabFile.singleTabType);
+      });
 
   test('addSearchContext sets input and queries autocomplete', async () => {
     omniboxComposebox.searchboxNextEnabled = true;

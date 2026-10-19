@@ -98,7 +98,9 @@ TEST_F(SearchboxContextDataTest, SetAndTakePendingContextWithTabAttachment) {
       searchbox::mojom::SearchContextAttachment::NewTabAttachment(
           searchbox::mojom::TabAttachment::New(
               kTabId, kTabName, GURL(kExampleUrl),
-              searchbox::mojom::TabAttachmentSource::kContextMenu)));
+              searchbox::mojom::TabAttachmentSource::kContextMenu,
+              /*from_single_tab_menu_item=*/false,
+              /*is_active_tab=*/false)));
   data.SetPendingContext(std::move(context));
 
   std::unique_ptr<SearchboxContextData::Context> taken_context =

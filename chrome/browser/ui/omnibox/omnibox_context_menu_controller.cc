@@ -250,6 +250,17 @@ std::optional<ui::ImageModel> GetImageModelForIconResourceId(
 }
 // LINT.ThenChange(//ui/webui/resources/cr_components/composebox/searchbox_config_icons.html.ts:SearchboxConfigIcons)
 
+void RecordSingleTabMenuItemAction(bool is_active_tab, bool selected) {
+  // Values correspond to `ContextualSearchSingleTabMenuItemAction` in
+  // `tools/metrics/histograms/metadata/contextual_search/enums.xml`.
+  int sample = selected ? (is_active_tab ? /*Current tab selected*/ 3
+                                         : /*Recent tab selected*/ 0)
+                        : (is_active_tab ? /*Current tab deselected*/ 4
+                                         : /*Recent tab deselected*/ 1);
+  base::UmaHistogramExactLinear(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox", sample, 6);
+}
+
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
@@ -1018,6 +1029,9 @@ void OmniboxContextMenuController::UpdateSearchboxContext(
     tab_attachment->url = tab_info->url;
     tab_attachment->source =
         searchbox::mojom::TabAttachmentSource::kContextMenu;
+    tab_attachment->from_single_tab_menu_item =
+        tab_info->from_single_tab_menu_item;
+    tab_attachment->is_active_tab = tab_info->is_active_tab;
     context->file_infos.push_back(
         searchbox::mojom::SearchContextAttachment::NewTabAttachment(
             std::move(tab_attachment)));
@@ -1648,6 +1662,7 @@ OmniboxPopupUI* OmniboxContextMenuController::GetOmniboxPopupUI() const {
 }
 
 void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
+  const bool is_single_tab_item = (id == IDC_OMNIBOX_CONTEXT_SINGLE_TAB);
   // The standalone single tab row behaves exactly like the flyout row for the
   // same tab, so route it through that tab's command.
   id = ResolveCommandId(id);
@@ -1680,7 +1695,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
     int tab_index_in_menu = id - kMinOmniboxContextMenuRecentTabsCommandId;
     if (static_cast<size_t>(tab_index_in_menu) < tabs.size()) {
       // Get the tab ID based on the command ID in the simple menu.
-      const auto& tab_info = tabs[tab_index_in_menu];
+      auto& tab_info = tabs[tab_index_in_menu];
       bool was_uploaded = false;
       base::UnguessableToken file_token_to_delete;
       ContextualSearchboxHandler* active_handler = nullptr;
@@ -1706,15 +1721,34 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
           }
         }
       }
+      if (!was_uploaded && contextual_searchbox_handler_) {
+        for (const auto& pair : contextual_searchbox_handler_->selected_tabs) {
+          if (tab_info.tab_id == pair.second) {
+            was_uploaded = true;
+            file_token_to_delete = pair.first;
+            active_handler = contextual_searchbox_handler_;
+            break;
+          }
+        }
+      }
       // If was already staged for upload, delete it, as this function was
       // called because user clicked on tab again.:
       if (was_uploaded && active_handler) {
+        if (is_single_tab_item) {
+          RecordSingleTabMenuItemAction(tab_info.is_active_tab,
+                                        /*selected=*/false);
+        }
         active_handler->DeleteContextFromBrowser(file_token_to_delete,
                                                  /*from_automatic_chip=*/false);
         // Refresh omnibox popup UI.
         OpenAiMode(OmniboxEditModel::AimActivation::kContextMenu,
                    /*initial_state=*/nullptr);
       } else {  // If not staged for upload, then stage for upload.
+        if (is_single_tab_item) {
+          tab_info.from_single_tab_menu_item = true;
+          RecordSingleTabMenuItemAction(tab_info.is_active_tab,
+                                        /*selected=*/true);
+        }
         base::UmaHistogramExactLinear(
             "ContextualSearch.ContextAdded.ContextAddedMethod.Omnibox",
             /*ContextMenu*/ 0, 4);

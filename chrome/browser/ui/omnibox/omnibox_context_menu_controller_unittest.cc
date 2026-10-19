@@ -20,6 +20,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
@@ -64,12 +65,18 @@ class FakeContextualSearchboxHandler : public ContextualSearchboxHandler {
                                  content::WebContents* web_contents)
       : ContextualSearchboxHandler(
             mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
-            mojo::PendingRemote<searchbox::mojom::Page>(),
+            MakeDummyPageRemote(),
             profile,
             web_contents,
             nullptr,
             base::NullCallback()) {}
   ~FakeContextualSearchboxHandler() override = default;
+
+  static mojo::PendingRemote<searchbox::mojom::Page> MakeDummyPageRemote() {
+    mojo::PendingRemote<searchbox::mojom::Page> page_remote;
+    std::ignore = page_remote.InitWithNewPipeAndPassReceiver();
+    return page_remote;
+  }
 
   bool IsSmartTabSharingActive() const override { return active_; }
   void SetSmartTabSharingActive(bool active) override { active_ = active; }
@@ -1605,6 +1612,112 @@ TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
       "ContextualSearch.TabPicker.SelectedTabIsActive.Omnibox", true, 1);
   histogram_tester.ExpectUniqueSample(
       "ContextualSearch.TabPicker.SelectedTabPosition.Omnibox", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
+      /*Current tab selected*/ 3, 1);
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       SingleTabItemMetrics_SelectAndDeselectCurrentTab) {
+  SearchboxContextData searchbox_context_data(
+      browser_window_interface_.GetUnownedUserDataHost());
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetContextualSearchboxHandler(&fake_handler);
+  controller()->SetMockTabs({MakeTab(1, u"Active", /*is_active_tab=*/true),
+                             MakeTab(2, u"Other", /*is_active_tab=*/false)});
+  controller()->RebuildMenu();
+
+  base::HistogramTester histogram_tester;
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
+      /*Current tab selected*/ 3, 1);
+  auto pending_context = searchbox_context_data.TakePendingContext();
+  ASSERT_TRUE(pending_context);
+  ASSERT_EQ(1u, pending_context->file_infos.size());
+  ASSERT_TRUE(pending_context->file_infos[0]->is_tab_attachment());
+  EXPECT_TRUE(pending_context->file_infos[0]
+                  ->get_tab_attachment()
+                  ->from_single_tab_menu_item);
+  EXPECT_TRUE(
+      pending_context->file_infos[0]->get_tab_attachment()->is_active_tab);
+
+  // Stage tab 1 as uploaded and execute `IDC_OMNIBOX_CONTEXT_SINGLE_TAB` again
+  // to deselect it.
+  fake_handler.selected_tabs[base::UnguessableToken::Create()] = 1;
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
+      /*Current tab deselected*/ 4, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox", 2);
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       SingleTabItemMetrics_SelectAndDeselectRecentTab) {
+  SearchboxContextData searchbox_context_data(
+      browser_window_interface_.GetUnownedUserDataHost());
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetContextualSearchboxHandler(&fake_handler);
+  controller()->SetMockTabs({MakeTab(1, u"Recent", /*is_active_tab=*/false),
+                             MakeTab(2, u"Older", /*is_active_tab=*/false)});
+  controller()->RebuildMenu();
+
+  base::HistogramTester histogram_tester;
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
+      /*Recent tab selected*/ 0, 1);
+  auto pending_context = searchbox_context_data.TakePendingContext();
+  ASSERT_TRUE(pending_context);
+  ASSERT_EQ(1u, pending_context->file_infos.size());
+  ASSERT_TRUE(pending_context->file_infos[0]->is_tab_attachment());
+  EXPECT_TRUE(pending_context->file_infos[0]
+                  ->get_tab_attachment()
+                  ->from_single_tab_menu_item);
+  EXPECT_FALSE(
+      pending_context->file_infos[0]->get_tab_attachment()->is_active_tab);
+
+  // Stage tab 1 as uploaded and execute `IDC_OMNIBOX_CONTEXT_SINGLE_TAB` again
+  // to deselect it.
+  fake_handler.selected_tabs[base::UnguessableToken::Create()] = 1;
+  controller()->ExecuteCommand(IDC_OMNIBOX_CONTEXT_SINGLE_TAB, 0);
+  histogram_tester.ExpectBucketCount(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox",
+      /*Recent tab deselected*/ 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox", 2);
+}
+
+TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
+       SingleTabItemMetrics_FlyoutDoesNotRecordSingleTabMetrics) {
+  SearchboxContextData searchbox_context_data(
+      browser_window_interface_.GetUnownedUserDataHost());
+  FakeContextualSearchboxHandler fake_handler(profile_.get(),
+                                              web_contents_.get());
+  controller()->SetContextualSearchboxHandler(&fake_handler);
+  controller()->SetMockTabs({MakeTab(1, u"Active", /*is_active_tab=*/true),
+                             MakeTab(2, u"Other", /*is_active_tab=*/false)});
+  controller()->RebuildMenu();
+
+  base::HistogramTester histogram_tester;
+  // Execute the flyout command (33000) directly instead of
+  // `IDC_OMNIBOX_CONTEXT_SINGLE_TAB`.
+  controller()->ExecuteCommand(33000, 0);
+  auto pending_context = searchbox_context_data.TakePendingContext();
+  ASSERT_TRUE(pending_context);
+  ASSERT_EQ(1u, pending_context->file_infos.size());
+  ASSERT_TRUE(pending_context->file_infos[0]->is_tab_attachment());
+  EXPECT_FALSE(pending_context->file_infos[0]
+                   ->get_tab_attachment()
+                   ->from_single_tab_menu_item);
+  fake_handler.selected_tabs[base::UnguessableToken::Create()] = 1;
+  controller()->ExecuteCommand(33000, 0);
+
+  histogram_tester.ExpectTotalCount(
+      "ContextualSearch.SingleTabMenuItem.Action.Omnibox", 0);
 }
 
 TEST_F(OmniboxContextMenuControllerSingleTabItemTest,
