@@ -1,0 +1,25 @@
+include_rules = [
+  "+ash/shell.h",
+  "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
+  "+chrome/browser/ui/immersive/immersive_mode_controller.h",
+  "+chrome/browser/ui/tabs/tab_strip_model.h",
+  "+chrome/browser/ui/tabs/tab_strip_user_gesture_details.h",
+  "+chrome/browser/ui/views/frame/browser_view.h",
+  "+chrome/browser/ui/views/frame/tab_strip_region_view.h",
+  "+chrome/browser/ui/views/tabs/shared/tab_strip_observer.h",
+  "+chrome/browser/ui/views/tabs/tab.h",
+  "+chrome/browser/ui/views/tabs/tab_strip.h",
+  "+chrome/browser/ui/views/tabs/tab_style_views.h",
+  "+chrome/browser/ui/window_feature_controller/window_feature_controller.h",
+]
+
+specific_include_rules = {
+  "tab_scrubber_browsertest\\.cc": [
+    "+ash/constants/ash_switches.h",
+    "+ash/display/event_transformation_handler.h",
+    "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser_tabstrip.h",
+    "+chrome/browser/ui/tabs/tab_enums.h",
+    "+chrome/browser/ui/tabs/tab_strip_model_observer.h",
+  ],
+}

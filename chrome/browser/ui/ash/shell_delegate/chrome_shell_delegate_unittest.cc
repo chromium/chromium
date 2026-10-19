@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/ash/shell_delegate/chrome_shell_delegate.h"
 
-#include "chrome/browser/ui/ash/shell_delegate/tab_scrubber.h"
+#include "chrome/browser/ui/chromeos/tab_scrubber/tab_scrubber.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

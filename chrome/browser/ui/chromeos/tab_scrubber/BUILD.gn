@@ -1,0 +1,71 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("tab_scrubber") {
+  sources = [
+    "tab_scrubber.cc",
+    "tab_scrubber.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/views",
+    "//chromeos/ash/components/browser_delegate",
+    "//ui/events",
+  ]
+
+  deps = [
+    "//ash",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/tabs:tab",
+    "//chrome/browser/ui/views/tabs:tab_strip",
+    "//chrome/browser/ui/views/tabs:tab_style_views",
+    "//chrome/browser/ui/window_feature_controller",
+    "//ui/events:gesture_detection",
+    "//ui/views",
+    "//ui/wm/public",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "tab_scrubber_browsertest.cc" ]
+
+  deps = [
+    ":tab_scrubber",
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//base/i18n:test_support",
+    "//chrome/browser/ui:browser_commands",
+    "//chrome/browser/ui:browser_tabstrip",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/immersive:immersive_mode_controller",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/views/tabs:tab",
+    "//chrome/browser/ui/views/tabs:tab_strip",
+    "//chrome/test:test_support_ui",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//ui/aura",
+    "//ui/events",
+    "//ui/events:test_support",
+    "//ui/gfx:test_support",
+    "//ui/wm",
+  ]
+}

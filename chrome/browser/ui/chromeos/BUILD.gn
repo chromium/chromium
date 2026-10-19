@@ -8,5 +8,6 @@ group("browser_tests") {
   deps = [
     "locked_state:browser_tests",
     "screen_orientation:browser_tests",
+    "tab_scrubber:browser_tests",
   ]
 }

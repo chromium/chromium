@@ -8,8 +8,6 @@ static_library("shell_delegate") {
   sources = [
     "chrome_shell_delegate.cc",
     "chrome_shell_delegate.h",
-    "tab_scrubber.cc",
-    "tab_scrubber.h",
   ]
 
   deps = [
@@ -51,16 +49,9 @@ static_library("shell_delegate") {
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/user_education",
     "//chrome/browser/ui/ash/wm",
-    "//chrome/browser/ui/immersive:immersive_mode_controller",
-    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/chromeos/tab_scrubber",
     "//chrome/browser/ui/views",
-    "//chrome/browser/ui/views/frame",
-    "//chrome/browser/ui/views/frame:browser_view_header",
-    "//chrome/browser/ui/views/tabs:tab",
-    "//chrome/browser/ui/views/tabs:tab_strip",
-    "//chrome/browser/ui/views/tabs:tab_style_views",
     "//chrome/browser/ui/webui/ash/diagnostics_dialog",
-    "//chrome/browser/ui/window_feature_controller",
     "//chrome/browser/web_applications",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/browser_context_helper",
@@ -79,7 +70,6 @@ static_library("shell_delegate") {
     "//extensions/browser",
     "//ui/aura",
     "//ui/base",
-    "//ui/events:gesture_detection",
     "//url",
   ]
 }
@@ -89,36 +79,19 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "chrome_shell_delegate_browsertest.cc",
-    "tab_scrubber_browsertest.cc",
-  ]
+  sources = [ "chrome_shell_delegate_browsertest.cc" ]
 
   deps = [
     ":shell_delegate",
     "//ash",
-    "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//base/i18n:test_support",
-    "//chrome/browser/ui:browser_commands",
-    "//chrome/browser/ui:browser_tabstrip",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/browser/ui/views/frame:browser_view_header",
-    "//chrome/browser/ui/views/tabs:tab",
-    "//chrome/browser/ui/views/tabs:tab_strip",
     "//chrome/test:test_support_ui",
-    "//components/exo",
-    "//components/exo:test_support",
-    "//content/public/common",
     "//content/test:test_support",
-    "//testing/gmock",
     "//ui/aura",
+    "//ui/base",
     "//ui/base/clipboard",
-    "//ui/events:gesture_detection",
-    "//ui/events:test_support",
-    "//ui/wm",
   ]
 }
 
@@ -129,6 +102,7 @@ source_set("unit_tests") {
 
   deps = [
     ":shell_delegate",
+    "//chrome/browser/ui/chromeos/tab_scrubber",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_ash_test_base",
     "//testing/gtest",
