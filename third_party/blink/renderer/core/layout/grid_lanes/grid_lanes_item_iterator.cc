@@ -95,13 +95,15 @@ GridLanesItemIterator::GridLanesItemIterator(
     const GridLanesDataVector& grid_lanes,
     const BlockBreakToken* break_token,
     TraversalOrder traversal_order,
+    IterationMode iteration_mode,
     bool is_column)
     : grid_lanes_(grid_lanes),
       break_token_(break_token),
       is_column_(is_column),
       traversal_order_(traversal_order),
+      iteration_mode_(iteration_mode),
       next_item_index_path_for_lane_(grid_lanes.size()) {
-  CHECK(traversal_order_ != kPreorder || is_column_);
+  DCHECK(!break_token || iteration_mode_ == kFragmentation);
 
   // Find the first lane with items to process.
   while (grid_lane_idx_ < grid_lanes_.size()) {
@@ -218,7 +220,8 @@ GridLanesItemData* GridLanesItemIterator::FindNextItem(
     const BlockBreakToken* item_break_token) {
   while (grid_lane_idx_ < grid_lanes_.size()) {
     GridLaneData* lane_data = grid_lanes_[grid_lane_idx_];
-    if (lane_data && (lane_data->has_unfinished_items || item_break_token)) {
+    if (lane_data && (iteration_mode_ == kStackingAxisReadingFlow ||
+                      lane_data->has_unfinished_items || item_break_token)) {
       while (!grid_lanes_item_index_path_.empty()) {
         const ItemIndexPath item_index_path = grid_lanes_item_index_path_;
         GridLanesItemData* item_data =
@@ -287,6 +290,9 @@ bool GridLanesItemIterator::StartPendingColumnSpanner(
     const ItemIndexPath& item_index_path) {
   CHECK(is_column_);
   CHECK(item_data.is_item_start);
+  if (iteration_mode_ != kFragmentation) {
+    return false;
+  }
 
   const GridSpan& lane_span = item_data.item->Span(kForColumns);
   if (lane_span.SpanSize() == 1) {
@@ -306,6 +312,10 @@ bool GridLanesItemIterator::StartPendingColumnSpanner(
 GridLanesItemData*
 GridLanesItemIterator::MaybeProcessNextPendingColumnSpanner() {
   CHECK(is_column_);
+  if (iteration_mode_ != kFragmentation) {
+    return nullptr;
+  }
+
   if (pending_column_spanners_.empty() ||
       pending_column_spanners_.back().end_lane_idx != grid_lane_idx_) {
     return nullptr;
@@ -336,6 +346,10 @@ GridLanesItemIterator::MaybeProcessNextPendingColumnSpanner() {
 bool GridLanesItemIterator::IsPendingColumnSpanner(
     const GridLanesItemData& item_data) const {
   CHECK(is_column_);
+  if (iteration_mode_ != kFragmentation) {
+    return false;
+  }
+
   if (pending_column_spanners_.empty() || item_data.is_item_start) {
     return false;
   }
@@ -352,6 +366,7 @@ bool GridLanesItemIterator::IsPendingColumnSpanner(
 
 void GridLanesItemIterator::MaybeAdvanceLanesPastColumnSpanner(
     const GridLanesItemData& item_data) {
+  DCHECK_EQ(iteration_mode_, kFragmentation);
   CHECK(is_column_);
   const GridSpan& lane_span = item_data.item->Span(kForColumns);
   if (lane_span.SpanSize() == 1) {

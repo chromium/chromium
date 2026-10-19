@@ -29,6 +29,10 @@ class BlockBreakToken;
 // In all cases, though child break tokens are processed first, in break token
 // order. The iterator then resumes unstarted items from those positions onward.
 //
+// For reading-flow, `kStackingAxisReadingFlow` requires no break token and
+// processes each lane fully before moving to the next, without deferring
+// spanners.
+//
 // This class does not handle modifications to its arguments after it has been
 // constructed.
 class CORE_EXPORT GridLanesItemIterator {
@@ -40,9 +44,15 @@ class CORE_EXPORT GridLanesItemIterator {
     kPreorder,
   };
 
+  enum IterationMode {
+    kFragmentation,
+    kStackingAxisReadingFlow,
+  };
+
   GridLanesItemIterator(const GridLanesDataVector& grid_lanes,
                         const BlockBreakToken* break_token,
                         TraversalOrder traversal_order,
+                        IterationMode iteration_mode,
                         bool is_column);
 
   // Returns the next grid lanes item which should be laid out, along with its
@@ -119,6 +129,7 @@ class CORE_EXPORT GridLanesItemIterator {
   const BlockBreakToken* break_token_;
   bool is_column_ = false;
   TraversalOrder traversal_order_ = kPostorder;
+  IterationMode iteration_mode_ = kFragmentation;
 
   // An index into `break_token_`'s `ChildBreakTokens()` vector. Used for
   // keeping track of the next child break token to inspect.

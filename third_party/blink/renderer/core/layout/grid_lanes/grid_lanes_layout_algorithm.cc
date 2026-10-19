@@ -314,8 +314,16 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
           ResolveFitToleranceForGridLanes(style, grid_lanes_available_size_),
           grid_items->HasStackingAxisAlignment());
 
+      // TODO(celestepan): We will eventually change the keywords used, but
+      // using `grid-columns` and `grid-rows` for now to unblock implementation.
+      const bool is_stacking_axis_reading_flow =
+          style.ReadingFlow() == (is_for_columns ? EReadingFlow::kGridColumns
+                                                 : EReadingFlow::kGridRows);
       GridLanesDataVector* out_grid_lanes =
-          (has_block_fragmentation || gap_accumulator) ? &grid_lanes : nullptr;
+          (has_block_fragmentation || gap_accumulator ||
+           is_stacking_axis_reading_flow)
+              ? &grid_lanes
+              : nullptr;
       GridLanesGapGeometryState* out_gap_geometry_state = nullptr;
       if (gap_accumulator) {
         out_gap_geometry_state = &gap_geometry_state.emplace();
@@ -334,6 +342,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
           grid_layout_subtree, *layout_data, running_positions,
           &total_intrinsic_block_size, SizingConstraint::kLayout,
           out_grid_lanes, out_gap_geometry_state);
+
+      SetReadingFlowNodes(*grid_items, grid_lanes);
     }
 
     // TODO(layout-dev): This isn't great but matches legacy. Ideally this
@@ -476,6 +486,51 @@ const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
 
   container_builder_.HandleOofsAndSpecialDescendants();
   return container_builder_.ToBoxFragment();
+}
+
+void GridLanesLayoutAlgorithm::SetReadingFlowNodes(
+    const GridItems& grid_items,
+    const GridLanesDataVector& grid_lanes) {
+  const auto& style = Style();
+  const EReadingFlow reading_flow = style.ReadingFlow();
+  const bool is_for_columns =
+      style.GridLanesTrackSizingDirection() == kForColumns;
+  // TODO(celestepan): Handle reading-flows across the tracks.
+  // TODO(celestepan): We will eventually change the keywords used for
+  // reading-flow.
+  if (reading_flow != EReadingFlow::kGridOrder &&
+      reading_flow != (is_for_columns ? EReadingFlow::kGridColumns
+                                      : EReadingFlow::kGridRows)) {
+    return;
+  }
+
+  HeapVector<Member<blink::Node>> reading_flow_nodes;
+  reading_flow_nodes.ReserveInitialCapacity(grid_items.Size());
+  auto add_item_to_reading_flow_nodes = [&](const GridItemData& item) {
+    if (blink::Node* node = item.node.GetDOMNode()) {
+      reading_flow_nodes.push_back(node);
+    }
+  };
+
+  if (reading_flow == EReadingFlow::kGridOrder) {
+    for (const auto& item : grid_items) {
+      add_item_to_reading_flow_nodes(item);
+    }
+  } else {
+    // TODO(celestepan): Support reading-flow that follows flow order rather
+    // than visual order.
+    GridLanesItemIterator item_iterator(
+        grid_lanes, /*break_token=*/nullptr,
+        style.IsReverseGridLanesFillDirection()
+            ? GridLanesItemIterator::kPreorder
+            : GridLanesItemIterator::kPostorder,
+        GridLanesItemIterator::kStackingAxisReadingFlow, is_for_columns);
+    for (auto entry = item_iterator.NextItem(); entry.grid_lanes_item;
+         entry = item_iterator.NextItem()) {
+      add_item_to_reading_flow_nodes(*entry.grid_lanes_item->item);
+    }
+  }
+  container_builder_.SetReadingFlowNodes(std::move(reading_flow_nodes));
 }
 
 namespace {
@@ -738,7 +793,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     GridLanesGapGeometryState* out_gap_geometry_state) {
   CHECK(out_total_intrinsic_block_size);
   // Fragmentation collection uses the graph as a break-token snapshot,
-  // but without fragmentation it is still used to build gap decorations.
+  // but without fragmentation it is still used to build gap decorations and
+  // support reading-flow.
   const bool is_fragmentation_collection =
       out_grid_lanes && GetConstraintSpace().HasBlockFragmentation();
   if (out_gap_geometry_state) {
@@ -906,14 +962,20 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   ApplyStackingAxisAlignment(running_positions, effective_stacking_axis_size,
                              stacking_axis_gap, out_grid_lanes);
 
+  const bool is_stacking_axis_reading_flow =
+      style.ReadingFlow() ==
+      (is_for_columns ? EReadingFlow::kGridColumns : EReadingFlow::kGridRows);
+
   // Gap-decoration data requires processing items in stacking order to ensure
   // proper decoration assignment, and column fragmentation requires processing
   // items in the correct order in the block (stacking) axis. If the stacking
   // order is reversed with 'fill-reverse', reverse the stored item order in
-  // `out_grid_lanes`, as well.
-  if (is_fill_reverse && (out_gap_geometry_state ||
-                          (is_fragmentation_collection && is_for_columns))) {
-    CHECK(out_grid_lanes);
+  // `out_grid_lanes`, as well. Stacking-axis reading-flow also needs reversed
+  // lane data for preorder traversal.
+  if (out_grid_lanes && is_fill_reverse &&
+      (out_gap_geometry_state ||
+       (is_fragmentation_collection && is_for_columns) ||
+       is_stacking_axis_reading_flow)) {
     ReverseGridLanesItemOrder(*out_grid_lanes);
   }
 }
@@ -938,7 +1000,7 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
       is_columns && Style().IsReverseGridLanesFillDirection()
           ? GridLanesItemIterator::kPreorder
           : GridLanesItemIterator::kPostorder,
-      is_columns);
+      GridLanesItemIterator::kFragmentation, is_columns);
   Vector<bool> has_inflow_child_break_inside_lane(grid_lanes.size(), false);
 
   // TODO(almaher): Properly handle break rules for columns and rows.
@@ -1435,7 +1497,8 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       out_grid_lanes && GetConstraintSpace().HasBlockFragmentation();
 
   // The lane graph is only built during actual-layout final placement, since we
-  // need each item's final position for gutter positions and for fragmentation.
+  // need each item's final position for reading-flow, gutter positions and for
+  // fragmentation.
   const bool builds_graph = out_grid_lanes && is_for_layout &&
                             placement_phase == PlacementPhase::kFinalPlacement;
 
@@ -1836,9 +1899,9 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
                         style.GetFontBaseline(), extra_margin, layout_data,
                         grid_lanes_item);
     } else {
-      // Build the lane graph for gap decorations or fragmentation collection.
-      // When used for fragmentation, we skip adding child results to the
-      // builder.
+      // Build the lane graph for reading-flow, gap decorations or fragmentation
+      // collection. When used for fragmentation, we skip adding child results
+      // to the builder.
       if (builds_graph) {
         LogicalOffset placement_offset = containing_grid_area.offset;
         if (is_fragmentation_collection && is_deferred_fill_reverse) {

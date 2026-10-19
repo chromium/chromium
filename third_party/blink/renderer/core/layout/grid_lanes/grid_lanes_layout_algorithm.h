@@ -167,8 +167,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // block size of the complete, unfragmented container. If provided,
   // `out_grid_lanes` is populated with the final item placement data for each
   // track, used as a break-token snapshot for fragmentation and as the source
-  // for gap decoration placement. `out_gap_geometry_state` receives the
-  // placement-derived inputs needed to finalize gap geometry.
+  // for gap decoration placement and reading-flow ordering.
+  // `out_gap_geometry_state` receives the placement-derived inputs needed to
+  // finalize gap geometry.
   void PlaceGridLanesItems(
       GridItems& grid_items,
       const GridSizingSubtree* sizing_subtree,
@@ -183,6 +184,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridLanesDataVector& grid_lanes,
       const GridLayoutSubtree& layout_subtree,
       LayoutUnit total_intrinsic_block_size);
+
+  void SetReadingFlowNodes(const GridItems& grid_items,
+                           const GridLanesDataVector& grid_lanes);
 
   // Iterates through and lays out each item in `grid_lanes_items`. If
   // `placement_phase` is kCalculateBaselines, this method measures items and
