@@ -4219,6 +4219,12 @@ inline constexpr char kPermissionsAIv4Description[] =
     "of the user granting the permission is predicted to be low. Requires "
     "`Make Searches and Browsing Better` to be enabled.";
 
+inline constexpr char kPersistentWidgetAPIName[] = "Persistent Widget API";
+inline constexpr char kPersistentWidgetAPIDescription[] =
+    "Enables the <persistentwidget> element, which is like an <iframe> but "
+    "can stay alive without reloading when its opener/embedder navigates "
+    "from one same-origin document to another.";
+
 inline constexpr char kReportNotificationContentDetectionDataName[] =
     "Option to report notifications to Google";
 inline constexpr char kReportNotificationContentDetectionDataDescription[] =

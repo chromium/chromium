@@ -14469,6 +14469,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kMixedFixedIntervalMatcher)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"persistent-widget-api", flag_descriptions::kPersistentWidgetAPIName,
+     flag_descriptions::kPersistentWidgetAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kPersistentWidgetAPI)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

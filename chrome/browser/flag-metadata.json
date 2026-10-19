@@ -8319,6 +8319,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "persistent-widget-api",
+    "owners": [ "jarhar@chromium.org", "dom@chromium.org", "khushalsagar@chromium.org" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "picture-in-picture-moves-toolbar-android",
     "owners": [ "philyan@chromium.org", "media-dev@chromium.org" ],
     "expiry_milestone": 175

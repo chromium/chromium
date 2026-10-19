@@ -9072,6 +9072,7 @@ from previous Chrome versions.
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:enabled"/>
   <int value="-1780174878" label="SplitTabStrip:disabled"/>
   <int value="-1779753607" label="VizDisplayCompositor:disabled"/>
+  <int value="-1779707308" label="PersistentWidgetAPI:enabled"/>
   <int value="-1779180655"
       label="CCTOpenInBrowserButtonIfAllowedByEmbedder:enabled"/>
   <int value="-1778993296" label="ContextualSearchMlTapSuppression:disabled"/>
@@ -19895,6 +19896,7 @@ from previous Chrome versions.
   <int value="1462042881" label="ArcRoundedWindowCompat:enabled"/>
   <int value="1462978380" label="EnableBuiltInAIAPI:disabled"/>
   <int value="1463230871" label="ArcEnableUsap:enabled"/>
+  <int value="1463231076" label="PersistentWidgetAPI:disabled"/>
   <int value="1463918520" label="Prerender2ReuseHost:enabled"/>
   <int value="1464028544" label="WinUseHybridSpellChecker:disabled"/>
   <int value="1464053185" label="EnableInputInDiagnosticsApp:disabled"/>
