@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "device/vr/openxr/linux/openxr_vulkan_context.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
@@ -54,6 +55,7 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingVulkan
   void OnSwapchainImageReady(OpenXrCompositionLayer& layer,
                              gpu::SharedImageInterface* sii) override;
   bool SupportsLayers() const override;
+  bool SupportsLayerType(OpenXrCompositionLayer::Type type) const override;
   void ResizeSharedBuffer(OpenXrCompositionLayer& layer,
                           OpenXrSwapchainInfo& swap_chain_info,
                           gpu::SharedImageInterface* sii) override;
@@ -92,19 +94,17 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingVulkan
       const gpu::SharedImageInfo& si_info,
       const OpenXrVulkanContext::IntermediateImage& image);
 
-  // Destroys all intermediate images and frees their Vulkan memory.
-  void DestroyIntermediateImages();
-
   // Owns the Vulkan instance/device/queue plus the image create/import/copy
   // logic; created in Initialize(). All raw Vulkan calls happen inside it.
   std::unique_ptr<OpenXrVulkanContext> vulkan_;
 
-  // Intermediate images owned by Chromium for SharedImage export.
-  std::vector<OpenXrVulkanContext::IntermediateImage> intermediate_images_;
-
   // The format negotiated by GetSwapchainFormat(), cached so that
   // CreateSharedImages() creates matching intermediate images.
   mutable VkFormat swapchain_format_ = VK_FORMAT_UNDEFINED;
+
+  // Layer types this binding cannot create, e.g. as the runtime lacks their
+  // extension.
+  base::flat_set<OpenXrCompositionLayer::Type> unsupported_layer_types_;
 };
 
 }  // namespace device

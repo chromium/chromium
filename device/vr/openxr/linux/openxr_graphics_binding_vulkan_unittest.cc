@@ -189,10 +189,10 @@ TEST_F(OpenXrGraphicsBindingVulkanTest, GetSwapchainFormatBeforeSession) {
   EXPECT_EQ(format, 0);
 }
 
-TEST_F(OpenXrGraphicsBindingVulkanTest, SupportsLayersReturnsFalse) {
+TEST_F(OpenXrGraphicsBindingVulkanTest, SupportsLayers) {
   ASSERT_TRUE(CreateXrInstanceAndSystem());
   ASSERT_TRUE(InitializeBinding());
-  EXPECT_FALSE(binding_->SupportsLayers());
+  EXPECT_TRUE(binding_->SupportsLayers());
 }
 
 TEST_F(OpenXrGraphicsBindingVulkanTest, GetMaxTextureSize) {

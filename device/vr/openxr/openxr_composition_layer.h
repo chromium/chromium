@@ -38,6 +38,7 @@ class OpenXrCompositionLayer {
       kInvalid,
       kOpenGLES,
       kD3D,
+      kVulkan,
     };
 
     virtual ~GraphicsBindingData() = default;

@@ -142,6 +142,11 @@ class OpenXrGraphicsBinding {
   // Return if the graphics binding supports multiple XR layers.
   virtual bool SupportsLayers() const = 0;
 
+#if BUILDFLAG(IS_LINUX)
+  // Return if the graphics binding can create layers of the given type.
+  virtual bool SupportsLayerType(OpenXrCompositionLayer::Type type) const = 0;
+#endif
+
   // Resizes the shared buffer for the given swapchain info if the transfer size
   // has changed.
   virtual void ResizeSharedBuffer(OpenXrCompositionLayer& layer,

@@ -723,7 +723,8 @@ bool OpenXrVulkanContext::WaitOnSyncFd(int fence_fd) {
 
 bool OpenXrVulkanContext::CopyToSwapchainImage(IntermediateImage& src_image,
                                                VkImage dst,
-                                               const gfx::Size& size) {
+                                               const gfx::Size& size,
+                                               bool flip_y) {
   VkImage src = src_image.image;
   vkResetCommandBuffer(vk_command_buffer_, 0);
 
@@ -766,13 +767,26 @@ bool OpenXrVulkanContext::CopyToSwapchainImage(IntermediateImage& src_image,
                        nullptr, 2, pre_copy_barriers);
 
   // Copy the intermediate image to the swapchain image.
+  // vkCmdCopyImage cannot mirror, so a flipped copy moves one row per region.
   VkImageCopy region{};
   region.srcSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
   region.dstSubresource = {VK_IMAGE_ASPECT_COLOR_BIT, 0, 0, 1};
   region.extent = {static_cast<uint32_t>(size.width()),
-                   static_cast<uint32_t>(size.height()), 1};
+                   static_cast<uint32_t>(flip_y ? 1 : size.height()), 1};
+  std::vector<VkImageCopy> regions;
+  if (flip_y) {
+    regions.reserve(size.height());
+    for (int row = 0; row < size.height(); ++row) {
+      region.srcOffset.y = row;
+      region.dstOffset.y = size.height() - 1 - row;
+      regions.push_back(region);
+    }
+  } else {
+    regions.push_back(region);
+  }
   vkCmdCopyImage(vk_command_buffer_, src, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
-                 dst, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+                 dst, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, regions.size(),
+                 regions.data());
 
   {
     // Transition dst back: TRANSFER_DST_OPTIMAL -> COLOR_ATTACHMENT_OPTIMAL.

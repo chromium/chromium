@@ -100,9 +100,11 @@ class DEVICE_VR_EXPORT OpenXrVulkanContext {
   // Records and submits the src -> dst blit and waits for it. dst must be an
   // OpenXR swapchain image: it is left in COLOR_ATTACHMENT_OPTIMAL as
   // xrReleaseSwapchainImage expects; src returns to GENERAL for the next frame.
+  // With `flip_y`, the rows are copied in reverse order.
   bool CopyToSwapchainImage(IntermediateImage& src,
                             VkImage dst,
-                            const gfx::Size& size);
+                            const gfx::Size& size,
+                            bool flip_y);
 
  private:
   // Cleans up the command pool and command buffer.

@@ -561,6 +561,13 @@ bool OpenXrGraphicsBinding::CreateCompositionLayer(
   if (!SupportsLayers()) {
     return false;
   }
+#if BUILDFLAG(IS_LINUX)
+  // The page's layer of an unsupported type never becomes active.
+  if (!SupportsLayerType(OpenXrCompositionLayer::GetTypeFromMojomData(
+          *layer_data->mutable_data->layer_data))) {
+    return false;
+  }
+#endif
 
   auto layer_id = layer_data->read_only_data->layer_id;
   CHECK(!layers_.contains(layer_id));

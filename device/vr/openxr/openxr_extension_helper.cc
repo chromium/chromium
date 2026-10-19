@@ -227,10 +227,16 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
       return IsExtensionSupported(
           XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
     case device::mojom::XRSessionFeature::LAYERS:
+#if BUILDFLAG(IS_LINUX)
+      // Few Linux runtimes support all of these, so the graphics binding
+      // refuses the layer types it cannot create instead.
+      return true;
+#else
       return std::ranges::all_of(GetRequiredExtensionsForLayers(),
                                  [this](const char* extension) {
                                    return IsExtensionSupported(extension);
                                  });
+#endif
     default:
       // By default we assume a feature doesn't need to be supported by an
       // extension unless customized above.
