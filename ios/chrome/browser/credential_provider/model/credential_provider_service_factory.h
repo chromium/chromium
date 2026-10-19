@@ -5,25 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_MODEL_CREDENTIAL_PROVIDER_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class CredentialProviderService;
-class ProfileIOS;
+#import "ios/chrome/browser/credential_provider/model/credential_provider_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all CredentialProviderServices and associates them with
 // profiles.
-class CredentialProviderServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class CredentialProviderServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          CredentialProviderServiceFactory,
+          CredentialProviderService> {
  public:
-  static CredentialProviderService* GetForProfile(ProfileIOS* profile);
-  static CredentialProviderServiceFactory* GetInstance();
+  explicit CredentialProviderServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<CredentialProviderServiceFactory>;
-
-  CredentialProviderServiceFactory();
-  ~CredentialProviderServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

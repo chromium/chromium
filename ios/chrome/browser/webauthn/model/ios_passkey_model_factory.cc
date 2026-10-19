@@ -4,7 +4,6 @@
 
 #include "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 
-#include "base/no_destructor.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/passkey_affiliation_source_adapter.h"
 #include "components/sync/base/features.h"
@@ -14,27 +13,14 @@
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 
-// static
-webauthn::PasskeyModel* IOSPasskeyModelFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<webauthn::PasskeyModel>(
-      profile, /*create=*/true);
-}
-
-// static
-IOSPasskeyModelFactory* IOSPasskeyModelFactory::GetInstance() {
-  static base::NoDestructor<IOSPasskeyModelFactory> instance;
-  return instance.get();
-}
-
-IOSPasskeyModelFactory::IOSPasskeyModelFactory()
-    : ProfileKeyedServiceFactoryIOS("PasskeyModel",
-                                    ProfileSelection::kRedirectedInIncognito) {
+IOSPasskeyModelFactory::IOSPasskeyModelFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "PasskeyModel",
+          ProfileSelection::kRedirectedInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
 }
-
-IOSPasskeyModelFactory::~IOSPasskeyModelFactory() {}
 
 std::unique_ptr<KeyedService> IOSPasskeyModelFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

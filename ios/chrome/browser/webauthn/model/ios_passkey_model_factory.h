@@ -7,27 +7,17 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "components/webauthn/core/browser/passkey_model.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-namespace webauthn {
-class PasskeyModel;
-}  // namespace webauthn
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that associates PasskeyModel to Profiles.
-class IOSPasskeyModelFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSPasskeyModelFactory
+    : public TypedProfileKeyedServiceFactoryIOS<IOSPasskeyModelFactory,
+                                                webauthn::PasskeyModel> {
  public:
-  static webauthn::PasskeyModel* GetForProfile(ProfileIOS* profile);
-
-  static IOSPasskeyModelFactory* GetInstance();
+  explicit IOSPasskeyModelFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSPasskeyModelFactory>;
-
-  IOSPasskeyModelFactory();
-  ~IOSPasskeyModelFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

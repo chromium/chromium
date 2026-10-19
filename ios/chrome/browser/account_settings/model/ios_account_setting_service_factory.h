@@ -5,30 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_ACCOUNT_SETTINGS_MODEL_IOS_ACCOUNT_SETTING_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_ACCOUNT_SETTINGS_MODEL_IOS_ACCOUNT_SETTING_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/account_settings/account_setting_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace account_settings {
-class AccountSettingService;
-}
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all AccountSettingServices and associates them with
 // ProfileIOS.
-class IOSAccountSettingServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class IOSAccountSettingServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          IOSAccountSettingServiceFactory,
+          account_settings::AccountSettingService> {
  public:
-  static IOSAccountSettingServiceFactory* GetInstance();
-  static account_settings::AccountSettingService* GetForProfile(
-      ProfileIOS* profile);
+  explicit IOSAccountSettingServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<IOSAccountSettingServiceFactory>;
-
-  IOSAccountSettingServiceFactory();
-  ~IOSAccountSettingServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

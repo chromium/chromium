@@ -12,28 +12,13 @@
 #import "components/sync/model/data_type_store_service.h"
 #import "ios/chrome/browser/sync/model/data_type_store_service_factory.h"
 
-// static
-IOSAccountSettingServiceFactory*
-IOSAccountSettingServiceFactory::GetInstance() {
-  static base::NoDestructor<IOSAccountSettingServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-account_settings::AccountSettingService*
-IOSAccountSettingServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<account_settings::AccountSettingService>(
-          profile, /*create=*/true);
-}
-
-IOSAccountSettingServiceFactory::IOSAccountSettingServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AccountSettingService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+IOSAccountSettingServiceFactory::IOSAccountSettingServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AccountSettingService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
-
-IOSAccountSettingServiceFactory::~IOSAccountSettingServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSAccountSettingServiceFactory::BuildServiceInstanceFor(
