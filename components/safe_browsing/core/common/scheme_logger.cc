@@ -4,17 +4,17 @@
 
 #include "components/safe_browsing/core/common/scheme_logger.h"
 
-#include <map>
+#include <string_view>
+
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
+#include "url/url_constants.h"
 
-namespace {
+namespace safe_browsing::scheme_logger {
 
-using UrlScheme = safe_browsing::scheme_logger::UrlScheme;
-
-const std::map<std::string, UrlScheme>& GetSchemeOptions() {
-  static const base::NoDestructor<std::map<std::string, UrlScheme>>
-      scheme_options({
+void LogScheme(const GURL& url, const std::string& enum_histogram_name) {
+  static constexpr auto kSchemeOptions =
+      base::MakeFixedFlatMap<std::string_view, UrlScheme>({
           // From url/url_constants.cc
           {url::kAboutScheme, UrlScheme::kAbout},
           {url::kBlobScheme, UrlScheme::kBlob},
@@ -55,20 +55,10 @@ const std::map<std::string, UrlScheme>& GetSchemeOptions() {
           // From extensions/common/constants.cc
           {"chrome-extension", UrlScheme::kChromeExtension},
       });
-  return *scheme_options;
-}
 
-}  // namespace
-
-namespace safe_browsing::scheme_logger {
-
-void LogScheme(const GURL& url, const std::string& enum_histogram_name) {
   UrlScheme scheme = UrlScheme::kUnknown;
-  for (const auto& scheme_option : GetSchemeOptions()) {
-    if (url.SchemeIs(scheme_option.first)) {
-      scheme = scheme_option.second;
-      break;
-    }
+  if (auto it = kSchemeOptions.find(url.scheme()); it != kSchemeOptions.end()) {
+    scheme = it->second;
   }
   base::UmaHistogramEnumeration(enum_histogram_name, scheme);
 }
