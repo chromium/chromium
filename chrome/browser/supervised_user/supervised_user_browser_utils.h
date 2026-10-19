@@ -46,12 +46,6 @@ ProfileSelections BuildProfileSelectionsForRegularAndGuest();
 // Returns given name of the primary account associated with the profile.
 std::string GetAccountGivenName(Profile& profile);
 
-// Asserts that `is_child` matches the child status of the primary user.
-// Terminates user session in case of status mismatch in order to prevent
-// supervision incidents. Relevant on Chrome OS platform that has the concept
-// of the user.
-void AssertChildStatusOfTheUser(Profile* profile, bool is_child);
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
 // Returns the html content of the reauthentication interstitial for blocked

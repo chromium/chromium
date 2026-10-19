@@ -19,6 +19,40 @@
 #include "components/supervised_user/core/browser/family_link_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_type.h"
+#endif
+
+namespace {
+// Asserts that `is_child` matches the child status of the primary user.
+// Terminates user session in case of status mismatch in order to prevent
+// supervision incidents. Relevant on Chrome OS platform that has the concept
+// of the user.
+void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (profile->AsTestingProfile() != nullptr) {
+    // Bail out during unit tests using TestingProfile. They have hard time
+    // simulating ChromeOS user types.
+    // TODO(crbug.com/561937726): Consider creating a drop-in test utility that
+    // would seamlessly assert expected ChromeOS user type, or better: preset
+    // such user type alongside with the TestingProfile.
+    return;
+  }
+  user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  if (user && is_child != (user->GetType() == user_manager::UserType::kChild)) {
+    LOG(FATAL) << "User child flag has changed: " << is_child;
+  }
+  if (!user && ash::ProfileHelper::IsUserProfile(profile)) {
+    LOG(FATAL) << "User instance not found while setting child account flag.";
+  }
+#endif
+}
+
+}  // namespace
+
 // static
 supervised_user::ChildAccountService* ChildAccountServiceFactory::GetForProfile(
     Profile* profile) {
@@ -62,7 +96,7 @@ ChildAccountServiceFactory::BuildServiceInstanceForBrowserContext(
       *profile->GetPrefs(), identity_manager,
       CHECK_DEREF(supervised_user::FamilyLinkSettingsServiceFactory::GetForKey(
           profile->GetProfileKey())),
-      base::BindOnce(&supervised_user::AssertChildStatusOfTheUser, profile));
+      base::BindOnce(&AssertChildStatusOfTheUser, profile));
 }
 
 bool ChildAccountServiceFactory::ServiceIsCreatedWithBrowserContext() const {

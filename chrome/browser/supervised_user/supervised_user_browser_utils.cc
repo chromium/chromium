@@ -34,18 +34,16 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_type.h"
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page_blocked_sites.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+        // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/supervised_user/supervised_user_verification_page_youtube.h"
-#endif
-#endif
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 namespace supervised_user {
 
@@ -143,27 +141,6 @@ std::string GetAccountGivenName(Profile& profile) {
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(primary_account_id);
   return std::string(account_info.GetGivenName().value_or(""));
-}
-
-void AssertChildStatusOfTheUser(Profile* profile, bool is_child) {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (profile->AsTestingProfile() != nullptr) {
-    // Bail out during unit tests using TestingProfile. They have hard time
-    // simulating ChromeOS user types.
-    // TODO(crbug.com/561937726: Consider creating a drop-in test utility that
-    // would seamlessly assert expected ChromeOS user type, or better: preset
-    // such user type alongside with the TestingProfile.
-    return;
-  }
-  user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  if (user && is_child != (user->GetType() == user_manager::UserType::kChild)) {
-    LOG(FATAL) << "User child flag has changed: " << is_child;
-  }
-  if (!user && ash::ProfileHelper::IsUserProfile(profile)) {
-    LOG(FATAL) << "User instance not found while setting child account flag.";
-  }
-#endif
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
