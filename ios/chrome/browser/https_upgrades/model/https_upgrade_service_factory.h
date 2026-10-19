@@ -5,25 +5,18 @@
 #ifndef IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HTTPS_UPGRADES_MODEL_HTTPS_UPGRADE_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 #include "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
-
-class ProfileIOS;
 
 // Singleton that owns all HttpsUpgradeService and associates them with
 // ProfileIOS.
-class HttpsUpgradeServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class HttpsUpgradeServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<HttpsUpgradeServiceFactory,
+                                                HttpsUpgradeService> {
  public:
-  static HttpsUpgradeService* GetForProfile(ProfileIOS* profile);
-  static HttpsUpgradeServiceFactory* GetInstance();
+  explicit HttpsUpgradeServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<HttpsUpgradeServiceFactory>;
-
-  HttpsUpgradeServiceFactory();
-  ~HttpsUpgradeServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

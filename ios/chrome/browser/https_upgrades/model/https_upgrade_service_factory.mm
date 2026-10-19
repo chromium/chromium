@@ -8,26 +8,13 @@
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-HttpsUpgradeService* HttpsUpgradeServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<HttpsUpgradeService>(
-      profile, /*create=*/true);
-}
-
-// static
-HttpsUpgradeServiceFactory* HttpsUpgradeServiceFactory::GetInstance() {
-  static base::NoDestructor<HttpsUpgradeServiceFactory> instance;
-  return instance.get();
-}
-
-HttpsUpgradeServiceFactory::HttpsUpgradeServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("HttpsUpgradeService",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
+HttpsUpgradeServiceFactory::HttpsUpgradeServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "HttpsUpgradeService",
+          ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(ios::HostContentSettingsMapFactory::GetInstance());
 }
-
-HttpsUpgradeServiceFactory::~HttpsUpgradeServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 HttpsUpgradeServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
