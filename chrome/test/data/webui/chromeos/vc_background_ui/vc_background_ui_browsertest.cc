@@ -18,10 +18,8 @@ namespace ash::vc_background_ui {
 class VcBackgroundUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   VcBackgroundUIBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVcBackgroundReplace,
-         features::kFeatureManagementVideoConference},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
     set_test_loader_host(std::string(kChromeUIVcBackgroundHost));
   }
 

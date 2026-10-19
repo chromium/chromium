@@ -52,10 +52,8 @@ std::string CreateJpgBytes() {
 class VcBackgroundUISeaPenProviderImplTest : public InProcessBrowserTest {
  public:
   VcBackgroundUISeaPenProviderImplTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kVcBackgroundReplace,
-         features::kFeatureManagementVideoConference},
-        {});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFeatureManagementVideoConference);
   }
 
   VcBackgroundUISeaPenProviderImplTest(

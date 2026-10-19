@@ -284,19 +284,6 @@ TEST_F(CameraEffectsControllerTest, IsEffectControlAvailable) {
     EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
         cros::mojom::CameraEffect::kBackgroundReplace));
   }
-
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {features::kFeatureManagementVideoConference},
-        {features::kVcBackgroundReplace});
-    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
-        cros::mojom::CameraEffect::kBackgroundBlur));
-    EXPECT_TRUE(camera_effects_controller()->IsEffectControlAvailable(
-        cros::mojom::CameraEffect::kPortraitRelight));
-    EXPECT_FALSE(camera_effects_controller()->IsEffectControlAvailable(
-        cros::mojom::CameraEffect::kBackgroundReplace));
-  }
 }
 
 TEST_F(CameraEffectsControllerTest, BackgroundBlurOnEffectControlActivated) {
@@ -535,9 +522,6 @@ TEST_F(CameraEffectsControllerTest, CameraFramingToggle) {
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kVcBackgroundReplace};
-
   SimulateUserLogin({kTestAccount});
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);
@@ -601,9 +585,6 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileExists) {
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kVcBackgroundReplace};
-
   SimulateUserLogin({kTestAccount});
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);
@@ -632,9 +613,6 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageWithFileDoesNotExist) {
 
 TEST_F(CameraEffectsControllerTest,
        SetBackgroundImageReplacesExistingDestination) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kVcBackgroundReplace};
-
   SimulateUserLogin({kTestAccount});
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);
@@ -676,9 +654,6 @@ TEST_F(CameraEffectsControllerTest,
 }
 
 TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kVcBackgroundReplace};
-
   SimulateUserLogin({kTestAccount});
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);
@@ -792,9 +767,6 @@ TEST_F(CameraEffectsControllerTest, SetBackgroundImageFromContent) {
 }
 
 TEST_F(CameraEffectsControllerTest, GetBackgroundImageFileNames) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kVcBackgroundReplace};
-
   SimulateUserLogin({kTestAccount});
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);
@@ -856,9 +828,6 @@ TEST_F(CameraEffectsControllerTest, GetBackgroundImageFileNames) {
 }
 
 TEST_F(CameraEffectsControllerTest, GetBackgroundImageInfo) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kVcBackgroundReplace};
-
   SimulateUserLogin({kTestAccount});
   camera_effects_controller()->set_camera_background_img_dir_for_testing(
       camera_background_img_dir_);

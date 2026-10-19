@@ -78,7 +78,7 @@ gfx::Rect VcBackgroundUISystemAppDelegate::GetDefaultBounds(
 }
 
 bool VcBackgroundUISystemAppDelegate::IsAppEnabled() const {
-  return ::ash::features::IsVcBackgroundReplaceEnabled() &&
+  return ::ash::features::IsVideoConferenceEnabled() &&
          personalization_app::IsAllowedToInstallSeaPen(profile());
 }
 

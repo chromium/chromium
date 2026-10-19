@@ -136,7 +136,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
             ash::personalization_app::IsEligibleForSeaPen(profile));
     source->AddBoolean(
         "isVcBackgroundReplaceAllowed",
-        ash::features::IsVcBackgroundReplaceEnabled() &&
+        ash::features::IsVideoConferenceEnabled() &&
             ash::personalization_app::IsEligibleForSeaPen(profile));
     source->AddBoolean(
         "isCrosSwitcherEnabled",

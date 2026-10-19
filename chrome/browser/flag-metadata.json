@@ -10177,11 +10177,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "vc-background-replace",
-    "owners": [ "skyostil@chromium.org", "charleszhao@chromium.org", "jmpollock@chromium.org" ],
-    "expiry_milestone": 126
-  },
-  {
     "name": "vc-dlc-ui",
     "owners": [
       "etuck@google.com",

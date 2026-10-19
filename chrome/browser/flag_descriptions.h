@@ -4935,11 +4935,6 @@ inline constexpr char kNotificationOneTapUnsubscribeOnDesktopDescription[] =
     "Enables an experimental UX  on Desktop that replaces the [Site settings]"
     "button on web push notifications with an [Unsubscribe] button.";
 
-inline constexpr char kVcBackgroundReplaceName[] =
-    "Enable vc background replacement";
-inline constexpr char kVcBackgroundReplaceDescription[] =
-    "Enables background replacement feature for video conferencing on "
-    "Chromebooks. THIS WILL OVERRIDE BACKGROUND BLUR.";
 
 inline constexpr char kVcRelightingInferenceBackendName[] =
     "Select relighting backend for video conferencing";

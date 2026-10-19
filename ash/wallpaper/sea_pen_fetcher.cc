@@ -321,8 +321,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
   explicit SeaPenFetcherImpl(
       std::unique_ptr<manta::SnapperProvider> snapper_provider)
       : snapper_provider_(std::move(snapper_provider)) {
-    CHECK(features::IsSeaPenEnabled() ||
-          features::IsVcBackgroundReplaceEnabled());
+    CHECK(features::IsSeaPenEnabled() || features::IsVideoConferenceEnabled());
   }
 
   SeaPenFetcherImpl(const SeaPenFetcherImpl&) = delete;

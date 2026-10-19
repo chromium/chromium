@@ -1675,10 +1675,6 @@ BASE_FEATURE(kUserActivityPrediction, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeatureManagementVideoConference,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether the vc background replace is enabled.
-BASE_FEATURE(kVcBackgroundReplace,
-             "VCBackgroundReplace",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the birch model provides lost video conference tab
 // suggestions.
@@ -2844,10 +2840,6 @@ bool IsBirchVideoConferenceSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kBirchVideoConferenceSuggestions);
 }
 
-bool IsVcBackgroundReplaceEnabled() {
-  return base::FeatureList::IsEnabled(kVcBackgroundReplace) &&
-         IsVideoConferenceEnabled();
-}
 
 bool IsVcResizeThumbnailEnabled() {
   return base::FeatureList::IsEnabled(kVcResizeThumbnail);

@@ -79,7 +79,7 @@ VcBackgroundUISeaPenProviderImpl::~VcBackgroundUISeaPenProviderImpl() = default;
 void VcBackgroundUISeaPenProviderImpl::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
-  CHECK(::ash::features::IsVcBackgroundReplaceEnabled());
+  CHECK(::ash::features::IsVideoConferenceEnabled());
   ::ash::personalization_app::PersonalizationAppSeaPenProviderBase::
       BindInterface(std::move(receiver));
 }

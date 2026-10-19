@@ -103,7 +103,7 @@ void PersonalizationAppSeaPenProviderBase::BindInterface(
     mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
         receiver) {
   CHECK(::ash::features::IsSeaPenEnabled() ||
-        ::ash::features::IsVcBackgroundReplaceEnabled());
+        ::ash::features::IsVideoConferenceEnabled());
   sea_pen_receiver_.reset();
   sea_pen_receiver_.Bind(std::move(receiver));
 }
@@ -410,8 +410,7 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
 
 void PersonalizationAppSeaPenProviderBase::ShouldShowSeaPenIntroductionDialog(
     ShouldShowSeaPenIntroductionDialogCallback callback) {
-  if (!features::IsSeaPenEnabled() &&
-      !features::IsVcBackgroundReplaceEnabled()) {
+  if (!features::IsSeaPenEnabled() && !features::IsVideoConferenceEnabled()) {
     sea_pen_receiver_.ReportBadMessage(
         "Cannot call `ShouldShowSeaPenIntroductionDialog()` without Sea Pen "
         "feature enabled");
@@ -429,8 +428,7 @@ void PersonalizationAppSeaPenProviderBase::
 void PersonalizationAppSeaPenProviderBase::
     ShouldShowSeaPenFreeformIntroductionDialog(
         ShouldShowSeaPenFreeformIntroductionDialogCallback callback) {
-  if (!features::IsSeaPenEnabled() &&
-      !features::IsVcBackgroundReplaceEnabled() &&
+  if (!features::IsSeaPenEnabled() && !features::IsVideoConferenceEnabled() &&
       !features::IsSeaPenTextInputEnabled()) {
     sea_pen_receiver_.ReportBadMessage(
         "Cannot call `ShouldShowSeaPenFreeformIntroductionDialog()` without "

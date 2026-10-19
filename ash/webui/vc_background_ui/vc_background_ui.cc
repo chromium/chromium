@@ -66,7 +66,7 @@ VcBackgroundUIConfig::VcBackgroundUIConfig(
 bool VcBackgroundUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return SystemWebAppUIConfig::IsWebUIEnabled(browser_context) &&
-         ::ash::features::IsVcBackgroundReplaceEnabled();
+         ::ash::features::IsVideoConferenceEnabled();
 }
 
 VcBackgroundUI::VcBackgroundUI(
@@ -103,7 +103,7 @@ void VcBackgroundUI::BindInterface(
 void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
   const bool common_sea_pen_requirements =
       sea_pen_provider_->IsEligibleForSeaPen() &&
-      ::ash::features::IsVcBackgroundReplaceEnabled();
+      ::ash::features::IsVideoConferenceEnabled();
   source->AddBoolean("isSeaPenEnabled",
                          common_sea_pen_requirements);
   source->AddBoolean("isSeaPenTextInputEnabled",

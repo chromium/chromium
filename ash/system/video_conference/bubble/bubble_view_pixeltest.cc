@@ -71,8 +71,7 @@ class BubbleViewPixelTest
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features{
         features::kFeatureManagementVideoConference};
-    std::vector<base::test::FeatureRef> disabled_features{
-        features::kVcBackgroundReplace};
+    std::vector<base::test::FeatureRef> disabled_features;
     if (IsVcDlcUiEnabled()) {
       enabled_features.push_back(features::kVcDlcUi);
     } else {
@@ -325,9 +324,11 @@ TEST_P(BubbleViewPixelTest, ReturnToApp) {
   LeftClickOn(toggle_bubble_button);
   ASSERT_TRUE(video_conference_tray()->GetBubbleView());
 
+  // Revision numbers bumped because removing `features::kVcBackgroundReplace`
+  // makes background replace enabled by default in the VC bubble.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("video_conference_tray_return_to_app_one_app"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
       GetReturnToAppPanel()));
 
   controller()->AddMediaApp(CreateFakeMediaApp(
@@ -345,7 +346,7 @@ TEST_P(BubbleViewPixelTest, ReturnToApp) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_tray_return_to_app_two_apps_collapsed"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
       return_to_app_panel));
 
   // Click the summary row to expand the panel.
@@ -357,7 +358,7 @@ TEST_P(BubbleViewPixelTest, ReturnToApp) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName(
           "video_conference_tray_return_to_app_two_apps_expanded"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
       return_to_app_panel));
 }
 
@@ -464,9 +465,11 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
   // Add an error, make sure the label shows up.
   ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name1");
 
+  // Revision numbers bumped because removing `features::kVcBackgroundReplace`
+  // makes background replace enabled by default in the VC bubble.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("one-toggle-effects-view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       bubble_view()));
 
   // Add one set-value effect.
@@ -483,7 +486,7 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelSingleError) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("additional-set-value-view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       bubble_view()));
 }
 
@@ -503,9 +506,11 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
   ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name1");
   ModifyDlcDownloadState(/*add_warning=*/true, u"test-feature-name2");
 
+  // Revision numbers bumped because removing `features::kVcBackgroundReplace`
+  // makes background replace enabled by default in the VC bubble.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("one-toggle-effects-view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 5 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 1,
       bubble_view()));
 
   // Add one set-value effect.
@@ -523,7 +528,7 @@ TEST_P(BubbleViewPixelTest, DLCUIInErrorShowsWarningLabelMaxErrors) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("additional-set-value-view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 6 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 1,
       bubble_view()));
 }
 

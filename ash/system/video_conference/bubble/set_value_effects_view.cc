@@ -238,8 +238,7 @@ SetValueEffectSlider::SetValueEffectSlider(
   DCHECK(current_state.has_value());
 
   const int num_states = effect->GetNumStates();
-  const int max_num_states =
-      ::ash::features::IsVcBackgroundReplaceEnabled() ? 4 : 3;
+  const int max_num_states = 4;
   DCHECK_LE(num_states, max_num_states)
       << "UX Requests no more than " << max_num_states
       << " states, otherwise "

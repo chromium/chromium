@@ -151,7 +151,6 @@ class VideoConferenceIntegrationTest
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kOnDeviceSpeechRecognition,
          ash::features::kFeatureManagementVideoConference,
-         ash::features::kVcBackgroundReplace,
          ash::features::kShowLiveCaptionInVideoConferenceTray},
         {});
   }

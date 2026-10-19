@@ -608,7 +608,7 @@ bool CameraEffectsController::IsEligibleForBackgroundReplace() {
 
   AccountId account_id =
       Shell::Get()->session_controller()->GetActiveAccountId();
-  return features::IsVcBackgroundReplaceEnabled() &&
+  return features::IsVideoConferenceEnabled() &&
          std::get<0>(Shell::Get()->session_controller()->IsEligibleForSeaPen(
              account_id));
 }
@@ -1082,11 +1082,10 @@ bool CameraEffectsController::IsEffectControlAvailable(
   switch (effect) {
     case cros::mojom::CameraEffect::kNone:
     case cros::mojom::CameraEffect::kBackgroundBlur:
+    case cros::mojom::CameraEffect::kBackgroundReplace:
       return features::IsVideoConferenceEnabled();
     case cros::mojom::CameraEffect::kPortraitRelight:
       return features::IsVcPortraitRelightEnabled();
-    case cros::mojom::CameraEffect::kBackgroundReplace:
-      return features::IsVcBackgroundReplaceEnabled();
   }
 }
 
