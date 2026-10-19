@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.fragment.app.Fragment;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -16,21 +18,25 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.chrome.browser.settings.SettingsHostFragment;
+import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Instrumentation tests for the Notification Platform Bridge.
@@ -41,10 +47,6 @@ import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({
-    ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
-    ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
-})
 public class NotificationPlatformBridgeIntentTest {
     /**
      * Name of the Intent extra holding the notification id. This is set by the framework when a
@@ -74,20 +76,8 @@ public class NotificationPlatformBridgeIntentTest {
                         .setClassName(context, ChromeLauncherActivity.class.getName())
                         .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        SettingsActivity activity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SettingsActivity.class,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                context.startActivity(intent);
-                            }
-                        });
-        Assert.assertNotNull("Could not find the Settings activity", activity);
-
         SingleCategorySettings fragment =
-                ActivityTestUtils.waitForFragmentToAttach(activity, SingleCategorySettings.class);
+                startSettingsAndWaitForFragment(context, intent, SingleCategorySettings.class);
         Assert.assertNotNull("Could not find the SingleCategorySettings fragment", fragment);
     }
 
@@ -115,21 +105,50 @@ public class NotificationPlatformBridgeIntentTest {
                                 NotificationConstants.EXTRA_NOTIFICATION_TAG,
                                 /* notificationId= */ "p#https://example.com#0");
 
-        SettingsActivity activity =
-                ActivityTestUtils.waitForActivity(
-                        InstrumentationRegistry.getInstrumentation(),
-                        SettingsActivity.class,
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                context.startActivity(intent);
-                            }
-                        });
-        Assert.assertNotNull("Could not find the Settings activity", activity);
-
         SingleWebsiteSettings fragment =
-                ActivityTestUtils.waitForFragmentToAttach(activity, SingleWebsiteSettings.class);
+                startSettingsAndWaitForFragment(context, intent, SingleWebsiteSettings.class);
         Assert.assertNotNull("Could not find the SingleWebsiteSettings fragment", fragment);
+    }
+
+    /**
+     * Starts {@code intent} and waits for a settings fragment of {@code fragmentClass} to be shown,
+     * either in a {@link SettingsActivity} or in a settings tab, depending on {@link
+     * SettingsInTab#shouldOpenSettingsInTab()}.
+     */
+    private static <T extends Fragment> T startSettingsAndWaitForFragment(
+            Context context, Intent intent, Class<T> fragmentClass) {
+        if (!SettingsInTab.shouldOpenSettingsInTab()) {
+            SettingsActivity activity =
+                    ActivityTestUtils.waitForActivity(
+                            InstrumentationRegistry.getInstrumentation(),
+                            SettingsActivity.class,
+                            () -> context.startActivity(intent));
+            Assert.assertNotNull("Could not find the Settings activity", activity);
+            return ActivityTestUtils.waitForFragmentToAttach(activity, fragmentClass);
+        }
+
+        // Settings open in a browser tab, hosted by a SettingsHostFragment in whichever activity
+        // ChromeLauncherActivity dispatches the intent to. A single poll covers the cold browser
+        // start, the launcher hop, activity and tab creation and the fragment commit, so use the
+        // long timeout.
+        context.startActivity(intent);
+        AtomicReference<T> fragmentRef = new AtomicReference<>();
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Waiting for settings tab showing " + fragmentClass.getSimpleName(),
+                () -> {
+                    for (Activity activity : ApplicationStatus.getRunningActivities()) {
+                        SettingsHostFragment hostFragment = SettingsHostFragment.get(activity);
+                        if (hostFragment == null) continue;
+                        Fragment fragment = hostFragment.getMainFragment();
+                        if (fragmentClass.isInstance(fragment)) {
+                            fragmentRef.set(fragmentClass.cast(fragment));
+                            return;
+                        }
+                    }
+                    throw new CriteriaNotSatisfiedException(
+                            "No settings tab showing " + fragmentClass.getSimpleName());
+                });
+        return fragmentRef.get();
     }
 
     /**

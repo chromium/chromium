@@ -1018,6 +1018,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.notifications") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/browser/settings:settings_in_tab_java",
     "//chrome/browser/tips/android:java",
   ]
 }
