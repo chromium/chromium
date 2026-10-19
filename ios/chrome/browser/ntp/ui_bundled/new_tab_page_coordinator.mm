@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
 
+#import "base/callback_list.h"
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
@@ -38,6 +39,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -51,6 +53,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_state_manager.h"
@@ -127,6 +131,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ntp_tiles/model/ios_most_visited_sites_factory.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_factory.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
@@ -136,6 +141,7 @@
 #import "ios/chrome/browser/safari_data_import/coordinator/safari_data_import_export_coordinator.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -362,6 +368,11 @@ using ntp_tiles::AimButtonRefactorArm;
   ComposeboxInputStateManager* _composeboxInputStateManager;
   // Holds the active composebox mode.
   ComposeboxModeHolder* _composeboxModeHolder;
+  // Subscription for browser view visibility state changes.
+  base::CallbackListSubscription _browserViewVisibilityStateChangedSubscription;
+  // Whether the browser view is currently obscured by an overlay (such as the
+  // omnibox popup, voice search, or a modal).
+  BOOL _isBrowserViewObscured;
 }
 
 @synthesize baseViewController = _baseViewController;
@@ -498,6 +509,9 @@ using ntp_tiles::AimButtonRefactorArm;
 }
 
 - (void)stop {
+  self.willFocusOmniboxAfterNewTabAnimation = NO;
+  _isBrowserViewObscured = NO;
+  _browserViewVisibilityStateChangedSubscription = {};
   if (IsNTPRedesignEnabled()) {
     [_mostVisitedTilesMediator disconnect];
     _mostVisitedTilesMediator = nil;
@@ -702,6 +716,10 @@ using ntp_tiles::AimButtonRefactorArm;
   if (!IsNTPRedesignEnabled()) {
     [self.NTPViewController omniboxDidEndEditing];
   }
+  if (self.isNTPActiveForCurrentWebState) {
+    [self.contentSuggestionsCoordinator
+            logDeferredEphemeralCardVisibilityIfNeeded];
+  }
 }
 
 - (void)handleFeedModelDidEndUpdates:(FeedLayoutUpdateType)updateType {
@@ -846,6 +864,19 @@ using ntp_tiles::AimButtonRefactorArm;
   _authServiceObserverBridge =
       std::make_unique<AuthenticationServiceObserverBridge>(self.authService,
                                                             self);
+
+  BrowserViewVisibilityNotifierBrowserAgent* visibilityNotifier =
+      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(self.browser);
+  if (visibilityNotifier) {
+    __weak __typeof(self) weakSelf = self;
+    _browserViewVisibilityStateChangedSubscription =
+        visibilityNotifier->RegisterBrowserVisibilityStateChangedCallback(
+            base::BindRepeating(^(BrowserViewVisibilityState currentState,
+                                  BrowserViewVisibilityState previousState) {
+              [weakSelf browserViewDidChangeToVisibilityState:currentState
+                                                    fromState:previousState];
+            }));
+  }
 }
 
 // Creates all the NTP components.
@@ -1501,6 +1532,19 @@ using ntp_tiles::AimButtonRefactorArm;
   [self presentCustomizationButtonBubbleNow];
 }
 
+- (BOOL)isNTPBypassed {
+  if (!self.browser) {
+    return NO;
+  }
+  OmniboxFocusBrowserAgent* omniboxFocusAgent =
+      OmniboxFocusBrowserAgent::FromBrowser(self.browser);
+  AppStartupParameters* startupParameters =
+      self.browser->GetSceneState().controller.startupParameters;
+  return self.willFocusOmniboxAfterNewTabAnimation || _isBrowserViewObscured ||
+         (omniboxFocusAgent && omniboxFocusAgent->IsOmniboxFocused()) ||
+         startupParameters.postOpeningAction != NO_ACTION;
+}
+
 #pragma mark - FeedSignInPromoDelegate
 
 - (void)showSignInUIFromSource:(FeedSignInPromoSource)source {
@@ -1981,6 +2025,22 @@ using ntp_tiles::AimButtonRefactorArm;
 }
 
 #pragma mark - Private
+
+// Called when the browser view's visibility state changes.
+- (void)browserViewDidChangeToVisibilityState:
+            (BrowserViewVisibilityState)currentState
+                                    fromState:(BrowserViewVisibilityState)
+                                                  previousState {
+  _isBrowserViewObscured =
+      currentState == BrowserViewVisibilityState::kCoveredByOmniboxPopup ||
+      currentState == BrowserViewVisibilityState::kCoveredByVoiceSearch ||
+      currentState == BrowserViewVisibilityState::kCoveredByModal;
+  if (currentState == BrowserViewVisibilityState::kVisible &&
+      self.isNTPActiveForCurrentWebState) {
+    [self.contentSuggestionsCoordinator
+            logDeferredEphemeralCardVisibilityIfNeeded];
+  }
+}
 
 // Evaluates and triggers a contextual default browser promo if eligible.
 - (void)maybeShowContextualDefaultBrowserPromo {

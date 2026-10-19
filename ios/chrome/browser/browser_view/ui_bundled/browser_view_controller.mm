@@ -714,16 +714,19 @@ bool IsFullscreenNextIAEnabled() {
     return;
   }
   const BOOL offTheRecord = _isOffTheRecord;
+  self.ntpCoordinator.willFocusOmniboxAfterNewTabAnimation = focusOmnibox;
   ProceduralBlock oldForegroundTabWasAddedCompletionBlock =
       self.foregroundTabWasAddedCompletionBlock;
   __weak id<BrowserCoordinatorCommands> browserCoordinatorHandler =
       _browserCoordinatorHandler;
+  __weak NewTabPageCoordinator* ntpCoordinator = self.ntpCoordinator;
   self.foregroundTabWasAddedCompletionBlock = ^{
     if (oldForegroundTabWasAddedCompletionBlock) {
       oldForegroundTabWasAddedCompletionBlock();
     }
     if (focusOmnibox) {
       [browserCoordinatorHandler showComposebox];
+      ntpCoordinator.willFocusOmniboxAfterNewTabAnimation = NO;
     }
   };
 

@@ -1524,8 +1524,12 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 // Resets the composebox state provider and coordinator. The
 // composeboxCoordinator should have been stopped before calling this method.
 - (void)resetComposebox {
+  BOOL hadComposebox = _composeboxCoordinator != nil;
   _browserOmniboxStateProvider.composeboxStateProvider = nil;
   _composeboxCoordinator = nil;
+  if (hadComposebox) {
+    self.viewController.visibilityState = BrowserViewVisibilityState::kVisible;
+  }
 }
 
 // Hides the compose box. If `immediately` is NO, the operation stops on the
@@ -2017,6 +2021,8 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
          composeboxAnimationBase:_toolbarCoordinator];
   [_composeboxCoordinator start];
   _browserOmniboxStateProvider.composeboxStateProvider = _composeboxCoordinator;
+  self.viewController.visibilityState =
+      BrowserViewVisibilityState::kCoveredByOmniboxPopup;
 }
 
 - (void)hideComposebox {

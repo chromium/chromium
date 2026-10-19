@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
 
+#import <optional>
 #import <string_view>
 #import <vector>
 
@@ -266,6 +267,10 @@ using segmentation_platform::TipIdentifier;
 
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       _segmentationService;
+
+  // Ephemeral card whose visibility logging was deferred because the NTP was
+  // bypassed when the card was initially shown.
+  std::optional<ContentSuggestionsModuleType> _deferredEphemeralCard;
 }
 
 - (void)start {
@@ -565,6 +570,7 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)stop {
+  _deferredEphemeralCard = std::nullopt;
   _segmentationService = nullptr;
   [_shortcutsMediator disconnect];
   _shortcutsMediator = nil;
@@ -616,7 +622,16 @@ using segmentation_platform::TipIdentifier;
 
 #pragma mark - Public methods
 
+- (void)setWebState:(web::WebState*)webState {
+  if (_webState == webState) {
+    return;
+  }
+  _webState = webState;
+  _deferredEphemeralCard = std::nullopt;
+}
+
 - (void)refresh {
+  _deferredEphemeralCard = std::nullopt;
   [_magicStackCollectionView reset];
   // Refresh in case there are new MVT to show.
   if (!IsNTPRedesignEnabled()) {
@@ -628,6 +643,13 @@ using segmentation_platform::TipIdentifier;
   // Fetch after resetting ranking since subscriptions could be returned
   // synchronously.
   [_priceTrackingPromoMediator fetchLatestSubscription];
+}
+
+- (void)logDeferredEphemeralCardVisibilityIfNeeded {
+  if (!_deferredEphemeralCard.has_value()) {
+    return;
+  }
+  [self logEphemeralCardVisibility:_deferredEphemeralCard.value()];
 }
 
 #pragma mark - ContentSuggestionsCommands and Helpers
@@ -890,6 +912,11 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)logEphemeralCardVisibility:(ContentSuggestionsModuleType)card {
+  if ([self.delegate isNTPBypassed]) {
+    _deferredEphemeralCard = card;
+    return;
+  }
+  _deferredEphemeralCard = std::nullopt;
   segmentation_platform::home_modules::HomeModulesCardRegistry* registry =
       segmentation_platform::SegmentationPlatformServiceFactory::
           GetHomeCardRegistryForProfile(self.profile);

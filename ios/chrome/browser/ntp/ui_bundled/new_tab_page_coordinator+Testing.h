@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COORDINATOR_TESTING_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_COORDINATOR_TESTING_H_
 
+#import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_coordinator.h"
@@ -20,7 +21,8 @@
 
 // Testing category that is intended to only be imported in
 // new_tab_page_coordinator.mm and tests.
-@interface NewTabPageCoordinator (Testing) <FeedWrapperViewControllerDelegate,
+@interface NewTabPageCoordinator (Testing) <ContentSuggestionsDelegate,
+                                            FeedWrapperViewControllerDelegate,
                                             NewTabPageActionsDelegate,
                                             NewTabPageHeaderCommands>
 

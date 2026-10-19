@@ -12,10 +12,12 @@
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/variations/scoped_variations_ids_provider.h"
+#import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/aim/model/mock_ios_chrome_aim_eligibility_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
@@ -43,16 +45,20 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_mediator.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_shortcuts_handler.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_focus_browser_agent.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_focus/omnibox_state_provider.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -950,4 +956,85 @@ TEST_F(NewTabPageCoordinatorTest, TestHandleChangeInModulesWithRedesign) {
 
   [coordinator_ stop];
   EXPECT_EQ(nil, coordinator_.feedTopSectionCoordinator);
+}
+
+// Tests that `-isNTPBypassed` returns `YES` when the omnibox is focused or
+// scheduled to be shown, or when a post-opening startup action is pending.
+TEST_F(NewTabPageCoordinatorTest, TestIsNTPBypassed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kNewTabPageRedesign);
+
+  CreateCoordinator(/*off_the_record=*/false);
+  SetupCommandHandlerMocks();
+  [coordinator_ start];
+  [coordinator_ didNavigateToNTPInWebState:web_state_];
+
+  EXPECT_FALSE([coordinator_ isNTPBypassed]);
+
+  // Scheduled omnibox focus or other post-opening action via startup parameters
+  // (e.g. app icon long-press "Search" or "Voice Search" shortcut) should be
+  // treated as an NTP bypass.
+  AppStartupParameters* startup_params = [[AppStartupParameters alloc]
+       initWithExternalURL:GURL(kChromeUINewTabURL)
+               completeURL:GURL(kChromeUINewTabURL)
+           applicationMode:ApplicationModeForTabOpening::NORMAL
+      forceApplicationMode:NO];
+  startup_params.postOpeningAction = FOCUS_OMNIBOX;
+  id scene_controller_mock = OCMClassMock([SceneController class]);
+  OCMStub([scene_controller_mock startupParameters]).andReturn(startup_params);
+  scene_state_.controller = scene_controller_mock;
+  EXPECT_TRUE([coordinator_ isNTPBypassed]);
+
+  startup_params.postOpeningAction = START_VOICE_SEARCH;
+  EXPECT_TRUE([coordinator_ isNTPBypassed]);
+
+  startup_params.postOpeningAction = NO_ACTION;
+  EXPECT_FALSE([coordinator_ isNTPBypassed]);
+
+  scene_state_.controller = nil;
+  EXPECT_FALSE([coordinator_ isNTPBypassed]);
+
+  // Scheduled omnibox focus after a new tab animation (e.g. "New Search" or
+  // Cmd+T) should be treated as an NTP bypass, and navigating away from an old
+  // NTP during tab insertion should not prematurely reset the flag.
+  coordinator_.willFocusOmniboxAfterNewTabAnimation = YES;
+  EXPECT_TRUE([coordinator_ isNTPBypassed]);
+  [coordinator_ didNavigateAwayFromNTP];
+  [coordinator_ didNavigateToNTPInWebState:web_state_];
+  EXPECT_TRUE([coordinator_ isNTPBypassed]);
+  coordinator_.willFocusOmniboxAfterNewTabAnimation = NO;
+  EXPECT_FALSE([coordinator_ isNTPBypassed]);
+
+  // Focused omnibox reported by `OmniboxFocusBrowserAgent` should be treated
+  // as an NTP bypass.
+  OmniboxFocusBrowserAgent::CreateForBrowser(browser_.get());
+  __block BOOL is_omnibox_focused = YES;
+  id omnibox_state_provider_mock =
+      OCMProtocolMock(@protocol(OmniboxStateProvider));
+  OCMStub([omnibox_state_provider_mock isOmniboxFocused])
+      .andDo(^(NSInvocation* invocation) {
+        [invocation setReturnValue:&is_omnibox_focused];
+      });
+  OmniboxFocusBrowserAgent::FromBrowser(browser_.get())
+      ->SetOmniboxStateProvider(omnibox_state_provider_mock);
+  EXPECT_TRUE([coordinator_ isNTPBypassed]);
+
+  is_omnibox_focused = NO;
+  EXPECT_FALSE([coordinator_ isNTPBypassed]);
+
+  // Obscuring the browser view (e.g. Voice Search or omnibox popup) should
+  // also be treated as an NTP bypass, and transitioning back to `kVisible`
+  // should trigger deferred ephemeral card logging.
+  BrowserViewVisibilityStateChangedCallback visibility_callback =
+      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get())
+          ->GetNotificationCallback();
+  visibility_callback.Run(BrowserViewVisibilityState::kCoveredByVoiceSearch,
+                          BrowserViewVisibilityState::kVisible);
+  EXPECT_TRUE([coordinator_ isNTPBypassed]);
+
+  visibility_callback.Run(BrowserViewVisibilityState::kVisible,
+                          BrowserViewVisibilityState::kCoveredByVoiceSearch);
+  EXPECT_FALSE([coordinator_ isNTPBypassed]);
+
+  [coordinator_ stop];
 }

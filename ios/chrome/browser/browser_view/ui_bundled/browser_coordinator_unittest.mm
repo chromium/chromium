@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 
 #import "base/logging.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
 #import "components/commerce/core/mock_shopping_service.h"
@@ -25,9 +26,11 @@
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
@@ -704,4 +707,71 @@ TEST_F(BrowserCoordinatorTest, StopChildCoordinatorsStopsReaderMode) {
     WebNavigationBrowserAgent::FromBrowser(browser_.get())->SetDelegate(nil);
     browser_coordinator = nil;
   }
+}
+
+// Tests that showing and hiding the composebox transitions the browser view
+// visibility state to `kCoveredByOmniboxPopup` and back to `kVisible`, and that
+// `OmniboxFocusBrowserAgent` already reports the omnibox as unfocused when the
+// `kVisible` transition notification fires.
+TEST_F(BrowserCoordinatorTest, TestComposeboxVisibilityTransitions) {
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+
+  ComposeboxCoordinator* composebox_mock =
+      OCMStrictClassMock([ComposeboxCoordinator class]);
+  OCMExpect([((id)composebox_mock) alloc]).andReturn(composebox_mock);
+  OCMExpect([composebox_mock
+                initWithBaseViewController:browser_coordinator.viewController
+                                   browser:browser_.get()
+                               focusParams:[OCMArg any]
+                   composeboxAnimationBase:[OCMArg any]])
+      .andReturn(composebox_mock);
+  OCMExpect([composebox_mock start]);
+  OCMStub([composebox_mock isOmniboxFocused]).andReturn(YES);
+
+  __block BrowserViewVisibilityState observed_state =
+      BrowserViewVisibilityState::kNotInViewHierarchy;
+  __block BOOL omnibox_focused_when_visible = NO;
+  OmniboxFocusBrowserAgent* omnibox_focus_agent =
+      OmniboxFocusBrowserAgent::FromBrowser(browser_.get());
+  base::CallbackListSubscription subscription =
+      BrowserViewVisibilityNotifierBrowserAgent::FromBrowser(browser_.get())
+          ->RegisterBrowserVisibilityStateChangedCallback(
+              base::BindRepeating(^(BrowserViewVisibilityState current_state,
+                                    BrowserViewVisibilityState previous_state) {
+                observed_state = current_state;
+                if (current_state == BrowserViewVisibilityState::kVisible) {
+                  omnibox_focused_when_visible =
+                      omnibox_focus_agent->IsOmniboxFocused();
+                }
+              }));
+
+  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [handler showComposebox];
+
+  EXPECT_OCMOCK_VERIFY((id)composebox_mock);
+  EXPECT_EQ(observed_state, BrowserViewVisibilityState::kCoveredByOmniboxPopup);
+  EXPECT_TRUE(omnibox_focus_agent->IsOmniboxFocused());
+
+  __block ProceduralBlock stop_completion = nil;
+  OCMExpect([composebox_mock
+      stopAnimatedWithCompletion:AssignValueToVariable(stop_completion)]);
+
+  __block bool hide_completion_called = false;
+  [handler hideComposeboxWithCompletion:^{
+    hide_completion_called = true;
+  }];
+  ASSERT_TRUE(base::test::RunUntil(^{
+    return stop_completion != nil;
+  }));
+  stop_completion();
+
+  EXPECT_TRUE(hide_completion_called);
+  EXPECT_EQ(observed_state, BrowserViewVisibilityState::kVisible);
+  EXPECT_FALSE(omnibox_focused_when_visible);
+  EXPECT_FALSE(omnibox_focus_agent->IsOmniboxFocused());
+
+  [browser_coordinator stop];
+  EXPECT_OCMOCK_VERIFY((id)composebox_mock);
 }

@@ -171,6 +171,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":coordinator",
+    ":public",
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",

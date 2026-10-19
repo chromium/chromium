@@ -22,7 +22,7 @@ enum class BrowserViewVisibilityState;
 
 // The visibility state of the browser view. Value will be set to `kVisible` on
 // viewDidAppear and to `kNotInViewHierarchy` on viewWillDisappear.
-@property(nonatomic, readonly) BrowserViewVisibilityState visibilityState;
+@property(nonatomic, assign) BrowserViewVisibilityState visibilityState;
 
 // Height of the header view.
 @property(nonatomic, readonly) CGFloat headerHeight;
