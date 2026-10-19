@@ -90,7 +90,11 @@ gfx::RectF Lift(ContentAutofillDriver& source, gfx::RectF r) {
   // for a malicious frame to position an Autofill popup over a field from
   // different frame (provided the attacker's and the victim's frames do not
   // share the same local root).
-  r.InclusiveIntersect(gfx::RectF(view->GetViewBounds().size()));
+  gfx::RectF bounds = gfx::RectF(view->GetViewBounds().size());
+  gfx::PointF origin = r.origin();
+  if (!r.InclusiveIntersect(bounds)) {
+    r = gfx::RectF(bounds.ClosestPoint(origin), gfx::SizeF());
+  }
 
   // We transform all corners to handle CSS `transform: scale(...)` correctly
   // (crbug.com/562177779).
@@ -506,7 +510,7 @@ std::optional<LocalFrameToken> ContentAutofillDriver::Resolve(
 
 ukm::SourceId ContentAutofillDriver::GetPageUkmSourceId() const {
   CHECK(!render_frame_host_->IsInLifecycleState(
-          content::RenderFrameHost::LifecycleState::kPrerendering));
+      content::RenderFrameHost::LifecycleState::kPrerendering));
   return render_frame_host_->GetPageUkmSourceId();
 }
 
