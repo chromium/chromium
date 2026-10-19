@@ -157,6 +157,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1649,20 +1650,20 @@ public class UrlOverridingTest {
     @DisableFeatures({"BackForwardCacheMemoryControls"})
     public void testNoRedirectWithBFCache() throws Exception {
         final CallbackHelper finishCallback = new CallbackHelper();
-        final CallbackHelper syncHelper = new CallbackHelper();
-        AtomicReference<NavigationHandle> lastNavigationHandle = new AtomicReference<>(null);
+        final CallbackHelper pageLoadCallback = new CallbackHelper();
+        final List<NavigationHandle> navigationHandles = new CopyOnWriteArrayList<>();
         TabObserver observer =
                 new TabObserver() {
                     @Override
                     public void onDidFinishNavigationInPrimaryMainFrame(
                             Tab tab, NavigationHandle navigation) {
-                        int callCount = syncHelper.getCallCount();
-                        lastNavigationHandle.set(navigation);
+                        navigationHandles.add(navigation);
                         finishCallback.notifyCalled();
-                        try {
-                            syncHelper.waitForCallback(callCount);
-                        } catch (Exception e) {
-                        }
+                    }
+
+                    @Override
+                    public void onPageLoadFinished(Tab tab, GURL url) {
+                        pageLoadCallback.notifyCalled();
                     }
                 };
         String url = mTestServer.getURL(NAVIGATION_FROM_BFCACHE);
@@ -1684,40 +1685,42 @@ public class UrlOverridingTest {
                     RedirectHandlerTabHelper.swapHandlerForTesting(tab, spyHandler);
                 });
 
-        // Click link to go to second page.
+        // Click link to go to second page and wait for its load to settle before navigating back.
         TouchCommon.singleClickView(tab.getView());
         finishCallback.waitForCallback(0);
-        syncHelper.notifyCalled();
+        pageLoadCallback.waitForCallback(0);
 
-        AtomicInteger lastResultValue = new AtomicInteger();
+        final CallbackHelper resultCallback = new CallbackHelper();
+        AtomicInteger lastResultValue = new AtomicInteger(-1);
         InterceptNavigationDelegateImpl.setResultCallbackForTesting(
                 (Pair<GURL, OverrideUrlLoadingResult> result) -> {
                     if (result.first.getSpec().equals(url)) return;
                     lastResultValue.set(result.second.getResultType());
+                    resultCallback.notifyCalled();
                 });
 
         // Press back to go back to first page with BFCache.
         ThreadUtils.runOnUiThreadBlocking(
                 mTabbedActivityTestRule.getActivity().getOnBackPressedDispatcher()::onBackPressed);
         finishCallback.waitForCallback(1);
-        Assert.assertTrue(lastNavigationHandle.get().isPageActivation());
+        Assert.assertTrue(navigationHandles.get(1).isPageActivation());
         // Page activations should clear the RedirectHandler so future navigations aren't part of
         // the same navigation chain.
         Mockito.verify(spyHandler, Mockito.times(1)).clear();
-        syncHelper.notifyCalled();
 
         // Page redirects to intent: URL.
         finishCallback.waitForCallback(2);
+        resultCallback.waitForCallback(0);
 
         // With RedirectHandler state cleared, this should be treated as a navigation without a
         // user gesture, which will use a Message to ask the user if they would like to follow the
         // external navigation.
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_WITH_ASYNC_ACTION, lastResultValue.get());
-        Assert.assertTrue(lastNavigationHandle.get().getUrl().getSpec().startsWith("intent://"));
-        syncHelper.notifyCalled();
+        Assert.assertTrue(navigationHandles.get(2).getUrl().getSpec().startsWith("intent://"));
 
-        Assert.assertNotNull(getCurrentExternalNavigationMessage());
+        CriteriaHelper.pollInstrumentationThread(
+                () -> getCurrentExternalNavigationMessage() != null);
     }
 
     @Test
