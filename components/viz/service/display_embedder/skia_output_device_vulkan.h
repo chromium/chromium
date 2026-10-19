@@ -71,7 +71,6 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
 
   bool Initialize();
   bool RecreateSwapChain(const SkImageInfo& image_info,
-                         int sample_count,
                          gfx::OverlayTransform transform);
   void OnPostSubBufferFinished(OutputSurfaceFrame frame,
                                gfx::SwapResult result);
@@ -92,7 +91,6 @@ class SkiaOutputDeviceVulkan final : public SkiaOutputDevice {
 
   SkColorType color_type_ = kUnknown_SkColorType;
   sk_sp<SkColorSpace> color_space_;
-  int sample_count_ = 1;
 
   // The swapchain is new created without a frame which convers the whole area
   // of it.

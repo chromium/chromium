@@ -162,7 +162,6 @@ bool SkiaOutputDeviceDawn::Reshape(const ReshapeParams& params) {
 
   size_ = params.GfxSize();
   sk_color_space_ = params.image_info.refColorSpace();
-  sample_count_ = params.sample_count;
 
   return ResizeBackbuffer();
 }

@@ -52,7 +52,6 @@ class SkiaOutputDeviceOffscreen : public SkiaOutputDevice {
   gfx::Size size_;
   SkColorType sk_color_type_ = kUnknown_SkColorType;
   sk_sp<SkColorSpace> sk_color_space_;
-  int sample_count_ = 1;
 
  private:
   uint64_t backbuffer_estimated_size_ = 0;

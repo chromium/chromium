@@ -211,8 +211,8 @@ bool SkiaOutputDeviceGL::Reshape(const ReshapeParams& params) {
   framebuffer_info.fFormat = GrBackendFormats::AsGLFormatEnum(backend_format);
 
   auto render_target = GrBackendRenderTargets::MakeGL(
-      size.width(), size.height(), params.sample_count,
-      /*stencilBits=*/0, framebuffer_info);
+      size.width(), size.height(), /*sampleCnt=*/1, /*stencilBits=*/0,
+      framebuffer_info);
   auto origin = (gl_surface_->GetOrigin() == gfx::SurfaceOrigin::kTopLeft)
                     ? kTopLeft_GrSurfaceOrigin
                     : kBottomLeft_GrSurfaceOrigin;

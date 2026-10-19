@@ -78,7 +78,6 @@ bool SkiaOutputDeviceOffscreen::Reshape(const ReshapeParams& params) {
   }
   sk_color_type_ = params.image_info.colorType();
   sk_color_space_ = params.image_info.refColorSpace();
-  sample_count_ = params.sample_count;
   EnsureBackbuffer();
   return true;
 }
@@ -190,7 +189,7 @@ SkSurface* SkiaOutputDeviceOffscreen::BeginPaint(
           capabilities_.output_surface_origin == gfx::SurfaceOrigin::kTopLeft
               ? kTopLeft_GrSurfaceOrigin
               : kBottomLeft_GrSurfaceOrigin,
-          sample_count_, sk_color_type_, sk_color_space_, &surface_props);
+          /*sampleCnt=*/1, sk_color_type_, sk_color_space_, &surface_props);
     } else {
       CHECK(context_state_->graphite_shared_context());
       sk_surface_ = SkSurfaces::WrapBackendTexture(

@@ -125,7 +125,6 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     SkImageInfo image_info;
     // This is redundant with `image_info.colorSpace()`.
     gfx::ColorSpace color_space;
-    int sample_count = 1;
     float device_scale_factor = 1.f;
     gfx::OverlayTransform transform = gfx::OVERLAY_TRANSFORM_NONE;
 

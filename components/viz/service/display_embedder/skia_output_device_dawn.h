@@ -73,7 +73,6 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
 
   gfx::Size size_;
   sk_sp<SkColorSpace> sk_color_space_;
-  int sample_count_ = 1;
 };
 
 }  // namespace viz
