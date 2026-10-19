@@ -347,6 +347,11 @@ test("display_unittests") {
     ]
   }
 
+  if (is_mac) {
+    sources += [ "mac/display_link_mac_unittest.mm" ]
+    frameworks = [ "CoreGraphics.framework" ]
+  }
+
   deps = [
     ":display",
     ":test_support",
