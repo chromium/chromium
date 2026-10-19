@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
 #include "third_party/blink/renderer/core/url/dom_origin_utils.h"
+#include "third_party/blink/renderer/core/url/url_utils.h"
 
 namespace blink {
 
@@ -35,7 +36,8 @@ class LocalDOMWindow;
 
 class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
                                       public SVGURIReference,
-                                      public DOMOriginUtils {
+                                      public DOMOriginUtils,
+                                      public UrlUtils {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -51,7 +53,12 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
   // DOMOriginUtils overrides:
   DOMOrigin* GetDOMOrigin(LocalDOMWindow*) const final;
 
-  KURL Url() const;
+  void SetUrl(const KURL& url) override;
+  String Input() const override;
+  KURL Url() const override;
+
+  using SVGURIReference::href;
+
   uint32_t GetLinkRelations() const { return link_relations_; }
   DOMTokenList& relList() const { return *rel_list_; }
 

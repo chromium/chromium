@@ -6485,6 +6485,10 @@
       status: "stable",
     },
     {
+      name: "SvgHyperlinkElementUtils",
+      status: "experimental",
+    },
+    {
       name: "SvgIgnoreNegativeEllipseRadii",
       status: "stable",
     },

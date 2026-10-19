@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_trustedscripturl.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
@@ -238,6 +240,17 @@ DOMOrigin* SVGAElement::GetDOMOrigin(LocalDOMWindow*) const {
     return DOMOrigin::Create(SecurityOrigin::Create(Url()));
   }
   return nullptr;
+}
+
+void SVGAElement::SetUrl(const KURL& url) {
+  auto* value =
+      MakeGarbageCollected<V8UnionStringOrTrustedScriptURL>(url.GetString());
+
+  href()->setBaseVal(value, ASSERT_NO_EXCEPTION);
+}
+
+String SVGAElement::Input() const {
+  return HrefString();
 }
 
 bool SVGAElement::HasActivationBehavior() const {

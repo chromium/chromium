@@ -1779,19 +1779,29 @@ svg element a
     property getBBox
     property getCTM
     property getScreenCTM
+    property hash
+    property host
+    property hostname
     property href
     property hreflang
     property interestForElement
     property nearestViewportElement
+    property origin
+    property password
+    property pathname
     property ping
+    property port
+    property protocol
     property referrerPolicy
     property rel
     property relList
     property requiredExtensions
+    property search
     property systemLanguage
     property target
     property transform
     property type
+    property username
 svg element animate
     property beginElement
     property beginElementAt

@@ -8741,24 +8741,43 @@ interface RtcTransportIceEvent : Event
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter download
+    getter hash
+    getter host
+    getter hostname
     getter href
     getter hreflang
     getter interestForElement
+    getter origin
+    getter password
+    getter pathname
     getter ping
+    getter port
+    getter protocol
     getter referrerPolicy
     getter rel
     getter relList
+    getter search
     getter target
     getter type
+    getter username
     method constructor
     setter download
+    setter hash
+    setter host
+    setter hostname
     setter hreflang
     setter interestForElement
+    setter password
+    setter pathname
     setter ping
+    setter port
+    setter protocol
     setter referrerPolicy
     setter rel
     setter relList
+    setter search
     setter type
+    setter username
 interface SVGAngle
     attribute @@toStringTag
     attribute SVG_ANGLETYPE_DEG
