@@ -671,13 +671,21 @@ void ActorTask::AddActorSurface(ActorSurfaceHandle actor_surface_handle,
 
   DidTabEnterActorControl(actor_surface_handle);
 
-  // Notify the UI of the new tab.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ui::UiEventDispatcher::OnActorTaskAsyncChange,
-                                ui_weak_ptr_factory_.GetWeakPtr(),
-                                ui::UiEventDispatcher::AddTab{
-                                    .task_id = id_, .handle = tab_handle},
-                                std::move(callback)));
+  // TODO(b/567721071): UI actually cares about visible tabs - determine how UI
+  // events should be sent when in headless.
+  if (actor_surface->IsTab()) {
+    // Notify the UI of the new tab.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &ui::UiEventDispatcher::OnActorTaskAsyncChange,
+            ui_weak_ptr_factory_.GetWeakPtr(),
+            ui::UiEventDispatcher::AddTab{.task_id = id_, .handle = tab_handle},
+            std::move(callback)));
+  } else {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
+  }
 
   // Post-task this delegate call to avoid any performance issues.
   if (delegate_) {

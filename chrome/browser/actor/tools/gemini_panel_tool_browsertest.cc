@@ -129,13 +129,7 @@ IN_PROC_BROWSER_TEST_F(ActorGeminiPanelToolBrowserTest, NotInTab) {
         std::make_unique<PromptGeminiPanelToolRequest>(
             GetPassKey(), headless_surface->GetHandle(), "Hello");
     actor_task().Act(ToRequestList(request), result.GetCallback());
-    // TODO(b/567721071): Because the headless web contents is added to the
-    // controlled set in ActorTask::Act, the UI manager starts observing the
-    // tab but notices a null TabHandle and ends the task with kTabWentAway
-    // instead. (The CloseGeminiPanelToolRequest passes because the tab is
-    // already added).
-    // ExpectErrorResult(result, mojom::ActionResultCode::kGeminiPanelNotInTab);
-    ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+    ExpectErrorResult(result, mojom::ActionResultCode::kGeminiPanelNotInTab);
   }
 
   {
