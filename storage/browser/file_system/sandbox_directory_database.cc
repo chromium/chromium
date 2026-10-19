@@ -206,17 +206,20 @@ bool DatabaseCheckHelper::ScanDatabase() {
       // key: "LAST_FILE_ID"
       // value: "<last_file_id>"
       if (last_file_id_ >= 0 ||
-          !base::StringToInt64(itr->value().ToString(), &last_file_id_))
+          !base::StringToInt64(itr->value().ToString(), &last_file_id_)) {
         return false;
+      }
 
-      if (last_file_id_ < 0)
+      if (last_file_id_ < 0) {
         return false;
+      }
     } else if (key == kSandboxDirectoryLastIntegerKey) {
       // key: "LAST_INTEGER"
       // value: "<last_integer>"
       if (last_integer_ >= 0 ||
-          !base::StringToInt64(itr->value().ToString(), &last_integer_))
+          !base::StringToInt64(itr->value().ToString(), &last_integer_)) {
         return false;
+      }
     } else {
       // key: "<entry_id>"
       // value: "<pickled FileInfo>"
@@ -228,21 +231,25 @@ bool DatabaseCheckHelper::ScanDatabase() {
       }
 
       FileId file_id = -1;
-      if (!base::StringToInt64(key, &file_id) || file_id < 0)
+      if (!base::StringToInt64(key, &file_id) || file_id < 0) {
         return false;
+      }
 
-      if (max_file_id < file_id)
+      if (max_file_id < file_id) {
         max_file_id = file_id;
-      if (!file_ids.insert(file_id).second)
+      }
+      if (!file_ids.insert(file_id).second) {
         return false;
+      }
 
       if (file_info.is_directory()) {
         ++num_directories_in_db_;
         DCHECK(file_info.data_path.empty());
       } else {
         // Ensure any pair of file entry don't share their data_path.
-        if (!files_in_db_.insert(file_info.data_path).second)
+        if (!files_in_db_.insert(file_info.data_path).second) {
           return false;
+        }
 
         // Ensure the backing file exists as a normal file.
         base::File::Info platform_file_info;
@@ -253,8 +260,9 @@ bool DatabaseCheckHelper::ScanDatabase() {
           // leveldb::Iterator iterates a snapshot of the database.
           // So even after RemoveFileInfo() call, we'll visit hierarchy link
           // from |parent_id| to |file_id|.
-          if (!dir_db_->RemoveFileInfo(file_id))
+          if (!dir_db_->RemoveFileInfo(file_id)) {
             return false;
+          }
           --num_hierarchy_links_in_db_;
           files_in_db_.erase(file_info.data_path);
         } else {
