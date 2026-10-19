@@ -13,18 +13,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/password_manager/core/browser/features/password_features.h"
-#endif
 
 namespace actor_login {
 
@@ -60,13 +54,6 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
  public:
   ActorLoginGetCredentialsHelperTest() = default;
 
-  void SetUp() override {
-#if BUILDFLAG(IS_ANDROID)
-    feature_list_.InitAndDisableFeature(
-        password_manager::features::kActorLoginNoPermanentPermissionsAndroid);
-#endif
-  }
-
   std::unique_ptr<ActorLoginGetCredentialsHelper> CreateHelper(
       std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers,
       base::OnceCallback<void(CredentialsOrError)> callback) {
@@ -81,7 +68,6 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<MockActorLoginMetricsHelper> metrics_helper_;
 };
@@ -416,41 +402,5 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   EXPECT_TRUE(conflicting_permissions);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-TEST_F(ActorLoginGetCredentialsHelperTest, NoPermanentPermissionsAndroid) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginNoPermanentPermissionsAndroid);
-
-  std::vector<Credential> credentials;
-  Credential user1;
-  user1.username = u"user1";
-  user1.has_persistent_permission = true;
-  credentials.push_back(user1);
-
-  Credential user2;
-  user2.username = u"user2";
-  user2.has_persistent_permission = true;
-  credentials.push_back(user2);
-
-  base::test::TestFuture<CredentialsOrError, bool> future;
-  std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
-  fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
-  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), &metrics_helper_, future.GetCallback());
-
-  ASSERT_TRUE(future.Wait());
-  auto [result, conflicting_permissions] = future.Get();
-  ASSERT_TRUE(result.has_value());
-
-  EXPECT_EQ(result.value().size(), 2u);
-  EXPECT_THAT(result.value(),
-              testing::Each(testing::Field(
-                  &Credential::has_persistent_permission, false)));
-  // Since permanent permissions shouldn't be applied, there should be
-  // no conflicting permissions.
-  EXPECT_FALSE(conflicting_permissions);
-}
-#endif
 
 }  // namespace actor_login

@@ -179,16 +179,7 @@ class MockPasswordManagerDriver
 
 class ActorLoginDelegateImplTest : public testing::Test {
  public:
-  ActorLoginDelegateImplTest() {
-    std::vector<base::test::FeatureRef> disabled_features;
-#if BUILDFLAG(IS_ANDROID)
-    disabled_features.push_back(
-        password_manager::features::kActorLoginNoPermanentPermissionsAndroid);
-#endif
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/disabled_features);
-  }
+  ActorLoginDelegateImplTest() = default;
 
   void SetUp() override {
     testing::Test::SetUp();
@@ -305,7 +296,6 @@ class ActorLoginDelegateImplTest : public testing::Test {
       base::MakeRefCounted<NiceMock<MockActorLoginQualityLogger>>();
   std::unique_ptr<NiceMock<MockActorLoginPermissionCleaningService>>
       mock_cleaning_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ActorLoginDelegateImplTest, GetCredentialsSuccess_FeatureOn) {

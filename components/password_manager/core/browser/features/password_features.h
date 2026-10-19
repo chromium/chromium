@@ -24,11 +24,6 @@ BASE_DECLARE_FEATURE(kActorLoginConflictingPermissionCleanup);
 BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
 
 #if BUILDFLAG(IS_ANDROID)
-// When enabled, it completely ignores existing permanent permissions
-// and does not store new ones.
-// TODO(crbug.com/507403760): Remove once the permissions management UI is
-// available.
-BASE_DECLARE_FEATURE(kActorLoginNoPermanentPermissionsAndroid);
 // Enables the Actor Login Permissions Settings UI on Android.
 BASE_DECLARE_FEATURE(kActorLoginPermissionsUi);
 #endif

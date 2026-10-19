@@ -9,16 +9,10 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/build_config.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/password_manager/core/browser/features/password_features.h"
-#endif
 
 namespace actor_login {
 
@@ -134,16 +128,6 @@ ActorLoginGetCredentialsHelper::MergeCredentials(
     }
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kActorLoginNoPermanentPermissionsAndroid)) {
-    for (Credential& credential : credentials) {
-      credential.has_persistent_permission = false;
-    }
-    return {credentials, false};
-  }
-#endif
 
   const int permission_count = std::ranges::count_if(
       credentials, &Credential::has_persistent_permission);

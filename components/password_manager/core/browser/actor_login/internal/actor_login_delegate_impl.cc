@@ -161,13 +161,6 @@ void ActorLoginDelegateImpl::AttemptLogin(
     base::WeakPtr<ActionSequenceDelegate> action_sequence_delegate) {
   CHECK(done_callback);
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kActorLoginNoPermanentPermissionsAndroid)) {
-    should_store_permission = false;
-  }
-#endif
 
   // One request at a time mechanism using pending callbacks.
   // Check if either callback is currently active.
