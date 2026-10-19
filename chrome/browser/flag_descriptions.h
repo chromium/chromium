@@ -5490,6 +5490,12 @@ inline constexpr char kAndroidDesktopUAPlatformDescription[] =
     "Enables the 'Android' platform client hint value for users on Desktop "
     "Android.";
 
+inline constexpr char kAndroidDesktopUAModelName[] =
+    "Device model client hint for Desktop Android";
+inline constexpr char kAndroidDesktopUAModelDescription[] =
+    "Enables sending the device model in the Sec-CH-UA-Model client hint for "
+    "users on Desktop Android devices.";
+
 inline constexpr char kAndroidDesktopUASpoofAsChromeOSName[] =
     "Spoof User-Agent as ChromeOS for Desktop Android";
 inline constexpr char kAndroidDesktopUASpoofAsChromeOSDescription[] =

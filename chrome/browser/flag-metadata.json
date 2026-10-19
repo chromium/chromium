@@ -448,6 +448,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "android-desktop-ua-model",
+    "owners": [ "miketaylr@chromium.org", "victortan@chromium.org" ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "android-desktop-ua-platform",
     "owners": [ "victortan@chromium.org", "miketaylr@chromium.org", "skavuluru@google.com" ],
     "expiry_milestone": 165
