@@ -5,28 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_ORIGIN_GATING_MODEL_ORIGIN_GATING_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_ORIGIN_GATING_MODEL_ORIGIN_GATING_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "components/origin_gating/core/origin_gating_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace origin_gating {
 
-class OriginGatingService;
-
 // Singleton that owns all OriginGatingServices and associates them with
 // ProfileIOS.
-class OriginGatingServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class OriginGatingServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<OriginGatingServiceFactory,
+                                                OriginGatingService> {
  public:
-  static OriginGatingService* GetForProfile(ProfileIOS* profile);
-  static OriginGatingServiceFactory* GetInstance();
+  explicit OriginGatingServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<OriginGatingServiceFactory>;
-
-  OriginGatingServiceFactory();
-  ~OriginGatingServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
