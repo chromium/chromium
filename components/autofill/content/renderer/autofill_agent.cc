@@ -1120,12 +1120,23 @@ void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
 }
 
 void AutofillAgent::BatchDataListOptionChange(FieldRendererId element_id) {
-  WebFormControlElement element =
-      form_util::GetFormControlByRendererId(element_id);
-  if (!element || !element.GetDocument()) {
+  auto input_element = form_util::GetFormControlByRendererId(element_id)
+                           .DynamicTo<WebInputElement>();
+  if (!input_element || !input_element.GetDocument() ||
+      !is_popup_possibly_visible_ || !input_element.Focused()) {
     return;
   }
-  OnTextFieldValueChanged(element, /*form_cache=*/{});
+  ClearPreviewedForm();
+  std::optional<PasswordSuggestionRequest> password_request =
+      password_autofill_agent_
+          ? password_autofill_agent_->CreateRequestForChangeInTextField(
+                input_element, /*form_cache=*/{})
+          : std::nullopt;
+  ShowSuggestions(
+      input_element,
+      // TODO(crbug.com.477541273): Replace with more accurate source.
+      AutofillSuggestionTriggerSource::kTextFieldValueChanged,
+      /*form_cache=*/{}, password_request);
 }
 
 void AutofillAgent::UserGestureObserved() {
