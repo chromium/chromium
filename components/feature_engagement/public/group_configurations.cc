@@ -60,7 +60,7 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     // Only one of the tailored promos ever can be shown.
     config.trigger =
         EventConfig("tailored_default_browser_promos_group_trigger",
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -118,7 +118,7 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     // Group Rule: Don't show until the holdback period has elapsed.
     config.event_configs.insert(
         EventConfig(events::kIOSFREBadgeHoldbackPeriodElapsed,
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), kMaxStoragePeriod,
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), kMaxWindowPeriod,
                     kMaxStoragePeriod));
     return config;
   }

@@ -26,6 +26,9 @@ class ConfigurationProvider;
 // Max number of days for storing client side event data, ~10 years.
 constexpr uint32_t kMaxStoragePeriod = 365 * 10;
 
+// Max number of days for the window of client side event data, ~10 years.
+inline constexpr uint32_t kMaxWindowPeriod = kMaxStoragePeriod;
+
 // A ComparatorType describes the relationship between two numbers.
 enum ComparatorType {
   ANY = 0,  // Will always yield true.

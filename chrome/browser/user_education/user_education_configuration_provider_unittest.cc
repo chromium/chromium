@@ -131,19 +131,19 @@ class UserEducationConfigurationProviderTest : public testing::Test {
 
   auto GetDefaultTrigger(const char* name) {
     return feature_engagement::EventConfig(
-        name, kAny, feature_engagement::kMaxStoragePeriod,
+        name, kAny, feature_engagement::kMaxWindowPeriod,
         feature_engagement::kMaxStoragePeriod);
   }
 
   auto GetAnyTrigger(const char* name) {
     return feature_engagement::EventConfig(
-        name, kAny, feature_engagement::kMaxStoragePeriod,
+        name, kAny, feature_engagement::kMaxWindowPeriod,
         feature_engagement::kMaxStoragePeriod);
   }
 
   auto GetDefaultUsed(const char* name) {
     return feature_engagement::EventConfig(
-        name, kEqualsZero, feature_engagement::kMaxStoragePeriod,
+        name, kEqualsZero, feature_engagement::kMaxWindowPeriod,
         feature_engagement::kMaxStoragePeriod);
   }
 

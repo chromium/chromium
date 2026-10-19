@@ -1811,7 +1811,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used = EventConfig("settings_appearance_opened",
                               Comparator(EQUAL, 0), 360, 360);
     config.event_configs.insert(
-        EventConfig(trigger_event, Comparator(LESS_THAN, 3), kMaxStoragePeriod,
+        EventConfig(trigger_event, Comparator(LESS_THAN, 3), kMaxWindowPeriod,
                     kMaxStoragePeriod));
     config.tracking_only = is_tracking_only;
     return config;
@@ -2159,9 +2159,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = kAlwaysAvailable;
     config.trigger =
         EventConfig("tab_switcher_xr_iph_trigger", Comparator(LESS_THAN, 3),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.used = EventConfig("tab_switcher_xr_iph_used", Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     config.snooze_params.snooze_interval = 1;
     config.snooze_params.max_limit = 3;
 
@@ -2176,9 +2176,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = kAlwaysAvailable;
     config.trigger =
         EventConfig("tab_tearing_xr_iph_trigger", Comparator(LESS_THAN, 3),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.used = EventConfig("tab_tearing_xr_iph_used", Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     config.snooze_params.snooze_interval = 1;
     config.snooze_params.max_limit = 3;
 
@@ -2193,11 +2193,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = Comparator(EQUAL, 0);
     config.session_rate_impact.type = SessionRateImpact::Type::ALL;
     config.trigger = EventConfig("keyboard_accessory_loyalty_cards_iph_trigger",
-                                 Comparator(LESS_THAN, 1), kMaxStoragePeriod,
+                                 Comparator(LESS_THAN, 1), kMaxWindowPeriod,
                                  kMaxStoragePeriod);
     config.used =
         EventConfig("keyboard_accessory_loyalty_cards_autofilled",
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
 
     return config;
   }
@@ -2405,7 +2405,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                  Comparator(LESS_THAN, 3), 90, 360);
     config.used =
         EventConfig("autofill_credit_card_benefit_iph_accepted",
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -2420,10 +2420,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = Comparator(EQUAL, 0);
     config.trigger =
         EventConfig("autofill_external_account_profile_suggestion_iph_trigger",
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     config.used =
         EventConfig("autofill_external_account_profile_suggestion_accepted",
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
 
     return config;
   }
@@ -2499,14 +2499,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     config.trigger =
         EventConfig(kLensOverlayFeatureTriggerEvent, Comparator(LESS_THAN, 2),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
 
     config.event_configs.emplace(kLensOverlayFeatureTriggerEvent,
                                  Comparator(EQUAL, 0), 7, 7);
 
     config.used =
         EventConfig(events::kLensOverlayEntrypointUsed, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
 
     return config;
   }
@@ -2522,7 +2522,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         "lens_overlay_escape_hatch_feature_trigger";
 
     config->trigger = EventConfig(kLensOverlayEscapeHatchFeatureTriggerEvent,
-                                  Comparator(LESS_THAN, 2), kMaxStoragePeriod,
+                                  Comparator(LESS_THAN, 2), kMaxWindowPeriod,
                                   kMaxStoragePeriod);
 
     return config;
@@ -2539,10 +2539,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = kNoRestrictions;
     config.used = EventConfig(
         events::kIOSContextualPanelPriceInsightsEntrypointUsed,
-        Comparator(LESS_THAN, 1), kMaxStoragePeriod, kMaxStoragePeriod);
+        Comparator(LESS_THAN, 1), kMaxWindowPeriod, kMaxStoragePeriod);
     config.used = EventConfig(
         events::kIOSContextualPanelPriceInsightsEntrypointExplicitlyDismissed,
-        Comparator(LESS_THAN, 2), kMaxStoragePeriod, kMaxStoragePeriod);
+        Comparator(LESS_THAN, 2), kMaxWindowPeriod, kMaxStoragePeriod);
     config.trigger = EventConfig(
         "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
         Comparator(LESS_THAN, 3), 182, kMaxStoragePeriod);
@@ -2551,7 +2551,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         Comparator(LESS_THAN, 1), 1, kMaxStoragePeriod));
     config.event_configs.insert(EventConfig(
         "ios_contextual_panel_price_insights_entrypoint_iph_trigger",
-        Comparator(LESS_THAN, 6), kMaxStoragePeriod, kMaxStoragePeriod));
+        Comparator(LESS_THAN, 6), kMaxWindowPeriod, kMaxStoragePeriod));
 
     // This IPH is blocked by the overflow menu's price tracking IPH
     // (kIPHPriceNotificationsWhileBrowsingFeature) if shown in the same
@@ -2585,7 +2585,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = kNoRestrictions;
     config.session_rate_impact.type = SessionRateImpact::Type::NONE;
     config.used = EventConfig(events::kIOSIPHReaderModeOptionsUsed,
-                              Comparator(LESS_THAN, 1), kMaxStoragePeriod,
+                              Comparator(LESS_THAN, 1), kMaxWindowPeriod,
                               kMaxStoragePeriod);
     config.trigger =
         EventConfig(events::kIOSIPHReaderModeOptionsTriggered,
@@ -2595,7 +2595,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 1), 1, kMaxStoragePeriod));
     config.event_configs.insert(EventConfig(
         events::kIOSIPHReaderModeOptionsTriggered, Comparator(LESS_THAN, 6),
-        kMaxStoragePeriod, kMaxStoragePeriod));
+        kMaxWindowPeriod, kMaxStoragePeriod));
     return config;
   }
 
@@ -2734,14 +2734,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // The IPH is shown at most once.
     config.trigger =
         EventConfig("iph_feed_swipe_animated_trigger", Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     // The user hasn't scrolled on the NTP while the feed is visible.
     config.used = EventConfig(events::kIOSScrolledOnFeed, Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     // The IPH only shows when user has engaged with the feed in any way.
     config.event_configs.insert(
         EventConfig(events::kIOSActionOnFeed, Comparator(GREATER_THAN, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod));
+                    kMaxWindowPeriod, kMaxStoragePeriod));
     return config;
   }
 
@@ -2755,10 +2755,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // The IPH is shown at most once.
     config.trigger =
         EventConfig("iph_feed_swipe_static_trigger", Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     // The user hasn't scrolled on the NTP while the feed is visible.
     config.used = EventConfig(events::kIOSScrolledOnFeed, Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -2791,10 +2791,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.availability = kAlwaysAvailable;  // Available immediately
     config.session_rate = Comparator(LESS_THAN, 1);
     config.used = EventConfig(events::kIOSLensButtonUsed, Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     config.trigger =
         EventConfig("ios_homepage_lens_badge_trigger", Comparator(LESS_THAN, 3),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.groups.push_back(kiOSHomepageNewBadgesGroup.name);
     return config;
   }
@@ -2806,9 +2806,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = Comparator(LESS_THAN, 1);
     config.used =
         EventConfig(events::kHomeCustomizationMenuUsed, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.trigger = EventConfig("ios_homepage_customization_badge_trigger",
-                                 Comparator(LESS_THAN, 3), kMaxStoragePeriod,
+                                 Comparator(LESS_THAN, 3), kMaxWindowPeriod,
                                  kMaxStoragePeriod);
     config.groups.push_back(kiOSHomepageNewBadgesGroup.name);
     return config;
@@ -2823,10 +2823,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.blocked_by.type = BlockedBy::Type::NONE;
     config.blocking.type = Blocking::Type::NONE;
     config.used = EventConfig("ios_background_badge_used", Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     config.trigger =
         EventConfig("ios_background_badge_trigger", Comparator(LESS_THAN, 1),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -2867,9 +2867,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = Comparator(EQUAL, 0);
     config.trigger =
         EventConfig("lens_keyboard_feature_trigger", Comparator(LESS_THAN, 3),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.used = EventConfig("lens_keyboard_used", Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -2895,12 +2895,12 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Initially, show to users who haven't scheduled a tab reminder yet.
     config.used =
         EventConfig(events::kIOSTabReminderScheduled, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     // The Overflow Menu Bubble IPH should not be triggered more than 3 times in
     // total.
     config.trigger = EventConfig(
         events::kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger,
-        Comparator(LESS_THAN, 3), kMaxStoragePeriod, kMaxStoragePeriod);
+        Comparator(LESS_THAN, 3), kMaxWindowPeriod, kMaxStoragePeriod);
     // Space out IPH triggers to once per day.
     config.event_configs.insert(EventConfig(
         events::kIOSReminderNotificationsOverflowMenuBubbleIPHTrigger,
@@ -2917,11 +2917,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = kNoRestrictions;
     // Initially, show to users who haven't interacted with Reading Mode.
     config.used = EventConfig(events::kIOSReaderModeUsed, Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     // The New Badge IPH should not be triggered more than 3 times
     // in total.
     config.trigger = EventConfig(events::kIOSIPHBadgedReaderModeTriggered,
-                                 Comparator(LESS_THAN, 3), kMaxStoragePeriod,
+                                 Comparator(LESS_THAN, 3), kMaxWindowPeriod,
                                  kMaxStoragePeriod);
     return config;
   }
@@ -2938,16 +2938,16 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // menu action yet.
     config.used =
         EventConfig(events::kIOSOverflowMenuSetTabReminderTapped,
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     // The New Badge IPH should not be triggered more than 3 times
     // in total.
     config.trigger = EventConfig(
         events::kIOSReminderNotificationsOverflowMenuNewBadgeIPHTrigger,
-        Comparator(LESS_THAN, 3), kMaxStoragePeriod, kMaxStoragePeriod);
+        Comparator(LESS_THAN, 3), kMaxWindowPeriod, kMaxStoragePeriod);
     // Don't show if the user has already scheduled a tab reminder.
     config.event_configs.insert(
         EventConfig(events::kIOSTabReminderScheduled, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod));
+                    kMaxWindowPeriod, kMaxStoragePeriod));
     return config;
   }
 
@@ -2961,9 +2961,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = kNoRestrictions;
     config.trigger =
         EventConfig("signin_from_settings_trigger", Comparator(LESS_THAN, 1),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.used = EventConfig("signin_from_settings_used", Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     config.blocked_by.type = BlockedBy::Type::NONE;
     return config;
   }
@@ -3009,13 +3009,13 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = Comparator(EQUAL, 0);
     config.used =
         EventConfig(events::kIOSOverflowMenuCustomizationUsed,
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     config.trigger =
         EventConfig("overflow_menu_customization_trigger", Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.event_configs.insert(
         EventConfig(events::kIOSOverflowMenuOffscreenItemUsed,
-                    Comparator(GREATER_THAN_OR_EQUAL, 2), kMaxStoragePeriod,
+                    Comparator(GREATER_THAN_OR_EQUAL, 2), kMaxWindowPeriod,
                     kMaxStoragePeriod));
     return config;
   }
@@ -3047,7 +3047,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 360, 360));
     config.used =
         EventConfig("inline_enhanced_safe_browsing_promo_used",
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     config.blocked_by.type = BlockedBy::Type::NONE;
     config.blocking.type = Blocking::Type::NONE;
     return config;
@@ -3078,10 +3078,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = Comparator(EQUAL, 0);
     config.trigger =
         EventConfig("home_customization_menu_iph_triggered",
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     config.used =
         EventConfig(events::kHomeCustomizationMenuUsed, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -3093,7 +3093,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate_impact.type = SessionRateImpact::Type::NONE;
     config.trigger =
         EventConfig("download_auto_deletion_iph_trigger", Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.event_configs.insert(
         EventConfig(events::kIOSDownloadAutoDeletionIPHCriterionMet,
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 60, 360));
@@ -3119,14 +3119,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Show at most 2 times total.
     config.trigger =
         EventConfig(kSettingsInOverflowTriggerEvent, Comparator(LESS_THAN, 2),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     // Show at most once per day.
     config.event_configs.emplace(kSettingsInOverflowTriggerEvent,
                                  Comparator(EQUAL, 0), 1, 1);
     // Stop showing once the user opens settings via the overflow menu.
     config.used =
         EventConfig(events::kSettingsOnOverflowMenuUsed, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
 
     return config;
   }
@@ -3146,7 +3146,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Show only once.
     config.trigger =
         EventConfig(kSwitchAccountsWithAccountParticleTrigger,
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
 
     return config;
   }
@@ -3168,10 +3168,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     config.trigger =
         EventConfig(events::kIOSPageActionMenuIPHTrigger, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.used =
         EventConfig(events::kIOSPageActionMenuIPHUsed, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
@@ -3226,7 +3226,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Feature should show as long as the AI Hub was never used.
     config.used =
         EventConfig(events::kIOSAIHubNewBadgeUsed, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
 
     // Should trigger no matter how many impressions there are.
     config.trigger =
@@ -3266,7 +3266,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
       // Should show if fullscreen promo was triggered once.
       config.event_configs.insert(EventConfig(
           events::kIOSGeminiFullscreenPromoTriggered,
-          Comparator(GREATER_THAN, 0), kMaxStoragePeriod, kMaxStoragePeriod));
+          Comparator(GREATER_THAN, 0), kMaxWindowPeriod, kMaxStoragePeriod));
     }
 
     return config;
@@ -3280,22 +3280,22 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Show promo only to users that are not recent.
     config.event_configs.insert(EventConfig(
         events::kIOSFirstRunComplete, Comparator(GREATER_THAN_OR_EQUAL, 1),
-        kMaxStoragePeriod, kMaxStoragePeriod));
+        kMaxWindowPeriod, kMaxStoragePeriod));
     config.event_configs.insert(EventConfig(events::kIOSFirstRunComplete,
                                             Comparator(EQUAL, 0), 1,
                                             kMaxStoragePeriod));
     // Show promo only if user has never started the Gemini flow before.
     config.used =
         EventConfig(events::kIOSGeminiFlowStartedNonPromo, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     // The promo should only be shown once.
     config.trigger =
         EventConfig(events::kIOSGeminiFullscreenPromoTriggered,
-                    Comparator(EQUAL, 0), kMaxStoragePeriod, kMaxStoragePeriod);
+                    Comparator(EQUAL, 0), kMaxWindowPeriod, kMaxStoragePeriod);
     // Show promo only if user never give consent.
     config.event_configs.insert(
         EventConfig(events::kIOSGeminiConsentGiven, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod));
+                    kMaxWindowPeriod, kMaxStoragePeriod));
     return config;
   }
 
@@ -3306,7 +3306,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = kNoRestrictions;
     // Limit showing the suggestion to less than 5 times.
     config.trigger = EventConfig(events::kIOSGeminiWhatCanGeminiDoTriggered,
-                                 Comparator(LESS_THAN, 5), kMaxStoragePeriod,
+                                 Comparator(LESS_THAN, 5), kMaxWindowPeriod,
                                  kMaxStoragePeriod);
     config.used =
         EventConfig(events::kIOSGeminiWhatCanGeminiDoTapped, kAlwaysTrue,
@@ -3351,7 +3351,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig(events::kIOSGeminiLiveNewBadgeTriggered, kAlwaysTrue,
                     kMaxStoragePeriod, kMaxStoragePeriod);
     config.used = EventConfig(events::kIOSGeminiLiveUsed, Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
 
     // After the user has seen the Live 1st-time IPH (at least 1 time in last 14
     // days).
@@ -3373,14 +3373,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     config.trigger =
         EventConfig(events::kIOSGeminiLiveIPHTriggered, Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.used = EventConfig(events::kIOSGeminiLiveUsed, Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
 
     // Seen Gemini Image Remix (Nano Banana) IPH at least once in the past.
     config.event_configs.insert(
         EventConfig(events::kIOSGeminiImageRemixIPHTrigger,
-                    Comparator(GREATER_THAN_OR_EQUAL, 1), kMaxStoragePeriod,
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), kMaxWindowPeriod,
                     kMaxStoragePeriod));
     // After 3 days since they've seen Gemini Image Remix IPH (0 times in the
     // last 3 days).
@@ -3399,9 +3399,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.session_rate = Comparator(EQUAL, 0);
     config.trigger =
         EventConfig("ios_pin_mvt_site_triggered", Comparator(EQUAL, 0),
-                    kMaxStoragePeriod, kMaxStoragePeriod);
+                    kMaxWindowPeriod, kMaxStoragePeriod);
     config.used = EventConfig(events::kIOSPinMVTSiteUsed, Comparator(EQUAL, 0),
-                              kMaxStoragePeriod, kMaxStoragePeriod);
+                              kMaxWindowPeriod, kMaxStoragePeriod);
     return config;
   }
 
