@@ -2,4 +2,7 @@ specific_include_rules = {
   "web_app_interactive_uitest\\.cc": [
     "+ash/shell.h",
   ],
+  "web_app_run_on_os_login_notification\\.cc": [
+    "+ui/message_center/message_center.h",
+  ],
 }

@@ -1143,7 +1143,6 @@ source_set("web_applications_unit_tests") {
     "//chrome/browser/apps/link_capturing:test_support",
     "//chrome/browser/component_updater",
     "//chrome/browser/content_settings:content_settings_factory",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/shortcuts",
@@ -1195,6 +1194,7 @@ source_set("web_applications_unit_tests") {
   if (is_chromeos) {
     deps += [
       "//ash/constants",
+      "//ash/public/cpp",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/system_web_apps/test_support",
@@ -1208,6 +1208,9 @@ source_set("web_applications_unit_tests") {
       "//chromeos/ash/experiences/arc/mojom",
       "//chromeos/ash/experiences/system_web_apps/types",
       "//chromeos/components/kiosk:test_support",
+      "//components/account_id",
+      "//google_apis",
+      "//ui/message_center",
     ]
   }
 
@@ -1373,7 +1376,6 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/devtools",
     "//chrome/browser/devtools:test_support",
     "//chrome/browser/gcm",
-    "//chrome/browser/notifications:system_notification_helper",
     "//chrome/browser/permissions",
     "//chrome/browser/policy:policy_util",
     "//chrome/browser/prefs:util",
@@ -1434,6 +1436,7 @@ source_set("web_applications_browser_tests") {
   if (is_chromeos) {
     deps += [
       "//ash/constants",
+      "//ash/public/cpp",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_mode/test:test_support",
       "//chrome/browser/ash/file_manager:test_support",
@@ -1447,8 +1450,10 @@ source_set("web_applications_browser_tests") {
       "//chrome/browser/ash/test:test_support",
       "//chrome/browser/device_api",
       "//chrome/browser/ui/ash/login",
+      "//chromeos/ash/components/browser_context_helper",
       "//chromeos/ash/components/policy/device_policy:test_support",
       "//chromeos/ash/components/system",
+      "//ui/message_center",
     ]
   } else {
     deps += [ "//chrome/browser/apps/link_capturing" ]

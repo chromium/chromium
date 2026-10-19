@@ -30,6 +30,13 @@ specific_include_rules = {
     "+ui/views/widget/any_widget_observer.h",
     "+ui/views/widget/widget.h",
   ],
+  "web_app_run_on_os_login_manager_browsertest.cc": [
+    "+ui/message_center/message_center.h",
+  ],
+  "web_app_run_on_os_login_manager_unittest.cc": [
+    "+ui/message_center/message_center.h",
+    "+ui/message_center/message_center_observer.h",
+  ],
   ".*unittest\\.(cc|h)": [
     "+chrome/browser/extensions",
     "+extensions",

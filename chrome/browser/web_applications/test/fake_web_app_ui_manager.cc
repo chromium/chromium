@@ -182,8 +182,7 @@ void FakeWebAppUiManager::DisplayRunOnOsLoginNotification(
     const base::flat_map<webapps::AppId,
                          WebAppUiManager::RoolNotificationBehavior>& apps,
     base::WeakPtr<Profile> profile) {
-  // Still show the notification so it can be tested using the
-  // NotificationDisplayServiceTester
+  // Still show the notification so that tests can find it in MessageCenter.
   web_app::DisplayRunOnOsLoginNotification(apps, std::move(profile));
 }
 

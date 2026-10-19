@@ -9,13 +9,15 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/notification_utils.h"
 #include "base/json/json_reader.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -30,12 +32,18 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/webapps/common/web_app_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "ui/message_center/message_center.h"
+#include "ui/message_center/message_center_observer.h"
 #include "url/gurl.h"
 
 namespace web_app {
@@ -56,9 +64,14 @@ const char kWebAppSettings[] = R"([
   }
 ])";
 
-class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
+class WebAppRunOnOsLoginManagerTestBase
+    : public WebAppTest,
+      public message_center::MessageCenterObserver {
  public:
   void SetUp() override {
+    // The notification is scoped to the user who owns the profile, so set up a
+    // user manager before WebAppTest::SetUp() creates the profile.
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     WebAppTest::SetUp();
 
     // Set up policy before managers are started.
@@ -72,12 +85,20 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
           launched_apps_.push_back(std::move(params));
         }));
 
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
-    tester_ = std::make_unique<NotificationDisplayServiceTester>(
-        /*profile=*/profile());
-    tester_->SetNotificationAddedClosure(
-        base::BindLambdaForTesting([this]() { notification_count_++; }));
+    message_center::MessageCenter::Initialize();
+
+    // Log in a user and associate it with the profile.
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("fakegaia"));
+    const std::string username_hash =
+        ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile());
+    fake_user_manager_->AddUser(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, username_hash);
+    ash::AnnotatedAccountId::Set(profile(), account_id);
+    notification_id_ = ash::CreateUserScopedNotificationId(
+        kRunOnOsLoginNotificationId, username_hash);
+
+    message_center_observation_.Observe(message_center::MessageCenter::Get());
     notification_count_ = 0u;
 
     // This test requires that a) the WebAppSettings are correctly read by the
@@ -97,7 +118,10 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   void TearDown() override {
     ui_manager_ = nullptr;
     fake_provider().Shutdown();
+    message_center_observation_.Reset();
+    message_center::MessageCenter::Shutdown();
     WebAppTest::TearDown();
+    fake_user_manager_.Reset();
   }
 
  protected:
@@ -113,10 +137,29 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
 
   unsigned int notification_count_;
   std::string notification_text_;
+  std::string notification_id_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   raw_ptr<FakeWebAppUiManager> ui_manager_ = nullptr;
-  std::unique_ptr<NotificationDisplayServiceTester> tester_;
+  base::ScopedObservation<message_center::MessageCenter,
+                          message_center::MessageCenterObserver>
+      message_center_observation_{this};
   std::vector<apps::AppLaunchParams> launched_apps_;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
+
+ private:
+  // message_center::MessageCenterObserver:
+  void OnNotificationAdded(const std::string& notification_id) override {
+    if (notification_id == notification_id_) {
+      ++notification_count_;
+    }
+  }
+
+  void OnNotificationUpdated(const std::string& notification_id) override {
+    if (notification_id == notification_id_) {
+      ++notification_count_;
+    }
+  }
 };
 
 class WebAppRunOnOsLoginManagerParameterizedTest

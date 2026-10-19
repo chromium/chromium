@@ -8,14 +8,12 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/notification_utils.h"
+#include "base/check_deref.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/build_config.h"
-#include "chrome/browser/notifications/notification_display_service.h"
-#include "chrome/browser/notifications/notification_display_service_factory.h"
-#include "chrome/browser/notifications/notification_handler.h"
-#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
@@ -23,23 +21,22 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_elider.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/notifier_catalogs.h"
-#endif
 
 namespace {
 
 constexpr size_t kAppLength = 18;
 
-message_center::Notification CreateNotification(
+std::unique_ptr<message_center::Notification> CreateNotification(
     const base::flat_map<webapps::AppId,
                          web_app::WebAppUiManager::RoolNotificationBehavior>&
         apps,
@@ -102,16 +99,16 @@ message_center::Notification CreateNotification(
   notification_data.buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_RUN_ON_OS_LOGIN_ENABLED_LEARN_MORE));
 
-#if BUILDFLAG(IS_CHROMEOS)
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile.get()));
+
   message_center::NotifierId notifier_id =
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  web_app::kRunOnOsLoginNotifierId,
                                  ash::NotificationCatalogName::kWebAppSettings);
-#else
-  message_center::NotifierId notifier_id =
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 web_app::kRunOnOsLoginNotifierId);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+  // Set `profile_id` so that the notification is hidden while another
+  // signed-in user is active.
+  notifier_id.profile_id = user.GetAccountId().GetUserEmail();
 
   auto click_callback = base::BindRepeating(
       [](base::WeakPtr<Profile> profile, std::optional<int> index) -> void {
@@ -128,15 +125,17 @@ message_center::Notification CreateNotification(
       },
       profile);
 
-  message_center::Notification notification(
+  auto notification = std::make_unique<message_center::Notification>(
       message_center::NOTIFICATION_TYPE_SIMPLE,
-      web_app::kRunOnOsLoginNotificationId, title, message, ui::ImageModel(),
+      ash::CreateUserScopedNotificationId(web_app::kRunOnOsLoginNotificationId,
+                                          user.username_hash()),
+      title, message, ui::ImageModel(),
       /*display_source=*/std::u16string(),
       /*origin_url=*/GURL(), notifier_id, notification_data,
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           std::move(click_callback)));
 
-  notification.SetSystemPriority();
+  notification->SetSystemPriority();
 
   return notification;
 }
@@ -155,10 +154,7 @@ void DisplayRunOnOsLoginNotification(
     return;
   }
 
-  message_center::Notification notification = CreateNotification(apps, profile);
-
-  NotificationDisplayServiceFactory::GetForProfile(profile.get())
-      ->Display(NotificationHandler::Type::TRANSIENT, notification,
-                /*metadata=*/nullptr);
+  message_center::MessageCenter::Get()->AddNotification(
+      CreateNotification(apps, profile));
 }
 }  // namespace web_app

@@ -141,7 +141,13 @@ source_set("impl") {
       "web_app_relaunch_notification.cc",
       "web_app_run_on_os_login_notification.cc",
     ]
-    deps += [ "//chromeos/strings:strings_grit" ]
+    deps += [
+      "//ash/public/cpp",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/strings:strings_grit",
+      "//components/user_manager",
+      "//ui/message_center",
+    ]
   }
 
   if (toolkit_views) {
