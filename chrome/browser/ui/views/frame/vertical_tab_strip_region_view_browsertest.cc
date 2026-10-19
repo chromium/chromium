@@ -281,11 +281,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewSmaller) {
     region_view()->OnResize(resize_amount, false);
     EXPECT_TRUE(region_view()->target_collapse_state_for_testing().collapsed);
     EXPECT_EQ(
-        region_view()->GetTopContainer()->state_override_for_testing(),
-        (tabs::VerticalTabStripState{
-            .collapsed = true,
-            .uncollapsed_width = tabs::kVerticalTabStripUncollapsedMinWidth}));
-    EXPECT_EQ(
         tabs::kVerticalTabStripUncollapsedMinWidth,
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_TRUE(IsAnimatingSize());
@@ -399,11 +394,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ResizeViewBigger) {
     region_view()->OnResize(resize_amount, false);
     EXPECT_FALSE(region_view()->target_collapse_state_for_testing().collapsed);
     EXPECT_EQ(
-        region_view()->GetTopContainer()->state_override_for_testing(),
-        (tabs::VerticalTabStripState{
-            .collapsed = false,
-            .uncollapsed_width = tabs::kVerticalTabStripUncollapsedMinWidth}));
-    EXPECT_EQ(
         tabs::kVerticalTabStripUncollapsedMinWidth,
         region_view()->target_collapse_state_for_testing().uncollapsed_width);
     EXPECT_TRUE(IsAnimatingSize());
@@ -474,16 +464,11 @@ class VerticalTabStripRegionViewOrganizerPanelTest
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewOrganizerPanelTest,
                        ResizeSwitchesControlsMidDrag) {
-  auto render_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
-      gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
-  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kTabSearchPinnedToTabstrip, true);
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kVerticalTabsExpandOnHoverEnabled, false);
-  region_view()->GetTopContainer()->UpdateControlsVisibility();
+  RunScheduledLayouts();
 
   auto* const top_container = region_view()->GetTopContainer();
   ASSERT_NE(top_container->GetSegmentedControl(), nullptr);
@@ -499,44 +484,42 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewOrganizerPanelTest,
   const int collapse_resize_amount =
       tabs::kVerticalTabStripCollapseSnapWidth - initial_width;
   region_view()->OnResize(collapse_resize_amount, /*done_resizing=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  RunScheduledLayouts();
 
-  // Even though it is mid-drag and the state controller has not finished
-  // collapsing yet, controls should immediately switch to the combo button.
   EXPECT_FALSE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_TRUE(top_container->GetComboButton()->GetVisible());
-  EXPECT_EQ(top_container->state_override_for_testing(),
-            (tabs::VerticalTabStripState{.collapsed = true,
-                                         .uncollapsed_width = initial_width}));
 
   // 2. Drag back larger mid-drag to a width supporting the organizer
   // panel (done_resizing = false).
   const int expand_resize_amount = 0;
   region_view()->OnResize(expand_resize_amount, /*done_resizing=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  RunScheduledLayouts();
 
-  // Should immediately switch back to the segmented control mid-drag.
+  // Should switch back to the segmented control mid-drag.
   EXPECT_TRUE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_FALSE(top_container->GetComboButton()->GetVisible());
-  // Because state_controller_ is still uncollapsed and width matches default,
-  // the overrides reset to nullopt.
-  EXPECT_EQ(top_container->state_override_for_testing(), std::nullopt);
 
   // 3. Complete the drag to collapse and wait for collapse animation to finish.
   region_view()->OnResize(collapse_resize_amount, /*done_resizing=*/true);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return state_controller()->IsCollapsed(); }));
   ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  RunScheduledLayouts();
 
   EXPECT_FALSE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_TRUE(top_container->GetComboButton()->GetVisible());
-  EXPECT_EQ(top_container->state_override_for_testing(), std::nullopt);
 
   // 4. Starting from collapsed, drag larger past the collapse snap point
   // to a width supporting the organizer panel mid-drag.
   const int drag_expand_amount =
       initial_width - tabs::kVerticalTabStripCollapsedWidth;
   region_view()->OnResize(drag_expand_amount, /*done_resizing=*/false);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return !IsAnimatingSize(); }));
+  RunScheduledLayouts();
 
-  // Controls immediately switch to the segmented control mid-drag.
+  // Controls switch to the segmented control mid-drag.
   EXPECT_TRUE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_FALSE(top_container->GetComboButton()->GetVisible());
 }
@@ -545,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewOrganizerPanelTest,
                        ResizeSwitchesControlsMidDragUncollapsed) {
   browser()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kTabSearchPinnedToTabstrip, true);
-  region_view()->GetTopContainer()->UpdateControlsVisibility();
+  RunScheduledLayouts();
 
   auto* const top_container = region_view()->GetTopContainer();
   ASSERT_NE(top_container->GetSegmentedControl(), nullptr);
@@ -559,31 +542,29 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewOrganizerPanelTest,
   // (to 200px, done_resizing = false).
   const int shrink_past_threshold = 200 - initial_width;
   region_view()->OnResize(shrink_past_threshold, /*done_resizing=*/false);
+  RunScheduledLayouts();
 
   // Even though it is mid-drag and the state controller still has the old
-  // width, controls should immediately switch to the combo button.
+  // width, controls should immediately switch to the combo button on layout.
+  EXPECT_EQ(state_controller()->GetUncollapsedWidth(), initial_width);
   EXPECT_FALSE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_TRUE(top_container->GetComboButton()->GetVisible());
-  EXPECT_EQ(top_container->state_override_for_testing(),
-            (tabs::VerticalTabStripState{.collapsed = false,
-                                         .uncollapsed_width = 200}));
 
   // 2. Drag back wider past the threshold mid-drag (to 280px, outside snap
   // distance of 256px, done_resizing = false).
   const int expand_past_threshold = 280 - initial_width;
   region_view()->OnResize(expand_past_threshold, /*done_resizing=*/false);
+  RunScheduledLayouts();
 
   // Should immediately switch back to the segmented control mid-drag.
+  EXPECT_EQ(state_controller()->GetUncollapsedWidth(), initial_width);
   EXPECT_TRUE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_FALSE(top_container->GetComboButton()->GetVisible());
-  EXPECT_EQ(top_container->state_override_for_testing(),
-            (tabs::VerticalTabStripState{.collapsed = false,
-                                         .uncollapsed_width = 280}));
 
   // 3. Complete drag narrower (done_resizing = true).
   region_view()->OnResize(shrink_past_threshold, /*done_resizing=*/true);
+  RunScheduledLayouts();
   EXPECT_EQ(state_controller()->GetUncollapsedWidth(), 200);
-  EXPECT_EQ(top_container->state_override_for_testing(), std::nullopt);
   EXPECT_FALSE(top_container->GetSegmentedControl()->GetVisible());
   EXPECT_TRUE(top_container->GetComboButton()->GetVisible());
 }

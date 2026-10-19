@@ -283,7 +283,6 @@ void VerticalTabStripRegionView::OnAnimationProgressed(
       if (motion == TabStripAnimations::kCollapse) {
         update_state_controller_collapsed_callback_.Run(true);
       }
-      top_button_container_->ClearStateOverride();
       InvalidateLayout();
       break;
     }
@@ -305,7 +304,6 @@ void VerticalTabStripRegionView::OnAnimationProgressed(
       if (!target_collapse_state_.collapsed) {
         update_state_controller_collapsed_callback_.Run(true);
       }
-      top_button_container_->ClearStateOverride();
       break;
   }
 }
@@ -788,11 +786,6 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
   }
 
   target_collapse_state_ = new_state;
-
-  top_button_container_->SetStateOverride(
-      (!done_resizing || previously_collapsed != new_state.collapsed)
-          ? std::make_optional(new_state)
-          : std::nullopt);
 
   if (previously_collapsed != target_collapse_state_.collapsed) {
     state_controller_->RequestCollapse(target_collapse_state_.collapsed);
