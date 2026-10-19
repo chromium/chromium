@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -44,6 +45,7 @@
 #include "third_party/blink/public/mojom/choosers/color_chooser.mojom-blink.h"
 #include "third_party/blink/public/web/web_autofill_client.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
+#include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_testing_support.h"
@@ -535,8 +537,22 @@ class MockWebAutofillClient : public WebAutofillClient {
     is_autofillable_ = is_autofillable;
   }
 
+  void DidChangeFormRelatedElementDynamically(
+      WebFormRelatedChangeType,
+      std::optional<mojom::FormControlType> form_control_type,
+      base::FunctionRef<WebElement()> element) override {
+    last_form_control_type_ = form_control_type;
+    last_element_ = element();
+  }
+  const std::optional<mojom::FormControlType>& last_form_control_type() const {
+    return last_form_control_type_;
+  }
+  const WebElement& last_element() const { return last_element_; }
+
  private:
   bool is_autofillable_ = false;
+  std::optional<mojom::FormControlType> last_form_control_type_;
+  WebElement last_element_;
 };
 
 class ChromeClientImplAutofillTest : public testing::Test {
@@ -572,6 +588,48 @@ TEST_F(ChromeClientImplAutofillTest, IsAutofillableElement) {
 
   mock_autofill_client.SetIsAutofillable(true);
   EXPECT_TRUE(chrome_client_impl_->IsAutofillableElement(*input));
+
+  web_frame->SetAutofillClient(nullptr);
+}
+
+TEST_F(ChromeClientImplAutofillTest, DidChangeFormRelatedElementDynamically) {
+  frame_test_helpers::LoadHTMLString(
+      main_frame_,
+      "<body><input id=input type=checkbox><form id=form></form>"
+      "<input id=password type=password>",
+      blink::WebURL());
+  auto* web_frame = To<WebLocalFrameImpl>(main_frame_.get());
+  MockWebAutofillClient mock_autofill_client;
+  web_frame->SetAutofillClient(&mock_autofill_client);
+
+  LocalFrame* frame = web_frame->GetFrame();
+  Document* document = frame->GetDocument();
+  auto* input =
+      To<HTMLElement>(document->getElementById(AtomicString("input")));
+  auto* form = To<HTMLElement>(document->getElementById(AtomicString("form")));
+  auto* password =
+      To<HTMLInputElement>(document->getElementById(AtomicString("password")));
+
+  chrome_client_impl_->DidChangeFormRelatedElementDynamically(
+      frame, input, WebFormRelatedChangeType::kAdd);
+  EXPECT_EQ(mock_autofill_client.last_form_control_type(),
+            mojom::FormControlType::kInputCheckbox);
+  EXPECT_EQ(mock_autofill_client.last_element(), WebElement(input));
+
+  chrome_client_impl_->DidChangeFormRelatedElementDynamically(
+      frame, form, WebFormRelatedChangeType::kAdd);
+  EXPECT_EQ(mock_autofill_client.last_form_control_type(), std::nullopt);
+  EXPECT_EQ(mock_autofill_client.last_element(), WebElement(form));
+
+  // The client is told FormControlTypeForAutofill(): a text field that was a
+  // password field still counts as one.
+  password->setType(input_type_names::kText);
+  ASSERT_EQ(password->FormControlType(), mojom::FormControlType::kInputText);
+  chrome_client_impl_->DidChangeFormRelatedElementDynamically(
+      frame, password, WebFormRelatedChangeType::kAdd);
+  EXPECT_EQ(mock_autofill_client.last_form_control_type(),
+            mojom::FormControlType::kInputPassword);
+  EXPECT_EQ(mock_autofill_client.last_element(), WebElement(password));
 
   web_frame->SetAutofillClient(nullptr);
 }

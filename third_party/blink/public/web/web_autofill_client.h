@@ -31,7 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_CLIENT_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
+#include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
@@ -84,9 +88,17 @@ class WebAutofillClient {
   // Called when the user interacts with the page after a load.
   virtual void UserGestureObserved() {}
 
+  // Called when a form-related element was added, removed, re-associated or
+  // hidden. `form_control_type` is the element's
+  // WebFormControlElement::FormControlTypeForAutofill() if it is a form
+  // control, and std::nullopt otherwise (e.g. for a <form>). `element` returns
+  // the changed element. This is called for every form control inserted into
+  // or removed from the document, so only call `element` (which constructs a
+  // WebElement) for changes that are of interest.
   virtual void DidChangeFormRelatedElementDynamically(
-      const WebElement&,
-      WebFormRelatedChangeType) {}
+      WebFormRelatedChangeType,
+      std::optional<mojom::FormControlType> form_control_type,
+      base::FunctionRef<WebElement()> element) {}
   virtual void AjaxSucceeded() {}
   // Called when the value of `element` has been changed by JavaScript.
   // `old_value` contains the value before being changed.

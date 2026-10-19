@@ -332,6 +332,37 @@ bool ShouldHidePopupOnScroll(blink::mojom::ScrollType scroll_type) {
       features::kAutofillIgnoreLayoutInducedScrollEvents);
 }
 
+// Returns whether a dynamic change of kind `form_related_change` to a form
+// control of type `form_control_type` may be relevant to Autofill. This only
+// looks at the control's type so that irrelevant notifications (e.g. for
+// checkboxes and buttons) can be dropped before creating a WebElement for
+// them. If relevance ever depends on more than the type, return true here for
+// the types in question and decide on the element in
+// DidChangeFormRelatedElementDynamically().
+bool MayBeRelevantFormControlChange(
+    WebFormRelatedChangeType form_related_change,
+    blink::mojom::FormControlType form_control_type) {
+  using enum blink::mojom::FormControlType;
+  const bool is_autofillable =
+      form_util::GetAutofillFormControlType(form_control_type).has_value();
+  switch (form_related_change) {
+    case WebFormRelatedChangeType::kAdd:
+    case WebFormRelatedChangeType::kRemove:
+    case WebFormRelatedChangeType::kReassociate:
+      // If the element dynamically added is not an autofillable control
+      // element, it will probably not have any influence on Autofill at all,
+      // and therefore there's no need to trigger DOM re-extraction.
+      return is_autofillable;
+    case WebFormRelatedChangeType::kHide:
+      // Hidden elements have a slightly different behavior, since they don't
+      // lead to form extraction. Here, we are also interested in input
+      // elements that have type 'hidden', which are not autofillable, but are
+      // one way to hide previously autofillable elements.
+      return is_autofillable || form_control_type == kInputHidden;
+  }
+  NOTREACHED();
+}
+
 AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
   if (uses_platform_autofill) {
     return {
@@ -2054,46 +2085,30 @@ void AutofillAgent::HidePopup() {
 }
 
 void AutofillAgent::DidChangeFormRelatedElementDynamically(
-    const WebElement& element,
-    WebFormRelatedChangeType form_related_change) {
-  auto should_handle_event = [&] {
-    if (!is_dom_content_loaded_) {
-      // When the agent receives the DomContentLoaded signal, it will extract
-      // all forms and notify PasswordAutofillAgent by default, so we do not
-      // need to run this function as this would be redundant.
-      return false;
-    }
-    // Early bailout for node removal.
-    if (form_related_change == blink::WebFormRelatedChangeType::kRemove &&
-        !replace_form_element_observer_) {
-      return false;
-    }
-    auto maybe_control_element = element.DynamicTo<WebFormControlElement>();
-    const bool is_autofillable_element =
-        element.DynamicTo<WebFormElement>() ||
-        (maybe_control_element &&
-         form_util::IsAutofillableElement(maybe_control_element));
-    switch (form_related_change) {
-      case blink::WebFormRelatedChangeType::kAdd:
-      case blink::WebFormRelatedChangeType::kRemove:
-      case blink::WebFormRelatedChangeType::kReassociate:
-        // If the element dynamically added is not a form element or
-        // autofillable control element (see condition above), it will probably
-        // not have any influence on Autofill at all, and therefore there's no
-        // need to trigger DOM re-extraction on any other case.
-        return is_autofillable_element;
-      case blink::WebFormRelatedChangeType::kHide:
-        // Hidden elements have a slightly different behavior, since they don't
-        // lead to form extraction. Here, we are also interested in input
-        // elements that have type 'hidden', which are not autofillable, but are
-        // one way to hide previously autofillable elements.
-        return is_autofillable_element ||
-               (maybe_control_element &&
-                maybe_control_element.FormControlTypeForAutofill() ==
-                    blink::mojom::FormControlType::kInputHidden);
-    }
-  };
-  if (!should_handle_event()) {
+    WebFormRelatedChangeType form_related_change,
+    std::optional<blink::mojom::FormControlType> form_control_type,
+    base::FunctionRef<WebElement()> get_element) {
+  // This is called for every form control that is inserted into or removed
+  // from the DOM, and `get_element()` constructs a WebElement (and thus a
+  // cppgc::Persistent). Decide on the cheap arguments first.
+  if (!is_dom_content_loaded_) {
+    // When the agent receives the DomContentLoaded signal, it will extract
+    // all forms and notify PasswordAutofillAgent by default, so we do not
+    // need to run this function as this would be redundant.
+    return;
+  }
+  // Early bailout for node removal.
+  if (form_related_change == blink::WebFormRelatedChangeType::kRemove &&
+      !replace_form_element_observer_) {
+    return;
+  }
+  if (form_control_type && !MayBeRelevantFormControlChange(
+                               form_related_change, *form_control_type)) {
+    return;
+  }
+  const WebElement element = get_element();
+  if (!form_control_type && !element.DynamicTo<WebFormElement>()) {
+    // Among non form control elements only form elements influence Autofill.
     return;
   }
 

@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
@@ -368,6 +369,16 @@ bool HTMLFormControlElement::MatchesEnabledPseudoClass() const {
 
 bool HTMLFormControlElement::IsRequired() const {
   return FastHasAttribute(html_names::kRequiredAttr);
+}
+
+mojom::blink::FormControlType
+HTMLFormControlElement::FormControlTypeForAutofill() const {
+  if (auto* input = DynamicTo<HTMLInputElement>(this)) {
+    if (input->IsTextField() && input->HasBeenPasswordField()) {
+      return mojom::blink::FormControlType::kInputPassword;
+    }
+  }
+  return FormControlType();
 }
 
 String HTMLFormControlElement::ResultForDialogSubmit() {

@@ -76,6 +76,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   virtual mojom::blink::FormControlType FormControlType() const = 0;
   virtual const AtomicString& FormControlTypeAsString() const = 0;
+  // FormControlType() as Autofill sees it: a text field that has ever been an
+  // <input type=password> is reported as kInputPassword.
+  mojom::blink::FormControlType FormControlTypeForAutofill() const;
 
   virtual bool CanTriggerImplicitSubmission() const { return false; }
 

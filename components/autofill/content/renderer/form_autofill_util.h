@@ -106,6 +106,14 @@ bool IsAutofillableElement(const blink::WebFormControlElement& element);
 std::optional<FormControlType> GetAutofillFormControlType(
     const blink::WebFormControlElement& element);
 
+// Maps a Blink FormControlTypeForAutofill() value to Autofill's
+// FormControlType. Returns std::nullopt for types that Autofill does not
+// handle. AutofillAgent::DidChangeFormRelatedElementDynamically() relies on
+// this depending on the type only; see MayBeRelevantFormControlChange() there
+// if that ever needs to change.
+std::optional<FormControlType> GetAutofillFormControlType(
+    blink::mojom::FormControlType type);
+
 // Returns true iff `element` has a "webauthn" autocomplete attribute.
 bool IsWebauthnTaggedElement(const blink::WebFormControlElement& element);
 

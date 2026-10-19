@@ -2265,9 +2265,14 @@ std::optional<FormControlType> GetAutofillFormControlType(
   if (!element) {
     return std::nullopt;
   }
+  return GetAutofillFormControlType(element.FormControlTypeForAutofill());
+}
+
+std::optional<FormControlType> GetAutofillFormControlType(
+    blink::mojom::FormControlType type) {
   // Note that adding a new field type here automatically makes
   // IsAutofillableElement() return true.
-  switch (element.FormControlTypeForAutofill()) {
+  switch (type) {
     case blink::mojom::FormControlType::kInputEmail:
       return FormControlType::kInputEmail;
     case blink::mojom::FormControlType::kInputMonth:

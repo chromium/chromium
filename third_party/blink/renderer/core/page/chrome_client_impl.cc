@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/external_popup_menu.h"
 #include "third_party/blink/renderer/core/html/forms/file_chooser.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/internal_popup_menu.h"
@@ -1287,10 +1288,20 @@ void ChromeClientImpl::DidChangeFormRelatedElementDynamically(
     LocalFrame* frame,
     HTMLElement* element,
     WebFormRelatedChangeType form_related_change) {
-  if (auto* fill_client = AutofillClientFromFrame(frame)) {
-    fill_client->DidChangeFormRelatedElementDynamically(element,
-                                                        form_related_change);
+  auto* fill_client = AutofillClientFromFrame(frame);
+  if (!fill_client) {
+    return;
   }
+  std::optional<mojom::blink::FormControlType> form_control_type;
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+    form_control_type = form_control->FormControlTypeForAutofill();
+  }
+  // This is called for every form-related element that is inserted into or
+  // removed from the document, so the WebElement (a Persistent) is only made
+  // if the client asks for it.
+  fill_client->DidChangeFormRelatedElementDynamically(
+      form_related_change, form_control_type,
+      [element] { return WebElement(element); });
 }
 
 void ChromeClientImpl::ShowVirtualKeyboardOnElementFocus(LocalFrame& frame) {

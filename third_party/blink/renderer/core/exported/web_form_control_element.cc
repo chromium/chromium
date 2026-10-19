@@ -71,12 +71,7 @@ FormControlType WebFormControlElement::FormControlType() const {
 }
 
 FormControlType WebFormControlElement::FormControlTypeForAutofill() const {
-  if (auto* input = ::blink::DynamicTo<HTMLInputElement>(*private_)) {
-    if (input->IsTextField() && input->HasBeenPasswordField()) {
-      return FormControlType::kInputPassword;
-    }
-  }
-  return FormControlType();
+  return ConstUnwrap<HTMLFormControlElement>()->FormControlTypeForAutofill();
 }
 
 WebAutofillState WebFormControlElement::GetAutofillState() const {

@@ -15,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -294,11 +295,13 @@ class AutofillAgent : public content::RenderFrameObserver,
   // blink::WebAutofillClient:
 
   // Signals from blink that a form related element changed dynamically,
-  // passing the changed element as well as the type of the change.
+  // passing the type of the change, the element's FormControlTypeForAutofill()
+  // if it is a form control, and a getter for the changed element.
   // TODO(crbug.com/40281981): Fire the signal for elements that become hidden.
   void DidChangeFormRelatedElementDynamically(
-      const blink::WebElement&,
-      blink::WebFormRelatedChangeType) override;
+      blink::WebFormRelatedChangeType,
+      std::optional<blink::mojom::FormControlType> form_control_type,
+      base::FunctionRef<blink::WebElement()> element) override;
 
   // content::RenderFrameObserver:
 
