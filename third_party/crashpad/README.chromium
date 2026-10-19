@@ -60,3 +60,6 @@ Local Modifications:
    "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h",
    https://crbug.com/1467773
  - CPEPrefix for third_party/zlib is added to README.chromium
+ - The program counter "nearby" check in CaptureContext.CaptureContext is
+   skipped on arm64 non-optimized (!NDEBUG) builds. https://crbug.com/574131848
+   (crashpad/util/misc/capture_context_test.cc)

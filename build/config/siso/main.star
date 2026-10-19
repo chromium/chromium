@@ -42,6 +42,27 @@ def __disable_remote(ctx, step_config):
         rule["remote"] = False
     return step_config
 
+def __disable_remote_host_tools_for_msan(ctx, step_config):
+    # In MSan builds, host tools (protoc, compiled_action targets) are run
+    # with MSan-instrumented shared libraries from
+    # //third_party/instrumented_libs. Only a small set of those libraries is
+    # declared as an input of the action, so when the tool runs remotely the
+    # dynamic loader silently falls back to the worker's uninstrumented system
+    # libraries for everything else (e.g. glib for tools that depend on //base
+    # in component builds), and MSan reports false positives.
+    # Run such steps locally in MSan builds.
+    if gn.args(ctx).get("is_msan") != "true":
+        return step_config
+    for rule in step_config["rules"]:
+        if not rule.get("remote"):
+            continue
+        prefix = rule.get("command_prefix", "")
+        if "/build/gn_run_binary.py" in prefix or \
+           "/tools/protoc_wrapper/protoc_wrapper.py" in prefix or \
+           rule.get("name") in ("default", "default-python"):
+            rule["remote"] = False
+    return step_config
+
 def __unset_timeout(ctx, step_config):
     if not config.get(ctx, "no-remote-timeout"):
         return step_config
@@ -134,6 +155,7 @@ def init(ctx):
 
     step_config = __setup_python(ctx, step_config)
     step_config = __disable_remote(ctx, step_config)
+    step_config = __disable_remote_host_tools_for_msan(ctx, step_config)
     step_config = __unset_timeout(ctx, step_config)
 
     filegroups = {}
