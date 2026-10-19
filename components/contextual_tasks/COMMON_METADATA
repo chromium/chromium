@@ -7,3 +7,6 @@ buganizer_public {
 }
 
 team_email: "chrome-contextual-tasks-eng@google.com"
+
+# Opt in to agentic code review.
+agentic_review {}

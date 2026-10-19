@@ -1,3 +1,6 @@
 buganizer_public: {
   component_id: 1618321
 }
+
+# Opt in to agentic code review.
+agentic_review {}
