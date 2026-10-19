@@ -2637,17 +2637,20 @@ public class BottomSheetCoordinatorUnitTest {
     @Test
     public void
             testContainerLayoutChange_FullStateResizeUpdatesVerticalLayoutWhenTranslationUnchanged() {
-        // 1. On standard mobile in SheetState.FULL, when WindowInsets change viewportBottomInset
-        // without changing translationY, CONTENT_BOTTOM_PADDING must still be updated.
+        // 1. On standard mobile in SheetState.FULL, when WindowInsets change bottomInset
+        // for a wrap-content sheet without changing translationY, CONTENT_BOTTOM_PADDING must
+        // still be updated.
         mActivity.getWindow().getDecorView().layout(0, 0, 1080, SHEET_CONTAINER_HEIGHT);
         WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
         when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 0));
 
-        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
-        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.WRAP_CONTENT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn((float) HeightMode.DISABLED);
         when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
-        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        View contentView = new View(mActivity);
+        contentView.setMinimumHeight(SHEET_CONTAINER_HEIGHT);
+        when(mSheetContent.getContentView()).thenReturn(contentView);
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         mBottomSheet.showContent(mSheetContent);
@@ -2656,7 +2659,7 @@ public class BottomSheetCoordinatorUnitTest {
                 mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
         assertEquals(0, mobileContentContainer.getPaddingBottom());
 
-        when(insets.getInsets(anyInt())).thenReturn(Insets.of(0, 0, 0, 48));
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 48);
         mSheetContainer.requestLayout();
         mSheetContainer.measure(
                 View.MeasureSpec.makeMeasureSpec(SHEET_CONTAINER_WIDTH, View.MeasureSpec.EXACTLY),
@@ -3221,5 +3224,72 @@ public class BottomSheetCoordinatorUnitTest {
                 "Sheet full height should be greater than 0",
                 mBottomSheet.getSheetHeightForState(SheetState.FULL) > 0);
         assertTrue("Content height should be greater than 0", contentView.getMeasuredHeight() > 0);
+    }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_EdgeToEdgeMode_BothSheetTypesLiftAboveSystemBars() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, SHEET_CONTAINER_HEIGHT);
+        int e2eBottomInset = 24;
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> e2eBottomInset);
+
+        float currentOffset = 150.0f;
+        float expectedTranslationY = SHEET_CONTAINER_HEIGHT - currentOffset - e2eBottomInset;
+
+        // 1. Wrap-content sheet in E2E mode lifts by edgeToEdgeBottomInset.
+        BottomSheetContent wrapContent =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, HeightMode.WRAP_CONTENT);
+        mBottomSheet.showContent(wrapContent);
+        mBottomSheet.setSheetOffsetFromBottom(currentOffset, StateChangeReason.NONE);
+        assertEquals(
+                expectedTranslationY, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // 2. Fixed-ratio sheet in E2E mode also lifts by edgeToEdgeBottomInset.
+        BottomSheetContent fixedRatioContent =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+        mBottomSheet.showContent(fixedRatioContent);
+        mBottomSheet.setSheetOffsetFromBottom(currentOffset, StateChangeReason.NONE);
+        assertEquals(
+                expectedTranslationY, mBottomSheet.getView().getTranslationY(), MathUtils.EPSILON);
+    }
+
+    @Test
+    public void testUpdateVerticalLayout_DoesNotConflateStatusBarOrKeyboardIntoBottomInset() {
+        mActivity.getWindow().getDecorView().layout(0, 0, 1080, 800);
+        measureAndLayoutContainer(1080, 800);
+
+        // Simulate a window with a 60px status bar at the top, a 48px nav bar at the bottom,
+        // and a 100px keyboard.
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(0, 60, 0, 48))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 100))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        mKeyboardInsetSupplier.set(100);
+
+        // For fixed-ratio sheets in non-E2E mode:
+        BottomSheetContent fixedContent =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
+        mBottomSheet.showContent(fixedContent);
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+
+        TouchRestrictingFrameLayout contentContainer =
+                mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
+        // In non-E2E mode, edge-to-edge inset is 0, so content bottom padding is 0.
+        assertEquals(0, contentContainer.getPaddingBottom());
+        assertEquals(0, mBottomSheet.getContentBottomPadding());
+
+        // Now enable Edge-to-Edge with a 148px bottom inset (48px nav bar + 100px keyboard):
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 148);
+        ViewUtils.requestLayout(
+                mSheetContainer,
+                "BottomSheetCoordinatorUnitTest.testContentPaddingBottomExcludesVirtualKeyboardAndStatusBar");
+        measureAndLayoutContainer(1080, 800);
+
+        // Effective bottom inset is exactly the 48px system bar inset (148 - 100), not inflated
+        // by status bar (60px) or keyboard (100px).
+        assertEquals(48, contentContainer.getPaddingBottom());
+        assertEquals(48, mBottomSheet.getContentBottomPadding());
+        mKeyboardInsetSupplier.set(0);
     }
 }
