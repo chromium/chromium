@@ -31,6 +31,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.android.bars_common.CaptureSafeRippleDrawable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link BottomBarUtils}. */
@@ -161,5 +163,33 @@ public class BottomBarUtilsUnitTest {
         drawable.draw(canvas);
 
         assertTrue(content.mWasDrawn);
+    }
+
+    @Test
+    public void testCreateButtonHighlightParams_DefaultRadius() {
+        HighlightParams params =
+                BottomBarUtils.createButtonHighlightParams(
+                        mContext, /* useNewTabBackgroundRadius= */ false);
+
+        assertEquals(HighlightShape.RECTANGLE, params.getShape());
+        assertTrue(params.getBoundsRespectPadding());
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_button_highlight_radius),
+                params.getCornerRadius());
+    }
+
+    @Test
+    public void testCreateButtonHighlightParams_NewTabBackgroundRadius() {
+        HighlightParams params =
+                BottomBarUtils.createButtonHighlightParams(
+                        mContext, /* useNewTabBackgroundRadius= */ true);
+
+        assertEquals(HighlightShape.RECTANGLE, params.getShape());
+        assertTrue(params.getBoundsRespectPadding());
+        assertEquals(
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_bar_new_tab_background_radius),
+                params.getCornerRadius());
     }
 }
