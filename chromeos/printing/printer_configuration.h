@@ -171,6 +171,10 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
     kHigh = 3
   };
 
+  // This enum can be modified (adding new values, changing the order of values,
+  // etc.).
+  enum class LayoutType { kUnknown = 0, kPortrait = 1, kLandscape = 2 };
+
   struct ManagedPrintOptions {
     ManagedPrintOptions();
     ManagedPrintOptions(const ManagedPrintOptions& other);
@@ -184,6 +188,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
     PrintOption<Dpi> dpi;
     PrintOption<QualityType> quality;
     PrintOption<bool> print_as_image;
+    PrintOption<LayoutType> layout;
   };
 
   // The location where the printer is stored.

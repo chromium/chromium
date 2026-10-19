@@ -51,6 +51,7 @@ inline constexpr char kManagedPrintOptions_Color[] = "color";
 inline constexpr char kManagedPrintOptions_Dpi[] = "dpi";
 inline constexpr char kManagedPrintOptions_Quality[] = "quality";
 inline constexpr char kManagedPrintOptions_PrintAsImage[] = "printAsImage";
+inline constexpr char kManagedPrintOptions_Layout[] = "layout";
 
 // This class must be created and used on the UI thread.
 class LocalPrinterHandlerChromeos : public PrinterHandler {

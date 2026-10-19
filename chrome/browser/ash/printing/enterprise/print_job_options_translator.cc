@@ -23,6 +23,7 @@ const char kColor[] = "color";
 const char kDpi[] = "dpi";
 const char kQuality[] = "quality";
 const char kPrintAsImage[] = "print_as_image";
+const char kLayout[] = "layout";
 
 const char kDefaultValue[] = "default_value";
 const char kAllowedValues[] = "allowed_values";
@@ -175,6 +176,17 @@ Printer::QualityType QualityFromProtoQuality(const QualityType& quality_type) {
   }
 }
 
+Printer::LayoutType LayoutFromProtoLayout(const LayoutType& layout_type) {
+  switch (layout_type) {
+    case LayoutType::LAYOUT_PORTRAIT:
+      return Printer::LayoutType::kPortrait;
+    case LayoutType::LAYOUT_LANDSCAPE:
+      return Printer::LayoutType::kLandscape;
+    default:
+      return Printer::LayoutType::kUnknown;
+  }
+}
+
 // Use this function for field conversions that always succeed.
 template <typename OptionValueType, typename ProtoValueType, typename InputType>
 Printer::PrintOption<OptionValueType> ParsePrinterJobOption(
@@ -251,6 +263,7 @@ PrintJobOptions ManagedPrintOptionsProtoFromDict(
   const base::DictValue* quality = print_job_options.FindDict(kQuality);
   const base::DictValue* print_as_image =
       print_job_options.FindDict(kPrintAsImage);
+  const base::DictValue* layout = print_job_options.FindDict(kLayout);
 
   if (media_size) {
     *result.mutable_media_size() = OptionFromDict<SizeOption>(
@@ -301,6 +314,17 @@ PrintJobOptions ManagedPrintOptionsProtoFromDict(
           return data.is_bool() ? std::optional<bool>(data.GetBool())
                                 : std::nullopt;
         }));
+  }
+  if (layout) {
+    *result.mutable_layout() = OptionFromDict<LayoutOption>(
+        *layout,
+        base::BindRepeating(
+            [](const base::Value& data) -> std::optional<LayoutType> {
+              if (data.is_int() && LayoutType_IsValid(data.GetInt())) {
+                return static_cast<LayoutType>(data.GetInt());
+              }
+              return std::nullopt;
+            }));
   }
 
   return result;
@@ -354,6 +378,12 @@ ChromeOsPrintOptionsFromManagedPrintOptions(
   if (print_job_options.has_print_as_image()) {
     result.print_as_image =
         ParsePrinterJobOption<bool>(print_job_options.print_as_image());
+  }
+
+  if (print_job_options.has_layout()) {
+    result.layout = ParsePrinterJobOption<Printer::LayoutType>(
+        print_job_options.layout(),
+        base::BindRepeating(&LayoutFromProtoLayout));
   }
 
   return result;

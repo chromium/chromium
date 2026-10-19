@@ -84,6 +84,10 @@ TEST(ManagedPrintOptionsProtoFromDict, MultipleValidPrintJobOptions) {
       "print_as_image": {
         "default_value": false,
         "allowed_values": [false, true]
+      },
+      "layout": {
+        "default_value": 2,
+        "allowed_values": [1, 2]
       }
     }
   )json";
@@ -162,6 +166,15 @@ TEST(ManagedPrintOptionsProtoFromDict, MultipleValidPrintJobOptions) {
                           print_as_image_available_values.end());
   EXPECT_THAT(print_job_options.print_as_image(),
               EqualsProto(expected_print_as_image));
+
+  // Layout
+  LayoutOption expected_layout;
+  expected_layout.set_default_value(LayoutType::LAYOUT_LANDSCAPE);
+  const std::vector<int> layout_available_values = {
+      LayoutType::LAYOUT_PORTRAIT, LayoutType::LAYOUT_LANDSCAPE};
+  *expected_layout.mutable_allowed_values() = RepeatedField<int>(
+      layout_available_values.begin(), layout_available_values.end());
+  EXPECT_THAT(print_job_options.layout(), EqualsProto(expected_layout));
 }
 
 TEST(ManagedPrintOptionsProtoFromDict, InvalidPrintJobOptions) {
@@ -181,6 +194,10 @@ TEST(ManagedPrintOptionsProtoFromDict, InvalidPrintJobOptions) {
         "allowed_values": [42, "paper"]
       },
       "duplex": {
+        "default_value": 1234567,
+        "allowed_values": []
+      },
+      "layout": {
         "default_value": 1234567,
         "allowed_values": []
       }
@@ -353,6 +370,26 @@ TEST(ChromeOsPrintOptionsFromManagedPrintOptions, PrintAsImage) {
   EXPECT_EQ(print_job_options->print_as_image.default_value.value(), false);
   EXPECT_THAT(print_job_options->print_as_image.allowed_values,
               ElementsAre(false));
+}
+
+TEST(ChromeOsPrintOptionsFromManagedPrintOptions, Layout) {
+  LayoutOption layout;
+  layout.set_default_value(LayoutType::LAYOUT_LANDSCAPE);
+  layout.add_allowed_values(LayoutType::LAYOUT_PORTRAIT);
+  layout.add_allowed_values(LayoutType::LAYOUT_LANDSCAPE);
+  PrintJobOptions print_job_options_proto;
+  *print_job_options_proto.mutable_layout() = layout;
+
+  std::optional<Printer::ManagedPrintOptions> print_job_options =
+      ChromeOsPrintOptionsFromManagedPrintOptions(print_job_options_proto);
+
+  ASSERT_TRUE(print_job_options.has_value());
+  ASSERT_TRUE(print_job_options.value().layout.default_value.has_value());
+  EXPECT_EQ(print_job_options.value().layout.default_value.value(),
+            Printer::LayoutType::kLandscape);
+  EXPECT_THAT(print_job_options.value().layout.allowed_values,
+              ElementsAre(Printer::LayoutType::kPortrait,
+                          Printer::LayoutType::kLandscape));
 }
 
 }  // namespace

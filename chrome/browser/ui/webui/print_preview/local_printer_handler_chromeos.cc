@@ -387,6 +387,12 @@ base::DictValue LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
       PrintOptionToValue(managed_print_options.print_as_image,
                          [](const bool& value) -> bool { return value; }));
 
+  result.Set(kManagedPrintOptions_Layout,
+             PrintOptionToValue(managed_print_options.layout,
+                                [](const chromeos::Printer::LayoutType& value) {
+                                  return static_cast<int>(value);
+                                }));
+
   return result;
 }
 

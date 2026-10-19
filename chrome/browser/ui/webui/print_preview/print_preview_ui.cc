@@ -103,6 +103,13 @@ namespace {
 // Enables sending non-modifiable (PDF) documents to the print compositor.
 BASE_FEATURE(kPdfWatermarkPrintCompositor, base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// If enabled, update the layout setting values in print preview based on the
+// destination's page orientation capabilities.
+BASE_FEATURE(kUsePageOrientationCapabilityInPrintPreview,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_MAC)
 const char16_t kBasicPrintShortcut[] = u"(⌥⌘P)";
 #elif !BUILDFLAG(IS_CHROMEOS)
@@ -349,6 +356,9 @@ void AddPrintPreviewFlags(content::WebUIDataSource* source, Profile* profile) {
   source->AddBoolean("isUseManagedPrintJobOptionsInPrintPreviewEnabled",
                      base::FeatureList::IsEnabled(
                          ::features::kUseManagedPrintJobOptionsInPrintPreview));
+  source->AddBoolean("isUsePageOrientationCapabilityInPrintPreviewEnabled",
+                     base::FeatureList::IsEnabled(
+                         kUsePageOrientationCapabilityInPrintPreview));
 #endif
 }
 

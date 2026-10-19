@@ -16,6 +16,7 @@ message PrintJobOptions {
   optional DPIOption dpi = 5;
   optional QualityOption quality = 6;
   optional BoolOption print_as_image = 7 [json_name = "print_as_image"];
+  optional LayoutOption layout = 8;
 }
 
 message SizeOption {
@@ -62,6 +63,17 @@ enum QualityType {
   QUALITY_DRAFT = 1;
   QUALITY_NORMAL = 2;
   QUALITY_HIGH = 3;
+}
+
+message LayoutOption {
+  optional LayoutType default_value = 1 [json_name = "default_value"];
+  repeated LayoutType allowed_values = 2 [json_name = "allowed_values"];
+}
+
+enum LayoutType {
+  LAYOUT_UNKNOWN = 0;
+  LAYOUT_PORTRAIT = 1;
+  LAYOUT_LANDSCAPE = 2;
 }
 
 message StringOption {

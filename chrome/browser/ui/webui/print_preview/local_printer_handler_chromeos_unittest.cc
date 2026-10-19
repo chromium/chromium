@@ -455,6 +455,9 @@ TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
       "duplex": {
          "allowedValues": []
       },
+      "layout": {
+         "allowedValues": []
+      },
       "mediaSize": {
          "allowedValues": []
       },
@@ -644,6 +647,28 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_PrintAsImage) {
       *managed_print_options_dict.FindDict(kManagedPrintOptions_PrintAsImage)
            ->FindList(kManagedPrintOptions_AllowedValues),
       ElementsAre(false, true));
+}
+
+TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Layout) {
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.layout.default_value =
+      chromeos::Printer::LayoutType::kLandscape;
+  managed_print_options.layout.allowed_values = {
+      chromeos::Printer::LayoutType::kPortrait,
+      chromeos::Printer::LayoutType::kLandscape};
+
+  const base::DictValue managed_print_options_dict =
+      LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
+          managed_print_options);
+
+  EXPECT_EQ(*managed_print_options_dict.FindDict(kManagedPrintOptions_Layout)
+                 ->FindInt(kManagedPrintOptions_DefaultValue),
+            static_cast<int>(chromeos::Printer::LayoutType::kLandscape));
+  EXPECT_THAT(
+      *managed_print_options_dict.FindDict(kManagedPrintOptions_Layout)
+           ->FindList(kManagedPrintOptions_AllowedValues),
+      ElementsAre(static_cast<int>(chromeos::Printer::LayoutType::kPortrait),
+                  static_cast<int>(chromeos::Printer::LayoutType::kLandscape)));
 }
 
 TEST(LocalPrinterHandlerChromeos, CapabilityToValue) {
