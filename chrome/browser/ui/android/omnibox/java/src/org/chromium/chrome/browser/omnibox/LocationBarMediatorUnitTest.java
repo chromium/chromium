@@ -5299,6 +5299,16 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    public void testBeginInput_fromDraftingNoFocus_restartsSession() {
+        setupSession(DisplayState.DRAFTING_NO_FOCUS, /* textDiffers= */ true);
+
+        mMediator.beginInput(new AutocompleteInput(OmniboxFocusReason.FAKE_BOX_TAP));
+
+        assertDisplayState(DisplayState.DRAFTING);
+        assertUserText("");
+    }
+
+    @Test
     public void testOnScrimClicked_phone_endsInput() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         setupSession(DisplayState.SUGGESTIONS, /* textDiffers= */ true);

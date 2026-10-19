@@ -3091,7 +3091,10 @@ public class LocationBarMediator
 
         // Guard against resetting active user text when a redundant beginInput() arrives
         // (e.g. from NTP load completion, fakebox touch, or keyboard focus transitions).
-        if (mCurrentInput == state.getAutocompleteInput() && userTextDiffersFromInitial()) {
+        // Exclude DRAFTING_NO_FOCUS so NTP AIM/fakebox taps focus the omnibox (and use new input).
+        if (mCurrentInput == state.getAutocompleteInput()
+                && !displayStateEquals(DisplayState.DRAFTING_NO_FOCUS)
+                && userTextDiffersFromInitial()) {
             String newText = input.getUserText();
             if (TextUtils.isEmpty(newText)
                     || TextUtils.equals(newText, mCurrentInput.getUserText())) {
