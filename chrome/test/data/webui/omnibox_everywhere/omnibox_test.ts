@@ -182,7 +182,7 @@ suite('OmniboxEverywhereOmniboxTest', () => {
             omnibox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
                 'search-animated-glow');
         assertTrue(!!glow);
-        assertEquals('OmniboxEverywhere', glow.entrypointName);
+        assertEquals('outer-glow', glow.glowMode);
         assertTrue(glow.energyEffectAnimationEnabled);
 
         const composeButton =
@@ -630,7 +630,8 @@ suite('OmniboxEverywhereOmniboxTest', () => {
     const composeButton =
         omnibox.shadowRoot.querySelector<HTMLElement>('#composeButton');
     assertTrue(!!composeButton);
-    assertEquals('36px', window.getComputedStyle(composeButton).marginInlineEnd);
+    assertEquals(
+        '36px', window.getComputedStyle(composeButton).marginInlineEnd);
 
     const profileIcon =
         omnibox.shadowRoot.querySelector<HTMLElement>('#profileIcon');
@@ -1175,7 +1176,7 @@ suite('OmniboxEverywhereComposeboxTest', () => {
     const glow = composebox.shadowRoot.querySelector<SearchAnimatedGlowElement>(
         '#animatedSearchElement');
     assertTrue(!!glow);
-    assertEquals('OmniboxEverywhere', glow.entrypointName);
+    assertEquals('outer-glow', glow.glowMode);
     assertEquals('expanding', glow.animationState);
     assertTrue(glow.energyEffectAnimationEnabled);
   });

@@ -87,7 +87,7 @@
   --glow-animation-delay: 0ms;
 }
 
-:host([animation-state='expanding'][energy-effect-animation-enabled]) {
+:host([animation-state='expanding'][glow-mode='outer-glow']) {
   --glow-animation-delay: 150ms;
 }
 
@@ -117,7 +117,7 @@
   z-index: var(--search-animated-glow-drag-drop-placeholder-z-index, 4);
 }
 
-:host([energy-effect-animation-enabled]) .gradient-blur-wrapper {
+:host([glow-mode='outer-glow']) .gradient-blur-wrapper {
   display: contents;
   border-radius: inherit;
 }
@@ -189,7 +189,7 @@
   width: 145%;
 }
 
-:host([entrypoint-name='Omnibox'][animation-state='expanding'])
+:host([glow-mode='inner-glow'][animation-state='expanding'])
     .double-gradient::before,
 :host([animation-state='expanding'])
     .gradient::before {
@@ -197,32 +197,32 @@
     var(--search-animated-glow-gradient-curve) forwards;
 }
 
-:host([entrypoint-name='Omnibox'][animation-state='expanding'])
+:host([glow-mode='inner-glow'][animation-state='expanding'])
     .gradient::before {
    --gradient-spin-expand-peak-opacity_: 0.4;
 }
 
 @media (prefers-color-scheme: dark) {
-  :host([entrypoint-name='Omnibox'][animation-state='expanding'])
+  :host([glow-mode='inner-glow'][animation-state='expanding'])
       .gradient::before {
     --gradient-spin-expand-peak-opacity_: 0.3;
   }
 }
 
-:host([entrypoint-name='Omnibox'][animation-state='expanding']) .background,
-:host([entrypoint-name='Omnibox'][animation-state='expanding']) .gradient {
+:host([glow-mode='inner-glow'][animation-state='expanding']) .background,
+:host([glow-mode='inner-glow'][animation-state='expanding']) .gradient {
   border: var(--glow-stroke-width_) solid transparent;
 }
 
 :host([animation-state='dragging']) .gradient,
-:host(:not([entrypoint-name='Omnibox'])) .double-gradient {
+:host(:not([glow-mode='inner-glow'])) .double-gradient {
   pointer-events: none;
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]),
-:host([animation-state='expanding'][energy-effect-animation-enabled]),
-:host([animation-state='submitting'][energy-effect-animation-enabled]) {
+:host([animation-state='dragging'][glow-mode='outer-glow']),
+:host([animation-state='expanding'][glow-mode='outer-glow']),
+:host([animation-state='submitting'][glow-mode='outer-glow']) {
   --dragging-glow-gradient: conic-gradient(
     #3186ff 34%,
     #9378ff 37%,
@@ -251,12 +251,12 @@
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient::before,
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient::before,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient::before,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .gradient-blur-wrapper .gradient::before,
+:host([animation-state='dragging'][glow-mode='outer-glow']) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-blur-wrapper .gradient::before,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-blur-wrapper .gradient::before,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
   background: var(--dragging-glow-gradient);
   opacity: 1;
@@ -413,15 +413,15 @@
   }
 }
 
-:host([entrypoint-name='Omnibox'][animation-state='expanding'])
+:host([glow-mode='inner-glow'][animation-state='expanding'])
     .background::before {
   animation: none;
   filter: blur(8px);
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-blur-wrapper,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .gradient-blur-wrapper,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-blur-wrapper,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-blur-wrapper {
   border-radius: inherit;
   display: block;
   filter: blur(8px);
@@ -430,8 +430,8 @@
   position: absolute;
 }
 
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-blur-wrapper,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-blur-wrapper,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-blur-wrapper {
   animation:
     animateOpacity var(--gradient-burst-duration) var(--glow-animation-delay) both,
     animateAngles var(--gradient-burst-duration)
@@ -485,9 +485,9 @@
   }
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-sharp-wrapper,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .gradient-sharp-wrapper,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-sharp-wrapper,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-sharp-wrapper {
   border-radius: inherit;
   display: block;
   filter: blur(2px);
@@ -496,17 +496,17 @@
   position: absolute;
 }
 
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-sharp-wrapper,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-sharp-wrapper,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-sharp-wrapper {
   animation:
     animateOpacity var(--gradient-burst-duration) var(--glow-animation-delay) both,
     animateAngles var(--gradient-burst-duration)
       var(--standard-decelerate-curve) var(--glow-animation-delay) both;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .gradient-blur-wrapper .gradient,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-blur-wrapper .gradient,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-blur-wrapper .gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
@@ -528,9 +528,9 @@
   );
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .double-gradient,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .double-gradient {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .double-gradient,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .double-gradient,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .double-gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
@@ -552,9 +552,9 @@
   inset: 0;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
   background: var(--dragging-glow-gradient);
   filter: none;
@@ -563,7 +563,7 @@
   scale: 1.2;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .gradient-sharp-wrapper .double-gradient::before {
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
@@ -574,9 +574,9 @@
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .background,
-:host([animation-state='expanding'][energy-effect-animation-enabled]) .background,
-:host([animation-state='submitting'][energy-effect-animation-enabled]) .background {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .background,
+:host([animation-state='expanding'][glow-mode='outer-glow']) .background,
+:host([animation-state='submitting'][glow-mode='outer-glow']) .background {
   /*
   * Remove transparent border and inset by 2px so background covers
   * the center up to the composebox border, letting the gradient
@@ -591,7 +591,7 @@
   pointer-events: none;
 }
 
-:host([animation-state='dragging'][energy-effect-animation-enabled]) .background {
+:host([animation-state='dragging'][glow-mode='outer-glow']) .background {
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
 

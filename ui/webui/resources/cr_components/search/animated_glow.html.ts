@@ -41,7 +41,7 @@ export function getHtml(this: SearchAnimatedGlowElement) {
 
   // clang-format off
   return html`<!--_html_template_start_-->
-    ${this.energyEffectAnimationEnabled &&
+    ${this.useEnergyEffect_() &&
       (this.animationState === GlowAnimationState.DRAGGING ||
        this.animationState === GlowAnimationState.SUBMITTING ||
        this.animationState === GlowAnimationState.EXPANDING) ? html`

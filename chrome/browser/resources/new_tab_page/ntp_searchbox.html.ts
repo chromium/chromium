@@ -25,7 +25,6 @@ export function getHtml(this: NtpSearchboxElement) {
         .isListening="${this.isListening}"
         .darkThemeColorsEnabled="${false}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}"
-        .entrypointName="${'Realbox'}"
         part="animated-glow">
       </search-animated-glow>
     ` : ''}

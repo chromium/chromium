@@ -13,10 +13,10 @@ export function getHtml(this: OmniboxComposeboxElement) {
   return html`<!--_html_template_start_-->
     <search-animated-glow id="animatedSearchElement"
         animation-state="${this.animationState}"
+        glow-mode="inner-glow"
         .coloredTicTacVoiceAnimationEnabled=
             "${this.voiceSearchCoherenceEnabled}"
         .isListening="${this.isListening}"
-        .entrypointName="${this.entrypointName}"
         .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
         .transcript="${this.transcript}"
         .receivedSpeech="${this.receivedSpeech}"

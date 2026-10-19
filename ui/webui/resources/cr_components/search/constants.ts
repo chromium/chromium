@@ -16,6 +16,12 @@ export enum GlowAnimationState {
   LISTENING = 'listening',
 }
 
+export enum GlowMode {
+  OUTER_GLOW = 'outer-glow',
+  INNER_GLOW = 'inner-glow',
+  NONE = 'none',
+}
+
 // LINT.IfChange(ContextAddedMethod)
 
 // These values are persisted to logs. Entries should not be renumbered and
