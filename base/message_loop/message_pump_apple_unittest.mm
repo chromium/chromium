@@ -103,4 +103,67 @@ TEST(MessagePumpAppleTest, DirectNestedRunInIdleWork) {
   EXPECT_TRUE(delegate.was_nested_);
 }
 
+// Regression test for crbug.com/571794773: when a nested RunLoop is started
+// from inside -[NSApp sendEvent:] (outside CFRunLoopRunSpecific) and quit from
+// a posted task that also schedules follow-up work for the outer RunLoop, the
+// outer RunLoop must not lose the work_source_ wakeup while the nested
+// MessagePumpNSApplication::DoRun() drains the dummy quit event.
+TEST(MessagePumpAppleTest, QuitNestedRunLoopFromNativeEventSchedulesOuterWork) {
+  test::SingleThreadTaskEnvironment task_environment(
+      test::SingleThreadTaskEnvironment::MainThreadType::UI);
+
+  constexpr short kStartNestedLoopSubtype = 1234;
+  RunLoop outer_run_loop;
+  bool outer_continuation_ran = false;
+  RunLoop* outer_run_loop_ptr = &outer_run_loop;
+  bool* outer_continuation_ran_ptr = &outer_continuation_ran;
+
+  id monitor = [NSEvent
+      addLocalMonitorForEventsMatchingMask:NSEventMaskApplicationDefined
+                                   handler:^NSEvent*(NSEvent* event) {
+                                     if (event.subtype !=
+                                         kStartNestedLoopSubtype) {
+                                       return event;
+                                     }
+                                     RunLoop nested_run_loop;
+                                     SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+                                         FROM_HERE, BindLambdaForTesting([&] {
+                                           nested_run_loop.Quit();
+                                           SingleThreadTaskRunner::GetCurrentDefault()
+                                               ->PostTask(
+                                                   FROM_HERE,
+                                                   BindLambdaForTesting(
+                                                       [outer_continuation_ran_ptr,
+                                                        outer_run_loop_ptr] {
+                                                         *outer_continuation_ran_ptr =
+                                                             true;
+                                                         outer_run_loop_ptr
+                                                             ->Quit();
+                                                       }));
+                                         }));
+                                     nested_run_loop.Run();
+                                     return event;
+                                   }];
+
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, BindLambdaForTesting([&] {
+        [NSApp
+            postEvent:[NSEvent otherEventWithType:NSEventTypeApplicationDefined
+                                         location:NSZeroPoint
+                                    modifierFlags:0
+                                        timestamp:0
+                                     windowNumber:0
+                                          context:nil
+                                          subtype:kStartNestedLoopSubtype
+                                            data1:0
+                                            data2:0]
+              atStart:NO];
+      }));
+
+  outer_run_loop.Run();
+  [NSEvent removeMonitor:monitor];
+
+  EXPECT_TRUE(outer_continuation_ran);
+}
+
 }  // namespace base

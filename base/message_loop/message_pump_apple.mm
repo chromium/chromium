@@ -94,6 +94,7 @@ class OptionalAutoreleasePool {
 // Must be called on the run loop thread.
 void MessagePumpCFRunLoopBase::Run(Delegate* delegate) {
   AutoReset<bool> auto_reset_keep_running(&keep_running_, true);
+  AutoReset<bool> auto_reset_signaled_after_quit(&signaled_after_quit_, false);
   // nesting_level_ will be incremented in EnterExitRunLoop, so set
   // run_nesting_level_ accordingly.
   int last_run_nesting_level = run_nesting_level_;
@@ -108,6 +109,9 @@ void MessagePumpCFRunLoopBase::Run(Delegate* delegate) {
   // Restore the previous state of the object.
   SetDelegate(last_delegate);
   run_nesting_level_ = last_run_nesting_level;
+  if (signaled_after_quit_) {
+    CFRunLoopSourceSignal(work_source_.get());
+  }
 }
 
 void MessagePumpCFRunLoopBase::Quit() {
@@ -417,6 +421,13 @@ bool MessagePumpCFRunLoopBase::RunWork() {
     return false;
   }
   if (!keep_running()) {
+    // If `work_source_` or `delayed_work_timer_` fired after `Quit()` set
+    // `keep_running_` to false (e.g. while `MessagePumpNSApplication::DoRun()`
+    // is still inside `-[NSApp nextEventMatchingMask:...]` waiting to dequeue
+    // the dummy event posted by `DoQuit()`), CoreFoundation has already cleared
+    // the signal on `work_source_`. Record this so `Run()` re-signals
+    // `work_source_` once `DoRun()` finishes.
+    signaled_after_quit_ = true;
     return false;
   }
 

@@ -244,6 +244,11 @@ class BASE_EXPORT MessagePumpCFRunLoopBase : public MessagePump {
   // Quit() is called for the innermost run loop.
   bool keep_running_ = true;
 
+  // Set when `work_source_` or `delayed_work_timer_` fires after `Quit()` has
+  // set `keep_running_` to false, so `Run()` can re-signal `work_source_` once
+  // `DoRun()` exits.
+  bool signaled_after_quit_ = false;
+
   // "Delegateless" work flags are set when work is ready to be performed but
   // must wait until a delegate is available to process it.  This can happen
   // when a MessagePumpCFRunLoopBase is instantiated and work arrives without
