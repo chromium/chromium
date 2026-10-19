@@ -61,6 +61,12 @@ ProfileDiffAfterRestartRecorder::GetInstance() {
   return *instance;
 }
 
+ProfileDiffAfterRestartRecorder::ProfileDiffAfterRestartRecorder() = default;
+
+ProfileDiffAfterRestartRecorder::~ProfileDiffAfterRestartRecorder() {
+  StopRecording();
+}
+
 void ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
     PrefService* local_state,
     size_t normal_profiles,
@@ -80,62 +86,6 @@ void ProfileDiffAfterRestartRecorder::SavePreRestartCounts(
     local_state->SetDict(prefs::kPreSmartRestartProfileCounts,
                          std::move(profile_dict));
   }
-}
-
-void ProfileDiffAfterRestartRecorder::ClearPreRestartCounts(
-    PrefService* local_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(local_state);
-  local_state->ClearPref(prefs::kPreSmartRestartProfileCounts);
-}
-
-ProfileDiffAfterRestartRecorder::ProfileDiffAfterRestartRecorder() = default;
-
-ProfileDiffAfterRestartRecorder::~ProfileDiffAfterRestartRecorder() {
-  StopRecording();
-}
-
-void ProfileDiffAfterRestartRecorder::MaybeStartRecording(
-    PrefService* local_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(local_state);
-  if (recording_) {
-    return;
-  }
-
-  // Nothing to compare against: the previous session had no windows open, or
-  // it exited without going through a restart.
-  if (!local_state->HasPrefPath(prefs::kPreSmartRestartProfileCounts)) {
-    return;
-  }
-
-  const base::DictValue& pre_restart_counts =
-      local_state->GetDict(prefs::kPreSmartRestartProfileCounts);
-  std::optional<size_t> expected_normal =
-      ToProfileCount(pre_restart_counts.FindInt(kNormalProfilesKey));
-  std::optional<size_t> expected_app =
-      ToProfileCount(pre_restart_counts.FindInt(kAppProfilesKey));
-
-  // Consume the pref immediately so that stale counts cannot linger on disk if
-  // startup is interrupted, and cannot be clobbered if startup browser creation
-  // runs a second wave while asynchronous restores are still in flight.
-  ClearPreRestartCounts(local_state);
-
-  // Check counts first so clients with nothing to record do not enter the
-  // study.
-  if (!expected_normal.has_value() && !expected_app.has_value()) {
-    return;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kRecordTabWindowDiffOnRestart)) {
-    return;
-  }
-
-  recording_ = true;
-  launches_finished_ = false;
-  expected_normal_profiles_ = expected_normal;
-  expected_app_profiles_ = expected_app;
-  SessionRestore::AddObserver(this);
 }
 
 void ProfileDiffAfterRestartRecorder::OnStartupLaunchesStarting(
@@ -190,6 +140,56 @@ void ProfileDiffAfterRestartRecorder::OnProfileSessionRestored(
     restored_app_profiles_.insert(profile->GetPath());
   }
   MaybeRecordDiff();
+}
+
+void ProfileDiffAfterRestartRecorder::MaybeStartRecording(
+    PrefService* local_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(local_state);
+  if (recording_) {
+    return;
+  }
+
+  // Nothing to compare against: the previous session had no windows open, or
+  // it exited without going through a restart.
+  if (!local_state->HasPrefPath(prefs::kPreSmartRestartProfileCounts)) {
+    return;
+  }
+
+  const base::DictValue& pre_restart_counts =
+      local_state->GetDict(prefs::kPreSmartRestartProfileCounts);
+  std::optional<size_t> expected_normal =
+      ToProfileCount(pre_restart_counts.FindInt(kNormalProfilesKey));
+  std::optional<size_t> expected_app =
+      ToProfileCount(pre_restart_counts.FindInt(kAppProfilesKey));
+
+  // Consume the pref immediately so that stale counts cannot linger on disk if
+  // startup is interrupted, and cannot be clobbered if startup browser creation
+  // runs a second wave while asynchronous restores are still in flight.
+  ClearPreRestartCounts(local_state);
+
+  // Check counts first so clients with nothing to record do not enter the
+  // study.
+  if (!expected_normal.has_value() && !expected_app.has_value()) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(features::kRecordTabWindowDiffOnRestart)) {
+    return;
+  }
+
+  recording_ = true;
+  launches_finished_ = false;
+  expected_normal_profiles_ = expected_normal;
+  expected_app_profiles_ = expected_app;
+  SessionRestore::AddObserver(this);
+}
+
+void ProfileDiffAfterRestartRecorder::ClearPreRestartCounts(
+    PrefService* local_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(local_state);
+  local_state->ClearPref(prefs::kPreSmartRestartProfileCounts);
 }
 
 void ProfileDiffAfterRestartRecorder::MaybeRecordDiff() {

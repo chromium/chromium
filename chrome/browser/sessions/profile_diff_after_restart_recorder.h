@@ -64,17 +64,17 @@ class ProfileDiffAfterRestartRecorder : public SessionRestoreObserver {
   // stops observing session restore as soon as it is done recording.
   static ProfileDiffAfterRestartRecorder& GetInstance();
 
+  ProfileDiffAfterRestartRecorder(const ProfileDiffAfterRestartRecorder&) =
+      delete;
+  ProfileDiffAfterRestartRecorder& operator=(
+      const ProfileDiffAfterRestartRecorder&) = delete;
+
   // Saves the number of profiles that had normal and app windows open before a
   // restart. Clears the pref when both counts are zero so counts from an
   // earlier restart cannot carry over.
   void SavePreRestartCounts(PrefService* local_state,
                             size_t normal_profiles,
                             size_t app_profiles);
-
-  ProfileDiffAfterRestartRecorder(const ProfileDiffAfterRestartRecorder&) =
-      delete;
-  ProfileDiffAfterRestartRecorder& operator=(
-      const ProfileDiffAfterRestartRecorder&) = delete;
 
   // Called before startup launches profiles. On restarts, consumes the saved
   // counts and starts recording; otherwise discards stale counts.
