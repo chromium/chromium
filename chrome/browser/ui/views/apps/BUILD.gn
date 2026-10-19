@@ -168,8 +168,6 @@ if (use_aura) {
 
     sources = [ "shaped_app_window_targeter_unittest.cc" ]
 
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
     deps = [
       ":apps",
       "//apps/ui/views",

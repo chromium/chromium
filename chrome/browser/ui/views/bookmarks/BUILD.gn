@@ -184,8 +184,6 @@ source_set("unit_tests") {
     "bookmark_page_action_controller_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   deps = [
     ":bookmarks",
     ":test_support",
@@ -212,8 +210,6 @@ source_set("browser_tests") {
     "bookmark_editor_view_browsertest.cc",
     "bookmark_menu_delegate_browsertest.cc",
   ]
-
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
   deps = [
     ":bookmarks",
@@ -256,8 +252,6 @@ if (!is_chromeos_device) {
       "bookmark_bar_view_test_helper.h",
       "bookmark_bubble_view_interactive_uitest.cc",
     ]
-
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
     deps = [
       ":bookmarks",

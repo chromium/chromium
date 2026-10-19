@@ -452,10 +452,6 @@ source_set("unit_tests") {
   if (is_mac) {
     sources += [ "autofill_popup_controller_impl_mac_unittest.mm" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -609,10 +605,6 @@ source_set("test_support_unit") {
   } else {
     sources += [ "test_autofill_popup_controller_autofill_client.h" ]
   }
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_android) {
@@ -682,9 +674,5 @@ if (!is_android) {
       "//ui/base",
       "//url",
     ]
-
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

@@ -395,10 +395,6 @@ if (!is_android) {
       # `chrome/browser/ui/test/test_infobar.h`.
     ]
 
-    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
     if (!is_android) {
       sources += [ "omnibox_context_menu_controller_browsertest.cc" ]
     }
