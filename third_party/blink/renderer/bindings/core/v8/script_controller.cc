@@ -207,7 +207,6 @@ void ScriptController::UpdateDocument() {
 void ScriptController::DiscardFrame() {
   LocalFrame* frame = window_->GetFrame();
   DCHECK(frame);
-  v8::Isolate* isolate = window_->GetIsolate();
   auto* previous_document_loader = frame->Loader().GetDocumentLoader();
   DCHECK(previous_document_loader);
   auto params =
@@ -217,7 +216,6 @@ void ScriptController::DiscardFrame() {
   params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   frame->Loader().CommitNavigation(std::move(params), nullptr,
                                    CommitReason::kDiscard);
-  isolate->MemoryPressureNotification(v8::MemoryPressureLevel::kCritical);
   MemoryCache::Get()->EvictResources();
 }
 
