@@ -4,9 +4,10 @@
 
 #import "ios/chrome/browser/universal_optout/model/eligibility_utils.h"
 
+#import "base/functional/bind.h"
+#import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/simple_test_clock.h"
-#import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/metrics/metrics_state_manager.h"
 #import "components/metrics/test/test_enabled_state_provider.h"
@@ -16,7 +17,11 @@
 #import "components/universal_optout/prefs.h"
 #import "components/universal_optout/universal_optout_service.h"
 #import "components/variations/service/test_variations_service.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/universal_optout/model/universal_optout_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -67,8 +72,29 @@ class UniversalOptOutEligibilityUtilsTest : public PlatformTest {
     return service;
   }
 
+  std::unique_ptr<KeyedService> CreateOptOutServiceForProfile(
+      bool eligible,
+      ProfileIOS* profile) {
+    auto service = std::make_unique<UniversalOptOutService>(
+        *profile->GetPrefs(), *variations_service_,
+        *identity_test_env_.identity_manager(), test_clock_);
+    profile->GetPrefs()->SetBoolean(prefs::kUniversalOptOutEligible, eligible);
+    return service;
+  }
+
+  std::unique_ptr<TestProfileIOS> BuildProfile(bool eligible) {
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        UniversalOptOutServiceFactory::GetInstance(),
+        base::BindRepeating(
+            &UniversalOptOutEligibilityUtilsTest::CreateOptOutServiceForProfile,
+            base::Unretained(this), eligible));
+    return std::move(builder).Build();
+  }
+
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
@@ -185,6 +211,85 @@ TEST_F(UniversalOptOutEligibilityUtilsTest,
   pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, true);
   EXPECT_EQ(web::UniversalOptOutState::kEnabled,
             GetUniversalOptOutState(&pref_service_));
+}
+
+// Tests that IsGPCExtensionEnabled returns false when profile is null.
+TEST_F(UniversalOptOutEligibilityUtilsTest,
+       TestGPCExtensionEnabledWithNullProfile) {
+  EXPECT_FALSE(IsGPCExtensionEnabled(nullptr));
+}
+
+// Tests that IsGPCExtensionEnabled returns false when the profile is
+// ineligible.
+TEST_F(UniversalOptOutEligibilityUtilsTest,
+       TestGPCExtensionEnabledWhenIneligible) {
+  EnableAllFeatures();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile(/*eligible=*/false);
+  EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
+}
+
+// Tests that IsGPCExtensionSupportedOS returns true on supported OS versions.
+TEST_F(UniversalOptOutEligibilityUtilsTest, TestIsGPCExtensionSupportedOS) {
+  if (@available(iOS 18.4, *)) {
+    if (!base::ios::IsRunningOnIOS27OrLater()) {
+      EXPECT_TRUE(IsGPCExtensionSupportedOS());
+    } else {
+      EXPECT_FALSE(IsGPCExtensionSupportedOS());
+    }
+  } else {
+    EXPECT_FALSE(IsGPCExtensionSupportedOS());
+  }
+}
+
+// Tests that IsGPCExtensionEnabled returns false when the service is null.
+TEST_F(UniversalOptOutEligibilityUtilsTest,
+       TestGPCExtensionEnabledWithNullService) {
+  EnableAllFeatures();
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      UniversalOptOutServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+            return nullptr;
+          }));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
+  EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
+}
+
+// Tests that IsGPCExtensionEnabled returns true when eligible on supported OS.
+TEST_F(UniversalOptOutEligibilityUtilsTest,
+       TestGPCExtensionEnabledWhenEligible) {
+  EnableAllFeatures();
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile(/*eligible=*/true);
+  if (IsGPCExtensionSupportedOS()) {
+    EXPECT_TRUE(IsGPCExtensionEnabled(profile.get()));
+  } else {
+    EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
+  }
+}
+
+// Tests that IsGPCExtensionEnabled returns false when in silent mode.
+TEST_F(UniversalOptOutEligibilityUtilsTest,
+       TestGPCExtensionEnabledWhenSilentMode) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kUniversalOptOut,
+                            features::kUniversalOptOutExtension,
+                            features::kUniversalOptOutExtensionSilent},
+      /*disabled_features=*/{features::kUniversalOptOutSettings});
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile(/*eligible=*/true);
+  EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
+}
+
+// Tests that IsGPCExtensionEnabled returns false when the extension feature
+// flag is disabled.
+TEST_F(UniversalOptOutEligibilityUtilsTest,
+       TestGPCExtensionEnabledWhenExtensionFlagDisabled) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kUniversalOptOut,
+                            features::kUniversalOptOutSettings},
+      /*disabled_features=*/{features::kUniversalOptOutExtension});
+  std::unique_ptr<TestProfileIOS> profile = BuildProfile(/*eligible=*/true);
+  EXPECT_FALSE(IsGPCExtensionEnabled(profile.get()));
 }
 
 }  // namespace universal_optout
