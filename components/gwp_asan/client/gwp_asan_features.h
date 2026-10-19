@@ -13,6 +13,9 @@ namespace gwp_asan::internal {
 
 GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kGwpAsanMalloc);
 GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kGwpAsanPartitionAlloc);
+// Enables smart sampling for GWP-ASan malloc. Only takes effect with
+// SHIM_SUPPORTS_ALLOC_TOKEN.
+GWP_ASAN_EXPORT BASE_DECLARE_FEATURE(kGwpAsanMallocSmartSampling);
 
 // GWP-ASan allows for per-process parameters.
 // If no per-process parameter is found, GWP-ASan falls back on

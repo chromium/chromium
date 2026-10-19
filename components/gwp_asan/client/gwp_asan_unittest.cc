@@ -279,5 +279,50 @@ TEST(GwpAsanTest, EnableForPartitionAllocIsNoOpUnderMemoryTools) {
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC) &&
         // PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
+#if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
+TEST(GwpAsanTest, SmartSamplingDefaultRateMultiplier) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeature(kGwpAsanMallocSmartSampling);
+
+  const auto settings =
+      GetAllocatorSettingsImpl(kGwpAsanMalloc, false, kDummyProcessType);
+  ASSERT_TRUE(settings.has_value());
+  EXPECT_TRUE(settings->smart_sampling_enabled);
+  EXPECT_EQ(settings->smart_sampling_rate_multiplier, 8ul);
+}
+
+TEST(GwpAsanTest, SmartSamplingRateMultiplierRange) {
+  const auto get_settings = [](const std::string& rate_multiplier) {
+    base::test::ScopedFeatureList scoped_feature;
+    scoped_feature.InitAndEnableFeatureWithParameters(
+        kGwpAsanMallocSmartSampling,
+        {{"SmartSamplingRateMultiplier", rate_multiplier}});
+    return GetAllocatorSettingsImpl(kGwpAsanMalloc, false, kDummyProcessType);
+  };
+
+  const auto min_settings = get_settings("1");
+  ASSERT_TRUE(min_settings.has_value());
+  EXPECT_EQ(min_settings->smart_sampling_rate_multiplier, 1ul);
+
+  const auto max_settings = get_settings("32");
+  ASSERT_TRUE(max_settings.has_value());
+  EXPECT_EQ(max_settings->smart_sampling_rate_multiplier, 32ul);
+
+  EXPECT_FALSE(get_settings("0").has_value());
+  EXPECT_FALSE(get_settings("33").has_value());
+}
+
+TEST(GwpAsanTest, SmartSamplingIsMallocOnly) {
+  base::test::ScopedFeatureList scoped_feature;
+  scoped_feature.InitAndEnableFeatureWithParameters(
+      kGwpAsanMallocSmartSampling, {{"SmartSamplingRateMultiplier", "4"}});
+
+  const auto settings =
+      GetAllocatorSettingsImpl(kTestFeature3, false, kDummyProcessType);
+  ASSERT_TRUE(settings.has_value());
+  EXPECT_FALSE(settings->smart_sampling_enabled);
+}
+#endif  // PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
+
 }  // namespace internal
 }  // namespace gwp_asan

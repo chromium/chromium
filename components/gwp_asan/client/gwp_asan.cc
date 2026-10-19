@@ -207,8 +207,9 @@ bool SampleProcess(const base::Feature& feature, bool boost_sampling) {
 
   base::CheckedNumeric<double> sampling_prob_mult =
       process_sampling_probability;
-  if (boost_sampling)
+  if (boost_sampling) {
     sampling_prob_mult *= process_sampling_boost;
+  }
   if (!sampling_prob_mult.IsValid()) {
     DLOG(ERROR) << feature.name << " multiplier caused out-of-range multiply: "
                 << process_sampling_boost;
@@ -337,15 +338,47 @@ GWP_ASAN_EXPORT std::optional<AllocatorSettings> GetAllocatorSettingsImpl(
 
   size_t alloc_sampling_freq =
       AllocationSamplingFrequency(feature, process_type);
-  if (!alloc_sampling_freq)
+  if (!alloc_sampling_freq) {
     return std::nullopt;
+  }
 
-  return AllocatorSettings{static_cast<size_t>(max_allocations.value()),
-                           static_cast<size_t>(max_metadata.value()),
-                           static_cast<size_t>(total_pages.value()),
-                           alloc_sampling_freq,
-                           static_cast<size_t>(sampling_min_size.value()),
-                           static_cast<size_t>(sampling_max_size.value())};
+  bool smart_sampling_enabled = false;
+  int smart_sampling_rate_multiplier = 1;
+#if PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
+  // Smart sampling requires per-type AllocTokens, which are only provided with
+  // SHIM_SUPPORTS_ALLOC_TOKEN. Otherwise every token is `kDefaultAllocToken`.
+  smart_sampling_enabled =
+      (&feature == &kGwpAsanMalloc) &&
+      base::FeatureList::IsEnabled(kGwpAsanMallocSmartSampling);
+  if (smart_sampling_enabled) {
+    // SmartSamplingRateMultiplier scales up the sampling rate when
+    // kGwpAsanMallocSmartSampling is enabled. It is capped to bound the
+    // overhead on the allocation hot path.
+    constexpr int kDefaultSmartSamplingRateMultiplier = 8;
+    constexpr int kMaxSmartSamplingRateMultiplier = 32;
+    const auto rate_multiplier = GetIntParam(
+        kGwpAsanMallocSmartSampling, "SmartSamplingRateMultiplier",
+        kDefaultSmartSamplingRateMultiplier, process_type, [](int param_int) {
+          return param_int > kMaxSmartSamplingRateMultiplier;
+        });
+    if (!rate_multiplier.has_value()) {
+      return std::nullopt;
+    }
+    smart_sampling_rate_multiplier = rate_multiplier.value();
+  }
+#endif  // PA_BUILDFLAG(SHIM_SUPPORTS_ALLOC_TOKEN)
+
+  return AllocatorSettings{
+      .max_allocated_pages = static_cast<size_t>(max_allocations.value()),
+      .num_metadata = static_cast<size_t>(max_metadata.value()),
+      .total_pages = static_cast<size_t>(total_pages.value()),
+      .sampling_frequency = alloc_sampling_freq,
+      .sampling_min_size = static_cast<size_t>(sampling_min_size.value()),
+      .sampling_max_size = static_cast<size_t>(sampling_max_size.value()),
+      .smart_sampling_enabled = smart_sampling_enabled,
+      .smart_sampling_rate_multiplier =
+          static_cast<size_t>(smart_sampling_rate_multiplier),
+  };
 }
 
 // Exported for testing.

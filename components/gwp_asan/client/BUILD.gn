@@ -137,6 +137,7 @@ source_set("unit_tests") {
 
   deps = [
     ":client",
+    ":features",
     "//base/allocator:buildflags",
     "//base/allocator/partition_allocator/src/partition_alloc:test_support",
     "//base/test:test_support",

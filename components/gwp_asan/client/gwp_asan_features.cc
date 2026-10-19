@@ -19,6 +19,7 @@ constexpr base::FeatureState kDefaultEnabled =
 
 BASE_FEATURE(kGwpAsanMalloc, kDefaultEnabled);
 BASE_FEATURE(kGwpAsanPartitionAlloc, kDefaultEnabled);
+BASE_FEATURE(kGwpAsanMallocSmartSampling, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 

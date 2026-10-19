@@ -23,6 +23,10 @@ struct AllocatorSettings {
   size_t sampling_frequency;
   size_t sampling_min_size;
   size_t sampling_max_size;
+  // The following smart sampling parameters are only used when
+  // `smart_sampling_enabled` is true.
+  bool smart_sampling_enabled = false;
+  size_t smart_sampling_rate_multiplier = 1;
 };
 
 }  // namespace internal
