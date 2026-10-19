@@ -128,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
-    expires_after="2026-11-15">
+    expires_after="2027-11-15">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.HomeScreenSource" enum="LaunchFromHomeScreenSource"
-    expires_after="2026-10-25">
+    expires_after="2027-10-25">
   <owner>dominickn@chromium.org</owner>
   <owner>hartmanng@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
@@ -2538,7 +2538,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Preinstalled.CalculatorForceMigration.ChromeAppAndWebAppInstalled"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2550,7 +2550,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Preinstalled.CalculatorForceMigration.ChromeAppNoWebAppInstalled"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2562,7 +2562,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Preinstalled.CalculatorForceMigration.MigrationTriggered"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2572,7 +2572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.CalculatorForceMigration.WebAppInstalled"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2582,7 +2582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Preinstalled.ChromeAppMigrationNeeded"
-    enum="BooleanSuccess" expires_after="2026-11-15">
+    enum="BooleanSuccess" expires_after="2027-11-15">
   <owner>alancutter@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -2948,7 +2948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Site.Intents.IntentPickerIconEvent"
-    enum="IntentPickerIconEvent" expires_after="2026-11-30">
+    enum="IntentPickerIconEvent" expires_after="2027-11-30">
   <owner>dibyapal@chromium.org</owner>
   <owner>cpwa-team@google.com</owner>
   <summary>
