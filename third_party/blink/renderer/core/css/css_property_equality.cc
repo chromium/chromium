@@ -1459,15 +1459,23 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBackground:
     case CSSPropertyID::kBackgroundPosition:
     case CSSPropertyID::kBorder:
+    case CSSPropertyID::kBorderBlockEndRadius:
+    case CSSPropertyID::kBorderBlockStartRadius:
     case CSSPropertyID::kBorderBottom:
+    case CSSPropertyID::kBorderBottomRadius:
     case CSSPropertyID::kBorderColor:
     case CSSPropertyID::kBorderImage:
+    case CSSPropertyID::kBorderInlineEndRadius:
+    case CSSPropertyID::kBorderInlineStartRadius:
     case CSSPropertyID::kBorderLeft:
+    case CSSPropertyID::kBorderLeftRadius:
     case CSSPropertyID::kBorderRadius:
     case CSSPropertyID::kBorderRight:
+    case CSSPropertyID::kBorderRightRadius:
     case CSSPropertyID::kBorderSpacing:
     case CSSPropertyID::kBorderStyle:
     case CSSPropertyID::kBorderTop:
+    case CSSPropertyID::kBorderTopRadius:
     case CSSPropertyID::kBorderWidth:
     case CSSPropertyID::kColumnRule:
     case CSSPropertyID::kColumnRuleInset:

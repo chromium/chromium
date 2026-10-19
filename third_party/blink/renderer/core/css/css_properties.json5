@@ -9290,6 +9290,14 @@
       valid_for_page_context: true,
     },
     {
+      name: "border-block-end-radius",
+      longhands: ["border-end-start-radius", "border-end-end-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
+    },
+    {
       name: "border-block-end",
       longhands: [
         "border-block-end-width", "border-block-end-style",
@@ -9301,6 +9309,14 @@
         resolver: "block-end",
       },
       valid_for_page_context: true,
+    },
+    {
+      name: "border-block-start-radius",
+      longhands: ["border-start-start-radius", "border-start-end-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
     },
     {
       name: "border-block-start",
@@ -9326,6 +9342,14 @@
       longhands: ["border-block-start-width", "border-block-end-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_page_context: true,
+    },
+    {
+      name: "border-bottom-radius",
+      longhands: ["border-bottom-left-radius", "border-bottom-right-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
     },
     {
       name: "border-bottom",
@@ -9375,6 +9399,14 @@
       valid_for_page_context: true,
     },
     {
+      name: "border-inline-end-radius",
+      longhands: ["border-start-end-radius", "border-end-end-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
+    },
+    {
       name: "border-inline-end",
       longhands: [
         "border-inline-end-width", "border-inline-end-style",
@@ -9386,6 +9418,14 @@
         resolver: "inline-end",
       },
       valid_for_page_context: true,
+    },
+    {
+      name: "border-inline-start-radius",
+      longhands: ["border-start-start-radius", "border-end-start-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
     },
     {
       name: "border-inline-start",
@@ -9413,6 +9453,14 @@
       valid_for_page_context: true,
     },
     {
+      name: "border-left-radius",
+      longhands: ["border-top-left-radius", "border-bottom-left-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
+    },
+    {
       name: "border-left",
       longhands: [
         "border-left-width", "border-left-style", "border-left-color"
@@ -9433,6 +9481,14 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_permission_element: true,
       valid_for_page_context: true,
+    },
+    {
+      name: "border-right-radius",
+      longhands: ["border-top-right-radius", "border-bottom-right-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
     },
     {
       name: "border-right",
@@ -9462,6 +9518,14 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       keywords: ["none"],
       valid_for_page_context: true,
+    },
+    {
+      name: "border-top-radius",
+      longhands: ["border-top-left-radius", "border-top-right-radius"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      runtime_flag: "CSSBorderRadiusSideShorthands",
+      valid_for_page_context: true,
+      valid_for_permission_element: true,
     },
     {
       name: "border-top",

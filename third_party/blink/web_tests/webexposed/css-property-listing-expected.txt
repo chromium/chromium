@@ -581,10 +581,16 @@ All changes to this list should go through Blink's feature review process: http:
         border-block-end-color
         border-block-end-style
         border-block-end-width
+    border-block-end-radius
+        border-end-end-radius
+        border-end-start-radius
     border-block-start
         border-block-start-color
         border-block-start-style
         border-block-start-width
+    border-block-start-radius
+        border-start-end-radius
+        border-start-start-radius
     border-block-style
         border-block-end-style
         border-block-start-style
@@ -595,6 +601,9 @@ All changes to this list should go through Blink's feature review process: http:
         border-bottom-color
         border-bottom-style
         border-bottom-width
+    border-bottom-radius
+        border-bottom-left-radius
+        border-bottom-right-radius
     border-color
         border-bottom-color
         border-left-color
@@ -620,10 +629,16 @@ All changes to this list should go through Blink's feature review process: http:
         border-inline-end-color
         border-inline-end-style
         border-inline-end-width
+    border-inline-end-radius
+        border-end-end-radius
+        border-start-end-radius
     border-inline-start
         border-inline-start-color
         border-inline-start-style
         border-inline-start-width
+    border-inline-start-radius
+        border-end-start-radius
+        border-start-start-radius
     border-inline-style
         border-inline-end-style
         border-inline-start-style
@@ -634,6 +649,9 @@ All changes to this list should go through Blink's feature review process: http:
         border-left-color
         border-left-style
         border-left-width
+    border-left-radius
+        border-bottom-left-radius
+        border-top-left-radius
     border-radius
         border-bottom-left-radius
         border-bottom-right-radius
@@ -643,6 +661,9 @@ All changes to this list should go through Blink's feature review process: http:
         border-right-color
         border-right-style
         border-right-width
+    border-right-radius
+        border-bottom-right-radius
+        border-top-right-radius
     border-spacing
         -webkit-border-horizontal-spacing
         -webkit-border-vertical-spacing
@@ -655,6 +676,9 @@ All changes to this list should go through Blink's feature review process: http:
         border-top-color
         border-top-style
         border-top-width
+    border-top-radius
+        border-top-left-radius
+        border-top-right-radius
     border-width
         border-bottom-width
         border-left-width

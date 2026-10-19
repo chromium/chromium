@@ -8755,6 +8755,14 @@ Called by update_use_counter_css.py.-->
   <int value="964" label="text-decoration-inset"/>
   <int value="965" label="overscroll-container-type"/>
   <int value="966" label="link-parameters"/>
+  <int value="967" label="border-block-end-radius"/>
+  <int value="968" label="border-block-start-radius"/>
+  <int value="969" label="border-inline-end-radius"/>
+  <int value="970" label="border-inline-start-radius"/>
+  <int value="971" label="border-bottom-radius"/>
+  <int value="972" label="border-left-radius"/>
+  <int value="973" label="border-right-radius"/>
+  <int value="974" label="border-top-radius"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->

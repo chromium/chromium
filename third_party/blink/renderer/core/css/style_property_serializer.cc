@@ -836,6 +836,38 @@ String StylePropertySerializer::SerializeShorthand(
     }
     case CSSPropertyID::kBorderRadius:
       return BorderRadiusValue();
+    case CSSPropertyID::kBorderBottomRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderBottomLeftRadius(),
+          GetCSSPropertyBorderBottomRightRadius());
+    case CSSPropertyID::kBorderLeftRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderTopLeftRadius(),
+          GetCSSPropertyBorderBottomLeftRadius());
+    case CSSPropertyID::kBorderRightRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderTopRightRadius(),
+          GetCSSPropertyBorderBottomRightRadius());
+    case CSSPropertyID::kBorderTopRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderTopLeftRadius(),
+          GetCSSPropertyBorderTopRightRadius());
+    case CSSPropertyID::kBorderBlockStartRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderStartStartRadius(),
+          GetCSSPropertyBorderStartEndRadius());
+    case CSSPropertyID::kBorderBlockEndRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderEndStartRadius(),
+          GetCSSPropertyBorderEndEndRadius());
+    case CSSPropertyID::kBorderInlineStartRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderStartStartRadius(),
+          GetCSSPropertyBorderEndStartRadius());
+    case CSSPropertyID::kBorderInlineEndRadius:
+      return BorderRadiusCornerShorthandValue(
+          GetCSSPropertyBorderStartEndRadius(),
+          GetCSSPropertyBorderEndEndRadius());
     case CSSPropertyID::kCorner:
       return CornersValue();
     case CSSPropertyID::kCornerTopLeft:
@@ -3169,6 +3201,50 @@ String StylePropertySerializer::BorderRadiusValue() const {
     builder.Append(" / ");
     builder.Append(serialize(top_left.Second(), top_right.Second(),
                              bottom_right.Second(), bottom_left.Second()));
+  }
+
+  return builder.ReleaseString();
+}
+
+String StylePropertySerializer::BorderRadiusCornerShorthandValue(
+    const CSSProperty& first_corner,
+    const CSSProperty& second_corner) const {
+  auto serialize = [](StringBuilder& builder, const CSSValue& first,
+                      const CSSValue& second) {
+    builder.Append(first.CssText());
+    if (first != second) {
+      builder.Append(' ');
+      builder.Append(second.CssText());
+    }
+  };
+
+  const CSSValue* first_corner_value =
+      property_set_.GetPropertyCSSValue(first_corner);
+  const CSSValue* second_corner_value =
+      property_set_.GetPropertyCSSValue(second_corner);
+
+  if (!first_corner_value || !second_corner_value) {
+    return String();
+  }
+
+  const auto* first_corner_pair = DynamicTo<CSSValuePair>(first_corner_value);
+  const auto* second_corner_pair = DynamicTo<CSSValuePair>(second_corner_value);
+
+  if (!first_corner_pair || !second_corner_pair) {
+    if (first_corner_value->CssText() == second_corner_value->CssText()) {
+      return first_corner_value->CssText();
+    }
+    return String();
+  }
+
+  StringBuilder builder;
+  serialize(builder, first_corner_pair->First(), second_corner_pair->First());
+
+  if (first_corner_pair->First() != first_corner_pair->Second() ||
+      second_corner_pair->First() != second_corner_pair->Second()) {
+    builder.Append(" / ");
+    serialize(builder, first_corner_pair->Second(),
+              second_corner_pair->Second());
   }
 
   return builder.ReleaseString();

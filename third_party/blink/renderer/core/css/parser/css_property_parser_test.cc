@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
+#include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
@@ -55,6 +56,61 @@ static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
       property_id, /*allow_important_annotation=*/false, stream,
       StrictCSSParserContext(SecureContextMode::kSecureContext),
       parsed_properties, StyleRule::RuleType::kStyle);
+}
+
+TEST(CSSPropertyParserTest, BorderRadiusSideShorthands) {
+  struct Side {
+    CSSPropertyID shorthand;
+    CSSPropertyID first;
+    CSSPropertyID second;
+  };
+  constexpr Side sides[] = {
+      {CSSPropertyID::kBorderTopRadius, CSSPropertyID::kBorderTopLeftRadius,
+       CSSPropertyID::kBorderTopRightRadius},
+      {CSSPropertyID::kBorderRightRadius, CSSPropertyID::kBorderTopRightRadius,
+       CSSPropertyID::kBorderBottomRightRadius},
+      {CSSPropertyID::kBorderBottomRadius,
+       CSSPropertyID::kBorderBottomLeftRadius,
+       CSSPropertyID::kBorderBottomRightRadius},
+      {CSSPropertyID::kBorderLeftRadius, CSSPropertyID::kBorderTopLeftRadius,
+       CSSPropertyID::kBorderBottomLeftRadius},
+      {CSSPropertyID::kBorderBlockStartRadius,
+       CSSPropertyID::kBorderStartStartRadius,
+       CSSPropertyID::kBorderStartEndRadius},
+      {CSSPropertyID::kBorderBlockEndRadius,
+       CSSPropertyID::kBorderEndStartRadius,
+       CSSPropertyID::kBorderEndEndRadius},
+      {CSSPropertyID::kBorderInlineStartRadius,
+       CSSPropertyID::kBorderStartStartRadius,
+       CSSPropertyID::kBorderEndStartRadius},
+      {CSSPropertyID::kBorderInlineEndRadius,
+       CSSPropertyID::kBorderStartEndRadius,
+       CSSPropertyID::kBorderEndEndRadius},
+  };
+  {
+    ScopedCSSBorderRadiusSideShorthandsForTest disabled(false);
+    for (const Side& side : sides) {
+      EXPECT_FALSE(CSSProperty::Get(side.shorthand).IsWebExposed());
+    }
+  }
+  ScopedCSSBorderRadiusSideShorthandsForTest enabled(true);
+  for (const Side& side : sides) {
+    EXPECT_TRUE(CSSProperty::Get(side.shorthand).IsWebExposed());
+    auto* style =
+        MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
+    EXPECT_TRUE(CSSParser::ParseValue(style, side.shorthand,
+                                      "1px 4px / 2px 3px", false));
+    EXPECT_EQ("1px 2px", style->GetPropertyValue(side.first));
+    EXPECT_EQ("4px 3px", style->GetPropertyValue(side.second));
+    EXPECT_EQ("1px 4px / 2px 3px", style->GetPropertyValue(side.shorthand));
+    EXPECT_TRUE(CSSParser::ParseValue(style, side.shorthand, "5px", false));
+    EXPECT_EQ("5px", style->GetPropertyValue(side.shorthand));
+    for (const char* invalid :
+         {"auto", "-1px", "1px 2px 3px", "1px /", "1px / 2px 3px 4px"}) {
+      EXPECT_FALSE(
+          CSSParser::ParseValue(style, side.shorthand, invalid, false));
+    }
+  }
 }
 
 TEST(CSSPropertyParserTest, CSSPaint_Functions) {

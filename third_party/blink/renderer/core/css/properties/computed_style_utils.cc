@@ -3646,6 +3646,56 @@ CSSValue* ComputedStyleUtils::ValueForShape(const ComputedStyle& style,
   return list;
 }
 
+const CSSValue* ComputedStyleUtils::ValueForBorderRadiusCornerShorthand(
+    const CSSProperty& first_corner,
+    const CSSProperty& second_corner,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) {
+  const CSSValue* first_corner_value = first_corner.CSSValueFromComputedStyle(
+      style, layout_object, allow_visited_style, value_phase);
+  const CSSValue* second_corner_value = second_corner.CSSValueFromComputedStyle(
+      style, layout_object, allow_visited_style, value_phase);
+
+  const auto& first_corner_pair = To<CSSValuePair>(*first_corner_value);
+  const auto& second_corner_pair = To<CSSValuePair>(*second_corner_value);
+
+  CSSValueList* list = CSSValueList::CreateSlashSeparated();
+
+  CSSValueList* horizontal_radii = CSSValueList::CreateSpaceSeparated();
+  horizontal_radii->Append(first_corner_pair.First());
+  if (!base::ValuesEquivalent(&first_corner_pair.First(),
+                              &second_corner_pair.First())) {
+    horizontal_radii->Append(second_corner_pair.First());
+  }
+
+  list->Append(*horizontal_radii);
+
+  CSSValueList* vertical_radii = CSSValueList::CreateSpaceSeparated();
+  vertical_radii->Append(first_corner_pair.Second());
+  if (!base::ValuesEquivalent(&first_corner_pair.Second(),
+                              &second_corner_pair.Second())) {
+    vertical_radii->Append(second_corner_pair.Second());
+  }
+
+  if (!vertical_radii->Equals(To<CSSValueList>(list->Item(0)))) {
+    list->Append(*vertical_radii);
+  }
+
+  // If it's a single value without `/`, we can just return that value, e.g.,
+  // "10px"
+  if (list->length() == 1) {
+    const auto& first_list = To<CSSValueList>(list->Item(0));
+    if (first_list.length() == 1) {
+      return &first_list.Item(0);
+    }
+    return &first_list;
+  }
+
+  return list;
+}
+
 CSSValueList* ComputedStyleUtils::ValueForBorderRadiusShorthand(
     const ComputedStyle& style) {
   CSSValueList* list = CSSValueList::CreateSlashSeparated();

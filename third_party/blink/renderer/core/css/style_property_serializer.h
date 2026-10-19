@@ -33,6 +33,7 @@
 
 namespace blink {
 
+class CSSProperty;
 class CSSPropertyName;
 class CSSPropertyValueSet;
 class StylePropertyShorthand;
@@ -55,6 +56,9 @@ class CORE_EXPORT StylePropertySerializer {
                              const StylePropertyShorthand&) const;
   String BorderImagePropertyValue() const;
   String BorderRadiusValue() const;
+  String BorderRadiusCornerShorthandValue(
+      const CSSProperty& first_corner,
+      const CSSProperty& second_corner) const;
   String CornerShapeValue() const;
   String CornersValue() const;
   String SingleCornerShorthandValue(const StylePropertyShorthand&) const;
