@@ -1095,6 +1095,14 @@ TEST_F(ActionAppMenuTest, InflatesTopBlockRowButtonsIncognito) {
             chrome::GetCleanText(
                 l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW)));
 
+  // Verify the multiline label causes the button to expand beyond baseline
+  // height (56dp), and stretches the block row to match.
+  const int base_height = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT);
+  EXPECT_GT(incognito_button->GetPreferredSize({}).height(), base_height);
+  EXPECT_GT(incognito_button->height(), base_height);
+  EXPECT_EQ(block_section_view->height(), incognito_button->height());
+
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
 }
@@ -2345,23 +2353,37 @@ TEST_F(ActionAppMenuTest, BlockSectionAndMenuHostWidth) {
   EXPECT_EQ(block_item->width(), 322);
 
   // 3. Verify AppMenuBlockView preferred width (298dp = 3 * 94dp + 2 *
-  // 8dp) and laid-out width (322dp - 24dp margins = 298dp).
+  // 8dp) and laid-out width (322dp - 24dp margins = 298dp), and baseline
+  // height of 56dp.
   ASSERT_EQ(block_item->children().size(), 1u);
   auto* block_view =
       views::AsViewClass<AppMenuBlockView>(block_item->children()[0]);
   ASSERT_TRUE(block_view);
   EXPECT_EQ(block_view->GetPreferredSize({}).width(), 298);
   EXPECT_EQ(block_view->width(), 298);
+  EXPECT_EQ(block_view->GetPreferredSize({}).height(), 56);
+  EXPECT_EQ(block_view->height(), 56);
 
   // 4. Verify each of the 3 block buttons has preferred width and laid-out
-  // width of 94dp.
+  // width of 94dp, and preferred and laid-out height of 56dp.
   ASSERT_EQ(block_view->children().size(), 3u);
   for (views::View* child : block_view->children()) {
     auto* button = views::AsViewClass<AppMenuBlockButton>(child);
     ASSERT_TRUE(button);
     EXPECT_EQ(button->GetPreferredSize({}).width(), 94);
     EXPECT_EQ(button->width(), 94);
+    EXPECT_EQ(button->GetPreferredSize({}).height(), 56);
+    EXPECT_EQ(button->height(), 56);
   }
+
+  // 5. Verify AppMenuBlockView uses the flexed button width when calculating
+  // height for a wider menu, so text that only wraps at 94dp stays 56dp tall.
+  views::AsViewClass<AppMenuBlockButton>(block_view->children()[0])
+      ->SetText(u"New window extra");
+  EXPECT_GT(block_view->GetPreferredSize(views::SizeBounds(298, {})).height(),
+            56);
+  EXPECT_EQ(block_view->GetPreferredSize(views::SizeBounds(406, {})).height(),
+            56);
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -2468,6 +2490,26 @@ TEST_F(ActionAppMenuTest, UpgradeNotificationRowStyling) {
                            provider->GetDistanceMetric(
                                DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
   EXPECT_EQ(*block_margins, expected_margins);
+
+  // Verify block view preferred height and laid out height is 56dp (consistent
+  // with no notification).
+  EXPECT_EQ(block_view->GetPreferredSize({}).height(), 56);
+  EXPECT_EQ(block_view->height(), 56);
+
+  // Verify the 12px notification margin is applied outside the block view /
+  // button border.
+  EXPECT_EQ(block_view->y(), provider->GetDistanceMetric(
+                                 DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+
+  // Verify each button has height of 56dp (does not increase height when menu
+  // expands or when notification is shown).
+  ASSERT_EQ(block_view->children().size(), 3u);
+  for (views::View* child : block_view->children()) {
+    auto* button = views::AsViewClass<AppMenuBlockButton>(child);
+    ASSERT_TRUE(button);
+    EXPECT_EQ(button->GetPreferredSize({}).height(), 56);
+    EXPECT_EQ(button->height(), 56);
+  }
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -2652,6 +2694,26 @@ TEST_F(ActionAppMenuTest, DefaultBrowserNotificationRowStyling) {
                            provider->GetDistanceMetric(
                                DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
   EXPECT_EQ(*block_margins, expected_margins);
+
+  // Verify block view preferred height and laid out height is 56dp (consistent
+  // with no notification).
+  EXPECT_EQ(block_view->GetPreferredSize({}).height(), 56);
+  EXPECT_EQ(block_view->height(), 56);
+
+  // Verify the 12px notification margin is applied outside the block view /
+  // button border.
+  EXPECT_EQ(block_view->y(), provider->GetDistanceMetric(
+                                 DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+
+  // Verify each button has height of 56dp (does not increase height when menu
+  // expands or when notification is shown).
+  ASSERT_EQ(block_view->children().size(), 3u);
+  for (views::View* child : block_view->children()) {
+    auto* button = views::AsViewClass<AppMenuBlockButton>(child);
+    ASSERT_TRUE(button);
+    EXPECT_EQ(button->GetPreferredSize({}).height(), 56);
+    EXPECT_EQ(button->height(), 56);
+  }
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
@@ -2913,6 +2975,26 @@ TEST_F(ActionAppMenuTest, GlobalErrorNotificationRowStyling) {
                            provider->GetDistanceMetric(
                                DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
   EXPECT_EQ(*block_margins, expected_margins);
+
+  // Verify block view preferred height and laid out height is 56dp (consistent
+  // with no notification).
+  EXPECT_EQ(block_view->GetPreferredSize({}).height(), 56);
+  EXPECT_EQ(block_view->height(), 56);
+
+  // Verify the 12px notification margin is applied outside the block view /
+  // button border.
+  EXPECT_EQ(block_view->y(), provider->GetDistanceMetric(
+                                 DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN));
+
+  // Verify each button has height of 56dp (does not increase height when menu
+  // expands or when notification is shown).
+  ASSERT_EQ(block_view->children().size(), 3u);
+  for (views::View* child : block_view->children()) {
+    auto* button = views::AsViewClass<AppMenuBlockButton>(child);
+    ASSERT_TRUE(button);
+    EXPECT_EQ(button->GetPreferredSize({}).height(), 56);
+    EXPECT_EQ(button->height(), 56);
+  }
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();

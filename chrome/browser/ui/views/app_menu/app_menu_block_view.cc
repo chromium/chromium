@@ -61,5 +61,46 @@ AppMenuBlockView::AppMenuBlockView(
 
 AppMenuBlockView::~AppMenuBlockView() = default;
 
+gfx::Size AppMenuBlockView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  // Use the unbounded preferred width so the block row does not force the menu
+  // wider than its default 3 * 94dp + spacing width. When a bounded width is
+  // provided (e.g. when `SubmenuView` queries `GetHeightForWidth` for a menu
+  // widened by other items), `views::BoxLayout` does not divide
+  // `available_size` among equal-flex horizontal children unless they need to
+  // shrink. Compute each child's flexed width explicitly so buttons whose
+  // labels fit on a single line at the flexed width do not report a wrapped
+  // multiline height.
+  gfx::Size size = views::BoxLayoutView::CalculatePreferredSize({});
+  if (!available_size.width().is_bounded()) {
+    return size;
+  }
+
+  int visible_children = 0;
+  for (const views::View* child : children()) {
+    if (child->GetVisible()) {
+      ++visible_children;
+    }
+  }
+  if (visible_children == 0) {
+    return size;
+  }
+
+  const int total_spacing =
+      (visible_children - 1) * GetBetweenChildSpacing() + GetInsets().width();
+  const int child_width = std::max(
+      0, (available_size.width().value() - total_spacing) / visible_children);
+  int max_height = 0;
+  for (const views::View* child : children()) {
+    if (child->GetVisible()) {
+      max_height = std::max(
+          max_height,
+          child->GetPreferredSize(views::SizeBounds(child_width, {})).height());
+    }
+  }
+  size.set_height(max_height + GetInsets().height());
+  return size;
+}
+
 BEGIN_METADATA(AppMenuBlockView)
 END_METADATA

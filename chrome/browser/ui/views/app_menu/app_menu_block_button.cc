@@ -47,21 +47,14 @@ AppMenuBlockButton::AppMenuBlockButton(views::MenuItemView* parent_menu_item,
   CHECK(parent_menu_item_);
   CHECK(base_action);
   const auto* provider = ChromeLayoutProvider::Get();
+  const int base_height =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT);
   const int icon_size = provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE);
   const int between_spacing = provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING);
   const int corner_radius =
       provider->GetCornerRadiusMetric(kActionAppMenuBlockEntryCornerRadius);
-
-  auto layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON),
-      between_spacing);
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetLayoutManager(std::move(layout));
 
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_RIGHT_MOUSE_BUTTON);
@@ -93,8 +86,16 @@ AppMenuBlockButton::AppMenuBlockButton(views::MenuItemView* parent_menu_item,
   label_->SetMnemonicMode(views::Label::MnemonicMode::kHide);
   label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   label_->SetTextStyle(views::style::STYLE_BODY_5);
-  label_->SetLineHeight(provider->GetDistanceMetric(
-      DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_LINE_HEIGHT));
+  // Ensure the line height is at least the font height; otherwise
+  // `Label::GetLabelHeightForWidth` caps the height at
+  // `GetMaxLines() * GetLineHeight()`, which clips wrapped text when the
+  // platform font height exceeds
+  // `DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_LINE_HEIGHT`.
+  const int line_height =
+      std::max(provider->GetDistanceMetric(
+                   DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_LINE_HEIGHT),
+               label_->font_list().GetHeight());
+  label_->SetLineHeight(line_height);
   label_->SetMultiLine(true);
   label_->SetMaxLines(2);
   label_->SetElideBehavior(gfx::ELIDE_TAIL);
@@ -104,6 +105,26 @@ AppMenuBlockButton::AppMenuBlockButton(views::MenuItemView* parent_menu_item,
 
   corner_radius_ = corner_radius;
   UpdateColors();
+
+  // Compute vertical insets to vertically center single-line content (icon +
+  // spacing + 1-line label) within `base_height`, accounting for the border
+  // thickness and platform font metrics so the label is not clipped or
+  // off-center while keeping `MainAxisAlignment::kStart` for top icon alignment
+  // across mixed 1-line and 2-line rows.
+  const int single_line_content_height =
+      icon_size + between_spacing + line_height;
+  const int vertical_inset = std::max(
+      0, (base_height - single_line_content_height) / 2 - GetInsets().top());
+  gfx::Insets button_insets =
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_BLOCK_ENTRY_BUTTON);
+  button_insets.set_top_bottom(vertical_inset, vertical_inset);
+
+  auto* const layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical, button_insets,
+      between_spacing));
+  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   if (std::u16string* text_override =
           base_action->GetProperty(AppMenuActionItem::kTextOverrideKey)) {
@@ -126,14 +147,23 @@ AppMenuBlockButton::~AppMenuBlockButton() = default;
 gfx::Size AppMenuBlockButton::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const auto* provider = ChromeLayoutProvider::Get();
-  const int width =
+  const int default_width =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH);
-  const int min_height =
+  // Measure height using the bounded available width when the button is flexed
+  // wider than `default_width` so `label_` only wraps (and expands height) if
+  // the text still requires multiple lines at its actual flexed width. Still
+  // return `default_width` as the preferred width so the button does not
+  // request extra horizontal space on its own.
+  const int width =
+      available_size.width().is_bounded()
+          ? std::max(default_width, available_size.width().value())
+          : default_width;
+  const int base_height =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT);
   const int preferred_height =
       views::Button::CalculatePreferredSize(views::SizeBounds(width, {}))
           .height();
-  return gfx::Size(width, std::max(min_height, preferred_height));
+  return gfx::Size(default_width, std::max(base_height, preferred_height));
 }
 
 void AppMenuBlockButton::OnEnabledChanged() {

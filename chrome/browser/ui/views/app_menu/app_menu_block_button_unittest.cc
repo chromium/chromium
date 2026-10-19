@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/views/app_menu/app_menu_block_button.h"
 
+#include <cstdlib>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
@@ -21,6 +23,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/test_menu_item_view.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -166,6 +169,62 @@ TEST_F(AppMenuBlockButtonTest, DisabledButtonIsNotFocusable) {
   button_->SetEnabled(false);
 
   EXPECT_FALSE(button_->IsFocusable());
+}
+
+TEST_F(AppMenuBlockButtonTest, SingleLineHeightAndLayout) {
+  const auto* provider = ChromeLayoutProvider::Get();
+  const int default_width =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH);
+  const int base_height =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT);
+
+  button_->SetText(u"New window");
+  EXPECT_EQ(button_->GetPreferredSize({}),
+            gfx::Size(default_width, base_height));
+
+  widget_->SetSize(gfx::Size(default_width, base_height));
+  views::test::RunScheduledLayout(button_);
+
+  auto* icon_view = GetChildOfType<views::ImageView>();
+  auto* label = GetChildOfType<views::Label>();
+  ASSERT_TRUE(icon_view);
+  ASSERT_TRUE(label);
+  EXPECT_GE(label->height(), label->font_list().GetHeight());
+  EXPECT_LE(
+      std::abs(icon_view->y() - (button_->height() - label->bounds().bottom())),
+      1);
+
+  // Text that wraps at `default_width` but fits on 1 line at a wider flexed
+  // width should still report `base_height` when queried with that width.
+  button_->SetText(u"New window extra");
+  EXPECT_GT(button_->GetPreferredSize({}).height(), base_height);
+  EXPECT_EQ(button_->GetPreferredSize(views::SizeBounds(130, {})),
+            gfx::Size(default_width, base_height));
+}
+
+TEST_F(AppMenuBlockButtonTest, MultilineHeightAndLayout) {
+  const auto* provider = ChromeLayoutProvider::Get();
+  const int default_width =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_WIDTH);
+  const int base_height =
+      provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_HEIGHT);
+
+  button_->SetText(u"New Incognito window");
+  const gfx::Size pref_size = button_->GetPreferredSize({});
+  EXPECT_EQ(pref_size.width(), default_width);
+  EXPECT_GT(pref_size.height(), base_height);
+
+  widget_->SetSize(pref_size);
+  views::test::RunScheduledLayout(button_);
+
+  auto* icon_view = GetChildOfType<views::ImageView>();
+  auto* label = GetChildOfType<views::Label>();
+  ASSERT_TRUE(icon_view);
+  ASSERT_TRUE(label);
+  EXPECT_GE(label->height(), 2 * label->font_list().GetHeight());
+  EXPECT_LE(
+      std::abs(icon_view->y() - (button_->height() - label->bounds().bottom())),
+      1);
 }
 
 }  // namespace

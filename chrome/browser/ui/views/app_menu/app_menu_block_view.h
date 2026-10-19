@@ -39,6 +39,10 @@ class AppMenuBlockView : public views::BoxLayoutView {
   AppMenuBlockView(const AppMenuBlockView&) = delete;
   AppMenuBlockView& operator=(const AppMenuBlockView&) = delete;
   ~AppMenuBlockView() override;
+
+  // views::BoxLayoutView:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 };
 
 using AppMenuBlockSectionView = AppMenuBlockView;
