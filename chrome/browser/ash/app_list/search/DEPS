@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/autocomplete",
   "+chrome/browser/bitmap_fetcher",
-  "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/screen_ai",

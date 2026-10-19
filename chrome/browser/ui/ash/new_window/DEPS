@@ -11,7 +11,6 @@ include_rules = [
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
   "+chrome/browser/chromeos/arc",
   "+chrome/browser/chromeos/network",
-  "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/platform_util.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/multi_user",

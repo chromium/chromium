@@ -10,7 +10,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"

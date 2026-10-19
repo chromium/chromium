@@ -12,7 +12,6 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "components/prefs/pref_change_registrar.h"

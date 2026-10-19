@@ -13,7 +13,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"

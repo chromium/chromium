@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/app_list/search/search_provider.h"
 #include "chrome/browser/ash/app_list/search/test/test_search_controller.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"

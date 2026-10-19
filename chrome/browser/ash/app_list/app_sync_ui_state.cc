@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/app_list/app_sync_ui_state_factory.h"
 #include "chrome/browser/ash/app_list/app_sync_ui_state_observer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/user_selectable_type.h"

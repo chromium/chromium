@@ -49,7 +49,6 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"

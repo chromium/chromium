@@ -30,7 +30,6 @@ include_rules = [
   "+chrome/browser/extensions/context_menu_matcher.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_uninstall_dialog.h",
-  "+chrome/browser/extensions/extension_util.h",
   "+chrome/browser/extensions/launch_util.h",
   "+chrome/browser/extensions/menu_manager.h",
   "+chrome/browser/media/router",

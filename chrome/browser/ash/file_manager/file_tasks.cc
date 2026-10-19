@@ -64,7 +64,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"

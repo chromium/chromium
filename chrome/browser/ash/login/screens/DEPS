@@ -37,7 +37,6 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/enterprise/util",
   "+chrome/browser/metrics",
-  "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/browser/speech/extension_api",

@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"

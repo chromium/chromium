@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/drive/file_errors.h"

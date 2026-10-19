@@ -56,8 +56,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker_controller.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"

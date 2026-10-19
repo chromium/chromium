@@ -16,7 +16,6 @@ include_rules = [
   "+chrome/browser/ash/policy/enrollment",
   "+chrome/browser/ash/policy/handlers",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/net",
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/webui/ash/login",
 ]

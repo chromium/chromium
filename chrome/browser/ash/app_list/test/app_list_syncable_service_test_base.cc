@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "extensions/browser/extension_registrar.h"
 
 namespace test {

@@ -274,7 +274,6 @@ static_library("screens") {
     "//chrome/browser/ash/system",
     "//chrome/browser/enterprise/browser_management:management_identity",
     "//chrome/browser/metrics",
-    "//chrome/browser/net",
     "//chrome/browser/prefs:util",
     "//chrome/browser/sync",
     "//chrome/browser/sync:factories",
