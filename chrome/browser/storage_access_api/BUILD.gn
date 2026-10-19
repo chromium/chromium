@@ -48,10 +48,6 @@ source_set("storage_access_api") {
 source_set("unit_tests") {
   testonly = true
 
-  # storage_access_grant_permission_context_unittest.cc has file-scope
-  # non-trivial statics, which -Wexit-time-destructors rejects.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-
   sources = [
     "site_pair_cache_unittest.cc",
     "storage_access_api_service_factory_unittest.cc",
