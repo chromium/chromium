@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
-#include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -108,7 +107,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver,
-      public CanvasMemoryDumpClient,
       public ScopedRasterTimer::Host {
  public:
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
@@ -204,6 +202,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGraphite() const;
   void RecordingCleared();
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd);
 
  private:
   Canvas2DResourceProvider(gfx::Size,
@@ -234,9 +233,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   void OnResourceRefReturned(
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
-  // CanvasMemoryDumpClient implementation.
-  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
-  size_t GetSize() const override;
 
   void EnsureWriteAccess();
   void EndWriteAccess();

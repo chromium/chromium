@@ -23,8 +23,6 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_allocator_dump.h"
-#include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "cc/paint/decode_stashing_image_provider.h"
@@ -59,7 +57,6 @@
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -548,27 +545,7 @@ void Canvas2DResourceProvider::OnFlushForImage(
 
 void Canvas2DResourceProvider::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (IsSoftware()) {
-    if (surface_) {
-      std::string dump_name =
-          base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
-                             reinterpret_cast<uintptr_t>(surface_.get()));
-      auto* dump = pmd->CreateAllocatorDump(dump_name);
-
-      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
-                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
-                      GetSize());
-      dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
-                      base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
-
-      if (const char* system_allocator_name =
-              base::trace_event::MemoryDumpManager::GetInstance()
-                  ->system_allocator_pool_name()) {
-        pmd->AddSuballocation(dump->guid(), system_allocator_name);
-      }
-    }
-    return;
-  }
+  CHECK(!IsSoftware());
 
   std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
                                         reinterpret_cast<uintptr_t>(this));
@@ -581,14 +558,6 @@ void Canvas2DResourceProvider::OnMemoryDump(
 
 SkSurface* Canvas2DResourceProvider::GetSkSurface() const {
   return surface_.get();
-}
-
-size_t Canvas2DResourceProvider::GetSize() const {
-  if (!surface_) {
-    return 0;
-  }
-  SkImageInfo info = surface_->imageInfo();
-  return info.computeByteSize(info.minRowBytes());
 }
 
 std::unique_ptr<Canvas2DResourceProvider>
@@ -857,7 +826,6 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
   if (resource_) {
     EnsureWriteAccess();
   }
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 
   // Single buffered mode supported only for accelerated canvas.
   CHECK(!IsSingleBuffered() || is_accelerated_);
@@ -934,11 +902,9 @@ Canvas2DResourceProvider::Canvas2DResourceProvider(
           kMaxRecycledCanvasResources);
     }
   }
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
 Canvas2DResourceProvider::~Canvas2DResourceProvider() {
-  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }

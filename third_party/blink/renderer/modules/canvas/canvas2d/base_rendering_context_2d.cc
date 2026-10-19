@@ -181,7 +181,7 @@ BaseRenderingContext2D::BaseRenderingContext2D(
 }
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
-  if (surface_ && !shared_image_provider_) {
+  if (HasBacking()) {
     CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   }
   if (context_provider_wrapper_) {
@@ -210,13 +210,11 @@ bool BaseRenderingContext2D::IsBackingValid() const {
 }
 
 void BaseRenderingContext2D::ResetBacking() {
-  if (surface_) {
-    if (!shared_image_provider_) {
-      CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-    }
-    surface_.reset();
+  if (HasBacking()) {
+    CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   }
   shared_image_provider_.reset();
+  surface_.reset();
   canvas_image_provider_.reset();
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
@@ -260,6 +258,7 @@ base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
 void BaseRenderingContext2D::CreateSharedImageProvider(
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags) {
+  CHECK(!HasBacking());
   shared_image_provider_ = Canvas2DResourceProvider::CreateWithClear(
       Host()->Size(), color_params_.GetSharedImageFormat(),
       color_params_.GetAlphaType(), color_params_.GetGfxColorSpace(),
@@ -268,17 +267,23 @@ void BaseRenderingContext2D::CreateSharedImageProvider(
       shared_image_usage_flags,
       blink::BindOnce(&CanvasRenderingContextHost::NotifyGpuContextLost,
                       WrapWeakPersistent(Host())));
-  if (shared_image_provider_ && raster_mode == RasterMode::kCPU) {
+  if (!shared_image_provider_) {
+    return;
+  }
+  if (raster_mode == RasterMode::kCPU) {
     CreateSoftwareSurface();
     if (!surface_) {
       shared_image_provider_.reset();
     } else {
       shared_image_provider_->SetSkSurface(surface_);
     }
+    return;
   }
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
 
 void BaseRenderingContext2D::CreateSharedImageProviderForSoftwareCompositor() {
+  CHECK(!HasBacking());
   shared_image_provider_ =
       Canvas2DResourceProvider::CreateWithClearForSoftwareCompositor(
           Host()->Size(), color_params_.GetSharedImageFormat(),
@@ -317,9 +322,7 @@ void BaseRenderingContext2D::CreateSoftwareSurface() {
   surface_->getCanvas()->clear(alpha_type == kOpaque_SkAlphaType
                                    ? SkColors::kBlack
                                    : SkColors::kTransparent);
-  if (!shared_image_provider_) {
-    CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  }
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   sw_snapshot_paint_image_id_ = cc::PaintImage::GetNextId();
   sw_snapshot_paint_image_content_id_ = cc::PaintImage::kInvalidContentId;
   sw_snapshot_sk_image_id_ = 0u;
@@ -345,7 +348,12 @@ void BaseRenderingContext2D::RecordBackingHistograms() {
 void BaseRenderingContext2D::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   // BaseRenderingContext2D is only registered with CanvasMemoryDumpProvider
-  // while `surface_` is non-null.
+  // while `HasBacking()` is true.
+  CHECK(HasBacking());
+  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+    shared_image_provider_->OnMemoryDump(pmd);
+    return;
+  }
   CHECK(surface_);
   std::string dump_name =
       base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
@@ -367,8 +375,11 @@ void BaseRenderingContext2D::OnMemoryDump(
 
 size_t BaseRenderingContext2D::GetSize() const {
   // BaseRenderingContext2D is only registered with CanvasMemoryDumpProvider
-  // while `surface_` is non-null.
-  CHECK(surface_);
+  // while `HasBacking()` is true.
+  CHECK(HasBacking());
+  if (!surface_) {
+    return 0;
+  }
   SkImageInfo info = surface_->imageInfo();
   return info.computeByteSize(info.minRowBytes());
 }
