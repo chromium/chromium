@@ -94,15 +94,16 @@ class CBOR_EXPORT Reader {
     TOO_MUCH_NESTING = 5,
     INVALID_UTF8 = 6,
     EXTRANEOUS_DATA = 7,
-    OUT_OF_ORDER_KEY = 8,
+    // 8 was OUT_OF_ORDER_KEY.
     NON_MINIMAL_CBOR_ENCODING = 9,
     UNSUPPORTED_SIMPLE_VALUE = 10,
     UNSUPPORTED_FLOATING_POINT_VALUE = 11,
     OUT_OF_RANGE_INTEGER_VALUE = 12,
-    DUPLICATE_KEY = 13,
+    // 13 was DUPLICATE_KEY.
     UNKNOWN_ERROR = 14,
+    OUT_OF_ORDER_OR_DUPLICATE_KEY = 15,
     // LINT.ThenChange(//components/cbor/rust/reader.rs:ErrorCode,//components/cbor/reader.cc:DecoderErrorAsserts,//tools/metrics/histograms/metadata/cbor/enums.xml:CBORDecoderError)
-    kMaxValue = UNKNOWN_ERROR,
+    kMaxValue = OUT_OF_ORDER_OR_DUPLICATE_KEY,
   };
 
   // CBOR nested depth sufficient for most use cases.
@@ -202,14 +203,15 @@ class CBOR_EXPORT Reader {
 
   std::optional<DataItemHeader> DecodeDataItemHeader();
   std::optional<Value> DecodeCompleteDataItem(const Config& config,
-                                              int max_nesting_level);
+                                              int max_nesting_level,
+                                              bool is_key);
   std::optional<Value> DecodeValueToNegative(uint64_t value);
   std::optional<Value> DecodeValueToUnsigned(uint64_t value);
   std::optional<Value> DecodeToSimpleValue(const DataItemHeader& header);
   std::optional<uint64_t> ReadVariadicLengthInteger(uint8_t additional_info);
   std::optional<Value> ReadByteStringContent(const DataItemHeader& header);
   std::optional<Value> ReadStringContent(const DataItemHeader& header,
-                                         const Config& config);
+                                         bool allow_invalid_utf8);
   std::optional<Value> ReadArrayContent(const DataItemHeader& header,
                                         const Config& config,
                                         int max_nesting_level);

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 use alloc::vec::Vec;
-use core::cmp::Ordering;
 
 use crate::constants::*;
 use crate::values::{Map, MapEntry, MapKey, Value};
@@ -19,13 +18,14 @@ pub enum Error {
     TooMuchNesting = 5,
     InvalidUtf8 = 6,
     ExtraneousData = 7,
-    OutOfOrderKey = 8,
+    // 8 was OutOfOrderKey.
     NonMinimalCborEncoding = 9,
     UnsupportedSimpleValue = 10,
     UnsupportedFloatingPointValue = 11,
     OutOfRangeIntegerValue = 12,
-    DuplicateKey = 13,
+    // 13 was DuplicateKey.
     UnknownError = 14,
+    OutOfOrderOrDuplicateKey = 15,
 }
 // LINT.ThenChange(//components/cbor/reader.h:DecoderError,
 // //components/cbor/reader.cc:DecoderErrorAsserts)
@@ -48,9 +48,6 @@ impl Error {
                 "String encodings other than UTF-8 are not allowed."
             }
             Self::ExtraneousData => "Trailing data bytes are not allowed.",
-            Self::OutOfOrderKey => {
-                "Map keys must be strictly monotonically increasing based on byte length and then by byte-wise lexical order."
-            }
             Self::NonMinimalCborEncoding => {
                 "Unsigned integers must be encoded with minimum number of bytes."
             }
@@ -63,8 +60,10 @@ impl Error {
             Self::OutOfRangeIntegerValue => {
                 "Integer values must be between INT64_MIN and INT64_MAX."
             }
-            Self::DuplicateKey => "Duplicate map keys are not allowed.",
             Self::UnknownError => "An unknown error occured.",
+            Self::OutOfOrderOrDuplicateKey => {
+                "Map keys must be strictly monotonically increasing based on major type, byte length and then by byte-wise lexical order."
+            }
         }
     }
 }
@@ -362,37 +361,57 @@ impl Decoder {
         let mut ret: Vec<MapEntry> = Vec::new();
 
         for _ in 0..num_elements {
-            // TODO(crbug.com/259749095): Validate key type + order (and
-            // possibly return early) before attempting to parse the
-            // value.
-            let key_value = self.parse_value(data, depth + 1)?;
-            let value = self.parse_value(data, depth + 1)?;
+            let key = self.parse_map_key(data, depth + 1)?;
 
-            let key = match MapKey::try_from(key_value) {
-                Ok(key) => key,
-                Err(Value::InvalidUtf8(_)) => return Err(Error::InvalidUtf8),
-                Err(_) => return Err(Error::IncorrectMapKeyType),
-            };
-
-            if let Some(previous) = ret.last() {
-                match previous.key.cmp(&key) {
-                    Ordering::Less => {}
-                    Ordering::Greater
-                        if ret.binary_search_by_key(&&key, |entry| &entry.key).is_err() =>
-                    {
-                        return Err(Error::OutOfOrderKey);
-                    }
-                    // Covers `Ordering::Equal` and `Ordering::Greater` when the key is already
-                    // in the map (e.g. an out-of-order duplicate).
-                    _ => {
-                        return Err(Error::DuplicateKey);
-                    }
-                }
+            if let Some(previous) = ret.last()
+                && previous.key >= key
+            {
+                return Err(Error::OutOfOrderOrDuplicateKey);
             }
+
+            let value = self.parse_value(data, depth + 1)?;
 
             ret.push(MapEntry { key, value });
         }
         Ok(Value::Map(Map::from_sorted_vec_unchecked(ret)))
+    }
+
+    fn parse_map_key<'a>(
+        &mut self,
+        data: &mut &'a [u8],
+        depth: usize,
+    ) -> Result<MapKey<'a>, Error> {
+        if depth > self.config.max_nesting_level {
+            return Err(Error::TooMuchNesting);
+        }
+
+        let event =
+            match self.parse_single_event_without_nesting_updates(data, /* is_key= */ true) {
+                Ok(CborEvent::NeedsMoreData(_)) => return Err(Error::IncompleteCborData),
+                Ok(e) => e,
+                Err(e) => return Err(e),
+            };
+
+        let key = match event {
+            CborEvent::Int(v) => MapKey::Int(v),
+            CborEvent::BytesStart(_) => MapKey::Bytestring(self.read_complete_bytestring(data)?),
+            CborEvent::String(s) => MapKey::String(s),
+            CborEvent::InvalidUtf8(_)
+            | CborEvent::ArrayStart(_)
+            | CborEvent::MapStart(_)
+            | CborEvent::Boolean(_)
+            | CborEvent::Null
+            | CborEvent::Undefined
+            | CborEvent::BytesChunk(_)
+            | CborEvent::BytesEnd
+            | CborEvent::Done
+            | CborEvent::NeedsMoreData(_) => {
+                unreachable!("unexpected event in map key parser")
+            }
+        };
+
+        self.update_state(&event, self.state)?;
+        Ok(key)
     }
 
     pub fn read_complete_value<'a>(&mut self, data: &mut &'a [u8]) -> Result<Value<'a>, Error> {
@@ -452,7 +471,9 @@ impl Decoder {
 
         let mut remaining = *data;
         let original_state = self.state;
-        let event = match self.parse_single_event_without_nesting_updates(&mut remaining) {
+        let event = match self
+            .parse_single_event_without_nesting_updates(&mut remaining, /* is_key= */ false)
+        {
             Ok(e) => e,
             Err(e) => {
                 self.state = original_state;
@@ -484,6 +505,7 @@ impl Decoder {
     fn parse_single_event_without_nesting_updates<'a>(
         &mut self,
         data: &mut &'a [u8],
+        is_key: bool,
     ) -> Result<CborEvent<'a>, Error> {
         match self.state {
             DecoderState::Done => Ok(CborEvent::Done),
@@ -563,11 +585,14 @@ impl Decoder {
                         };
                         match core::str::from_utf8(bytes) {
                             Ok(s) => Ok(CborEvent::String(s)),
-                            Err(_) if self.config.allow_invalid_utf8 => {
+                            Err(_) if self.config.allow_invalid_utf8 && !is_key => {
                                 Ok(CborEvent::InvalidUtf8(bytes))
                             }
                             Err(_) => Err(Error::InvalidUtf8),
                         }
+                    }
+                    MAJOR_TYPE_ARRAY | MAJOR_TYPE_MAP | MAJOR_TYPE_SIMPLE_VALUE if is_key => {
+                        Err(Error::IncorrectMapKeyType)
                     }
                     MAJOR_TYPE_ARRAY => Ok(CborEvent::ArrayStart(arg)),
                     MAJOR_TYPE_MAP => Ok(CborEvent::MapStart(arg)),

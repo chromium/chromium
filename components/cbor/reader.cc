@@ -62,14 +62,14 @@ ASSERT_DECODER_ERROR_EQ(INCORRECT_MAP_KEY_TYPE, IncorrectMapKeyType);
 ASSERT_DECODER_ERROR_EQ(TOO_MUCH_NESTING, TooMuchNesting);
 ASSERT_DECODER_ERROR_EQ(INVALID_UTF8, InvalidUtf8);
 ASSERT_DECODER_ERROR_EQ(EXTRANEOUS_DATA, ExtraneousData);
-ASSERT_DECODER_ERROR_EQ(OUT_OF_ORDER_KEY, OutOfOrderKey);
 ASSERT_DECODER_ERROR_EQ(NON_MINIMAL_CBOR_ENCODING, NonMinimalCborEncoding);
 ASSERT_DECODER_ERROR_EQ(UNSUPPORTED_SIMPLE_VALUE, UnsupportedSimpleValue);
 ASSERT_DECODER_ERROR_EQ(UNSUPPORTED_FLOATING_POINT_VALUE,
                         UnsupportedFloatingPointValue);
 ASSERT_DECODER_ERROR_EQ(OUT_OF_RANGE_INTEGER_VALUE, OutOfRangeIntegerValue);
-ASSERT_DECODER_ERROR_EQ(DUPLICATE_KEY, DuplicateKey);
 ASSERT_DECODER_ERROR_EQ(UNKNOWN_ERROR, UnknownError);
+ASSERT_DECODER_ERROR_EQ(OUT_OF_ORDER_OR_DUPLICATE_KEY,
+                        OutOfOrderOrDuplicateKey);
 // LINT.ThenChange(//components/cbor/reader.h:DecoderError,//components/cbor/rust/reader.rs:Error)
 #undef ASSERT_DECODER_ERROR_EQ
 #endif
@@ -105,8 +105,8 @@ const char kInvalidUTF8[] =
     "String encodings other than UTF-8 are not allowed.";
 const char kExtraneousData[] = "Trailing data bytes are not allowed.";
 const char kMapKeyOutOfOrder[] =
-    "Map keys must be strictly monotonically increasing based on byte length "
-    "and then by byte-wise lexical order.";
+    "Map keys must be strictly monotonically increasing based on major type, "
+    "byte length and then by byte-wise lexical order.";
 const char kNonMinimalCBOREncoding[] =
     "Unsigned integers must be encoded with minimum number of bytes.";
 const char kUnsupportedSimpleValue[] =
@@ -115,7 +115,6 @@ const char kUnsupportedFloatingPointValue[] =
     "Floating point numbers are not supported.";
 const char kOutOfRangeIntegerValue[] =
     "Integer values must be between INT64_MIN and INT64_MAX.";
-const char kMapKeyDuplicate[] = "Duplicate map keys are not allowed.";
 const char kUnknownError[] = "An unknown error occured.";
 
 // Every duration recorded for a parse uses this bucket layout, so that their
@@ -341,8 +340,8 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
 #endif
 
   Reader reader(data);
-  std::optional<Value> value =
-      reader.DecodeCompleteDataItem(config, config.max_nesting_level);
+  std::optional<Value> value = reader.DecodeCompleteDataItem(
+      config, config.max_nesting_level, /*is_key=*/false);
 
   error_code_out = reader.GetErrorCode();
   const bool success = value.has_value();
@@ -360,7 +359,8 @@ std::optional<Value> Reader::Read(base::span<uint8_t const> data,
 }
 
 std::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
-                                                    int max_nesting_level) {
+                                                    int max_nesting_level,
+                                                    bool is_key) {
   if (max_nesting_level < 0 || max_nesting_level > kCBORMaxDepth) {
     error_code_ = DecoderError::TOO_MUCH_NESTING;
     return std::nullopt;
@@ -379,12 +379,25 @@ std::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
     case Value::Type::BYTE_STRING:
       return ReadByteStringContent(*header);
     case Value::Type::STRING:
-      return ReadStringContent(*header, config);
+      return ReadStringContent(
+          *header, /*allow_invalid_utf8=*/config.allow_invalid_utf8 && !is_key);
     case Value::Type::ARRAY:
+      if (is_key) {
+        error_code_ = DecoderError::INCORRECT_MAP_KEY_TYPE;
+        return std::nullopt;
+      }
       return ReadArrayContent(*header, config, max_nesting_level);
     case Value::Type::MAP:
+      if (is_key) {
+        error_code_ = DecoderError::INCORRECT_MAP_KEY_TYPE;
+        return std::nullopt;
+      }
       return ReadMapContent(*header, config, max_nesting_level);
     case Value::Type::SIMPLE_VALUE:
+      if (is_key) {
+        error_code_ = DecoderError::INCORRECT_MAP_KEY_TYPE;
+        return std::nullopt;
+      }
       return DecodeToSimpleValue(*header);
     case Value::Type::INVALID_UTF8:
       break;
@@ -495,7 +508,7 @@ std::optional<Value> Reader::DecodeToSimpleValue(const DataItemHeader& header) {
 
 std::optional<Value> Reader::ReadStringContent(
     const Reader::DataItemHeader& header,
-    const Config& config) {
+    bool allow_invalid_utf8) {
   uint64_t num_bytes = header.value;
   const std::optional<base::span<const uint8_t>> bytes = ReadBytes(num_bytes);
   if (!bytes) {
@@ -507,7 +520,7 @@ std::optional<Value> Reader::ReadStringContent(
     return Value(cbor_string_view);
   }
 
-  if (config.allow_invalid_utf8) {
+  if (allow_invalid_utf8) {
     return Value(Value::invalid_utf8, *bytes);
   }
 
@@ -535,7 +548,7 @@ std::optional<Value> Reader::ReadArrayContent(
   Value::ArrayValue cbor_array;
   for (uint64_t i = 0; i < length; ++i) {
     std::optional<Value> cbor_element =
-        DecodeCompleteDataItem(config, max_nesting_level - 1);
+        DecodeCompleteDataItem(config, max_nesting_level - 1, /*is_key=*/false);
     if (!cbor_element.has_value()) {
       return std::nullopt;
     }
@@ -553,35 +566,19 @@ std::optional<Value> Reader::ReadMapContent(
   std::vector<std::pair<Value, Value>> items;
   for (uint64_t i = 0; i < length; ++i) {
     std::optional<Value> key =
-        DecodeCompleteDataItem(config, max_nesting_level - 1);
+        DecodeCompleteDataItem(config, max_nesting_level - 1, /*is_key=*/true);
     if (!key.has_value()) {
       return std::nullopt;
     }
-    std::optional<Value> value =
-        DecodeCompleteDataItem(config, max_nesting_level - 1);
-    if (!value.has_value()) {
+
+    if (!items.empty() && !Value::Less()(items.back().first, *key)) {
+      error_code_ = DecoderError::OUT_OF_ORDER_OR_DUPLICATE_KEY;
       return std::nullopt;
     }
 
-    switch (key.value().type()) {
-      case Value::Type::UNSIGNED:
-      case Value::Type::NEGATIVE:
-      case Value::Type::STRING:
-      case Value::Type::BYTE_STRING:
-        break;
-      case Value::Type::INVALID_UTF8:
-        error_code_ = DecoderError::INVALID_UTF8;
-        return std::nullopt;
-      default:
-        error_code_ = DecoderError::INCORRECT_MAP_KEY_TYPE;
-        return std::nullopt;
-    }
-
-    if (!items.empty() && !Value::Less()(items.back().first, *key)) {
-      error_code_ = std::ranges::binary_search(items, *key, Value::Less(),
-                                               &std::pair<Value, Value>::first)
-                        ? DecoderError::DUPLICATE_KEY
-                        : DecoderError::OUT_OF_ORDER_KEY;
+    std::optional<Value> value =
+        DecodeCompleteDataItem(config, max_nesting_level - 1, /*is_key=*/false);
+    if (!value.has_value()) {
       return std::nullopt;
     }
 
@@ -636,8 +633,6 @@ const char* Reader::ErrorCodeToString(DecoderError error) {
       return kInvalidUTF8;
     case DecoderError::EXTRANEOUS_DATA:
       return kExtraneousData;
-    case DecoderError::OUT_OF_ORDER_KEY:
-      return kMapKeyOutOfOrder;
     case DecoderError::NON_MINIMAL_CBOR_ENCODING:
       return kNonMinimalCBOREncoding;
     case DecoderError::UNSUPPORTED_SIMPLE_VALUE:
@@ -646,10 +641,10 @@ const char* Reader::ErrorCodeToString(DecoderError error) {
       return kUnsupportedFloatingPointValue;
     case DecoderError::OUT_OF_RANGE_INTEGER_VALUE:
       return kOutOfRangeIntegerValue;
-    case DecoderError::DUPLICATE_KEY:
-      return kMapKeyDuplicate;
     case DecoderError::UNKNOWN_ERROR:
       return kUnknownError;
+    case DecoderError::OUT_OF_ORDER_OR_DUPLICATE_KEY:
+      return kMapKeyOutOfOrder;
     default:
       NOTREACHED();
   }

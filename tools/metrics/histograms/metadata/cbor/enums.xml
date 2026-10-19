@@ -37,13 +37,14 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="TOO_MUCH_NESTING"/>
   <int value="6" label="INVALID_UTF8"/>
   <int value="7" label="EXTRANEOUS_DATA"/>
-  <int value="8" label="OUT_OF_ORDER_KEY"/>
+  <int value="8" label="(Obsolete) OUT_OF_ORDER_KEY"/>
   <int value="9" label="NON_MINIMAL_CBOR_ENCODING"/>
   <int value="10" label="UNSUPPORTED_SIMPLE_VALUE"/>
   <int value="11" label="UNSUPPORTED_FLOATING_POINT_VALUE"/>
   <int value="12" label="OUT_OF_RANGE_INTEGER_VALUE"/>
-  <int value="13" label="DUPLICATE_KEY"/>
+  <int value="13" label="(Obsolete) DUPLICATE_KEY"/>
   <int value="14" label="UNKNOWN_ERROR"/>
+  <int value="15" label="OUT_OF_ORDER_OR_DUPLICATE_KEY"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/cbor/reader.h:DecoderError) -->

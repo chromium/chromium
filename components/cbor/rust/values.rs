@@ -317,19 +317,6 @@ impl<'a> MapKey<'a> {
     }
 }
 
-impl<'a> TryFrom<Value<'a>> for MapKey<'a> {
-    type Error = Value<'a>;
-
-    fn try_from(value: Value<'a>) -> Result<Self, Self::Error> {
-        match value {
-            Value::Int(val) => Ok(Self::Int(val)),
-            Value::Bytestring(bytes) => Ok(Self::Bytestring(bytes)),
-            Value::String(text) => Ok(Self::String(text)),
-            _ => Err(value),
-        }
-    }
-}
-
 impl PartialEq for MapKey<'_> {
     fn eq(&self, other: &Self) -> bool {
         self.type_arg_and_payload() == other.type_arg_and_payload()

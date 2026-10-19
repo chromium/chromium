@@ -197,6 +197,60 @@ TEST_P(CBORReaderTest, MapErrorHandlingFirstError) {
   std::optional<Value> cbor = DoRead(kMapWithErrors, &error_code);
   EXPECT_FALSE(cbor.has_value());
   EXPECT_EQ(error_code, Reader::DecoderError::INVALID_UTF8);
+
+  // Even when `allow_invalid_utf8` is enabled, an invalid UTF-8 map key must be
+  // rejected before attempting to decode the value.
+  Reader::Config config;
+  config.allow_invalid_utf8 = true;
+  config.error_code_out = &error_code;
+  EXPECT_FALSE(DoRead(kMapWithErrors, config).has_value());
+  EXPECT_EQ(error_code, Reader::DecoderError::INVALID_UTF8);
+
+  // An unsupported map key type must be rejected before decoding the value or
+  // the elements of a container key.
+  static constexpr uint8_t kUnsupportedKeyTypeWithMissingValue[] = {
+      0xa1,  // map with 1 pair
+      0xf4,  // key: false (unsupported key type)
+             // value: missing
+  };
+  VerifyDecoderError(kUnsupportedKeyTypeWithMissingValue,
+                     Reader::DecoderError::INCORRECT_MAP_KEY_TYPE);
+
+  static constexpr uint8_t kArrayKeyWithMissingElement[] = {
+      0xa1,  // map with 1 pair
+      0x81,  // key: array of 1 element (unsupported key type, missing element)
+  };
+  VerifyDecoderError(kArrayKeyWithMissingElement,
+                     Reader::DecoderError::INCORRECT_MAP_KEY_TYPE);
+
+  static constexpr uint8_t kMapKeyWithMissingEntry[] = {
+      0xa1,  // map with 1 pair
+      0xa1,  // key: map of 1 pair (unsupported key type, missing entry)
+  };
+  VerifyDecoderError(kMapKeyWithMissingEntry,
+                     Reader::DecoderError::INCORRECT_MAP_KEY_TYPE);
+
+  // An out-of-order map key must be rejected before decoding the value.
+  static constexpr uint8_t kOutOfOrderKeyWithMissingValue[] = {
+      0xa2,  // map with 2 pairs
+      0x02,  // key: 2
+      0x00,  // value: 0
+      0x01,  // key: 1 (out of order)
+             // value: missing
+  };
+  VerifyDecoderError(kOutOfOrderKeyWithMissingValue,
+                     Reader::DecoderError::OUT_OF_ORDER_OR_DUPLICATE_KEY);
+
+  // A duplicate map key must be rejected before decoding the value.
+  static constexpr uint8_t kDuplicateKeyWithMissingValue[] = {
+      0xa2,  // map with 2 pairs
+      0x01,  // key: 1
+      0x00,  // value: 0
+      0x01,  // key: 1 (duplicate)
+             // value: missing
+  };
+  VerifyDecoderError(kDuplicateKeyWithMissingValue,
+                     Reader::DecoderError::OUT_OF_ORDER_OR_DUPLICATE_KEY);
 }
 
 TEST_P(CBORReaderTest, TestReadNegativeInt) {
@@ -1150,13 +1204,14 @@ TEST_P(CBORReaderTest, TestOutOfOrderKeyError) {
     scope_message << "testing unsorted map : " << test_element_index++;
     SCOPED_TRACE(scope_message);
 
-    // Expect `OUT_OF_ORDER_KEY`.
+    // Expect `OUT_OF_ORDER_OR_DUPLICATE_KEY`.
     {
       Reader::DecoderError error_code;
       std::optional<Value> cbor =
           DoRead(unsorted_map, &error_code);
       EXPECT_FALSE(cbor.has_value());
-      EXPECT_EQ(error_code, Reader::DecoderError::OUT_OF_ORDER_KEY);
+      EXPECT_EQ(error_code,
+                Reader::DecoderError::OUT_OF_ORDER_OR_DUPLICATE_KEY);
     }
   }
 }
@@ -1185,6 +1240,16 @@ TEST_P(CBORReaderTest, TestOutOfOrderKeyErrorWithDuplicateKeys) {
          0x41, 'y',  // key byte string "y" (duplicate)
          0x02,
       },
+      {0xa3,  // map of 3 pairs:
+         0x61, 0x61,  // "a"
+         0x01,
+
+         0x61, 0x62,  // "b"
+         0x02,
+
+         0x61, 0x61,  // "a" (duplicate key, also out of order)
+         0x03,
+      },
       //clang-format on
   };
 
@@ -1194,13 +1259,14 @@ TEST_P(CBORReaderTest, TestOutOfOrderKeyErrorWithDuplicateKeys) {
     scope_message << "testing unsorted map : " << test_element_index++;
     SCOPED_TRACE(scope_message);
 
-    // Expect `OUT_OF_ORDER_KEY`.
+    // Expect `OUT_OF_ORDER_OR_DUPLICATE_KEY`.
     {
       Reader::DecoderError error_code;
       std::optional<Value> cbor =
           DoRead(unsorted_map, &error_code);
       EXPECT_FALSE(cbor.has_value());
-      EXPECT_EQ(error_code, Reader::DecoderError::OUT_OF_ORDER_KEY);
+      EXPECT_EQ(error_code,
+                Reader::DecoderError::OUT_OF_ORDER_OR_DUPLICATE_KEY);
     }
   }
 }
@@ -1233,30 +1299,7 @@ TEST_P(CBORReaderTest, TestDuplicateKeyError) {
     Reader::DecoderError error_code;
     std::optional<Value> cbor = DoRead(kMapWithDuplicateKey, &error_code);
     EXPECT_FALSE(cbor.has_value());
-    EXPECT_EQ(error_code, Reader::DecoderError::DUPLICATE_KEY);
-  }
-}
-
-TEST_P(CBORReaderTest, TestDuplicateKeyErrorWithOutOfOrderKey) {
-  static const std::vector<uint8_t> kMapWithDuplicateKey = {
-      // clang-format off
-      0xa3,  // map of 3 pairs:
-        0x61, 0x61,  // "a"
-        0x01,
-
-        0x61, 0x62,  // "b"
-        0x02,
-
-        0x61, 0x61,  // "a" (Duplicate key, also out of order)
-        0x03,
-      // clang-format on
-  };
-
-  {
-    Reader::DecoderError error_code;
-    std::optional<Value> cbor = DoRead(kMapWithDuplicateKey, &error_code);
-    EXPECT_FALSE(cbor.has_value());
-    EXPECT_EQ(error_code, Reader::DecoderError::DUPLICATE_KEY);
+    EXPECT_EQ(error_code, Reader::DecoderError::OUT_OF_ORDER_OR_DUPLICATE_KEY);
   }
 }
 
@@ -1365,7 +1408,7 @@ TEST_P(CBORReaderTest, TestMapKeyIsUnsupportedSimpleValue) {
   std::optional<Value> cbor =
       DoRead(kMapWithUnsupportedSimpleValueKey, &error_code);
   EXPECT_FALSE(cbor.has_value());
-  EXPECT_EQ(error_code, Reader::DecoderError::UNSUPPORTED_SIMPLE_VALUE);
+  EXPECT_EQ(error_code, Reader::DecoderError::INCORRECT_MAP_KEY_TYPE);
 }
 
 TEST_P(CBORReaderTest, TestMapValueIsUnsupportedSimpleValue) {

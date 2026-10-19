@@ -96,13 +96,13 @@ fn test_inputs() {
             "a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a101a0",
             Err(Error::TooMuchNesting),
         ),
-        ("a202010102", Err(Error::OutOfOrderKey)),
+        ("a202010102", Err(Error::OutOfOrderOrDuplicateKey)),
         ("a1810101", Err(Error::IncorrectMapKeyType)),
         ("f4", Ok(Value::Boolean(false))),
         ("f5", Ok(Value::Boolean(true))),
         ("f6", Ok(Value::Null)),
         ("f7", Ok(Value::Undefined)),
-        ("a201010102", Err(Error::DuplicateKey)),
+        ("a201010102", Err(Error::OutOfOrderOrDuplicateKey)),
         ("f93c00", Err(Error::UnsupportedFloatingPointValue)),
         ("fa3f801000", Err(Error::UnsupportedFloatingPointValue)),
         ("fb3ff0000000000001", Err(Error::UnsupportedFloatingPointValue)),
@@ -157,7 +157,7 @@ fn test_corner_cases() {
 fn test_map_unsupported_simple_values() {
     let bytes_key = hex::decode("a1f002").unwrap();
     let result_key = parse_bytes(&bytes_key);
-    assert_eq!(result_key, Err(Error::UnsupportedSimpleValue));
+    assert_eq!(result_key, Err(Error::IncorrectMapKeyType));
 
     let bytes_value = hex::decode("a102f0").unwrap();
     let result_value = parse_bytes(&bytes_value);
@@ -172,8 +172,8 @@ fn test_error_to_string() {
         "Prematurely terminated CBOR data byte array."
     );
     assert_eq!(
-        Error::OutOfOrderKey.to_str(),
-        "Map keys must be strictly monotonically increasing based on byte length and then by byte-wise lexical order."
+        Error::OutOfOrderOrDuplicateKey.to_str(),
+        "Map keys must be strictly monotonically increasing based on major type, byte length and then by byte-wise lexical order."
     );
 }
 
@@ -244,14 +244,16 @@ fn test_streaming_decoder_complex() {
 
 #[gtest(CBORReaderRustTest, TestStreamingDecoderInvalidUtf8String)]
 fn test_streaming_decoder_invalid_utf8_string() {
-    let mut data: &[u8] = &[0x61, 0x80]; // Major type 3 (text string) length 1, invalid UTF-8 byte 0x80
+    let mut data: &[u8] = &[0x61, 0x80]; // Major type 3 (text string) length 1,
+                                         // invalid UTF-8 byte 0x80
     let mut decoder = Decoder::new();
     assert_eq!(decoder.next_event(&mut data), Err(Error::InvalidUtf8));
 }
 
 #[gtest(CBORReaderRustTest, TestStreamingDecoderIncomplete)]
 fn test_streaming_decoder_incomplete() {
-    let mut data: &[u8] = &[0x82, 0x01]; // Array of 2 elements, but only holds 1
+    let mut data: &[u8] = &[0x82, 0x01]; // Array of 2 elements, but only holds
+                                         // 1
     let mut decoder = Decoder::new();
     assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::ArrayStart(2)));
     assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::Int(1)));
@@ -289,8 +291,8 @@ fn test_streaming_decoder_incremental_string() {
     let mut decoder = Decoder::new();
     let mut chunk1: &[u8] = &[0x64, b't', b'e'];
 
-    // Since only 2 of 4 bytes are available in the chunk, read_bytes returns None
-    // (IncompleteCborData).
+    // Since only 2 of 4 bytes are available in the chunk, read_bytes returns
+    // None (IncompleteCborData).
     assert_eq!(decoder.next_event(&mut chunk1), Ok(CborEvent::NeedsMoreData(5)));
 
     // Provide the complete text string chunk:
@@ -300,7 +302,8 @@ fn test_streaming_decoder_incremental_string() {
 
 #[gtest(CBORReaderRustTest, TestStreamingDecoderAllowInvalidUtf8)]
 fn test_streaming_decoder_allow_invalid_utf8() {
-    let mut data: &[u8] = &[0x61, 0xFF]; // Text string of 1 byte with invalid UTF-8
+    let mut data: &[u8] = &[0x61, 0xFF]; // Text string of 1 byte with invalid
+                                         // UTF-8
     let config = Config { allow_invalid_utf8: true, ..Default::default() };
     let mut decoder = Decoder::with_config(config);
     assert_eq!(decoder.next_event(&mut data), Ok(CborEvent::InvalidUtf8(&[0xFF])));
@@ -393,11 +396,11 @@ fn test_one_pass_huge_map_length_no_overflow() {
     // An array [21] followed by 0xBF (unsupported additional info 31).
     let data: &[u8] = &[
         0xBB, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, 0x95, // Map header
-        0x95, // Array of length 21
+        0x95, // Array of length 21 (invalid map key type)
         0x15, // Uint 21
         0xBF, // Map with additional info 31 (invalid)
         0xBE, 0x3B, 0x4F, 0x2F, 0x9E,
     ];
     let res = parse_with_config(data, Config::default());
-    assert_eq!(res, Err(Error::UnknownAdditionalInfo));
+    assert_eq!(res, Err(Error::IncorrectMapKeyType));
 }
