@@ -26,6 +26,7 @@ if (is_android) {
     deps = [
       "//base",
       "//chrome/android:chrome_jni_headers",
+      "//chrome/app:command_ids",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/profiles",

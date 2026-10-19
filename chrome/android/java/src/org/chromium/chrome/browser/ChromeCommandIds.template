@@ -11,6 +11,9 @@ import org.chromium.build.annotations.NullMarked;
 /** Command IDs generated from chrome/app/chrome_command_ids.h. */
 @NullMarked
 public final class ChromeCommandIds {
+    public static final int BACK = IDC_BACK;
+    public static final int FORWARD = IDC_FORWARD;
+    public static final int RELOAD = IDC_RELOAD;
     public static final int NEW_WINDOW = IDC_NEW_WINDOW;
     public static final int NEW_INCOGNITO_WINDOW = IDC_NEW_INCOGNITO_WINDOW;
     public static final int NEW_TAB = IDC_NEW_TAB;
@@ -18,8 +21,12 @@ public final class ChromeCommandIds {
     public static final int RESTORE_TAB = IDC_RESTORE_TAB;
     public static final int BOOKMARK_THIS_TAB = IDC_BOOKMARK_THIS_TAB;
     public static final int BOOKMARK_ALL_TABS = IDC_BOOKMARK_ALL_TABS;
+    public static final int VIEW_SOURCE = IDC_VIEW_SOURCE;
     public static final int PRINT = IDC_PRINT;
     public static final int SAVE_PAGE = IDC_SAVE_PAGE;
+    public static final int CUT = IDC_CUT;
+    public static final int COPY = IDC_COPY;
+    public static final int PASTE = IDC_PASTE;
     public static final int FIND = IDC_FIND;
     public static final int DEV_TOOLS = IDC_DEV_TOOLS;
     public static final int SHOW_BOOKMARK_BAR = IDC_SHOW_BOOKMARK_BAR;
@@ -29,6 +36,9 @@ public final class ChromeCommandIds {
     public static final int CLEAR_BROWSING_DATA = IDC_CLEAR_BROWSING_DATA;
     public static final int HELP_PAGE_VIA_KEYBOARD = IDC_HELP_PAGE_VIA_KEYBOARD;
     public static final int TASK_MANAGER_SHORTCUT = IDC_TASK_MANAGER_SHORTCUT;
+    public static final int CONTENT_CONTEXT_SELECTALL = IDC_CONTENT_CONTEXT_SELECTALL;
+    public static final int CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE =
+            IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE;
 
     private ChromeCommandIds() {}
 }

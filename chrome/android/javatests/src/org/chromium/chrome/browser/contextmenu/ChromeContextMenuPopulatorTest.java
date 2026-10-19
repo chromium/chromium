@@ -79,7 +79,10 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.blink_public.common.ContextMenuDataMediaFlags;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeCommandIds;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.KeyboardShortcuts;
+import org.chromium.chrome.browser.KeyboardShortcutsJni;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
@@ -97,6 +100,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
@@ -195,6 +199,7 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private ChromeContextMenuPopulator.PendingIntentSender mMockPendingIntentSender;
     @Mock private ForcedSigninStatusProvider mMockForcedSigninStatusProvider;
     @Mock private TranslateBridge.Natives mTranslateBridgeMock;
+    @Mock private KeyboardShortcuts.Natives mKeyboardShortcutsJniMock;
     @Mock private GlicKeyedService mGlicKeyedService;
 
     private Activity mActivity;
@@ -215,6 +220,8 @@ public class ChromeContextMenuPopulatorTest {
         when(mMenuModelBridge.populateModelList()).thenReturn(new ModelList());
         TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeMock);
         when(mTranslateBridgeMock.getTargetLanguage(any())).thenReturn("en");
+        KeyboardShortcutsJni.setInstanceForTesting(mKeyboardShortcutsJniMock);
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(anyInt())).thenReturn("");
 
         GURL pageUrl = new GURL(PAGE_URL);
         when(mItemDelegate.getPageUrl()).thenReturn(pageUrl);
@@ -4563,5 +4570,64 @@ public class ChromeContextMenuPopulatorTest {
         mPopulator.onMenuClosed();
 
         watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
+    public void testPage_ShortcutTextPopulatedWhenEnabled() {
+        setAllMandatoryFlowsComplete();
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.BACK))
+                .thenReturn("Alt+LeftArrow");
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.RELOAD))
+                .thenReturn("Ctrl+R");
+        ContextMenuParams params = getPageParams();
+
+        initializePopulator(
+                ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params, true, true, true);
+        List<ModelList> menuState = mPopulator.buildContextMenu();
+
+        assertEquals(
+                "Alt+LeftArrow",
+                findItemWithId(menuState, R.id.contextmenu_back)
+                        .model
+                        .get(ListMenuItemProperties.SHORTCUT_TEXT));
+        assertEquals(
+                "Ctrl+R",
+                findItemWithId(menuState, R.id.contextmenu_reload)
+                        .model
+                        .get(ListMenuItemProperties.SHORTCUT_TEXT));
+        assertNull(
+                findItemWithId(menuState, R.id.contextmenu_inspect_element)
+                        .model
+                        .get(ListMenuItemProperties.SHORTCUT_TEXT));
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_KEYBOARD_SHORTCUT_HINTS)
+    public void testSelectionDropdown_ShortcutTextPopulatedWhenEnabled() {
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(ChromeCommandIds.COPY))
+                .thenReturn("Ctrl+C");
+        when(mKeyboardShortcutsJniMock.getShortcutTextForCommandId(
+                        ChromeCommandIds.CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE))
+                .thenReturn("Ctrl+Shift+V");
+        ChromeSelectionDropdownMenuDelegate delegate = new ChromeSelectionDropdownMenuDelegate();
+
+        assertEquals(
+                "Ctrl+C", getSelectionItemShortcutText(delegate, R.id.select_action_menu_copy));
+        assertEquals(
+                "Ctrl+Shift+V",
+                getSelectionItemShortcutText(delegate, android.R.id.pasteAsPlainText));
+        assertNull(getSelectionItemShortcutText(delegate, R.id.select_action_menu_share));
+    }
+
+    private static CharSequence getSelectionItemShortcutText(
+            ChromeSelectionDropdownMenuDelegate delegate, int id) {
+        return delegate.getMenuItem("", null, 0, id, null, true, false, true, null, 0)
+                .model
+                .get(ListMenuItemProperties.SHORTCUT_TEXT);
     }
 }

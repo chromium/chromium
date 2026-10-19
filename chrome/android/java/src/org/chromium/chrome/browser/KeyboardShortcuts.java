@@ -1358,7 +1358,13 @@ public class KeyboardShortcuts {
         }
 
         int commandId;
-        if (menuItemId == R.id.new_window_menu_id) {
+        if (menuItemId == R.id.contextmenu_back) {
+            commandId = ChromeCommandIds.BACK;
+        } else if (menuItemId == R.id.contextmenu_forward) {
+            commandId = ChromeCommandIds.FORWARD;
+        } else if (menuItemId == R.id.contextmenu_reload) {
+            commandId = ChromeCommandIds.RELOAD;
+        } else if (menuItemId == R.id.new_window_menu_id) {
             commandId = ChromeCommandIds.NEW_WINDOW;
         } else if (menuItemId == R.id.new_incognito_window_menu_id) {
             commandId = ChromeCommandIds.NEW_INCOGNITO_WINDOW;
@@ -1378,10 +1384,20 @@ public class KeyboardShortcuts {
             commandId = ChromeCommandIds.BOOKMARK_THIS_TAB;
         } else if (menuItemId == R.id.bookmark_all_tabs) {
             commandId = ChromeCommandIds.BOOKMARK_ALL_TABS;
-        } else if (menuItemId == R.id.print_id) {
+        } else if (menuItemId == R.id.contextmenu_view_page_source) {
+            commandId = ChromeCommandIds.VIEW_SOURCE;
+        } else if (menuItemId == R.id.print_id || menuItemId == R.id.contextmenu_print_page) {
             commandId = ChromeCommandIds.PRINT;
-        } else if (menuItemId == R.id.offline_page_id || menuItemId == R.id.download_page_id) {
+        } else if (menuItemId == R.id.offline_page_id
+                || menuItemId == R.id.download_page_id
+                || menuItemId == R.id.contextmenu_save_page) {
             commandId = ChromeCommandIds.SAVE_PAGE;
+        } else if (menuItemId == R.id.select_action_menu_cut) {
+            commandId = ChromeCommandIds.CUT;
+        } else if (menuItemId == R.id.select_action_menu_copy) {
+            commandId = ChromeCommandIds.COPY;
+        } else if (menuItemId == android.R.id.paste) {
+            commandId = ChromeCommandIds.PASTE;
         } else if (menuItemId == R.id.find_in_page_id) {
             commandId = ChromeCommandIds.FIND;
         } else if (menuItemId == R.id.dev_tools) {
@@ -1401,6 +1417,10 @@ public class KeyboardShortcuts {
             commandId = ChromeCommandIds.HELP_PAGE_VIA_KEYBOARD;
         } else if (menuItemId == R.id.task_manager) {
             commandId = ChromeCommandIds.TASK_MANAGER_SHORTCUT;
+        } else if (menuItemId == R.id.select_action_menu_select_all) {
+            commandId = ChromeCommandIds.CONTENT_CONTEXT_SELECTALL;
+        } else if (menuItemId == android.R.id.pasteAsPlainText) {
+            commandId = ChromeCommandIds.CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE;
         } else {
             return null;
         }
