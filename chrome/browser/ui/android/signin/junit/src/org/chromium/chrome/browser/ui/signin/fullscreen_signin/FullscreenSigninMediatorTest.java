@@ -8,11 +8,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
 
 import org.junit.After;
 import org.junit.Before;
@@ -36,10 +39,12 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.AccountPreviewDataService;
+import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
+import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.SigninFlow;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator.LoadPoint;
@@ -47,6 +52,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -242,6 +248,56 @@ public class FullscreenSigninMediatorTest {
 
         assertNoAccountIsDisplayed();
         assertFalse(mModel.get(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION));
+    }
+
+    @Test
+    public void testChildBadgeIsSetForChildAccount() {
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        createMediator();
+        initializeNative();
+
+        assertSelectedAccountIsDisplayed(TestAccounts.CHILD_ACCOUNT);
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
+        Context context = RuntimeEnvironment.getApplication();
+        assertEquals(
+                BadgeConfig.create(R.drawable.ic_account_child_20dp)
+                        .withDefaultSizeChildAccountConfig()
+                        .build(context),
+                mMediator.getContinueButtonBadgeConfigForTesting());
+        assertEquals(
+                BadgeConfig.create(R.drawable.ic_account_child_40dp)
+                        .withLargeChildAccountConfig()
+                        .build(context),
+                mMediator.getSigninAnimationBadgeConfigForTesting());
+    }
+
+    @Test
+    public void testChildBadgeIsRemovedWhenAccountStopsBeingSupervised() {
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
+        createMediator();
+        initializeNative();
+        assertSelectedAccountIsDisplayed(TestAccounts.CHILD_ACCOUNT);
+        assertTrue(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
+        assertNotNull(mMediator.getContinueButtonBadgeConfigForTesting());
+        assertNotNull(mMediator.getSigninAnimationBadgeConfigForTesting());
+
+        // The account stops being supervised while the screen is shown. The child account status
+        // is re-checked on account list updates, simulate the resulting callback.
+        AccountInfo unsupervisedAccount =
+                new AccountInfo.Builder(TestAccounts.CHILD_ACCOUNT)
+                        .accountCapabilities(
+                                new AccountCapabilitiesBuilder()
+                                        .setIsSubjectToParentalControls(false)
+                                        .build())
+                        .build();
+        mAccountManagerTestRule.updateAccount(unsupervisedAccount);
+        mMediator.onChildAccountStatusReady(/* isChild= */ false, /* childInfo= */ null);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertSelectedAccountIsDisplayed(unsupervisedAccount);
+        assertFalse(mModel.get(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE));
+        assertNull(mMediator.getContinueButtonBadgeConfigForTesting());
+        assertNull(mMediator.getSigninAnimationBadgeConfigForTesting());
     }
 
     @Test

@@ -141,7 +141,8 @@ public class ProfileDataCacheWithBadgeRenderTest {
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataWithRemovingBadgeDynamically() throws IOException {
-        setUpProfileDataCache(R.drawable.ic_account_child_20dp);
+        setUpProfileDataCache(0);
+        setBadge(R.drawable.ic_account_child_20dp);
         mRenderTestRule.render(mImageView, "profile_data_cache_with_child_badge");
         setBadge(0);
         mRenderTestRule.render(mImageView, "profile_data_cache_without_badge");

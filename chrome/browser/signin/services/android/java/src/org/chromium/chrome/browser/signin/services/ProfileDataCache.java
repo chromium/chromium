@@ -96,7 +96,7 @@ public class ProfileDataCache
     // * If there is a config for that specific account, use that
     // * Else if there is a default config, use that
     // * Else do not display a badge.
-    private @Nullable BadgeConfig mDefaultBadgeConfig;
+    private final @Nullable BadgeConfig mDefaultBadgeConfig;
     private final Map<CoreAccountId, BadgeConfig> mPerAccountBadgeConfig = new HashMap<>();
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -313,40 +313,25 @@ public class ProfileDataCache
     }
 
     /**
-     * Sets a default {@link BadgeConfig} and then populates the cache with the new Badge.
-     *
-     * @param badgeConfig The badge configuration. If null then the current badge is removed.
-     *     <p>If both a per-account and default badge are set, the per-account badge takes
-     *     precedence.
-     *     <p>TODO(crbug.com/40798208): replace usages of this method with the per-account config
-     *     below.
-     */
-    public void setBadge(@Nullable BadgeConfig badgeConfig) {
-        if (Objects.equals(mDefaultBadgeConfig, badgeConfig)) {
-            return;
-        }
-
-        mDefaultBadgeConfig = badgeConfig;
-        updateCache();
-    }
-
-    /**
      * Sets a {@link BadgeConfig} for a given account and refreshes its cached profile data, if any.
      * Otherwise, the badge is applied once the account's profile data is built.
      *
-     * @param coreAccountId The account id for which to set this badge.
+     * @param accountId The account id for which to set this badge.
      * @param badgeConfig The badge configuration. If null then the current badge is removed.
      *     <p>If both a per-account and default badge are set, the per-account badge takes
      *     precedence.
      */
     public void setBadge(CoreAccountId accountId, @Nullable BadgeConfig badgeConfig) {
-        if (mPerAccountBadgeConfig.containsKey(accountId)
-                && Objects.equals(mPerAccountBadgeConfig.get(accountId), badgeConfig)) {
+        if (Objects.equals(mPerAccountBadgeConfig.get(accountId), badgeConfig)) {
             // Update is a no-op. The per-account badge set to accountId is the same as the
-            // badgeResId.
+            // badgeConfig.
             return;
         }
-        mPerAccountBadgeConfig.put(accountId, badgeConfig);
+        if (badgeConfig != null) {
+            mPerAccountBadgeConfig.put(accountId, badgeConfig);
+        } else {
+            mPerAccountBadgeConfig.remove(accountId);
+        }
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
             if (!mAccountsCache.containsKey(accountId)) return;
         }

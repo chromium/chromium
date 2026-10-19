@@ -957,11 +957,9 @@ public class FullscreenSigninMediator
 
     @VisibleForTesting
     void onChildAccountStatusReady(boolean isChild, @Nullable CoreAccountInfo childInfo) {
-        if (mContinueButtonProfileDataCache == null) {
-            // Both caches are initialized together so they're either both null or none of them are.
-            assert mSigninAnimationProfileDataCache == null;
-            return;
-        }
+        if (mContinueButtonProfileDataCache == null) return;
+        // Both caches are initialized together so they're either both null or none of them are.
+        assert mSigninAnimationProfileDataCache != null;
 
         mIsChild = isChild;
         mModel.set(FullscreenSigninProperties.SHOW_ACCOUNT_SUPERVISION_NOTICE, mIsChild);
@@ -975,22 +973,27 @@ public class FullscreenSigninMediator
         updateShouldHideDismissButton();
         // Selected account data will be updated by the ProfileDataCache observers.
 
-        BadgeConfig continueButtonBadgeConfig = null;
-        BadgeConfig signinAnimationBadgeConfig = null;
-        if (isChild) {
-            continueButtonBadgeConfig =
+        if (isChild && childInfo != null) {
+            mContinueButtonProfileDataCache.setBadge(
+                    childInfo.getId(),
                     BadgeConfig.create(R.drawable.ic_account_child_20dp)
                             .withDefaultSizeChildAccountConfig()
-                            .build(mContext);
+                            .build(mContext));
             // The recommendation for a 32dp icon is to use the 40dp icon and scale it down.
-            signinAnimationBadgeConfig =
+            mSigninAnimationProfileDataCache.setBadge(
+                    childInfo.getId(),
                     BadgeConfig.create(R.drawable.ic_account_child_40dp)
                             .withLargeChildAccountConfig()
-                            .build(mContext);
-        }
-        mContinueButtonProfileDataCache.setBadge(continueButtonBadgeConfig);
-        if (mSigninAnimationProfileDataCache != null) {
-            mSigninAnimationProfileDataCache.setBadge(signinAnimationBadgeConfig);
+                            .build(mContext));
+        } else {
+            // The child account status is re-checked on every account list update, so an account
+            // may stop being supervised while this screen is shown. The listener doesn't provide
+            // the account in that case, so remove the child badge from all accounts. This is a
+            // no-op for accounts without a badge, i.e. in the common case.
+            for (AccountInfo account : getAccountsIfLoadedOrEmpty()) {
+                mContinueButtonProfileDataCache.setBadge(account.getId(), null);
+                mSigninAnimationProfileDataCache.setBadge(account.getId(), null);
+            }
         }
     }
 

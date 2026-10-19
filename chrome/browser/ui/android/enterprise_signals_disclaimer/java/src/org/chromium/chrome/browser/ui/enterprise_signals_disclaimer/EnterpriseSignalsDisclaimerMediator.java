@@ -87,7 +87,7 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
                         context,
                         identityManager,
                         R.dimen.enterprise_signals_disclaimer_profile_picture_size);
-        mProfileDataCache.setBadge(badgeConfig);
+        mProfileDataCache.setBadge(account.getId(), badgeConfig);
 
         // The FRE uses dedicated strings, and moves the "Learn more" link from the description
         // into a footer below the buttons.
