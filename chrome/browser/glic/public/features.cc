@@ -342,4 +342,8 @@ BASE_FEATURE(kGlicColdWarmingUsePerformanceManager,
 BASE_FEATURE(kGlicSsr, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicClientDataStorage, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+
+BASE_FEATURE(kGlicShowNotTellTutorials, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kGlicShowNotTellTutorialsArm{
+    &kGlicShowNotTellTutorials, "tutorials_arm", 0};
 }  // namespace features

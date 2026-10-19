@@ -4008,6 +4008,16 @@ const FeatureEntry::FeatureVariation kGlicOSIconVariantVariations[] = {
     {"Variant 2 (Square)", kGlicOSIconVariant_2, nullptr},
 };
 
+const FeatureEntry::FeatureParam kGlicShowNotTellTutorialsArm1[] = {
+    {"tutorials_arm", "1"}};
+const FeatureEntry::FeatureParam kGlicShowNotTellTutorialsArm2[] = {
+    {"tutorials_arm", "2"}};
+
+const FeatureEntry::FeatureVariation kGlicShowNotTellTutorialsVariations[] = {
+    {"Arm 1", kGlicShowNotTellTutorialsArm1, nullptr},
+    {"Arm 2", kGlicShowNotTellTutorialsArm2, nullptr},
+};
+
 const FeatureEntry::FeatureParam kAiOverlayDialog_Mes[] = {{"use_mes", "true"}};
 const FeatureEntry::FeatureParam kAiOverlayDialog_PageTools[] = {
     {"enable_page_tools", "true"}};
@@ -11381,6 +11391,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-ssr", flag_descriptions::kGlicSsrName,
      flag_descriptions::kGlicSsrDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kGlicSsr)},
+    {"glic-show-not-tell-tutorials",
+     flag_descriptions::kGlicShowNotTellTutorialsName,
+     flag_descriptions::kGlicShowNotTellTutorialsDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicShowNotTellTutorials,
+                                    kGlicShowNotTellTutorialsVariations,
+                                    "GlicShowNotTellTutorials")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"enterprise-published-skills-policy-enabled",

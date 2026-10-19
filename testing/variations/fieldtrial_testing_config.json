@@ -8682,6 +8682,27 @@
             ]
         }
     ],
+    "GlicTutorialsStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Arm1",
+                    "params": {
+                        "tutorials_arm": "1"
+                    },
+                    "enable_features": [
+                        "GlicShowNotTellTutorials"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicUserStatusCheckDogfood": [
         {
             "platforms": [

@@ -2062,6 +2062,11 @@ inline constexpr char kGlicSsrName[] = "Glic SSR";
 inline constexpr char kGlicSsrDescription[] =
     "Enables server-side rendering for Glic.";
 
+inline constexpr char kGlicShowNotTellTutorialsName[] =
+    "Glic Show, not Tell Tutorials";
+inline constexpr char kGlicShowNotTellTutorialsDescription[] =
+    "Enables Show, not Tell Tutorials in Gemini in Chrome.";
+
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledName[] =
     "Enable EnterprisePublishedSkills policy";
 inline constexpr char kEnterprisePublishedSkillsPolicyEnabledDescription[] =

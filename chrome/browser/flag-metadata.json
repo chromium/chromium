@@ -6060,6 +6060,11 @@
     "expiry_milestone": 180
   },
   {
+    "name": "glic-show-not-tell-tutorials",
+    "owners": [ "andreaxg@google.com", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-spark-settings-accessible-labels",
     "owners": [ "rosiey@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 160
