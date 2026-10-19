@@ -10,28 +10,12 @@
 
 namespace ios {
 
-// static
-sync_bookmarks::BookmarkSyncService*
-LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<sync_bookmarks::BookmarkSyncService>(
-          profile, /*create=*/true);
-}
-
-// static
-LocalOrSyncableBookmarkSyncServiceFactory*
-LocalOrSyncableBookmarkSyncServiceFactory::GetInstance() {
-  static base::NoDestructor<LocalOrSyncableBookmarkSyncServiceFactory> instance;
-  return instance.get();
-}
-
 LocalOrSyncableBookmarkSyncServiceFactory::
-    LocalOrSyncableBookmarkSyncServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("LocalOrSyncableBookmarkSyncService",
-                                    ProfileSelection::kRedirectedInIncognito) {}
-
-LocalOrSyncableBookmarkSyncServiceFactory::
-    ~LocalOrSyncableBookmarkSyncServiceFactory() = default;
+    LocalOrSyncableBookmarkSyncServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "LocalOrSyncableBookmarkSyncService",
+          ProfileSelection::kRedirectedInIncognito) {}
 
 std::unique_ptr<KeyedService>
 LocalOrSyncableBookmarkSyncServiceFactory::BuildServiceInstanceFor(

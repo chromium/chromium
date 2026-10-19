@@ -9,30 +9,9 @@
 
 namespace ios {
 
-// static
-BookmarkUndoService* BookmarkUndoServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BookmarkUndoService>(
-      profile, /*create=*/true);
-}
-
-// static
-BookmarkUndoService* BookmarkUndoServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BookmarkUndoService>(
-      profile, /*create=*/false);
-}
-
-// static
-BookmarkUndoServiceFactory* BookmarkUndoServiceFactory::GetInstance() {
-  static base::NoDestructor<BookmarkUndoServiceFactory> instance;
-  return instance.get();
-}
-
-BookmarkUndoServiceFactory::BookmarkUndoServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BookmarkUndoService") {}
-
-BookmarkUndoServiceFactory::~BookmarkUndoServiceFactory() = default;
+BookmarkUndoServiceFactory::BookmarkUndoServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "BookmarkUndoService") {}
 
 std::unique_ptr<KeyedService>
 BookmarkUndoServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

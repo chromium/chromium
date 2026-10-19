@@ -5,33 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_MODEL_FACTORY_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_MODEL_BOOKMARK_MODEL_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
+#include "components/bookmarks/browser/bookmark_model.h"
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
-class BookmarkModelFactory : public ProfileKeyedServiceFactoryIOS {
+class BookmarkModelFactory
+    : public TypedProfileKeyedServiceFactoryIOS<BookmarkModelFactory,
+                                                bookmarks::BookmarkModel> {
  public:
-  static bookmarks::BookmarkModel* GetForProfile(ProfileIOS* profile);
-  static bookmarks::BookmarkModel* GetForProfileIfExists(ProfileIOS* profile);
-
-  static BookmarkModelFactory* GetInstance();
+  explicit BookmarkModelFactory(PassKey key);
 
   // Returns the default factory, useful in tests where it's null by default.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<BookmarkModelFactory>;
-
-  BookmarkModelFactory();
-  ~BookmarkModelFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

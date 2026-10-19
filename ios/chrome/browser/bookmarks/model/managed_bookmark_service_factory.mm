@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 
-#import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -42,30 +41,15 @@ std::unique_ptr<KeyedService> BuildManagedBookmarkModel(ProfileIOS* profile) {
 }  // namespace
 
 // static
-bookmarks::ManagedBookmarkService* ManagedBookmarkServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<bookmarks::ManagedBookmarkService>(
-          profile, /*create=*/true);
-}
-
-// static
-ManagedBookmarkServiceFactory* ManagedBookmarkServiceFactory::GetInstance() {
-  static base::NoDestructor<ManagedBookmarkServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 ManagedBookmarkServiceFactory::TestingFactory
 ManagedBookmarkServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildManagedBookmarkModel);
 }
 
-ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ManagedBookmarkService",
-                                    TestingCreation::kNoServiceForTests) {}
-
-ManagedBookmarkServiceFactory::~ManagedBookmarkServiceFactory() {}
+ManagedBookmarkServiceFactory::ManagedBookmarkServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "ManagedBookmarkService",
+                                         TestingCreation::kNoServiceForTests) {}
 
 std::unique_ptr<KeyedService>
 ManagedBookmarkServiceFactory::BuildServiceInstanceFor(

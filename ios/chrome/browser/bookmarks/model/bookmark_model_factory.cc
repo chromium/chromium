@@ -37,41 +37,21 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(ProfileIOS* profile) {
 }  // namespace
 
 // static
-bookmarks::BookmarkModel* BookmarkModelFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<bookmarks::BookmarkModel>(
-      profile, /*create=*/true);
-}
-
-// static
-bookmarks::BookmarkModel* BookmarkModelFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<bookmarks::BookmarkModel>(
-      profile, /*create=*/false);
-}
-
-// static
-BookmarkModelFactory* BookmarkModelFactory::GetInstance() {
-  static base::NoDestructor<BookmarkModelFactory> instance;
-  return instance.get();
-}
-
-// static
 BookmarkModelFactory::TestingFactory BookmarkModelFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildBookmarkModel);
 }
 
-BookmarkModelFactory::BookmarkModelFactory()
-    : ProfileKeyedServiceFactoryIOS("BookmarkModel",
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+BookmarkModelFactory::BookmarkModelFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "BookmarkModel",
+          ProfileSelection::kRedirectedInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(ios::AccountBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::LocalOrSyncableBookmarkSyncServiceFactory::GetInstance());
   DependsOn(ios::BookmarkUndoServiceFactory::GetInstance());
   DependsOn(ManagedBookmarkServiceFactory::GetInstance());
 }
-
-BookmarkModelFactory::~BookmarkModelFactory() = default;
 
 void BookmarkModelFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
