@@ -320,6 +320,9 @@ bool IsBrowserForSystemWebApp(const BrowserDelegate& browser,
 
 std::optional<SystemWebAppType> GetCapturingSystemAppForURL(Profile* profile,
                                                             const GURL& url) {
+  if (!url.is_valid() || url.IsAboutBlank()) {
+    return std::nullopt;
+  }
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetCapturingSystemAppForURL(url)
                      : std::nullopt;
