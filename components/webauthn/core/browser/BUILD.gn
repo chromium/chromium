@@ -65,6 +65,8 @@ source_set("passkey_model") {
     "passkey_model_utils.cc",
     "passkey_model_utils.h",
   ]
+  public_deps =
+      [ "//components/webauthn/core/browser/device_authorization:types" ]
   deps = [
     "//base",
     "//components/cbor",

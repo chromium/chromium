@@ -26,6 +26,7 @@ namespace {
 using ::base::test::EqualsProto;
 using ::base::test::ScopedFeatureList;
 using ::webauthn::features::kDeviceAuthorizationPasskeyDecryption;
+using ::webauthn::features::kDeviceAuthorizationPasskeyEncryption;
 
 constexpr std::array<uint8_t, 32> kTestKey = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
@@ -51,6 +52,14 @@ sync_pb::WebauthnCredentialSpecifics CreateValidPasskey() {
 constexpr std::array<uint8_t, 32> kTestDeviceAuthorizationKey = {
     31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16,
     15, 14, 13, 12, 11, 10, 9,  8,  7,  6,  5,  4,  3,  2,  1,  0};
+constexpr int32_t kTestDeviceAuthorizationKeyVersion = 7;
+
+DeviceAuthorizationKey CreateTestDeviceAuthorizationKey() {
+  DeviceAuthorizationKey key;
+  key.set_key(base::as_string_view(kTestDeviceAuthorizationKey));
+  key.set_version(kTestDeviceAuthorizationKeyVersion);
+  return key;
+}
 
 // A key that is neither `kTestKey` nor `kTestDeviceAuthorizationKey`.
 constexpr std::array<uint8_t, 32> kWrongKey = {};
@@ -189,8 +198,8 @@ TEST(PasskeyModelUtilsTest, EncryptWebauthnCredentialSpecificsData) {
   plain.set_large_blob("d");
   plain.set_large_blob_uncompressed_size(1u);
   sync_pb::WebauthnCredentialSpecifics encrypted;
-  ASSERT_TRUE(
-      EncryptWebauthnCredentialSpecificsData(kTestKey, plain, &encrypted));
+  ASSERT_TRUE(EncryptWebauthnCredentialSpecificsData(
+      kTestKey, /*device_authorization_key=*/std::nullopt, plain, &encrypted));
   EXPECT_TRUE(encrypted.has_encrypted());
 
   sync_pb::WebauthnCredentialSpecifics_Encrypted decrypted;
@@ -483,12 +492,32 @@ TEST(PasskeyModelUtilsTest, IgnoresDeviceAuthorizationKeyForEncryptedCase) {
   const sync_pb::WebauthnCredentialSpecifics_Encrypted secrets =
       CreateTestSecrets();
   sync_pb::WebauthnCredentialSpecifics passkey;
-  ASSERT_TRUE(
-      EncryptWebauthnCredentialSpecificsData(kTestKey, secrets, &passkey));
+  ASSERT_TRUE(EncryptWebauthnCredentialSpecificsData(
+      kTestKey, /*device_authorization_key=*/std::nullopt, secrets, &passkey));
 
   sync_pb::WebauthnCredentialSpecifics_Encrypted out;
   EXPECT_TRUE(DecryptWebauthnCredentialSpecificsData(kTestKey, kWrongKey,
                                                      passkey, &out));
+  EXPECT_THAT(out, EqualsProto(secrets));
+}
+
+// Tests that `EncryptWebauthnCredentialSpecificsData` ignores the device
+// authorization key and writes `encrypted` if
+// `kDeviceAuthorizationPasskeyEncryption` is disabled.
+TEST(PasskeyModelUtilsTest, EncryptsAsEncryptedWithFeatureDisabled) {
+  ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kDeviceAuthorizationPasskeyEncryption);
+  const sync_pb::WebauthnCredentialSpecifics_Encrypted secrets =
+      CreateTestSecrets();
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  ASSERT_TRUE(EncryptWebauthnCredentialSpecificsData(
+      kTestKey, CreateTestDeviceAuthorizationKey(), secrets, &passkey));
+  EXPECT_TRUE(passkey.has_encrypted());
+  EXPECT_FALSE(passkey.has_device_authorization_key_version());
+
+  sync_pb::WebauthnCredentialSpecifics_Encrypted out;
+  EXPECT_TRUE(DecryptWebauthnCredentialSpecificsData(
+      kTestKey, /*device_authorization_key=*/{}, passkey, &out));
   EXPECT_THAT(out, EqualsProto(secrets));
 }
 
@@ -505,11 +534,52 @@ TEST(PasskeyModelUtilsTest,
       &out));
 }
 
-// Test fixture with `kDeviceAuthorizationPasskeyDecryption` enabled.
+// Test fixture with `kDeviceAuthorizationPasskeyDecryption` and
+// `kDeviceAuthorizationPasskeyEncryption` enabled.
 class PasskeyModelUtilsDeviceAuthorizationTest : public testing::Test {
+ public:
+  PasskeyModelUtilsDeviceAuthorizationTest() {
+    feature_list_.InitWithFeatures({kDeviceAuthorizationPasskeyDecryption,
+                                    kDeviceAuthorizationPasskeyEncryption},
+                                   {});
+  }
+
  private:
-  ScopedFeatureList feature_list_{kDeviceAuthorizationPasskeyDecryption};
+  ScopedFeatureList feature_list_;
 };
+
+// Tests that `EncryptWebauthnCredentialSpecificsData` writes
+// `security_domain_encrypted` and `device_authorization_key_version`, and can
+// be decrypted with valid keys.
+TEST_F(PasskeyModelUtilsDeviceAuthorizationTest,
+       EncryptsAndDecryptsSecurityDomainPasskey) {
+  const sync_pb::WebauthnCredentialSpecifics_Encrypted secrets =
+      CreateTestSecrets();
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  ASSERT_TRUE(EncryptWebauthnCredentialSpecificsData(
+      kTestKey, CreateTestDeviceAuthorizationKey(), secrets, &passkey));
+  EXPECT_TRUE(passkey.has_security_domain_encrypted());
+  EXPECT_EQ(passkey.device_authorization_key_version(),
+            kTestDeviceAuthorizationKeyVersion);
+
+  sync_pb::WebauthnCredentialSpecifics_Encrypted out;
+  EXPECT_TRUE(DecryptWebauthnCredentialSpecificsData(
+      kTestKey, kTestDeviceAuthorizationKey, passkey, &out));
+  EXPECT_THAT(out, EqualsProto(secrets));
+}
+
+// Tests that `EncryptWebauthnCredentialSpecificsData` fails without a device
+// authorization key when `kDeviceAuthorizationPasskeyEncryption` is enabled.
+TEST_F(PasskeyModelUtilsDeviceAuthorizationTest,
+       EncryptionFailsWithoutDeviceAuthorizationKey) {
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  EXPECT_FALSE(EncryptWebauthnCredentialSpecificsData(
+      kTestKey, /*device_authorization_key=*/std::nullopt, CreateTestSecrets(),
+      &passkey));
+  EXPECT_EQ(passkey.encrypted_data_case(),
+            sync_pb::WebauthnCredentialSpecifics::ENCRYPTED_DATA_NOT_SET);
+  EXPECT_FALSE(passkey.has_device_authorization_key_version());
+}
 
 // Test decryption of the `security_domain_encrypted` case for
 // `WebAuthnCredentialSpecifics.encrypted_data`.

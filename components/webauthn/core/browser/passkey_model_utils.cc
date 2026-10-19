@@ -85,8 +85,6 @@ struct PasskeyComparator {
   }
 };
 
-
-
 std::array<uint8_t, kEncryptionSecretSize> DerivePasskeyEncryptionSecret(
     base::span<const uint8_t> trusted_vault_key) {
   constexpr std::string_view kHkdfInfo =
@@ -151,6 +149,21 @@ base::expected<std::vector<uint8_t>, AesGcmDecryptionError> DecryptAesGcm(
     return base::unexpected(AesGcmDecryptionError::kDecryptionFailed);
   }
   return std::move(*decrypted);
+}
+
+// Encrypts `plaintext` with AES-256-GCM and returns the randomly generated
+// nonce followed by the ciphertext.
+std::string EncryptAesGcm(base::span<const uint8_t> key,
+                          std::string_view plaintext,
+                          std::string_view aad) {
+  std::array<uint8_t, kWebAuthnCredentialSpecificsEncryptedDataNonceLength>
+      nonce;
+  crypto::RandBytes(nonce);
+  std::vector<uint8_t> ciphertext = crypto::aead::Seal(
+      crypto::aead::AES_256_GCM, key, base::as_byte_span(plaintext), nonce,
+      base::as_byte_span(aad));
+  return base::StrCat(
+      {base::as_string_view(nonce), base::as_string_view(ciphertext)});
 }
 
 }  // namespace
@@ -261,8 +274,10 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   if (extension_input_data.has_prf) {
     encrypted.set_hmac_secret(base::RandBytesAsString(kHmacSecretSize));
   }
-  CHECK(EncryptWebauthnCredentialSpecificsData(trusted_vault_key, encrypted,
-                                               &specifics));
+  // TODO(crbug.com/434939433): Pass the device authorization key.
+  CHECK(EncryptWebauthnCredentialSpecificsData(
+      trusted_vault_key, /*device_authorization_key=*/std::nullopt, encrypted,
+      &specifics));
   CHECK(specifics.has_encrypted());
   specifics.set_key_version(trusted_vault_key_version);
 
@@ -374,6 +389,7 @@ bool DecryptWebauthnCredentialSpecificsData(
 
 bool EncryptWebauthnCredentialSpecificsData(
     base::span<const uint8_t> trusted_vault_key,
+    base::optional_ref<const DeviceAuthorizationKey> device_authorization_key,
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& in,
     sync_pb::WebauthnCredentialSpecifics* out) {
   CHECK_NE(out, nullptr);
@@ -381,17 +397,36 @@ bool EncryptWebauthnCredentialSpecificsData(
   if (!in.SerializeToString(&plaintext)) {
     return false;
   }
-  const std::string nonce = base::RandBytesAsString(
-      kWebAuthnCredentialSpecificsEncryptedDataNonceLength);
-  std::vector<uint8_t> encrypted = crypto::aead::Seal(
-      crypto::aead::AES_256_GCM,
-      DerivePasskeyEncryptionSecret(trusted_vault_key),
-      base::as_byte_span(plaintext), base::as_byte_span(nonce),
-      base::as_byte_span(kAadWebauthnCredentialSpecificsEncrypted));
-  // TODO(crbug.com/405036010): Implement encrypting with the new encryption
-  // scheme.
+  if (base::FeatureList::IsEnabled(
+          features::kDeviceAuthorizationPasskeyEncryption)) {
+    if (!device_authorization_key.has_value() ||
+        device_authorization_key->key().empty()) {
+      DVLOG(1) << "Missing device authorization key";
+      return false;
+    }
+    sync_pb::WebauthnCredentialSpecifics_SecurityDomainEncrypted
+        security_domain_msg;
+    *security_domain_msg.mutable_device_authorization_encrypted() =
+        EncryptAesGcm(
+            DeriveDeviceAuthorizationEncryptionSecret(
+                base::as_byte_span(device_authorization_key->key())),
+            plaintext,
+            kAadWebauthnCredentialSpecificsDeviceAuthorizationEncrypted);
+    std::string security_domain_plaintext;
+    if (!security_domain_msg.SerializeToString(&security_domain_plaintext)) {
+      return false;
+    }
+    *out->mutable_security_domain_encrypted() =
+        EncryptAesGcm(DerivePasskeyEncryptionSecret(trusted_vault_key),
+                      security_domain_plaintext,
+                      kAadWebauthnCredentialSpecificsSecurityDomainEncrypted);
+    out->set_device_authorization_key_version(
+        device_authorization_key->version());
+    return true;
+  }
   *out->mutable_encrypted() =
-      base::StrCat({nonce, base::as_string_view(encrypted)});
+      EncryptAesGcm(DerivePasskeyEncryptionSecret(trusted_vault_key), plaintext,
+                    kAadWebauthnCredentialSpecificsEncrypted);
   return true;
 }
 

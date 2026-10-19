@@ -72,7 +72,8 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics(
     encrypted.set_large_blob_uncompressed_size(100);
   }
   webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
-      GetTrustedVaultKey(), encrypted, &passkey);
+      GetTrustedVaultKey(), /*device_authorization_key=*/std::nullopt,
+      encrypted, &passkey);
   return passkey;
 }
 

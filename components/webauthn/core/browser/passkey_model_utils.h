@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/types/optional_ref.h"
+#include "components/webauthn/core/browser/device_authorization/device_authorization_types.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "device/fido/attestation_object.h"
 #include "device/fido/authenticator_data.h"
@@ -144,10 +146,14 @@ bool DecryptWebauthnCredentialSpecificsData(
 // Attempts to encrypt data from a `WebauthnCredentialSpecifics_Encrypted`
 // entity and writes it to the `encrypted_data` field of `out`, which must be
 // non-null. `trusted_vault_key` must be the security domain secret of the
-// `hw_protected` domain. The return value indicates whether serialization and
-// encryption succeeded.
+// `hw_protected` domain. `device_authorization_key` must have the most recent
+// version. The return value indicates whether serialization and encryption
+// succeeded.
+// TODO(crbug.com/570578262): Pass `device_authorization_key` using
+// `crypto::ProcessBound`.
 bool EncryptWebauthnCredentialSpecificsData(
     base::span<const uint8_t> trusted_vault_key,
+    base::optional_ref<const DeviceAuthorizationKey> device_authorization_key,
     const sync_pb::WebauthnCredentialSpecifics_Encrypted& in,
     sync_pb::WebauthnCredentialSpecifics* out);
 

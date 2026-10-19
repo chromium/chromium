@@ -113,9 +113,10 @@ void PasskeyImporter::ProcessPasskeys(
 
     sync_pb::WebauthnCredentialSpecifics passkey =
         CandidateToSpecifics(candidate);
+    // TODO(crbug.com/434939433): Pass the device authorization key.
     if (!webauthn::passkey_model_utils::EncryptWebauthnCredentialSpecificsData(
-            trusted_vault_key, CandidateToEncryptedSpecifics(candidate),
-            &passkey)) {
+            trusted_vault_key, /*device_authorization_key=*/std::nullopt,
+            CandidateToEncryptedSpecifics(candidate), &passkey)) {
       RecordPasskeyImportError(
           candidate, ImportedPasskeyStatus::kEncryptionFailed, result);
       continue;

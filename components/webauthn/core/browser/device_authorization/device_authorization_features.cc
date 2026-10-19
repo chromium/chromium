@@ -16,4 +16,7 @@ BASE_FEATURE(kDeviceAuthorizationStartupSilentFetch,
 BASE_FEATURE(kDeviceAuthorizationPasskeyDecryption,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceAuthorizationPasskeyEncryption,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace webauthn::features

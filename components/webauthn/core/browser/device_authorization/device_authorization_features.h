@@ -25,6 +25,10 @@ BASE_DECLARE_FEATURE(kDeviceAuthorizationStartupSilentFetch);
 // is enabled.
 BASE_DECLARE_FEATURE(kDeviceAuthorizationPasskeyDecryption);
 
+// Controls whether encrypting passkeys with the device authorization key scheme
+// is enabled.
+BASE_DECLARE_FEATURE(kDeviceAuthorizationPasskeyEncryption);
+
 }  // namespace webauthn::features
 
 #endif  // COMPONENTS_WEBAUTHN_CORE_BROWSER_DEVICE_AUTHORIZATION_DEVICE_AUTHORIZATION_FEATURES_H_
