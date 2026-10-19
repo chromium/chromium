@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -24,6 +26,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -233,10 +236,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
   }
 }
 
+// Test fixture for tests that exercise the Views-based extensions container
+// (ExtensionsToolbarDesktop). ToolbarView does not create that container when
+// features::kWebUIExtensionsContainer is enabled, so disable the feature here.
+class ExtensionUninstallDialogImplViewsContainerBrowserTest
+    : public ExtensionUninstallDialogImplBrowserTest {
+ public:
+  ExtensionUninstallDialogImplViewsContainerBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kWebUIExtensionsContainer);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Tests the dialog is anchored in the correct place based on whether the
 // extensions container is visible.
 // Regression test for crbug.com/40227690.
-IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionUninstallDialogImplViewsContainerBrowserTest,
                        DialogAnchoredInCorrectPlace) {
   extensions::ExtensionRegistrar* extension_registrar =
       extensions::ExtensionRegistrar::Get(browser()->GetProfile());
@@ -354,6 +372,12 @@ class ExtensionUninstallDialogImplInteractiveBrowserTest
     EXTENSION_FROM_WEBSTORE,
   };
   void ShowUi(const std::string& name) override {
+    if (features::IsWebUIExtensionsContainerEnabled()) {
+      // Dialogs anchored via the WebUI extensions container are positioned
+      // asynchronously, so their bounds may not yet be final when verified.
+      set_should_verify_dialog_bounds(false);
+    }
+
     extensions::ExtensionBuilder extension_builder("ExtensionForRemoval");
     if (extension_origin_ == EXTENSION_FROM_WEBSTORE) {
       extension_builder.SetManifestKey(
