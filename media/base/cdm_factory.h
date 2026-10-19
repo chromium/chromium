@@ -7,7 +7,6 @@
 
 #include "media/base/content_decryption_module.h"
 #include "media/base/media_export.h"
-#include "media/base/status.h"
 
 namespace url {
 class Origin;
@@ -17,7 +16,7 @@ namespace media {
 
 // CDM creation status.
 // These are reported to UMA server. Do not renumber or reuse values.
-enum class CreateCdmStatus : StatusCodeType {
+enum class CreateCdmStatus {
   // Succeeded.
   kSuccess = 0,
   // Unknown error.
@@ -82,14 +81,6 @@ enum class CreateCdmStatus : StatusCodeType {
 
   kMaxValue = kAndroidUnsupportedMediaCryptoScheme,
 };
-
-struct CreateCdmStatusTraits {
-  using Codes = CreateCdmStatus;
-  static constexpr StatusGroupType Group() { return "CreateCdmStatus"; }
-  static constexpr Codes OkEnumValue() { return Codes::kSuccess; }
-};
-
-using CreateCdmTypedStatus = TypedStatus<CreateCdmStatusTraits>;
 
 // Callback used when CDM is created. |status| tells the detailed reason why CDM
 // can't be created if ContentDecryptionModule is null.

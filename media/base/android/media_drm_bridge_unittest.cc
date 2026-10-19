@@ -44,7 +44,7 @@ namespace media {
   do {                                                              \
     if (!MediaDrmBridge::IsKeySystemSupported(b)) {                 \
       VLOG(0) << "Key System " << b << " not supported on device."; \
-      EXPECT_EQ(a.error().code(), err);                             \
+      EXPECT_EQ(a.error(), err);                                    \
     } else {                                                        \
       EXPECT_TRUE(a.has_value());                                   \
     }                                                               \
@@ -135,7 +135,7 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
 
  protected:
   MediaDrmBridge::CdmCreationResult media_drm_bridge_ =
-      base::unexpected(CreateCdmTypedStatus::Codes::kUnknownError);
+      base::unexpected(CreateCdmStatus::kUnknownError);
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -215,14 +215,13 @@ TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_Widevine) {
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kDefault);
   EXPECT_VALUE_IF_KEY_SYSTEM_AVAILABLE_OR_ERROR(
       media_drm_bridge_, kWidevineKeySystem,
-      CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
+      CreateCdmStatus::kUnsupportedKeySystem);
 }
 
 TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_ExternalClearKey) {
   CreateWithoutSessionSupport(kExternalClearKeyKeySystem, kTestOrigin,
                               kDefault);
-  EXPECT_EQ(media_drm_bridge_.error().code(),
-            CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
+  EXPECT_EQ(media_drm_bridge_.error(), CreateCdmStatus::kUnsupportedKeySystem);
 
   scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
                                         {});
@@ -230,15 +229,14 @@ TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_ExternalClearKey) {
                               kDefault);
   EXPECT_VALUE_IF_KEY_SYSTEM_AVAILABLE_OR_ERROR(
       media_drm_bridge_, kExternalClearKeyKeySystem,
-      CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
+      CreateCdmStatus::kUnsupportedKeySystem);
 }
 
 // Invalid key system is NOT supported regardless whether MediaDrm is available.
 TEST_F(MediaDrmBridgeTest, CreateWithoutSessionSupport_InvalidKeySystem) {
   CreateWithoutSessionSupport(kInvalidKeySystem, kTestOrigin, kDefault);
   EXPECT_FALSE(media_drm_bridge_.has_value());
-  EXPECT_EQ(media_drm_bridge_.error().code(),
-            CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
+  EXPECT_EQ(media_drm_bridge_.error(), CreateCdmStatus::kUnsupportedKeySystem);
 }
 
 TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_Widevine) {
@@ -247,7 +245,7 @@ TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_Widevine) {
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL3);
   EXPECT_VALUE_IF_KEY_SYSTEM_AVAILABLE_OR_ERROR(
       media_drm_bridge_, kWidevineKeySystem,
-      CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
+      CreateCdmStatus::kUnsupportedKeySystem);
 
   CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL1);
 }
@@ -261,7 +259,7 @@ TEST_F(MediaDrmBridgeTest, CreateWithSecurityLevel_ExternalClearKey) {
                               kDefault);
   EXPECT_VALUE_IF_KEY_SYSTEM_AVAILABLE_OR_ERROR(
       media_drm_bridge_, kExternalClearKeyKeySystem,
-      CreateCdmTypedStatus::Codes::kUnsupportedKeySystem);
+      CreateCdmStatus::kUnsupportedKeySystem);
 }
 
 TEST_F(MediaDrmBridgeTest, Provision_Widevine) {

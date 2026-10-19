@@ -247,7 +247,7 @@ class MediaDrmProvisionHelper {
     if (!result.has_value()) {
       // Unable to create mediaDrm for L3, so try L1.
       DVLOG(1) << "Unable to create MediaDrmBridge for L3, CreateCdmStatus: "
-               << (media::StatusCodeType)result.error().code();
+               << static_cast<int>(result.error());
       ProvisionLevel1(false);
       return;
     }
@@ -279,7 +279,7 @@ class MediaDrmProvisionHelper {
       // Unable to create MediaDrm for L1, so quit. Note that L3 provisioning
       // may or may not have worked.
       DVLOG(1) << "Unable to create MediaDrmBridge for L1, CreateCdmStatus: "
-               << (media::StatusCodeType)result.error().code();
+               << static_cast<int>(result.error());
       ProvisionDone(L3_success, false);
       return;
     }

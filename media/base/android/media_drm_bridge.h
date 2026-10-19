@@ -117,7 +117,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
 
   using MediaCryptoReadyCB = MediaCryptoContext::MediaCryptoReadyCB;
   using CdmCreationResult =
-      base::expected<scoped_refptr<MediaDrmBridge>, CreateCdmTypedStatus>;
+      base::expected<scoped_refptr<MediaDrmBridge>, CreateCdmStatus>;
   using GetVersionResult = base::expected<base::Version, CreateCdmStatus>;
 
   // Checks whether |key_system| is supported.
