@@ -29,10 +29,9 @@ skia_use_gl = true
 
 skia_support_pdf = use_blink && (enable_printing || enable_printing_tests)
 
-# Skottie is not used on Android. To keep apk size small the skottie library is
-# excluded from the binary. At the time this comment was written, it adds ~200KB
-# to the APK.
-skia_support_skottie = !is_android
+# Skottie is not used on Android or CastOS. To keep binary size small the
+# skottie library is excluded from the binary.
+skia_support_skottie = !is_android && !is_castos
 
 # Skia needs XMP support for gainmap HDR image decoding in blink.
 skia_support_xmp = use_blink
