@@ -264,6 +264,7 @@ test("leveldb_unittests") {
     "//base",
     "//base/test:test_support",
   ]
+  data_deps = [ "//testing/buildbot/filters:leveldb_unittests_filters" ]
 }
 
 if (!is_ios && !is_android) {

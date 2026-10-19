@@ -522,3 +522,10 @@ source_set("ipc_tests_filters") {
 
   data = [ "//testing/buildbot/filters/fuchsia.starview.ipc_tests.filter" ]
 }
+
+source_set("leveldb_unittests_filters") {
+  testonly = true
+
+  data =
+      [ "//testing/buildbot/filters/fuchsia.starview.leveldb_unittests.filter" ]
+}
