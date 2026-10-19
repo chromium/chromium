@@ -134,8 +134,13 @@ void SyncBreadcrumbsLog() {
           UIApplication.sharedApplication.delegate);
   [appDelegate.appState sceneStateDisconnected:_sceneState];
 
-  _window.rootViewController = nil;
-  _sceneState.activationLevel = SceneActivationLevelDisconnected;
+  if (IsClearRootViewControllerAfterSceneDisconnectEnabled()) {
+    _sceneState.activationLevel = SceneActivationLevelDisconnected;
+    _window.rootViewController = nil;
+  } else {
+    _window.rootViewController = nil;
+    _sceneState.activationLevel = SceneActivationLevelDisconnected;
+  }
   _sceneState = nil;
   // Setting the level to Disconnected had the side effect of tearing down the
   // controller’s UI.

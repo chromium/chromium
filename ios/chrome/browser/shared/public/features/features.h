@@ -920,6 +920,14 @@ BASE_DECLARE_FEATURE(kDefaultBottomOmniboxOnIOS);
 // Returns true if the DefaultBottomOmniboxOnIOS feature is enabled.
 bool IsDefaultBottomOmniboxOnIOSEnabled();
 
+// Feature flag (acting as kill switch) to clear window rootViewController after
+// disconnecting scene state to avoid UIKit focus system exceptions.
+BASE_DECLARE_FEATURE(kClearRootViewControllerAfterSceneDisconnect);
+
+// Returns true if the ClearRootViewControllerAfterSceneDisconnect feature is
+// enabled.
+bool IsClearRootViewControllerAfterSceneDisconnectEnabled();
+
 // Enables the GlassToolbar feature.
 BASE_DECLARE_FEATURE(kGlassToolbar);
 
