@@ -86,12 +86,20 @@ export class OrganizerPanelAppElement extends CrLitElement {
       left: e.clientX,
     });
   };
+  private onVisibilityChange_: () => void = () => {
+    if (document.visibilityState === 'hidden') {
+      this.$.searchField.setValue('');
+      this.searchQuery_ = '';
+      this.$.list.scrollTop = 0;
+    }
+  };
 
   override connectedCallback() {
     super.connectedCallback();
     ColorChangeUpdater.forDocument().start();
     window.addEventListener('focus', this.onWindowFocused_);
     window.addEventListener('contextmenu', this.onContextMenu_);
+    document.addEventListener('visibilitychange', this.onVisibilityChange_);
     this.verticalTabsEnabledChangedListenerId_ =
         this.browserProxy_.callbackRouter.onVerticalTabsEnabledChanged
             .addListener((verticalTabsEnabled: boolean) => {
@@ -103,6 +111,7 @@ export class OrganizerPanelAppElement extends CrLitElement {
     super.disconnectedCallback();
     window.removeEventListener('focus', this.onWindowFocused_);
     window.removeEventListener('contextmenu', this.onContextMenu_);
+    document.removeEventListener('visibilitychange', this.onVisibilityChange_);
     assert(this.verticalTabsEnabledChangedListenerId_ !== null);
     this.browserProxy_.callbackRouter.removeListener(
         this.verticalTabsEnabledChangedListenerId_);
