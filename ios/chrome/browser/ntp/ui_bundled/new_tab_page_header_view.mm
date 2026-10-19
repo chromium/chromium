@@ -120,7 +120,8 @@ constexpr CGFloat kOmniboxPlusLeadingSpace = 26.0;
 constexpr CGFloat kFakeboxImageSize = 20.0;
 // TODO(crbug.com/542594099): Remove the "UICleanup" suffix once
 // `kNewTabPageUICleanup` launches.
-constexpr CGFloat kFakeboxImageSizeUICleanup = 24.0;
+constexpr CGFloat kFakeboxPlusIconSizeUICleanup = 24.0;
+constexpr CGFloat kFakeboxLogoSizeUICleanup = 22.0;
 constexpr CGFloat kSymbolActionPointSizeUICleanup = 19.0;
 
 // The spacing between the items in the button stack.
@@ -741,9 +742,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   leadingView.translatesAutoresizingMaskIntoConstraints = NO;
   [searchField addSubview:leadingView];
 
-  CGFloat imageSize = IsNewTabPageUICleanupEnabled()
-                          ? kFakeboxImageSizeUICleanup
-                          : kFakeboxImageSize;
+  CGFloat imageSize = kFakeboxImageSize;
+  if (IsNewTabPageUICleanupEnabled()) {
+    imageSize = [self shouldShowPlusButton] ? kFakeboxPlusIconSizeUICleanup
+                                            : kFakeboxLogoSizeUICleanup;
+  }
   AddSquareConstraints(leadingView, imageSize);
 
   CGFloat leadingViewConstraintConstant;
