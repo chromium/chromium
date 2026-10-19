@@ -28,6 +28,7 @@ class GeminiSharedTabsDelegate;
 @class GeminiConfiguration;
 @class GeminiGatewayManager;
 @class GeminiPageContext;
+@class GeminiSessionMetricsManager;
 @class GeminiStartupState;
 @protocol AssistantContainerCommands;
 @protocol BWGGatewayProtocol;
@@ -71,12 +72,13 @@ class GeminiSharedTabsDelegate;
 
 // TODO(crbug.com/537719170): Mediator should be the target directly.
 // Initializes the mediator with the given dependencies.
-- (instancetype)initWithBrowser:(Browser*)browser
-                   actorService:(actor::ActorService*)actorService
-          authenticationService:(AuthenticationService*)authService
-                   eventHandler:
-                       (GeminiContainerMediatorEventHandler*)eventHandler
-             sharedTabsDelegate:(GeminiSharedTabsDelegate*)sharedTabsDelegate
+- (instancetype)
+          initWithBrowser:(Browser*)browser
+             actorService:(actor::ActorService*)actorService
+    authenticationService:(AuthenticationService*)authService
+             eventHandler:(GeminiContainerMediatorEventHandler*)eventHandler
+       sharedTabsDelegate:(GeminiSharedTabsDelegate*)sharedTabsDelegate
+    sessionMetricsManager:(GeminiSessionMetricsManager*)sessionMetricsManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

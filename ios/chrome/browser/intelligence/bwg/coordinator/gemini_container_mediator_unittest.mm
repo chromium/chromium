@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_event_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_shared_tabs_delegate.h"
@@ -353,13 +354,16 @@ class GeminiContainerMediatorTest : public PlatformTest {
     startup_state_ = [[GeminiStartupState alloc]
         initWithEntryPoint:gemini::EntryPoint::OverflowMenu];
 
+    session_metrics_manager_ = [[GeminiSessionMetricsManager alloc] init];
+
     mediator_ = [[GeminiContainerMediator alloc]
               initWithBrowser:browser_.get()
                  actorService:nullptr
         authenticationService:AuthenticationServiceFactory::GetForProfile(
                                   profile_.get())
                  eventHandler:&delegate_
-           sharedTabsDelegate:&shared_tabs_delegate_];
+           sharedTabsDelegate:&shared_tabs_delegate_
+        sessionMetricsManager:session_metrics_manager_];
     mediator_.containerHandler = mock_container_handler_;
     mediator_.geminiHandler = mock_gemini_handler_;
   }
@@ -398,6 +402,7 @@ class GeminiContainerMediatorTest : public PlatformTest {
   GeminiStartupState* startup_state_;
   FakeGeminiContainerMediatorEventHandler delegate_;
   FakeGeminiSharedTabsDelegate shared_tabs_delegate_;
+  GeminiSessionMetricsManager* session_metrics_manager_;
   GeminiContainerMediator* mediator_;
   id mock_settings_handler_;
   id mock_gemini_handler_;
@@ -695,7 +700,8 @@ TEST_F(GeminiContainerMediatorTest, TestNullDelegate) {
           authenticationService:AuthenticationServiceFactory::GetForProfile(
                                     profile_.get())
                    eventHandler:nullptr
-             sharedTabsDelegate:nullptr];
+             sharedTabsDelegate:nullptr
+          sessionMetricsManager:nil];
 
   // Verify that calling delegate methods does not crash when delegate is null.
   [null_delegate_mediator

@@ -6,6 +6,8 @@ source_set("metrics") {
   sources = [
     "gemini_metrics.h",
     "gemini_metrics.mm",
+    "gemini_session_metrics_manager.h",
+    "gemini_session_metrics_manager.mm",
   ]
   deps = [
     "//base",
@@ -18,7 +20,10 @@ source_set("metrics") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "gemini_metrics_unittest.mm" ]
+  sources = [
+    "gemini_metrics_unittest.mm",
+    "gemini_session_metrics_manager_unittest.mm",
+  ]
   deps = [
     ":metrics",
     "//base/test:test_support",

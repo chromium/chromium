@@ -52,6 +52,7 @@ class ScopedFullscreenDisabler;
 @class GeminiLinkOpeningHandler;
 @class GeminiPageStateChangeHandler;
 @class GeminiSessionHandler;
+@class GeminiSessionMetricsManager;
 @class GeminiCameraHandler;
 @class GeminiTabPickerHandler;
 @class GeminiConsentProviderHandler;
@@ -290,10 +291,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Invokes a new floaty for `startup_state`, configured with `page_context`
   // (the partial page context of the active web state is used when nil).
-  // `start_time` is used to record the startup latency.
   void InvokeNewFloaty(UIViewController* base_view_controller,
                        GeminiStartupState* startup_state,
-                       base::TimeTicks start_time,
                        GeminiPageContext* page_context);
 
   // Runs the presentation deferred by `StartGeminiFlow()`, if any, with
@@ -428,6 +427,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Mediator for the Gemini container. Remove after bottom sheet migrations.
   __strong GeminiContainerMediator* gemini_container_mediator_ = nil;
+
+  // Manager for tracking and recording Gemini session metrics.
+  __strong GeminiSessionMetricsManager* session_metrics_manager_ = nil;
 
   // Handler for link opening.
   __strong GeminiLinkOpeningHandler* link_opening_handler_ = nil;

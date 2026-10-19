@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_capabilities_manager.h"
@@ -271,16 +272,6 @@ bool IsPageContextEligibleForTabPicker(GeminiPageContext* context) {
              ios::provider::GeminiPageContextComputationState::kPending;
 }
 
-// Records the latency of presenting Gemini for `startup_state`, from
-// `start_time` until now.
-void RecordStartupTime(GeminiStartupState* startup_state,
-                       base::TimeTicks start_time) {
-  base::UmaHistogramLongTimes(startup_state.isFirstSession
-                                  ? kStartupTimeWithFirstRunHistogram
-                                  : kStartupTimeNoFirstRunHistogram,
-                              base::TimeTicks::Now() - start_time);
-}
-
 }  // namespace
 
 @interface GeminiSceneStateObserver : NSObject <SceneStateObserver>
@@ -419,13 +410,15 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     return;
   }
 
+  session_metrics_manager_ = [[GeminiSessionMetricsManager alloc] init];
   gemini_container_mediator_ = [[GeminiContainerMediator alloc]
             initWithBrowser:browser_
                actorService:nullptr
       authenticationService:AuthenticationServiceFactory::GetForProfile(
                                 browser_->GetProfile())
                eventHandler:this
-         sharedTabsDelegate:this];
+         sharedTabsDelegate:this
+      sessionMetricsManager:session_metrics_manager_];
 
   // TODO(crbug.com/537761575): Move tab managment related work to into a
   // dedicated helper/service class GeminiTabSessionManager.
@@ -512,6 +505,7 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
     [gemini_container_mediator_ disconnect];
     gemini_container_mediator_ = nil;
+    session_metrics_manager_ = nil;
   }
 
   if (keyboard_show_observer_) {
@@ -563,6 +557,7 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
   if (!IsIOSGeminiBottomSheetMigrationEnabled()) {
     [gemini_container_mediator_ disconnect];
     gemini_container_mediator_ = nil;
+    session_metrics_manager_ = nil;
   }
 
   if (identity_manager_) {
@@ -790,7 +785,7 @@ void GeminiBrowserAgent::SetIsShowingLiveSessionDormantSnackbar(bool showing) {
 
 void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
                                          GeminiStartupState* startup_state) {
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  [session_metrics_manager_ geminiWillStart];
 
   // A new flow supersedes a presentation still waiting for page context.
   CancelPendingPresentation();
@@ -825,7 +820,7 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
     ForceShowFloatyIfInvoked();
     ios::provider::UpdateGeminiViewState(
         ios::provider::GeminiViewState::kExpanded, /*animated=*/true);
-    RecordStartupTime(startup_state, start_time);
+    [session_metrics_manager_ geminiStarted:startup_state.isFirstSession];
     return;
   }
 
@@ -845,9 +840,9 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
     // invoked floaty does not need to wait: prompts are only auto-submitted
     // from contextual cues, which are not shown while the floaty is invoked,
     // even when it is collapsed.
-    pending_presentation_ = base::BindOnce(
-        &GeminiBrowserAgent::InvokeNewFloaty, weak_factory_.GetWeakPtr(),
-        base_view_controller, startup_state, start_time);
+    pending_presentation_ = base::BindOnce(&GeminiBrowserAgent::InvokeNewFloaty,
+                                           weak_factory_.GetWeakPtr(),
+                                           base_view_controller, startup_state);
     pending_presentation_timer_.Start(
         FROM_HERE, kAutoSubmitPageContextTimeout,
         base::BindOnce(&GeminiBrowserAgent::OnPendingPresentationTimeout,
@@ -856,14 +851,13 @@ void GeminiBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
         base::BindRepeating(&GeminiBrowserAgent::RunPendingPresentation,
                             pending_presentation_weak_factory_.GetWeakPtr()));
   } else {
-    InvokeNewFloaty(base_view_controller, startup_state, start_time,
+    InvokeNewFloaty(base_view_controller, startup_state,
                     /*page_context=*/nil);
   }
 }
 
 void GeminiBrowserAgent::InvokeNewFloaty(UIViewController* base_view_controller,
                                          GeminiStartupState* startup_state,
-                                         base::TimeTicks start_time,
                                          GeminiPageContext* page_context) {
   // Set on invocation rather than when the flow starts so that a deferred
   // invocation that is cancelled, e.g. by a tab switch, leaves no stale entry
@@ -890,7 +884,7 @@ void GeminiBrowserAgent::InvokeNewFloaty(UIViewController* base_view_controller,
   DismissGeminiFromOtherWindows(base::BindOnce(
       &GeminiBrowserAgent::InvokeFloaty, weak_factory_.GetWeakPtr(), config));
 
-  RecordStartupTime(startup_state, start_time);
+  [session_metrics_manager_ geminiStarted:startup_state.isFirstSession];
 
   // Request full page context generation, which will update the floaty once
   // it's available. Skipped when the floaty is invoked with an already
