@@ -576,6 +576,11 @@ ci.builder(
             "linux-jammy",
         ],
         per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
             "telemetry_perf_unittests_android_chrome": targets.mixin(
                 # For whatever reason, automatic browser selection on this bot chooses
                 # webview instead of the full browser, so explicitly specify it here.
