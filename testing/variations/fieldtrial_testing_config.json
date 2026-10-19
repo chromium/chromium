@@ -15674,26 +15674,6 @@
             ]
         }
     ],
-    "ScrollJankV4MetricFastScrollContinuityRequiresSameDirection": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ScrollJankV4MetricFastScrollContinuityRequiresSameDirection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ScrollJankV4MetricReportAndroidAppJankStats": [
         {
             "platforms": [

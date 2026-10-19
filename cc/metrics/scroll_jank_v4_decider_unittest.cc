@@ -1039,8 +1039,7 @@ Assuming I2-I5 are all above the fast scroll threshold (each have at least
 and 5 (B) missed VSyncs respectively.
 
 For each of the gaps, (A) and (B), the total scroll deltas of the frames before
-and after the gap have the same sign. For (A), F2 and F3 have positive total
-scroll deltas. For (B), F4 and F5 have negative total scroll deltas.
+and after the gap have the same sign (positive).
 */
 TEST_P(DoublyParameterizedScrollJankV4DeciderTest,
        MissedVsyncDuringFastScroll) {
@@ -1096,7 +1095,7 @@ TEST_P(DoublyParameterizedScrollJankV4DeciderTest,
               Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(372),
                         .has_inertial_input = false},
           .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastNegative},
+                                    &FutureRealUpdates::kFastPositive},
           .if_damaging =
               DamagingFrame{.presentation_ts = MillisSinceEpoch(388)},
           .args = CreateBeginFrameArgs(MillisSinceEpoch(372)),
@@ -1116,13 +1115,13 @@ TEST_P(DoublyParameterizedScrollJankV4DeciderTest,
           .if_real = Real{.first_input_generation_ts = MillisSinceEpoch(164),
                           .last_input_generation_ts = MillisSinceEpoch(164),
                           .has_inertial_input = false,
-                          .total_raw_delta_pixels = -4.0f,
+                          .total_raw_delta_pixels = 4.0f,
                           .max_abs_inertial_raw_delta_pixels = 0.0f},
           .if_synthetic =
               Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(388),
                         .has_inertial_input = false},
           .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastNegative},
+                                    &FutureRealUpdates::kFastPositive},
           .if_damaging =
               DamagingFrame{.presentation_ts = MillisSinceEpoch(404)},
           .args = CreateBeginFrameArgs(MillisSinceEpoch(388)),
@@ -1137,13 +1136,13 @@ TEST_P(DoublyParameterizedScrollJankV4DeciderTest,
           .if_real = Real{.first_input_generation_ts = MillisSinceEpoch(260),
                           .last_input_generation_ts = MillisSinceEpoch(260),
                           .has_inertial_input = false,
-                          .total_raw_delta_pixels = -4.0f,
+                          .total_raw_delta_pixels = 4.0f,
                           .max_abs_inertial_raw_delta_pixels = 0.0f},
           .if_synthetic =
               Synthetic{.first_input_begin_frame_ts = MillisSinceEpoch(484),
                         .has_inertial_input = false},
           .if_synthetic_only = {.future_real_updates =
-                                    &FutureRealUpdates::kFastNegative},
+                                    &FutureRealUpdates::kFastPositive},
           .if_damaging =
               DamagingFrame{.presentation_ts = MillisSinceEpoch(500)},
           .args = CreateBeginFrameArgs(MillisSinceEpoch(484)),
