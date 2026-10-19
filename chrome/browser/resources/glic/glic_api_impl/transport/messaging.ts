@@ -2,14 +2,5 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export class ResponseExtras {
-  transfers: Transferable[] = [];
-
-  // Add objects to transfer when sending the response over postMessage.
-  addTransfer(...transfers: Transferable[]): void {
-    this.transfers.push(...transfers);
-  }
-}
-
 /* eslint-disable-next-line @typescript-eslint/naming-convention */
 export function assertNever<_T extends never>() {}

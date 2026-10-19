@@ -96,7 +96,6 @@ import {                           //
   WebClientMode,                   //
 } from '../../glic_api/glic_api.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
-import type {ResponseExtras} from '../transport/messaging.js';
 
 import {replaceProperties} from './../conversions.js';
 import type {                              //
@@ -148,15 +147,13 @@ export function idFromClient(windowId: string|undefined): number|null {
   return parsed;
 }
 
-export function screenshotToClient(
-    screenshot: ScreenshotMojo|null, extras: ResponseExtras): Screenshot|
+export function screenshotToClient(screenshot: ScreenshotMojo|null): Screenshot|
     undefined {
   if (!screenshot) {
     return undefined;
   }
   const screenshotArray = new Uint8Array(screenshot.data);
   const buffer = screenshotArray.buffer;
-  extras.addTransfer(buffer);
   return {
     widthPixels: screenshot.widthPixels,
     heightPixels: screenshot.heightPixels,
@@ -182,17 +179,14 @@ export function webPageDataToClient(webPageData: WebPageDataMojo|null):
 }
 
 export function pdfDocumentDataToClient(
-    pdfDocumentData: PdfDocumentDataMojo|null,
-    extras: ResponseExtras): PdfDocumentDataPrivate|undefined {
+    pdfDocumentData: PdfDocumentDataMojo|null): PdfDocumentDataPrivate|
+    undefined {
   if (!pdfDocumentData) {
     return undefined;
   }
   const pdfData = pdfDocumentData.pdfData ?
       new Uint8Array(pdfDocumentData.pdfData).buffer :
       undefined;
-  if (pdfData) {
-    extras.addTransfer(pdfData);
-  }
   return {
     origin: originToClient(pdfDocumentData.origin),
     pdfSizeLimitExceeded: pdfDocumentData.pdfSizeLimitExceeded,
@@ -200,27 +194,22 @@ export function pdfDocumentDataToClient(
   };
 }
 
-export function protoWrapperToClient(
-    protoWrapper: ProtoWrapper|null|undefined,
-    extras: ResponseExtras): ArrayBuffer|undefined {
+export function protoWrapperToClient(protoWrapper: ProtoWrapper|null|undefined):
+    ArrayBuffer|undefined {
   if (!protoWrapper) {
     return undefined;
   }
-  const buffer = getArrayBufferFromBigBuffer(protoWrapper.smuggled);
-  if (buffer) {
-    extras.addTransfer(buffer);
-  }
-  return buffer;
+  return getArrayBufferFromBigBuffer(protoWrapper.smuggled);
 }
 
 export function annotatedPageDataToClient(
-    annotatedPageData: AnnotatedPageDataMojo|null,
-    extras: ResponseExtras): AnnotatedPageDataPrivate|undefined {
+    annotatedPageData: AnnotatedPageDataMojo|null): AnnotatedPageDataPrivate|
+    undefined {
   if (!annotatedPageData) {
     return undefined;
   }
   const annotatedPageContent =
-      protoWrapperToClient(annotatedPageData.annotatedPageContent, extras);
+      protoWrapperToClient(annotatedPageData.annotatedPageContent);
   let metadata: PageMetadata|undefined = undefined;
   if (annotatedPageData.metadata) {
     metadata = {
@@ -285,13 +274,10 @@ export function originToClientOpaqueAsNull(origin: Origin|null): string|
   return originToClient(origin);
 }
 
-export function tabDataToPrivate(
-    tabData: TabDataMojo, extras: ResponseExtras): TabDataPrivate;
-export function tabDataToPrivate(
-    tabData: TabDataMojo|null, extras: ResponseExtras): TabDataPrivate|
+export function tabDataToPrivate(tabData: TabDataMojo): TabDataPrivate;
+export function tabDataToPrivate(tabData: TabDataMojo|null): TabDataPrivate|
     undefined;
-export function tabDataToPrivate(
-    tabData: TabDataMojo|null, extras: ResponseExtras): TabDataPrivate|
+export function tabDataToPrivate(tabData: TabDataMojo|null): TabDataPrivate|
     undefined {
   if (!tabData) {
     return undefined;
@@ -300,9 +286,6 @@ export function tabDataToPrivate(
   let favicon: RgbaImage|undefined = undefined;
   if (tabData.favicon && !conversionSettings.omitFaviconInTabData) {
     favicon = bitmapN32ToRGBAImage(tabData.favicon);
-    if (favicon) {
-      extras.addTransfer(favicon.dataRGBA);
-    }
   }
 
   const isObservable = optionalToClient(tabData.isObservable);
@@ -391,19 +374,18 @@ export function timeToClient(time: Time|null|undefined): Date|undefined {
   return new Date(unixEpochMs);
 }
 
-export function focusedTabDataToClient(
-    focusedTabData: FocusedTabDataMojo,
-    extras: ResponseExtras): FocusedTabDataPrivate {
+export function focusedTabDataToClient(focusedTabData: FocusedTabDataMojo):
+    FocusedTabDataPrivate {
   if (focusedTabData.focusedTab) {
     return {
-      hasFocus: {tabData: tabDataToPrivate(focusedTabData.focusedTab, extras)},
+      hasFocus: {tabData: tabDataToPrivate(focusedTabData.focusedTab)},
     };
   }
   if (focusedTabData.noFocusedTabData) {
     return {
       hasNoFocus: {
-        tabFocusCandidateData: tabDataToPrivate(
-            focusedTabData.noFocusedTabData.activeTabData, extras),
+        tabFocusCandidateData:
+            tabDataToPrivate(focusedTabData.noFocusedTabData.activeTabData),
         noFocusReason: focusedTabData.noFocusedTabData.noFocusReason,
       },
     };
@@ -529,19 +511,15 @@ export function timeDeltaFromClient(durationMs: number = 0): TimeDelta {
   return {microseconds: BigInt(Math.floor(durationMs * 1000))};
 }
 
-export function tabContextToClient(
-    tabContext: TabContextResultMojo,
-    extras: ResponseExtras): TabContextResultPrivate {
-  const tabData: TabDataPrivate = tabDataToPrivate(tabContext.tabData, extras);
+export function tabContextToClient(tabContext: TabContextResultMojo):
+    TabContextResultPrivate {
+  const tabData: TabDataPrivate = tabDataToPrivate(tabContext.tabData);
   const webPageData = webPageDataToClient(tabContext.webPageData);
-  const viewportScreenshot =
-      screenshotToClient(tabContext.viewportScreenshot, extras);
-  const screenshotInfo =
-      protoWrapperToClient(tabContext.screenshotInfo, extras);
-  const pdfDocumentData =
-      pdfDocumentDataToClient(tabContext.pdfDocumentData, extras);
+  const viewportScreenshot = screenshotToClient(tabContext.viewportScreenshot);
+  const screenshotInfo = protoWrapperToClient(tabContext.screenshotInfo);
+  const pdfDocumentData = pdfDocumentDataToClient(tabContext.pdfDocumentData);
   const annotatedPageData =
-      annotatedPageDataToClient(tabContext.annotatedPageData, extras);
+      annotatedPageDataToClient(tabContext.annotatedPageData);
 
   return {
     tabData,
@@ -704,14 +682,13 @@ export function skillsPayloadToClient(payload: SkillsPayloadMojo):
   };
 }
 
-export function invokeOptionsToClient(
-    options: InvokeOptionsMojo, extras: ResponseExtras): InvokeOptionsPrivate {
+export function invokeOptionsToClient(options: InvokeOptionsMojo):
+    InvokeOptionsPrivate {
   return {
     invocationSource: enumToClient(options.invocationSource),
     prompts: options.prompts || undefined,
-    context: options.context ?
-        additionalContextToClient(options.context, extras) :
-        undefined,
+    context: options.context ? additionalContextToClient(options.context) :
+                               undefined,
     autoSubmit: options.autoSubmit,
     featureMode: enumToClient(options.featureMode),
     actuationTarget: enumToClient(options.actuationTarget),
@@ -719,26 +696,23 @@ export function invokeOptionsToClient(
     skillId: options.skillId || undefined,
     zssConfig: options.zssConfig ? zssConfigToClient(options.zssConfig) :
                                    undefined,
-    payload: invocationPayloadToClient(options.payload, extras),
+    payload: invocationPayloadToClient(options.payload),
     actuationTabId: idToClient(options.actuationTabId),
   };
 }
 
-export function invocationPayloadToClient(
-    payload: InvocationPayloadMojo, extras: ResponseExtras): InvocationPayload;
-export function invocationPayloadToClient(
-    payload: InvocationPayloadMojo|null,
-    extras: ResponseExtras): InvocationPayload|undefined;
-export function invocationPayloadToClient(
-    payload: InvocationPayloadMojo|null,
-    extras: ResponseExtras): InvocationPayload|undefined {
+export function invocationPayloadToClient(payload: InvocationPayloadMojo):
+    InvocationPayload;
+export function invocationPayloadToClient(payload: InvocationPayloadMojo|null):
+    InvocationPayload|undefined;
+export function invocationPayloadToClient(payload: InvocationPayloadMojo|null):
+    InvocationPayload|undefined {
   if (!payload) {
     return undefined;
   }
   if (payload.universalCart) {
     const buffer =
         new Uint8Array(payload.universalCart.serializedMetadata).buffer;
-    extras.addTransfer(buffer);
     return {
       universalCart: {
         serializedMetadata: buffer,
@@ -753,7 +727,6 @@ export function invocationPayloadToClient(
   if (payload.experimentalTriggering) {
     const buffer =
         new Uint8Array(payload.experimentalTriggering.paymentMetadata).buffer;
-    extras.addTransfer(buffer);
     return {
       experimentalTriggering: {
         paymentMetadata: buffer,
@@ -763,11 +736,10 @@ export function invocationPayloadToClient(
   throw new Error('Unknown payload type');
 }
 
-export function additionalContextToClient(
-    context: AdditionalContextMojo,
-    extras: ResponseExtras): AdditionalContextPrivate {
+export function additionalContextToClient(context: AdditionalContextMojo):
+    AdditionalContextPrivate {
   const parts = context.parts ?
-      context.parts.map(p => additionalContextPartToClient(p, extras)) :
+      context.parts.map(p => additionalContextPartToClient(p)) :
       [];
   // Filter out undefined parts if any.
   const validParts: AdditionalContextPartPrivate[] = [];
@@ -787,9 +759,8 @@ export function additionalContextToClient(
   };
 }
 
-export function additionalContextPartToClient(
-    part: AdditionalContextPartMojo,
-    extras: ResponseExtras): AdditionalContextPartPrivate|undefined {
+export function additionalContextPartToClient(part: AdditionalContextPartMojo):
+    AdditionalContextPartPrivate|undefined {
   const result: AdditionalContextPartPrivate = {};
   if (part.data) {
     result.data = {
@@ -797,18 +768,17 @@ export function additionalContextPartToClient(
       data: getArrayBufferFromBigBuffer(part.data.data)!,
     };
     result.filename = optionalToClient(part.data.filename);
-    extras.addTransfer(result.data.data);
   } else if (part.screenshot) {
-    result.screenshot = screenshotToClient(part.screenshot, extras);
+    result.screenshot = screenshotToClient(part.screenshot);
   } else if (part.webPageData) {
     result.webPageData = webPageDataToClient(part.webPageData);
   } else if (part.annotatedPageData) {
     result.annotatedPageData =
-        annotatedPageDataToClient(part.annotatedPageData, extras);
+        annotatedPageDataToClient(part.annotatedPageData);
   } else if (part.pdfDocumentData) {
-    result.pdf = pdfDocumentDataToClient(part.pdfDocumentData, extras);
+    result.pdf = pdfDocumentDataToClient(part.pdfDocumentData);
   } else if (part.tabContext) {
-    result.tabContext = tabContextToClient(part.tabContext, extras);
+    result.tabContext = tabContextToClient(part.tabContext);
   } else if (part.region) {
     const regionMojo = part.region;
     if (regionMojo) {
@@ -867,14 +837,12 @@ export function imageInfoToClient(info: ImageInfoMojo): ImageInfoPrivate {
   };
 }
 
-export function imageBytesResultToClient(
-    result: ImageBytesResultMojo,
-    extras: ResponseExtras): ImageBytesResultPrivate|null {
+export function imageBytesResultToClient(result: ImageBytesResultMojo):
+    ImageBytesResultPrivate|null {
   const buffer = getArrayBufferFromBigBuffer(result.bytes);
   if (!buffer) {
     return null;
   }
-  extras.addTransfer(buffer);
   return {
     bytes: buffer,
     imageInfo: imageInfoToClient(result.imageInfo),

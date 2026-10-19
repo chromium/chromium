@@ -102,7 +102,7 @@ import {GlicBrowserHostGeic} from '../geic/geic_client.js';
 import {maybeWrapWithLogging} from '../mojo_logging.js';
 import {GlicBrowserHostSkills} from '../skills/skills_client.js';
 import {GlicBrowserHostTools} from '../tools/tools_client.js';
-import {assertNever, ResponseExtras} from '../transport/messaging.js';
+import {assertNever} from '../transport/messaging.js';
 import {GlicBrowserHostZeroStateSuggestions} from '../zero_state_suggestions/zero_state_suggestions_client.js';
 
 import {replaceProperties} from './../conversions.js';
@@ -347,9 +347,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
         state.geminiEnterpriseSettings ?? undefined);
     this.zoomLevel.assignAndSignal(state.zoomFactor);
     this.panelState.assignAndSignal(panelStateToClient(state.panelState));
-    const extras = new ResponseExtras();
-    const focusedTabDataPrivate =
-        focusedTabDataToClient(state.focusedTabData, extras);
+    const focusedTabDataPrivate = focusedTabDataToClient(state.focusedTabData);
     this.focusedTabStateV2.assignAndSignal(
         convertFocusedTabDataFromPrivate(focusedTabDataPrivate));
     this.permissionStateMicrophone.assignAndSignal(
@@ -524,9 +522,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
 
   async invoke(options: InvokeOptionsMojo): Promise<void> {
     try {
-      const extras = new ResponseExtras();
-      const clientOptions = convertInvokeOptionsFromPrivate(
-          invokeOptionsToClient(options, extras));
+      const clientOptions =
+          convertInvokeOptionsFromPrivate(invokeOptionsToClient(options));
       // Wait until notifyPanelWillOpen has resolved before invoking.
       await this.notifyPanelWillOpenCompleted.promise;
       await this.webClient.invoke?.(clientOptions);
@@ -596,9 +593,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   }
 
   notifyFocusedTabChanged(focusedTabData: FocusedTabDataMojo): void {
-    const extras = new ResponseExtras();
-    const focusedTabDataPrivate =
-        focusedTabDataToClient(focusedTabData, extras);
+    const focusedTabDataPrivate = focusedTabDataToClient(focusedTabData);
     this.focusedTabStateV2.assignAndSignal(
         convertFocusedTabDataFromPrivate(focusedTabDataPrivate));
   }
@@ -656,9 +651,8 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
   }
 
   notifyAdditionalContext(context: AdditionalContextMojo): void {
-    const extras = new ResponseExtras();
-    const clientContext = convertAdditionalContextFromPrivate(
-        additionalContextToClient(context, extras));
+    const clientContext =
+        convertAdditionalContextFromPrivate(additionalContextToClient(context));
     this.additionalContextSubject.next(clientContext);
   }
 
@@ -813,8 +807,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     if (!tabContext) {
       throw new Error(`getContextFromFocusedTab failed: ${errorReason}`);
     }
-    const tabContextResult =
-        tabContextToClient(tabContext, new ResponseExtras());
+    const tabContextResult = tabContextToClient(tabContext);
     return convertTabContextResultFromPrivate(tabContextResult);
   }
 
@@ -832,8 +825,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     if (!tabContext) {
       throw new Error(`getContextFromTab failed: ${errorReason}`);
     }
-    const tabContextResult =
-        tabContextToClient(tabContext, new ResponseExtras());
+    const tabContextResult = tabContextToClient(tabContext);
     return convertTabContextResultFromPrivate(tabContextResult);
   }
 
@@ -846,7 +838,7 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     if (!imageBytes) {
       throw new Error(`getImageBytesFromTab failed: ${errorReason}`);
     }
-    const result = imageBytesResultToClient(imageBytes, new ResponseExtras());
+    const result = imageBytesResultToClient(imageBytes);
     if (!result) {
       throw new Error('Failed to get image bytes');
     }
