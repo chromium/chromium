@@ -5,11 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_SEGMENTATION_PLATFORM_MODEL_SEGMENTATION_PLATFORM_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace segmentation_platform {
 
@@ -18,15 +15,14 @@ class HomeModulesCardRegistry;
 }  // namespace home_modules
 
 class DeviceSwitcherResultDispatcher;
-class SegmentationPlatformService;
 
 // Factory for SegmentationPlatformService.
 class SegmentationPlatformServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          SegmentationPlatformServiceFactory,
+          SegmentationPlatformService> {
  public:
-  static SegmentationPlatformService* GetForProfile(ProfileIOS* profile);
-
-  static SegmentationPlatformServiceFactory* GetInstance();
+  explicit SegmentationPlatformServiceFactory(PassKey key);
 
   // Returns the dispatcher used to retrieve or store the classification result
   // for the user in the given profile. Do not call for OTR profiles.
@@ -43,11 +39,6 @@ class SegmentationPlatformServiceFactory
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<SegmentationPlatformServiceFactory>;
-
-  SegmentationPlatformServiceFactory();
-  ~SegmentationPlatformServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

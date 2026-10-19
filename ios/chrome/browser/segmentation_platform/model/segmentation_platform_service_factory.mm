@@ -201,35 +201,17 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
 
 }  // namespace
 
-// static
-SegmentationPlatformService* SegmentationPlatformServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature)) {
-    return nullptr;
-  }
-  return GetInstance()->GetServiceForProfileAs<SegmentationPlatformService>(
-      profile, /*create=*/true);
-}
-
-// static
-SegmentationPlatformServiceFactory*
-SegmentationPlatformServiceFactory::GetInstance() {
-  static base::NoDestructor<SegmentationPlatformServiceFactory> instance;
-  return instance.get();
-}
-
-SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SegmentationPlatformService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory(
+    PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "SegmentationPlatformService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SessionSyncServiceFactory::GetInstance());
 }
-
-SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
-    default;
 
 // static
 DeviceSwitcherResultDispatcher*
