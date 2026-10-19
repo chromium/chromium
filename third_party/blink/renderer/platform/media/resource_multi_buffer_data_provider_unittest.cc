@@ -856,4 +856,100 @@ TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexStartViaReader) {
   EXPECT_FALSE(reader);
 }
 
+TEST_F(ResourceMultiBufferDataProviderTest, ServiceWorkerFailureDoesNotRetry) {
+  Initialize(kHttpUrl, 100);
+  Start();
+
+  WebURLResponse response(url_);
+  response.SetHttpStatusCode(kHttpPartialContent);
+  response.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                              WebString::FromUtf8("bytes 100-1023/1024"));
+  response.SetExpectedContentLength(924);
+  response.SetWasFetchedViaServiceWorker(true);
+  response.SetUrlListViaServiceWorker(std::vector<WebURL>{url_});
+  loader_->DidReceiveResponse(response);
+
+  // Failing after receiving a service worker response at `pos_ != 0` should
+  // fail immediately rather than scheduling a retry.
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_)).Times(0);
+  loader_->DidFail(WebURLError(net::ERR_ABORTED, url_));
+  task_environment_.FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       PartialResponseMismatchedInstanceSizeFails) {
+  Initialize(kHttpUrl, 0);
+  Start();
+
+  // First response pins `url_data_->length()` to 1,000,000.
+  WebURLResponse response1(url_);
+  response1.SetHttpStatusCode(kHttpOK);
+  response1.SetExpectedContentLength(1000000);
+  loader_->DidReceiveResponse(response1);
+  EXPECT_EQ(url_data_->length(), 1000000);
+
+  // Empty body triggers a retry from byte 0.
+  loader_->DidFinishLoading();
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  // A subsequent 206 response reporting a different instance size (7777) must
+  // be rejected immediately in DidReceiveResponse().
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse response2(url_);
+  response2.SetHttpStatusCode(kHttpPartialContent);
+  response2.SetHttpHeaderField(WebString::FromUtf8("Content-Range"),
+                               WebString::FromUtf8("bytes 0-7776/7777"));
+  response2.SetExpectedContentLength(7777);
+  loader_->DidReceiveResponse(response2);
+  EXPECT_EQ(url_data_->length(), 1000000);
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest,
+       OkResponseMismatchedContentLengthFails) {
+  Initialize(kHttpUrl, 0);
+  Start();
+
+  // First response pins `url_data_->length()` to 1,000,000.
+  WebURLResponse response1(url_);
+  response1.SetHttpStatusCode(kHttpOK);
+  response1.SetExpectedContentLength(1000000);
+  loader_->DidReceiveResponse(response1);
+  EXPECT_EQ(url_data_->length(), 1000000);
+
+  // Empty body triggers a retry from byte 0.
+  loader_->DidFinishLoading();
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  // A subsequent chunked 200 OK response (kPositionNotSpecified) must be
+  // rejected when `url_data_->length()` is already known.
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse response2(url_);
+  response2.SetHttpStatusCode(kHttpOK);
+  response2.SetExpectedContentLength(kPositionNotSpecified);
+  loader_->DidReceiveResponse(response2);
+  EXPECT_EQ(url_data_->length(), 1000000);
+
+  // Likewise, a mid-resource 200 OK response reporting a different
+  // Content-Length (e.g. b/574206996) must be rejected without overwriting
+  // `url_data_->length()`.
+  url_data_->OnRedirect(
+      blink::BindOnce(&ResourceMultiBufferDataProviderTest::RedirectCallback,
+                      Unretained(this)));
+  auto mid_loader = std::make_unique<ResourceMultiBufferDataProvider>(
+      url_data_.get(), /*pos=*/1, /*is_client_audio_element=*/false,
+      task_environment_.GetMainThreadTaskRunner());
+  ResourceMultiBufferDataProvider* raw_mid_loader = mid_loader.get();
+  url_data_->multibuffer()->AddProvider(std::move(mid_loader));
+  loader_ = raw_mid_loader;
+  Start();
+
+  EXPECT_CALL(*this, RedirectCallback(scoped_refptr<UrlData>(nullptr)));
+  WebURLResponse response3(url_);
+  response3.SetHttpStatusCode(kHttpOK);
+  response3.SetExpectedContentLength(500000);
+  loader_->DidReceiveResponse(response3);
+  EXPECT_EQ(url_data_->length(), 1000000);
+}
+
 }  // namespace blink

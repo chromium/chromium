@@ -121,6 +121,13 @@ bool UrlData::MergeFrom(const scoped_refptr<UrlData>& other) {
   if (!CanAcceptDataFrom(other_origin, other->is_cors_cross_origin_)) {
     return false;
   }
+  // Do not merge if either UrlData already has a known length and the other
+  // does not report the same length, to prevent splicing responses from
+  // resources of different sizes onto the same UrlData.
+  if (!HasCompatibleLength(other->length_) ||
+      !other->HasCompatibleLength(length_)) {
+    return false;
+  }
   SetDataOrigin(other_origin, other->is_cors_cross_origin_);
 
   valid_until_ = std::max(valid_until_, other->valid_until_);
@@ -148,6 +155,10 @@ void UrlData::set_length(int64_t length) {
   if (length != kPositionNotSpecified) {
     length_ = length;
   }
+}
+
+bool UrlData::HasCompatibleLength(int64_t length) const {
+  return length_ == kPositionNotSpecified || length_ == length;
 }
 
 void UrlData::set_is_cors_cross_origin(bool is_cors_cross_origin) {

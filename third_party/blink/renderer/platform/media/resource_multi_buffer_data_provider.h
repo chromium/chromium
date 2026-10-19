@@ -92,6 +92,11 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   bool VerifyPartialResponse(const WebURLResponse& response,
                              const scoped_refptr<UrlData>& url_data);
 
+  // Validates that |length| is compatible with any existing length on
+  // |url_data_| and |destination_url_data|, and updates |destination_url_data|.
+  bool TrySetLength(const scoped_refptr<UrlData>& destination_url_data,
+                    int64_t length);
+
   // Current Position.
   MultiBufferBlockId pos_;
 
@@ -128,6 +133,10 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
 
   // Is the client an audio element?
   bool is_client_audio_element_ = false;
+
+  // True if any response handled by this data provider was fetched via a
+  // service worker.
+  bool was_fetched_via_service_worker_ = false;
 
   size_t total_bytes_received_ = 0;
 

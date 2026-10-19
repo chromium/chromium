@@ -151,6 +151,10 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Length of data associated with url or |kPositionNotSpecified|
   int64_t length() const { return length_; }
 
+  // Returns true if this UrlData has not yet had a length set, or if |length|
+  // matches the existing length.
+  bool HasCompatibleLength(int64_t length) const;
+
   // Returns the number of blocks cached for this resource.
   size_t CachedSize();
 

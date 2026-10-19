@@ -126,6 +126,8 @@ TEST_F(UrlIndexTest, TryInsert) {
       GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   scoped_refptr<UrlData> mismatched_opaque =
       GetByUrl(url, UrlData::CORS_UNSPECIFIED);
+  scoped_refptr<UrlData> mismatched_length =
+      GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   EXPECT_NE(a, c);
   EXPECT_FALSE(a->Valid());
   base::Time now = base::Time::Now();
@@ -198,6 +200,19 @@ TEST_F(UrlIndexTest, TryInsert) {
   EXPECT_TRUE(mismatched_opaque->Valid());
   EXPECT_EQ(mismatched_opaque, url_index_->TryInsert(mismatched_opaque));
   EXPECT_FALSE(b->is_cors_cross_origin());
+
+  // If a new valid entry has a mismatched length, MergeFrom fails and
+  // TryInsert should return the new entry rather than overwriting the indexed
+  // entry's length.
+  b->set_length(1000);
+  mismatched_length->set_range_supported();
+  mismatched_length->set_valid_until(valid_until);
+  mismatched_length->set_last_modified(last_modified);
+  mismatched_length->SetDataOrigin(url, /*is_cors_cross_origin=*/false);
+  mismatched_length->set_length(500);
+  EXPECT_TRUE(mismatched_length->Valid());
+  EXPECT_EQ(mismatched_length, url_index_->TryInsert(mismatched_length));
+  EXPECT_EQ(b->length(), 1000);
 }
 
 TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {

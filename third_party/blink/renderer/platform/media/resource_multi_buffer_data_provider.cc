@@ -283,8 +283,12 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   // constructed responses (new Response()) and native server responses, even if
   // they have the same response URL.
   KURL response_url;
-  if (!response.WasFetchedViaServiceWorker() ||
-      response.HasUrlListViaServiceWorker()) {
+  if (response.WasFetchedViaServiceWorker()) {
+    was_fetched_via_service_worker_ = true;
+    if (response.HasUrlListViaServiceWorker()) {
+      response_url = response.ResponseUrl();
+    }
+  } else {
     response_url = response.ResponseUrl();
   }
 
@@ -348,11 +352,11 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
     if (partial_response &&
         VerifyPartialResponse(response, destination_url_data)) {
       destination_url_data->set_range_supported();
-    } else if (ok_response) {
+    } else if (ok_response &&
+               TrySetLength(destination_url_data, content_length)) {
       // We accept a 200 response for a Range:0- request, trusting the
       // Accept-Ranges header, because Apache thinks that's a reasonable thing
       // to return.
-      destination_url_data->set_length(content_length);
       bytes_to_discard_ = byte_pos();
     } else if (response.HttpStatusCode() == kHttpRangeNotSatisfiable &&
                !is_cors_cross_origin) {
@@ -548,7 +552,11 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
     return;  // "this" may be deleted now.
   }
 
-  if (net::IsRequestBlockedError(error.reason()) ||
+  // Service worker responses are not retried on failure, as they are
+  // synthesized or proxied by script and retrying exposes internal buffer
+  // positions via follow-up Range headers.
+  if (was_fetched_via_service_worker_ ||
+      net::IsRequestBlockedError(error.reason()) ||
       net::IsCertificateError(error.reason()) ||
       net::IsClientCertificateError(error.reason())) {
     url_data_->Fail();
@@ -643,8 +651,8 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
     return false;
   }
 
-  if (url_data->length() == kPositionNotSpecified) {
-    url_data->set_length(instance_size);
+  if (!TrySetLength(url_data, instance_size)) {
+    return false;
   }
 
   if (first_byte_position > byte_pos()) {
@@ -655,6 +663,23 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
   }
   bytes_to_discard_ = byte_pos() - first_byte_position;
 
+  return true;
+}
+
+bool ResourceMultiBufferDataProvider::TrySetLength(
+    const scoped_refptr<UrlData>& destination_url_data,
+    int64_t length) {
+  // If a previous response already established the resource length on either
+  // the original or destination UrlData, subsequent responses must report the
+  // same total length. Otherwise a service worker could splice a smaller
+  // cross-origin response onto a UrlData whose length was pinned by a larger
+  // resource, causing DidFinishLoading() to retry at the smaller response's
+  // EOF and disclose its size via the follow-up Range header.
+  if (!url_data_->HasCompatibleLength(length) ||
+      !destination_url_data->HasCompatibleLength(length)) {
+    return false;
+  }
+  destination_url_data->set_length(length);
   return true;
 }
 
