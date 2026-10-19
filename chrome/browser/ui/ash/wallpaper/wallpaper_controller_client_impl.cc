@@ -18,6 +18,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/extend.h"
@@ -42,6 +43,7 @@
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/browser_delegate/browser_controller.h"
 #include "chromeos/ash/components/browser_delegate/browser_delegate.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
@@ -52,6 +54,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -258,9 +261,9 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
   }
 
   // Show the wallpaper of the active user during an user session.
-  if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
-    ShowUserWallpaper(
-        user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+  if (const session_manager::Session* active_session =
+          SessionManager::Get()->GetActiveSession()) {
+    ShowUserWallpaper(active_session->account_id());
     return;
   }
 
@@ -394,7 +397,11 @@ void WallpaperControllerClientImpl::OnVolumeMounted(
   if (volume.type() != file_manager::VolumeType::VOLUME_TYPE_GOOGLE_DRIVE) {
     return;
   }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
+  const AccountId& account_id =
+      CHECK_DEREF(SessionManager::Get()->GetActiveSession()).account_id();
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
   CHECK(profile);
   VolumeManager* volume_manager = VolumeManager::Get(profile);
   // Volume ID is based on the mount path, which for drive is based on the
@@ -402,9 +409,7 @@ void WallpaperControllerClientImpl::OnVolumeMounted(
   if (!volume_manager->FindVolumeById(volume.volume_id())) {
     return;
   }
-  user_manager::User* user = user_manager::UserManager::Get()->GetActiveUser();
-  CHECK(user);
-  wallpaper_controller_->SyncLocalAndRemotePrefs(user->GetAccountId());
+  wallpaper_controller_->SyncLocalAndRemotePrefs(account_id);
 }
 
 void WallpaperControllerClientImpl::OnUserProfileLoaded(

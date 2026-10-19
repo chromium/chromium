@@ -27,6 +27,7 @@ static_library("magic_boost") {
     "//chromeos/components/mahi/public/cpp",
     "//components/account_id",
     "//components/prefs",
+    "//components/session_manager/core",
     "//mojo/public/cpp/bindings",
     "//ui/views",
 

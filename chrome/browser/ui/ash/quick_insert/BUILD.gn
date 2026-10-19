@@ -46,6 +46,7 @@ static_library("quick_insert") {
     "//chromeos/constants",
     "//components/favicon/core",
     "//components/optimization_guide/core",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
     "//google_apis",

@@ -24,7 +24,6 @@
 #include "chrome/browser/ash/mahi/mahi_availability.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_context.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
@@ -32,8 +31,9 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace {
@@ -42,11 +42,9 @@ namespace {
 // immediately runs the callback if refresh tokens are already loaded.
 class RefreshTokensLoadedBarrier : public signin::IdentityManager::Observer {
  public:
-  RefreshTokensLoadedBarrier(Profile* profile,
-                             signin::IdentityManager* identity_manager,
+  RefreshTokensLoadedBarrier(signin::IdentityManager* identity_manager,
                              base::OnceCallback<void()> callback)
       : callback_(std::move(callback)) {
-    CHECK(profile);
     CHECK(identity_manager);
 
     if (identity_manager->AreRefreshTokensLoaded()) {
@@ -109,8 +107,10 @@ Profile* MagicBoostState::GetActiveUserProfile() {
   }
 
   return Profile::FromBrowserContext(
-      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetActiveUser()));
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          CHECK_DEREF(
+              session_manager::SessionManager::Get()->GetActiveSession())
+              .account_id()));
 }
 
 void MagicBoostState::OnActiveUserPrefServiceChanged(
@@ -238,20 +238,18 @@ void MagicBoostState::RegisterPrefChanges(PrefService* pref_service) {
   OnHMRConsentStatusUpdated();
   OnHMRConsentWindowDismissCountUpdated();
 
-  Profile* profile = GetActiveUserProfile();
-  if (!profile) {
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
     CHECK_IS_TEST();
     // Test code can bypass availability check by a flag. Run check immediately
-    // for that case if `profile` is nullptr.
+    // for that case if there is no session.
     OnRefreshTokensReady();
     return;
   }
 
-  // A guest session's active profile is off the record, and the AccountId is
-  // annotated on the original one.
   signin::IdentityManager* identity_manager =
-      ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
-          ash::AnnotatedAccountId::Get(profile->GetOriginalProfile())));
+      ash::IdentityManagerProvider::Get().Find(active_session->account_id());
   if (!identity_manager) {
     // `identity_manager` is not available under a certain condition, e.g.,
     // guest session, test code. Run check immediately for those cases.
@@ -263,9 +261,8 @@ void MagicBoostState::RegisterPrefChanges(PrefService* pref_service) {
   // until refresh tokens are loaded. Run availability check after refresh token
   // is loaded.
   refresh_tokens_loaded_barrier_.reset(new RefreshTokensLoadedBarrier(
-      profile, identity_manager,
-      base::BindOnce(&MagicBoostState::OnRefreshTokensReady,
-                     base::Unretained(this))));
+      identity_manager, base::BindOnce(&MagicBoostState::OnRefreshTokensReady,
+                                       base::Unretained(this))));
 }
 
 base::expected<bool, chromeos::MagicBoostState::Error>

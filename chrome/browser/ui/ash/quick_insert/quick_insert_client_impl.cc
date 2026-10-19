@@ -58,6 +58,8 @@
 #include "chromeos/ash/components/history/history_service_provider.h"
 #include "chromeos/ash/components/search_engines/template_url_service_provider.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -256,7 +258,11 @@ QuickInsertClientImpl::QuickInsertClientImpl(
   // As `QuickInsertClientImpl` is initialised in
   // `ChromeBrowserMainExtraPartsAsh::PostProfileInit`, the user manager does
   // not notify us of the first user "change".
-  ActiveUserChanged(user_manager->GetActiveUser());
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ActiveUserChanged(active_session ? user_manager->FindUserAndModify(
+                                         active_session->account_id())
+                                   : nullptr);
   user_session_state_observation_.Observe(user_manager);
 }
 
