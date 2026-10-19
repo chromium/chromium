@@ -2,8 +2,8 @@ Sync Protocol Style
 ===================
 
 General guidelines:
-* Follow the [Protocol Buffers Style Guide](https://developers.google.com/protocol-buffers/docs/style)
-* Follow the [Proto Do's and Don'ts](http://go/protodosdonts) (sorry, Googlers only).
+* Follow the [Protocol Buffers Style Guide](https://developers.google.com/protocol-buffers/docs/style).
+* Follow the [Proto Best Practices](https://protobuf.dev/best-practices/dos-donts/).
 * Maintain local consistency.
 * Use proto2 syntax.
 
