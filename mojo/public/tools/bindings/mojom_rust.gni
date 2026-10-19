@@ -50,7 +50,8 @@ template("mojom_rust") {
         }
         _typemap = typemap
         if (defined(typemap.traits_file)) {
-          _typemap.traits_file = rebase_path(typemap.traits_file, "//")
+          _typemap.traits_file =
+              rebase_path(typemap.traits_file, root_build_dir)
         }
         _rust_typemaps += [ _typemap ]
       }

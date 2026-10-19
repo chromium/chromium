@@ -489,9 +489,8 @@ class Generator(generator.Generator):
     typemapped_types = []
     seen_files = set()
 
-    source_root_abs = os.path.abspath(os.path.join(os.getcwd(), "../../"))
     gen_file_dir = os.path.abspath(
-      os.path.join(os.getcwd(), "gen", os.path.dirname(self.module.path))
+      os.path.join(self.output_dir, os.path.dirname(self.module.path))
     )
 
     for kind in self.module.structs + self.module.enums + self.module.unions:
@@ -506,10 +505,8 @@ class Generator(generator.Generator):
         )
         traits_file = self.typemap[kind.qualified_name].get('traits_file')
         if traits_file and traits_file not in seen_files:
-          traits_file_abs = os.path.abspath(
-            os.path.join(source_root_abs, traits_file)
-          )
-          rel_path = os.path.relpath(traits_file_abs, gen_file_dir)
+          # GN passes `traits_file` relative to the build directory (our cwd).
+          rel_path = os.path.relpath(traits_file, gen_file_dir)
           typemaps_to_include.append(
             {
               'path': rel_path,
