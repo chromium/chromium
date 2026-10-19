@@ -526,7 +526,6 @@ textDecorationColor
 textDecorationInset
 textDecorationLine
 textDecorationSkipInk
-textDecorationSkipSpaces
 textDecorationStyle
 textDecorationThickness
 textEmphasis
