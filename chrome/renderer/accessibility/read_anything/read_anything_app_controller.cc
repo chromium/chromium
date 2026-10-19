@@ -346,7 +346,10 @@ bool ReadAnythingAppController::IsUpdateProcessingPaused(
     // already a good distillation on IRM. If a distillation or selection is
     // pending, or if the current distillation is empty, we don't want to
     // block the pending update.
-    if (allow_selection_updates && model_.has_pending_selection()) {
+    // TODO(b/574644874): Align Readability's pending selection handling with
+    // Screen2x.
+    if (allow_selection_updates && (model_.has_pending_selection() ||
+                                    model_.requires_post_process_selection())) {
       return false;
     }
 
@@ -416,8 +419,6 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 }
 
 void ReadAnythingAppController::ProcessModelUpdates() {
-  // TODO: crbug.com/505770261 - Implement selection_mode for readability.
-  // Readability should only be able to trigger PostProcessSelection.
   if (model_.is_readability_next_distillation_method()) {
     DCHECK(!model_.requires_distillation())
         << "Readability should not trigger Screen2x distillation.";
@@ -1060,12 +1061,34 @@ bool ReadAnythingAppController::PostProcessSelection() {
   if (!model_.ContainsActiveTree()) {
     return false;
   }
+
+  // TODO(b/574644874): Align Readability selection / hidden lifecycle with
+  // Screen2x so `PostProcessSelection()` is not called while hidden.
+  // On pages distilled via Readability, a selection can change what the side
+  // panel shows. Update the selection endpoints, but leave the selection
+  // pending until reading mode is shown.
+  if (model_.is_readability_next_distillation_method() && IsHidden()) {
+    model_.UpdateSelectionEndpoints();
+    model_.set_requires_post_process_selection(true);
+    return false;
+  }
+
   bool did_draw = false;
   // Note post `model_.PostProcessSelection` returns true if a draw is required.
   if (model_.PostProcessSelection()) {
     did_draw = true;
     if (model_.is_empty()) {
       DrawEmptyState();
+    } else if (model_.is_readability_next_distillation_method()) {
+      // Reset Read Aloud when switching between the readability distillation
+      // and selection mode or when changing the selected content in selection
+      // mode, since the displayed content is changing.
+      read_aloud_model_.ResetReadAloudState();
+      if (IsInSelectionMode()) {
+        Draw(/*recompute_display_nodes=*/false);
+      } else {
+        DrawReadabilityContent();
+      }
     } else {
       bool should_recompute_display_nodes = !model_.content_node_ids().empty();
       VLOG(1) << "In PostProcessSelection content node size: "
@@ -1087,10 +1110,12 @@ bool ReadAnythingAppController::PostProcessSelection() {
 }
 
 void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
-  // Draw is only used for the Screen2x distillation path. Readability
-  // distillation uses UpdateContent instead.
-  DCHECK(!model_.is_readability_next_distillation_method())
-      << "Draw called during Readability distillation path.";
+  // On pages distilled via Readability, `Draw()` is only used when rendering a
+  // user selection. Main article content is drawn via
+  // `DrawReadabilityContent()` instead.
+  DCHECK(!model_.is_readability_next_distillation_method() ||
+         IsInSelectionMode())
+      << "Draw called for Readability outside of selection mode.";
 
   // For Google Docs, do not show any text before the doc finishing loading.
   if (pdf_draw_debouncer_->IsRunning() ||
@@ -1142,10 +1167,11 @@ void ReadAnythingAppController::DrawSelection() {
 }
 
 void ReadAnythingAppController::DrawEmptyState() {
-  // Draw is only used for the Screen2x distillation path. Readability
-  // distillation uses UpdateContent instead.
-  DCHECK(!model_.is_readability_next_distillation_method())
-      << "DrawEmptyState called during Readability distillation path.";
+  // On pages distilled via Readability, `DrawEmptyState()` is only used when in
+  // selection mode.
+  DCHECK(!model_.is_readability_next_distillation_method() ||
+         IsInSelectionMode())
+      << "DrawEmptyState called for Readability outside of selection mode.";
 
   // Update the current distillation method to Screen2x now that the content is
   // about to be drawn.
@@ -1153,6 +1179,25 @@ void ReadAnythingAppController::DrawEmptyState() {
       ReadAnythingAppModel::DistillationMethod::kScreen2x);
 
   ExecuteJavaScript("chrome.readingMode.showEmpty();");
+}
+
+void ReadAnythingAppController::DrawReadabilityContent() {
+  model_.set_current_content_distillation_method(
+      ReadAnythingAppModel::DistillationMethod::kReadability);
+
+  // Reset text blocks when content is updated and reset should map flag to
+  // not trigger a false positive when rendered text is not ready.
+  model_.set_readability_text_blocks({});
+  model_.set_should_map_rendered_text_to_tree_for_readability(false);
+  model_.set_is_readability_mapping_in_progress(true);
+  ExecuteJavaScript("chrome.readingMode.updateContent();");
+
+  // Update anchors.
+  model_.set_should_extract_anchors_from_tree_for_readability(true);
+  bool didProcessAnchors = model_.ProcessAXTreeAnchors();
+  if (didProcessAnchors) {
+    ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
+  }
 }
 
 void ReadAnythingAppController::LogEmptyState() {
@@ -3160,30 +3205,20 @@ void ReadAnythingAppController::UpdateContent(const std::string& title,
 
   model_.set_readability_distillation_complete_for_current_tree(true);
 
-  // Set both active and target distillation to readability since distillation
-  // was successful.
+  // Set the next distillation method to Readability now that distillation
+  // succeeded. `DrawReadabilityContent()` will update the active method.
   model_.set_next_distillation_method(
-      ReadAnythingAppModel::DistillationMethod::kReadability);
-  model_.set_current_content_distillation_method(
       ReadAnythingAppModel::DistillationMethod::kReadability);
   model_.set_readability_content_drawn(true);
 
-  // Reset text blocks when content is updated and reset should map flag to
-  // not trigger a false positive when rendered text is not ready.
-  model_.set_readability_text_blocks({});
-  model_.set_should_map_rendered_text_to_tree_for_readability(false);
-  model_.set_is_readability_mapping_in_progress(true);
-
-  ExecuteJavaScript("chrome.readingMode.updateContent();");
+  // Exit selection mode so the newly distilled article is displayed.
+  if (IsInSelectionMode()) {
+    model_.ResetSelection();
+  }
+  DrawReadabilityContent();
 
   if (!IsUpdateProcessingPaused() && model_.ContainsActiveTree()) {
     PostProcessSelection();
-  }
-
-  model_.set_should_extract_anchors_from_tree_for_readability(true);
-  bool didProcessAnchors = model_.ProcessAXTreeAnchors();
-  if (didProcessAnchors) {
-    ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
   }
 
   // Log a successful readability distillation if reading mode is currently
@@ -3236,9 +3271,8 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
   // processed so that Immersive can open to the correctly selected text.
   if (!read_aloud_model_.speech_playing() &&
       model_.requires_post_process_selection()) {
-    // TODO: crbug.com/505770261- Once general select-to-distill is enabled
-    // this should be re-evaluated to prevent switching distillation modes
-    // before the selection mapping is ready.
+    // If the Readability text hasn't been mapped to the AXTree yet, the model
+    // will keep the selection pending until mapping completes.
     PostProcessSelection();
   }
 
@@ -3285,6 +3319,13 @@ void ReadAnythingAppController::MaybeMapRenderedTextToTree() {
   if (model_.MapRenderedTextToTree(model_.readability_text_blocks())) {
     model_.set_is_readability_mapping_in_progress(false);
     ExecuteJavaScript("chrome.readingMode.onRenderedTextMappingReady();");
+
+    // Process any selection that was deferred while text mapping was still in
+    // progress.
+    if (model_.requires_post_process_selection() &&
+        !read_aloud_model_.speech_playing()) {
+      PostProcessSelection();
+    }
   }
 }
 

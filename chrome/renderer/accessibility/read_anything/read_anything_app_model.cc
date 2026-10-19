@@ -202,8 +202,13 @@ bool ReadAnythingAppModel::PostProcessSelection() {
 
   UpdateSelectionEndpoints();
 
-  // TODO: crbug.com/505770261 - Implement selection_mode for readability.
-  if (is_readability_next_distillation_method()) {
+  // For Readability, wait until the distilled content has been drawn and
+  // mapped to the AXTree before deciding whether the selection falls inside or
+  // outside the article. Keep the selection pending so it will be processed
+  // once mapping finishes.
+  if (is_readability_next_distillation_method() &&
+      (!readability_content_drawn_ || is_readability_mapping_in_progress_)) {
+    requires_post_process_selection_ = true;
     return false;
   }
 
@@ -290,8 +295,13 @@ bool ReadAnythingAppModel::IsSelectionInDistilledContent() const {
                            IsNodeInFigure(GetAXNode(end_.id)))) {
     return false;
   }
-  return display_node_ids_.contains(start_.id) &&
-         display_node_ids_.contains(end_.id);
+  // Since Readability renders from HTML rather than `display_node_ids_`, check
+  // against the AXNodes mapped from the rendered Readability text instead.
+  const std::set<ui::AXNodeID>& display_node_ids =
+      is_readability_next_distillation_method() ? readability_display_node_ids_
+                                                : display_node_ids_;
+  return display_node_ids.contains(start_.id) &&
+         display_node_ids.contains(end_.id);
 }
 
 void ReadAnythingAppModel::ComputeSelectionNodeIdsForSelectionMode() {
@@ -528,6 +538,30 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
         continue;
       }
       InsertIdIfNotIgnored(next_node->id(), display_node_ids_);
+    }
+  }
+}
+
+void ReadAnythingAppModel::ComputeReadabilityDisplayNodeIds() {
+  for (const auto& block_segments : text_to_ax_map_) {
+    for (const MappingSegment& segment : block_segments) {
+      const ui::AXNode* node = GetAXNode(segment.id);
+      if (!node) {
+        continue;
+      }
+      // Include ancestors (just like `display_node_ids_`) so selections whose
+      // endpoints are on a parent container node are still recognized as part
+      // of the distilled content. Exit the loop early if an ancestor is
+      // already in `readability_display_node_ids_`, since all of its remaining
+      // ancestors will already be in the set too.
+      for (base::queue<ui::AXNode*> ancestors =
+               node->GetAncestorsCrossingTreeBoundaryAsQueue();
+           !ancestors.empty(); ancestors.pop()) {
+        if (!readability_display_node_ids_.insert(ancestors.front()->id())
+                 .second) {
+          break;
+        }
+      }
     }
   }
 }
@@ -1711,6 +1745,7 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   base::ElapsedTimer step_timer;
 
   text_to_ax_map_.clear();
+  readability_display_node_ids_.clear();
   occupied_ax_ranges_.clear();
   // Ensure the mapping storage size matches the input blocks.
   text_to_ax_map_.resize(blocks.size());
@@ -1793,6 +1828,7 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
                 return a.start < b.start;
               });
   }
+  ComputeReadabilityDisplayNodeIds();
 
   should_map_rendered_text_to_tree_for_readability_ = false;
   RecordReadabilityMappingMetrics(

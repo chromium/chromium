@@ -5607,6 +5607,40 @@ class ReadAnythingAppControllerReadabilityTest
     controller_->distillation_status_logging_delay_timer_.Stop();
     controller_->has_logged_distillation_status_ = false;
   }
+
+ protected:
+  static constexpr ui::AXNodeID kArticleId = 2;
+  static constexpr ui::AXNodeID kSidebarId = 3;
+
+  // Creates a page with an article paragraph and a sidebar, and distills only
+  // the article paragraph with Readability. Call `MapRenderedReadabilityText()`
+  // to simulate the WebUI finishing text mapping.
+  void SetUpReadabilityArticlePage() {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    ui::AXNodeData root = test::GenericContainerNode(1);
+    ui::AXNodeData article =
+        test::TextNode(kArticleId, u"This is the article paragraph text.");
+    ui::AXNodeData sidebar =
+        test::TextNode(kSidebarId, u"Unrelated sidebar text.");
+    root.child_ids = {article.id, sidebar.id};
+    update.root_id = root.id;
+    update.nodes = {root, article, sidebar};
+    AccessibilityEventReceived({update});
+
+    controller().OnReadabilityDistillationStateChanged(
+        read_anything::mojom::ReadAnythingDistillationState::
+            kDistillationWithContent);
+    controller().UpdateContent("Title",
+                               "<p>This is the article paragraph text.</p>");
+  }
+
+  // Simulates the WebUI reporting the rendered text blocks for the article set
+  // up in `SetUpReadabilityArticlePage()`, triggering AXTree mapping.
+  void MapRenderedReadabilityText() {
+    controller().OnRenderedTextBlocksAvailable(
+        {u"Title", u"This is the article paragraph text."});
+  }
 };
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -5661,6 +5695,147 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   controller().OnActiveAXTreeIDChanged(new_tree_id, ukm::kInvalidSourceId,
                                        /*is_pdf=*/false);
   EXPECT_FALSE(model().readability_content_drawn());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       UpdateContent_ResetsSelectionMode) {
+  model().set_side_panel_distillation_mode_for_testing(
+      ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+
+  controller().UpdateContent("Title", "Some valid content");
+
+  EXPECT_FALSE(controller().IsInSelectionMode());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       PostProcessSelection_DefersUntilRenderedTextIsMapped) {
+  SetUpReadabilityArticlePage();
+
+  // Until the rendered Readability text is mapped to the AXTree, we can't tell
+  // whether the selection is inside or outside the article, so keep it pending.
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
+  EXPECT_FALSE(controller().IsInSelectionMode());
+  EXPECT_TRUE(model().requires_post_process_selection());
+
+  // Once mapping finishes, the pending selection is processed and enters
+  // selection mode because the sidebar is outside the distilled article.
+  MapRenderedReadabilityText();
+  EXPECT_TRUE(controller().IsInSelectionMode());
+  EXPECT_TRUE(model().selection_node_ids().contains(kSidebarId));
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       PostProcessSelection_LeavingSelectionMode_RedrawsReadabilityContent) {
+  SetUpReadabilityArticlePage();
+  MapRenderedReadabilityText();
+
+  // Add a link node to the tree so anchor extraction has an anchor to collect.
+  ui::AXTreeUpdate link_update;
+  test::SetUpdateTreeID(&link_update, tree_id_);
+  ui::AXNodeData root = test::GenericContainerNode(1);
+  ui::AXNodeData article =
+      test::TextNode(kArticleId, u"This is the article paragraph text.");
+  ui::AXNodeData sidebar =
+      test::TextNode(kSidebarId, u"Unrelated sidebar text.");
+  ui::AXNodeData link;
+  link.id = 4;
+  link.role = ax::mojom::Role::kLink;
+  link.SetName("Example link");
+  link.AddStringAttribute(ax::mojom::StringAttribute::kUrl,
+                          "https://www.google.com");
+  root.child_ids = {article.id, sidebar.id, link.id};
+  link_update.root_id = root.id;
+  link_update.nodes = {root, article, sidebar, link};
+  AccessibilityEventReceived({link_update});
+
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
+  ASSERT_TRUE(controller().IsInSelectionMode());
+  // While in selection mode, the selected content is rendered from the AXTree.
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  model().ResetAXTreeAnchors();
+  ASSERT_TRUE(model().ax_tree_anchors().empty());
+
+  // Clearing the selection exits selection mode, redraws the Readability
+  // article, restarts text mapping, and re-extracts anchors.
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 0);
+  EXPECT_FALSE(controller().IsInSelectionMode());
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+  EXPECT_TRUE(model().is_readability_mapping_in_progress());
+  EXPECT_FALSE(model().ax_tree_anchors().empty());
+}
+
+TEST_F(
+    ReadAnythingAppControllerReadabilityTest,
+    PostProcessSelection_ReopeningImmersiveAfterSelectionMode_ProcessesSelection) {
+  SetUpReadabilityArticlePage();
+  MapRenderedReadabilityText();
+
+  // 1. Select text outside the article while hidden and open Immersive Mode in
+  // selection mode. `Draw()` sets `current_content_distillation_method` to
+  // `kScreen2x`, while `next_distillation_method` remains `kReadability`.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  ASSERT_TRUE(controller().IsInSelectionMode());
+  ASSERT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kScreen2x);
+  EXPECT_TRUE(model().should_apply_accessibility_updates_for_readability());
+
+  // 2. Close Immersive Mode, clear the selection on the main page, and reopen
+  // Immersive Mode. Because `next_distillation_method` is still `kReadability`,
+  // the selection update is applied via the Readability path and processed on
+  // reopen rather than getting stuck queued.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 0);
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_FALSE(controller().IsInSelectionMode());
+  EXPECT_EQ(model().current_content_distillation_method(),
+            ReadAnythingAppModel::DistillationMethod::kReadability);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       PostProcessSelection_WhileHidden_DefersUntilShown) {
+  SetUpReadabilityArticlePage();
+  MapRenderedReadabilityText();
+
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
+
+  // Because the side panel cannot be redrawn while hidden, the selection
+  // stays pending while still updating its endpoints.
+  EXPECT_FALSE(controller().IsInSelectionMode());
+  EXPECT_TRUE(model().requires_post_process_selection());
+  EXPECT_TRUE(model().has_selection());
+
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+  EXPECT_TRUE(controller().IsInSelectionMode());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
+       PostProcessSelection_WhileHidden_DefersUntilShownInImmersive) {
+  SetUpReadabilityArticlePage();
+  MapRenderedReadabilityText();
+
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  SetMainPageSelection(kSidebarId, 0, kSidebarId, 5);
+
+  EXPECT_FALSE(controller().IsInSelectionMode());
+  EXPECT_TRUE(model().requires_post_process_selection());
+  EXPECT_TRUE(model().has_selection());
+
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_TRUE(controller().IsInSelectionMode());
+  EXPECT_FALSE(model().requires_post_process_selection());
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
@@ -6519,7 +6694,10 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
        ProcessModelUpdates_Readability_OnlyProcessesSelection) {
-  // Setup: Model has a pending selection request.
+  // Setup: Mark Readability content as drawn and mapped so selection
+  // processing can complete immediately.
+  model().set_readability_content_drawn(true);
+  model().set_is_readability_mapping_in_progress(false);
   model().set_requires_post_process_selection(true);
   model().set_requires_distillation(false);
 
@@ -6646,14 +6824,14 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
   // Set up: requires_post_process_selection is true.
   model().set_requires_post_process_selection(true);
 
-  // Call AccessibilityEventReceived.
-  ui::AXTreeUpdate update;
-  test::SetUpdateTreeID(&update, tree_id_);
-  AccessibilityEventReceived({update});
+  // Call AccessibilityEventReceived with a main page selection.
+  SetMainPageSelection(2, 0, 2, 1);
 
-  // Verification: PostProcessSelection was called, which reset
-  // requires_post_process_selection to false.
-  EXPECT_FALSE(model().requires_post_process_selection());
+  // Verification: `PostProcessSelection()` updated the selection endpoints,
+  // but kept the selection pending because Readability content has not been
+  // drawn and mapped yet.
+  EXPECT_TRUE(model().has_selection());
+  EXPECT_TRUE(model().requires_post_process_selection());
 }
 
 TEST_F(
@@ -6667,6 +6845,7 @@ TEST_F(
   controller().SetDistillationState(
       read_anything::mojom::ReadAnythingDistillationState::
           kDistillationWithContent);
+  model().set_readability_content_drawn(true);
   controller().OnIsSpeechActiveChanged(true);
 
   model().set_requires_post_process_selection(true);

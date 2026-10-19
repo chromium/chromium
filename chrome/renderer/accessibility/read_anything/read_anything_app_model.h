@@ -385,20 +385,13 @@ class ReadAnythingAppModel {
     if (!features::IsReadAnythingWithReadabilityEnabled()) {
       return false;
     }
-
-    if (is_readability_next_distillation_method() &&
-        distillation_state_ ==
-            read_anything::mojom::ReadAnythingDistillationState::
-                kDistillationInProgress) {
-      return true;
-    }
-
-    if (is_readability_current_distillation_method() &&
-        distillation_state_ ==
-            read_anything::mojom::ReadAnythingDistillationState::
-                kDistillationWithContent) {
-      return true;
-    }
+    return is_readability_next_distillation_method() &&
+           (distillation_state_ ==
+                read_anything::mojom::ReadAnythingDistillationState::
+                    kDistillationInProgress ||
+            distillation_state_ ==
+                read_anything::mojom::ReadAnythingDistillationState::
+                    kDistillationWithContent);
 
     return false;
   }
@@ -663,6 +656,9 @@ class ReadAnythingAppModel {
 
   void Reset(std::vector<ui::AXNodeID> content_node_ids);
 
+  // Clears the current selection and resets the view back to the main content.
+  void ResetSelection();
+
   // Helper functions for the rendering algorithm. Post-process the AXTree and
   // cache values before sending an `updateContent` notification to the Read
   // Anything app.ts.
@@ -680,9 +676,10 @@ class ReadAnythingAppModel {
   // are stored in forward tree order.
   void UpdateSelectionEndpoints();
 
-  // Returns true if the user's current selection is entirely contained within
-  // the distilled article content (display_node_ids_). When images are
-  // disabled, returns false if the selection starts or ends in a figure, so
+  // Returns true if the user's current selection is entirely within the
+  // distilled article content (display_node_ids_ for Screen2x, or
+  // readability_display_node_ids_ for Readability). When images are
+  // disabled, returns false if the selection starts or ends in a figure so
   // that the hidden figure is redrawn in selection mode.
   bool IsSelectionInDistilledContent() const;
 
@@ -693,6 +690,10 @@ class ReadAnythingAppModel {
   // Computes display nodes from the content nodes. These display nodes will be
   // displayed in the Read Anything app.ts by default.
   void ComputeDisplayNodeIdsForDistilledTree();
+
+  // Computes the AXNodes (and their ancestors) mapped from the rendered
+  // Readability text.
+  void ComputeReadabilityDisplayNodeIds();
 
   ui::AXSerializableTree* GetActiveTree() const;
 
@@ -890,8 +891,6 @@ class ReadAnythingAppModel {
 
   ui::AXNode* GetAXNodeFromRoot(const ui::AXNodeID& ax_node_id) const;
 
-  void ResetSelection();
-
   bool ContentNodesOnlyContainHeadings();
 
   void AddPendingUpdates(const ui::AXTreeID& tree_id, Updates& updates);
@@ -1057,11 +1056,20 @@ class ReadAnythingAppModel {
   // selection or if the users selection is contained within these nodes.
   std::set<ui::AXNodeID> display_node_ids_;
 
+  // All AXNodes mapped from the rendered Readability text, along with their
+  // ancestors. This corresponds to display_node_ids_ for Screen2x and is used
+  // to check if a user selection on the main page exists in the distilled
+  // reading mode content. Note that this is not a perfect match with the
+  // distilled content because distilled readability content is not always
+  // identical to the AXTree.
+  std::set<ui::AXNodeID> readability_display_node_ids_;
+
   // Set of displayed nodes that will be deleted.
   std::set<ui::AXNodeID> displayed_nodes_pending_deletion_;
 
-  // If the user's selection contains nodes outside of display_node_ids, this
-  // contains all nodes between the start and end nodes of the selection.
+  // If the user's selection contains nodes outside of display_node_ids_ (or
+  // readability_display_node_ids_), this contains all nodes between the start
+  // and end nodes of the selection.
   std::set<ui::AXNodeID> selection_node_ids_;
 
   // The current base language code used for fonts or reading aloud.

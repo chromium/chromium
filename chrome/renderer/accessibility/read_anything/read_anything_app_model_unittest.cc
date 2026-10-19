@@ -1550,6 +1550,48 @@ class ReadAnythingAppModelReadabilityTest : public ReadAnythingAppModelTest {
   }
   ~ReadAnythingAppModelReadabilityTest() override = default;
 
+ protected:
+  static constexpr ui::AXNodeID kArticleId = 2;
+  static constexpr ui::AXNodeID kSidebarId = 3;
+
+  // Creates a page with an article paragraph and a sidebar, then simulates
+  // distilling only the article paragraph with Readability and mapping its
+  // rendered text back to the AXTree.
+  void SetUpMappedReadabilityContent() {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    ui::AXNodeData root = test::GenericContainerNode(1);
+    ui::AXNodeData article =
+        test::TextNode(kArticleId, u"This is the article paragraph text.");
+    ui::AXNodeData sidebar =
+        test::TextNode(kSidebarId, u"Unrelated sidebar text.");
+    root.child_ids = {article.id, sidebar.id};
+    update.root_id = root.id;
+    update.nodes = {root, article, sidebar};
+    ApplyAccessibilityUpdates(tree_id_, {update});
+
+    model().set_next_distillation_method(
+        ReadAnythingAppModel::DistillationMethod::kReadability);
+    model().set_readability_content_drawn(true);
+    model().set_should_map_rendered_text_to_tree_for_readability(true);
+    ASSERT_TRUE(model().MapRenderedTextToTree(
+        {u"Title", u"This is the article paragraph text."}));
+    model().set_is_readability_mapping_in_progress(false);
+  }
+
+  // Selects the range [start_offset, end_offset) within `node_id` on the main
+  // page. Passing equal offsets collapses (clears) the selection.
+  void SetSelection(ui::AXNodeID node_id, int start_offset, int end_offset) {
+    ui::AXTreeUpdate update;
+    test::SetUpdateTreeID(&update, tree_id_);
+    update.tree_data.sel_anchor_object_id = node_id;
+    update.tree_data.sel_focus_object_id = node_id;
+    update.tree_data.sel_anchor_offset = start_offset;
+    update.tree_data.sel_focus_offset = end_offset;
+    update.tree_data.sel_is_backward = false;
+    ApplyAccessibilityUpdates(tree_id_, {update});
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -1832,8 +1874,10 @@ TEST_F(ReadAnythingAppModelReadabilityTest,
   update.has_tree_data = true;
   ApplyAccessibilityUpdates(tree_id_, {std::move(update)});
 
-  // PostProcessSelection should return false for Readability.
+  // Because no Readability content has been drawn yet, the selection should
+  // stay pending.
   EXPECT_FALSE(model().PostProcessSelection());
+  EXPECT_TRUE(model().requires_post_process_selection());
 
   // Confirm that UpdateSelectionEndpoints was called and the model's
   // selection endpoints were updated.
@@ -1841,6 +1885,56 @@ TEST_F(ReadAnythingAppModelReadabilityTest,
   EXPECT_EQ(model().end_node_id(), 3);
   EXPECT_EQ(model().start_offset(), 0);
   EXPECT_EQ(model().end_offset(), 1);
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       PostProcessSelection_Readability_DefersWhileMappingInProgress) {
+  SetUpMappedReadabilityContent();
+  model().set_is_readability_mapping_in_progress(true);
+  SetSelection(kSidebarId, 0, 5);
+
+  EXPECT_FALSE(model().PostProcessSelection());
+  EXPECT_TRUE(model().requires_post_process_selection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       PostProcessSelection_Readability_SelectionInsideContent_DoesNotDraw) {
+  SetUpMappedReadabilityContent();
+  SetSelection(kArticleId, 0, 4);
+
+  EXPECT_FALSE(model().PostProcessSelection());
+  EXPECT_FALSE(model().requires_post_process_selection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+}
+
+TEST_F(
+    ReadAnythingAppModelReadabilityTest,
+    PostProcessSelection_Readability_SelectionOutsideContent_EntersSelectionMode) {
+  SetUpMappedReadabilityContent();
+  SetSelection(kSidebarId, 0, 5);
+
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kSelection);
+  EXPECT_TRUE(model().selection_node_ids().contains(kSidebarId));
+}
+
+TEST_F(ReadAnythingAppModelReadabilityTest,
+       PostProcessSelection_Readability_SelectionCleared_ReturnsToMainContent) {
+  SetUpMappedReadabilityContent();
+  SetSelection(kSidebarId, 0, 5);
+  ASSERT_TRUE(model().PostProcessSelection());
+
+  SetSelection(kSidebarId, 0, 0);
+
+  EXPECT_TRUE(model().PostProcessSelection());
+  EXPECT_EQ(model().side_panel_distillation_mode(),
+            ReadAnythingAppModel::SidePanelDistillationMode::kMainContent);
+  // The distilled Readability content is still available to be redrawn.
+  EXPECT_FALSE(model().is_empty());
 }
 
 TEST_F(

@@ -469,6 +469,7 @@ class ReadAnythingAppController
 
   void DrawSelection();
   void DrawEmptyState();
+  void DrawReadabilityContent();
 
   // Helper function that restarts the distillation logging timer and triggers a
   // new distillation if the tree is ready.
