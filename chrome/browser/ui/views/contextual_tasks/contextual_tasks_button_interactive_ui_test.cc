@@ -1665,10 +1665,8 @@ class ContextualTasksEphemeralButtonAutoDismissInteractiveTest
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 };
 
-// TODO(crbug.com/574674717): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
-    DISABLED_AutoDismissHidesButtonAndDisassociatesTaskAfterTimeout) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonAutoDismissInteractiveTest,
+                       AutoDismissHidesButtonAndDisassociatesTaskAfterTimeout) {
   base::UserActionTester user_action_tester;
   base::HistogramTester histogram_tester;
 
@@ -1689,7 +1687,7 @@ IN_PROC_BROWSER_TEST_F(
                          "ContextualTasks.EphemeralToolbarButton."
                          "AutoDismissed"));
         histogram_tester.ExpectUniqueSample(
-            "ContextualTasks.EphemeralToolbarButton.AutoDismissed", 1440, 1);
+            "ContextualTasks.EphemeralToolbarButton.AutoDismissed", 120, 1);
       }),
       Check([this]() {
         content::WebContents* const web_contents =
