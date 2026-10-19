@@ -260,6 +260,13 @@ void TabGroupView::OnAnimationEnded() {
   }
 }
 
+bool TabGroupView::IsAnimationAllowed() {
+  if (!collection_node_) {
+    return false;
+  }
+  return collection_node_->GetController()->IsAnimationAllowed();
+}
+
 bool TabGroupView::IsValid() const {
   return collection_node_;
 }

@@ -31,8 +31,12 @@ namespace {
 class MockAnimatingLayoutManagerDelegate
     : public TabCollectionAnimatingLayoutManager::Delegate {
  public:
+  MockAnimatingLayoutManagerDelegate() {
+    ON_CALL(*this, IsAnimationAllowed).WillByDefault(testing::Return(true));
+  }
   MOCK_METHOD(bool, IsViewDragging, (const views::View&), (const, override));
   MOCK_METHOD(void, OnAnimationEnded, (), (override));
+  MOCK_METHOD(bool, IsAnimationAllowed, (), (override));
 };
 
 class TestLayoutManager : public views::LayoutManagerBase {
@@ -724,13 +728,36 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
       is_vertical ? trailing_tab->bounds().y() : trailing_tab->bounds().x(),
       100);
 
+  class FixedHeightTestLayoutManager : public TestLayoutManager {
+   public:
+    explicit FixedHeightTestLayoutManager(
+        TabCollectionAnimatingLayoutManager::AnimationAxis axis)
+        : TestLayoutManager(axis) {}
+    ~FixedHeightTestLayoutManager() override = default;
+
+   protected:
+    views::ProposedLayout CalculateProposedLayout(
+        const views::SizeBounds& size_bounds) const override {
+      views::ProposedLayout layout =
+          TestLayoutManager::CalculateProposedLayout(size_bounds);
+      layout.host_size.set_height(41);
+      return layout;
+    }
+  };
   testing::NiceMock<MockAnimatingLayoutManagerDelegate> group_delegate;
   auto* group_view =
       host_view()->AddChildViewAt(std::make_unique<views::View>(), 1);
   auto* group_layout_manager = group_view->SetLayoutManager(
       std::make_unique<TabCollectionAnimatingLayoutManager>(
-          std::make_unique<TestLayoutManager>(animation_axis()), group_delegate,
-          animation_coordinator(), animation_axis()));
+          // In horizontal tabs, tab group views have a fixed height. Make our
+          // mock tab group view also report a fixed height, otherwise during
+          // the initial layout pass, a cross-axis resize will stop it from
+          // animating.
+          animation_axis() == TabCollectionAnimatingLayoutManager::
+                                  AnimationAxis::kHorizontal
+              ? std::make_unique<FixedHeightTestLayoutManager>(animation_axis())
+              : std::make_unique<TestLayoutManager>(animation_axis()),
+          group_delegate, animation_coordinator(), animation_axis()));
   group_view->AddChildView(std::make_unique<views::View>());
 
   const gfx::Rect previous_bounds_in_screen = leading_tab->GetBoundsInScreen();
@@ -761,6 +788,35 @@ TEST_P(TabCollectionAnimatingLayoutManagerTest,
 
   EXPECT_GT(step, 20);
   EXPECT_EQ(prev_pos_in_host, 20);
+}
+
+TEST_P(TabCollectionAnimatingLayoutManagerTest, IsAnimationAllowed) {
+  if (!IsAnimationDurationEnabled()) {
+    GTEST_SKIP();
+  }
+  ON_CALL(*layout_manager_delegate(), IsAnimationAllowed)
+      .WillByDefault(testing::Return(false));
+
+  widget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+  widget()->LayoutRootViewIfNecessary();
+
+  // When `IsAnimationAllowed()` is false, new layouts snap immediately to
+  // target without animating.
+  host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+
+  EXPECT_FALSE(layout_manager()->is_animating());
+
+  // Once `IsAnimationAllowed()` is true, a new layout starts an animation.
+  ON_CALL(*layout_manager_delegate(), IsAnimationAllowed)
+      .WillByDefault(testing::Return(true));
+
+  host_view()->AddChildView(std::make_unique<views::View>());
+  host_view()->InvalidateLayout();
+  widget()->LayoutRootViewIfNecessary();
+
+  EXPECT_TRUE(layout_manager()->is_animating());
 }
 
 TEST_P(TabCollectionAnimatingLayoutManagerTest,

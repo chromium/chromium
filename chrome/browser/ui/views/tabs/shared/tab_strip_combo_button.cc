@@ -104,6 +104,10 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
                           base::Unretained(this)));
   UpdateButtonsVisibility();
   UpdateStyles();
+
+  // Don't animate on startup.
+  start_button_animation_.End();
+  end_button_animation_.End();
 }
 
 TabStripComboButton::~TabStripComboButton() {
