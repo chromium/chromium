@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_FAKE_ACTOR_OVERLAY_PAGE_H_
 #define CHROME_BROWSER_ACTOR_UI_TEST_SUPPORT_FAKE_ACTOR_OVERLAY_PAGE_H_
 
+#include <string>
+
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -35,6 +37,7 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
                     MoveCursorToCallback callback) override;
   void SetTheme(mojom::ThemePtr theme) override;
   void TriggerClickAnimation(TriggerClickAnimationCallback callback) override;
+  void SetCursorChip(const std::string& text) override;
 
   // Test accessors
   bool is_scrim_background_visible() const {
@@ -51,6 +54,8 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   int trigger_click_animation_call_count() {
     return trigger_click_animation_call_count_;
   }
+  const std::string& cursor_chip_text() const { return cursor_chip_text_; }
+  int cursor_chip_call_count() const { return cursor_chip_call_count_; }
 
  private:
   mojo::Receiver<mojom::ActorOverlayPage> receiver_{this};
@@ -62,6 +67,8 @@ class FakeActorOverlayPage : public mojom::ActorOverlayPage {
   gfx::Point last_cursor_point_;
   int move_cursor_call_count_ = 0;
   int trigger_click_animation_call_count_ = 0;
+  std::string cursor_chip_text_;
+  int cursor_chip_call_count_ = 0;
 };
 
 }  // namespace actor::ui

@@ -118,6 +118,12 @@ void ActorOverlayWebView::TriggerClickAnimation(base::OnceClosure callback) {
   }
 }
 
+void ActorOverlayWebView::SetCursorChip(const std::string& text) {
+  if (actor::ui::ActorOverlayUI* web_ui = GetWebUi()) {
+    web_ui->SetCursorChip(text);
+  }
+}
+
 actor::ui::ActorOverlayUI* ActorOverlayWebView::GetWebUi() {
   if (!web_contents()) {
     return nullptr;

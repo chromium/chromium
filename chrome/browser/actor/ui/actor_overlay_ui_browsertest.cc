@@ -75,6 +75,22 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
+                       SetCursorChipQueuesAndReplaysUpdates) {
+  std::unique_ptr<ActorOverlayUI> controller = CreateController();
+
+  controller->SetCursorChip("Searching");
+  controller->SetCursorChip("Adding to cart");
+
+  MockPageHandlerFactory factory_helper(controller.get());
+  FakeActorOverlayPage fake_page;
+  factory_helper.CreatePageHandler(&fake_page);
+  fake_page.FlushForTesting();
+
+  EXPECT_EQ(fake_page.cursor_chip_call_count(), 2);
+  EXPECT_EQ(fake_page.cursor_chip_text(), "Adding to cart");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayUITest,
                        SetBorderGlowVisibilityCrashesIfHandlerNull) {
   std::unique_ptr<ActorOverlayUI> controller = CreateController();
   EXPECT_DEATH(controller->SetBorderGlowVisibility(true), "");

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_UI_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_UI_H_
 
+#include <string>
+
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
@@ -34,6 +36,7 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
   virtual void MoveCursorTo(const gfx::Point& point,
                             base::OnceClosure callback);
   virtual void TriggerClickAnimation(base::OnceClosure callback);
+  virtual void SetCursorChip(const std::string& text);
 
   // Checks if the passed in WebContents are associated with the ActorOverlayUI
   // WebUIController.

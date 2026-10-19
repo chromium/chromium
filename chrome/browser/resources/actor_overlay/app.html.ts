@@ -15,6 +15,9 @@ export function getHtml(this: ActorOverlayAppElement) {
 </div>
 <div id="magicCursor">
   <div id="cursorImage"></div>
+  ${this.cursorChipText_ ? html`
+    <div id="cursorChip">${this.cursorChipText_}</div>
+  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -65,4 +65,8 @@ interface ActorOverlayPage {
   // Notifies WebUI to trigger a click animation at the current position.
   // Expects a response from WebUI once the animation is initiated.
   TriggerClickAnimation() => ();
+
+  // Sets the text of the chip next to the magic cursor. An empty |text| hides
+  // the chip.
+  SetCursorChip(string text);
 };

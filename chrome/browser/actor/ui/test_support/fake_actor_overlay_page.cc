@@ -46,6 +46,7 @@ void FakeActorOverlayPage::ResetCounters() {
   set_border_glow_call_count_ = 0;
   move_cursor_call_count_ = 0;
   theme_call_count_ = 0;
+  cursor_chip_call_count_ = 0;
 }
 
 void FakeActorOverlayPage::TriggerClickAnimation(
@@ -53,5 +54,10 @@ void FakeActorOverlayPage::TriggerClickAnimation(
   trigger_click_animation_call_count_++;
   // Simulate the WebUI replying once the animation is done.
   std::move(callback).Run();
+}
+
+void FakeActorOverlayPage::SetCursorChip(const std::string& text) {
+  cursor_chip_text_ = text;
+  cursor_chip_call_count_++;
 }
 }  // namespace actor::ui

@@ -114,4 +114,14 @@ void ActorOverlayUI::TriggerClickAnimation(base::OnceClosure callback) {
   handler_->TriggerClickAnimation(std::move(callback));
 }
 
+void ActorOverlayUI::SetCursorChip(const std::string& text) {
+  // If handler is not initialized yet, queue the update.
+  if (!handler_) {
+    SetHandlerInitializedCallback(base::BindOnce(
+        &ActorOverlayUI::SetCursorChip, weak_factory_.GetWeakPtr(), text));
+    return;
+  }
+  handler_->SetCursorChip(text);
+}
+
 }  // namespace actor::ui

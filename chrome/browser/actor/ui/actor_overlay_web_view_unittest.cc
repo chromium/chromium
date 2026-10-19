@@ -5,6 +5,7 @@
 #include "chrome/browser/actor/ui/actor_overlay_web_view.h"
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
@@ -39,6 +40,7 @@ class MockActorOverlayUI : public ActorOverlayUI {
               (const gfx::Point&, base::OnceClosure),
               (override));
   MOCK_METHOD(void, TriggerClickAnimation, (base::OnceClosure), (override));
+  MOCK_METHOD(void, SetCursorChip, (const std::string&), (override));
 };
 
 class TestActorOverlayWebView : public ActorOverlayWebView {
@@ -122,6 +124,18 @@ TEST_F(ActorOverlayWebViewTestBase, SetBorderGlowVisibilityHandlesNullWebUi) {
   // Verifies that the null check prevents a crash.
   web_view_->SetBorderGlowVisibility(true);
   web_view_->SetBorderGlowVisibility(false);
+}
+
+TEST_F(ActorOverlayWebViewTestBase, SetCursorChipForwardsToWebUI) {
+  web_view_->set_web_ui(mock_web_ui_.get());
+  EXPECT_CALL(*mock_web_ui_, SetCursorChip("Searching"));
+  web_view_->SetCursorChip("Searching");
+}
+
+TEST_F(ActorOverlayWebViewTestBase, SetCursorChipHandlesNullWebUi) {
+  web_view_->set_web_ui(nullptr);
+  // Verifies that the null check prevents a crash.
+  web_view_->SetCursorChip("Searching");
 }
 
 class ActorOverlayWebViewMagicCursorEnabledTest

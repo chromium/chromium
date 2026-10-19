@@ -128,6 +128,17 @@ TEST_F(ActorOverlayHandlerTest, SetBorderGlowVisibility) {
   EXPECT_EQ(fake_page_.border_glow_call_count(), 2);
 }
 
+TEST_F(ActorOverlayHandlerTest, SetCursorChip) {
+  handler_->SetCursorChip("Searching for shoes");
+  fake_page_.FlushForTesting();
+  EXPECT_EQ(fake_page_.cursor_chip_text(), "Searching for shoes");
+
+  handler_->SetCursorChip("");
+  fake_page_.FlushForTesting();
+  EXPECT_EQ(fake_page_.cursor_chip_text(), "");
+  EXPECT_EQ(fake_page_.cursor_chip_call_count(), 2);
+}
+
 TEST_F(ActorOverlayHandlerTest, OnThemeChanged) {
   // Setting up the first time calls set theme once so we reset the counters.
   fake_page_.FlushForTesting();

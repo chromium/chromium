@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_WEB_VIEW_H_
 
 #include <optional>
+#include <string>
 
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -45,6 +46,9 @@ class ActorOverlayWebView : public views::WebView {
 
   // Notifies the WebUI to trigger a click animation at the current coordinate.
   void TriggerClickAnimation(base::OnceClosure callback);
+
+  // Forwards the cursor chip text to WebUI.
+  void SetCursorChip(const std::string& text);
 
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;

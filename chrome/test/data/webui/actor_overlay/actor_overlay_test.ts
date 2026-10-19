@@ -566,6 +566,60 @@ suite('MagicCursor', function() {
         false);
   });
 
+  test('SetCursorChipShowsPlainText', async function() {
+    assertFalse(!!page.shadowRoot.querySelector('#cursorChip'));
+
+    testRemote.setCursorChip('<b>Searching</b>');
+    await microtasksFinished();
+    const cursorChip =
+        page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!cursorChip);
+    assertEquals('<b>Searching</b>', cursorChip.textContent);
+  });
+
+  test('SetCursorChipWithEmptyTextHidesChip', async function() {
+    testRemote.setCursorChip('Searching');
+    await microtasksFinished();
+    assertTrue(!!page.shadowRoot.querySelector('#cursorChip'));
+
+    testRemote.setCursorChip('');
+    await microtasksFinished();
+    assertFalse(!!page.shadowRoot.querySelector('#cursorChip'));
+  });
+
+  test('CursorChipHasNoTransition', async function() {
+    // A transitionend from the chip would end a cursor move early.
+    testRemote.setCursorChip('Searching');
+    await microtasksFinished();
+    const cursorChip =
+        page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!cursorChip);
+    assertEquals(
+        0,
+        (cursorChip.computedStyleMap().get('transition-duration') as
+         CSSUnitValue)
+            .value);
+  });
+
+  test('ResizeHidesCursorChip', async function() {
+    await moveCursorAndWait(100, 100);
+    testRemote.setCursorChip('Searching');
+    await microtasksFinished();
+    const cursorChip =
+        page.shadowRoot.querySelector<HTMLElement>('#cursorChip');
+    assertTrue(!!cursorChip);
+    assertEquals(
+        'visible',
+        (cursorChip.computedStyleMap().get('visibility') as CSSKeywordValue)
+            .value);
+
+    window.dispatchEvent(new Event('resize'));
+    assertEquals(
+        'hidden',
+        (cursorChip.computedStyleMap().get('visibility') as CSSKeywordValue)
+            .value);
+  });
+
   test('LoadingState_TriggersAfterMoveAndDelay', async function() {
     const mockTimer = new MockTimer();
     mockTimer.install();

@@ -35,10 +35,12 @@ export class ActorOverlayAppElement extends CrLitElement {
   static override get properties() {
     return {
       borderGlowVisible_: {type: Boolean},
+      cursorChipText_: {type: String},
     };
   }
 
   protected accessor borderGlowVisible_: boolean = false;
+  protected accessor cursorChipText_: string = '';
 
   private eventTracker_: EventTracker = new EventTracker();
   private listenerIds_: number[] = [];
@@ -95,6 +97,8 @@ export class ActorOverlayAppElement extends CrLitElement {
           this.onMoveCursorTo_.bind(this)),
       proxy.callbackRouter.triggerClickAnimation.addListener(
           this.onTriggerClickAnimation_.bind(this)),
+      proxy.callbackRouter.setCursorChip.addListener(
+          this.onSetCursorChip_.bind(this)),
       // Theme
       proxy.callbackRouter.setTheme.addListener(this.onSetTheme_.bind(this)),
     ];
@@ -149,6 +153,10 @@ export class ActorOverlayAppElement extends CrLitElement {
 
   private onSetBorderGlowVisibility_(isVisible: boolean) {
     this.borderGlowVisible_ = isVisible;
+  }
+
+  private onSetCursorChip_(text: string) {
+    this.cursorChipText_ = text;
   }
 
   private onSetTheme_(theme: Theme) {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_HANDLER_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_OVERLAY_HANDLER_H_
 
+#include <string>
+
 #include "base/scoped_observation.h"
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -56,6 +58,9 @@ class ActorOverlayHandler : public mojom::ActorOverlayPageHandler,
 
   // Forwards the border glow visibility to WebUI.
   void SetBorderGlowVisibility(bool is_visible);
+
+  // Forwards the cursor chip text to WebUI.
+  void SetCursorChip(const std::string& text);
 
  private:
   // ui::NativeThemeObserver:
