@@ -179,7 +179,7 @@ source_set("android") {
     "//components/webauthn/json",
     "//content/public/browser",
     "//device/fido",
-    "//third_party/blink/public/mojom:android_mojo_bindings_blink",
+    "//third_party/blink/public/mojom:authenticator_mojo_bindings",
     "//third_party/boringssl",
     "//url",
   ]
