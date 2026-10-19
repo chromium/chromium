@@ -3,7 +3,7 @@ Short Name: xnu
 URL: https://github.com/apple-oss-distributions/xnu/
 Version: 12377.1.9 (from macOS 26.0)
 Revision: f6217f891ac0bb64f3d375211650a4c1ff8ca1ea
-Update Mechanism: Manual
+Update Mechanism: Static (https://crbug.com/575200361)
 License: APSL-2.0
 License File: APPLE_LICENSE
 Security Critical: no
