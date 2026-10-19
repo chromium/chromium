@@ -111,7 +111,16 @@ void WebDialogDelegate::RegisterOnDialogClosedCallback(
 
 void WebDialogDelegate::OnDialogCloseFromWebUI(
     const std::string& json_retval) {
-  OnDialogClosed(json_retval);
+  if (close_from_webui_callback_) {
+    close_from_webui_callback_.Run(json_retval);
+  } else {
+    OnDialogClosed(json_retval);
+  }
+}
+
+void WebDialogDelegate::SetOnDialogCloseFromWebUICallback(
+    base::RepeatingCallback<void(const std::string&)> callback) {
+  close_from_webui_callback_ = std::move(callback);
 }
 
 void WebDialogDelegate::OnCloseContents(content::WebContents* source,
@@ -189,6 +198,10 @@ void WebDialogDelegate::SetAccessibleTitleChangedCallback(
 
 bool WebDialogDelegate::ShouldDisableHttpsUpgrades() const {
   return false;
+}
+
+base::WeakPtr<WebDialogDelegate> WebDialogDelegate::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace ui

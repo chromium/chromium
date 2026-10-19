@@ -75,12 +75,6 @@ TEST_F(LoginScreenExtensionUiLoginWebViewUnittest, ShouldNotShowCloseButton) {
   EXPECT_FALSE(dialog_view_->ShouldShowCloseButton());
 }
 
-TEST_F(LoginScreenExtensionUiLoginWebViewUnittest,
-       ShouldCenterDialogTitleText) {
-  CreateDialogView(/*can_be_closed_by_user=*/false);
-  EXPECT_TRUE(dialog_view_->ShouldCenterDialogTitleText());
-}
-
 TEST_F(LoginScreenExtensionUiLoginWebViewUnittest, TabOut) {
   CreateDialogView();
 

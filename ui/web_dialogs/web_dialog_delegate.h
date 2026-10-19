@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/media_stream_request.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -187,7 +188,9 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   // A callback to notify the delegate that the dialog is being closed in
   // response to a "dialogClose" message from WebUI.
-  virtual void OnDialogCloseFromWebUI(const std::string& json_retval);
+  void OnDialogCloseFromWebUI(const std::string& json_retval);
+  void SetOnDialogCloseFromWebUICallback(
+      base::RepeatingCallback<void(const std::string&)> callback);
 
   // A callback to notify the delegate that the contents are requesting
   // to be closed.  This could be in response to a number of events
@@ -312,6 +315,8 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   // with explicit security exemptions.
   virtual bool ShouldDisableHttpsUpgrades() const;
 
+  base::WeakPtr<WebDialogDelegate> GetWeakPtr();
+
  private:
   base::flat_map<Accelerator, AcceleratorHandler> accelerators_;
   std::optional<std::u16string> accessible_title_;
@@ -342,12 +347,15 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   ui::ElementIdentifier web_view_element_id_;
 
   OnDialogClosedCallback closed_callback_;
+  base::RepeatingCallback<void(const std::string&)> close_from_webui_callback_;
 
   base::RepeatingCallback<void()> title_changed_callback_;
   base::RepeatingCallback<void()> accessible_title_changed_callback_;
 
   std::vector<std::unique_ptr<content::WebUIMessageHandler>>
       added_message_handlers_;
+
+  base::WeakPtrFactory<WebDialogDelegate> weak_factory_{this};
 };
 
 }  // namespace ui

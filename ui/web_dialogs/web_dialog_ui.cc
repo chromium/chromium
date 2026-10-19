@@ -8,7 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -28,13 +28,13 @@ const char kWebDialogDelegateUserDataKey[] = "WebDialogDelegateUserData";
 
 class WebDialogDelegateUserData : public base::SupportsUserData::Data {
  public:
-  explicit WebDialogDelegateUserData(WebDialogDelegate* delegate)
-      : delegate_(delegate) {}
-  ~WebDialogDelegateUserData() override {}
-  WebDialogDelegate* delegate() { return delegate_; }
+  explicit WebDialogDelegateUserData(base::WeakPtr<WebDialogDelegate> delegate)
+      : delegate_(std::move(delegate)) {}
+  ~WebDialogDelegateUserData() override = default;
+  WebDialogDelegate* delegate() { return delegate_.get(); }
 
  private:
-  raw_ptr<WebDialogDelegate> delegate_;  // unowned
+  base::WeakPtr<WebDialogDelegate> delegate_;
 };
 
 }  // namespace
@@ -42,9 +42,9 @@ class WebDialogDelegateUserData : public base::SupportsUserData::Data {
 // static
 void WebDialogUI::SetDelegate(content::WebContents* web_contents,
                               WebDialogDelegate* delegate) {
-  web_contents->SetUserData(
-      &kWebDialogDelegateUserDataKey,
-      std::make_unique<WebDialogDelegateUserData>(delegate));
+  web_contents->SetUserData(&kWebDialogDelegateUserDataKey,
+                            std::make_unique<WebDialogDelegateUserData>(
+                                delegate ? delegate->GetWeakPtr() : nullptr));
 }
 
 WebDialogDelegate* WebDialogUI::GetDelegate(

@@ -50,9 +50,18 @@ class TestWebDialogViewWebDialogDelegate
   ui::mojom::ModalType GetDialogModalType() const override {
     return ui::mojom::ModalType::kWindow;
   }
+  void OnDialogClosed(const std::string& json_retval) override {
+    closed_json_retval_ = json_retval;
+    ui::test::TestWebDialogDelegate::OnDialogClosed(json_retval);
+  }
+
+  const std::optional<std::string>& closed_json_retval() const {
+    return closed_json_retval_;
+  }
 
  private:
   bool close_on_escape_ = true;
+  std::optional<std::string> closed_json_retval_;
 };
 
 // Provides functionality to test a WebDialogView.
@@ -101,11 +110,19 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
 
   void TearDown() override {
     web_dialog_view_ = nullptr;
-    widget_.ExtractAsDangling()->CloseNow();
+    if (widget_) {
+      widget_.ExtractAsDangling()->CloseNow();
+    }
     views::test::WidgetTest::TearDown();
   }
 
   bool widget_is_closed() { return widget_->IsClosed(); }
+
+  void WaitForWidgetDestroyed() {
+    web_dialog_view_ = nullptr;
+    views::test::WidgetDestroyedWaiter waiter(widget_.ExtractAsDangling());
+    waiter.Wait();
+  }
 
   WebDialogView* web_dialog_view() { return web_dialog_view_; }
 
@@ -249,7 +266,7 @@ TEST_F(WebDialogViewUnitTest, CanDownload) {
   // If the delegate is destroyed/missing (e.g. after the dialog is closed),
   // CanDownload should fall back to true to match the WebContentsDelegate
   // default.
-  web_dialog_view()->OnDialogClosed("");
+  web_dialog_view()->CloseContents(nullptr);
   content::WebContentsDelegate* null_delegate = web_dialog_view();
   base::test::TestFuture<bool> allowed_null_delegate;
   null_delegate->CanDownload(GURL(), "GET",
@@ -268,6 +285,13 @@ TEST_F(WebDialogViewUnitTest, AllowAccelerators) {
       browser_context(), delegate.get(),
       std::make_unique<ui::test::TestWebContentsHandler>());
   EXPECT_FALSE(GetWebViewFor(web_dialog_view.get())->allow_accelerators());
+}
+
+TEST_F(WebDialogViewUnitTest, WebDialogViewClosedFromWebUI) {
+  web_dialog_delegate()->OnDialogCloseFromWebUI("{\"closed\":true}");
+  WaitForWidgetDestroyed();
+
+  EXPECT_EQ("{\"closed\":true}", web_dialog_delegate()->closed_json_retval());
 }
 
 }  // namespace views
