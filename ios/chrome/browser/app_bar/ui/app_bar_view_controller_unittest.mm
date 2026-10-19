@@ -621,6 +621,29 @@ TEST_F(AppBarViewControllerTest, TestNewTabButtonMetricsIncognito) {
   EXPECT_EQ(user_action_tester.GetActionCount("MobileTabNewTab"), 1);
 }
 
+// Tests that fullscreen action metrics are only recorded when the app bar is
+// positioned at the bottom (and not in regular-width / non-bottom layouts).
+TEST_F(AppBarViewControllerTest, TestFullscreenMetricsDependOnAppBarPosition) {
+  base::UserActionTester user_action_tester;
+
+  [view_controller_ setTabGridVisible:NO];
+  [view_controller_ updateForFullscreenProgress:0.5];
+
+  UIButton* button = openNewTabButton();
+  [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarNewTabShortcutFullscreen"),
+            1);
+
+  [layout_state_
+      setAppBarPosition:AppBarPosition::kNone
+                passKey:LayoutStateTestPassKeyFactory::CreateSceneKey()];
+  [button sendActionsForControlEvents:UIControlEventTouchUpInside];
+  EXPECT_EQ(user_action_tester.GetActionCount(
+                "MobileToolbarNewTabShortcutFullscreen"),
+            1);
+}
+
 // Tests that the assistant button reflects the enabled state passed to
 // setAssistantButtonState.
 TEST_F(AppBarViewControllerTest, TestAssistantButtonEnabledState) {

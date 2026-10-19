@@ -37,7 +37,6 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/grit/ios_strings.h"
-#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -1450,14 +1449,14 @@ UIColor* AssistantHighlightBackgroundColor() {
   }
 }
 
-// Records the given `action`. If the device is an iPhone in portrait, and
+// Records the given `action`. If the app bar is at the bottom in portrait, and
 // Fullscreen is active, also records `fullscreenAction`.
 - (void)recordAction:(const char*)action
     withFullscreenAction:(const char*)fullscreenAction {
   base::RecordAction(base::UserMetricsAction(action));
 
-  bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
-  if (isIPhone && !_isRotated && _fullscreenProgress < 1.0) {
+  if (self.layoutState.appBarPosition == AppBarPosition::kBottom &&
+      !_isRotated && _fullscreenProgress < 1.0) {
     base::RecordAction(base::UserMetricsAction(fullscreenAction));
   }
 }
