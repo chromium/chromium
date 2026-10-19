@@ -5,28 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_COLLABORATION_MODEL_COLLABORATION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_COLLABORATION_MODEL_COLLABORATION_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
 #import "components/collaboration/public/collaboration_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace collaboration {
 
-class CollaborationService;
-
 // Factory for CollaborationService.
-class CollaborationServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class CollaborationServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<CollaborationServiceFactory,
+                                                CollaborationService> {
  public:
-  static CollaborationService* GetForProfile(ProfileIOS* profile);
-  static CollaborationServiceFactory* GetInstance();
+  explicit CollaborationServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<CollaborationServiceFactory>;
-
-  CollaborationServiceFactory();
-  ~CollaborationServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

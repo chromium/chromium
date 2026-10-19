@@ -28,21 +28,9 @@
 
 namespace collaboration::messaging {
 
-// static
-MessagingBackendService* MessagingBackendServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<MessagingBackendService>(
-      profile, /*create=*/true);
-}
-
-// static
-MessagingBackendServiceFactory* MessagingBackendServiceFactory::GetInstance() {
-  static base::NoDestructor<MessagingBackendServiceFactory> instance;
-  return instance.get();
-}
-
-MessagingBackendServiceFactory::MessagingBackendServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("MessagingBackendService") {
+MessagingBackendServiceFactory::MessagingBackendServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "MessagingBackendService") {
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(data_sharing::DataSharingServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -50,8 +38,6 @@ MessagingBackendServiceFactory::MessagingBackendServiceFactory()
   DependsOn(
       collaboration::messaging::InstantMessagingServiceFactory::GetInstance());
 }
-
-MessagingBackendServiceFactory::~MessagingBackendServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 MessagingBackendServiceFactory::BuildServiceInstanceFor(

@@ -15,25 +15,11 @@
 
 namespace collaboration::messaging {
 
-// static
-InstantMessagingService* InstantMessagingServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<InstantMessagingService>(
-      profile, /*create=*/true);
-}
-
-// static
-InstantMessagingServiceFactory* InstantMessagingServiceFactory::GetInstance() {
-  static base::NoDestructor<InstantMessagingServiceFactory> instance;
-  return instance.get();
-}
-
-InstantMessagingServiceFactory::InstantMessagingServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("InstantMessagingService") {
+InstantMessagingServiceFactory::InstantMessagingServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "InstantMessagingService") {
   DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
 }
-
-InstantMessagingServiceFactory::~InstantMessagingServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 InstantMessagingServiceFactory::BuildServiceInstanceFor(
