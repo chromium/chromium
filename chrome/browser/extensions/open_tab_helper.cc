@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
@@ -33,11 +34,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/unload_controller.h"
-#include "components/split_tabs/split_tab_id.h"
-#include "components/split_tabs/split_tab_visual_data.h"
-#include "components/tabs/public/tab_interface.h"
 #endif
 
 namespace extensions {
@@ -270,8 +267,9 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
     tabs::TabInterface* new_tab =
         tabs::TabInterface::GetFromContents(new_contents);
     CHECK(new_tab);
-    if (!tab_list->CreateSplit(
-            {split_tab->GetHandle(), new_tab->GetHandle()})) {
+    if (!tab_list->CreateSplit({split_tab->GetHandle(), new_tab->GetHandle()},
+                               split_tabs::SplitTabVisualData(
+                                   split_tabs::SplitTabLayout::kSideBySide))) {
       tab_list->CloseTab(new_tab->GetHandle());
       return base::unexpected(tabs_constants::kSplitViewCreationFailedError);
     }

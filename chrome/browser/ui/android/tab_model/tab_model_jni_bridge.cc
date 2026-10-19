@@ -46,6 +46,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/android/jni_conversion.h"
@@ -808,6 +809,14 @@ std::optional<TabGroupVisualData> TabModelJniBridge::GetTabGroupVisualData(
   return TabGroupVisualData(title, color_id, collapsed);
 }
 
+std::optional<split_tabs::SplitTabVisualData>
+TabModelJniBridge::GetSplitTabVisualData(split_tabs::SplitTabId split_id) {
+  // TODO(https://crbug.com/480192698): Implement this once split tabs are
+  // supported on Desktop Android.
+  NOTIMPLEMENTED();
+  return std::nullopt;
+}
+
 gfx::Range TabModelJniBridge::GetTabGroupTabIndices(
     tab_groups::TabGroupId group_id) {
   JNIEnv* env = AttachCurrentThread();
@@ -835,7 +844,8 @@ std::optional<tab_groups::TabGroupId> TabModelJniBridge::CreateTabGroup(
 }
 
 std::optional<split_tabs::SplitTabId> TabModelJniBridge::CreateSplit(
-    const std::vector<tabs::TabHandle>& tabs) {
+    const std::vector<tabs::TabHandle>& tabs,
+    const split_tabs::SplitTabVisualData& visual_data) {
   // TODO(https://crbug.com/480192698): Implement this once split tabs are
   // supported on Desktop Android.
   NOTIMPLEMENTED();

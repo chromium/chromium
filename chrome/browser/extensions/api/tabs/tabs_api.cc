@@ -46,6 +46,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_interface.h"
@@ -82,6 +83,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #endif
 
@@ -2395,7 +2397,10 @@ ExtensionFunction::ResponseAction TabsCreateSplitFunction::Run() {
   CHECK(browser);
   TabListInterface* tab_list = TabListInterface::From(browser);
   std::optional<split_tabs::SplitTabId> split_id =
-      tab_list ? tab_list->CreateSplit(tab_handles) : std::nullopt;
+      tab_list ? tab_list->CreateSplit(
+                     tab_handles, split_tabs::SplitTabVisualData(
+                                      split_tabs::SplitTabLayout::kSideBySide))
+               : std::nullopt;
   if (!split_id) {
     return RespondNow(Error(tabs_constants::kSplitViewCreationFailedError));
   }

@@ -31,6 +31,10 @@ namespace gfx {
 class Range;
 }
 
+namespace split_tabs {
+class SplitTabVisualData;
+}
+
 namespace tab_groups {
 class TabGroupVisualData;
 }
@@ -160,6 +164,10 @@ class TabListInterface {
   virtual std::optional<tab_groups::TabGroupVisualData> GetTabGroupVisualData(
       tab_groups::TabGroupId group_id) = 0;
 
+  // Returns the visual data for a split tab, or nullopt on error.
+  virtual std::optional<split_tabs::SplitTabVisualData> GetSplitTabVisualData(
+      split_tabs::SplitTabId split_id) = 0;
+
   // Returns the range of tab model indices this group contains. The returned
   // range will never be a reverse range. It will always be a forward range or
   // the empty range (0,0) on error. See TabGroup::ListTabs() for details.
@@ -170,10 +178,11 @@ class TabListInterface {
   virtual std::optional<tab_groups::TabGroupId> CreateTabGroup(
       const std::vector<tabs::TabHandle>& tabs) = 0;
 
-  // Creates a new split view with the given `tabs` and returns the split ID.
-  // Returns nullopt on error.
+  // Creates a new split view with the given `tabs` and `visual_data`, and
+  // returns the split ID. Returns nullopt on error.
   virtual std::optional<split_tabs::SplitTabId> CreateSplit(
-      const std::vector<tabs::TabHandle>& tabs) = 0;
+      const std::vector<tabs::TabHandle>& tabs,
+      const split_tabs::SplitTabVisualData& visual_data) = 0;
 
   // Sets the visual data for a tab group. Implementations may choose to notify
   // observers of the change.
