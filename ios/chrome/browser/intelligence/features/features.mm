@@ -876,7 +876,7 @@ bool IsIOSGeminiBottomSheetMigrationEnabled() {
          base::FeatureList::IsEnabled(kIOSGeminiBottomSheetMigration);
 }
 
-BASE_FEATURE(kGeminiQuizzes, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiQuizzes, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiQuizzesEnabled() {
   return base::FeatureList::IsEnabled(kGeminiQuizzes);
