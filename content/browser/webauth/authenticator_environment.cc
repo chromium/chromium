@@ -56,26 +56,25 @@ void AuthenticatorEnvironment::EnableVirtualAuthenticatorFor(
     bool enable_ui) {
   // Do not create a new virtual authenticator if there is one already defined
   // for the |node|.
-  if (virtual_authenticator_managers_.contains(node)) {
+  auto [it, inserted] = virtual_authenticator_managers_.try_emplace(node);
+  if (!inserted) {
     return;
   }
 
   node->AddObserver(this);
-  auto virtual_authenticator_manager =
-      std::make_unique<VirtualAuthenticatorManagerImpl>();
-  virtual_authenticator_manager->enable_ui(enable_ui);
-  virtual_authenticator_managers_[node] =
-      std::move(virtual_authenticator_manager);
+  it->second = std::make_unique<VirtualAuthenticatorManagerImpl>();
+  it->second->enable_ui(enable_ui);
 }
 
 void AuthenticatorEnvironment::DisableVirtualAuthenticatorFor(
     FrameTreeNode* node) {
-  if (!virtual_authenticator_managers_.contains(node)) {
+  auto it = virtual_authenticator_managers_.find(node);
+  if (it == virtual_authenticator_managers_.end()) {
     return;
   }
 
   node->RemoveObserver(this);
-  virtual_authenticator_managers_.erase(node);
+  virtual_authenticator_managers_.erase(it);
 }
 
 bool AuthenticatorEnvironment::IsVirtualAuthenticatorEnabledFor(
@@ -87,8 +86,9 @@ VirtualAuthenticatorManagerImpl*
 AuthenticatorEnvironment::MaybeGetVirtualAuthenticatorManager(
     FrameTreeNode* node) {
   for (; node; node = FrameTreeNode::From(node->parent())) {
-    if (virtual_authenticator_managers_.contains(node)) {
-      return virtual_authenticator_managers_[node].get();
+    if (auto it = virtual_authenticator_managers_.find(node);
+        it != virtual_authenticator_managers_.end()) {
+      return it->second.get();
     }
   }
   return nullptr;
