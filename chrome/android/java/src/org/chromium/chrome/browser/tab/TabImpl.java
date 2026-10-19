@@ -2616,7 +2616,8 @@ class TabImpl implements Tab, TabInternal {
      *
      * @param webContents The WebContents object that will initialize all the browser components.
      */
-    private void initWebContents(WebContents webContents) {
+    @VisibleForTesting
+    void initWebContents(WebContents webContents) {
         assert !isDormant() : "Dormant tabs must never initialize WebContents.";
         assert mWebContents == null : "WebContents is already initialized for this Tab.";
         assert mWebContentsState == null : "Pending WebContentsState must be cleared first.";
@@ -2917,7 +2918,11 @@ class TabImpl implements Tab, TabInternal {
 
             if (!restored) {
                 assumeNonNull(failedRestoreUrl);
-                loadUrl(new LoadUrlParams(failedRestoreUrl, PageTransition.GENERATED));
+                LoadUrlParams params =
+                        new LoadUrlParams(failedRestoreUrl, PageTransition.GENERATED);
+                params.setIsRendererInitiated(true);
+                params.setInitiatorOrigin(Origin.createOpaqueOrigin());
+                loadUrl(params);
             }
         } finally {
             TraceEvent.end("Tab.unfreezeContents");

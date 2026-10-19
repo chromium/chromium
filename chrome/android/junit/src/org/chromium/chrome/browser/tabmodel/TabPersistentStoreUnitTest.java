@@ -8,6 +8,7 @@ import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -1858,5 +1859,41 @@ public class TabPersistentStoreUnitTest {
         verify(mBackgroundTabPool).loadTabByOriginalId(201);
         verify(remainingTab).attachTab(eq(mNormalTabModel), eq(1));
         verify(mBackgroundTabPool).cleanupPostRestore();
+    }
+
+    @Test
+    @Feature("TabPersistentStore")
+    public void testRestoreTab_nullTabState_setsRendererInitiatedAndOpaqueOrigin() {
+        mPersistentStore =
+                new TabPersistentStoreImpl(
+                        TabOrchestratorType.TABBED,
+                        mPersistencePolicy,
+                        mTabModelSelector,
+                        mTabCreatorManager,
+                        mTabWindowManager,
+                        mCipherFactory,
+                        /* isAuthoritative= */ true,
+                        /* recordLegacyTabCountMetrics= */ true);
+        mPersistentStore.initializeRestoreVars(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        Tab fallbackTab = mock(Tab.class);
+        when(fallbackTab.getId()).thenReturn(1);
+        when(mNormalTabCreator.createNewTab(any(), eq(TabLaunchType.FROM_RESTORE), isNull(), eq(0)))
+                .thenReturn(fallbackTab);
+
+        TabRestoreDetails details =
+                new TabRestoreDetails(1, 0, TriState.FALSE, REGULAR_TAB_STRING_1, false);
+        mPersistentStore.restoreTab(details, null, false);
+
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mNormalTabCreator)
+                .createNewTab(
+                        paramsCaptor.capture(), eq(TabLaunchType.FROM_RESTORE), isNull(), eq(0));
+        LoadUrlParams params = paramsCaptor.getValue();
+        assertEquals(REGULAR_TAB_STRING_1, params.getUrl());
+        assertTrue(params.getIsRendererInitiated());
+        assertNotNull(params.getInitiatorOrigin());
+        assertTrue(params.getInitiatorOrigin().isOpaque());
     }
 }

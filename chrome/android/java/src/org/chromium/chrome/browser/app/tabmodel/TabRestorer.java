@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -597,8 +598,11 @@ class TabRestorer {
 
     /** Creates a Tab from the given URL when tabState.contentsState is null. */
     private @Nullable Tab createTabWithoutContentsState(GURL url, int index) {
+        LoadUrlParams params = new LoadUrlParams(url);
+        params.setIsRendererInitiated(true);
+        params.setInitiatorOrigin(Origin.createOpaqueOrigin());
         return mTabCreator.createNewTab(
-                new LoadUrlParams(url), TabLaunchType.FROM_RESTORE, null, index);
+                params, TabLaunchType.FROM_RESTORE, /* parent= */ null, index);
     }
 
     /** Creates a frozen Tab from a non-null contentsState. */

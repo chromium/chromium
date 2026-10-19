@@ -66,6 +66,7 @@ import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -930,12 +931,12 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                     recordingTabCreator.recordFallbackTab(tabToRestore.id, tabToRestore.url);
                 }
             }
+            LoadUrlParams params = new LoadUrlParams(tabToRestore.url);
+            params.setIsRendererInitiated(true);
+            params.setInitiatorOrigin(Origin.createOpaqueOrigin());
             tab =
                     tabCreator.createNewTab(
-                            new LoadUrlParams(tabToRestore.url),
-                            TabLaunchType.FROM_RESTORE,
-                            /* parent= */ null,
-                            restoredIndex);
+                            params, TabLaunchType.FROM_RESTORE, /* parent= */ null, restoredIndex);
             recordRestorationResult(tab, TabRestoreMethod.CREATE_NEW_TAB);
 
             // restoredIndex might not be the one used in createNewTab so update accordingly.

@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -22,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -40,6 +43,7 @@ import org.chromium.chrome.browser.tab.ScopedStorageBatch;
 import org.chromium.chrome.browser.tab.StorageLoadedData;
 import org.chromium.chrome.browser.tab.StorageLoadedData.LoadedTabState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -48,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
 import java.nio.ByteBuffer;
@@ -548,7 +553,15 @@ public class TabRestorerUnitTest {
 
         mRestorer.onCachedActiveTabLoaded(state);
 
-        verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator)
+                .createNewTab(
+                        paramsCaptor.capture(), eq(TabLaunchType.FROM_RESTORE), isNull(), anyInt());
+        LoadUrlParams params = paramsCaptor.getValue();
+        assertEquals(UrlConstants.GOOGLE_URL, params.getUrl());
+        assertTrue(params.getIsRendererInitiated());
+        assertNotNull(params.getInitiatorOrigin());
+        assertTrue(params.getInitiatorOrigin().isOpaque());
         verify(mDelegate).onActiveTabRestored(eq(false));
     }
 
@@ -594,7 +607,15 @@ public class TabRestorerUnitTest {
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
-        verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator)
+                .createNewTab(
+                        paramsCaptor.capture(), eq(TabLaunchType.FROM_RESTORE), isNull(), anyInt());
+        LoadUrlParams params = paramsCaptor.getValue();
+        assertEquals(UrlConstants.NTP_URL, params.getUrl());
+        assertTrue(params.getIsRendererInitiated());
+        assertNotNull(params.getInitiatorOrigin());
+        assertTrue(params.getInitiatorOrigin().isOpaque());
     }
 
     @Test
@@ -612,7 +633,15 @@ public class TabRestorerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         // Non-active tab without contentsState is restored as fallback GURL.
-        verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator)
+                .createNewTab(
+                        paramsCaptor.capture(), eq(TabLaunchType.FROM_RESTORE), isNull(), anyInt());
+        LoadUrlParams params = paramsCaptor.getValue();
+        assertEquals(UrlConstants.GOOGLE_URL, params.getUrl());
+        assertTrue(params.getIsRendererInitiated());
+        assertNotNull(params.getInitiatorOrigin());
+        assertTrue(params.getInitiatorOrigin().isOpaque());
         verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
     }
 
@@ -635,7 +664,15 @@ public class TabRestorerUnitTest {
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
         // Empty contentsState buffer limit == 0 falls back to createTabWithoutContentsState.
-        verify(mTabCreator).createNewTab(any(), anyInt(), any(), anyInt());
+        ArgumentCaptor<LoadUrlParams> paramsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(mTabCreator)
+                .createNewTab(
+                        paramsCaptor.capture(), eq(TabLaunchType.FROM_RESTORE), isNull(), anyInt());
+        LoadUrlParams params = paramsCaptor.getValue();
+        assertEquals(UrlConstants.GOOGLE_URL, params.getUrl());
+        assertTrue(params.getIsRendererInitiated());
+        assertNotNull(params.getInitiatorOrigin());
+        assertTrue(params.getInitiatorOrigin().isOpaque());
         verify(mTabCreator, never()).createFrozenTab(any(), anyInt(), anyInt());
     }
 
