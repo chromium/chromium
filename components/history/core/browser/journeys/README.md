@@ -211,9 +211,10 @@ populated domain models ([`Journey`][journey]) by looking up the local history
 tables. The diagram shows the all-journeys path, which also records the
 resolution histogram (see [Metrics](#metrics));
 [`GetJourneyWithResolvedVisits`][get-one-resolved] (behind
-`HistoryService::GetJourney`) loads a single row by `journey_id` and resolves it
-through [`ResolveJourneyVisits`][resolve-visits], which returns
-`std::optional<Journey>` and records nothing:
+`HistoryService::GetJourney`) does the same for a single `journey_id`, returns
+`std::optional<Journey>` and records nothing. Either way, all history entries
+are looked up with a single query (`LookUpJourneyHistoryEntries` or
+`LookUpAllJourneyHistoryEntries`):
 
 ```text
 HistoryBackend::GetAllJourneysWithVisits()
@@ -225,26 +226,26 @@ journeys::GetAllJourneysWithResolvedVisits(HistoryDatabase& db)
   │
   │  db.GetAllJourneys()  →  vector<JourneyRow>, creation_time DESC
   │
+  │  db.LookUpAllJourneyHistoryEntries()             ┄ one query ┄
+  │    journey_history_entries
+  │      LEFT JOIN visits  (largest id with that visit_time)
+  │      LEFT JOIN urls
+  │    →  one JourneyHistoryEntryLookup per entry, grouped by journey_id
+  │
+  │  query fails  ⇒  return {}                        ✗ bail out
+  │
   ├─► for each JourneyRow row:                       ┄ outer loop ┄
   │      │
   │      ▼
-  │    ResolveJourneyVisitsWithResult(db, std::move(row))
+  │    ResolveJourney(std::move(row), lookups for row.journey_id)
   │      →  expected<Journey, SyncedJourneyResolutionResult>
   │      │
-  │      ├─► for each JourneyHistoryEntry:           ┄ inner loop ┄
-  │      │      │
-  │      │      │  db.GetLastRowForVisitByVisitTime(entry.visit_time,
-  │      │      │                                   &visit_row)
-  │      │      │    miss  ⇒  VLOG(1), unexpected(kMissingVisit)  ✗ bail out
-  │      │      │    hit   →  terminal visit of the redirect chain
-  │      │      │
-  │      │      │  db.GetURLRow(visit_row.url_id, &url_row)
-  │      │      │    miss  ⇒  VLOG(1), unexpected(kMissingUrl)    ✗ bail out
-  │      │      │    hit   →  visits.emplace_back(url_row.url(),
-  │      │      │                                 url_row.title(),
-  │      │      │                                 entry.visit_time)
-  │      │      │
-  │      │      ↺  next entry
+  │      ├─► for each lookup:                        ┄ inner loop ┄
+  │      │      │    no visit  ⇒  VLOG(1), unexpected(kMissingVisit)  ✗ bail out
+  │      │      │    no URL    ⇒  VLOG(1), unexpected(kMissingUrl)    ✗ bail out
+  │      │      │    else      →  visits.emplace_back(url, title,
+  │      │      │                                     visit_time, is_foreign)
+  │      │      ↺  next lookup
   │      │
   │      ├─► after the loop: resolve collection items against `visits`
   │      │     (unmatched items and empty collections are dropped)
@@ -265,17 +266,16 @@ std::vector<Journey>   (size ≤ number of stored journeys)
 1. **Redirect chains**: all hops recorded by a single navigation are written
    with that navigation's commit timestamp, so a timestamp on its own does not
    identify one row. (Client redirects arrive as separate navigations and do get
-   their own timestamps.) [`GetLastRowForVisitByVisitTime`][get-last-row] takes
-   the last visit recorded for that timestamp, which for such a chain is the
-   page the user ended up on — the URL and title worth showing. The lookup keys
-   only on the timestamp, so it assumes no unrelated visit shares that exact
-   microsecond.
+   their own timestamps.) Like [`GetLastRowForVisitByVisitTime`][get-last-row],
+   the lookup query takes the last visit recorded for that timestamp, which for
+   such a chain is the page the user ended up on — the URL and title worth
+   showing. The lookup keys only on the timestamp, so it assumes no unrelated
+   visit shares that exact microsecond.
 2. **Unresolvable journeys are dropped whole**: if any visit or URL for a
-   journey is missing, [`ResolveJourneyVisits`][resolve-visits] gives up on that
-   journey and returns nothing, and
-   [`GetAllJourneysWithResolvedVisits`][get-all-resolved] leaves it out of the
-   result. Callers therefore never see a journey with a partial visit list, and
-   the returned vector may be shorter than the number of stored journeys.
+   journey is missing, resolution gives up on that journey and returns nothing,
+   and [`GetAllJourneysWithResolvedVisits`][get-all-resolved] leaves it out of
+   the result. Callers therefore never see a journey with a partial visit list,
+   and the returned vector may be shorter than the number of stored journeys.
 3. **Collections never drop a journey**: collection items are matched against
    the journey's resolved visits. Items without a match are dropped, as are
    collections left without items, but the journey itself is kept.
@@ -480,7 +480,7 @@ end-to-end tests of the public APIs, and the schema-creation test. Avoid
 | Test file | Covers |
 |---|---|
 | `journeys_database_unittest.cc` | Schema, upserts, cascading deletes |
-| `journeys_backend_util_unittest.cc` | Visit resolution and the omission rules |
+| `journeys_backend_util_unittest.cc` | Visit resolution, the history-entry lookup queries and the omission rules |
 | `journeys_sync_bridge_unittest.cc` | Bridge behavior against a fake backend |
 | `journeys_sync_metadata_database_unittest.cc` | Sync metadata persistence |
 
@@ -576,6 +576,5 @@ others.
 [merge-full]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_sync_bridge.h?q=MergeFullSyncData
 [metadata-db]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_sync_metadata_database.h?q=JourneysSyncMetadataDatabase
 [proxy-delegate]: https://source.chromium.org/chromium/chromium/src/+/main:components/sync/model/proxy_data_type_controller_delegate.h?q=ProxyDataTypeControllerDelegate
-[resolve-visits]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_backend_util.h?q=ResolveJourneyVisits
 [schema]: https://source.chromium.org/chromium/chromium/src/+/main:components/history/core/browser/journeys/journeys_database.cc?q=InitJourneysTables
 [specifics]: https://source.chromium.org/chromium/chromium/src/+/main:components/sync/protocol/journey_specifics.proto?q=JourneySpecifics

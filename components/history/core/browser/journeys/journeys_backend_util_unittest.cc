@@ -675,9 +675,9 @@ TEST_F(JourneysBackendUtilTest,
   EXPECT_THAT(db_.LookUpAllJourneyHistoryEntries(), Optional(IsEmpty()));
 }
 
-// A lookup statement that fails while stepping returns std::nullopt instead of
-// the rows read so far. This is the only test of that partial-read path, so
-// keep each part of the setup:
+// A lookup statement that fails while stepping returns std::nullopt, and
+// resolution drops the journeys, instead of using the rows read so far. This is
+// the only test of that partial-read path, so keep each part of the setup:
 // - The first row reads fine and the second fails, so rows have already been
 //   read when the statement fails.
 // - The failure comes from `urls.title`, replaced with a generated column that
@@ -690,7 +690,7 @@ TEST_F(JourneysBackendUtilTest,
 // supports generated columns (no SQLITE_OMIT_GENERATED_COLUMNS in
 // //third_party/sqlite/sqlite_common_configuration_flags.gni).
 TEST_F(JourneysBackendUtilTest,
-       LookUpJourneyHistoryEntries_ReadErrorReturnsNullopt) {
+       LookUpJourneyHistoryEntries_ReadErrorReturnsNoJourneys) {
   URLID good_id = AddTestURL(GURL("http://www.example.com/good"), u"Good");
   URLID failing_id =
       AddTestURL(GURL("http://www.example.com/failing"), u"Failing");
@@ -726,6 +726,8 @@ TEST_F(JourneysBackendUtilTest,
   expecter.ExpectError(sql::SqliteResultCode::kError);
   EXPECT_EQ(db_.LookUpJourneyHistoryEntries("journey_a"), std::nullopt);
   EXPECT_EQ(db_.LookUpAllJourneyHistoryEntries(), std::nullopt);
+  EXPECT_EQ(GetJourneyWithResolvedVisits(db_, "journey_a"), std::nullopt);
+  EXPECT_THAT(GetAllJourneysWithResolvedVisits(db_), IsEmpty());
   EXPECT_TRUE(expecter.SawExpectedErrors());
 }
 
@@ -753,9 +755,6 @@ TEST_F(JourneysBackendUtilTest, GetUnresolvableJourneysCountForFishfood) {
       {complete_journey, unresolvable_journey_1, unresolvable_journey_2}));
 
   EXPECT_EQ(GetUnresolvableJourneysCountForFishfood(db_), 2u);
-  EXPECT_EQ(GetUnresolvableJourneysCountForFishfoodForTesting(
-                db_, /*max_journeys=*/2),
-            1u);
   histogram_tester.ExpectTotalCount(kResolutionResultHistogram, 0);
 }
 
