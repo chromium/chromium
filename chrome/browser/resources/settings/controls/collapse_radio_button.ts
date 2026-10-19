@@ -5,26 +5,29 @@
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_style.css.js';
-import '../settings_shared.css.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 
 import type {CrExpandButtonElement} from 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import {CrRadioButtonMixin} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin.js';
-import {CrRippleMixinPolymer} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin_polymer.js';
+import {CrRadioButtonMixinLit} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button_mixin_lit.js';
+import {CrRippleMixin} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './collapse_radio_button.html.js';
-import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
+import {getCss} from './collapse_radio_button.css.js';
+import {getHtml} from './collapse_radio_button.html.js';
+import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
 
 export interface SettingsCollapseRadioButtonElement {
   $: {
     expandButton: CrExpandButtonElement,
   };
 }
-const SettingsCollapseRadioButtonElementBase = PrefKeyObserverMixin(
-    CrRippleMixinPolymer(CrRadioButtonMixin(PolymerElement)));
+
+const SettingsCollapseRadioButtonElementBase =
+    PrefKeyObserverMixinLit(CrRippleMixin(CrRadioButtonMixinLit(CrLitElement)));
+
+export type CollapseRadioButtonElement = SettingsCollapseRadioButtonElement;
 
 export class SettingsCollapseRadioButtonElement extends
     SettingsCollapseRadioButtonElementBase {
@@ -32,88 +35,63 @@ export class SettingsCollapseRadioButtonElement extends
     return 'settings-collapse-radio-button';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       expanded: {
         type: Boolean,
         notify: true,
-        value: false,
       },
 
-      noAutomaticCollapse: {
-        type: Boolean,
-        value: false,
-      },
+      noAutomaticCollapse: {type: Boolean},
 
-      noCollapse: Boolean,
+      noCollapse: {type: Boolean},
 
-      label: String,
+      indicatorAriaLabel: {type: String},
 
-      indicatorAriaLabel: String,
+      icon: {type: String},
 
-      icon: {
-        type: String,
-        value: '',
-      },
-
-      disabled: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true,
-      },
-
-      subLabel: {
-        type: String,
-        value: '',  // Allows the $hidden= binding to run without being set.
-      },
+      subLabel: {type: String},
 
       /*
        * The aria-label attribute associated with the expand button. Used by
        * screen readers when announcing the expand button.
        */
-      expandAriaLabel: String,
+      expandAriaLabel: {type: String},
     };
   }
 
-  static get observers() {
-    return [
-      'onCheckedChanged_(checked)',
-      'onPrefChanged_(pref.*)',
-    ];
+  accessor expanded: boolean = false;
+  accessor noAutomaticCollapse: boolean = false;
+  accessor noCollapse: boolean = false;
+  accessor indicatorAriaLabel: string = '';
+  accessor icon: string = '';
+  accessor subLabel: string = '';
+  accessor expandAriaLabel: string = '';
+  private pendingUpdateCollapsed_: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('checked')) {
+      this.onCheckedChanged_();
+    }
+
+    if (changedProperties.has('pref') && this.pref) {
+      this.onPrefChanged_();
+    }
   }
 
-  declare expanded: boolean;
-  declare noAutomaticCollapse: boolean;
-  declare noCollapse: boolean;
-  declare label: string;
-  declare indicatorAriaLabel: string;
-  declare icon: string;
-  declare disabled: boolean;
-  declare subLabel: string;
-  declare expandAriaLabel: string;
-  private pendingUpdateCollapsed_: boolean;
-
-  constructor() {
-    super();
-
-    /**
-     * Tracks if this button was clicked but wasn't expanded.
-     */
-    this.pendingUpdateCollapsed_ = false;
-  }
-
-  // Overridden from CrRadioButtonMixin
-  override getPaperRipple() {
-    return this.getRipple();
-  }
-
-  // Overridden from CrRippleMixinPolymer
+  // Overridden from CrRippleMixin
   override createRipple() {
-    this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
+    this.rippleContainer = this.shadowRoot.querySelector('.disc-wrapper');
     const ripple = super.createRipple();
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle');
@@ -124,7 +102,8 @@ export class SettingsCollapseRadioButtonElement extends
    * Updates the collapsed status of this radio button to reflect
    * the user selection actions.
    */
-  updateCollapsed() {
+  async updateCollapsed() {
+    await this.updateComplete;
     if (this.pendingUpdateCollapsed_) {
       this.pendingUpdateCollapsed_ = false;
       this.expanded = this.checked;
@@ -132,7 +111,7 @@ export class SettingsCollapseRadioButtonElement extends
   }
 
   getBubbleAnchor() {
-    const anchor = this.shadowRoot!.querySelector<HTMLElement>('#button');
+    const anchor = this.shadowRoot.querySelector<HTMLElement>('#button');
     assert(anchor);
     return anchor;
   }
@@ -155,12 +134,15 @@ export class SettingsCollapseRadioButtonElement extends
           this.pref.userSelectableValues.includes(this.name));
   }
 
-  private onExpandClicked_() {
-    this.dispatchEvent(
-        new CustomEvent('expand-clicked', {bubbles: true, composed: true}));
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded = e.detail.value;
   }
 
-  private onRadioFocus_() {
+  protected onExpandClick_() {
+    this.fire('expand-clicked');
+  }
+
+  protected onRadioFocus_() {
     this.getRipple().showAndHoldDown();
   }
 
@@ -168,7 +150,7 @@ export class SettingsCollapseRadioButtonElement extends
    * Clear the ripple associated with the radio button when the expand button
    * is focused. Stop propagation to prevent the ripple being re-created.
    */
-  private onNonRadioFocus_(e: Event) {
+  protected onNonRadioFocus_(e: Event) {
     this.getRipple().clear();
     e.stopPropagation();
   }

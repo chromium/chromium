@@ -4,7 +4,6 @@
 
 import 'chrome://settings/lazy_load.js';
 
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PrefsBrowserProxy, PrefService} from 'chrome://settings/settings.js';
 import type {SettingsRadioGroupElement} from 'chrome://settings/settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
@@ -45,7 +44,7 @@ suite('SettingsRadioGroup', function() {
 
     radioGroup.appendChild(button1);
     radioGroup.appendChild(button2);
-    flush();
+    await microtasksFinished();
 
     radioGroup.prefKey = 'test.pref';
     await microtasksFinished();

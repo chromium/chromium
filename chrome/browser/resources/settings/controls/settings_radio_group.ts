@@ -15,73 +15,71 @@
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {prefToString, stringToPrefValue} from '/shared/settings/prefs/pref_util.js';
 import {PrefService} from '/shared/settings/prefs2/pref_service.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {PrefKeyObserverMixin} from './pref_key_observer_mixin.js';
-import {getTemplate} from './settings_radio_group.html.js';
+import {PrefKeyObserverMixinLit} from './pref_key_observer_mixin_lit.js';
+import {getCss} from './settings_radio_group.css.js';
+import {getHtml} from './settings_radio_group.html.js';
 
-const SettingsRadioGroupElementBase = PrefKeyObserverMixin(PolymerElement);
+const SettingsRadioGroupElementBase = PrefKeyObserverMixinLit(CrLitElement);
 
 export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
   static get is() {
     return 'settings-radio-group';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      groupAriaLabel: String,
+      groupAriaLabel: {type: String},
 
       /**
        * If true, do not automatically set the preference value. This allows the
        * container to confirm the change first then call either sendPrefChange
        * or resetToPrefValue accordingly.
        */
-      noSetPref: {
-        type: Boolean,
-        value: false,
-      },
+      noSetPref: {type: Boolean},
 
-      selected: String,
+      selected: {type: String},
 
-      selectableElements: {
-        type: String,
-        value: ['cr-radio-button', 'controlled-radio-button'].join(', '),
-      },
+      selectableElements: {type: String},
 
-      nestedSelectable: {
-        type: Boolean,
-        value: false,
-      },
+      nestedSelectable: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return [
-      'resetToPrefValue(pref.*)',
-    ];
+  accessor groupAriaLabel: string = '';
+  accessor noSetPref: boolean = false;
+  accessor selected: string|undefined = undefined;
+  accessor selectableElements: string =
+      ['cr-radio-button', 'controlled-radio-button'].join(', ');
+  accessor nestedSelectable: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('pref') && this.pref) {
+      this.resetToPrefValue();
+    }
   }
 
-  declare groupAriaLabel: string;
-  declare noSetPref: boolean;
-  declare selected?: string;
-  declare selectableElements: string;
-  declare nestedSelectable: boolean;
-
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.setAttribute('role', 'none');
   }
 
   override focus() {
-    this.shadowRoot!.querySelector('cr-radio-group')!.focus();
+    this.shadowRoot.querySelector('cr-radio-group')!.focus();
   }
 
   /** Reset the selected value to match the current pref value. */
@@ -96,17 +94,15 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
         this.prefKey, stringToPrefValue(this.selected || '', this.pref));
   }
 
-  private onSelectedChanged_() {
-    const previous = this.selected;
-    this.selected = this.shadowRoot!.querySelector('cr-radio-group')!.selected;
-    if (previous === this.selected) {
+  protected onSelectedChanged_(e: CustomEvent<{value: string}>) {
+    if (this.selected === e.detail.value) {
       return;
     }
+    this.selected = e.detail.value;
     if (!this.noSetPref) {
       this.sendPrefChange();
     }
-    this.dispatchEvent(
-        new CustomEvent('change', {bubbles: true, composed: true}));
+    this.fire('change');
   }
 }
 

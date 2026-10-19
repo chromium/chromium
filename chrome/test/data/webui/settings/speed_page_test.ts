@@ -50,6 +50,9 @@ suite('SpeedPage', function() {
 
     speedPage = document.createElement('settings-speed-page');
     document.body.appendChild(speedPage);
+    // Wait for the initial pref value to propagate to the radio group and
+    // buttons before tests interact with them.
+    await microtasksFinished();
   });
 
   test('PreloadPagesDefault', function() {

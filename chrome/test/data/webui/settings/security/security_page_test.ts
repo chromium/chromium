@@ -399,9 +399,12 @@ suite('FlagsDisabled', function() {
     resetRouterForTesting();
   });
 
-  function createPage() {
+  async function createPage() {
     page = document.createElement('settings-security-page');
     document.body.appendChild(page);
+    // Wait for the initial pref value to propagate through the radio group to
+    // the radio buttons' checked state before calling updateCollapsed().
+    await microtasksFinished();
 
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
@@ -651,6 +654,9 @@ suite('SafeBrowsingRadio', function() {
 
     page = document.createElement('settings-security-page');
     document.body.appendChild(page);
+    // Wait for the initial pref value to propagate through the radio group to
+    // the radio buttons' checked state before calling updateCollapsed().
+    await microtasksFinished();
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
     return microtasksFinished();
@@ -805,6 +811,9 @@ suite('SafeBrowsingDialog', function() {
 
     page = document.createElement('settings-security-page');
     document.body.appendChild(page);
+    // Wait for the initial pref value to propagate through the radio group to
+    // the radio buttons' checked state before calling updateCollapsed().
+    await microtasksFinished();
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
     return microtasksFinished();
@@ -1136,6 +1145,9 @@ suite('SafeBrowsingLabelsAndToggles', function() {
 
     page = document.createElement('settings-security-page');
     document.body.appendChild(page);
+    // Wait for the initial pref value to propagate through the radio group to
+    // the radio buttons' checked state before calling updateCollapsed().
+    await microtasksFinished();
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
     return microtasksFinished();
@@ -1213,6 +1225,7 @@ suite('SafeBrowsingLabelsAndToggles', function() {
 
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('change', page.$.safeBrowsingRadioGroup);
+    await microtasksFinished();
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });

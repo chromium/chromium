@@ -1,0 +1,53 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+cr-radio-group {
+  width: 100%;
+}
+
+:host([is-horizontal]) cr-radio-group {
+  display: flex;
+}
+
+:host-context([settings-refresh-2026]):host([is-horizontal]) {
+  cr-radio-group {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    gap: 0;
+    overflow: hidden;
+  }
+
+  ::slotted(controlled-radio-button),
+  ::slotted(cr-radio-button) {
+    background-color: transparent;
+    border-radius: var(--cr-card-border-radius);
+    box-sizing: border-box;
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+    padding: 20px;
+    transition: background-color 150ms ease-in-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    ::slotted(controlled-radio-button),
+    ::slotted(cr-radio-button) {
+      transition: none;
+    }
+  }
+
+  ::slotted(controlled-radio-button:hover:not([checked])),
+  ::slotted(cr-radio-button:hover:not([checked])) {
+    background-color: var(--cr-hover-background-color);
+  }
+
+  ::slotted(controlled-radio-button[checked]),
+  ::slotted(cr-radio-button[checked]) {
+    background-color: var(--color-settings-radio-card-selected);
+  }
+}

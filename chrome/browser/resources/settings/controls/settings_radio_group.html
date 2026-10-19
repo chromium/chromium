@@ -1,54 +1,7 @@
-<style>
-  cr-radio-group {
-    width: 100%;
-  }
-
-  :host([is-horizontal]) cr-radio-group {
-    display: flex;
-  }
-
-  :host-context([settings-refresh-2026]):host([is-horizontal]) {
-    cr-radio-group {
-      background-color: var(--cr-card-background-color);
-      border-radius: var(--cr-card-border-radius);
-      gap: 0;
-      overflow: hidden;
-    }
-
-    ::slotted(controlled-radio-button),
-    ::slotted(cr-radio-button) {
-      background-color: transparent;
-      border-radius: var(--cr-card-border-radius);
-      box-sizing: border-box;
-      cursor: pointer;
-      flex: 1;
-      min-width: 0;
-      padding: 20px;
-      transition: background-color 150ms ease-in-out;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      ::slotted(controlled-radio-button),
-      ::slotted(cr-radio-button) {
-        transition: none;
-      }
-    }
-
-    ::slotted(controlled-radio-button:hover:not([checked])),
-    ::slotted(cr-radio-button:hover:not([checked])) {
-      background-color: var(--cr-hover-background-color);
-    }
-
-    ::slotted(controlled-radio-button[checked]),
-    ::slotted(cr-radio-button[checked]) {
-      background-color: var(--color-settings-radio-card-selected);
-    }
-  }
-</style>
-<cr-radio-group selected="[[selected]]"
-    on-selected-changed="onSelectedChanged_"
-    aria-label$="[[groupAriaLabel]]"
-    selectable-elements="[[selectableElements]]"
-    nested-selectable="[[nestedSelectable]]">
+<cr-radio-group .selected="${this.selected}"
+    @selected-changed="${this.onSelectedChanged_}"
+    aria-label="${this.groupAriaLabel}"
+    .selectableElements="${this.selectableElements}"
+    ?nested-selectable="${this.nestedSelectable}">
   <slot></slot>
 </cr-radio-group>

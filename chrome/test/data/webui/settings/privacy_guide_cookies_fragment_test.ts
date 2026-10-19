@@ -55,6 +55,7 @@ suite('CookiesFragment', function() {
         ThirdPartyCookieBlockingSetting.BLOCK_THIRD_PARTY;
     prefService.setPrefValue(
         'generated.third_party_cookie_blocking_setting', cookieStartState);
+    await microtasksFinished();
 
     // The fragment is informed that it becomes visible by a receiving
     // a view-enter-start event.
