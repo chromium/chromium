@@ -329,19 +329,24 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
     context_->Reset();
     origin_clean_ = true;
     context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
-    return;
-  }
-
-  if (size_ == old_size) {
-    return;
-  }
-
-  if (context_->IsWebGL() || IsWebGPU()) {
-    context_->Reshape(Size().width(), Size().height());
+  } else if (context_->IsWebGL()) {
+    if (old_size != size_) {
+      context_->Reshape(Size().width(), Size().height());
+      context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+    }
+  } else if (context_->IsWebGPU()) {
+    if (old_size != size_) {
+      context_->Reshape(Size().width(), Size().height());
+      context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+    }
   } else if (context_->IsImageBitmapRenderingContext()) {
-    context_->Reset();
+    if (old_size != size_) {
+      context_->Reset();
+      context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
+    }
+  } else {
+    NOTREACHED();
   }
-  context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 }
 
 void OffscreenCanvas::RecordTransfer() {
