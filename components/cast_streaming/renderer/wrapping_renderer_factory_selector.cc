@@ -5,6 +5,7 @@
 #include "components/cast_streaming/renderer/public/wrapping_renderer_factory_selector.h"
 
 #include <memory>
+#include <utility>
 
 #include "components/cast_streaming/renderer/control/playback_command_forwarding_renderer_factory.h"
 #include "components/cast_streaming/renderer/public/resource_provider.h"
@@ -15,17 +16,24 @@ WrappingRendererFactorySelector::WrappingRendererFactorySelector(
     ResourceProvider* resource_provider) {
   DCHECK(resource_provider);
 
-  wrapping_factory_ =
-      std::make_unique<PlaybackCommandForwardingRendererFactory>(
-          resource_provider->GetRendererCommandReceiver());
+  // The receiver is unbound once the RendererController connection has been
+  // lost; there is nothing to forward commands from in that case.
+  auto receiver = resource_provider->GetRendererCommandReceiver();
+  if (receiver) {
+    wrapping_factory_ =
+        std::make_unique<PlaybackCommandForwardingRendererFactory>(
+            std::move(receiver));
+  }
 }
 
 WrappingRendererFactorySelector::~WrappingRendererFactorySelector() = default;
 
 media::RendererFactory* WrappingRendererFactorySelector::GetCurrentFactory() {
-  DCHECK(wrapping_factory_);
   media::RendererFactory* wrapped_factory =
       RendererFactorySelector::GetCurrentFactory();
+  if (!wrapping_factory_) {
+    return wrapped_factory;
+  }
   // NOTE: |wrapped_factory| will outlive |wrapping_factory_|, as it is owned
   // by the base class.
   wrapping_factory_->SetWrappedRendererFactory(wrapped_factory);

@@ -79,7 +79,9 @@ std::unique_ptr<media::Demuxer> ResourceProviderImpl::MaybeGetDemuxerOverride(
 
 mojo::PendingReceiver<media::mojom::Renderer>
 ResourceProviderImpl::GetRendererCommandReceiver() {
-  DCHECK(per_frame_resources_);
+  if (!per_frame_resources_) {
+    return mojo::NullReceiver();
+  }
   return per_frame_resources_->renderer_controller_proxy().GetReceiver();
 }
 

@@ -68,12 +68,17 @@ source_set("decoder_buffer_provider") {
 source_set("unit_tests") {
   testonly = true
   visibility += [ "//components/cast_streaming:unit_tests" ]
-  sources = []
+  sources = [ "wrapping_renderer_factory_selector_unittest.cc" ]
   deps = [
+    "//base/test:test_support",
+    "//components/cast_streaming/common:mojom",
     "//components/cast_streaming/renderer/common:unit_tests",
     "//components/cast_streaming/renderer/control:unit_tests",
     "//components/cast_streaming/renderer/frame:unit_tests",
     "//components/cast_streaming/renderer/web_codecs:unit_tests",
+    "//media:test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
   ]
 
   # The following are not used by the tests, but have been explicitly added

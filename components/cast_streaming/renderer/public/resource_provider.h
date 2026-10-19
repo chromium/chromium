@@ -59,7 +59,8 @@ class ResourceProvider {
 
   // Gets the receiver for this instance. To be used by the renderer-process
   // PlaybackCommandForwardingRenderer to receive playback commands from the
-  // browser.
+  // browser. Returns an invalid receiver if the connection was lost or the
+  // receiver was already taken.
   virtual mojo::PendingReceiver<media::mojom::Renderer>
   GetRendererCommandReceiver() = 0;
 

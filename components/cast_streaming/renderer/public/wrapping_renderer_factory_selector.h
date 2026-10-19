@@ -17,9 +17,11 @@ class PlaybackCommandForwardingRendererFactory;
 // This class provides an implementation of RendererFactorySelector to be used
 // when the PlaybackCommandForwardingRenderer is desired. All functionality is
 // as in the base class, with the exception that the GetCurrentRendererFactory()
-// method always returns a PlaybackCommandForwardingRendererFactory, which is
-// set to wrap the RendererFactory which would have otherwise been returned, and
-// GetCurrentRendererType() always returns kCastStreaming.
+// method returns a PlaybackCommandForwardingRendererFactory, which is set to
+// wrap the RendererFactory which would have otherwise been returned, and
+// GetCurrentRendererType() always returns kCastStreaming. If no renderer
+// command receiver is available, the wrapped RendererFactory is returned
+// directly.
 class WrappingRendererFactorySelector : public media::RendererFactorySelector {
  public:
   explicit WrappingRendererFactorySelector(ResourceProvider* resource_provider);
