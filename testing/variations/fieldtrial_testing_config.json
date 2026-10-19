@@ -8229,16 +8229,32 @@
     "GlicColdWarmingDelay": [
         {
             "platforms": [
-                "mac",
-                "windows",
+                "chromeos",
                 "linux",
-                "chromeos"
+                "mac"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_300s_20261013",
                     "params": {
-                        "glic-warming-delay-ms": "20000"
+                        "glic-warming-delay-ms": "300000"
+                    },
+                    "enable_features": [
+                        "GlicWarming"
+                    ]
+                }
+            ]
+        },
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_300s_20261013",
+                    "params": {
+                        "glic-warming-delay-ms": "300000",
+                        "glic-warming-min-required-ram-mb": "8192"
                     },
                     "enable_features": [
                         "GlicWarming"
