@@ -46,6 +46,7 @@
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/active_field_trials.h"
+#include "components/variations/client_filterable_state.h"
 #include "components/variations/hashing.h"
 #include "components/variations/metrics.h"
 #include "components/variations/platform_field_trials.h"
@@ -2224,6 +2225,48 @@ TEST_F(VariationsServiceTest,
     histogram_tester.ExpectUniqueSample(
         kPrepareRuntimeMutableChangesResultMetric,
         PrepareRuntimeMutableChangesResult::kNotPermanentConsistency, 1);
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
+    EXPECT_FALSE(
+        base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
+            "MyStudy"));
+  }
+}
+
+// Verifies that low anonymity studies (e.g. filtered by Google group) cannot be
+// applied.
+TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_LowAnonymityStudy) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  feature_list->EnableRuntimeMutability(
+      kTestRuntimeFeatureA,
+      /*pre_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback(),
+      /*post_mutation_callback=*/
+      base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  // Make the client a member of Google group 123, so that the study below is
+  // not filtered out.
+  base::DictValue google_groups;
+  google_groups.Set("Profile 1", base::ListValue().Append("123"));
+  prefs_.SetDict(prefs::kVariationsGoogleGroups, std::move(google_groups));
+
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed seed = CreateTestRuntimeMutableSeed(
+        "MyStudy", "Group1", {}, {kTestRuntimeFeatureA.name});
+    Study::Filter* filter = seed.mutable_study(0)->mutable_filter();
+    filter->add_platform(ClientFilterableState::GetCurrentPlatform());
+    filter->add_google_group(123);
+    service.SimulateAndApplyRuntimeMutableChanges(seed);
+    histogram_tester.ExpectUniqueSample(
+        kPrepareRuntimeMutableChangesResultMetric,
+        PrepareRuntimeMutableChangesResult::kLowAnonymityStudy, 1);
     EXPECT_TRUE(base::FeatureList::IsEnabled(kTestRuntimeFeatureA));
     EXPECT_FALSE(
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(

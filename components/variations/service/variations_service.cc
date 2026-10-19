@@ -1396,6 +1396,13 @@ VariationsService::PrepareRuntimeMutableChanges(
     return base::unexpected(kNotPermanentConsistency);
   }
 
+  // TODO(crbug.com/536852160): Support low anonymity studies. For now,
+  // disallow them as runtime overrides are not excluded from metrics and crash
+  // reporting.
+  if (StudyIsLowAnonymity(study)) {
+    return base::unexpected(kLowAnonymityStudy);
+  }
+
   // TODO(crbug.com/482450020): Support runtime mutability for Google web
   // studies. For now, disallow applying a runtime experiment if it has a
   // Google web experiment ID.

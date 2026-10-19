@@ -45,6 +45,11 @@ class ProcessedStudy;
 struct ClientFilterableState;
 class VariationsLayers;
 
+// Returns whether `study` is potentially low anonymity (i.e. it is filtered
+// based on Google group or enterprise group membership). Trials created from
+// such studies are marked as low anonymity.
+COMPONENT_EXPORT(VARIATIONS) bool StudyIsLowAnonymity(const Study& study);
+
 // Helper class to instantiate field trials from a variations seed.
 class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
  public:

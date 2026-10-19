@@ -301,6 +301,11 @@ chromium-metrics-reviews@google.com.
     The study does not have a supported activation type (ACTIVATE_ON_STARTUP or
     ACTIVATE_ON_QUERY).
   </int>
+  <int value="20" label="Low Anonymity Study">
+    The study is low anonymity (e.g. it is filtered by Google group or
+    enterprise group membership). Runtime mutability does not support low
+    anonymity studies yet.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//components/variations/metrics.h:VariationsPrepareRuntimeMutableChangesResult) -->

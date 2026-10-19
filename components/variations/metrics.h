@@ -141,7 +141,8 @@ enum class PrepareRuntimeMutableChangesResult {
   // kRuntimeExperimentHasParams = 17,
   kFeatureBothEnabledAndDisabled = 18,
   kInvalidActivationType = 19,
-  kMaxValue = kInvalidActivationType,
+  kLowAnonymityStudy = 20,
+  kMaxValue = kLowAnonymityStudy,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/variations/enums.xml:VariationsPrepareRuntimeMutableChangesResult)
 
