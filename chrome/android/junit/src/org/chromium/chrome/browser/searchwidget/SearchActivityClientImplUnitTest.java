@@ -92,7 +92,8 @@ public class SearchActivityClientImplUnitTest {
                             SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
                             origin,
                             SearchType.TEXT,
-                            AutocompleteRequestType.SEARCH);
+                            AutocompleteRequestType.SEARCH,
+                            /* noHistory= */ 1);
 
             // null URL
             var client = new SearchActivityClientImpl(mActivity, origin);
@@ -130,7 +131,8 @@ public class SearchActivityClientImplUnitTest {
                             SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
                             origin,
                             SearchType.VOICE,
-                            AutocompleteRequestType.SEARCH);
+                            AutocompleteRequestType.SEARCH,
+                            /* noHistory= */ 1);
 
             // null URL
             var client = new SearchActivityClientImpl(mActivity, origin);
@@ -168,7 +170,8 @@ public class SearchActivityClientImplUnitTest {
                             SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
                             origin,
                             SearchType.LENS,
-                            AutocompleteRequestType.SEARCH);
+                            AutocompleteRequestType.SEARCH,
+                            /* noHistory= */ 1);
 
             // null URL
             var client = new SearchActivityClientImpl(mActivity, origin);
@@ -207,7 +210,8 @@ public class SearchActivityClientImplUnitTest {
                         SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
                         IntentOrigin.HUB,
                         SearchType.TEXT,
-                        AutocompleteRequestType.AI_MODE),
+                        AutocompleteRequestType.AI_MODE,
+                        /* noHistory= */ 1),
                 intent.getAction());
     }
 
@@ -229,6 +233,14 @@ public class SearchActivityClientImplUnitTest {
     public void intentBuilder_mayLaunchChildActivities_omitsNoHistory() {
         var intent = mClient.newIntentBuilder().setMayLaunchChildActivities(true).build();
         assertFalse(hasNoHistoryFlag(intent));
+        assertEquals(
+                String.format(
+                        SearchActivityClientImpl.ACTION_SEARCH_FORMAT,
+                        IntentOrigin.HUB,
+                        SearchType.TEXT,
+                        AutocompleteRequestType.SEARCH,
+                        /* noHistory= */ 0),
+                intent.getAction());
     }
 
     @Test

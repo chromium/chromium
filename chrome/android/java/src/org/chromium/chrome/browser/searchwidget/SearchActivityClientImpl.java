@@ -49,7 +49,7 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     // offer complimentary default values.
     @VisibleForTesting
     /* package */ static final String ACTION_SEARCH_FORMAT =
-            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d:%d";
+            "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d:%d:%d";
 
     private final Context mContext;
     private final @IntentOrigin int mOrigin;
@@ -135,6 +135,8 @@ public class SearchActivityClientImpl implements SearchActivityClient {
 
         @Override
         public Intent build() {
+            boolean noHistory =
+                    !mMayLaunchChildActivities || !ChromeFeatureList.sOneStepAimAccess.isEnabled();
             // Ensure `action` is unique especially across different Widget implementations.
             // Otherwise, a QuickActionSearchWidget action may override the SearchActivity widget,
             // triggering functionality we might not want to activate.
@@ -144,13 +146,14 @@ public class SearchActivityClientImpl implements SearchActivityClient {
                             ACTION_SEARCH_FORMAT,
                             mOrigin,
                             mSearchType,
-                            mRequestType));
+                            mRequestType,
+                            noHistory ? 1 : 0));
             // Ensure a copy is made so that the builder can be reused, producing variations of an
             // intent.
             var intent = new Intent(mIntent);
             // NO_HISTORY finishes SearchActivity as soon as a child activity covers it, dropping
             // the child's result. Only sessions that may launch child activities opt out of it.
-            if (!mMayLaunchChildActivities || !ChromeFeatureList.sOneStepAimAccess.isEnabled()) {
+            if (noHistory) {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             }
             IntentUtils.addTrustedIntentExtras(intent);
