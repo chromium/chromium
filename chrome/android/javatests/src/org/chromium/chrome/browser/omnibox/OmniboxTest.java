@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -29,7 +31,6 @@ import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -134,7 +135,7 @@ public class OmniboxTest {
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
 
         // Omnibox on NTP shows the hint text.
-        Assert.assertNotNull(urlBar);
+        assertNotNull(urlBar);
         assertEquals("Location bar has text.", "", urlBar.getText().toString());
 
         @StringRes
@@ -179,7 +180,7 @@ public class OmniboxTest {
         omnibox.sendKey(KeyEvent.KEYCODE_ENTER, KeyEvent.META_ALT_ON);
 
         Tab resultTab = mActivityTestRule.getActivityTab();
-        Assert.assertNotEquals(
+        assertNotEquals(
                 "The result should be loaded in a new tab that is brought to the foreground.",
                 currentTab,
                 resultTab);
@@ -458,7 +459,7 @@ public class OmniboxTest {
                         }
                     }
 
-                    Assert.assertNotNull(notDefault);
+                    assertNotNull(notDefault);
 
                     templateUrlService.setSearchEngine(notDefault.getKeyword());
                 });

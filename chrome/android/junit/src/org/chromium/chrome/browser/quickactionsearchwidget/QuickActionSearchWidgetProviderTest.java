@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.quickactionsearchwidget;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,13 +25,11 @@ import android.util.SizeF;
 
 import androidx.test.core.app.ApplicationProvider;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -64,7 +65,7 @@ public class QuickActionSearchWidgetProviderTest {
 
     @Before
     public void setUp() {
-        mContext = Mockito.spy(ApplicationProvider.getApplicationContext());
+        mContext = spy(ApplicationProvider.getApplicationContext());
         mOptionsWidgetA = new Bundle();
         mOptionsWidgetB = new Bundle();
         mPreferences =
@@ -76,7 +77,7 @@ public class QuickActionSearchWidgetProviderTest {
 
         // Inflate an actual RemoteViews to avoid stubbing internal methods or making
         // any other assumptions about the class.
-        mWidgetProvider = Mockito.spy(new QuickActionSearchWidgetProviderDino());
+        mWidgetProvider = spy(new QuickActionSearchWidgetProviderDino());
         when(mContext.getSystemService(Context.APPWIDGET_SERVICE))
                 .thenReturn(mAppWidgetManagerMock);
         when(mAppWidgetManagerMock.getAppWidgetOptions(eq(WIDGET_A_ID)))
@@ -244,9 +245,9 @@ public class QuickActionSearchWidgetProviderTest {
                 Math.round(
                         res.getDimension(R.dimen.quick_action_search_widget_max_height) / density);
 
-        Assert.assertTrue(maxWidthDp > minWidthDp);
-        Assert.assertTrue(maxHeightDp > minHeightDp);
-        Assert.assertEquals(624, maxWidthDp);
-        Assert.assertEquals(155, maxHeightDp);
+        assertTrue(maxWidthDp > minWidthDp);
+        assertTrue(maxHeightDp > minHeightDp);
+        assertEquals(624, maxWidthDp);
+        assertEquals(155, maxHeightDp);
     }
 }

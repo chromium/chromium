@@ -4,11 +4,17 @@
 
 package org.chromium.components.omnibox;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_1_NO_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_2_WITH_HEADER;
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_3_WITH_HEADER;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -76,8 +82,8 @@ public class AutocompleteResultUnitTest {
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
-        Assert.assertEquals(res1, res2);
-        Assert.assertEquals(res1.hashCode(), res2.hashCode());
+        assertEquals(res1, res2);
+        assertEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -107,8 +113,8 @@ public class AutocompleteResultUnitTest {
         var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
+        assertNotEquals(res1, res2);
+        assertNotEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -135,8 +141,8 @@ public class AutocompleteResultUnitTest {
         var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
+        assertNotEquals(res1, res2);
+        assertNotEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -167,8 +173,8 @@ public class AutocompleteResultUnitTest {
         var res1 = AutocompleteResult.fromCache(list1, groupsDetails1);
         var res2 = AutocompleteResult.fromCache(list2, groupsDetails2);
 
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
+        assertNotEquals(res1, res2);
+        assertNotEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -187,8 +193,8 @@ public class AutocompleteResultUnitTest {
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
 
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
+        assertNotEquals(res1, res2);
+        assertNotEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -224,9 +230,9 @@ public class AutocompleteResultUnitTest {
         var res2 = AutocompleteResult.fromCache(list, groupsDetails2);
         var res3 = AutocompleteResult.fromCache(list, groupsDetails3);
 
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1, res3);
-        Assert.assertNotEquals(res2, res3);
+        assertNotEquals(res1, res2);
+        assertNotEquals(res1, res3);
+        assertNotEquals(res2, res3);
     }
 
     @Test
@@ -256,7 +262,7 @@ public class AutocompleteResultUnitTest {
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
 
-        Assert.assertNotEquals(res1, res2);
+        assertNotEquals(res1, res2);
     }
 
     @Test
@@ -272,8 +278,8 @@ public class AutocompleteResultUnitTest {
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
 
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
+        assertNotEquals(res1, res2);
+        assertNotEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -282,8 +288,8 @@ public class AutocompleteResultUnitTest {
         final List<AutocompleteMatch> list2 = new ArrayList<>();
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
-        Assert.assertEquals(res1, res2);
-        Assert.assertEquals(res1.hashCode(), res2.hashCode());
+        assertEquals(res1, res2);
+        assertEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -291,8 +297,8 @@ public class AutocompleteResultUnitTest {
         final List<AutocompleteMatch> list1 = new ArrayList<>();
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
         AutocompleteResult res2 = AutocompleteResult.fromCache(null, null);
-        Assert.assertEquals(res1, res2);
-        Assert.assertEquals(res1.hashCode(), res2.hashCode());
+        assertEquals(res1, res2);
+        assertEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
@@ -301,40 +307,40 @@ public class AutocompleteResultUnitTest {
         final List<AutocompleteMatch> list2 = new ArrayList<>();
         AutocompleteResult res1 = AutocompleteResult.fromCache(list1, null);
         AutocompleteResult res2 = AutocompleteResult.fromCache(list2, null);
-        Assert.assertNotEquals(res1, res2);
-        Assert.assertNotEquals(res1.hashCode(), res2.hashCode());
+        assertNotEquals(res1, res2);
+        assertNotEquals(res1.hashCode(), res2.hashCode());
     }
 
     @Test
     public void resultCreatedFromCacheIsIdentifiedAsCached() {
         AutocompleteResult res = new AutocompleteResult(0, null, null);
-        Assert.assertTrue(res.isFromCachedResult());
+        assertTrue(res.isFromCachedResult());
         res.notifyNativeDestroyed();
-        Assert.assertTrue(res.isFromCachedResult());
+        assertTrue(res.isFromCachedResult());
 
         res = AutocompleteResult.fromCache(new ArrayList<>(), GroupsInfo.newBuilder().build());
-        Assert.assertTrue(res.isFromCachedResult());
+        assertTrue(res.isFromCachedResult());
         res.notifyNativeDestroyed();
-        Assert.assertTrue(res.isFromCachedResult());
+        assertTrue(res.isFromCachedResult());
     }
 
     @Test
     public void resultCreatedFromNativeAreNotIdentifiedAsCached() {
         AutocompleteResult res = new AutocompleteResult(0x12345678, null, null);
-        Assert.assertFalse(res.isFromCachedResult());
+        assertFalse(res.isFromCachedResult());
         res.notifyNativeDestroyed();
-        Assert.assertFalse(res.isFromCachedResult());
+        assertFalse(res.isFromCachedResult());
 
         res = AutocompleteResult.fromNative(0xfedcba98, new AutocompleteMatch[0], new byte[0]);
-        Assert.assertFalse(res.isFromCachedResult());
+        assertFalse(res.isFromCachedResult());
         res.notifyNativeDestroyed();
-        Assert.assertFalse(res.isFromCachedResult());
+        assertFalse(res.isFromCachedResult());
     }
 
     @Test
     public void getDefaultMatch_emptyList() {
         AutocompleteResult emptyResult = new AutocompleteResult(0x12345678, null, null);
-        Assert.assertNull(emptyResult.getDefaultMatch());
+        assertNull(emptyResult.getDefaultMatch());
     }
 
     @Test
@@ -345,7 +351,7 @@ public class AutocompleteResultUnitTest {
                         buildSuggestionForIndex(2),
                         buildSuggestionForIndex(3));
         AutocompleteResult autocompleteResult = new AutocompleteResult(0x12345678, list, null);
-        Assert.assertNull(autocompleteResult.getDefaultMatch());
+        assertNull(autocompleteResult.getDefaultMatch());
     }
 
     @Test
@@ -363,12 +369,11 @@ public class AutocompleteResultUnitTest {
                         buildSuggestionForIndex(2),
                         buildSuggestionForIndex(3));
         AutocompleteResult autocompleteResult = new AutocompleteResult(0x12345678, list, null);
-        Assert.assertNotNull(autocompleteResult.getDefaultMatch());
-        Assert.assertTrue(autocompleteResult.getDefaultMatch().allowedToBeDefaultMatch());
-        Assert.assertEquals(
+        assertNotNull(autocompleteResult.getDefaultMatch());
+        assertTrue(autocompleteResult.getDefaultMatch().allowedToBeDefaultMatch());
+        assertEquals(
                 "inline_autocomplete",
                 autocompleteResult.getDefaultMatch().getInlineAutocompletion());
-        Assert.assertEquals(
-                "additional_text", autocompleteResult.getDefaultMatch().getAdditionalText());
+        assertEquals("additional_text", autocompleteResult.getDefaultMatch().getAdditionalText());
     }
 }

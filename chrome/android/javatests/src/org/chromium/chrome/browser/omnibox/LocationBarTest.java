@@ -12,7 +12,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
@@ -30,7 +32,6 @@ import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -209,7 +210,7 @@ public class LocationBarTest {
             errorMsg.append(' ');
         }
         errorMsg.append(']');
-        Assert.assertEquals(errorMsg.toString(), expectedIds, actualIds);
+        assertEquals(errorMsg.toString(), expectedIds, actualIds);
     }
 
     @Test
@@ -615,7 +616,7 @@ public class LocationBarTest {
         startActivityNormally();
         mActivityTestRule.loadUrl(UrlConstants.ABOUT_URL);
 
-        Assert.assertFalse(mLocationBarMediator.isUrlBarFocused());
+        assertFalse(mLocationBarMediator.isUrlBarFocused());
 
         // Set unfocused selection
         ThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setSelection(2, 5));
@@ -626,9 +627,9 @@ public class LocationBarTest {
         // Verify focus and that selection is preserved.
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Assert.assertTrue(mLocationBarMediator.isUrlBarFocused());
-                    Assert.assertEquals(2, mUrlBar.getSelectionStart());
-                    Assert.assertEquals(5, mUrlBar.getSelectionEnd());
+                    assertTrue(mLocationBarMediator.isUrlBarFocused());
+                    assertEquals(2, mUrlBar.getSelectionStart());
+                    assertEquals(5, mUrlBar.getSelectionEnd());
                 });
     }
 }

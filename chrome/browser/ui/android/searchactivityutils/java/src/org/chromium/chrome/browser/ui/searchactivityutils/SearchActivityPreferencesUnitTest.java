@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.ui.searchactivityutils;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,41 +34,41 @@ public class SearchActivityPreferencesUnitTest {
     public void builder_defaultValues() {
         SearchActivityPreferences prefs = new SearchActivityPreferences.Builder().build();
 
-        Assert.assertNull(prefs.accountEmail);
-        Assert.assertNull(prefs.searchEngineName);
-        Assert.assertEquals(GURL.emptyGURL(), prefs.searchEngineUrl);
-        Assert.assertEquals(
+        assertNull(prefs.accountEmail);
+        assertNull(prefs.searchEngineName);
+        assertEquals(GURL.emptyGURL(), prefs.searchEngineUrl);
+        assertEquals(
                 SearchActivityPreferences.DEFAULT_VOICE_SEARCH_AVAILABILITY,
                 prefs.voiceSearchAvailable);
-        Assert.assertEquals(
+        assertEquals(
                 SearchActivityPreferences.DEFAULT_GOOGLE_LENS_AVAILABILITY,
                 prefs.googleLensAvailable);
-        Assert.assertEquals(
+        assertEquals(
                 SearchActivityPreferences.DEFAULT_INCOGNITO_AVAILABILITY, prefs.incognitoAvailable);
     }
 
     @Test
     public void builderTest_toBuilderPreservesAllValues() {
         SearchActivityPreferences copy = mPreferences.toBuilder().build();
-        Assert.assertEquals(mPreferences, copy);
-        Assert.assertEquals("email@a.b", copy.accountEmail);
-        Assert.assertEquals("test", copy.searchEngineName);
-        Assert.assertEquals(new GURL("https://test.url"), copy.searchEngineUrl);
-        Assert.assertEquals(
+        assertEquals(mPreferences, copy);
+        assertEquals("email@a.b", copy.accountEmail);
+        assertEquals("test", copy.searchEngineName);
+        assertEquals(new GURL("https://test.url"), copy.searchEngineUrl);
+        assertEquals(
                 SearchActivityPreferences.DEFAULT_VOICE_SEARCH_AVAILABILITY,
                 copy.voiceSearchAvailable);
-        Assert.assertEquals(
+        assertEquals(
                 SearchActivityPreferences.DEFAULT_GOOGLE_LENS_AVAILABILITY,
                 copy.googleLensAvailable);
-        Assert.assertEquals(
+        assertEquals(
                 SearchActivityPreferences.DEFAULT_INCOGNITO_AVAILABILITY, copy.incognitoAvailable);
     }
 
     @Test
     public void preferenceTest_equalWithSameContent() {
         SearchActivityPreferences sameContent = mPreferences.toBuilder().build();
-        Assert.assertEquals(mPreferences, sameContent);
-        Assert.assertEquals(mPreferences.hashCode(), sameContent.hashCode());
+        assertEquals(mPreferences, sameContent);
+        assertEquals(mPreferences.hashCode(), sameContent.hashCode());
     }
 
     @Test
@@ -73,8 +76,8 @@ public class SearchActivityPreferencesUnitTest {
         boolean voiceSearchAvailable = mPreferences.voiceSearchAvailable;
         SearchActivityPreferences modified =
                 mPreferences.toBuilder().setVoiceSearchAvailable(!voiceSearchAvailable).build();
-        Assert.assertNotEquals(mPreferences, modified);
-        Assert.assertNotEquals(mPreferences.hashCode(), modified.hashCode());
+        assertNotEquals(mPreferences, modified);
+        assertNotEquals(mPreferences.hashCode(), modified.hashCode());
     }
 
     @Test
@@ -82,8 +85,8 @@ public class SearchActivityPreferencesUnitTest {
         boolean googleLensAvailable = mPreferences.googleLensAvailable;
         SearchActivityPreferences modified =
                 mPreferences.toBuilder().setGoogleLensAvailable(!googleLensAvailable).build();
-        Assert.assertNotEquals(mPreferences, modified);
-        Assert.assertNotEquals(mPreferences.hashCode(), modified.hashCode());
+        assertNotEquals(mPreferences, modified);
+        assertNotEquals(mPreferences.hashCode(), modified.hashCode());
     }
 
     @Test
@@ -91,31 +94,31 @@ public class SearchActivityPreferencesUnitTest {
         boolean incognitoAvailable = mPreferences.incognitoAvailable;
         SearchActivityPreferences modified =
                 mPreferences.toBuilder().setIncognitoAvailable(!incognitoAvailable).build();
-        Assert.assertNotEquals(mPreferences, modified);
-        Assert.assertNotEquals(mPreferences.hashCode(), modified.hashCode());
+        assertNotEquals(mPreferences, modified);
+        assertNotEquals(mPreferences.hashCode(), modified.hashCode());
     }
 
     @Test
     public void preferenceTest_notEqualWithDifferentSearchEngineName() {
         SearchActivityPreferences modified =
                 mPreferences.toBuilder().setSearchEngineName("other").build();
-        Assert.assertNotEquals(mPreferences, modified);
-        Assert.assertNotEquals(mPreferences.hashCode(), modified.hashCode());
+        assertNotEquals(mPreferences, modified);
+        assertNotEquals(mPreferences.hashCode(), modified.hashCode());
     }
 
     @Test
     public void preferenceTest_notEqualWithDifferentSearchEngineUrl() {
         SearchActivityPreferences modified =
                 mPreferences.toBuilder().setSearchEngineUrl(new GURL("https://other.url")).build();
-        Assert.assertNotEquals(mPreferences, modified);
-        Assert.assertNotEquals(mPreferences.hashCode(), modified.hashCode());
+        assertNotEquals(mPreferences, modified);
+        assertNotEquals(mPreferences.hashCode(), modified.hashCode());
     }
 
     @Test
     public void preferenceTest_notEqualWithDifferentEmail() {
         SearchActivityPreferences modified =
                 mPreferences.toBuilder().setAccountEmail("other@a.b").build();
-        Assert.assertNotEquals(mPreferences, modified);
-        Assert.assertNotEquals(mPreferences.hashCode(), modified.hashCode());
+        assertNotEquals(mPreferences, modified);
+        assertNotEquals(mPreferences.hashCode(), modified.hashCode());
     }
 }

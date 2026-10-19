@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -18,7 +23,6 @@ import android.widget.TextView;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -173,7 +177,7 @@ public class SearchWidgetProviderTest {
             message = "Flaky, https://crbug.com/431007457")
     @CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testUpdateCachedEngineNameBeforeFirstRun() throws ExecutionException {
-        Assert.assertFalse(
+        assertFalse(
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> SearchWidgetProvider.shouldShowFullString()));
 
@@ -187,7 +191,7 @@ public class SearchWidgetProviderTest {
         // updated.
         mDelegate.mViews.clear();
         setNeedToCheckForSearchEnginePromo();
-        Assert.assertEquals(0, mDelegate.mViews.size());
+        assertEquals(0, mDelegate.mViews.size());
 
         // Manually set the preference, then update the cached engine name again.  The
         // SearchWidgetProvider should now believe that its widgets are displaying branding when it
@@ -204,9 +208,9 @@ public class SearchWidgetProviderTest {
 
     private void checkWidgetStates(final String expectedString, final int expectedMicrophoneState) {
         // Confirm that all the widgets got updated.
-        Assert.assertEquals(TestDelegate.ALL_IDS.length, mDelegate.mViews.size());
+        assertEquals(TestDelegate.ALL_IDS.length, mDelegate.mViews.size());
         for (int i = 0; i < TestDelegate.ALL_IDS.length; i++) {
-            Assert.assertEquals(TestDelegate.ALL_IDS[i], mDelegate.mViews.get(i).first.intValue());
+            assertEquals(TestDelegate.ALL_IDS[i], mDelegate.mViews.get(i).first.intValue());
         }
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -220,13 +224,12 @@ public class SearchWidgetProviderTest {
 
                         // Confirm that the string is correct.
                         TextView titleView = view.findViewById(R.id.title);
-                        Assert.assertEquals(View.VISIBLE, titleView.getVisibility());
-                        Assert.assertEquals(expectedString, titleView.getHint());
+                        assertEquals(View.VISIBLE, titleView.getVisibility());
+                        assertEquals(expectedString, titleView.getHint());
 
                         // Confirm the visibility of the microphone.
                         View microphoneView = view.findViewById(R.id.microphone_icon);
-                        Assert.assertEquals(
-                                expectedMicrophoneState, microphoneView.getVisibility());
+                        assertEquals(expectedMicrophoneState, microphoneView.getVisibility());
                     }
                 });
     }
@@ -282,17 +285,17 @@ public class SearchWidgetProviderTest {
         Activity activity =
                 instrumentation.waitForMonitorWithTimeout(
                         monitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(activity);
+        assertNotNull(activity);
         if (isFirstRunComplete) {
             // Check that the Activity was launched in the right mode.
             Intent intent = activity.getIntent();
             boolean microphoneState =
                     SearchActivityUtils.getIntentSearchType(intent) == SearchType.VOICE;
-            Assert.assertEquals(clickTarget == R.id.microphone_icon, microphoneState);
+            assertEquals(clickTarget == R.id.microphone_icon, microphoneState);
             boolean fromWidget =
                     IntentUtils.safeGetBooleanExtra(
                             intent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);
-            Assert.assertTrue(fromWidget);
+            assertTrue(fromWidget);
         }
     }
 }

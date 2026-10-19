@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
+import static org.junit.Assert.assertNotNull;
+
 import static org.chromium.base.test.transit.Triggers.noopTo;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -25,7 +27,6 @@ import org.hamcrest.Matchers;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
-import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -386,7 +387,7 @@ public class OmniboxTestUtils {
     public void typeTextWithLatency(String text, long latencyMs) {
         KeyCharacterMap characterMap = KeyCharacterMap.load(KeyCharacterMap.VIRTUAL_KEYBOARD);
         KeyEvent[] events = characterMap.getEvents(text.toCharArray());
-        Assert.assertNotNull("Failed to map characters to key events", events);
+        assertNotNull("Failed to map characters to key events", events);
         for (KeyEvent event : events) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> mUrlBar.dispatchKeyEventPreIme(event) || mUrlBar.dispatchKeyEvent(event));

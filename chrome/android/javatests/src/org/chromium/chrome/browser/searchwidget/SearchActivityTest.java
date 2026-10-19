@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -30,7 +32,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -294,15 +295,14 @@ public class SearchActivityTest {
 
         mTestDelegate.shouldDelayNativeInitializationCallback.waitForCallback(
                 0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
-        Assert.assertEquals(0, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
-        Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
+        assertEquals(0, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
+        assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
         // Start loading native, then let the activity finish initialization.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> searchActivity.startDelayedNativeInitializationForTests());
 
-        Assert.assertEquals(
-                1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
+        assertEquals(1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
         mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(
                 0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
         mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(
@@ -324,8 +324,8 @@ public class SearchActivityTest {
                 0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
         mTestDelegate.showSearchEngineDialogIfNeededCallback.waitForCallback(
                 0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
-        Assert.assertNotNull(mTestDelegate.onSearchEngineFinalizedCallback);
-        Assert.assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
+        assertNotNull(mTestDelegate.onSearchEngineFinalizedCallback);
+        assertEquals(0, mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
         // Native initialization is finished, but we don't have a DSE elected yet.
         verify(mAutocompleteController).addOnSuggestionsReceivedListener(any());
 
@@ -339,17 +339,16 @@ public class SearchActivityTest {
         ThreadUtils.runOnUiThreadBlocking(mTestDelegate.onSearchEngineFinalizedCallback.bind(true));
 
         // Let the initialization finish completely.
-        Assert.assertEquals(
-                1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
-        Assert.assertEquals(1, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
+        assertEquals(1, mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
+        assertEquals(1, mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
         mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(
                 0, 1, ScalableTimeout.scaleTimeout(30), TimeUnit.SECONDS);
 
         // Omnibox suggestions should be requested now.
         var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
         verify(mAutocompleteController).startZeroSuggest(any(), captor.capture());
-        Assert.assertEquals("", captor.getValue().getUserText());
-        Assert.assertEquals(
+        assertEquals("", captor.getValue().getUserText());
+        assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET,
                 captor.getValue().getPageClassification());
     }
@@ -478,7 +477,7 @@ public class SearchActivityTest {
     private void assertColorsEqual(int expected, int actual) {
         String message =
                 String.format("Expected %s but got %s", intToHex(expected), intToHex(actual));
-        Assert.assertEquals(message, expected, actual);
+        assertEquals(message, expected, actual);
     }
 
     private String intToHex(int color) {
@@ -496,13 +495,13 @@ public class SearchActivityTest {
         instrumentation.addMonitor(searchMonitor);
 
         // The SearchActivity shouldn't have started yet.
-        Assert.assertEquals(
+        assertEquals(
                 expectedCallCount,
                 mTestDelegate.shouldDelayNativeInitializationCallback.getCallCount());
-        Assert.assertEquals(
+        assertEquals(
                 expectedCallCount,
                 mTestDelegate.showSearchEngineDialogIfNeededCallback.getCallCount());
-        Assert.assertEquals(
+        assertEquals(
                 expectedCallCount,
                 mTestDelegate.onFinishDeferredInitializationCallback.getCallCount());
 
@@ -515,7 +514,7 @@ public class SearchActivityTest {
         Activity searchActivity =
                 instrumentation.waitForMonitorWithTimeout(
                         searchMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull("Activity didn't start", searchActivity);
+        assertNotNull("Activity didn't start", searchActivity);
         assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
         instrumentation.removeMonitor(searchMonitor);
         mOmnibox = new OmniboxTestUtils(searchActivity);
