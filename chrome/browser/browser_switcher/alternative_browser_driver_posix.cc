@@ -7,10 +7,10 @@
 #include <stdlib.h>
 
 #include <algorithm>
+#include <array>
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
@@ -31,7 +31,7 @@ namespace {
 
 using LaunchCallback = AlternativeBrowserDriver::LaunchCallback;
 
-const char kUrlVarName[] = "${url}";
+constexpr std::string_view kUrlVarName = "${url}";
 
 // TODO(crbug.com/40147515): add ${edge} on macOS/Linux once it's released on
 // those platforms.
@@ -78,7 +78,7 @@ bool ExpandUrlVarName(std::string* arg, const GURL& url) {
   size_t url_index = arg->find(kUrlVarName);
   if (url_index == std::string::npos)
     return false;
-  arg->replace(url_index, strlen(kUrlVarName), url.spec());
+  arg->replace(url_index, kUrlVarName.size(), url.spec());
   return true;
 }
 
@@ -92,13 +92,13 @@ void ExpandEnvironmentVariables(std::string* arg) {
       "\\$\\{([a-zA-Z_][a-zA-Z_0-9]*)\\}|\\$([a-zA-Z_][a-zA-Z_0-9]*)"};
   std::string out;
   std::string_view view(*arg);
-  std::string_view submatch[3] = {};
+  std::array<std::string_view, 3> submatch = {};
   size_t start = 0;
   bool matched = false;
   while (re->Match(view, start, arg->size(), re2::RE2::Anchor::UNANCHORED,
-                   submatch, std::size(submatch))) {
-    out.append(view, start,
-               submatch[0].data() - (UNSAFE_TODO(arg->data() + start)));
+                   submatch.data(), submatch.size())) {
+    const size_t match_start = submatch[0].begin() - view.begin();
+    out.append(view.substr(start, match_start - start));
     if (submatch[0] == kUrlVarName) {
       // Don't treat '${url}' as an environment variable, leave it as is.
       out.append(kUrlVarName);
@@ -113,7 +113,7 @@ void ExpandEnvironmentVariables(std::string* arg) {
   }
   if (!matched)
     return;
-  out.append(UNSAFE_TODO(view.data() + start), view.size() - start);
+  out.append(view.substr(start));
   std::swap(out, *arg);
 }
 
