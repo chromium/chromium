@@ -8,13 +8,18 @@
 #import <UIKit/UIKit.h>
 
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
+#import "components/supervised_user/core/common/supervised_user_constants.h"
 
 // The app interface for supervised user settings tests.
 @interface FamilyLinkSettingsAppInterface : NSObject
 
 // Sets the parental control setting to filter websites for supervised users.
+// TODO(crbug.com/320981294): Remove in favor of `+setWebFilterType:`.
 + (void)setSupervisedUserURLFilterBehavior:
     (supervised_user::FilteringBehavior)behavior;
+
+// Sets the supervised user's web filter type.
++ (void)setWebFilterType:(supervised_user::WebFilterType)filterType;
 
 // Resets to default parental control settings for website filtering.
 + (void)resetSupervisedUserURLFilterBehavior;
@@ -30,9 +35,11 @@
 + (void)approveWebsiteDomain:(const NSURL*)url;
 
 // Sets a supervised user's filtering behaviour to "Allow All Sites".
+// TODO(crbug.com/320981294): Remove in favor of `+setWebFilterType:`.
 + (void)setFilteringToAllowAllSites;
 
 // Sets a supervised user's filtering behaviour to "Allow Approved Sites".
+// TODO(crbug.com/320981294): Remove in favor of `+setWebFilterType:`.
 + (void)setFilteringToAllowApprovedSites;
 
 // Adds the `url` to a supervised user's allow-list.
@@ -47,7 +54,7 @@
 
 // Returns the number of Supervised User interstitials attached to the existing
 // web states.
-+ (NSInteger)countSupervisedUserIntersitialsForExistingWebStates;
++ (NSInteger)countSupervisedUserInterstitialsForExistingWebStates;
 
 // Returns YES if ListFamilyMembersService is instantiated for the profile.
 + (BOOL)isListFamilyMembersServiceCreated;

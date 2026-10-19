@@ -83,6 +83,9 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
 
 @implementation FamilyLinkSettingsAppInterface : NSObject
 
+// TODO(crbug.com/320981294): Remove `+setSupervisedUserURLFilterBehavior:`,
+// `+setFilteringToAllowAllSites`, and `+setFilteringToAllowApprovedSites` in
+// favor of `+setWebFilterType:`.
 + (void)setSupervisedUserURLFilterBehavior:
     (supervised_user::FilteringBehavior)behavior {
   supervised_user::FamilyLinkSettingsService* family_link_settings_service =
@@ -97,12 +100,23 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
   }
 }
 
++ (void)setWebFilterType:(supervised_user::WebFilterType)filterType {
+  supervised_user::FamilyLinkSettingsService* family_link_settings_service =
+      supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile());
+  supervised_user::SupervisedUserTestEnvironment::SetWebFilterType(
+      filterType, *family_link_settings_service);
+}
+
 + (void)resetSupervisedUserURLFilterBehavior {
   supervised_user::FamilyLinkSettingsService* family_link_settings_service =
       supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
           chrome_test_util::GetOriginalProfile());
   family_link_settings_service->RemoveLocalSetting(
       supervised_user::kContentPackDefaultFilteringBehavior);
+  family_link_settings_service->RemoveLocalSetting(
+      supervised_user::kSafeSitesEnabled);
+  [self setDefaultClassifyURLNavigationIsAllowed:YES];
 }
 
 + (void)resetManualUrlFiltering {
@@ -174,7 +188,7 @@ bool IsShowingInterstitialForState(web::WebState* web_state) {
                      : safe_search_api::ClientClassification::kRestricted));
 }
 
-+ (NSInteger)countSupervisedUserIntersitialsForExistingWebStates {
++ (NSInteger)countSupervisedUserInterstitialsForExistingWebStates {
   int count = 0;
   int tab_count = chrome_test_util::GetMainTabCount();
   for (int i = 0; i < tab_count; i++) {
