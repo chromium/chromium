@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
@@ -138,10 +139,9 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
 
   // If the service worker provided a Response produced from cache_storage,
   // then we need to use a different code cache sender.
-  CHECK_EQ(response.GetServiceWorkerResponseSource() ==
-               network::mojom::FetchResponseSource::kCacheStorage,
-           response.CacheStorageSideDataWriter().is_bound());
   if (response.CacheStorageSideDataWriter().is_bound()) {
+    CHECK_EQ(response.GetServiceWorkerResponseSource(),
+             network::mojom::FetchResponseSource::kCacheStorage);
     // TODO(leszeks): Check whether it's correct that |origin| can be nullptr.
     if (!requestor_origin) {
       return std::make_unique<NullCachedMetadataSender>();
@@ -152,6 +152,13 @@ std::unique_ptr<CachedMetadataSender> CachedMetadataSender::Create(
       return std::make_unique<NullCachedMetadataSender>();
     }
     return std::make_unique<ServiceWorkerCachedMetadataSender>(response);
+  } else if (response.GetServiceWorkerResponseSource() ==
+             network::mojom::FetchResponseSource::kCacheStorage) {
+    // TODO(crbug.com/570132114): Some paths (e.g., Response.clone() or certain
+    // URLLoaderThrottles) drop the writer for kCacheStorage responses. This
+    // silently disables code caching. Find and fix these paths, then restore
+    // the bidirectional CHECK.
+    base::debug::DumpWithoutCrashing();
   }
 
   // If the service worker provides a synthetic `new Response()` or a
