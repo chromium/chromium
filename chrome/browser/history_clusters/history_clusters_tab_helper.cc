@@ -261,8 +261,10 @@ HistoryClustersTabHelper::OnUkmNavigationComplete(
   // `CompleteVisitContextAnnotationsIfReady()`.
   auto context_annotations_copy =
       incomplete_visit_context_annotations.context_annotations;
-  CHECK(incomplete_visit_context_annotations.status.expect_ukm_page_end_signals,
-        base::NotFatalUntil::M161);
+  // TODO(crbug.com/574688432): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(
+      incomplete_visit_context_annotations.status.expect_ukm_page_end_signals);
   incomplete_visit_context_annotations.status.ukm_page_end_signals = true;
   history_clusters_service->CompleteVisitContextAnnotationsIfReady(
       navigation_id);
