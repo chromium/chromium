@@ -1004,9 +1004,35 @@ crypto::ScopedPK11SymKey GetSymKey(std::vector<uint8_t> key_id,
   } else {
     mechanism_type = GetSymMechanismFromKeyType(*key_type);
   }
-  return crypto::ScopedPK11SymKey(PK11_FindFixedKey(slot, mechanism_type,
-                                                    &sec_key_id,
-                                                    /*wincx=*/nullptr));
+  crypto::ScopedPK11SymKey key(PK11_FindFixedKey(slot, mechanism_type,
+                                                 &sec_key_id,
+                                                 /*wincx=*/nullptr));
+  if (key) {
+    return key;
+  }
+
+  // Newer versions of NSS only match keys whose CKA_KEY_TYPE corresponds to
+  // `mechanism_type`. A key with the same CKA_ID but a different type must
+  // still be found (e.g. to reject duplicate key IDs), so retry with the
+  // generation mechanisms of all key types that can be created here: AES keys
+  // are CKK_AES and all other types are CKK_GENERIC_SECRET.
+  for (CK_MECHANISM_TYPE fallback_type :
+       {CKM_AES_KEY_GEN, CKM_GENERIC_SECRET_KEY_GEN}) {
+    if (PK11_GetKeyType(fallback_type, 0) ==
+        PK11_GetKeyType(mechanism_type, 0)) {
+      continue;
+    }
+    crypto::ScopedPK11SymKey fallback_key(
+        PK11_FindFixedKey(slot, fallback_type, &sec_key_id, /*wincx=*/nullptr));
+    if (fallback_key) {
+      // Use the requested mechanism, as older versions of NSS did.
+      return crypto::ScopedPK11SymKey(PK11_SymKeyFromHandle(
+          slot, /*parent=*/nullptr, PK11_OriginDerive, mechanism_type,
+          PK11_GetSymKeyHandle(fallback_key.get()), /*owner=*/PR_FALSE,
+          /*wincx=*/nullptr));
+    }
+  }
+  return nullptr;
 }
 
 // Does the actual symmetric key generation on a worker thread. Used by
