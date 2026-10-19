@@ -154,13 +154,17 @@ void DlpContentManagerAsh::CheckScreenShareRestriction(
 
 void DlpContentManagerAsh::OnVideoCaptureStarted(const ScreenshotArea& area) {
   CHECK(!running_video_capture_info_.has_value(), base::NotFatalUntil::M160);
-  running_video_capture_info_.emplace(area);
   const ConfidentialContentsInfo info =
       GetAreaConfidentialContentsInfo(area, DlpContentRestriction::kScreenshot);
-  // Taking video capture of confidential content with block level restriction
-  // should not proceed to this function. Taking video capture should be blocked
-  // earlier.
-  CHECK(!IsBlocked(info.restriction_info), base::NotFatalUntil::M160);
+  if (IsBlocked(info.restriction_info)) {
+    MaybeReportEvent(info.restriction_info,
+                     DlpRulesManager::Restriction::kScreenshot);
+    data_controls::DlpBooleanHistogram(
+        data_controls::dlp::kVideoCaptureInterruptedUMA, true);
+    InterruptVideoRecording();
+    return;
+  }
+  running_video_capture_info_.emplace(area);
   if (IsReported(info.restriction_info)) {
     // Don't report for the report mode before starting a video capture to avoid
     // reporting multiple times.

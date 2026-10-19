@@ -966,6 +966,72 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    DlpContentManagerAshBrowserTest,
+    VideoCaptureStoppedWhenConfidentialWindowBlockedBeforeStart) {
+  SetupReporting();
+  aura::Window* root_window =
+      browser()->GetWindow()->GetNativeWindow()->GetRootWindow();
+
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Initial state is kWarn so the pre-recording DLP check shows a warning
+  // dialog instead of immediately blocking.
+  helper_->ChangeConfidentiality(web_contents, screenshot_warned_);
+
+  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
+  bool dlp_check_proceeded = false;
+  capture_mode_delegate->CheckCaptureOperationRestrictionByDlp(
+      root_window, root_window->bounds(),
+      base::BindLambdaForTesting(
+          [&](bool proceed) { dlp_check_proceeded = proceed; }));
+
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  ASSERT_EQ(events_.size(), 1u);
+  EXPECT_THAT(events_[0],
+              data_controls::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  web_contents->GetLastCommittedURL().spec(),
+                  DlpRulesManager::Restriction::kScreenshot, kRuleName, kRuleId,
+                  DlpRulesManager::Level::kWarn)));
+
+  // While the warning dialog is open and before video recording starts, the
+  // content transitions to kBlock.
+  helper_->ChangeConfidentiality(web_contents, screenshot_restricted_);
+  EXPECT_FALSE(helper_->GetRunningVideoCaptureInfo().has_value());
+
+  // User accepts the warning dialog to proceed with starting video recording.
+  ui::test::EventGenerator(root_window)
+      .PressAndReleaseKey(ui::VKEY_RETURN, ui::EF_NONE);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_TRUE(dlp_check_proceeded);
+
+  // Starting observation of restricted content at the beginning of video
+  // recording must immediately interrupt the recording and report the kBlock
+  // event.
+  testing::StrictMock<base::MockOnceClosure> stop_cb;
+  EXPECT_CALL(stop_cb, Run()).Times(1);
+  capture_mode_delegate->StartObservingRestrictedContent(
+      root_window, root_window->bounds(), stop_cb.Get());
+
+  EXPECT_FALSE(helper_->GetRunningVideoCaptureInfo().has_value());
+  histogram_tester_.ExpectUniqueSample(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kVideoCaptureInterruptedUMA,
+      true, 1);
+  ASSERT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              data_controls::IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                  web_contents->GetLastCommittedURL().spec(),
+                  DlpRulesManager::Restriction::kScreenshot, kRuleName, kRuleId,
+                  DlpRulesManager::Level::kBlock)));
+
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
+}
+
 class DlpContentManagerAshScreenShareBrowserTest
     : public DlpContentManagerAshBrowserTest {
  protected:
