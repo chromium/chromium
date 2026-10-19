@@ -98,7 +98,7 @@ class Warning {
   std::vector<std::string> message_parameters_;
 };
 
-typedef std::set<Warning> WarningSet;
+using WarningSet = std::set<Warning>;
 
 }  // namespace extensions
 

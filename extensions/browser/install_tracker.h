@@ -95,7 +95,7 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
                             bool is_update) override;
 
   // Maps extension id to the details of an active install.
-  typedef std::map<std::string, ActiveInstallData> ActiveInstallsMap;
+  using ActiveInstallsMap = std::map<std::string, ActiveInstallData>;
   ActiveInstallsMap active_installs_;
 
   // Safe: `this` belongs to `browser_context_` via KeyedService, and this

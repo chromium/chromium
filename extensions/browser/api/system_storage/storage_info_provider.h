@@ -14,7 +14,7 @@
 
 namespace extensions {
 
-typedef std::vector<api::system_storage::StorageUnitInfo> StorageUnitInfoList;
+using StorageUnitInfoList = std::vector<api::system_storage::StorageUnitInfo>;
 
 class StorageInfoProvider : public SystemInfoProvider {
  public:

@@ -166,22 +166,22 @@ class BluetoothEventRouter : public device::BluetoothAdapter::Observer,
   std::map<std::string, int> event_listener_count_;
 
   // A map that maps extension ids to BluetoothDiscoverySession pointers.
-  typedef std::map<std::string,
-                   raw_ptr<device::BluetoothDiscoverySession, CtnExperimental>>
-      DiscoverySessionMap;
+  using DiscoverySessionMap =
+      std::map<std::string,
+               raw_ptr<device::BluetoothDiscoverySession, CtnExperimental>>;
   DiscoverySessionMap discovery_session_map_;
 
-  typedef std::map<std::string,
-                   raw_ptr<device::BluetoothDiscoveryFilter, CtnExperimental>>
-      PreSetFilterMap;
+  using PreSetFilterMap =
+      std::map<std::string,
+               raw_ptr<device::BluetoothDiscoveryFilter, CtnExperimental>>;
 
   // Maps an extension id to it's pre-set discovery filter.
   PreSetFilterMap pre_set_filter_map_;
 
   // Maps an extension id to its pairing delegate.
-  typedef std::map<std::string,
-                   raw_ptr<BluetoothApiPairingDelegate, CtnExperimental>>
-      PairingDelegateMap;
+  using PairingDelegateMap =
+      std::map<std::string,
+               raw_ptr<BluetoothApiPairingDelegate, CtnExperimental>>;
   PairingDelegateMap pairing_delegate_map_;
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

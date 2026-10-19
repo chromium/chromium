@@ -25,7 +25,7 @@ namespace extensions {
 // A struct containing information about a script run.
 struct ScriptsRunInfo {
   // Map of extensions IDs to the executing script paths.
-  typedef std::map<std::string, std::set<std::string> > ExecutingScriptsMap;
+  using ExecutingScriptsMap = std::map<std::string, std::set<std::string>>;
 
   ScriptsRunInfo(content::RenderFrame* render_frame,
                  mojom::RunLocation location);

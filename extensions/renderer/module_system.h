@@ -144,8 +144,8 @@ class ModuleSystem : public ObjectBackedNativeHandler {
   void Invalidate() override;
 
  private:
-  typedef std::map<std::string, std::unique_ptr<NativeHandler>>
-      NativeHandlerMap;
+  using NativeHandlerMap =
+      std::map<std::string, std::unique_ptr<NativeHandler>>;
 
   // Run `code` in the current context with the name `name` used for stack
   // traces.

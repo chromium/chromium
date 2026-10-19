@@ -204,10 +204,10 @@ class ManagementPolicy {
  private:
   // This is a pointer to a function in the Provider interface, used in
   // ApplyToProviderList.
-  typedef bool (Provider::*ProviderFunction)(const Extension*,
-                                             std::u16string*) const;
+  using ProviderFunction = bool (Provider::*)(const Extension*,
+                                              std::u16string*) const;
 
-  typedef std::set<raw_ptr<Provider, SetExperimental>> ProviderList;
+  using ProviderList = std::set<raw_ptr<Provider, SetExperimental>>;
 
   // This is a helper to apply a method in the Provider interface to each of
   // the Provider objects in `providers_`. The return value of this function

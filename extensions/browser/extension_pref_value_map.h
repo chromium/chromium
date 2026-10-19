@@ -198,8 +198,8 @@ class ExtensionPrefValueMap : public KeyedService,
  private:
   struct ExtensionEntry;
 
-  typedef std::map<std::string, std::unique_ptr<ExtensionEntry>>
-      ExtensionEntryMap;
+  using ExtensionEntryMap =
+      std::map<std::string, std::unique_ptr<ExtensionEntry>>;
 
   const PrefValueMap* GetExtensionPrefValueMap(const std::string& ext_id,
                                                ChromeSettingScope scope) const;

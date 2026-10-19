@@ -30,8 +30,8 @@ class Extension;
 // PendingExtensionManager, and remove all other users.
 class PendingExtensionInfo {
  public:
-  typedef bool (*ShouldAllowInstallPredicate)(const Extension*,
-                                              content::BrowserContext* context);
+  using ShouldAllowInstallPredicate =
+      bool (*)(const Extension*, content::BrowserContext* context);
 
   PendingExtensionInfo(const std::string& id,
                        const std::string& install_parameter,

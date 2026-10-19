@@ -169,9 +169,8 @@ class StorageFrontend : public BrowserContextKeyedAPI {
  private:
   friend class BrowserContextKeyedAPIFactory<StorageFrontend>;
 
-  typedef std::map<settings_namespace::Namespace,
-                   raw_ptr<ValueStoreCache, CtnExperimental>>
-      CacheMap;
+  using CacheMap = std::map<settings_namespace::Namespace,
+                            raw_ptr<ValueStoreCache, CtnExperimental>>;
 
   // Constructor for tests.
   StorageFrontend(scoped_refptr<value_store::ValueStoreFactory> storage_factory,

@@ -191,10 +191,10 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
   // where resource lifetime is handled.
   class ApiResourceData : public base::RefCountedThreadSafe<ApiResourceData> {
    public:
-    typedef std::map<int, std::unique_ptr<T>> ApiResourceMap;
+    using ApiResourceMap = std::map<int, std::unique_ptr<T>>;
     // Lookup map from extension id's to allocated resource id's.
-    typedef std::map<std::string, absl::flat_hash_set<int>>
-        ExtensionToResourceMap;
+    using ExtensionToResourceMap =
+        std::map<std::string, absl::flat_hash_set<int>>;
 
     ApiResourceData() : next_id_(1) { DETACH_FROM_SEQUENCE(sequence_checker_); }
 

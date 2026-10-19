@@ -41,7 +41,7 @@ class ExtensionCacheFake : public ExtensionCache {
                        const CrxInstallError& error) override;
 
  private:
-  typedef std::map<std::string, std::pair<std::string, base::FilePath>> Map;
+  using Map = std::map<std::string, std::pair<std::string, base::FilePath>>;
   // Set of extensions that can be cached.
   std::set<std::string> allowed_extensions_;
 

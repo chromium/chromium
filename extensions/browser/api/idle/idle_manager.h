@@ -126,7 +126,7 @@ class IdleManager : public ExtensionRegistryObserver,
   FRIEND_TEST_ALL_PREFIXES(IdleTest, SetDetectionIntervalMinimum);
   FRIEND_TEST_ALL_PREFIXES(IdleTest, UnloadCleanup);
 
-  typedef std::map<const std::string, IdleMonitor> MonitorMap;
+  using MonitorMap = std::map<const std::string, IdleMonitor>;
 
   IdleMonitor* GetMonitor(const ExtensionId& extension_id);
   void StartPolling();

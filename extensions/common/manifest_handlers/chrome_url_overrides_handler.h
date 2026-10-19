@@ -18,7 +18,7 @@ namespace extensions {
 struct URLOverrides : public Extension::ManifestData {
   static const char* kManifestDataKey;
 
-  typedef std::map<const std::string, GURL> URLOverrideMap;
+  using URLOverrideMap = std::map<const std::string, GURL>;
 
   URLOverrides();
   ~URLOverrides() override;

@@ -126,7 +126,7 @@ bool ExtensionPrefValueMap::CanExtensionControlPref(
 }
 
 void ExtensionPrefValueMap::ClearAllIncognitoSessionOnlyPreferences() {
-  typedef std::set<std::string> KeySet;
+  using KeySet = std::set<std::string>;
   KeySet deleted_keys;
 
   for (const auto& entry : entries_) {

@@ -150,7 +150,7 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
 // applicable stages, one for each stage applicable for that stage, and one
 // applicable in all stages.
 TEST(WebRequestConditionAttributeTest, Stages) {
-  typedef std::pair<RequestStage, const char*> StageNamePair;
+  using StageNamePair = std::pair<RequestStage, const char*>;
   static constexpr auto active_stages = std::to_array<StageNamePair>(
       {{ON_BEFORE_REQUEST, keys::kOnBeforeRequestEnum},
        {ON_BEFORE_SEND_HEADERS, keys::kOnBeforeSendHeadersEnum},

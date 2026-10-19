@@ -166,7 +166,7 @@ class BluetoothLowEnergyEventRouter
   // successful. Otherwise returns std::nullopt, if no device with the given
   // address is known. If the device is found but it has no GATT services, then
   // returns an empty list.
-  typedef std::vector<api::bluetooth_low_energy::Service> ServiceList;
+  using ServiceList = std::vector<api::bluetooth_low_energy::Service>;
   std::optional<ServiceList> GetServices(
       const std::string& device_address) const;
 
@@ -187,8 +187,8 @@ class BluetoothLowEnergyEventRouter
   // error status, if no service with the given instance ID is known. If the
   // service is found but it has no characteristics, then returns empty list.
   // `extension` is the extension that made the call.
-  typedef std::vector<api::bluetooth_low_energy::Characteristic>
-      CharacteristicList;
+  using CharacteristicList =
+      std::vector<api::bluetooth_low_energy::Characteristic>;
   base::expected<CharacteristicList, Status> GetCharacteristics(
       const Extension* extension,
       const std::string& instance_id) const;
@@ -205,7 +205,7 @@ class BluetoothLowEnergyEventRouter
   // the characteristic is found but it has no descriptors, then returns an
   // empty list. In case of failure, returns a error status. `extension` is the
   // extension that made the call.
-  typedef std::vector<api::bluetooth_low_energy::Descriptor> DescriptorList;
+  using DescriptorList = std::vector<api::bluetooth_low_energy::Descriptor>;
   base::expected<DescriptorList, Status> GetDescriptors(
       const Extension* extension,
       const std::string& instance_id) const;

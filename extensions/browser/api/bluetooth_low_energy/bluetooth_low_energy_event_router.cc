@@ -145,8 +145,8 @@ apibtle::Request PopulateDevice(const device::BluetoothDevice* device) {
   return request;
 }
 
-typedef extensions::ApiResourceManager<extensions::BluetoothLowEnergyConnection>
-    ConnectionResourceManager;
+using ConnectionResourceManager =
+    extensions::ApiResourceManager<extensions::BluetoothLowEnergyConnection>;
 ConnectionResourceManager* GetConnectionResourceManager(
     content::BrowserContext* context) {
   ConnectionResourceManager* manager = ConnectionResourceManager::Get(context);
@@ -158,9 +158,8 @@ ConnectionResourceManager* GetConnectionResourceManager(
   return manager;
 }
 
-typedef extensions::ApiResourceManager<
-    extensions::BluetoothLowEnergyNotifySession>
-    NotifySessionResourceManager;
+using NotifySessionResourceManager =
+    extensions::ApiResourceManager<extensions::BluetoothLowEnergyNotifySession>;
 NotifySessionResourceManager* GetNotifySessionResourceManager(
     content::BrowserContext* context) {
   NotifySessionResourceManager* manager =

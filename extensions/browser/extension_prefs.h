@@ -116,7 +116,7 @@ class ExtensionPrefs : public KeyedService {
   using ChromeSettingScope = extensions::api::types::ChromeSettingScope;
 
   // Vector containing identifiers for preferences.
-  typedef std::set<std::string> PrefKeySet;
+  using PrefKeySet = std::set<std::string>;
 
   // This enum is used to store the reason an extension's install has been
   // delayed.  Do not remove items or re-order this enum as it is used in

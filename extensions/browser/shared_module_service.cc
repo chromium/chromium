@@ -25,8 +25,8 @@ namespace extensions {
 
 namespace {
 
-typedef std::vector<SharedModuleInfo::ImportInfo> ImportInfoVector;
-typedef std::list<SharedModuleInfo::ImportInfo> ImportInfoList;
+using ImportInfoVector = std::vector<SharedModuleInfo::ImportInfo>;
+using ImportInfoList = std::list<SharedModuleInfo::ImportInfo>;
 
 bool IsSharedModule(const Extension* extension,
                     content::BrowserContext* context) {

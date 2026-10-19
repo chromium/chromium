@@ -42,7 +42,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-typedef extensions::api::alarms::Alarm JsAlarm;
+using JsAlarm = extensions::api::alarms::Alarm;
 
 namespace extensions {
 

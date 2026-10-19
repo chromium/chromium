@@ -16,7 +16,7 @@
 namespace extensions {
 namespace {
 
-typedef testing::Test ExtensionRegistryTest;
+using ExtensionRegistryTest = testing::Test;
 
 testing::AssertionResult HasSingleExtension(
     const ExtensionList& list,

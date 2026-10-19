@@ -110,7 +110,7 @@ class VerifiedContents {
   // TODO(crbug.com/40334716) - we should give developers client-side warnings
   // in each of those cases, and have the webstore reject the cases they can
   // statically detect.
-  typedef std::multimap<CanonicalRelativePath, std::string> RootHashes;
+  using RootHashes = std::multimap<CanonicalRelativePath, std::string>;
   RootHashes root_hashes_;
 };
 

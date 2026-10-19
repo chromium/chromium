@@ -74,8 +74,8 @@ class WebRequestConditionAttribute
   virtual ~WebRequestConditionAttribute();
 };
 
-typedef std::vector<scoped_refptr<const WebRequestConditionAttribute> >
-    WebRequestConditionAttributes;
+using WebRequestConditionAttributes =
+    std::vector<scoped_refptr<const WebRequestConditionAttribute>>;
 
 //
 // The following are concrete condition attributes.

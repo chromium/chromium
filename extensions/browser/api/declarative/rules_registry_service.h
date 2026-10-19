@@ -126,8 +126,8 @@ class RulesRegistryService : public BrowserContextKeyedAPI,
 
   // Maps <event name, rules registry ID> to RuleRegistries that handle these
   // events.
-  typedef std::map<RulesRegistryKey, scoped_refptr<RulesRegistry> >
-      RulesRegistryMap;
+  using RulesRegistryMap =
+      std::map<RulesRegistryKey, scoped_refptr<RulesRegistry>>;
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,

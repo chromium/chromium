@@ -39,11 +39,11 @@ class DedupingFactory {
   // to return error messages in case the extension passed an action that was
   // syntactically correct but semantically incorrect. `bad_message` is set to
   // true in case `dict` does not confirm to the validated JSON specification.
-  typedef scoped_refptr<const BaseClassT> (*FactoryMethod)(
-      const std::string& instance_type,
-      ValueT /* value */,
-      std::string* /* error */,
-      bool* /* bad_message */);
+  using FactoryMethod =
+      scoped_refptr<const BaseClassT> (*)(const std::string& instance_type,
+                                          ValueT /* value */,
+                                          std::string* /* error */,
+                                          bool* /* bad_message */);
 
   enum Parameterized {
     // Two instantiated objects may be different and we need to check for
@@ -77,7 +77,7 @@ class DedupingFactory {
   void ClearPrototypes();
 
  private:
-  typedef std::string InstanceType;
+  using InstanceType = std::string;
   // Cache of previous prototypes in most-recently-used order. Most recently
   // used objects are at the end.
   using PrototypeList = std::list<scoped_refptr<const BaseClassT>>;

@@ -175,7 +175,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
 
   // Iterator used to identify a particular alarm within the Map/List pair.
   // "Not found" is represented by <alarms_.end(), invalid_iterator>.
-  typedef std::pair<AlarmMap::iterator, AlarmList::iterator> AlarmIterator;
+  using AlarmIterator = std::pair<AlarmMap::iterator, AlarmList::iterator>;
 
   // Part of AddAlarm that is executed after alarms are loaded.
   void AddAlarmWhenReady(Alarm alarm,

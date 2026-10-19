@@ -87,9 +87,9 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<HidDeviceManager>;
 
-  typedef std::map<int, device::mojom::HidDeviceInfoPtr>
-      ResourceIdToDeviceInfoMap;
-  typedef std::map<std::string, int> DeviceIdToResourceIdMap;
+  using ResourceIdToDeviceInfoMap =
+      std::map<int, device::mojom::HidDeviceInfoPtr>;
+  using DeviceIdToResourceIdMap = std::map<std::string, int>;
 
   struct GetApiDevicesParams;
 

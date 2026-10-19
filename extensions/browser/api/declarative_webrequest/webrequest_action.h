@@ -428,8 +428,8 @@ class WebRequestIgnoreRulesAction : public WebRequestAction {
 // Action that instructs to modify (add, edit, remove) a request cookie.
 class WebRequestRequestCookieAction : public WebRequestAction {
  public:
-  typedef extension_web_request_api_helpers::RequestCookieModification
-      RequestCookieModification;
+  using RequestCookieModification =
+      extension_web_request_api_helpers::RequestCookieModification;
 
   explicit WebRequestRequestCookieAction(
       RequestCookieModification request_cookie_modification);
@@ -455,8 +455,8 @@ class WebRequestRequestCookieAction : public WebRequestAction {
 // Action that instructs to modify (add, edit, remove) a response cookie.
 class WebRequestResponseCookieAction : public WebRequestAction {
  public:
-  typedef extension_web_request_api_helpers::ResponseCookieModification
-      ResponseCookieModification;
+  using ResponseCookieModification =
+      extension_web_request_api_helpers::ResponseCookieModification;
 
   explicit WebRequestResponseCookieAction(
       ResponseCookieModification response_cookie_modification);
