@@ -1295,21 +1295,47 @@ TEST_F(BrowsingHistoryServiceTest,
                                  .WithGuid("guid4")
                                  .WithClientName("Device B")
                                  .Build());
+  device_info_tracker()->Add(syncer::TestDeviceInfoBuilder()
+                                 .WithGuid("guid5")
+                                 .WithClientName("Device C")
+                                 .Build());
 
+  // When the local device shares a name with another device ("Device A"),
+  // "(this browser)" is appended to disambiguate it.
   device_info_tracker()->SetLocalCacheGuid("guid1");
 
-  EXPECT_THAT(service()->GetSyncedDevicesForFiltering(),
-              UnorderedElementsAre(
-                  AllOf(Field(&ClientGroup::name, "Device A"),
-                        Field(&ClientGroup::is_local_device, true),
-                        Field(&ClientGroup::client_ids, ElementsAre("guid1"))),
-                  AllOf(Field(&ClientGroup::name, "Device A"),
-                        Field(&ClientGroup::is_local_device, false),
-                        Field(&ClientGroup::client_ids, ElementsAre("guid2"))),
-                  AllOf(Field(&ClientGroup::name, "Device B"),
-                        Field(&ClientGroup::is_local_device, false),
-                        Field(&ClientGroup::client_ids,
-                              ElementsAre("guid3", "guid4")))));
+  EXPECT_THAT(
+      service()->GetSyncedDevicesForFiltering(),
+      UnorderedElementsAre(
+          AllOf(Field(&ClientGroup::name, "Device A (this browser)"),
+                Field(&ClientGroup::is_local_device, true),
+                Field(&ClientGroup::client_ids, ElementsAre("guid1"))),
+          AllOf(Field(&ClientGroup::name, "Device A"),
+                Field(&ClientGroup::is_local_device, false),
+                Field(&ClientGroup::client_ids, ElementsAre("guid2"))),
+          AllOf(Field(&ClientGroup::name, "Device B"),
+                Field(&ClientGroup::is_local_device, false),
+                Field(&ClientGroup::client_ids, ElementsAre("guid3", "guid4"))),
+          AllOf(Field(&ClientGroup::name, "Device C"),
+                Field(&ClientGroup::is_local_device, false),
+                Field(&ClientGroup::client_ids, ElementsAre("guid5")))));
+
+  // When the local device has a unique name ("Device C"), "(this browser)" is
+  // not appended.
+  device_info_tracker()->SetLocalCacheGuid("guid5");
+
+  EXPECT_THAT(
+      service()->GetSyncedDevicesForFiltering(),
+      UnorderedElementsAre(
+          AllOf(Field(&ClientGroup::name, "Device A"),
+                Field(&ClientGroup::is_local_device, false),
+                Field(&ClientGroup::client_ids, ElementsAre("guid1", "guid2"))),
+          AllOf(Field(&ClientGroup::name, "Device B"),
+                Field(&ClientGroup::is_local_device, false),
+                Field(&ClientGroup::client_ids, ElementsAre("guid3", "guid4"))),
+          AllOf(Field(&ClientGroup::name, "Device C"),
+                Field(&ClientGroup::is_local_device, true),
+                Field(&ClientGroup::client_ids, ElementsAre("guid5")))));
 }
 
 }  // namespace

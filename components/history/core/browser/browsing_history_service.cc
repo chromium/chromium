@@ -31,11 +31,13 @@
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/protocol/history_delete_directive_specifics.pb.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_name_util.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace history {
 
@@ -1140,9 +1142,18 @@ BrowsingHistoryService::GetSyncedDevicesForFiltering() const {
         .push_back(device_info->guid());
   }
 
-  return base::ToVector(deduplicated_devices, [](auto& pair) {
-    return ClientGroup{.name = std::move(pair.first.first),
-                       .is_local_device = pair.first.second,
+  return base::ToVector(deduplicated_devices, [&deduplicated_devices](
+                                                  auto& pair) {
+    const auto& [device_name, is_local_device] = pair.first;
+    bool has_duplicate_name =
+        is_local_device && deduplicated_devices.contains({device_name, false});
+    std::string name =
+        has_duplicate_name
+            ? l10n_util::GetStringFUTF8(IDS_HISTORY_DEVICE_FILTER_LOCAL_DEVICE,
+                                        base::UTF8ToUTF16(device_name))
+            : device_name;
+    return ClientGroup{.name = std::move(name),
+                       .is_local_device = is_local_device,
                        .client_ids = std::move(pair.second)};
   });
 }

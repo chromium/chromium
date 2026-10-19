@@ -3,6 +3,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/query_parser",
   "+components/prefs",
+  "+components/strings/grit/components_strings.h",
   "+components/sync",
   "+components/version_info/channel.h",
   "+google_apis/gaia",

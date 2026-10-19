@@ -32,6 +32,9 @@
   <message name="IDS_HISTORY_DEVICE_FILTER_ALL_DEVICES" desc="The default option in the device filter dropdown on the Chrome history page that shows browsing history from all synced devices.">
     All devices
   </message>
+  <message name="IDS_HISTORY_DEVICE_FILTER_LOCAL_DEVICE" desc="The option in the device filter on the Chrome history page for the current local device.">
+    <ph name="DEVICE_NAME">$1<ex>Google Phone</ex></ph> (this browser)
+  </message>
   <message name="IDS_HISTORY_ENTRY_ACCESSIBILITY_DELETE" desc="Name for the accessibility action to delete a single history entry.">
     Delete
   </message>
