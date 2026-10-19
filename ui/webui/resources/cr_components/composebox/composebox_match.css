@@ -58,9 +58,31 @@
 }
 
 @media (forced-colors: active) {
+  :host([base-layout='text']) #icon {
+    background-color: ButtonText;
+    forced-color-adjust: none;
+  }
+
   :host([base-layout='text']) .container:hover,
   :host([base-layout='text']:is(:focus-visible, [selected])) .container {
     --color-searchbox-results-background-hovered: Highlight;
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+
+  :host([base-layout='text']) .container:hover #textContainer,
+  :host([base-layout='text']) .container:hover #primaryText,
+  :host([base-layout='text']) .container:hover #secondaryText,
+  :host([base-layout='text']:is(:focus-visible, [selected])) #textContainer,
+  :host([base-layout='text']:is(:focus-visible, [selected])) #primaryText,
+  :host([base-layout='text']:is(:focus-visible, [selected])) #secondaryText {
+    color: HighlightText;
+  }
+
+  :host([base-layout='text']) .container:hover #icon,
+  :host([base-layout='text']:is(:focus-visible, [selected])) #icon {
+    background-color: HighlightText;
   }
 }
 

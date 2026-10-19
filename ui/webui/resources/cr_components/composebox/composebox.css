@@ -521,6 +521,13 @@ search-animated-glow {
   #voiceSearchButton {
     --cr-icon-button-fill-color: ButtonText;
   }
+
+  #voiceSearchButton:hover {
+    --cr-icon-button-fill-color: HighlightText;
+    --cr-icon-button-hover-background-color: Highlight;
+    background-color: Highlight;
+    forced-color-adjust: none;
+  }
 }
 
 :host(:not([searchbox-next-enabled])) #voiceSearchButton,

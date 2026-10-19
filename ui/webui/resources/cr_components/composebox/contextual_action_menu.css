@@ -392,3 +392,22 @@ composebox-favicon-group {
   flex-shrink: 0;
   margin-inline-start: auto;
 }
+
+@media (forced-colors: active) {
+  :host([unbounded-menu-enabled]) .main-menu-card,
+  .share-tabs-flyout {
+    border: 1px solid CanvasText;
+  }
+
+  #menu hr {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+
+  .dropdown-item:hover:not([disabled]),
+  .dropdown-item:focus-visible:not([disabled]) {
+    background-color: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

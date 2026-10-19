@@ -329,6 +329,28 @@
   .action-icon {
     border: var(--composebox-outline-hcm);
   }
+
+  #cancelIcon:hover:not([disabled]) {
+    --cr-icon-button-icon-size: 0;
+    background-color: Highlight;
+    forced-color-adjust: none;
+  }
+
+  #cancelIcon:hover:not([disabled])::after {
+    -webkit-mask-image: url(//resources/images/icon_clear_old.svg);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 20px;
+    background-color: HighlightText;
+    content: '';
+    inset: 0;
+    position: absolute;
+  }
+
+  :host-context([webui-rounded-icons])
+      #cancelIcon:hover:not([disabled])::after {
+    -webkit-mask-image: url(//resources/images/icon_clear.svg);
+  }
 }
 
 .aim-chip {

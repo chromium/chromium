@@ -400,9 +400,21 @@ cr-icon-button {
     color: ButtonText;
   }
   #entrypoint {
+    animation: none;
     background-color: ButtonFace;
     border: 1px solid ButtonText;
     box-sizing: border-box;
+    forced-color-adjust: none;
+  }
+  #entrypoint:hover:not([disabled]),
+  :host(.menu-open) #entrypoint:not([disabled]) {
+    --cr-button-text-color: HighlightText;
+    --cr-hover-background-color: Highlight;
+    --cr-icon-button-fill-color: HighlightText !important;
+    --cr-icon-button-hover-background-color: Highlight;
+    background-color: Highlight;
+    border-color: Highlight;
+    color: HighlightText;
   }
 }
 
