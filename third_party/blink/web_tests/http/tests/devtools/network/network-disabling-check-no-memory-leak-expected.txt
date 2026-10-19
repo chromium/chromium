@@ -1,3 +1,0 @@
-Tests that after disabling network domain, content saved on backend is removed. https://bugs.webkit.org/show_bug.cgi?id=67995
-resource.content after disabling network domain: null
-

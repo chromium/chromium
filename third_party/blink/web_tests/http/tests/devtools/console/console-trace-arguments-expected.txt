@@ -1,7 +1,0 @@
-Tests that console.trace dumps arguments alongside the stack trace.
-
-console-trace-arguments.js:15 1 2 3
-a @ console-trace-arguments.js:15
-setTimeout
-(anonymous) @ console-trace-arguments.js:23
-
