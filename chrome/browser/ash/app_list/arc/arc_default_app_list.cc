@@ -184,6 +184,11 @@ ArcDefaultAppList::~ArcDefaultAppList() {
 }
 
 void ArcDefaultAppList::OnPropertyFilesExpanded(bool result) {
+  if (!use_test_apps_directory && !arc::IsArcAllowedForProfile(profile_)) {
+    OnAppsReady();
+    return;
+  }
+
   if (!result) {
     // Failed to generate |kGeneratedPropertyFilesPath[Vm]| for whatever reason.
     // Continue anyway not to stall the launcher initialization. In this case,
@@ -206,6 +211,11 @@ void ArcDefaultAppList::OnPropertyFilesExpanded(bool result) {
 }
 
 void ArcDefaultAppList::LoadDefaultApps(std::string board_name) {
+  if (!use_test_apps_directory && !arc::IsArcAllowedForProfile(profile_)) {
+    OnAppsReady();
+    return;
+  }
+
   VLOG(1) << "Start loading default apps. Board name is "
           << (board_name.empty() ? "<unknown>" : board_name);
   std::vector<base::FilePath> sources;
