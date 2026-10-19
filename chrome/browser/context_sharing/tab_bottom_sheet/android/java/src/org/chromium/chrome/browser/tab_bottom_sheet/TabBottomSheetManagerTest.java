@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Color;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
@@ -124,17 +123,16 @@ public class TabBottomSheetManagerTest {
                     TabbedRootUiCoordinator tabbedRootUiCoordinator =
                             (TabbedRootUiCoordinator) mActivity.getRootUiCoordinatorForTesting();
                     mBottomSheetController = tabbedRootUiCoordinator.getBottomSheetController();
-                    View rootView =
-                            LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
                     mCoBrowseViews =
-                            new CoBrowseViews(
-                                    rootView,
+                            CoBrowseViewFactory.buildCoBrowseViews(
+                                    mWindowAndroid,
+                                    /* webContents= */ null,
+                                    /* backgroundColor= */ Color.WHITE,
+                                    /* placeholderElemColor= */ Color.LTGRAY,
                                     TabBottomSheetClientType.UNKNOWN,
                                     CoBrowseContainerType.BOTTOM_SHEET,
-                                    null,
-                                    Color.WHITE,
-                                    new TestCoBrowseComponentProvider(),
-                                    () -> mPeekViewManager);
+                                    /* requestFocus= */ false,
+                                    new TestCoBrowseComponentProvider());
                     mManager =
                             (TabBottomSheetManagerImpl)
                                     tabbedRootUiCoordinator.getTabBottomSheetManagerForTesting();
@@ -147,6 +145,9 @@ public class TabBottomSheetManagerTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> mManager.tryToCloseBottomSheet(/* animate= */ false));
             CriteriaHelper.pollUiThread(() -> !mManager.isSheetShowing());
+        }
+        if (mCoBrowseViews != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mCoBrowseViews.destroy());
         }
     }
 
@@ -620,15 +621,15 @@ public class TabBottomSheetManagerTest {
         CoBrowseViews coBrowseViews2 =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                new CoBrowseViews(
-                                        LayoutInflater.from(mActivity)
-                                                .inflate(R.layout.tab_bottom_sheet, null),
+                                CoBrowseViewFactory.buildCoBrowseViews(
+                                        mWindowAndroid,
+                                        /* webContents= */ null,
+                                        /* backgroundColor= */ Color.WHITE,
+                                        /* placeholderElemColor= */ Color.LTGRAY,
                                         TabBottomSheetClientType.UNKNOWN,
                                         CoBrowseContainerType.BOTTOM_SHEET,
-                                        null,
-                                        Color.WHITE,
-                                        new TestCoBrowseComponentProvider(),
-                                        () -> mPeekViewManager));
+                                        /* requestFocus= */ false,
+                                        new TestCoBrowseComponentProvider()));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
