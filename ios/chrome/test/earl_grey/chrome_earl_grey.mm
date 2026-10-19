@@ -1585,6 +1585,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGreyAppInterface openSettingsInWindowWithNumber:windowNumber];
 }
 
+- (void)showTabSwitcherInWindowWithNumber:(int)windowNumber {
+  [ChromeEarlGreyAppInterface showTabSwitcherInWindowWithNumber:windowNumber];
+  GREYWaitForAppToIdle(@"App failed to idle");
+}
+
 #pragma mark - SignIn Utilities (EG2)
 
 - (void)signOutAndClearIdentities {

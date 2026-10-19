@@ -149,49 +149,75 @@ TEST_F(UIViewWindowCoordinatesTest, WindowDeallocationRegressionTest) {
     local_window = nil;
   }
 
-  // Ensure the window and notifying view are actually deallocated.
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-    return (BOOL)(windowDeallocated && weakNotifyingView == nil);
-  }));
+  // Ensure the window is deallocated and the notifying view is detached.
+  @autoreleasepool {
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+      return (BOOL)(windowDeallocated && weakNotifyingView.superview == nil);
+    }));
 
-  // Now the internal associated object is DANGLING (if buggy).
-  // Accessing the property setter triggers cleanup which reads the dangling
-  // pointer.
-  view_.cr_onWindowCoordinatesChanged = nil;
+    // Clearing the callback releases the retained mirror view.
+    view_.cr_onWindowCoordinatesChanged = nil;
+  }
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
+    return (BOOL)(weakNotifyingView == nil);
+  }));
 }
 
 // Test that resetting `cr_onWindowCoordinatesChanged` while the view is in a
 // window removes the internal `NotifyingView` mirror from the window, and that
-// reassigning the callback multiple times never accumulates duplicate mirror
-// views.
+// reassigning the callback multiple times or moving across windows reuses the
+// same mirror view instance without accumulating duplicates.
 TEST_F(UIViewWindowCoordinatesTest, ResetAndReassignRemovesMirrorView) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kChromeNextIa);
 
   [window_ addSubview:view_];
 
-  auto count_notifying_views = ^NSUInteger() {
-    NSUInteger count = 0;
-    for (UIView* subview in window_.subviews) {
+  auto find_notifying_views = ^NSArray<UIView*>*(UIWindow* window) {
+    NSMutableArray<UIView*>* views = [NSMutableArray array];
+    for (UIView* subview in window.subviews) {
       if ([NSStringFromClass([subview class])
               containsString:@"NotifyingView"]) {
-        count++;
+        [views addObject:subview];
       }
     }
-    return count;
+    return views;
   };
 
   view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
   };
-  EXPECT_EQ(1u, count_notifying_views());
+  NSArray<UIView*>* initial_views = find_notifying_views(window_);
+  ASSERT_EQ(1u, initial_views.count);
+  UIView* initial_mirror = initial_views.firstObject;
 
   // Reassigning the closure while the view is already in the window must
-  // replace the existing mirror view rather than leaking it.
+  // reuse the existing mirror view rather than leaking a duplicate.
   view_.cr_onWindowCoordinatesChanged = ^(UIView* view) {
   };
-  EXPECT_EQ(1u, count_notifying_views());
+  NSArray<UIView*>* reassigned_views = find_notifying_views(window_);
+  ASSERT_EQ(1u, reassigned_views.count);
+  EXPECT_EQ(initial_mirror, reassigned_views.firstObject);
+
+  // Moving the view to a temporary window, removing it from all windows, and
+  // moving it back to the original window (as UIKit does during background
+  // snapshotting) must preserve and re-insert the same mirror view instance.
+  UIWindow* temp_window =
+      [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  [temp_window addSubview:view_];
+  EXPECT_EQ(0u, find_notifying_views(window_).count);
+  NSArray<UIView*>* temp_views = find_notifying_views(temp_window);
+  ASSERT_EQ(1u, temp_views.count);
+  EXPECT_EQ(initial_mirror, temp_views.firstObject);
+
+  [view_ removeFromSuperview];
+  EXPECT_EQ(nil, initial_mirror.superview);
+
+  [window_ addSubview:view_];
+  NSArray<UIView*>* restored_views = find_notifying_views(window_);
+  ASSERT_EQ(1u, restored_views.count);
+  EXPECT_EQ(initial_mirror, restored_views.firstObject);
 
   // Clearing the closure must remove the mirror view from the window.
   view_.cr_onWindowCoordinatesChanged = nil;
-  EXPECT_EQ(0u, count_notifying_views());
+  EXPECT_EQ(0u, find_notifying_views(window_).count);
 }
