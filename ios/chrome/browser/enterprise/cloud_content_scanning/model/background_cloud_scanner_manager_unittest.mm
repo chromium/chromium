@@ -13,6 +13,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
@@ -23,6 +24,7 @@
 #import "components/policy/core/common/policy_types.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/background_cloud_scanner_manager_factory.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/download_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
@@ -128,6 +130,7 @@ class BackgroundCloudScannerManagerTest : public PlatformTest {
   policy::FakeBrowserDMTokenStorage fake_browser_dm_token_storage_;
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath test_file_path_;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   raw_ptr<BackgroundCloudScannerManager> manager_;
@@ -140,6 +143,9 @@ TEST_F(BackgroundCloudScannerManagerTest, CompletedScannerIsDeletedAsync) {
   StartSynchronouslyCompletingScan(download_proceed);
   EXPECT_TRUE(download_proceed.Get());
 
+  histogram_tester_.ExpectUniqueSample(
+      kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram, true, 1);
+
   // The scan is done, so the scanner is no longer active, but its destruction
   // is deferred to a posted task.
   EXPECT_EQ(manager_->GetScannerCountForTesting(), 0u);
@@ -149,6 +155,11 @@ TEST_F(BackgroundCloudScannerManagerTest, CompletedScannerIsDeletedAsync) {
       [&]() { return manager_->GetPendingDeletionCountForTesting() == 0u; }));
 
   EXPECT_EQ(manager_->GetScannerCountForTesting(), 0u);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester_.GetBucketCount(
+               kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram,
+               true) == 1;
+  }));
 }
 
 // Tests that several scanners completing before the deletion task runs are all
@@ -162,6 +173,9 @@ TEST_F(BackgroundCloudScannerManagerTest, MultipleCompletedScannersAreDeleted) {
   EXPECT_TRUE(download_proceed_1.Get());
   EXPECT_TRUE(download_proceed_2.Get());
 
+  histogram_tester_.ExpectUniqueSample(
+      kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram, true, 2);
+
   EXPECT_EQ(manager_->GetScannerCountForTesting(), 0u);
 
   // Depending on whether the scanner for `download_proceed_1` is cleaned up
@@ -172,6 +186,11 @@ TEST_F(BackgroundCloudScannerManagerTest, MultipleCompletedScannersAreDeleted) {
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return manager_->GetPendingDeletionCountForTesting() == 0u; }));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester_.GetBucketCount(
+               kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram,
+               true) == 2;
+  }));
 }
 
 // Tests that active in-flight scanners in `scanners_` are directly cleared and
@@ -186,6 +205,10 @@ TEST_F(BackgroundCloudScannerManagerTest, ShutdownDeletesActiveScanners) {
   manager_->StartScanner(CreateContentAnalysisInfo(), GURL(kDownloadUrl),
                          test_file_path_, download_proceed.GetCallback());
   EXPECT_TRUE(download_proceed.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram, true, 1);
+
   ASSERT_EQ(manager_->GetScannerCountForTesting(), 1u);
   EXPECT_EQ(manager_->GetPendingDeletionCountForTesting(), 0u);
 
@@ -193,6 +216,11 @@ TEST_F(BackgroundCloudScannerManagerTest, ShutdownDeletesActiveScanners) {
 
   EXPECT_EQ(manager_->GetScannerCountForTesting(), 0u);
   EXPECT_EQ(manager_->GetPendingDeletionCountForTesting(), 0u);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester_.GetBucketCount(
+               kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram,
+               true) == 1;
+  }));
 }
 
 // Tests that scanners waiting to be deleted are destroyed by Shutdown() when
@@ -202,6 +230,10 @@ TEST_F(BackgroundCloudScannerManagerTest, ShutdownDeletesPendingScanners) {
   base::test::TestFuture<bool> download_proceed;
   StartSynchronouslyCompletingScan(download_proceed);
   EXPECT_TRUE(download_proceed.Get());
+
+  histogram_tester_.ExpectUniqueSample(
+      kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram, true, 1);
+
   ASSERT_EQ(manager_->GetPendingDeletionCountForTesting(), 1u);
 
   manager_->Shutdown();
@@ -212,6 +244,11 @@ TEST_F(BackgroundCloudScannerManagerTest, ShutdownDeletesPendingScanners) {
   RunUntilPendingScannersAreDeleted();
 
   EXPECT_EQ(manager_->GetPendingDeletionCountForTesting(), 0u);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester_.GetBucketCount(
+               kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram,
+               true) == 1;
+  }));
 }
 
 // Tests that no scan is started once the profile is being torn down.
@@ -222,8 +259,14 @@ TEST_F(BackgroundCloudScannerManagerTest, StartScannerAfterShutdownIsIgnored) {
   StartSynchronouslyCompletingScan(download_proceed);
   EXPECT_TRUE(download_proceed.Get());
 
+  histogram_tester_.ExpectTotalCount(
+      kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram, 0);
+
   EXPECT_EQ(manager_->GetScannerCountForTesting(), 0u);
   EXPECT_EQ(manager_->GetPendingDeletionCountForTesting(), 0u);
+  histogram_tester_.ExpectTotalCount(
+      kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram,
+      0);
 }
 
 // Tests that when `kEnableDLPClonefileScanUploadIOS` is disabled, the scanner

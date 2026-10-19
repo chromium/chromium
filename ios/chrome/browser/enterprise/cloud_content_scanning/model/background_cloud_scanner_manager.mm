@@ -15,6 +15,7 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/no_destructor.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
@@ -23,6 +24,7 @@
 #import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 #import "components/enterprise/connectors/core/reporting_event_router.h"
+#import "ios/chrome/browser/enterprise/cloud_content_scanning/model/download_protection_metrics.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/files_request_handler_ios.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
@@ -89,7 +91,10 @@ void DeleteTempEnterpriseScanDirectorySync() {
 
 // Deletes the temporary directory at `temp_dir`. Runs on a background thread.
 void DeleteTemporaryPath(const base::FilePath& temp_dir) {
-  base::DeletePathRecursively(temp_dir);
+  bool delete_success = base::DeletePathRecursively(temp_dir);
+  base::UmaHistogramBoolean(
+      kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram,
+      delete_success);
 }
 
 // Clones the file at `source` to a new isolated temporary directory using
@@ -114,6 +119,10 @@ ClonedFileInfo CloneToTemporaryDirectory(const base::FilePath& source) {
 
   bool clone_success =
       clonefile(source.value().c_str(), clone_path.value().c_str(), 0) == 0;
+
+  base::UmaHistogramBoolean(
+      kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram,
+      clone_success);
 
   // If `clonefile` fails, clean up the temporary directory and fall back to
   // scanning `source` directly.

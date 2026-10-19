@@ -19,4 +19,10 @@ extern const char kIOSDownloadProtectionScanTriggeredEventResultHistogram[];
 
 extern const char kIOSDownloadProtectionScanTriggeredWarningBypassedHistogram[];
 
+extern const char
+    kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram[];
+
+extern const char
+    kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram[];
+
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_CLOUD_CONTENT_SCANNING_MODEL_DOWNLOAD_PROTECTION_METRICS_H_

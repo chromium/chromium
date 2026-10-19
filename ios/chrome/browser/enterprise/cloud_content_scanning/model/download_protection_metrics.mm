@@ -10,3 +10,12 @@ extern const char kIOSDownloadProtectionScanTriggeredEventResultHistogram[] =
 extern const char
     kIOSDownloadProtectionScanTriggeredWarningBypassedHistogram[] =
         "Enterprise.IOS.DownloadProtection.ScanTriggered.WarningBypassed";
+
+extern const char
+    kIOSDownloadProtectionScanTriggeredClonefileSuccessHistogram[] =
+        "Enterprise.IOS.DownloadProtection.ScanTriggered.Clonefile.Success";
+
+extern const char
+    kIOSDownloadProtectionScanTriggeredTempDirectoryDeleteSuccessHistogram[] =
+        "Enterprise.IOS.DownloadProtection.ScanTriggered.TempDirectoryDelete."
+        "Success";

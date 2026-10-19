@@ -3498,6 +3498,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.IOS.DownloadProtection.ScanTriggered.Clonefile.Success"
+    enum="Boolean" expires_after="2027-05-30">
+  <owner>mxlg@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records whether a file is cloned successfully for uploading to WebProtect in
+    the case of background scanning.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.IOS.DownloadProtection.ScanTriggered.EventResult"
     enum="EnterpriseDownloadProtectionEventResult" expires_after="2027-05-30">
   <owner>mxlg@google.com</owner>
@@ -3505,6 +3516,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the event result of a download protection scan triggered by
     enterprise users when trying to download files according to policy settings.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.IOS.DownloadProtection.ScanTriggered.TempDirectoryDelete.Success"
+    enum="Boolean" expires_after="2027-05-30">
+  <owner>mxlg@google.com</owner>
+  <owner>bling-enterprise@google.com</owner>
+  <summary>
+    Records whether the temporary directory and file is deleted successfully
+    after cloning the file for async upload scan.
   </summary>
 </histogram>
 
