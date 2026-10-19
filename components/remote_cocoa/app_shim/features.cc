@@ -28,4 +28,9 @@ BASE_FEATURE(kSuppressAppKitFrameAdjustmentsDuringMoveLoop,
 // display reliably when floating over native macOS fullscreen spaces.
 BASE_FEATURE(kMacFullScreenAuxiliaryFileDialog,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Kill switch for clearing the first responder before hiding a WebContents in
+// the NSToolbarFullScreenWindow. See https://crbug.com/573809833.
+BASE_FEATURE(kClearFirstResponderInToolbarFullScreenWindow,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace remote_cocoa::features

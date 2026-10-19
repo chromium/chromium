@@ -5,7 +5,10 @@
 #include "content/app_shim_remote_cocoa/web_contents_ns_view_bridge.h"
 
 #include "base/apple/foundation_util.h"
+#include "base/feature_list.h"
 #import "base/task/sequenced_task_runner.h"
+#include "components/remote_cocoa/app_shim/features.h"
+#include "components/remote_cocoa/app_shim/immersive_mode_controller_cocoa.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
@@ -92,19 +95,25 @@ void WebContentsNSViewBridge::SetVisible(bool visible) {
   // If the first responder is a child of the current view, AppKit will search
   // for a new first responder during `-setHidden:`. The key view loop is
   // searched for a view that can become key. Typically this search yields no
-  // results and the window becomes the default first responder. However if this
-  // occurs after an immersive fullscreen restore an infinite loop can occur
-  // leading to an OOM. This occurs because of the existence of an NSToolbar,
-  // which causes the key loop traversal to jump back and forth between the
-  // view's window and the AppKit owned NSToolbarFullscreenWindow which hosts
-  // the toolbar in immersive fullscreen. To prevent this set the window's first
-  // responder to nil which will make the window the first responder before the
-  // hide.
+  // results and the first responder is left in place. However if this occurs
+  // after an immersive fullscreen restore an infinite loop can occur leading to
+  // an OOM. This occurs because of the existence of an NSToolbar, which causes
+  // the key loop traversal to jump back and forth between the view's window and
+  // the AppKit owned NSToolbarFullscreenWindow which hosts the toolbar in
+  // immersive fullscreen. To prevent this set the window's first responder to
+  // nil before the hide. This drops focus, so only do it in immersive
+  // fullscreen. Toolbar WebContents (e.g. WebUI toolbar) live in the
+  // NSToolbarFullscreenWindow, which is not a NativeWidgetMacNSWindow, so check
+  // for it separately.
   // TODO(http://crbug.com/40261565): Remove when FB12010731 is fixed in
   // AppKit.
   NativeWidgetMacNSWindow* widget_window =
       base::apple::ObjCCast<NativeWidgetMacNSWindow>(ns_view_.window);
-  if (!visible && [widget_window immersiveFullscreen]) {
+  if (!visible &&
+      ([widget_window immersiveFullscreen] ||
+       (base::FeatureList::IsEnabled(
+            features::kClearFirstResponderInToolbarFullScreenWindow) &&
+        IsNSToolbarFullScreenWindow(ns_view_.window)))) {
     NSView* first_responder =
         base::apple::ObjCCast<NSView>(ns_view_.window.firstResponder);
     if ([first_responder isDescendantOf:ns_view_]) {
