@@ -32,6 +32,7 @@
 
 #include <memory>
 #include <numbers>
+#include <utility>
 
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -45,8 +46,8 @@ constexpr size_t kKernelSize = 256;
 
 // Computes ideal band-limited half-band filter coefficients.
 // In other words, filter out all frequencies higher than 0.25 * Nyquist.
-std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
-  auto reduced_kernel = std::make_unique<AudioFloatArray>(size / 2);
+AudioFloatArray MakeReducedKernel(int size) {
+  AudioFloatArray reduced_kernel(size / 2);
 
   // Blackman window parameters.
   double alpha = 0.16;
@@ -78,7 +79,7 @@ std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
     // Then store only the odd terms in the kernel.
     // In a sense, this is shifting forward in time by one sample-frame at the
     // destination sample-rate.
-    (*reduced_kernel)[(i - 1) / 2] = sinc * window;
+    reduced_kernel[(i - 1) / 2] = sinc * window;
   }
 
   return reduced_kernel;
@@ -90,14 +91,13 @@ DownSampler::DownSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
       temp_buffer_(input_block_size / 2),
       input_buffer_(kKernelSize / 2 + input_block_size) {
-  std::unique_ptr<AudioFloatArray> convolution_kernel =
-      MakeReducedKernel(kKernelSize);
+  AudioFloatArray convolution_kernel = MakeReducedKernel(kKernelSize);
   if (input_block_size_ <= kKernelSize) {
     direct_convolver_ = std::make_unique<DirectConvolver>(
         input_block_size_ / 2, std::move(convolution_kernel));
   } else {
     simple_fft_convolver_ = std::make_unique<SimpleFFTConvolver>(
-        input_block_size_ / 2, *convolution_kernel);
+        input_block_size_ / 2, convolution_kernel);
   }
 }
 

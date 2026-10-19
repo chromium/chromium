@@ -29,8 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_CHANNEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_CHANNEL_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_span.h"
@@ -58,7 +56,7 @@ class PLATFORM_EXPORT AudioChannel final {
   bool TryAllocate(uint32_t length);
 
   void Set(base::span<float> storage) {
-    mem_buffer_.reset();  // cleanup managed storage
+    mem_buffer_ = AudioFloatArray();  // cleanup managed storage
     data_span_ = storage;
     silent_ = false;
   }
@@ -111,7 +109,7 @@ class PLATFORM_EXPORT AudioChannel final {
   float MaxAbsValue() const;
 
  private:
-  std::unique_ptr<AudioFloatArray> mem_buffer_;
+  AudioFloatArray mem_buffer_;
   base::raw_span<float> data_span_;
   bool silent_ = true;
 };

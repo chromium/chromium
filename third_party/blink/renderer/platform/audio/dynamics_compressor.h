@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DYNAMICS_COMPRESSOR_H_
 
 #include <array>
-#include <memory>
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -117,7 +116,7 @@ class PLATFORM_EXPORT DynamicsCompressor final {
   };  // SetPreDelayTime() will override this initial value
   unsigned last_pre_delay_frames_ = kDefaultPreDelayFrames;
 
-  Vector<std::unique_ptr<AudioFloatArray>> pre_delay_buffers_;
+  Vector<AudioFloatArray> pre_delay_buffers_;
   int pre_delay_read_index_ = 0;
   int pre_delay_write_index_ = kDefaultPreDelayFrames;
 

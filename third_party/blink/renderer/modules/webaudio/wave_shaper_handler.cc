@@ -107,19 +107,19 @@ double WaveShaperCurveValue(float input, base::span<const float> curve) {
 
 class WaveShaperKernel final {
  public:
-  std::unique_ptr<AudioFloatArray> temp_buffer_;
-  std::unique_ptr<AudioFloatArray> temp_buffer2_;
+  AudioFloatArray temp_buffer_;
+  AudioFloatArray temp_buffer2_;
   std::unique_ptr<UpSampler> up_sampler_;
   std::unique_ptr<DownSampler> down_sampler_;
   std::unique_ptr<UpSampler> up_sampler2_;
   std::unique_ptr<DownSampler> down_sampler2_;
 
-  bool IsInitialized() const { return temp_buffer_ != nullptr; }
+  bool IsInitialized() const { return temp_buffer_.size() > 0; }
 
   void LazyInitializeOversampling(uint32_t sub_block_frames) {
     if (!IsInitialized()) {
-      temp_buffer_ = std::make_unique<AudioFloatArray>(sub_block_frames * 2);
-      temp_buffer2_ = std::make_unique<AudioFloatArray>(sub_block_frames * 4);
+      temp_buffer_.Allocate(sub_block_frames * 2);
+      temp_buffer2_.Allocate(sub_block_frames * 4);
       up_sampler_ = std::make_unique<UpSampler>(sub_block_frames);
       down_sampler_ = std::make_unique<DownSampler>(sub_block_frames * 2);
       up_sampler2_ = std::make_unique<UpSampler>(sub_block_frames * 2);
@@ -324,8 +324,7 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
                   NOTREACHED();
                 case V8OverSampleType::Enum::k2X: {
                   base::span<float> temp_span =
-                      kernels_[i]->temp_buffer_->as_span().first(chunk_size *
-                                                                 2);
+                      kernels_[i]->temp_buffer_.as_span().first(chunk_size * 2);
                   kernels_[i]->up_sampler_->Process(source_chunk, temp_span);
 
                   // Process at 2x up-sampled rate.
@@ -337,11 +336,10 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
 
                 case V8OverSampleType::Enum::k4X: {
                   base::span<float> temp_span =
-                      kernels_[i]->temp_buffer_->as_span().first(chunk_size *
-                                                                 2);
+                      kernels_[i]->temp_buffer_.as_span().first(chunk_size * 2);
                   base::span<float> temp_span2 =
-                      kernels_[i]->temp_buffer2_->as_span().first(chunk_size *
-                                                                  4);
+                      kernels_[i]->temp_buffer2_.as_span().first(chunk_size *
+                                                                 4);
                   kernels_[i]->up_sampler_->Process(source_chunk, temp_span);
                   kernels_[i]->up_sampler2_->Process(temp_span, temp_span2);
 

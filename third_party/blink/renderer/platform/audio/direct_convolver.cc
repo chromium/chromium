@@ -37,15 +37,13 @@
 
 namespace blink {
 
-DirectConvolver::DirectConvolver(
-    size_t input_block_size,
-    std::unique_ptr<AudioFloatArray> convolution_kernel)
+DirectConvolver::DirectConvolver(size_t input_block_size,
+                                 AudioFloatArray convolution_kernel)
     : input_block_size_(input_block_size),
       convolution_kernel_(std::move(convolution_kernel)) {
-  CHECK(convolution_kernel_);
-  CHECK_GT(convolution_kernel_->size(), 0u);
-  buffer_.Allocate(convolution_kernel_->size() - 1 + input_block_size);
-  vector_math::PrepareFilterForConv(convolution_kernel_->as_span(),
+  CHECK_GT(convolution_kernel_.size(), 0u);
+  buffer_.Allocate(convolution_kernel_.size() - 1 + input_block_size);
+  vector_math::PrepareFilterForConv(convolution_kernel_.as_span(),
                                     prepared_convolution_kernel_);
 }
 
@@ -65,7 +63,7 @@ void DirectConvolver::Process(base::span<const float> source,
       .subspan(history_size, frames_to_process)
       .copy_from(source.first(frames_to_process));
 
-  vector_math::Conv(buffer_.as_span(), convolution_kernel_->as_span(),
+  vector_math::Conv(buffer_.as_span(), convolution_kernel_.as_span(),
                     destination, prepared_convolution_kernel_);
 
   // Copy the last `history_size` samples to the beginning of the buffer.

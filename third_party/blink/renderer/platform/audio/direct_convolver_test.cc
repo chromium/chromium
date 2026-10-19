@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/audio/direct_convolver.h"
 
-#include <memory>
+#include <utility>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -14,9 +14,9 @@ namespace blink {
 namespace {
 
 void TestDirectConvolverImpulse(size_t input_block_size, size_t kernel_size) {
-  auto kernel = std::make_unique<AudioFloatArray>(kernel_size);
+  AudioFloatArray kernel(kernel_size);
   for (size_t i = 0; i < kernel_size; ++i) {
-    (*kernel)[i] = static_cast<float>(i + 1);
+    kernel[i] = static_cast<float>(i + 1);
   }
 
   DirectConvolver convolver(input_block_size, std::move(kernel));

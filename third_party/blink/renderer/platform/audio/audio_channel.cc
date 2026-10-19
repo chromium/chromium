@@ -37,14 +37,11 @@
 namespace blink {
 
 bool AudioChannel::TryAllocate(uint32_t length) {
-  if (!mem_buffer_) {
-    mem_buffer_ = std::make_unique<AudioFloatArray>();
-  }
-  if (!mem_buffer_->TryAllocate(length)) {
+  if (!mem_buffer_.TryAllocate(length)) {
     data_span_ = base::span<float>();
     return false;
   }
-  data_span_ = mem_buffer_->as_span();
+  data_span_ = mem_buffer_.as_span();
   silent_ = true;
   return true;
 }

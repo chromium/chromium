@@ -32,6 +32,7 @@
 
 #include <memory>
 #include <numbers>
+#include <utility>
 
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -46,9 +47,8 @@ constexpr size_t kKernelSize = 128;
 // Computes ideal band-limited filter coefficients to sample in between each
 // source sample-frame.  This filter will be used to compute the odd
 // sample-frames of the output.
-std::unique_ptr<AudioFloatArray> MakeKernel(size_t size) {
-  std::unique_ptr<AudioFloatArray> kernel =
-      std::make_unique<AudioFloatArray>(size);
+AudioFloatArray MakeKernel(size_t size) {
+  AudioFloatArray kernel(size);
 
   // Blackman window parameters.
   double alpha = 0.16;
@@ -56,7 +56,7 @@ std::unique_ptr<AudioFloatArray> MakeKernel(size_t size) {
   double a1 = 0.5;
   double a2 = 0.5 * alpha;
 
-  int n = kernel->size();
+  int n = kernel.size();
   int half_size = n / 2;
   double subsample_offset = -0.5;
 
@@ -71,7 +71,7 @@ std::unique_ptr<AudioFloatArray> MakeKernel(size_t size) {
                     a2 * fdlibm::cos(kTwoPiDouble * 2.0 * x);
 
     // Window the sinc() function.
-    (*kernel)[i] = sinc * window;
+    kernel[i] = sinc * window;
   }
 
   return kernel;
@@ -83,7 +83,7 @@ UpSampler::UpSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
       temp_buffer_(input_block_size),
       input_buffer_(kKernelSize / 2 + input_block_size) {
-  std::unique_ptr<AudioFloatArray> convolution_kernel = MakeKernel(kKernelSize);
+  AudioFloatArray convolution_kernel = MakeKernel(kKernelSize);
   if (input_block_size_ <= kKernelSize) {
     // Use direct convolution because SimpleFFTConvolver requires the block size
     // to be at least as large as the kernel size.  Direct convolution is also
@@ -94,7 +94,7 @@ UpSampler::UpSampler(unsigned input_block_size)
     // Otherwise, use FFT convolution because it is faster than direct
     // convolution for large input block sizes.
     simple_fft_convolver_ = std::make_unique<SimpleFFTConvolver>(
-        input_block_size_, *convolution_kernel);
+        input_block_size_, convolution_kernel);
   }
 }
 

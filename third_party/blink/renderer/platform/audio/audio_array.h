@@ -64,6 +64,8 @@ class AudioArray final {
   explicit AudioArray(size_t n) { CHECK(TryAllocate(n)); }
   AudioArray(const AudioArray&) = delete;
   AudioArray& operator=(const AudioArray&) = delete;
+  AudioArray(AudioArray&&) = default;
+  AudioArray& operator=(AudioArray&&) = default;
 
   ~AudioArray() = default;
 

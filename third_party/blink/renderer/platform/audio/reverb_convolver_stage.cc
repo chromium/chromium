@@ -100,9 +100,8 @@ bool ReverbConvolverStage::Initialize(
     DCHECK_LE(stage_length, fft_size / 2);
     DCHECK_LE(stage_length, impulse_response.size());
 
-    auto direct_kernel = std::make_unique<AudioFloatArray>(fft_size / 2);
-    base::span<float> kernel_span =
-        direct_kernel->as_span().first(stage_length);
+    AudioFloatArray direct_kernel(fft_size / 2);
+    base::span<float> kernel_span = direct_kernel.as_span().first(stage_length);
     kernel_span.copy_from(impulse_response.first(stage_length));
     // Account for the normalization (if any) of the convolver node.
     if (scale != 1) {
