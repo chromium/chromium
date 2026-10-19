@@ -47,6 +47,7 @@ class AskBeforeHttpDialogController;
 class AutoPictureInPictureTabHelper;
 class BookmarkBarPreloadPipelineManager;
 class BookmarkPageActionController;
+class BookmarkTabHelper;
 class BreadcrumbManagerTabHelper;
 class BrowserSyncedTabDelegate;
 class ChromeFacilitatedPaymentsClient;
@@ -714,6 +715,8 @@ class TabFeatures {
   // Manages the Lens Overlay Homework page action.
   std::unique_ptr<LensOverlayHomeworkPageActionController>
       lens_overlay_homework_page_action_controller_;
+
+  std::unique_ptr<BookmarkTabHelper> bookmark_tab_helper_;
 
   // Manages the Bookmark page action.
   std::unique_ptr<BookmarkPageActionController>

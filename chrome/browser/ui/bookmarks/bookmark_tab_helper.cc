@@ -20,6 +20,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -27,10 +28,40 @@
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
+DEFINE_USER_DATA(BookmarkTabHelper);
+
+BookmarkTabHelper::BookmarkTabHelper(tabs::TabInterface& tab)
+    : content::WebContentsObserver(tab.GetContents()),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(
+      web_contents()->GetBrowserContext());
+  if (bookmark_model_) {
+    bookmark_model_->AddObserver(this);
+  }
+}
+
 BookmarkTabHelper::~BookmarkTabHelper() {
   if (bookmark_model_) {
     bookmark_model_->RemoveObserver(this);
   }
+}
+
+// static
+BookmarkTabHelper* BookmarkTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
+// static
+BookmarkTabHelper* BookmarkTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  return web_contents
+             ? From(tabs::TabInterface::MaybeGetFromContents(web_contents))
+             : nullptr;
+}
+
+void BookmarkTabHelper::DiscardContents(content::WebContents* new_contents) {
+  Observe(new_contents);
+  UpdateStarredStateForCurrentURL();
 }
 
 void BookmarkTabHelper::AddObserver(BookmarkTabHelperObserver* observer) {
@@ -43,19 +74,6 @@ void BookmarkTabHelper::RemoveObserver(BookmarkTabHelperObserver* observer) {
 
 bool BookmarkTabHelper::HasObserver(BookmarkTabHelperObserver* observer) const {
   return observers_.HasObserver(observer);
-}
-
-BookmarkTabHelper::BookmarkTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<BookmarkTabHelper>(*web_contents),
-      is_starred_(false),
-      bookmark_model_(nullptr),
-      bookmark_drag_(nullptr) {
-  bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(
-      web_contents->GetBrowserContext());
-  if (bookmark_model_) {
-    bookmark_model_->AddObserver(this);
-  }
 }
 
 void BookmarkTabHelper::UpdateStarredStateForCurrentURL() {
@@ -117,5 +135,3 @@ void BookmarkTabHelper::DidFinishNavigation(
   }
   UpdateStarredStateForCurrentURL();
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(BookmarkTabHelper);

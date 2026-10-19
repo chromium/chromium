@@ -582,7 +582,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, *profile, *page_action_controller_);
   }
 
-  BookmarkTabHelper::CreateForWebContents(tab.GetContents());
+  bookmark_tab_helper_ =
+      GetUserDataFactory().CreateInstance<BookmarkTabHelper>(tab, tab);
   if (tab.GetBrowserWindowInterface()->GetType() ==
           BrowserWindowInterface::TYPE_NORMAL &&
       page_action_controller_->ActionExists(kActionBookmarkThisTab)) {
@@ -1561,7 +1562,7 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     web_app::WebAppTabHelper::Create(tab, new_contents);
   }
 
-  BookmarkTabHelper::CreateForWebContents(new_contents);
+  bookmark_tab_helper_->DiscardContents(new_contents);
 
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(new_contents);

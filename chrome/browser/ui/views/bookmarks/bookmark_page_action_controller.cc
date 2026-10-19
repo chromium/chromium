@@ -55,7 +55,7 @@ BookmarkPageActionController::BookmarkPageActionController(
           &BookmarkPageActionController::UpdatePageActionVisibility,
           base::Unretained(this)));
   UpdatePageActionVisibility();
-  ObserveBookmarkTabHelper(tab.GetContents());
+  ObserveBookmarkTabHelper();
 }
 
 BookmarkPageActionController::~BookmarkPageActionController() = default;
@@ -92,10 +92,9 @@ void BookmarkPageActionController::URLStarredChanged(
   SetStarred(starred);
 }
 
-void BookmarkPageActionController::ObserveBookmarkTabHelper(
-    content::WebContents* contents) {
+void BookmarkPageActionController::ObserveBookmarkTabHelper() {
   tab_helper_observation_.Reset();
-  if (auto* bookmark_helper = BookmarkTabHelper::FromWebContents(contents)) {
+  if (auto* bookmark_helper = BookmarkTabHelper::From(&tab())) {
     tab_helper_observation_.Observe(bookmark_helper);
     SetStarred(bookmark_helper->is_starred());
   } else {
@@ -118,7 +117,7 @@ void BookmarkPageActionController::OnDiscardContents(
     content::WebContents* new_contents) {
   ContentsObservingTabFeature::OnDiscardContents(tab, old_contents,
                                                  new_contents);
-  ObserveBookmarkTabHelper(new_contents);
+  ObserveBookmarkTabHelper();
 }
 
 void BookmarkPageActionController::UpdatePageActionVisibility() {

@@ -175,9 +175,7 @@ class TouchBarNotificationBridge : public CommandObserver,
     if (contents_ == new_contents) {
       return;
     }
-    if (contents_) {
-      BookmarkTabHelper::FromWebContents(contents_)->RemoveObserver(this);
-    }
+    bookmark_tab_helper_observation_.Reset();
 
     contents_ = new_contents;
 
@@ -188,7 +186,7 @@ class TouchBarNotificationBridge : public CommandObserver,
     BookmarkTabHelper* bookmark_helper =
         contents_ ? BookmarkTabHelper::FromWebContents(contents_) : nullptr;
     if (bookmark_helper) {
-      bookmark_helper->AddObserver(this);
+      bookmark_tab_helper_observation_.Observe(bookmark_helper);
     }
 
     owner_.isPageLoading = contents_ && contents_->IsLoading();
@@ -265,6 +263,8 @@ class TouchBarNotificationBridge : public CommandObserver,
 
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+  base::ScopedObservation<BookmarkTabHelper, BookmarkTabHelperObserver>
+      bookmark_tab_helper_observation_{this};
 };
 
 }  // namespace
