@@ -888,7 +888,7 @@ bool ShouldOpenGeminiQuizzesInNewTab() {
              kGeminiQuizzes, kGeminiQuizzesOpenInNewTabParam, false);
 }
 
-BASE_FEATURE(kGeminiFRERefactor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiFRERefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiFRERefactorEnabled() {
   return base::FeatureList::IsEnabled(kGeminiFRERefactor);
@@ -909,7 +909,7 @@ const char kGeminiFREExperimentParamLightweightPageSharing[] =
 const char kGeminiFREExperimentParamLightweightDiverse[] =
     "lightweight-diverse";
 
-BASE_FEATURE(kGeminiFREExperiment, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiFREExperiment, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiFREExperimentEnabled() {
   return base::FeatureList::IsEnabled(kGeminiFREExperiment);
@@ -921,7 +921,7 @@ bool IsGeminiVisualRichFREEnabled() {
   }
   std::string variant = base::GetFieldTrialParamValueByFeature(
       kGeminiFREExperiment, kGeminiFREExperimentParam);
-  return variant.empty() || variant == kGeminiFREExperimentParamVisualRich;
+  return variant == kGeminiFREExperimentParamVisualRich;
 }
 
 bool IsGeminiLightweightFREEnabled() {
@@ -930,7 +930,8 @@ bool IsGeminiLightweightFREEnabled() {
   }
   std::string variant = base::GetFieldTrialParamValueByFeature(
       kGeminiFREExperiment, kGeminiFREExperimentParam);
-  return variant == kGeminiFREExperimentParamLightweightConvenience ||
+  return variant.empty() ||
+         variant == kGeminiFREExperimentParamLightweightConvenience ||
          variant == kGeminiFREExperimentParamLightweightPageSharing ||
          variant == kGeminiFREExperimentParamLightweightDiverse;
 }
@@ -944,10 +945,7 @@ GeminiLightweightFREVariant GetGeminiLightweightFREVariant() {
   if (variant == kGeminiFREExperimentParamLightweightDiverse) {
     return GeminiLightweightFREVariant::kDiverse;
   }
-  if (variant == kGeminiFREExperimentParamLightweightConvenience) {
-    return GeminiLightweightFREVariant::kConvenience;
-  }
-  NOTREACHED();
+  return GeminiLightweightFREVariant::kConvenience;
 }
 
 // Meant for experiments only.

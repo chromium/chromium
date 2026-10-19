@@ -11,8 +11,6 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/first_run/coordinator/gemini_first_run_mediator_delegate.h"
@@ -136,25 +134,6 @@ class GeminiFirstRunMediatorTest : public PlatformTest {
   BOOL completion_success_ = NO;
 };
 
-// Tests steps and branding header for NewUser by default.
-TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_DefaultNewUser) {
-  EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kNewUser],
-              testing::ElementsAre(GeminiFirstRunStepIdentifier::kPromo,
-                                   GeminiFirstRunStepIdentifier::kConsent));
-  EXPECT_TRUE([mediator_
-      shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
-}
-
-// Tests that stepsForFirstRunType returns only the consent step for NewUser
-// when promo impressions are exhausted.
-TEST_F(GeminiFirstRunMediatorTest,
-       StepsForFirstRunType_DefaultNewUser_PromoImpressionsExhausted) {
-  profile_->GetPrefs()->SetInteger(prefs::kIOSBWGPromoImpressionCount, 3);
-
-  EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kNewUser],
-              testing::ElementsAre(GeminiFirstRunStepIdentifier::kConsent));
-}
-
 // Tests steps and branding header for Live.
 TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_Live) {
   EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kLive],
@@ -166,11 +145,9 @@ TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_Live) {
 // Tests steps and branding header when Visual Rich experiment is enabled.
 TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_VisualRich) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kGeminiFRERefactor, {}},
-       {kGeminiFREExperiment,
-        {{kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}}}},
-      {});
+  feature_list.InitAndEnableFeatureWithParameters(
+      kGeminiFREExperiment,
+      {{kGeminiFREExperimentParam, kGeminiFREExperimentParamVisualRich}});
 
   EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kNewUser],
               testing::ElementsAre(GeminiFirstRunStepIdentifier::kVisualRich));
@@ -178,16 +155,8 @@ TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_VisualRich) {
       shouldShowBrandingHeaderForFirstRunType:GeminiFirstRunType::kNewUser]);
 }
 
-// Tests steps and branding header when Lightweight experiment is enabled.
+// Tests steps and branding header for NewUser (Lightweight by default).
 TEST_F(GeminiFirstRunMediatorTest, FirstRunConfiguration_Lightweight) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{kGeminiFRERefactor, {}},
-       {kGeminiFREExperiment,
-        {{kGeminiFREExperimentParam,
-          kGeminiFREExperimentParamLightweightConvenience}}}},
-      {});
-
   EXPECT_THAT([mediator_ stepsForFirstRunType:GeminiFirstRunType::kNewUser],
               testing::ElementsAre(GeminiFirstRunStepIdentifier::kLightweight));
   EXPECT_TRUE([mediator_
@@ -211,11 +180,9 @@ TEST_F(GeminiFirstRunMediatorTest, LightweightPromoTitle_Variants) {
 
   for (const auto& test_case : kTestCases) {
     base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeaturesAndParameters(
-        {{kGeminiFRERefactor, {}},
-         {kGeminiFREExperiment,
-          {{kGeminiFREExperimentParam, test_case.experiment_param}}}},
-        {});
+    feature_list.InitAndEnableFeatureWithParameters(
+        kGeminiFREExperiment,
+        {{kGeminiFREExperimentParam, test_case.experiment_param}});
     EXPECT_NSEQ([mediator_ lightweightPromoTitle],
                 l10n_util::GetNSString(test_case.expected_title_id));
   }
@@ -261,13 +228,6 @@ TEST_F(GeminiFirstRunMediatorTest, TestDidConsentGemini) {
 TEST_F(GeminiFirstRunMediatorTest, TestDidRefuseGeminiConsent) {
   [mediator_ didRefuseGeminiConsent];
   EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kIOSBwgConsent));
-  EXPECT_TRUE(completion_called_);
-  EXPECT_FALSE(completion_success_);
-}
-
-// Tests didCloseGeminiPromo calls completion with NO.
-TEST_F(GeminiFirstRunMediatorTest, TestDidCloseGeminiPromo) {
-  [mediator_ didCloseGeminiPromo];
   EXPECT_TRUE(completion_called_);
   EXPECT_FALSE(completion_success_);
 }

@@ -177,18 +177,31 @@ TEST_F(ActorFeaturesTest, IsGeminiLuminousEnabled_FeatureFlagDisabled) {
 }
 
 TEST_F(ActorFeaturesTest, GeminiFREExperimentVariants) {
-  // Disabled by default.
-  EXPECT_FALSE(IsGeminiFREExperimentEnabled());
+  // Enabled by default with Lightweight Convenience.
+  EXPECT_TRUE(IsGeminiFREExperimentEnabled());
   EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
-  EXPECT_FALSE(IsGeminiLightweightFREEnabled());
+  EXPECT_TRUE(IsGeminiLightweightFREEnabled());
+  EXPECT_EQ(GetGeminiLightweightFREVariant(),
+            GeminiLightweightFREVariant::kConvenience);
 
-  // Enabled with no parameters defaults to Visual Rich.
+  // Explicitly disabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndDisableFeature(kGeminiFREExperiment);
+    EXPECT_FALSE(IsGeminiFREExperimentEnabled());
+    EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
+    EXPECT_FALSE(IsGeminiLightweightFREEnabled());
+  }
+
+  // Enabled with no parameters defaults to Lightweight Convenience.
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(kGeminiFREExperiment);
     EXPECT_TRUE(IsGeminiFREExperimentEnabled());
-    EXPECT_TRUE(IsGeminiVisualRichFREEnabled());
-    EXPECT_FALSE(IsGeminiLightweightFREEnabled());
+    EXPECT_FALSE(IsGeminiVisualRichFREEnabled());
+    EXPECT_TRUE(IsGeminiLightweightFREEnabled());
+    EXPECT_EQ(GetGeminiLightweightFREVariant(),
+              GeminiLightweightFREVariant::kConvenience);
   }
 
   // Enabled with explicit "visual-rich" parameter.

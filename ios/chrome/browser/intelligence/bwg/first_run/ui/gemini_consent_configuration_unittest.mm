@@ -66,7 +66,7 @@ TEST_F(GeminiConsentConfigurationTest, StandardRowCount) {
       BuildStandardConfiguration(NO, NO, kUSCountryCode);
   ASSERT_NE(nil, config);
   EXPECT_EQ(2U, config.rows.count);
-  EXPECT_FALSE(config.collapsible);
+  EXPECT_TRUE(config.collapsible);
   EXPECT_FALSE(config.useStrict);
   EXPECT_EQ(nil, config.header);
 }
@@ -289,14 +289,6 @@ TEST_F(GeminiConsentConfigurationTest, StrictConsentLayout) {
 
 TEST_F(GeminiConsentConfigurationTest,
        LightweightFirstRunOmitsIconsAndExpandsFirstRow) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{kGeminiFREExperiment,
-        {{kGeminiFREExperimentParam,
-          kGeminiFREExperimentParamLightweightConvenience}}}},
-      /*disabled_features=*/{});
-
   GeminiConsentConfiguration* config =
       BuildStandardConfiguration(/*is_managed=*/NO,
                                  /*use_strict=*/NO, kUSCountryCode);
