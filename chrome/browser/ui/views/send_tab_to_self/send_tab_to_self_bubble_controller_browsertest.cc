@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -182,6 +183,13 @@ class SendTabToSelfBubbleControllerBrowserTest : public SigninBrowserTestBase {
     return static_cast<StubSendTabToSelfSyncService*>(
         SendTabToSelfSyncServiceFactory::GetForProfile(
             browser()->GetProfile()));
+  }
+
+  void ShowToolbarBubble(SendTabToSelfBubbleController* controller) {
+    controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+    if (!controller->IsBubbleShown()) {
+      PinnedActionTestAccessor::WaitForAnimation(browser());
+    }
   }
 
  protected:
@@ -646,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   sync_service->SetEntryPointDisplayReason(
       EntryPointDisplayReason::kOfferFeature);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+  ShowToolbarBubble(controller);
   EXPECT_TRUE(controller->IsBubbleShown());
 
   // Navigate to a new URL. This should hide the bubble.
@@ -678,7 +686,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       NavigateToUrlAndGetController(GURL("about:blank"));
   ASSERT_TRUE(controller);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+  ShowToolbarBubble(controller);
   EXPECT_TRUE(controller->IsBubbleShown());
 
   histogram_tester.ExpectUniqueSample(
@@ -698,8 +706,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
-
+  ShowToolbarBubble(controller);
   EXPECT_TRUE(controller->IsBubbleShown());
   EXPECT_NE(nullptr, controller->send_tab_to_self_bubble_view());
 }
@@ -797,8 +804,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleBrowserTest,
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
-
+  ShowToolbarBubble(controller);
   EXPECT_TRUE(controller->IsBubbleShown());
   EXPECT_NE(controller->send_tab_to_self_bubble_view(), nullptr);
 }
@@ -819,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfNoTargetDeviceQrBubbleDisabledBrowserTest,
       NavigateToUrlAndGetController(empty_url());
   ASSERT_TRUE(controller);
 
-  controller->ShowBubble(ShareEntryPoint::kToolbarIcon);
+  ShowToolbarBubble(controller);
   EXPECT_TRUE(controller->IsBubbleShown());
   EXPECT_NE(controller->send_tab_to_self_bubble_view(), nullptr);
 }

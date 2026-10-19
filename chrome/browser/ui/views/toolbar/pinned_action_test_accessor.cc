@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/run_loop.h"
@@ -24,18 +26,19 @@
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/animation/ink_drop_state.h"
+#include "ui/base/interaction/interaction_test_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/view_utils.h"
+#include "ui/webui/tracked_element/interaction_test_util_web_ui.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 PinnedActionTestAccessor::PinnedActionTestAccessor(
     BrowserWindowInterface* browser,
@@ -240,16 +243,23 @@ ui::TrackedElement* PinnedActionTestAccessor::GetElement() const {
 }
 
 void PinnedActionTestAccessor::Click() const {
-  if (auto* container = GetViewsContainer()) {
-    if (auto* button = container->GetButtonFor(action_id_)) {
-      views::test::ButtonTestApi(button).NotifyClick(ui::MouseEvent(
-          ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-          ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
-    }
-    return;
+  ui::TrackedElement* element = GetElement();
+  if (!element) {
+    WaitForAnimation(browser_);
+    element = GetElement();
   }
-  if (auto* item = GetActionItem()) {
-    item->InvokeAction();
+  ASSERT_TRUE(element);
+  const bool is_webui = element->IsA<ui::TrackedElementWebUI>();
+  ui::test::InteractionTestUtil test_util;
+  test_util.AddSimulator(
+      std::make_unique<views::test::InteractionTestUtilSimulatorViews>());
+  test_util.AddSimulator(
+      std::make_unique<ui::InteractionTestUtilSimulatorWebUI>());
+  EXPECT_EQ(ui::test::ActionResult::kSucceeded,
+            test_util.PressButton(
+                element, ui::test::InteractionTestUtil::InputType::kMouse));
+  if (is_webui) {
+    EXPECT_TRUE(FlushWebUIToolbarPipes(browser_));
   }
 }
 
