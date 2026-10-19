@@ -2422,7 +2422,9 @@ void AXTree::UpdateReverseRelations(AXNode* node,
           }
         }
       }
-      map[new_relation_target_id].insert(id);
+      if (new_relation_target_id != kInvalidAXNodeID) {
+        map[new_relation_target_id].insert(id);
+      }
     }
   }
 
