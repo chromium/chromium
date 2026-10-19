@@ -5,6 +5,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/base64url.h"
 #include "base/callback_list.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -116,6 +117,7 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/aim_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_contextual_inputs.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -4122,6 +4124,463 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
           },
           true));
 }
+
+class ContextualTasksSeparateViewportRequestIdsInteractiveUiTest
+    : public ContextualTasksInteractiveUiTest {
+ public:
+  ContextualTasksSeparateViewportRequestIdsInteractiveUiTest() = default;
+  ~ContextualTasksSeparateViewportRequestIdsInteractiveUiTest() override =
+      default;
+
+  void SetUpFeatureList() override {
+    auto enabled = GetDefaultEnabledFeatures();
+    auto disabled = GetDefaultDisabledFeatures();
+    enabled.push_back(
+        {lens::features::kLensUseSeparateRequestIdForViewportImages, {}});
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSeparateViewportRequestIdsInteractiveUiTest,
+    LensOverlayRegionSearchHandoff) {
+  UseRealLensQueryFlowRouter();
+  WaitForTemplateURLServiceToLoad();
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+
+  const DeepQuery kThreadFrame = {"contextual-tasks-app", "#threadFrame"};
+  const DeepQuery kSelectionOverlay = {"lens-overlay-app",
+                                       "lens-selection-overlay"};
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->GetContentsView()->GetBoundsInScreen().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  auto get_lens_controller = [this]() {
+    return LensSearchController::FromTabWebContents(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  };
+
+  RunTestSequence(
+      // (1)-(2) Navigate to a page and select Lens from the app menu.
+      OpenLensOverlay(),
+
+      // (3) The Lens overlay opens from the app menu entry point.
+      InAnyContext(WaitForShow(LensOverlayController::kOverlayId)),
+      CheckResult(
+          [get_lens_controller]() {
+            return get_lens_controller()->invocation_source();
+          },
+          std::make_optional(lens::LensOverlayInvocationSource::kAppMenu)),
+
+      // (4) Drag to select a region in the overlay.
+      SelectRegionInLensOverlay(kOverlayId, std::move(off_center_point)),
+
+      // (5) The region query opens the Contextual Tasks side panel for a task
+      // associated with the tab, and the panel loads the region results URL.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      Check(
+          [this]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is open for a contextual task"),
+      Check(
+          [this]() {
+            return CHECK_DEREF(ContextualTasksServiceFactory::GetForProfile(
+                                   browser()->GetProfile()))
+                .GetContextualTaskForTab(sessions::SessionTabHelper::IdForTab(
+                    browser()->tab_strip_model()->GetActiveWebContents()))
+                .has_value();
+          },
+          "Active tab is associated with a contextual task"),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "LensRegionHandoffSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelId,
+                              "LensRegionHandoffSidePanelContents"),
+      WaitForElementExists(kSidePanelId, kThreadFrame),
+      WaitForJsResultAt(kSidePanelId, kThreadFrame,
+                        "el => {"
+                        "  if (!el.src || !URL.canParse(el.src)) return false;"
+                        "  const url = new URL(el.src);"
+                        "  return url.origin === 'https://www.google.com' &&"
+                        "         url.pathname === '/search' &&"
+                        "         url.searchParams.get('udm') === '26' &&"
+                        "         url.searchParams.get('lns_mode') === 'un' &&"
+                        "         url.searchParams.get('lns_fp') === '1' &&"
+                        "         Boolean(url.searchParams.get('cinpts')) &&"
+                        "         !url.searchParams.has('vsrid') &&"
+                        "         Boolean(url.searchParams.get('vsint')) &&"
+                        "         Boolean(url.searchParams.get('gsessionid'));"
+                        "}"),
+      CheckJsResultAt(
+          kSidePanelId, kThreadFrame,
+          "el => new URL(el.src).searchParams.get('cinpts')",
+          testing::Truly([](const std::string& cinpts_param) {
+            std::string serialized_proto;
+            if (!base::Base64UrlDecode(
+                    cinpts_param, base::Base64UrlDecodePolicy::DISALLOW_PADDING,
+                    &serialized_proto)) {
+              return false;
+            }
+            lens::LensOverlayContextualInputs proto;
+            if (!proto.ParseFromString(serialized_proto)) {
+              return false;
+            }
+            if (proto.inputs_size() != 2) {
+              return false;
+            }
+            bool viewport_is_first = proto.inputs(0).is_viewport_image();
+            const auto& viewport_input =
+                proto.inputs(viewport_is_first ? 0 : 1);
+            const auto& page_input = proto.inputs(viewport_is_first ? 1 : 0);
+            return viewport_input.is_viewport_image() &&
+                   viewport_input.request_id().media_type() ==
+                       lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE &&
+                   !page_input.is_viewport_image() &&
+                   page_input.request_id().media_type() ==
+                       lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE &&
+                   viewport_input.request_id().context_id() ==
+                       page_input.request_id().context_id() &&
+                   viewport_input.request_id().uuid() !=
+                       page_input.request_id().uuid();
+          })),
+
+      // (6) The overlay stays open with the region still selected.
+      CheckResult(
+          [get_lens_controller]() {
+            return get_lens_controller()
+                ->lens_overlay_controller()
+                ->IsOverlayShowing();
+          },
+          true),
+      InAnyContext(WaitForJsResultAt(
+          kOverlayId, kSelectionOverlay,
+          "el => !!el.shadowRoot?.querySelector('#postSelectionRenderer')"
+          "?.hasSelection?.()")),
+      CheckResult(
+          [get_lens_controller]() {
+            return get_lens_controller()
+                ->lens_overlay_controller()
+                ->HasRegionSelection();
+          },
+          true));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSeparateViewportRequestIdsInteractiveUiTest,
+    AddAndSubmitTabFromComposebox) {
+  SkipIfIncognito("Tab sharing is not supported in Incognito mode.");
+
+  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+
+  const DeepQuery kFaviconGroup = {
+      "contextual-tasks-app", "#composebox",       "#composebox",
+      "#contextEntrypoint",   "#entrypointButton", "composebox-favicon-group"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+      NavigateWebContents(kPrimaryTab, GURL(chrome::kChromeUIVersionURL)),
+      AddInstrumentedTab(kGenericTab, kGenericPageUrl),
+      WaitForWebContentsReady(kGenericTab, kGenericPageUrl),
+      SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInSidePanel(kSidePanelId),
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelId, 0),
+      ForceClickAddContextEntrypoint(kSidePanelId),
+      ForceClickMenuButton(kSidePanelId, 0),
+      WaitForFaviconGroupWithTitle(kSidePanelId, "title1.html"),
+      WaitForComposeboxFilesCount(kSidePanelId, 1),
+      WaitForSubmitButtonEnabled(kSidePanelId),
+      ClickButton(kSidePanelId, kSubmitButton),
+      WaitForJsResult(kInnerWebContentsId,
+                      "() => Boolean(Array.isArray(window.receivedMessages) && "
+                      "window.receivedMessages.filter(buf => new "
+                      "Uint8Array(buf)[0] === 18).length > 0)"),
+      WithElement(kInnerWebContentsId, [](ui::TrackedElement* el) {
+        auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
+        std::string base64_msg =
+            content::EvalJs(
+                web_contents,
+                "btoa(Array.from(new "
+                "Uint8Array(window.receivedMessages.filter(buf => new "
+                "Uint8Array(buf)[0] === 18)[0])).map(b => "
+                "String.fromCharCode(b)).join(''))")
+                .ExtractString();
+        std::string decoded_msg;
+        ASSERT_TRUE(base::Base64Decode(base64_msg, &decoded_msg));
+        lens::ClientToAimMessage message;
+        ASSERT_TRUE(message.ParseFromString(decoded_msg));
+
+        EXPECT_TRUE(message.has_submit_query());
+        const auto& payload = message.submit_query().payload();
+        ASSERT_EQ(payload.lens_image_query_data_size(), 2);
+
+        const auto& page_data = payload.lens_image_query_data(0);
+        const auto& viewport_data = payload.lens_image_query_data(1);
+
+        EXPECT_EQ(page_data.request_id().media_type(),
+                  lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+        EXPECT_EQ(page_data.contextual_input_upload_type(),
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+        EXPECT_EQ(page_data.request_id().sequence_id(), 1);
+        EXPECT_EQ(page_data.request_id().image_sequence_id(), 0);
+        EXPECT_EQ(page_data.request_id().long_context_id(), 1);
+
+        EXPECT_EQ(viewport_data.request_id().media_type(),
+                  lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+        EXPECT_EQ(viewport_data.contextual_input_upload_type(),
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+        EXPECT_EQ(viewport_data.request_id().sequence_id(), 1);
+        EXPECT_EQ(viewport_data.request_id().image_sequence_id(), 1);
+        EXPECT_EQ(viewport_data.request_id().long_context_id(), 0);
+
+        EXPECT_NE(page_data.request_id().uuid(),
+                  viewport_data.request_id().uuid());
+        EXPECT_NE(page_data.request_id().context_id(), 0);
+        EXPECT_EQ(page_data.request_id().context_id(),
+                  viewport_data.request_id().context_id());
+      }));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ContextualTasksSeparateViewportRequestIdsInteractiveUiTest,
+    RecontextualizationViewportAndPageChanges) {
+  SkipIfIncognito(
+      "Auto-suggested tab sharing is not supported in Incognito mode.");
+
+  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+
+  const DeepQuery kComposeboxContainer = {"contextual-tasks-app", "#composebox",
+                                          "#composebox"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  ContextualTasksPanelController* coordinator =
+      ContextualTasksPanelController::From(browser());
+
+  uint64_t page_uuid = 0;
+  uint64_t viewport_uuid = 0;
+  int64_t session_context_id = 0;
+
+  auto extract_submit_query_message =
+      [](ui::TrackedElement* el,
+         int message_index) -> lens::ClientToAimMessage {
+    auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
+    std::string base64_msg =
+        content::EvalJs(
+            web_contents,
+            base::StringPrintf(
+                "btoa(Array.from(new "
+                "Uint8Array(window.receivedMessages.filter(buf => new "
+                "Uint8Array(buf)[0] === 18)[%d])).map(b => "
+                "String.fromCharCode(b)).join(''))",
+                message_index))
+            .ExtractString();
+    std::string decoded_msg;
+    CHECK(base::Base64Decode(base64_msg, &decoded_msg));
+    lens::ClientToAimMessage message;
+    CHECK(message.ParseFromString(decoded_msg));
+    return message;
+  };
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), Do([&]() {
+        TestTabContextualizationController::screenshot_color_ = SK_ColorRED;
+        coordinator->Show(
+            false,
+            omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelWebContentsId,
+                                 0),
+      WaitForElementExists(kSidePanelWebContentsId, kComposeboxContainer),
+      NavigateWebContents(kPrimaryTab, kGenericPageUrl),
+
+      // Turn 1: Auto-suggested tab chip is submitted (initial page + viewport
+      // upload).
+      WaitForFaviconGroupWithTitle(kSidePanelWebContentsId, "title1.html"),
+      ClickButton(kSidePanelWebContentsId, kSubmitButton),
+      WaitForJsResult(kInnerWebContentsId,
+                      "() => Boolean(Array.isArray(window.receivedMessages) && "
+                      "window.receivedMessages.filter(buf => new "
+                      "Uint8Array(buf)[0] === 18).length > 0)"),
+      WithElement(
+          kInnerWebContentsId,
+          [&](ui::TrackedElement* el) {
+            lens::ClientToAimMessage message =
+                extract_submit_query_message(el, /*message_index=*/0);
+            ASSERT_TRUE(message.has_submit_query());
+            const auto& payload = message.submit_query().payload();
+            ASSERT_EQ(payload.lens_image_query_data_size(), 2);
+
+            const auto& page_id = payload.lens_image_query_data(0).request_id();
+            const auto& viewport_id =
+                payload.lens_image_query_data(1).request_id();
+            page_uuid = page_id.uuid();
+            viewport_uuid = viewport_id.uuid();
+            session_context_id = page_id.context_id();
+
+            EXPECT_NE(page_uuid, 0u);
+            EXPECT_NE(viewport_uuid, 0u);
+            EXPECT_NE(page_uuid, viewport_uuid);
+            EXPECT_NE(session_context_id, 0);
+            EXPECT_EQ(viewport_id.context_id(), session_context_id);
+
+            EXPECT_EQ(page_id.media_type(),
+                      lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+            EXPECT_EQ(page_id.sequence_id(), 1);
+            EXPECT_EQ(page_id.image_sequence_id(), 0);
+            EXPECT_EQ(page_id.long_context_id(), 1);
+
+            EXPECT_EQ(viewport_id.media_type(),
+                      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+            EXPECT_EQ(viewport_id.sequence_id(), 1);
+            EXPECT_EQ(viewport_id.image_sequence_id(), 1);
+            EXPECT_EQ(viewport_id.long_context_id(), 0);
+          }),
+
+      // Turn 2: Submit a second query without changing either the page content
+      // or the viewport screenshot; QueryContextualizer should not reupload.
+      InputText(kSidePanelWebContentsId, "second query"),
+      ClickButton(kSidePanelWebContentsId, kSubmitButton),
+      VerifyMultipleSubmitQueryMessage("second query",
+                                       /*expected_viewport_image_count=*/0,
+                                       /*expected_upload_image_count=*/0,
+                                       /*expected_upload_file_count=*/0,
+                                       /*expected_added_input_names=*/{},
+                                       /*expected_message_index=*/1),
+
+      // Turn 3: Change only the viewport screenshot color (page content
+      // unchanged).
+      Do([&]() {
+        TestTabContextualizationController::screenshot_color_ = SK_ColorBLUE;
+      }),
+      InputText(kSidePanelWebContentsId, "third query"),
+      ClickButton(kSidePanelWebContentsId, kSubmitButton),
+      WaitForJsResult(kInnerWebContentsId,
+                      "() => Boolean(Array.isArray(window.receivedMessages) && "
+                      "window.receivedMessages.filter(buf => new "
+                      "Uint8Array(buf)[0] === 18).length > 2)"),
+      WithElement(
+          kInnerWebContentsId,
+          [&](ui::TrackedElement* el) {
+            lens::ClientToAimMessage message =
+                extract_submit_query_message(el, /*message_index=*/2);
+            ASSERT_TRUE(message.has_submit_query());
+            const auto& payload = message.submit_query().payload();
+            EXPECT_EQ(payload.query_text(), "third query");
+            ASSERT_EQ(payload.lens_image_query_data_size(), 2);
+
+            const auto& page_id = payload.lens_image_query_data(0).request_id();
+            const auto& viewport_id =
+                payload.lens_image_query_data(1).request_id();
+
+            // Page request ID preserves uuid, context_id, and Turn 1's sequence
+            // numbers because page content was not reuploaded on Turn 3.
+            EXPECT_EQ(page_id.uuid(), page_uuid);
+            EXPECT_EQ(page_id.context_id(), session_context_id);
+            EXPECT_EQ(page_id.media_type(),
+                      lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+            EXPECT_EQ(page_id.sequence_id(), 1);
+            EXPECT_EQ(page_id.image_sequence_id(), 0);
+            EXPECT_EQ(page_id.long_context_id(), 1);
+
+            // Viewport request ID preserves uuid and context_id while
+            // incrementing sequence_id and image_sequence_id to 2.
+            EXPECT_EQ(viewport_id.uuid(), viewport_uuid);
+            EXPECT_EQ(viewport_id.context_id(), session_context_id);
+            EXPECT_EQ(viewport_id.media_type(),
+                      lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+            EXPECT_EQ(viewport_id.sequence_id(), 2);
+            EXPECT_EQ(viewport_id.image_sequence_id(), 2);
+            EXPECT_EQ(viewport_id.long_context_id(), 0);
+          }),
+
+      // Turn 4: Change both the page DOM content and the viewport screenshot.
+      WithElement(kPrimaryTab,
+                  [](ui::TrackedElement* el) {
+                    auto* wc = AsInstrumentedWebContents(el)->web_contents();
+                    EXPECT_TRUE(content::ExecJs(
+                        wc,
+                        "document.body.innerText += ' Updated page content "
+                        "with enough characters to exceed byte tolerance.';"));
+                  }),
+      Do([&]() {
+        TestTabContextualizationController::screenshot_color_ = SK_ColorGREEN;
+      }),
+      InputText(kSidePanelWebContentsId, "fourth query"),
+      ClickButton(kSidePanelWebContentsId, kSubmitButton),
+      WaitForJsResult(kInnerWebContentsId,
+                      "() => Boolean(Array.isArray(window.receivedMessages) && "
+                      "window.receivedMessages.filter(buf => new "
+                      "Uint8Array(buf)[0] === 18).length > 3)"),
+      WithElement(kInnerWebContentsId, [&](ui::TrackedElement* el) {
+        lens::ClientToAimMessage message =
+            extract_submit_query_message(el, /*message_index=*/3);
+        ASSERT_TRUE(message.has_submit_query());
+        const auto& payload = message.submit_query().payload();
+        EXPECT_EQ(payload.query_text(), "fourth query");
+        ASSERT_EQ(payload.lens_image_query_data_size(), 2);
+
+        const auto& page_id = payload.lens_image_query_data(0).request_id();
+        const auto& viewport_id = payload.lens_image_query_data(1).request_id();
+
+        // Page request ID increments sequence_id and long_context_id to 2.
+        EXPECT_EQ(page_id.uuid(), page_uuid);
+        EXPECT_EQ(page_id.context_id(), session_context_id);
+        EXPECT_EQ(page_id.media_type(),
+                  lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
+        EXPECT_EQ(page_id.sequence_id(), 2);
+        EXPECT_EQ(page_id.image_sequence_id(), 0);
+        EXPECT_EQ(page_id.long_context_id(), 2);
+
+        // Viewport request ID increments sequence_id and image_sequence_id
+        // to 3.
+        EXPECT_EQ(viewport_id.uuid(), viewport_uuid);
+        EXPECT_EQ(viewport_id.context_id(), session_context_id);
+        EXPECT_EQ(viewport_id.media_type(),
+                  lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+        EXPECT_EQ(viewport_id.sequence_id(), 3);
+        EXPECT_EQ(viewport_id.image_sequence_id(), 3);
+        EXPECT_EQ(viewport_id.long_context_id(), 0);
+      }));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ContextualTasksSeparateViewportRequestIdsInteractiveUiTest,
+    testing::Values(UserVariation::kSignedIn,
+                    UserVariation::kSignedOut,
+                    UserVariation::kIncognito),
+    &UserVariationToString);
 
 // Enables the ephemeral branded toolbar entry point, which surfaces the
 // ephemeral Contextual Tasks toolbar button after the side panel is closed on a
