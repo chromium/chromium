@@ -419,6 +419,10 @@ vars = {
   # the commit queue can handle CLs rolling android_sdk_build-tools_version
   # and whatever else without interference from each other.
   'android_sdk_build-tools_version': 'version_37.0.0',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling aapt2_version
+  # and whatever else without interference from each other.
+  'aapt2_version': 'version:2@9.5.0-alpha08-16409357',
   # Used by the //third_party/android_deps/cipd entry. Rolled by the
   # android_deps autoroller.
   # Three lines of non-changing comments so that
@@ -1903,12 +1907,25 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/android_build_tools/aapt2/${{platform}}',
-              'version': 'version:2@9.5.0-alpha08-16409357',
+              'version': Var('aapt2_version'),
           },
       ],
       'condition': 'checkout_android and non_git_source and '
                    '((host_os == "linux" and host_cpu == "x64") or '
                    '(host_os == "mac" and host_cpu == "arm64"))',
+      'dep_type': 'cipd',
+  },
+
+  # Resources are compiled on Linux workers under remote execution, so
+  # non-Linux hosts also need the Linux aapt2.
+  'src/third_party/android_build_tools/aapt2/linux-amd64': {
+      'packages': [
+          {
+              'package': 'chromium/third_party/android_build_tools/aapt2/linux-amd64',
+              'version': Var('aapt2_version'),
+          },
+      ],
+      'condition': 'checkout_android and non_git_source and host_os != "linux"',
       'dep_type': 'cipd',
   },
 
