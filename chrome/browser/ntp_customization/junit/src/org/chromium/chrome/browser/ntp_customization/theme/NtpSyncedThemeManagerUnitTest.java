@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +46,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeBridge.SyncedBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
@@ -583,5 +585,18 @@ public class NtpSyncedThemeManagerUnitTest {
                         eq(JUnitTestGURLs.URL_2),
                         eq(primaryColor),
                         /* isDailyRefresh= */ eq(true));
+    }
+
+    @Test
+    public void testDisabledByPolicy_doesNotAttach() {
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        NtpSyncedThemeManager manager =
+                new NtpSyncedThemeManager(NtpCustomizationConfigManager.getInstance());
+
+        manager.onFinishNativeInitialization(mProfile);
+
+        verify(mNatives, never()).init(any(), any());
     }
 }

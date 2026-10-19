@@ -103,6 +103,10 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
      * @param profile The original (non-incognito) profile.
      */
     public void onFinishNativeInitialization(Profile profile) {
+        // The manager is attached on tablets regardless of the feature. Both the feature and the
+        // policy are fixed for the lifetime of the process.
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return;
+
         if (mProfile == profile) return;
 
         destroy();
