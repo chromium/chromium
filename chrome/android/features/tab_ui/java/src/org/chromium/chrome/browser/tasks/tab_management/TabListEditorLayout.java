@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,8 +13,10 @@ import android.view.ViewGroup;
 import android.widget.PopupWindow;
 
 import androidx.annotation.StringRes;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,7 +34,7 @@ public class TabListEditorLayout extends SelectableListLayout<TabListEditorItemS
     private TabListEditorToolbar mToolbar;
     private ViewGroup mRootView;
     private ViewGroup mParentView;
-    private RecyclerView mRecyclerView;
+    private TabListRecyclerView mRecyclerView;
     private @Nullable View mFinalRecyclerViewChild;
     private boolean mIsInitialized;
     private boolean mIsShowing;
@@ -73,7 +77,7 @@ public class TabListEditorLayout extends SelectableListLayout<TabListEditorItemS
     void initialize(
             ViewGroup rootView,
             ViewGroup parentView,
-            RecyclerView recyclerView,
+            TabListRecyclerView recyclerView,
             RecyclerView.Adapter adapter,
             SelectionDelegate<TabListEditorItemSelectionId> selectionDelegate) {
         mIsInitialized = true;
@@ -135,6 +139,30 @@ public class TabListEditorLayout extends SelectableListLayout<TabListEditorItemS
             @StringRes int backButtonContentDescription) {
         setContentDescription(getContext().getString(containerContentDescription));
         mToolbar.setBackButtonContentDescription(backButtonContentDescription);
+    }
+
+    /**
+     * Obtains the first completely visible tab's view in the list once the child tab views are laid
+     * out (running immediately if already laid out, or after the next layout pass if layout is
+     * pending).
+     *
+     * @param callback Called with the first completely visible tab's view once attached and laid
+     *     out, or {@code null} if there are no completely visible tabs.
+     */
+    void runOnFirstTabViewAvailable(Callback<@Nullable View> callback) {
+        assert mIsInitialized;
+        mRecyclerView.runOnNextLayout(
+                () -> {
+                    LinearLayoutManager layoutManager =
+                            (LinearLayoutManager) mRecyclerView.getLayoutManager();
+                    assumeNonNull(layoutManager);
+                    int pos = layoutManager.findFirstCompletelyVisibleItemPosition();
+                    if (pos == RecyclerView.NO_POSITION) {
+                        callback.onResult(null);
+                        return;
+                    }
+                    callback.onResult(layoutManager.findViewByPosition(pos));
+                });
     }
 
     private void suppressBackgroundViews() {

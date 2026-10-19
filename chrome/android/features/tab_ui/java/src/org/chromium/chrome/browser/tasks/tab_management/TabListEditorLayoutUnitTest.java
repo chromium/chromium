@@ -11,7 +11,9 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -28,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.core.widget.ImageViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -40,6 +43,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.GraphicsMode;
 
+import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -71,6 +75,8 @@ public class TabListEditorLayoutUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegate;
+    @Mock private LinearLayoutManager mLayoutManager;
+    @Mock private Callback<View> mCardViewCallback;
 
     private Context mActivity;
     private TabListEditorLayout mTabListEditorLayout;
@@ -268,5 +274,40 @@ public class TabListEditorLayoutUnitTest {
                 }
             }
         }
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testRunOnFirstTabViewAvailable_notInitialized() {
+        mTabListEditorLayout.runOnFirstTabViewAvailable(mCardViewCallback);
+    }
+
+    @Test
+    public void testRunOnFirstTabViewAvailable_completelyVisibleItem_invokesCallback() {
+        initializeLayout();
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        when(mLayoutManager.findFirstCompletelyVisibleItemPosition()).thenReturn(2);
+        when(mLayoutManager.findViewByPosition(2)).thenReturn(mChildView);
+
+        mTabListEditorLayout.runOnFirstTabViewAvailable(mCardViewCallback);
+        verify(mCardViewCallback, never()).onResult(any());
+
+        mRecyclerView.runOnNextLayoutRunnables();
+
+        verify(mCardViewCallback).onResult(mChildView);
+    }
+
+    @Test
+    public void testRunOnFirstTabViewAvailable_noCompletelyVisibleItems_invokesCallbackWithNull() {
+        initializeLayout();
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        when(mLayoutManager.findFirstCompletelyVisibleItemPosition())
+                .thenReturn(RecyclerView.NO_POSITION);
+
+        mTabListEditorLayout.runOnFirstTabViewAvailable(mCardViewCallback);
+        verify(mCardViewCallback, never()).onResult(any());
+
+        mRecyclerView.runOnNextLayoutRunnables();
+
+        verify(mCardViewCallback).onResult(null);
     }
 }
