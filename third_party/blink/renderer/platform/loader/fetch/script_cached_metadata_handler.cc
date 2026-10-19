@@ -168,6 +168,7 @@ String ScriptCachedMetadataHandler::Encoding() const {
 
 CachedMetadataHandler::ServingSource
 ScriptCachedMetadataHandler::GetServingSource() const {
+  CHECK(sender_);
   return sender_->IsServedFromCacheStorage() ? ServingSource::kCacheStorage
                                              : ServingSource::kOther;
 }
@@ -190,6 +191,7 @@ size_t ScriptCachedMetadataHandler::GetCodeCacheSize() const {
 
 void ScriptCachedMetadataHandler::CommitToPersistentStorage(
     CodeCacheHost* code_cache_host) {
+  CHECK(sender_);
   if (cached_metadata_) {
     sender_->Send(code_cache_host,
                   mojo_base::BigBuffer(cached_metadata_->SerializedData()));
@@ -210,6 +212,7 @@ void ScriptCachedMetadataHandlerWithHashing::SetSerializedCachedMetadata(
 
 void ScriptCachedMetadataHandlerWithHashing::CommitToPersistentStorage(
     CodeCacheHost* code_cache_host) {
+  CHECK(sender());
   sender()->Send(code_cache_host, GetSerializedCachedMetadata());
 }
 

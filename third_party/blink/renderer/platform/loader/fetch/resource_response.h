@@ -291,9 +291,9 @@ class PLATFORM_EXPORT ResourceResponse final {
     cache_storage_cache_name_ = cache_storage_cache_name;
   }
 
-  const scoped_refptr<CacheStorageSideDataWriterHolder>&
-  CacheStorageSideDataWriterHolder() const {
-    return cache_storage_side_data_writer_;
+  mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
+  TakeCacheStorageSideDataWriter() const {
+    return std::move(cache_storage_side_data_writer_->data);
   }
   void SetCacheStorageSideDataWriter(
       mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
@@ -682,9 +682,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   // is served via the ServiceWorker, used for writing code cache side data.
   // The underlying PendingRemote is invalid if the response isn't from
   // CacheStorage.
-  scoped_refptr<blink::CacheStorageSideDataWriterHolder>
+  scoped_refptr<CacheStorageSideDataWriterHolder>
       cache_storage_side_data_writer_ =
-          base::MakeRefCounted<blink::CacheStorageSideDataWriterHolder>();
+          base::MakeRefCounted<CacheStorageSideDataWriterHolder>();
 
   // The headers that should be exposed according to CORS. Only guaranteed
   // to be set if the response was fetched by a ServiceWorker.

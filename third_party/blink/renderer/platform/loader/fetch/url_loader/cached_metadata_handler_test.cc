@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -260,6 +261,85 @@ TEST_F(
   SendDataFor(response, &mock_disk_cache);
   EXPECT_EQ(0u, mock_disk_cache.CachedURLs().size());
   EXPECT_EQ(0u, mock_disk_cache.CacheStorageWriteCount());
+}
+
+TEST_F(CachedMetadataHandlerTest,
+       DoesNotFallThroughToCodeCacheHostOnRepeatedSendForCacheResponse) {
+  ScopedServiceWorkerCodeCacheForTest scoped_feature(true);
+  MockGeneratedCodeCache mock_disk_cache;
+
+  ResourceResponse response(CreateTestResourceResponse());
+  response.SetWasFetchedViaServiceWorker(true);
+  response.SetUrlListViaServiceWorker({response.CurrentRequestUrl()});
+  mock_disk_cache.BindSideDataWriter(response);
+
+  std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
+      response, mojom::CodeCacheType::kWebAssembly,
+      SecurityOrigin::Create(response.CurrentRequestUrl()));
+
+  std::unique_ptr<mojom::blink::CodeCacheHost> mojo_code_cache_host =
+      std::make_unique<CodeCacheHostMockImpl>(&mock_disk_cache);
+  mojo::Remote<mojom::blink::CodeCacheHost> remote;
+  mojo::Receiver<mojom::blink::CodeCacheHost> receiver(
+      mojo_code_cache_host.get(), remote.BindNewPipeAndPassReceiver());
+  auto code_cache_host = CodeCacheHost::Create(std::move(remote));
+
+  constexpr uint8_t kTestData[] = {1, 2, 3, 4, 5};
+  sender->Send(code_cache_host.get(), mojo_base::BigBuffer(kTestData));
+  sender->Send(code_cache_host.get(), mojo_base::BigBuffer(kTestData));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(0u, mock_disk_cache.CachedURLs().size());
+  EXPECT_EQ(1u, mock_disk_cache.CacheStorageWriteCount());
+}
+
+TEST_F(CachedMetadataHandlerTest,
+       PreservesCacheStorageWriterAcrossResourceResponseCopyAndTakesSenderOnce) {
+  ScopedServiceWorkerCodeCacheForTest scoped_feature(true);
+  MockGeneratedCodeCache mock_disk_cache;
+
+  ResourceResponse response(CreateTestResourceResponse());
+  response.SetWasFetchedViaServiceWorker(true);
+  response.SetUrlListViaServiceWorker({response.CurrentRequestUrl()});
+  mock_disk_cache.BindSideDataWriter(response);
+
+  // Copy ResourceResponse before creating the sender (sharing the underlying
+  // writer holder).
+  ResourceResponse copied_response(response);
+
+  auto* handler = MakeGarbageCollected<ScriptCachedMetadataHandler>(
+      Utf8Encoding(),
+      CachedMetadataSender::Create(
+          copied_response, mojom::CodeCacheType::kWebAssembly,
+          SecurityOrigin::Create(copied_response.CurrentRequestUrl())));
+
+  // First consumer takes the sender from the shared handler and writes to
+  // CacheStorage.
+  std::unique_ptr<CachedMetadataSender> first_sender = handler->TakeSender();
+  ASSERT_NE(nullptr, first_sender);
+
+  std::unique_ptr<mojom::blink::CodeCacheHost> mojo_code_cache_host =
+      std::make_unique<CodeCacheHostMockImpl>(&mock_disk_cache);
+  mojo::Remote<mojom::blink::CodeCacheHost> remote;
+  mojo::Receiver<mojom::blink::CodeCacheHost> receiver(
+      mojo_code_cache_host.get(), remote.BindNewPipeAndPassReceiver());
+  auto code_cache_host = CodeCacheHost::Create(std::move(remote));
+
+  constexpr uint8_t kTestData[] = {1, 2, 3, 4, 5};
+  first_sender->Send(code_cache_host.get(), mojo_base::BigBuffer(kTestData));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(0u, mock_disk_cache.CachedURLs().size());
+  EXPECT_EQ(1u, mock_disk_cache.CacheStorageWriteCount());
+
+  // Second consumer (e.g. a cloned Response sharing the same handler) gets
+  // nullptr from TakeSender().
+  EXPECT_EQ(nullptr, handler->TakeSender());
+
+  // Clearing in-memory metadata locally on the handler after the sender was
+  // taken remains safe.
+  handler->ClearCachedMetadata(/*code_cache_host=*/nullptr,
+                               CachedMetadataHandler::kClearLocally);
 }
 
 TEST_F(CachedMetadataHandlerTest,

@@ -117,12 +117,6 @@ class CORE_EXPORT FetchResponseData final
   void SetCacheStorageCacheName(const String& cache_storage_cache_name) {
     cache_storage_cache_name_ = cache_storage_cache_name;
   }
-  void ShareCacheStorageSideDataWriterHolder(
-      scoped_refptr<CacheStorageSideDataWriterHolder>
-          cache_storage_side_data_writer) {
-    CHECK(cache_storage_side_data_writer);
-    cache_storage_side_data_writer_ = std::move(cache_storage_side_data_writer);
-  }
   void SetCacheStorageSideDataWriter(
       mojo::PendingRemote<network::mojom::blink::CacheStorageSideDataWriter>
           cache_storage_side_data_writer) {

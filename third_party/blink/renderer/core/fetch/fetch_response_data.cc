@@ -217,8 +217,8 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   new_response->request_method_ = request_method_;
   new_response->response_time_ = response_time_;
   new_response->cache_storage_cache_name_ = cache_storage_cache_name_;
-  new_response->ShareCacheStorageSideDataWriterHolder(
-      cache_storage_side_data_writer_);
+  new_response->cache_storage_side_data_writer_ =
+      cache_storage_side_data_writer_;
   new_response->cors_exposed_header_names_ = cors_exposed_header_names_;
   new_response->connection_info_ = connection_info_;
   new_response->alpn_negotiated_protocol_ = alpn_negotiated_protocol_;
@@ -352,8 +352,6 @@ void FetchResponseData::InitFromResourceResponse(
   SetRequestMethod(request_method);
   SetResponseTime(response.ResponseTime());
   SetCacheStorageCacheName(response.CacheStorageCacheName());
-  ShareCacheStorageSideDataWriterHolder(
-      response.CacheStorageSideDataWriterHolder());
 
   if (response.WasCached()) {
     SetResponseSource(network::mojom::FetchResponseSource::kHttpCache);

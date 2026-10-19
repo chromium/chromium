@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -62,6 +63,9 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
   void OnMemoryDump(WebProcessMemoryDump* pmd,
                     const String& dump_prefix) const override;
   size_t GetCodeCacheSize() const override;
+  std::unique_ptr<CachedMetadataSender> TakeSender() override {
+    return std::move(sender_);
+  }
 
  protected:
   // Asks sender to send `cached_metadata_` to the `code_cache_host`. Virtual to
