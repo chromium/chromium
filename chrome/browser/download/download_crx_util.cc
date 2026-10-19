@@ -113,6 +113,7 @@ scoped_refptr<extensions::CrxInstaller> CreateCrxInstaller(
   installer->set_error_on_unsupported_requirements(true);
   installer->set_delete_source(true);
   installer->set_was_triggered_by_user_download();
+  installer->set_download_url(download_item.GetURL());
   installer->set_original_mime_type(download_item.GetOriginalMimeType());
   installer->set_apps_require_extension_mime_type(true);
 

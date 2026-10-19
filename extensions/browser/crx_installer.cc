@@ -446,40 +446,8 @@ std::optional<CrxInstallError> CrxInstaller::AllowInstall(
               base::ASCIIToUTF16(Extension::kMimeType)));
     }
 
-    // If the client_ is NULL, then the app is either being installed via
-    // an internal mechanism like sync, external_extensions, or default apps.
-    // In that case, we don't want to enforce things like the install origin.
-    if (!is_gallery_install() && client_) {
-      // For apps with a gallery update URL, require that they be installed
-      // from the gallery.
-      // TODO(erikkay) Apply this rule for paid extensions and themes as well.
-      if (UpdatesFromWebstore(*extension)) {
-        return CrxInstallError(
-            CrxInstallErrorType::OTHER,
-            CrxInstallErrorDetail::NOT_INSTALLED_FROM_GALLERY,
-            l10n_util::GetStringFUTF16(
-                IDS_EXTENSION_INSTALL_GALLERY_ONLY,
-                l10n_util::GetStringUTF16(IDS_EXTENSION_WEB_STORE_TITLE)));
-      }
-
-      // For self-hosted apps, verify that the entire extent is on the same
-      // host (or a subdomain of the host) the download happened from.  There's
-      // no way for us to verify that the app controls any other hosts.
-      URLPattern pattern(UserScript::ValidUserScriptSchemes());
-      pattern.SetHost(download_url_.GetHost());
-      pattern.SetMatchSubdomains(true);
-
-      const URLPatternSet& patterns = extension_->web_extent();
-      for (auto i = patterns.begin(); i != patterns.end(); ++i) {
-        if (!pattern.MatchesHost(i->host())) {
-          return CrxInstallError(
-              CrxInstallErrorType::OTHER,
-              CrxInstallErrorDetail::INCORRECT_INSTALL_HOST,
-              l10n_util::GetStringUTF16(
-                  IDS_EXTENSION_INSTALL_INCORRECT_INSTALL_HOST));
-        }
-      }
-    }
+    // Additional install-origin checks for user-initiated app installs are
+    // performed in CheckInstall() on the UI thread.
   }
 
   return std::nullopt;
@@ -631,6 +599,57 @@ void CrxInstaller::CheckInstall() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!browser_context_) {
     return;
+  }
+
+  // If `client_` is null, then the app is being installed via an internal
+  // mechanism like sync, external_extensions, or default apps. In that case,
+  // install origin enforcement is not needed.
+  if (extension()->is_app() && !is_gallery_install() && client_ &&
+      !Manifest::IsExternalLocation(install_source_)) {
+    // For apps with a gallery update URL, require that they be installed from
+    // the gallery.
+    // TODO(erikkay) Apply this rule for paid extensions and themes as well.
+    if (UpdatesFromWebstore(*extension())) {
+      ReportFailureFromUIThread(CrxInstallError(
+          CrxInstallErrorType::OTHER,
+          CrxInstallErrorDetail::NOT_INSTALLED_FROM_GALLERY,
+          l10n_util::GetStringFUTF16(
+              IDS_EXTENSION_INSTALL_GALLERY_ONLY,
+              l10n_util::GetStringUTF16(IDS_EXTENSION_WEB_STORE_TITLE))));
+      return;
+    }
+
+    // For self-hosted apps, verify that the entire extent is on the same host
+    // (or a subdomain of the host) the download happened from. There is no
+    // way to verify that the app controls any other hosts.
+    if (!extension()->web_extent().is_empty()) {
+      // A pattern with an empty host and match_subdomains matches every host,
+      // so any web extent must be rejected when there is no download host
+      // available to compare against.
+      if (!download_url_.has_host()) {
+        ReportFailureFromUIThread(
+            CrxInstallError(CrxInstallErrorType::OTHER,
+                            CrxInstallErrorDetail::INCORRECT_INSTALL_HOST,
+                            l10n_util::GetStringUTF16(
+                                IDS_EXTENSION_INSTALL_INCORRECT_INSTALL_HOST)));
+        return;
+      }
+
+      URLPattern pattern(UserScript::ValidUserScriptSchemes());
+      pattern.SetHost(download_url_.host());
+      pattern.SetMatchSubdomains(true);
+
+      for (const URLPattern& web_extent_pattern : extension()->web_extent()) {
+        if (!pattern.MatchesHost(web_extent_pattern.host())) {
+          ReportFailureFromUIThread(CrxInstallError(
+              CrxInstallErrorType::OTHER,
+              CrxInstallErrorDetail::INCORRECT_INSTALL_HOST,
+              l10n_util::GetStringUTF16(
+                  IDS_EXTENSION_INSTALL_INCORRECT_INSTALL_HOST)));
+          return;
+        }
+      }
+    }
   }
 
   // TODO(crbug.com/40387578): Move this code to a utility class to avoid

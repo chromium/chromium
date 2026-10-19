@@ -168,6 +168,9 @@ class CrxInstaller : public SandboxedUnpackerClient {
 
   const base::FilePath& source_file() const { return source_file_; }
 
+  const GURL& download_url() const { return download_url_; }
+  void set_download_url(const GURL& val) { download_url_ = val; }
+
   mojom::ManifestLocation install_source() const { return install_source_; }
   void set_install_source(mojom::ManifestLocation source) {
     install_source_ = source;

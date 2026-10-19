@@ -595,6 +595,68 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, AllowOffStore) {
   }
 }
 
+// Tests that self-hosted hosted app installation requires a matching download
+// host.
+IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
+                       HostedAppExtentRequiresDownloadHost) {
+  base::ScopedAllowBlockingForTesting allow_io;
+
+  TestExtensionDir app_dir;
+  app_dir.WriteManifest(
+      R"({
+           "name": "Hosted app",
+           "version": "1",
+           "manifest_version": 2,
+           "app": {
+             "urls": ["http://app.example.com/"],
+             "launch": {"web_url": "http://app.example.com/"}
+           }
+         })");
+  base::FilePath crx_path = app_dir.Pack();
+  ASSERT_FALSE(crx_path.empty());
+
+  auto run_installer =
+      [&](const GURL& download_url) -> std::optional<CrxInstallError> {
+    std::unique_ptr<MockPromptProxy> mock_prompt =
+        CreateMockPromptProxyForBrowser(browser());
+    scoped_refptr<CrxInstaller> installer(
+        CrxInstaller::Create(profile(), mock_prompt->CreatePrompt()));
+    installer->set_off_store_install_allow_reason(
+        CrxInstaller::OffStoreInstallAllowedInTest);
+    installer->set_original_mime_type(Extension::kMimeType);
+    installer->set_apps_require_extension_mime_type(true);
+    installer->set_download_url(download_url);
+
+    base::test::TestFuture<std::optional<CrxInstallError>>
+        installer_done_future;
+    installer->AddInstallerCallback(
+        installer_done_future
+            .GetCallback<const std::optional<CrxInstallError>&>());
+    installer->InstallCrx(crx_path);
+    return installer_done_future.Take();
+  };
+
+  // The download host does not cover the app's web extent, so the install
+  // must be rejected.
+  std::optional<CrxInstallError> result =
+      run_installer(GURL("http://other.example.com/app.crx"));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(CrxInstallErrorDetail::INCORRECT_INSTALL_HOST, result->detail());
+
+  // No download URL is available (for example, the file was dropped from
+  // disk); there is no host to compare against, so the install must be
+  // rejected.
+  result = run_installer(GURL());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(CrxInstallErrorDetail::INCORRECT_INSTALL_HOST, result->detail());
+
+  // The app's web extent is limited to the host (or a subdomain of the host)
+  // it was downloaded from, so the install is allowed.
+  EXPECT_EQ(std::nullopt,
+            run_installer(GURL("http://app.example.com/app.crx")));
+  EXPECT_EQ(std::nullopt, run_installer(GURL("http://example.com/app.crx")));
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, HiDpiThemeTest) {
   base::FilePath crx_path = test_data_dir_.AppendASCII("theme_hidpi_crx");
   crx_path = crx_path.AppendASCII("theme_hidpi.crx");
