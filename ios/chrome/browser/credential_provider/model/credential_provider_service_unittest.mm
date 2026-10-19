@@ -270,7 +270,13 @@ TEST_F(CredentialProviderServiceTest, FirstSync) {
               base::SysUTF16ToNSString(kTestPassword1));
 }
 
-TEST_F(CredentialProviderServiceTest, TwoStores) {
+// TODO(crbug.com/575488677): Flaky on physical devices.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_TwoStores TwoStores
+#else
+#define MAYBE_TwoStores DISABLED_TwoStores
+#endif
+TEST_F(CredentialProviderServiceTest, MAYBE_TwoStores) {
   password_manager::PasswordForm local_form;
   local_form.url = GURL(kTestUrl1);
   local_form.username_value = kTestUsername1;

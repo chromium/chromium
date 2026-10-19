@@ -111,7 +111,7 @@ crbug.com/554049961 GeminiMultiTabTestCase/testActiveTabNotBlockedOnTabGridWhenS
 crbug.com/557277868 ContentSuggestionsTestCase/testMostVisitedPinnedSiteDragAndDrop [ Pass Failure ]
 crbug.com/557277111 [ Simulator ] TranslateInfobarTestCase/testTranslateManualTrigger [ Pass Failure ]
 crbug.com/557276943 [ iPhone Simulator ] SnapshotTestCase/testSnapshotWithScrollDown [ Pass Failure ]
-crbug.com/557277287 [ iPhone Simulator ] ComposeboxEligiblityTestCase/testNoTabAttachmentsInImageGeneration [ Pass Failure ]
+crbug.com/557277287 ComposeboxEligiblityTestCase/testNoTabAttachmentsInImageGeneration [ Pass Failure ]
 crbug.com/557278120 [ iPad Simulator ] InfobarTestCase/testInfobarTopMostVisible [ Pass Failure ]
 crbug.com/557278184 [ iPad Simulator ] SaveToDriveTestCase/testSaveToDriveAccountRemoved [ Pass Failure ]
 crbug.com/557277880 [ iPad Simulator ] FeatureEngagementTestCase/testRequestDesktopTip [ Pass Failure ]
@@ -239,3 +239,9 @@ crbug.com/573994066 [ Device ] TracingTestCase/testStartupTracing [ Skip ]
 crbug.com/573995191 TabGridTestCase/testHistorySuggestedActionInRegularTabsSearch [ Pass Failure ]
 crbug.com/573994751 StartSurfaceTestCase/testOpenNewWindowDoesNotReopenNTP [ Pass Failure ]
 crbug.com/573993705 AssistantAIMTestCase/testInputPlateHiddenOnPlusMenu [ Pass Failure ]
+
+# Gardening suppression 2026-10-19
+crbug.com/575489890 AutofillProfileSettingsTestCase/testCountrySelection [ Pass Failure ]
+crbug.com/575489325 [ Device ] NewTabPageTestCase/testPremiumAvatarRingWithDynamicTierChange [ Pass Failure ]
+crbug.com/575489612 [ iPhone Simulator ] AutofillAIEGTest/testSavePassportForm [ Pass Failure ]
+crbug.com/575489509 [ Simulator ] SharedTabGroupsSigninTestCase/testJoinGroupNotSynced [ Pass Failure ]
