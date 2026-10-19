@@ -17,10 +17,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/read_anything/read_anything_contents_wrapper.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
-#include "chrome/browser/ui/read_anything/read_anything_hats_survey_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_activation_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
-#include "chrome/browser/ui/read_anything/read_anything_omnibox_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
@@ -42,6 +40,8 @@ struct NativeWebKeyboardEvent;
 }  // namespace input
 
 class ReadAnythingController;
+class ReadAnythingHatsSurveyController;
+class ReadAnythingOmniboxController;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
 

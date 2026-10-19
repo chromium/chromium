@@ -33,11 +33,9 @@ source_set("read_anything") {
     "read_anything_controller.h",
     "read_anything_entry_point_controller.h",
     "read_anything_enums.h",
-    "read_anything_hats_survey_controller.h",
     "read_anything_immersive_activation_observer.h",
     "read_anything_immersive_overlay_view.h",
     "read_anything_lifecycle_observer.h",
-    "read_anything_omnibox_controller.h",
     "read_anything_service.h",
     "read_anything_service_factory.h",
     "read_anything_side_panel_navigation_throttle.h",
@@ -62,7 +60,6 @@ source_set("read_anything") {
     "//url",
   ]
   deps = [
-    "//chrome/browser/ui/page_action",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/views/side_panel",
@@ -79,10 +76,12 @@ source_set("impl") {
     "read_anything_controller.cc",
     "read_anything_entry_point_controller.cc",
     "read_anything_hats_survey_controller.cc",
+    "read_anything_hats_survey_controller.h",
     "read_anything_immersive_overlay_view.cc",
     "read_anything_immersive_web_view.cc",
     "read_anything_immersive_web_view.h",
     "read_anything_omnibox_controller.cc",
+    "read_anything_omnibox_controller.h",
     "read_anything_service.cc",
     "read_anything_service_factory.cc",
     "read_anything_side_panel_controller.cc",
@@ -107,6 +106,7 @@ source_set("impl") {
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/page_action",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/user_education",
@@ -248,6 +248,7 @@ source_set("unit_tests") {
     "read_anything_hats_survey_controller_unittest.cc",
   ]
   deps = [
+    ":impl",
     ":read_anything",
     "//base",
     "//chrome/browser/ui/browser_window/test:test_support",
