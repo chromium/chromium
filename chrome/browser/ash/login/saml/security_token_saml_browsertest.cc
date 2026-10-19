@@ -11,8 +11,8 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,11 +20,12 @@ namespace ash {
 namespace {
 
 std::string GetActiveUserEmail() {
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  if (!user)
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
     return std::string();
-  return user->GetAccountId().GetUserEmail();
+  }
+  return active_session->account_id().GetUserEmail();
 }
 
 }  // namespace

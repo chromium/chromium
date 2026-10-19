@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_login_pref_names.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
@@ -24,8 +25,11 @@
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -197,10 +201,15 @@ IN_PROC_BROWSER_TEST_F(LocaleSwitchScreenBrowserTest,
   EXPECT_EQ(g_browser_process->GetApplicationLocale(), new_locale);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    const user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    return user && user->GetAccountLocale() &&
-           *user->GetAccountLocale() == new_locale;
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    if (!active_session) {
+      return false;
+    }
+    const user_manager::User* user = user_manager::UserManager::Get()->FindUser(
+        active_session->account_id());
+    CHECK(user);
+    return user->GetAccountLocale() && *user->GetAccountLocale() == new_locale;
   })) << "Timeout waiting for user account locale to be updated";
 }
 

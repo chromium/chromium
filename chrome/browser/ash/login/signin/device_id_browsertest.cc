@@ -33,8 +33,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/user_manager/known_user.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -325,10 +328,15 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_Migration) {
                kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
 
   // Simulate user that has device ID saved only in preferences (pre-M44).
-  PrefService* prefs =
-      ProfileHelper::Get()
-          ->GetProfileByUser(user_manager::UserManager::Get()->GetActiveUser())
-          ->GetPrefs();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  user_manager::User* user =
+      user_manager::UserManager::Get()->FindUserAndModify(
+          active_session->account_id());
+  ASSERT_TRUE(user);
+  PrefService* prefs = user->GetProfilePrefs();
+  ASSERT_TRUE(prefs);
   prefs->SetString(
       prefs::kGoogleServicesSigninScopedDeviceId,
       GetDeviceId(AccountId::FromUserEmail(FakeGaiaMixin::kFakeUserEmail)));
@@ -361,10 +369,15 @@ IN_PROC_BROWSER_TEST_F(DeviceIDTest, PRE_LegacyUsers) {
   SignInOnline(FakeGaiaMixin::kFakeUserEmail, FakeGaiaMixin::kFakeUserPassword,
                kRefreshToken1, FakeGaiaMixin::kFakeUserGaiaId);
 
-  PrefService* prefs =
-      ProfileHelper::Get()
-          ->GetProfileByUser(user_manager::UserManager::Get()->GetActiveUser())
-          ->GetPrefs();
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
+  user_manager::User* user =
+      user_manager::UserManager::Get()->FindUserAndModify(
+          active_session->account_id());
+  ASSERT_TRUE(user);
+  PrefService* prefs = user->GetProfilePrefs();
+  ASSERT_TRUE(prefs);
   EXPECT_TRUE(
       prefs->GetString(prefs::kGoogleServicesSigninScopedDeviceId).empty());
 

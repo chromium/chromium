@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -41,8 +42,8 @@
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -67,6 +68,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -764,8 +767,11 @@ class AutoStartTest : public LockscreenWebUiTest,
 
   void ForceOnlineReauthOnLockScreen() {
     base::test::TestFuture<void> test_future;
-    Profile* profile = ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetActiveUser());
+    Profile* profile = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            CHECK_DEREF(
+                session_manager::SessionManager::Get()->GetActiveSession())
+                .account_id()));
     ASSERT_TRUE(profile);
     LockScreenReauthManager* lock_screen_reauth_manager =
         LockScreenReauthManagerFactory::GetForProfile(profile);
@@ -1270,8 +1276,11 @@ class SAMLCookieTransferTest : public SamlUnlockTest {
     constexpr char kRandomCookieName[] = "random_cookie";
     constexpr char kRandomCookieValue[] = "random_cookie_value";
 
-    Profile* profile = ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetActiveUser());
+    Profile* profile = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            CHECK_DEREF(
+                session_manager::SessionManager::Get()->GetActiveSession())
+                .account_id()));
     ASSERT_TRUE(profile);
     net::CookieOptions options;
     options.set_include_httponly();
@@ -1293,8 +1302,11 @@ class SAMLCookieTransferTest : public SamlUnlockTest {
 
   void ExpectCookieInUserProfile(const std::string& cookie_name,
                                  const std::string& cookie_value) {
-    Profile* profile = ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetActiveUser());
+    Profile* profile = Profile::FromBrowserContext(
+        BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            CHECK_DEREF(
+                session_manager::SessionManager::Get()->GetActiveSession())
+                .account_id()));
     net::CookieList cookie_list_;
     base::RunLoop run_loop;
     profile->GetDefaultStoragePartition()

@@ -54,9 +54,10 @@
 #include "components/account_id/account_id.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/features/simple_feature.h"
@@ -829,9 +830,12 @@ IN_PROC_BROWSER_TEST_F(SecurityTokenSessionBehaviorSamlTest, Logout) {
   test::WaitForPrimaryUserSessionStart();
 
   // Setup extension and pref.
+  const session_manager::Session* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  ASSERT_TRUE(active_session);
   Profile* profile = Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByUser(
-          user_manager::UserManager::Get()->GetActiveUser()));
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          active_session->account_id()));
   PrepareUserCertificateProviderExtension(profile);
   g_browser_process->local_state()->SetString(
       ash::prefs::kSecurityTokenSessionBehavior, "LOGOUT");

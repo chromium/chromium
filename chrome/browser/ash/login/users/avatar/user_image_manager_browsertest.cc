@@ -61,6 +61,8 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -264,11 +266,11 @@ class UserImageManagerTestBase : public LoginManagerTest,
     pref_change_registrar.Add("UserDisplayName", run_loop.QuitClosure());
     run_loop.Run();
 
-    const user_manager::User* user =
-        user_manager::UserManager::Get()->GetActiveUser();
-    ASSERT_TRUE(user);
-    UserImageManagerImpl* uim =
-        UserImageManagerRegistry::Get()->GetManager(user->GetAccountId());
+    const session_manager::Session* active_session =
+        session_manager::SessionManager::Get()->GetActiveSession();
+    ASSERT_TRUE(active_session);
+    UserImageManagerImpl* uim = UserImageManagerRegistry::Get()->GetManager(
+        active_session->account_id());
     if (uim->job_.get()) {
       run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
