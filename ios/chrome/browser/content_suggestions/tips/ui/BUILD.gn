@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "ntp_customization_promo_view_controller.h",
+    "ntp_customization_promo_view_controller.mm",
     "ntp_theme_actionable_tip_config.h",
     "ntp_theme_actionable_tip_config.mm",
     "ntp_theme_actionable_tip_view.h",

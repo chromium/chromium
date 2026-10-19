@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/content_suggestions/shortcuts/coordinator/shortcuts_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_ntp_customization_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_collection_utils.h"
@@ -224,7 +225,8 @@ using segmentation_platform::TipIdentifier;
     PriceTrackingPromoActionDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
     SetUpListTapDelegate,
-    ShopCardActionDelegate>
+    ShopCardActionDelegate,
+    TipsNTPCustomizationCoordinatorDelegate>
 
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
@@ -264,6 +266,7 @@ using segmentation_platform::TipIdentifier;
   SigninCoordinator* _signinCoordinator;
   MagicStackCollectionViewController* _magicStackCollectionView;
   DefaultBrowserMediator* _defaultBrowserMediator;
+  TipsNTPCustomizationCoordinator* _tipsNTPCustomizationCoordinator;
 
   raw_ptr<segmentation_platform::SegmentationPlatformService>
       _segmentationService;
@@ -618,6 +621,8 @@ using segmentation_platform::TipIdentifier;
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
   [self stopSigninCoordinator];
+  [_tipsNTPCustomizationCoordinator stop];
+  _tipsNTPCustomizationCoordinator = nil;
 }
 
 #pragma mark - Public methods
@@ -880,8 +885,17 @@ using segmentation_platform::TipIdentifier;
       break;
     }
     case TipIdentifier::kNTPCustomization: {
-      CHECK(!segmentation_platform::features::
-                IsMagicStackTipsV2IosActionableEnabled());
+      if (segmentation_platform::features::
+              IsMagicStackTipsV2IosActionableEnabled()) {
+        [_tipsNTPCustomizationCoordinator stop];
+        _tipsNTPCustomizationCoordinator =
+            [[TipsNTPCustomizationCoordinator alloc]
+                initWithBaseViewController:self.magicStackCollectionView
+                                   browser:self.browser];
+        _tipsNTPCustomizationCoordinator.delegate = self;
+        [_tipsNTPCustomizationCoordinator start];
+        break;
+      }
       [self.delegate openMainCustomizationMenuWithIconBubbleOnDismiss:YES
                                                        scrollToBottom:YES];
       break;
@@ -1477,6 +1491,16 @@ using segmentation_platform::TipIdentifier;
     params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
     urlLoadingBrowserAgent->Load(params);
   }
+}
+
+#pragma mark - TipsNTPCustomizationCoordinatorDelegate
+
+- (void)tipsNTPCustomizationCoordinator:
+            (TipsNTPCustomizationCoordinator*)coordinator
+                    didFinishWithAccept:(BOOL)didAccept {
+  [_tipsNTPCustomizationCoordinator stop];
+  _tipsNTPCustomizationCoordinator = nil;
+  // TODO(crbug.com/571447764): Trigger the undo snackbar.
 }
 
 #pragma mark - Helpers
