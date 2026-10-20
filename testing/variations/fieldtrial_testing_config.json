@@ -17543,6 +17543,21 @@
             ]
         }
     ],
+    "TrimMemoryBackgroundIsSevere": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261020",
+                    "enable_features": [
+                        "TrimMemoryBackgroundIsSevere"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
