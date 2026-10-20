@@ -150,7 +150,7 @@ WebUILoginView::~WebUILoginView() {
 
 void WebUILoginView::Init() {
   // Init() should only be called once.
-  DCHECK(!web_view_);
+  CHECK(!web_view_, base::NotFatalUntil::M162);
   auto web_view =
       std::make_unique<views::WebView>(ProfileHelper::GetSigninProfile());
   WebContents* web_contents = web_view->GetWebContents();
@@ -259,7 +259,7 @@ void WebUILoginView::SetKeyboardEventsAndSystemTrayEnabled(bool enabled) {
 // WebUILoginView protected: ---------------------------------------------------
 
 void WebUILoginView::Layout(PassKey) {
-  DCHECK(web_view_);
+  CHECK(web_view_, base::NotFatalUntil::M162);
   web_view_->SetBoundsRect(bounds());
 
   for (auto& observer : observer_list_) {

@@ -630,7 +630,7 @@ void NetworkStateNotifier::ShowConnectErrorNotification(
 }
 
 void NetworkStateNotifier::ShowVpnDisconnectedNotification(VpnDetails* vpn) {
-  DCHECK(vpn);
+  CHECK(vpn, base::NotFatalUntil::M162);
   std::u16string error_msg = l10n_util::GetStringFUTF16(
       IDS_NETWORK_VPN_CONNECTION_LOST_BODY, base::UTF8ToUTF16(vpn->name));
   ShowErrorNotification(

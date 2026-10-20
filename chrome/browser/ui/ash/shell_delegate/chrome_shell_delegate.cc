@@ -396,7 +396,7 @@ bool ChromeShellDelegate::IsUiDevToolsStarted() const {
 void ChromeShellDelegate::StartUiDevTools() {
   base::FilePath output_dir;
   bool result = base::PathService::Get(ash::DIR_USER_DATA, &output_dir);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
 
   return ui_devtools::ServerHolder::GetInstance()->CreateUiDevTools(output_dir);
 }

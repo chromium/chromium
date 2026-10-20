@@ -89,10 +89,10 @@ uint32_t GetSessionId(const User& user) {
 // no user session started for the given user.
 std::unique_ptr<ash::UserSession> UserToUserSession(const User& user) {
   const uint32_t user_session_id = GetSessionId(user);
-  DCHECK_NE(0u, user_session_id);
+  CHECK_NE(0u, user_session_id, base::NotFatalUntil::M162);
 
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(&user);
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   auto session = std::make_unique<ash::UserSession>();
   session->session_id = user_session_id;
@@ -162,12 +162,13 @@ SessionControllerClientImpl::SessionControllerClientImpl(
       ash::prefs::kSessionLengthLimit,
       base::BindRepeating(&SessionControllerClientImpl::SendSessionLengthLimit,
                           base::Unretained(this)));
-  DCHECK(!g_session_controller_client_instance);
+  CHECK(!g_session_controller_client_instance, base::NotFatalUntil::M162);
   g_session_controller_client_instance = this;
 }
 
 SessionControllerClientImpl::~SessionControllerClientImpl() {
-  DCHECK_EQ(this, g_session_controller_client_instance);
+  CHECK_EQ(this, g_session_controller_client_instance,
+           base::NotFatalUntil::M162);
   g_session_controller_client_instance = nullptr;
   if (session_controller_ &&
       session_controller_ == ash::SessionController::Get()) {
@@ -262,11 +263,13 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
     return;
   }
 
-  DCHECK(UserManager::Get()->GetLoggedInUsers().size() <
-         session_manager::kMaximumNumberOfUserSessions);
+  CHECK(UserManager::Get()->GetLoggedInUsers().size() <
+            session_manager::kMaximumNumberOfUserSessions,
+        base::NotFatalUntil::M162);
 
   // Launch sign in screen to add another user to current session.
-  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiUserSignIn().empty());
+  CHECK(!UserManager::Get()->GetUsersAllowedForMultiUserSignIn().empty(),
+        base::NotFatalUntil::M162);
 
   // Don't show the dialog if any logged-in user in the multi-profile session
   // dismissed it.
@@ -524,9 +527,10 @@ void SessionControllerClientImpl::OnSessionStateChanged() {
   TRACE_EVENT0("ui", "SessionControllerClientImpl::OnSessionStateChanged");
   if (SessionManager::Get()->session_state() == SessionState::ACTIVE) {
     // The active user should not be pending when the session becomes active.
-    DCHECK(pending_users_.find(
-               UserManager::Get()->GetActiveUser()->GetAccountId()) ==
-           pending_users_.end());
+    CHECK(pending_users_.find(
+              UserManager::Get()->GetActiveUser()->GetAccountId()) ==
+              pending_users_.end(),
+          base::NotFatalUntil::M162);
   }
 
   SendSessionInfoIfChanged();
@@ -548,7 +552,7 @@ void SessionControllerClientImpl::OnAppTerminating() {
 
 void SessionControllerClientImpl::OnLoginUserProfilePrepared(Profile* profile) {
   const User* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
 
   base::RepeatingClosure session_info_changed_closure = base::BindRepeating(
       &SessionControllerClientImpl::SendSessionInfoIfChanged,
@@ -591,7 +595,7 @@ void SessionControllerClientImpl::SendSessionInfoIfChanged() {
 
 void SessionControllerClientImpl::SendUserSession(const User& user) {
   // |user| must have a session, i.e. signed-in already.
-  DCHECK_NE(0u, GetSessionId(user));
+  CHECK_NE(0u, GetSessionId(user), base::NotFatalUntil::M162);
 
   // Check user profile via GetProfileByUser() instead of is_profile_created()
   // flag because many tests have only setup testing user profile in
@@ -624,7 +628,7 @@ void SessionControllerClientImpl::SendUserSessionOrder() {
   std::vector<uint32_t> user_session_ids;
   for (user_manager::User* user : user_manager->GetLRULoggedInUsers()) {
     const uint32_t user_session_id = GetSessionId(*user);
-    DCHECK_NE(0u, user_session_id);
+    CHECK_NE(0u, user_session_id, base::NotFatalUntil::M162);
     user_session_ids.push_back(user_session_id);
   }
 

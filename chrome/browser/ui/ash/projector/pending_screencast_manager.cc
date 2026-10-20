@@ -111,7 +111,8 @@ void GetDriveFileMetadata(
     const AccountId& account_id,
     const base::FilePath& drive_relative_path,
     PendingScreencastManager::OnGetFileIdCallback callback) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   auto* drive_integration_service =
       ProjectorDriveFsProvider::GetDriveIntegrationService(account_id);
   if (!drive_integration_service) {
@@ -143,7 +144,8 @@ void GetDriveFileMetadata(
 // }
 // Returns the indexable text concated by all "text" fields content.
 std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   std::string indexable_text = "";
 
   // Reads the Json content in `metadata_file_local_path` to `dict_value`:
@@ -191,7 +193,8 @@ std::string GetIndexableText(const base::FilePath& metadata_file_local_path) {
 // }
 const std::string BuildRequestBody(
     const base::FilePath& metadata_file_local_path) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   const std::string indexable_text = GetIndexableText(metadata_file_local_path);
   if (indexable_text.empty()) {
     return std::string();
@@ -212,7 +215,8 @@ std::optional<ash::PendingScreencastContainer> GetPendingScreencastContainer(
     const base::FilePath& container_dir,
     const base::FilePath& drivefs_mounted_point,
     bool upload_failed) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   const base::FilePath container_absolute_path =
       GetLocalAbsolutePath(drivefs_mounted_point, container_dir);
   if (!base::PathExists(container_absolute_path)) {
@@ -276,7 +280,8 @@ ash::PendingScreencastContainerSet ProcessAndGenerateNewScreencasts(
         pending_webm_or_projector_events,
     const std::set<base::FilePath>& error_syncing_file,
     const base::FilePath drivefs_mounted_point) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   // The valid screencasts set.
   ash::PendingScreencastContainerSet screencasts;
 
@@ -636,7 +641,7 @@ void PendingScreencastManager::OnGetFileId(
 void PendingScreencastManager::SendDrivePatchRequest(
     const std::string& file_id,
     const std::string& request_body) {
-  DCHECK(!file_id.empty());
+  CHECK(!file_id.empty(), base::NotFatalUntil::M162);
   if (request_body.empty()) {
     return;
   }

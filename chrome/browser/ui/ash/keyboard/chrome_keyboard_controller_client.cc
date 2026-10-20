@@ -82,7 +82,7 @@ ChromeKeyboardControllerClient::ChromeKeyboardControllerClient() {
 
 void ChromeKeyboardControllerClient::Init(
     ash::KeyboardController* keyboard_controller) {
-  DCHECK(!keyboard_controller_);
+  CHECK(!keyboard_controller_, base::NotFatalUntil::M162);
   keyboard_controller_ = keyboard_controller;
 
   // Add this as a KeyboardController observer.
@@ -470,7 +470,7 @@ Profile* ChromeKeyboardControllerClient::GetProfile() {
 gfx::Rect ChromeKeyboardControllerClient::BoundsFromScreen(
     const gfx::Rect& screen_bounds) {
   aura::Window* keyboard_window = GetKeyboardWindow();
-  DCHECK(keyboard_window);
+  CHECK(keyboard_window, base::NotFatalUntil::M162);
   gfx::Rect bounds(screen_bounds);
   ::wm::ConvertRectFromScreen(keyboard_window, &bounds);
   return bounds;

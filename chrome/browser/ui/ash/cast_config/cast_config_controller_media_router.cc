@@ -64,7 +64,7 @@ media_router::MediaRouter* GetMediaRouter() {
 
   auto* router =
       media_router::MediaRouterFactory::GetApiForBrowserContext(profile);
-  DCHECK(router);
+  CHECK(router, base::NotFatalUntil::M162);
   return router;
 }
 

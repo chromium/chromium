@@ -36,13 +36,13 @@ ChromeKeyboardUI::ChromeKeyboardUI(content::BrowserContext* context)
     : browser_context_(context) {}
 
 ChromeKeyboardUI::~ChromeKeyboardUI() {
-  DCHECK(!keyboard_controller());
+  CHECK(!keyboard_controller(), base::NotFatalUntil::M162);
 }
 
 // keyboard::KeyboardUI:
 
 aura::Window* ChromeKeyboardUI::LoadKeyboardWindow(LoadCallback callback) {
-  DCHECK(!keyboard_contents_);
+  CHECK(!keyboard_contents_, base::NotFatalUntil::M162);
 
   keyboard_contents_ = std::make_unique<ChromeKeyboardWebContents>(
       browser_context_,
@@ -88,7 +88,7 @@ ui::InputMethod* ChromeKeyboardUI::GetInputMethod() {
 
 void ChromeKeyboardUI::ReloadKeyboardIfNeeded() {
   VLOG(1) << "ReloadKeyboardIfNeeded";
-  DCHECK(keyboard_contents_);
+  CHECK(keyboard_contents_, base::NotFatalUntil::M162);
   keyboard_contents_->SetKeyboardUrl(
       ChromeKeyboardControllerClient::Get()->GetVirtualKeyboardUrl());
 }
@@ -115,7 +115,7 @@ void ChromeKeyboardUI::OnWindowParentChanged(aura::Window* window,
 
 void ChromeKeyboardUI::SetShadowAroundKeyboard() {
   aura::Window* contents_window = GetKeyboardWindow();
-  DCHECK(contents_window);
+  CHECK(contents_window, base::NotFatalUntil::M162);
 
   if (!shadow_decoration_) {
     shadow_decoration_ =

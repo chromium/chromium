@@ -70,7 +70,7 @@ std::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   }
 
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
-  DCHECK(provider);
+  CHECK(provider, base::NotFatalUntil::M162);
 
   web_app::DisplayMode display_mode =
       provider->registrar_unsafe().GetAppEffectiveDisplayMode(app_id.value());
@@ -109,7 +109,7 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
 
   auto* app_service =
       apps::AppServiceProxyFactory::GetForProfile(profile_for_launch);
-  DCHECK(app_service);
+  CHECK(app_service, base::NotFatalUntil::M162);
 
   auto event_flags = apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                                          /* prefer_container */ false);
@@ -123,7 +123,7 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
   }
 
   if (params.url) {
-    DCHECK(params.url->is_valid());
+    CHECK(params.url->is_valid(), base::NotFatalUntil::M162);
     app_service->LaunchAppWithUrl(*app_id, event_flags, *params.url,
                                   params.launch_source, std::move(window_info),
                                   std::move(callback));
@@ -141,9 +141,9 @@ void LaunchSystemWebAppAsync(Profile* profile,
                              apps::WindowInfoPtr window_info,
                              std::optional<apps::LaunchCallback> callback) {
   // Terminal should be launched with crostini::LaunchTerminal*.
-  DCHECK(type != SystemWebAppType::TERMINAL);
+  CHECK(type != SystemWebAppType::TERMINAL, base::NotFatalUntil::M162);
   // Callback is only supported when launching with an URL.
-  DCHECK(!callback || params.url.has_value());
+  CHECK(!callback || params.url.has_value(), base::NotFatalUntil::M162);
 
   base::expected<void, NonUserRepresentativeProfileReason> ok =
       IsUserRepresentativeProfileForMigration(profile);
@@ -221,10 +221,11 @@ BrowserDelegate* LaunchSystemWebAppImpl(Profile* profile,
   auto* system_app = swa_manager->GetSystemApp(app_type);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  DCHECK(url.DeprecatedGetOriginAsURL() == provider->registrar_unsafe()
-                                               .GetAppLaunchUrl(params.app_id)
-                                               .DeprecatedGetOriginAsURL() ||
-         system_app && system_app->IsUrlInSystemAppScope(url));
+  CHECK(url.DeprecatedGetOriginAsURL() == provider->registrar_unsafe()
+                                              .GetAppLaunchUrl(params.app_id)
+                                              .DeprecatedGetOriginAsURL() ||
+            system_app && system_app->IsUrlInSystemAppScope(url),
+        base::NotFatalUntil::M162);
 #endif
 
   if (!system_app) {

@@ -261,9 +261,10 @@ void TetherNotificationPresenter::OnNotificationClicked(
     const std::string& notification_id,
     std::optional<int> button_index) {
   if (button_index) {
-    DCHECK_EQ(kPotentialHotspotNotificationId, notification_id);
-    DCHECK_EQ(0, *button_index);
-    DCHECK(hotspot_nearby_device_id_);
+    CHECK_EQ(kPotentialHotspotNotificationId, notification_id,
+             base::NotFatalUntil::M162);
+    CHECK_EQ(0, *button_index, base::NotFatalUntil::M162);
+    CHECK(hotspot_nearby_device_id_, base::NotFatalUntil::M162);
     UMA_HISTOGRAM_ENUMERATION(
         "InstantTethering.NotificationInteractionType",
         TetherNotificationPresenter::NOTIFICATION_BUTTON_TAPPED_HOST_NEARBY,

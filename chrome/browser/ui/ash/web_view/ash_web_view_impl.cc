@@ -57,7 +57,7 @@ gfx::NativeView AshWebViewImpl::GetNativeView() {
 }
 
 void AshWebViewImpl::ChildPreferredSizeChanged(views::View* child) {
-  DCHECK_EQ(web_view_, child);
+  CHECK_EQ(web_view_, child, base::NotFatalUntil::M162);
   SetPreferredSize(web_view_->GetPreferredSize());
 }
 
@@ -171,13 +171,13 @@ void AshWebViewImpl::ActivateContents(content::WebContents* contents) {
 
 void AshWebViewImpl::ResizeDueToAutoResize(content::WebContents* web_contents,
                                            const gfx::Size& new_size) {
-  DCHECK_EQ(web_contents_.get(), web_contents);
+  CHECK_EQ(web_contents_.get(), web_contents, base::NotFatalUntil::M162);
   web_view_->SetPreferredSize(new_size);
 }
 
 bool AshWebViewImpl::TakeFocus(content::WebContents* web_contents,
                                bool reverse) {
-  DCHECK_EQ(web_contents_.get(), web_contents);
+  CHECK_EQ(web_contents_.get(), web_contents, base::NotFatalUntil::M162);
   auto* focus_manager = GetFocusManager();
   if (focus_manager) {
     focus_manager->ClearNativeFocus();
@@ -188,7 +188,7 @@ bool AshWebViewImpl::TakeFocus(content::WebContents* web_contents,
 void AshWebViewImpl::NavigationStateChanged(
     content::WebContents* web_contents,
     content::InvalidateTypes changed_flags) {
-  DCHECK_EQ(web_contents_.get(), web_contents);
+  CHECK_EQ(web_contents_.get(), web_contents, base::NotFatalUntil::M162);
   UpdateCanGoBack();
 }
 
@@ -260,7 +260,8 @@ void AshWebViewImpl::RenderFrameHostChanged(
 }
 
 void AshWebViewImpl::PrimaryPageChanged(content::Page& page) {
-  DCHECK_EQ(&page.GetMainDocument(), web_contents_->GetPrimaryMainFrame());
+  CHECK_EQ(&page.GetMainDocument(), web_contents_->GetPrimaryMainFrame(),
+           base::NotFatalUntil::M162);
   if (!web_contents_->GetRenderWidgetHostView()) {
     return;
   }

@@ -46,8 +46,8 @@ std::optional<std::u16string> MapAppIdToShortName(
     apps::AppCapabilityAccessCache* capability_cache,
     apps::AppRegistryCache* registry_cache,
     const std::set<std::string>& apps_accessing_sensor) {
-  DCHECK(capability_cache);
-  DCHECK(registry_cache);
+  CHECK(capability_cache, base::NotFatalUntil::M162);
+  CHECK(registry_cache, base::NotFatalUntil::M162);
 
   for (const std::string& app : apps_accessing_sensor) {
     std::optional<std::u16string> name;
@@ -277,7 +277,7 @@ void AppAccessNotifier::LaunchAppSettings(const std::string& app_id) {
 
   // We don't have the capability to launch privacy settings for system web
   // app, so settings button is disabled for this type of app.
-  DCHECK(app_type != apps::AppType::kSystemWeb);
+  CHECK(app_type != apps::AppType::kSystemWeb, base::NotFatalUntil::M162);
 
   if (app_type == apps::AppType::kWeb) {
     const user_manager::User* user =

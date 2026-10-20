@@ -56,7 +56,7 @@ class MultiUserWindowManagerBrowserAdaptor::AppObserver
   // AppWindowRegistry::Observer overrides:
   void OnAppWindowAdded(extensions::AppWindow* app_window) override {
     aura::Window* window = app_window->GetNativeWindow();
-    DCHECK(window);
+    CHECK(window, base::NotFatalUntil::M162);
     multi_user_window_manager_->SetWindowOwner(window, account_id_);
   }
 

@@ -104,7 +104,7 @@ void WallpaperAsh::SetWallpaper(
     const std::string& extension_id,
     const std::string& extension_name,
     base::OnceCallback<void(ash::mojom::SetWallpaperResultPtr)> callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   CHECK(ash::LoginState::Get()->IsUserLoggedIn());
   // Prevent any in progress decodes from changing wallpaper.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -130,7 +130,7 @@ void WallpaperAsh::SetWallpaper(
 void WallpaperAsh::OnWallpaperDecoded(
     ash::mojom::WallpaperSettingsPtr wallpaper_settings,
     const SkBitmap& bitmap) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   if (bitmap.isNull()) {
     LOG(ERROR) << "Decoding wallpaper data failed from extension_id '"
                << extension_id_ << "'";

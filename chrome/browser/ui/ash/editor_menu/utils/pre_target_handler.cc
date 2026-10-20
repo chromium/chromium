@@ -137,7 +137,7 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
 // TODO(siabhijeet): Investigate using SendEventsToSink() for dispatching.
 bool PreTargetHandler::DoDispatchEvent(views::View* view,
                                        ui::LocatedEvent* event) {
-  DCHECK(view && event);
+  CHECK(view && event, base::NotFatalUntil::M162);
 
   // Out-of-bounds `EventType::kMouseMoved` events are allowed to sift through
   // to clear any set hover-state.

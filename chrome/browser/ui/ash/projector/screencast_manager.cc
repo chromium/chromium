@@ -45,7 +45,8 @@ void OnMediaMetadataParsed(
     bool parse_success,
     chrome::mojom::MediaMetadataPtr metadata,
     std::unique_ptr<std::vector<metadata::AttachedImage>> attached_images) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   if (!parse_success || !metadata || !metadata->duration) {
     // TODO(b/242748137): Add test to cover this error message.
     std::move(callback).Run(
@@ -80,7 +81,8 @@ void OnMediaMetadataParsed(
 void GetVideoMetadata(const base::FilePath& video_path,
                       projector::mojom::VideoInfoPtr video,
                       ProjectorAppClient::OnGetVideoCallback callback) {
-  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M162);
   std::optional<int64_t> size_in_byte = base::GetFileSize(video_path);
   if (!size_in_byte.has_value()) {
     content::GetUIThreadTaskRunner({})->PostTask(

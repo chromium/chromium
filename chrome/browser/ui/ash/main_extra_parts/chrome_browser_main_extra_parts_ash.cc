@@ -166,8 +166,8 @@ class ChromeShelfControllerInitializer
   void OnSessionStateChanged() override {
     TRACE_EVENT0("ui",
                  "ChromeShelfControllerInitializer::OnSessionStateChanged");
-    DCHECK(!chrome_shelf_controller_);
-    DCHECK(!ChromeShelfController::instance());
+    CHECK(!chrome_shelf_controller_, base::NotFatalUntil::M162);
+    CHECK(!ChromeShelfController::instance(), base::NotFatalUntil::M162);
 
     if (session_manager::SessionManager::Get()->session_state() ==
         session_manager::SessionState::ACTIVE) {
@@ -376,7 +376,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   if (ash::features::IsCoralFeatureEnabled()) {
     ash::TabClusterUIController* tab_cluster_ui_controller =
         ash::Shell::Get()->tab_cluster_ui_controller();
-    DCHECK(tab_cluster_ui_controller);
+    CHECK(tab_cluster_ui_controller, base::NotFatalUntil::M162);
     tab_cluster_ui_client_ =
         std::make_unique<TabClusterUIClient>(tab_cluster_ui_controller);
   }

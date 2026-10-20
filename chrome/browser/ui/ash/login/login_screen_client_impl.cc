@@ -62,7 +62,7 @@ LoginScreenClientImpl::LoginScreenClientImpl(PrefService* local_state)
   // Register this object as the client interface implementation.
   ash::LoginScreen::Get()->SetClient(this);
 
-  DCHECK(!g_login_screen_client_instance);
+  CHECK(!g_login_screen_client_instance, base::NotFatalUntil::M162);
   g_login_screen_client_instance = this;
 
   if (user_manager::UserManager::IsInitialized()) {
@@ -79,7 +79,7 @@ LoginScreenClientImpl::~LoginScreenClientImpl() {
     CHECK_IS_TEST();
   }
   ash::LoginScreen::Get()->SetClient(nullptr);
-  DCHECK_EQ(this, g_login_screen_client_instance);
+  CHECK_EQ(this, g_login_screen_client_instance, base::NotFatalUntil::M162);
   g_login_screen_client_instance = nullptr;
 }
 
@@ -90,7 +90,7 @@ bool LoginScreenClientImpl::HasInstance() {
 
 // static
 LoginScreenClientImpl* LoginScreenClientImpl::Get() {
-  DCHECK(g_login_screen_client_instance);
+  CHECK(g_login_screen_client_instance, base::NotFatalUntil::M162);
   return g_login_screen_client_instance;
 }
 
@@ -350,7 +350,8 @@ void LoginScreenClientImpl::CancelAddUser() {
 }
 
 void LoginScreenClientImpl::LoginAsGuest() {
-  DCHECK(!ash::ScreenLockerController::Get().screen_locker());
+  CHECK(!ash::ScreenLockerController::Get().screen_locker(),
+        base::NotFatalUntil::M162);
   if (ash::LoginDisplayHost::default_host()) {
     ash::LoginDisplayHost::default_host()->GetExistingUserController()->Login(
         ash::UserContext(user_manager::UserType::kGuest,

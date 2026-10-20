@@ -21,17 +21,17 @@ ChromeAccessibilityDelegate::ChromeAccessibilityDelegate() = default;
 ChromeAccessibilityDelegate::~ChromeAccessibilityDelegate() = default;
 
 void ChromeAccessibilityDelegate::SetMagnifierEnabled(bool enabled) {
-  DCHECK(MagnificationManager::Get());
+  CHECK(MagnificationManager::Get(), base::NotFatalUntil::M162);
   return MagnificationManager::Get()->SetMagnifierEnabled(enabled);
 }
 
 bool ChromeAccessibilityDelegate::IsMagnifierEnabled() const {
-  DCHECK(MagnificationManager::Get());
+  CHECK(MagnificationManager::Get(), base::NotFatalUntil::M162);
   return MagnificationManager::Get()->IsMagnifierEnabled();
 }
 
 bool ChromeAccessibilityDelegate::ShouldShowAccessibilityMenu() const {
-  DCHECK(AccessibilityManager::Get());
+  CHECK(AccessibilityManager::Get(), base::NotFatalUntil::M162);
   return AccessibilityManager::Get()->ShouldShowAccessibilityMenu();
 }
 

@@ -44,7 +44,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> GetArcAppInfo(
     Profile* profile,
     const std::string& app_id) {
   ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(arc_prefs);
+  CHECK(arc_prefs, base::NotFatalUntil::M162);
   return arc_prefs->GetApp(app_id);
 }
 
@@ -144,7 +144,7 @@ ArcAppDialogView::ArcAppDialogView(Profile* profile,
   text_container->SetLayoutManager(std::move(text_container_layout));
 
   auto* text_container_ptr = AddChildView(std::move(text_container));
-  DCHECK(!heading_text.empty());
+  CHECK(!heading_text.empty(), base::NotFatalUntil::M162);
   AddMultiLineLabel(text_container_ptr, heading_text);
   if (!subheading_text.empty()) {
     AddMultiLineLabel(text_container_ptr, subheading_text);
@@ -186,13 +186,13 @@ void ArcAppDialogView::ConfirmOrCancelForTest(bool confirm) {
 
 void ArcAppDialogView::OnDialogAccepted() {
   // The dialog can either be accepted or cancelled, but never both.
-  DCHECK(confirm_callback_);
+  CHECK(confirm_callback_, base::NotFatalUntil::M162);
   std::move(confirm_callback_).Run(true);
 }
 
 void ArcAppDialogView::OnDialogCancelled() {
   // The dialog can either be accepted or cancelled, but never both.
-  DCHECK(confirm_callback_);
+  CHECK(confirm_callback_, base::NotFatalUntil::M162);
   std::move(confirm_callback_).Run(false);
 }
 
@@ -201,10 +201,10 @@ void ArcAppDialogView::OnAppImageUpdated(
     const gfx::ImageSkia& image,
     bool is_placeholder_icon,
     const std::optional<gfx::ImageSkia>& badge_image) {
-  DCHECK_EQ(app_id, app_id_);
-  DCHECK(!image.isNull());
-  DCHECK_EQ(image.width(), kIconSourceSize);
-  DCHECK_EQ(image.height(), kIconSourceSize);
+  CHECK_EQ(app_id, app_id_, base::NotFatalUntil::M162);
+  CHECK(!image.isNull(), base::NotFatalUntil::M162);
+  CHECK_EQ(image.width(), kIconSourceSize, base::NotFatalUntil::M162);
+  CHECK_EQ(image.height(), kIconSourceSize, base::NotFatalUntil::M162);
   icon_view_->SetImageSize(image.size());
   icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }

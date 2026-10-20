@@ -63,7 +63,7 @@ bool IsAppAvailable(apps::AppServiceProxy& app_service_proxy,
                     const std::string& app_id) {
   bool installed = false;
   Profile* app_profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(app_profile);
+  CHECK(app_profile, base::NotFatalUntil::M162);
 
   app_service_proxy.AppRegistryCache().ForOneApp(
       app_id, [&](const apps::AppUpdate& app) {
@@ -152,7 +152,7 @@ void ShowUnavailableAppToast(
           unavailable_apps[0], unavailable_apps[1]);
       break;
     default:
-      DCHECK_GT(unavailable_apps.size(), 2u);
+      CHECK_GT(unavailable_apps.size(), 2u, base::NotFatalUntil::M162);
       toast_string = l10n_util::GetStringFUTF16(
           IDS_ASH_DESKS_TEMPLATES_UNAVAILABLE_APP_TOAST_MORE,
           unavailable_apps[0], unavailable_apps[1],
@@ -194,11 +194,11 @@ void ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk(
     aura::Window* window,
     GetAppLaunchDataCallback callback) const {
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetAppLaunchDataForSavedDesk");
-  DCHECK(callback);
+  CHECK(callback, base::NotFatalUntil::M162);
 
   const user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(active_user);
+  CHECK(active_user, base::NotFatalUntil::M162);
   Profile* user_profile =
       ash::ProfileHelper::Get()->GetProfileByUser(active_user);
   if (!user_profile) {
@@ -335,7 +335,7 @@ ChromeSavedDeskDelegate::MaybeRetrieveIconForSpecialIdentifier(
     return gfx::CreateStandardAppIconImage(
         rb.GetImageNamed(IDR_PRODUCT_LOGO_32).AsImageSkia());
   } else if (identifier == ash::DeskTemplate::kIncognitoWindowIdentifier) {
-    DCHECK(color_provider);
+    CHECK(color_provider, base::NotFatalUntil::M162);
     gfx::ImageSkia icon =
         ui::ThemedVectorIcon(
             ui::ImageModel::FromVectorIcon(ash::kIncognitoProfileIcon,
@@ -369,7 +369,7 @@ void ChromeSavedDeskDelegate::GetIconForAppId(
 
 bool ChromeSavedDeskDelegate::IsAppAvailable(const std::string& app_id) const {
   Profile* app_profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(app_profile);
+  CHECK(app_profile, base::NotFatalUntil::M162);
 
   auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(app_profile);

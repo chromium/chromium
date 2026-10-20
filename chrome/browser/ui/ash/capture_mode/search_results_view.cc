@@ -38,7 +38,7 @@ SearchResultsView::SearchResultsView() : AshWebViewImpl(GetInitParams()) {
   // We should not use `CanShowSunfishUi` here, as that could change between
   // sending the region and receiving a URL which will then create this view
   // (for example, if the Sunfish policy changes).
-  DCHECK(features::IsSunfishFeatureEnabled());
+  CHECK(features::IsSunfishFeatureEnabled(), base::NotFatalUntil::M162);
 }
 
 SearchResultsView::~SearchResultsView() = default;

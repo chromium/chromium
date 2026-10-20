@@ -58,13 +58,13 @@ InSessionAuthDialogClient::InSessionAuthDialogClient(PrefService* local_state)
       auth_performer_(ash::UserDataAuthClient::Get()) {
   ash::WebAuthNDialogController::Get()->SetClient(this);
 
-  DCHECK(!g_auth_dialog_client_instance);
+  CHECK(!g_auth_dialog_client_instance, base::NotFatalUntil::M162);
   g_auth_dialog_client_instance = this;
 }
 
 InSessionAuthDialogClient::~InSessionAuthDialogClient() {
   ash::WebAuthNDialogController::Get()->SetClient(nullptr);
-  DCHECK_EQ(this, g_auth_dialog_client_instance);
+  CHECK_EQ(this, g_auth_dialog_client_instance, base::NotFatalUntil::M162);
   g_auth_dialog_client_instance = nullptr;
 }
 
@@ -75,7 +75,7 @@ bool InSessionAuthDialogClient::HasInstance() {
 
 // static
 InSessionAuthDialogClient* InSessionAuthDialogClient::Get() {
-  DCHECK(g_auth_dialog_client_instance);
+  CHECK(g_auth_dialog_client_instance, base::NotFatalUntil::M162);
   return g_auth_dialog_client_instance;
 }
 
@@ -192,7 +192,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   // TODO(b/156258540): Pick/validate the correct user.
   const user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
   auto user_context = std::make_unique<UserContext>(*user);
   Key key(Key::KEY_TYPE_PASSWORD_PLAIN, std::string(), secret);
   user_context->SetIsUsingPin(authenticated_by_pin);
@@ -200,7 +200,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
       user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(secret),
       false /*force_update*/));
 
-  DCHECK(!pending_auth_state_);
+  CHECK(!pending_auth_state_, base::NotFatalUntil::M162);
   pending_auth_state_.emplace(std::move(callback));
 
   if (!authenticated_by_pin) {
@@ -320,7 +320,7 @@ void InSessionAuthDialogClient::OnPasswordAuthSuccess(
 
 void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
     base::OnceCallback<void(bool, ash::FingerprintState)> callback) {
-  DCHECK(!fingerprint_scan_done_callback_);
+  CHECK(!fingerprint_scan_done_callback_, base::NotFatalUntil::M162);
   fingerprint_scan_done_callback_ = std::move(callback);
 }
 

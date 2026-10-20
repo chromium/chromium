@@ -31,8 +31,8 @@ void SystemWebAppIconCheckerImpl::StartCheck(
   DCHECK(!icon_checks_running_)
       << "StartCheck() shouldn't be called again before "
          "the current check completes.";
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(SystemWebAppManager::Get(profile_));
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
+  CHECK(SystemWebAppManager::Get(profile_), base::NotFatalUntil::M162);
   DCHECK(
       SystemWebAppManager::Get(profile_)->on_apps_synchronized().is_signaled())
       << "SystemWebAppIconChecker should only be called after system web apps "
@@ -48,7 +48,8 @@ void SystemWebAppIconCheckerImpl::StartCheck(
       SystemWebAppManager::GetWebAppProvider(profile_);
   icon_checks_running_ = true;
   for (const webapps::AppId& app_id : app_ids) {
-    DCHECK(GetSystemWebAppTypeForAppId(profile_, app_id));
+    CHECK(GetSystemWebAppTypeForAppId(profile_, app_id),
+          base::NotFatalUntil::M162);
     provider->scheduler().RunIconDiagnosticsForApp(app_id, barrier);
   }
 }

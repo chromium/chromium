@@ -397,18 +397,18 @@ ChromeCaptureModeDelegate::ChromeCaptureModeDelegate(
     ApplicationLocaleStorage* application_locale_storage)
     : local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
-  DCHECK_EQ(g_instance, nullptr);
+  CHECK_EQ(g_instance, nullptr, base::NotFatalUntil::M162);
   g_instance = this;
 }
 
 ChromeCaptureModeDelegate::~ChromeCaptureModeDelegate() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M162);
   g_instance = nullptr;
 }
 
 // static
 ChromeCaptureModeDelegate* ChromeCaptureModeDelegate::Get() {
-  DCHECK(g_instance);
+  CHECK(g_instance, base::NotFatalUntil::M162);
   return g_instance;
 }
 
@@ -437,10 +437,10 @@ bool ChromeCaptureModeDelegate::InterruptVideoRecordingIfAny() {
 
 base::FilePath ChromeCaptureModeDelegate::GetUserDefaultDownloadsFolder()
     const {
-  DCHECK(ash::LoginState::Get()->IsUserLoggedIn());
+  CHECK(ash::LoginState::Get()->IsUserLoggedIn(), base::NotFatalUntil::M162);
 
   auto* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (!profile->GetDownloadManager()->GetBrowserContext()) {
     // Some browser tests use a |content::MockDownloadManager| which doesn't
     // have a browser context. In this case, just return an empty path.
@@ -635,7 +635,7 @@ void ChromeCaptureModeDelegate::ConnectToVideoSourceProvider(
 
 void ChromeCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
     ash::OnGotDriveFsFreeSpace callback) {
-  DCHECK(ash::LoginState::Get()->IsUserLoggedIn());
+  CHECK(ash::LoginState::Get()->IsUserLoggedIn(), base::NotFatalUntil::M162);
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
@@ -827,7 +827,7 @@ void ChromeCaptureModeDelegate::DeleteRemoteFile(
     const base::FilePath& path,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(GetOneDriveMountPointPath().IsParent(path));
+  CHECK(GetOneDriveMountPointPath().IsParent(path), base::NotFatalUntil::M162);
   ash::cloud_upload::OdfsFileDeleter::Delete(path, std::move(callback));
 }
 
@@ -965,7 +965,7 @@ void ChromeCaptureModeDelegate::PrimaryAccountAccessTokenAvailable(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo access_token_info) {
   // Reset token fetcher for the next request.
-  DCHECK(primary_account_token_fetcher_);
+  CHECK(primary_account_token_fetcher_, base::NotFatalUntil::M162);
   primary_account_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -1122,7 +1122,7 @@ void ChromeCaptureModeDelegate::OnAccessTokenAvailableForCopyText(
     const std::string vsr_id,
     const int request_id,
     const std::string& access_token) {
-  DCHECK(!access_token.empty());
+  CHECK(!access_token.empty(), base::NotFatalUntil::M162);
 
   // Create a new GET request for the text metadata.
   auto resource_request = std::make_unique<network::ResourceRequest>();

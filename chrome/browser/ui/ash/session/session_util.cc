@@ -26,7 +26,7 @@ namespace {
 const content::BrowserContext* GetBrowserContextForWindow(
     const aura::Window* window,
     bool presenting) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M162);
   auto* window_manager = ash::Shell::Get()->multi_user_window_manager();
   // Speculative fix for multi-profile crash. crbug.com/41284353
   if (!window_manager) {
@@ -44,14 +44,15 @@ const content::BrowserContext* GetBrowserContextForWindow(
 }  // namespace
 
 const content::BrowserContext* GetActiveBrowserContext() {
-  DCHECK(user_manager::UserManager::Get()->GetLoggedInUsers().size());
+  CHECK(user_manager::UserManager::Get()->GetLoggedInUsers().size(),
+        base::NotFatalUntil::M162);
   return ProfileManager::GetActiveUserProfile();
 }
 
 bool CanShowWindowForUser(
     const aura::Window* window,
     const GetActiveBrowserContextCallback& get_context_callback) {
-  DCHECK(window);
+  CHECK(window, base::NotFatalUntil::M162);
   if (user_manager::UserManager::Get()->GetLoggedInUsers().size() > 1u) {
     const content::BrowserContext* active_browser_context =
         get_context_callback.Run();

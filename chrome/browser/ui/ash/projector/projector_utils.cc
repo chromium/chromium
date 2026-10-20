@@ -37,7 +37,7 @@ bool IsRealUserProfile(const Profile* profile) {
 }  // namespace
 
 bool IsProjectorAllowedForProfile(const Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   if (!IsRealUserProfile(profile)) {
     return false;
   }

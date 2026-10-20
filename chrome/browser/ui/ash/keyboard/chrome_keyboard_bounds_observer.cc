@@ -52,7 +52,7 @@ ui::InputMethod* GetCurrentInputMethod() {
 ChromeKeyboardBoundsObserver::ChromeKeyboardBoundsObserver(
     aura::Window* keyboard_window)
     : keyboard_window_(keyboard_window) {
-  DCHECK(keyboard_window_);
+  CHECK(keyboard_window_, base::NotFatalUntil::M162);
   ChromeKeyboardControllerClient::Get()->AddObserver(this);
 }
 

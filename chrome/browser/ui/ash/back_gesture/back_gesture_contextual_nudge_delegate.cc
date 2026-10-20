@@ -46,7 +46,7 @@ void BackGestureContextualNudgeDelegate::MaybeStartTrackingNavigation(
 
 void BackGestureContextualNudgeDelegate::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK(window_);
+  CHECK(window_, base::NotFatalUntil::M162);
   // Make sure for one valid navigation, we only fire one status change
   // notification.
   if (navigation_handle->HasCommitted() &&
@@ -73,7 +73,7 @@ void BackGestureContextualNudgeDelegate::OnActiveWebContentsChanged(
 
 void BackGestureContextualNudgeDelegate::OnWindowDestroying(
     aura::Window* window) {
-  DCHECK_EQ(window_, window);
+  CHECK_EQ(window_, window, base::NotFatalUntil::M162);
   StopTrackingNavigation();
 }
 

@@ -319,13 +319,13 @@ SystemTrayClientImpl::SystemTrayClientImpl(
 
   system_tray_->SetClient(this);
 
-  DCHECK(!g_system_tray_client_instance);
+  CHECK(!g_system_tray_client_instance, base::NotFatalUntil::M162);
   g_system_tray_client_instance = this;
   UpgradeDetector::GetInstance()->AddObserver(this);
 }
 
 SystemTrayClientImpl::~SystemTrayClientImpl() {
-  DCHECK_EQ(this, g_system_tray_client_instance);
+  CHECK_EQ(this, g_system_tray_client_instance, base::NotFatalUntil::M162);
   g_system_tray_client_instance = nullptr;
 
   // This can happen when mocking this class in tests.
@@ -590,7 +590,7 @@ void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
     return;
   }
 
-  DCHECK(ash::NetworkHandler::IsInitialized());
+  CHECK(ash::NetworkHandler::IsInitialized(), base::NotFatalUntil::M162);
   const ash::NetworkState* network_state = GetNetworkState(network_id);
   if (!network_state) {
     LOG(ERROR) << "Network not found: " << network_id;
@@ -656,8 +656,9 @@ void SystemTrayClientImpl::ShowArcVpnCreate(const std::string& app_id) {
 void SystemTrayClientImpl::ShowSettingsSimUnlock() {
   // TODO(crbug.com/40134918) Add metrics action recorder.
   SessionManager* const session_manager = SessionManager::Get();
-  DCHECK(session_manager->IsSessionStarted());
-  DCHECK(!session_manager->IsInSecondaryLoginScreen());
+  CHECK(session_manager->IsSessionStarted(), base::NotFatalUntil::M162);
+  CHECK(!session_manager->IsInSecondaryLoginScreen(),
+        base::NotFatalUntil::M162);
   std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
   page += "&showSimLockDialog=true";
   ShowSettingsSubPageForActiveUser(page);
@@ -928,7 +929,7 @@ bool SystemTrayClientImpl::IsUserFeedbackEnabled() {
   }
   PrefService* signin_prefs =
       ProfileManager::GetActiveUserProfile()->GetPrefs();
-  DCHECK(signin_prefs);
+  CHECK(signin_prefs, base::NotFatalUntil::M162);
   return signin_prefs->GetBoolean(ash::chrome_prefs::kUserFeedbackAllowed);
 }
 

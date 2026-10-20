@@ -238,7 +238,7 @@ class DesksClient::DeskEventObserver : public ash::DesksController::Observer {
 };
 
 DesksClient::DesksClient() : desks_controller_(ash::DesksController::Get()) {
-  DCHECK(!g_desks_client_instance);
+  CHECK(!g_desks_client_instance, base::NotFatalUntil::M162);
   g_desks_client_instance = this;
   if (ash::SessionController::Get()) {
     ash::SessionController::Get()->AddObserver(this);
@@ -248,7 +248,7 @@ DesksClient::DesksClient() : desks_controller_(ash::DesksController::Get()) {
 }
 
 DesksClient::~DesksClient() {
-  DCHECK_EQ(this, g_desks_client_instance);
+  CHECK_EQ(this, g_desks_client_instance, base::NotFatalUntil::M162);
   g_desks_client_instance = nullptr;
   if (ash::SessionController::Get()) {
     ash::SessionController::Get()->RemoveObserver(this);
@@ -269,7 +269,7 @@ void DesksClient::OnActiveUserSessionChanged(const AccountId& account_id) {
 
   active_profile_ = profile;
   active_account_id_ = account_id;
-  DCHECK(active_profile_);
+  CHECK(active_profile_, base::NotFatalUntil::M162);
 
   save_and_recall_desks_storage_manager_ =
       std::make_unique<desks_storage::LocalDeskDataManager>(
@@ -458,7 +458,7 @@ DesksClient::GetAllDesks() {
 
 void DesksClient::LaunchAppsFromTemplate(
     std::unique_ptr<ash::DeskTemplate> desk_template) {
-  DCHECK(desk_template);
+  CHECK(desk_template, base::NotFatalUntil::M162);
 
   // Generate a unique ID for this launch. It is used to tell different template
   // launches apart.
@@ -484,7 +484,7 @@ void DesksClient::LaunchAppsFromTemplate(
           GetWindowIDSetFromTemplate(desk_template.get()),
           desk_template->uuid(), this);
 
-  DCHECK(active_profile_);
+  CHECK(active_profile_, base::NotFatalUntil::M162);
 
   auto& handler = app_launch_handlers_[launch_id];
   // Some tests reach into this class and install a handler ahead of time. In
@@ -515,7 +515,8 @@ desks_storage::DeskModel* DesksClient::GetDeskModel() {
       !ash::features::IsDeskTemplateSyncEnabled() ||
       (!ash::saved_desk_util::AreDesksTemplatesEnabled() &&
        !ash::floating_workspace_util::IsFloatingWorkspaceV2Enabled())) {
-    DCHECK(save_and_recall_desks_storage_manager_.get());
+    CHECK(save_and_recall_desks_storage_manager_.get(),
+          base::NotFatalUntil::M162);
     return save_and_recall_desks_storage_manager_.get();
   }
   saved_desk_storage_manager_->SetDeskSyncBridge(
@@ -555,7 +556,7 @@ void DesksClient::RemovePolicyPreconfiguredTemplate(
     return;
   }
 
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
 
   preconfigured_desk_templates_json_.erase(account_id);
 
@@ -692,7 +693,7 @@ void DesksClient::OnCaptureActiveDeskAndSaveTemplate(
         return;
       }
       overview_session = overview_controller->overview_session();
-      DCHECK(overview_session);
+      CHECK(overview_session, base::NotFatalUntil::M162);
     }
 
     overview_session->ShowSavedDeskLibrary(desk_template->uuid(),
@@ -797,7 +798,7 @@ aura::Window* DesksClient::GetWindowByBrowserSessionId(
 
 const ash::Desk* DesksClient::CreateEmptyDeskAndActivate(
     const std::u16string& customized_desk_name) {
-  DCHECK(desks_controller_->CanCreateDesks());
+  CHECK(desks_controller_->CanCreateDesks(), base::NotFatalUntil::M162);
 
   // If there is an ongoing animation, we should stop it before creating and
   // activating the new desk, which triggers its own animation.

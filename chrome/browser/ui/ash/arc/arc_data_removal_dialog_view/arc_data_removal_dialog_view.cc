@@ -132,7 +132,8 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
 DataRemovalConfirmationDialog::~DataRemovalConfirmationDialog() {
   ArcSessionManager::Get()->RemoveObserver(this);
 
-  DCHECK_EQ(g_current_data_removal_confirmation, this);
+  CHECK_EQ(g_current_data_removal_confirmation, this,
+           base::NotFatalUntil::M162);
   g_current_data_removal_confirmation = nullptr;
 }
 
@@ -141,9 +142,9 @@ void DataRemovalConfirmationDialog::OnAppImageUpdated(
     const gfx::ImageSkia& image,
     bool is_placeholder_icon,
     const std::optional<gfx::ImageSkia>& badge_image) {
-  DCHECK(!image.isNull());
-  DCHECK_EQ(image.width(), kArcAppIconSize);
-  DCHECK_EQ(image.height(), kArcAppIconSize);
+  CHECK(!image.isNull(), base::NotFatalUntil::M162);
+  CHECK_EQ(image.width(), kArcAppIconSize, base::NotFatalUntil::M162);
+  CHECK_EQ(image.height(), kArcAppIconSize, base::NotFatalUntil::M162);
   icon_view_->SetImageSize(image.size());
   icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }
@@ -174,7 +175,7 @@ bool IsDataRemovalConfirmationDialogOpenForTesting() {
 }
 
 void CloseDataRemovalConfirmationDialogForTesting(bool confirm) {
-  DCHECK(g_current_data_removal_confirmation);
+  CHECK(g_current_data_removal_confirmation, base::NotFatalUntil::M162);
   if (confirm) {
     g_current_data_removal_confirmation->AcceptDialog();
   } else {

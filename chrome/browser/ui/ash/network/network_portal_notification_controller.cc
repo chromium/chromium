@@ -124,7 +124,7 @@ NetworkPortalNotificationController::NetworkPortalNotificationController() {
   if (NetworkHandler::IsInitialized()) {  // May be null in tests.
     NetworkHandler::Get()->network_state_handler()->AddObserver(this);
   }
-  DCHECK(session_manager::SessionManager::Get());
+  CHECK(session_manager::SessionManager::Get(), base::NotFatalUntil::M162);
   session_manager::SessionManager::Get()->AddObserver(this);
 }
 

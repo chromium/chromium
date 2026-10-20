@@ -40,7 +40,7 @@ QuickAnswersStateAsh::QuickAnswersStateAsh() {
   // Register pref changes if use session already started.
   if (session_controller->IsActiveUserSessionStarted()) {
     PrefService* prefs = session_controller->GetPrimaryUserPrefService();
-    DCHECK(prefs);
+    CHECK(prefs, base::NotFatalUntil::M162);
     RegisterPrefChanges(prefs);
   }
 }
@@ -241,7 +241,7 @@ void QuickAnswersStateAsh::OnApplicationLocaleReady() {
   const std::optional<std::string> resolved_locale =
       l10n_util::CheckAndResolveLocale(
           locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList);
-  DCHECK(resolved_locale);
+  CHECK(resolved_locale, base::NotFatalUntil::M162);
 
   if (resolved_application_locale_ == resolved_locale) {
     return;

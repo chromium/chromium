@@ -26,7 +26,7 @@ views::View* FocusSearch::FindNextFocusableView(
     AnchoredDialogPolicy can_go_into_anchored_dialog,
     views::FocusTraversable** focus_traversable,
     views::View** focus_traversable_view) {
-  DCHECK_EQ(root(), view_);
+  CHECK_EQ(root(), view_, base::NotFatalUntil::M162);
 
   // The callback provided by |view_| polls the currently focusable views.
   auto focusable_views = get_focusable_views_callback_.Run();

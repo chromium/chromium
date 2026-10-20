@@ -13,7 +13,7 @@ namespace ash {
 LoginDisplayHost* LoginDisplayHost::default_host_ = nullptr;
 
 LoginDisplayHost::LoginDisplayHost() {
-  DCHECK(default_host() == nullptr);
+  CHECK(default_host() == nullptr, base::NotFatalUntil::M162);
   default_host_ = this;
 }
 
@@ -44,7 +44,7 @@ void LoginDisplayHost::StartUserAdding(base::OnceClosure completion_callback) {
 
 void LoginDisplayHost::AddWizardCreatedObserverForTests(
     base::RepeatingClosure on_created) {
-  DCHECK(!on_wizard_controller_created_for_tests_);
+  CHECK(!on_wizard_controller_created_for_tests_, base::NotFatalUntil::M162);
   on_wizard_controller_created_for_tests_ = std::move(on_created);
 }
 

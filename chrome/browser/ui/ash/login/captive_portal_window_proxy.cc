@@ -81,12 +81,12 @@ std::unique_ptr<views::Widget> CreateWindowAsFramelessChild(
 CaptivePortalWindowProxy::CaptivePortalWindowProxy(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  DCHECK_EQ(STATE_IDLE, GetState());
+  CHECK_EQ(STATE_IDLE, GetState(), base::NotFatalUntil::M162);
 }
 
 CaptivePortalWindowProxy::~CaptivePortalWindowProxy() {
   if (widget_) {
-    DCHECK_EQ(STATE_DISPLAYED, GetState());
+    CHECK_EQ(STATE_DISPLAYED, GetState(), base::NotFatalUntil::M162);
   }
 }
 
@@ -96,7 +96,8 @@ void CaptivePortalWindowProxy::ShowIfRedirected(
     return;
   }
   InitCaptivePortalView(network_name);
-  DCHECK_EQ(STATE_WAITING_FOR_REDIRECTION, GetState());
+  CHECK_EQ(STATE_WAITING_FOR_REDIRECTION, GetState(),
+           base::NotFatalUntil::M162);
 }
 
 void CaptivePortalWindowProxy::Show(const std::string& network_name) {
@@ -164,8 +165,8 @@ void CaptivePortalWindowProxy::RemoveObserver(Observer* observer) {
 
 void CaptivePortalWindowProxy::InitCaptivePortalView(
     const std::string& network_name) {
-  DCHECK(GetState() == STATE_IDLE ||
-         GetState() == STATE_WAITING_FOR_REDIRECTION);
+  CHECK(GetState() == STATE_IDLE || GetState() == STATE_WAITING_FOR_REDIRECTION,
+        base::NotFatalUntil::M162);
   if (!captive_portal_view_.get()) {
     captive_portal_view_ =
         std::make_unique<CaptivePortalView>(this, network_name);
@@ -178,18 +179,18 @@ CaptivePortalWindowProxy::State CaptivePortalWindowProxy::GetState() const {
   if (!widget_) {
     return captive_portal_view_ ? STATE_WAITING_FOR_REDIRECTION : STATE_IDLE;
   }
-  DCHECK(!captive_portal_view_);
+  CHECK(!captive_portal_view_, base::NotFatalUntil::M162);
   return STATE_DISPLAYED;
 }
 
 void CaptivePortalWindowProxy::CloseWidget(
     views::Widget::ClosedReason closed_reason) {
-  DCHECK_EQ(STATE_DISPLAYED, GetState());
+  CHECK_EQ(STATE_DISPLAYED, GetState(), base::NotFatalUntil::M162);
 
   widget_.reset();
   delegate_.reset();
 
-  DCHECK_EQ(STATE_IDLE, GetState());
+  CHECK_EQ(STATE_IDLE, GetState(), base::NotFatalUntil::M162);
 
   for (auto& observer : observers_) {
     observer.OnAfterCaptivePortalHidden();

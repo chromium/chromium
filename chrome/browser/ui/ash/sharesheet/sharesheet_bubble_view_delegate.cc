@@ -85,8 +85,8 @@ void SharesheetBubbleViewDelegate::OnActionLaunched(bool has_action_view) {
 
 void SharesheetBubbleViewDelegate::SetBubbleSize(int width, int height) {
   CHECK(sharesheet_bubble_view_);
-  DCHECK_GT(width, 0);
-  DCHECK_GT(height, 0);
+  CHECK_GT(width, 0, base::NotFatalUntil::M162);
+  CHECK_GT(height, 0, base::NotFatalUntil::M162);
   sharesheet_bubble_view_->ResizeBubble(width, height);
 }
 

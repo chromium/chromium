@@ -130,7 +130,7 @@ AssistantBrowserDelegateImpl::AssistantBrowserDelegateImpl() {
   auto* session_manager = session_manager::SessionManager::Get();
   // AssistantBrowserDelegateImpl must be created before any user session is
   // created. Otherwise, it will not get OnUserProfileLoaded notification.
-  DCHECK(session_manager->sessions().empty());
+  CHECK(session_manager->sessions().empty(), base::NotFatalUntil::M162);
   session_manager->AddObserver(this);
 }
 

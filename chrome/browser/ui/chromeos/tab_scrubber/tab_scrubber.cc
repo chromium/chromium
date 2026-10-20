@@ -294,8 +294,8 @@ void TabScrubber::OnTabRemoved(int index) {
 }
 
 void TabScrubber::BeginScrub(BrowserView* browser_view, float x_offset) {
-  DCHECK(browser_view);
-  DCHECK(browser_view->browser());
+  CHECK(browser_view, base::NotFatalUntil::M162);
+  CHECK(browser_view->browser(), base::NotFatalUntil::M162);
 
   if (browser_view->ShouldDrawVerticalTabStrip()) {
     // TODO(crbug.com/484364227): TabScrubbing is not supported in VerticalTabs
@@ -380,9 +380,9 @@ void TabScrubber::ScheduleFinishScrubIfNeeded() {
 }
 
 void TabScrubber::ScrubDirectionChanged(Direction direction) {
-  DCHECK(browser_);
-  DCHECK(tab_strip_);
-  DCHECK(scrubbing_);
+  CHECK(browser_, base::NotFatalUntil::M162);
+  CHECK(tab_strip_, base::NotFatalUntil::M162);
+  CHECK(scrubbing_, base::NotFatalUntil::M162);
 
   swipe_direction_ = direction;
   const gfx::Point start_point = GetStartPoint(
@@ -393,9 +393,9 @@ void TabScrubber::ScrubDirectionChanged(Direction direction) {
 }
 
 void TabScrubber::UpdateSwipeX(float x_offset) {
-  DCHECK(browser_);
-  DCHECK(tab_strip_);
-  DCHECK(scrubbing_);
+  CHECK(browser_, base::NotFatalUntil::M162);
+  CHECK(tab_strip_, base::NotFatalUntil::M162);
+  CHECK(scrubbing_, base::NotFatalUntil::M162);
 
   // Make the swipe speed inversely proportional with the number or tabs:
   // Each added tab introduces a reduction of 2% in |x_offset|, with a value of
@@ -425,8 +425,8 @@ void TabScrubber::UpdateSwipeX(float x_offset) {
 }
 
 void TabScrubber::UpdateHighlightedTab(Tab* new_tab, int new_index) {
-  DCHECK(scrubbing_);
-  DCHECK(new_tab);
+  CHECK(scrubbing_, base::NotFatalUntil::M162);
+  CHECK(new_tab, base::NotFatalUntil::M162);
 
   if (new_index == highlighted_tab_) {
     return;

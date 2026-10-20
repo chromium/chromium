@@ -308,7 +308,7 @@ void ChromeNewWindowClient::OpenCalculator() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M162);
   proxy->Launch(ash::calculator_app::GetInstalledCalculatorAppId(profile),
                 ui::EF_NONE, apps::LaunchSource::kFromKeyboard);
 }
@@ -321,7 +321,7 @@ void ChromeNewWindowClient::OpenFileManager() {
 
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M162);
 
   auto launch_files_app = [proxy](const apps::AppUpdate& update) {
     if (update.Readiness() != apps::Readiness::kReady) {
@@ -339,7 +339,7 @@ void ChromeNewWindowClient::OpenFileManager() {
 
   bool result = proxy->AppRegistryCache().ForOneApp(
       file_manager::kFileManagerAppId, std::move(launch_files_app));
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
 }
 
 void ChromeNewWindowClient::OpenDownloadsFolder() {
@@ -354,7 +354,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
       apps::AppServiceProxyFactory::GetForProfile(profile);
   auto downloads_path =
       file_manager::util::GetDownloadsFolderForProfile(profile);
-  DCHECK(proxy);
+  CHECK(proxy, base::NotFatalUntil::M162);
 
   auto launch_files_app = [proxy,
                            downloads_path](const apps::AppUpdate& update) {
@@ -376,7 +376,7 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
 
   bool result = proxy->AppRegistryCache().ForOneApp(
       file_manager::kFileManagerAppId, launch_files_app);
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M162);
 }
 
 void ChromeNewWindowClient::OpenCrosh() {
@@ -466,7 +466,7 @@ void ChromeNewWindowClient::ToggleGeminiApp() {
 void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
                                             bool launch_in_dialog,
                                             int32_t task_id) {
-  DCHECK(IsCameraAppEnabled());
+  CHECK(IsCameraAppEnabled(), base::NotFatalUntil::M162);
   ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
       queries, launch_in_dialog, arc::GetArcWindow(task_id));
   apps::RecordAppLaunch(ash::kCameraAppId, apps::LaunchSource::kFromArc);
@@ -482,7 +482,7 @@ void ChromeNewWindowClient::CloseCameraApp() {
     return;
   }
 
-  DCHECK_LE(app_controller->window_count(), 1lu);
+  CHECK_LE(app_controller->window_count(), 1lu, base::NotFatalUntil::M162);
   if (app_controller->window_count() > 0) {
     app_controller->windows().front()->Close();
   }

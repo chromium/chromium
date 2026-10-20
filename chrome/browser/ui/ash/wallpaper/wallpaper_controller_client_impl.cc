@@ -112,7 +112,7 @@ user_manager::UserType GetUserType(const AccountId& id) {
 // this dependency.
 std::string HashWallpaperFilesIdStr(std::string_view files_id_unhashed) {
   ash::SystemSaltGetter* salt_getter = ash::SystemSaltGetter::Get();
-  DCHECK(salt_getter);
+  CHECK(salt_getter, base::NotFatalUntil::M162);
 
   // System salt must be defined at this point.
   const ash::SystemSaltGetter::RawSalt* salt = salt_getter->GetRawSalt();
@@ -138,7 +138,7 @@ void GetFilesIdSaltReady(
     PrefService* local_state,
     const AccountId& account_id,
     base::OnceCallback<void(const std::string&)> files_id_callback) {
-  DCHECK(CanGetFilesId());
+  CHECK(CanGetFilesId(), base::NotFatalUntil::M162);
   user_manager::KnownUser known_user(local_state);
   if (const std::string* stored_value =
           known_user.FindStringPath(account_id, kWallpaperFilesId)) {
@@ -194,7 +194,7 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl(
               &WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen,
               weak_factory_.GetWeakPtr()));
 
-  DCHECK(!g_wallpaper_controller_client_instance);
+  CHECK(!g_wallpaper_controller_client_instance, base::NotFatalUntil::M162);
   g_wallpaper_controller_client_instance = this;
 
   SessionManager* session_manager = SessionManager::Get();
@@ -213,7 +213,8 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl(
 WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
   wallpaper_controller_->SetClient(nullptr);
   weak_factory_.InvalidateWeakPtrs();
-  DCHECK_EQ(this, g_wallpaper_controller_client_instance);
+  CHECK_EQ(this, g_wallpaper_controller_client_instance,
+           base::NotFatalUntil::M162);
   g_wallpaper_controller_client_instance = nullptr;
 }
 
@@ -458,7 +459,7 @@ void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
 
 void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M162);
   ash::SystemAppLaunchParams params;
   params.url = GURL(
       std::string(ash::personalization_app::kChromeUIPersonalizationAppURL) +
@@ -642,7 +643,7 @@ void WallpaperControllerClientImpl::OnGooglePhotosDailyAlbumFetched(
   ids.Put(base::PersistentHash(selected->id));
   bool success = wallpaper_controller_->SetDailyGooglePhotosWallpaperIdCache(
       account_id, ids);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M162);
   std::move(callback).Run(std::move(selected),
                           /*success=*/true);
 }

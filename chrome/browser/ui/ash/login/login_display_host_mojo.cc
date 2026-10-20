@@ -341,7 +341,7 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
 void LoginDisplayHostMojo::UseAlternativeAuthentication(
     std::unique_ptr<UserContext> user_context,
     bool online_password_mismatch) {
-  DCHECK(GetOobeUI());
+  CHECK(GetOobeUI(), base::NotFatalUntil::M162);
   // We only get here if the user already exist on the device,
   // so mark the flow as reauth:
   if (GetWizardContext()->knowledge_factor_setup.auth_setup_flow ==
@@ -450,7 +450,7 @@ void LoginDisplayHostMojo::OnFinalize() {
 void LoginDisplayHostMojo::StartWizard(OobeScreenId first_screen) {
   EnsureOobeDialogLoaded();
   OobeUI* oobe_ui = GetOobeUI();
-  DCHECK(oobe_ui);
+  CHECK(oobe_ui, base::NotFatalUntil::M162);
   // Dialog is not shown immediately, and will be shown only when a screen
   // change occurs. This prevents the dialog from showing when there are no
   // screens to show.
@@ -612,7 +612,7 @@ void LoginDisplayHostMojo::StartUserRecovery(
 void LoginDisplayHostMojo::ShowGaiaDialogImpl(
     const AccountId& prefilled_account) {
   EnsureOobeDialogLoaded();
-  DCHECK(GetOobeUI());
+  CHECK(GetOobeUI(), base::NotFatalUntil::M162);
 
   if (prefilled_account.is_valid()) {
     gaia_reauth_account_id_ = prefilled_account;
@@ -643,7 +643,7 @@ void LoginDisplayHostMojo::ShowRemoteActivityNotificationScreen() {
 }
 
 void LoginDisplayHostMojo::HideOobeDialog(bool saml_page_closed) {
-  DCHECK(dialog_);
+  CHECK(dialog_, base::NotFatalUntil::M162);
 
   // The dialog can be hidden if there are no users on the login screen only
   // on camera timeout during SAML login.
@@ -761,8 +761,9 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
     const std::string& password,
     bool authenticated_by_pin,
     base::OnceCallback<void(bool)> callback) {
-  DCHECK_EQ(account_id.GetUserEmail(),
-            gaia::SanitizeEmail(account_id.GetUserEmail()));
+  CHECK_EQ(account_id.GetUserEmail(),
+           gaia::SanitizeEmail(account_id.GetUserEmail()),
+           base::NotFatalUntil::M162);
 
   CHECK(!pending_auth_state_);
   pending_auth_state_ =
@@ -770,7 +771,7 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
 
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
   UserContext user_context(*user);
   user_context.SetIsUsingPin(authenticated_by_pin);
   user_context.SetKey(Key(Key::KEY_TYPE_PASSWORD_PLAIN, "" /*salt*/, password));
@@ -882,7 +883,7 @@ void LoginDisplayHostMojo::OnOldEncryptionDetected(
 
 void LoginDisplayHostMojo::OnCurrentScreenChanged(OobeScreenId current_screen,
                                                   OobeScreenId new_screen) {
-  DCHECK(dialog_);
+  CHECK(dialog_, base::NotFatalUntil::M162);
   if (!dialog_->IsVisible()) {
     ShowDialog();
   }
@@ -894,14 +895,16 @@ void LoginDisplayHostMojo::OnDestroyingOobeUI() {
 
 // views::ViewObserver:
 void LoginDisplayHostMojo::OnViewBoundsChanged(views::View* observed_view) {
-  DCHECK(scoped_observation_.IsObservingSource(observed_view));
+  CHECK(scoped_observation_.IsObservingSource(observed_view),
+        base::NotFatalUntil::M162);
   for (auto& observer : observers_) {
     observer.WebDialogViewBoundsChanged(observed_view->GetBoundsInScreen());
   }
 }
 
 void LoginDisplayHostMojo::OnViewIsDeleting(views::View* observed_view) {
-  DCHECK(scoped_observation_.IsObservingSource(observed_view));
+  CHECK(scoped_observation_.IsObservingSource(observed_view),
+        base::NotFatalUntil::M162);
   scoped_observation_.Reset();
 }
 
@@ -958,7 +961,7 @@ void LoginDisplayHostMojo::OnChallengeResponseKeysPrepared(
 
   const user_manager::User* const user =
       user_manager::UserManager::Get()->FindUser(account_id);
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
   UserContext user_context(*user);
   *user_context.GetMutableChallengeResponseKeys() =
       std::move(challenge_response_keys);

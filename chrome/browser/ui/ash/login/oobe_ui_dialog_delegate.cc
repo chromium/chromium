@@ -270,7 +270,7 @@ OobeUIDialogDelegate::OobeUIDialogDelegate(
         kLoginAcceleratorData[i].action;
   }
 
-  DCHECK(!dialog_view_ && !widget_);
+  CHECK(!dialog_view_ && !widget_, base::NotFatalUntil::M162);
   // Life cycle of `dialog_view_` is managed by the widget:
   // Widget owns a root view which has `dialog_view_` as its child view.
   // Before the widget is destroyed, it will clean up the view hierarchy
@@ -472,7 +472,7 @@ void OobeUIDialogDelegate::OnViewBoundsChanged(views::View* observed_view) {
 }
 
 void OobeUIDialogDelegate::OnViewIsDeleting(views::View* observed_view) {
-  DCHECK_EQ(observed_view, dialog_view_);
+  CHECK_EQ(observed_view, dialog_view_, base::NotFatalUntil::M162);
   view_observer_.Reset();
   dialog_view_ = nullptr;
 }

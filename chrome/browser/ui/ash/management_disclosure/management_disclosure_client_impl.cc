@@ -29,14 +29,15 @@ ManagementDisclosureClientImpl::ManagementDisclosureClientImpl(
   // Register this object as the client interface implementation.
   ash::LoginScreen::Get()->SetManagementDisclosureClient(this);
 
-  DCHECK(!g_management_disclosure_client_instance);
+  CHECK(!g_management_disclosure_client_instance, base::NotFatalUntil::M162);
   g_management_disclosure_client_instance = this;
 }
 
 ManagementDisclosureClientImpl::~ManagementDisclosureClientImpl() {
   ash::LoginScreen::Get()->SetManagementDisclosureClient(nullptr);
 
-  DCHECK_EQ(this, g_management_disclosure_client_instance);
+  CHECK_EQ(this, g_management_disclosure_client_instance,
+           base::NotFatalUntil::M162);
   g_management_disclosure_client_instance = nullptr;
   connector_ = nullptr;
   profile_ = nullptr;

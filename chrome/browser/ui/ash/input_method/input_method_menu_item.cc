@@ -17,7 +17,7 @@ InputMethodMenuItem::InputMethodMenuItem(const std::string& in_key,
     : key(in_key),
       label(in_label),
       is_selection_item_checked(in_is_selection_item_checked) {
-  DCHECK(!key.empty());
+  CHECK(!key.empty(), base::NotFatalUntil::M162);
 }
 
 InputMethodMenuItem::InputMethodMenuItem() : is_selection_item_checked(false) {}

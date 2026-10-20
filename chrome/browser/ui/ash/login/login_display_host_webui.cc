@@ -198,7 +198,7 @@ bool ShouldShowSigninScreen(const PrefService& local_state,
 }
 
 void MaybeShowDeviceDisabledScreen() {
-  DCHECK(LoginDisplayHost::default_host());
+  CHECK(LoginDisplayHost::default_host(), base::NotFatalUntil::M162);
   if (!g_browser_process->platform_part()->device_disabling_manager()) {
     // Device disabled check will be done in the DeviceDisablingManager.
     return;
@@ -351,8 +351,8 @@ void ShowLoginWizardFinish(
 
   // This step requires the session manager to have been initialized and login
   // display host to be created.
-  DCHECK(session_manager::SessionManager::Get());
-  DCHECK(LoginDisplayHost::default_host());
+  CHECK(session_manager::SessionManager::Get(), base::NotFatalUntil::M162);
+  CHECK(LoginDisplayHost::default_host(), base::NotFatalUntil::M162);
   // Postpone loading wallpaper if the booting animation might be played.
   if (!features::IsBootAnimationEnabled() ||
       session_manager::SessionManager::Get()->session_state() !=
@@ -874,7 +874,7 @@ void LoginDisplayHostWebUI::OnWillRemoveView(views::Widget* widget,
 ////////////////////////////////////////////////////////////////////////////////
 // LoginDisplayHostWebUI, views::WidgetObserver:
 void LoginDisplayHostWebUI::OnWidgetDestroying(views::Widget* widget) {
-  DCHECK_EQ(login_window_, widget);
+  CHECK_EQ(login_window_, widget, base::NotFatalUntil::M162);
   login_window_->RemoveRemovalsObserver(this);
   login_window_->RemoveObserver(this);
 
@@ -979,8 +979,8 @@ void LoginDisplayHostWebUI::ShowWebUI() {
   session_observation_.Reset();
   show_webui_guard_.Stop();
 
-  DCHECK(login_window_);
-  DCHECK(login_view_);
+  CHECK(login_window_, base::NotFatalUntil::M162);
+  CHECK(login_view_, base::NotFatalUntil::M162);
 
   VLOG(1) << "Login WebUI >> Show already initialized UI";
   login_window_->Show();
@@ -1371,7 +1371,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
 void SwitchWebUItoMojo() {
   auto* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
   if (oobe_ui) {
-    DCHECK_EQ(oobe_ui->display_type(), OobeUI::kOobeDisplay);
+    CHECK_EQ(oobe_ui->display_type(), OobeUI::kOobeDisplay,
+             base::NotFatalUntil::M162);
   }
 
   // This replaces WebUI host with the Mojo (views) host.

@@ -69,7 +69,8 @@ ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
         kEnforcedByFlag;
   }
 
-  DCHECK_NE(availability, ash::OnDeviceRecognitionAvailability::kAvailable);
+  CHECK_NE(availability, ash::OnDeviceRecognitionAvailability::kAvailable,
+           base::NotFatalUntil::M162);
   switch (availability) {
     case ash::OnDeviceRecognitionAvailability::kSodaNotAvailable:
       return ash::OnDeviceToServerSpeechRecognitionFallbackReason::
@@ -156,8 +157,8 @@ ProjectorClientImpl::GetSpeechRecognitionAvailability() const {
 
 void ProjectorClientImpl::StartSpeechRecognition() {
   const auto availability = GetSpeechRecognitionAvailability();
-  DCHECK(availability.IsAvailable());
-  DCHECK_EQ(speech_recognizer_.get(), nullptr);
+  CHECK(availability.IsAvailable(), base::NotFatalUntil::M162);
+  CHECK_EQ(speech_recognizer_.get(), nullptr, base::NotFatalUntil::M162);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
   const std::string app_locale(
       application_locale_storage_->GetTag().tag_string());
@@ -201,7 +202,7 @@ bool ProjectorClientImpl::GetBaseStoragePath(base::FilePath* result) const {
 
   if (ash::ProjectorController::AreExtendedProjectorFeaturesDisabled()) {
     auto* profile = ProfileManager::GetActiveUserProfile();
-    DCHECK(profile);
+    CHECK(profile, base::NotFatalUntil::M162);
 
     DownloadPrefs* download_prefs = DownloadPrefs::FromBrowserContext(
         ProfileManager::GetActiveUserProfile());
@@ -274,7 +275,7 @@ void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
     const std::optional<media::SpeechRecognitionResult>& full_result) {
-  DCHECK(full_result.has_value());
+  CHECK(full_result.has_value(), base::NotFatalUntil::M162);
   controller_->OnTranscription(full_result.value());
 }
 

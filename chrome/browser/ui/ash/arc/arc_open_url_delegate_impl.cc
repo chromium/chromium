@@ -250,12 +250,12 @@ apps::IntentPtr ConvertLaunchIntent(
 
 ArcOpenUrlDelegateImpl::ArcOpenUrlDelegateImpl() {
   arc::ArcIntentHelperBridge::SetOpenUrlDelegate(this);
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M162);
   g_instance = this;
 }
 
 ArcOpenUrlDelegateImpl::~ArcOpenUrlDelegateImpl() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M162);
   g_instance = nullptr;
   arc::ArcIntentHelperBridge::SetOpenUrlDelegate(nullptr);
 }
@@ -284,7 +284,8 @@ void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
 }
 
 void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
-  DCHECK(url.is_valid() && url.SchemeIs(url::kHttpsScheme));
+  CHECK(url.is_valid() && url.SchemeIs(url::kHttpsScheme),
+        base::NotFatalUntil::M162);
 
   // Fetch the profile associated with ARC. This method should only be called
   // for a |url| which was installed via ARC, and so we want the web app that is
@@ -398,14 +399,15 @@ void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
 void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
     const GURL& start_url,
     arc::mojom::LaunchIntentPtr arc_intent) {
-  DCHECK(start_url.is_valid());
-  DCHECK(start_url.SchemeIs(url::kHttpsScheme) || net::IsLocalhost(start_url));
+  CHECK(start_url.is_valid(), base::NotFatalUntil::M162);
+  CHECK(start_url.SchemeIs(url::kHttpsScheme) || net::IsLocalhost(start_url),
+        base::NotFatalUntil::M162);
 
   // Fetch the profile associated with ARC. This method should only be called
   // for a |url| which was installed via ARC, and so we want the web app that is
   // opened through here to be installed in the profile associated with ARC.
   const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
+  CHECK(user, base::NotFatalUntil::M162);
 
   // |profile| may be null if sign-in has happened but the profile isn't loaded
   // yet.

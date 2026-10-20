@@ -109,7 +109,7 @@ void QuickAnswersUiController::CreateQuickAnswersViewInternal(
     CloseQuickAnswersView();
   }
 
-  DCHECK(!IsShowingUserConsentView());
+  CHECK(!IsShowingUserConsentView(), base::NotFatalUntil::M162);
   SetActiveQuery(profile, query);
 
   auto* view = GetReadWriteCardsUiController().SetQuickAnswersUi(
@@ -367,7 +367,7 @@ void QuickAnswersUiController::OnUserConsentAllowPressed() {
 }
 
 void QuickAnswersUiController::OnUserConsentResult(bool consented) {
-  DCHECK(IsShowingUserConsentView());
+  CHECK(IsShowingUserConsentView(), base::NotFatalUntil::M162);
   controller_->OnUserConsentResult(consented);
 
   if (consented && IsShowingQuickAnswersView()) {
