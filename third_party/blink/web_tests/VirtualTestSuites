@@ -3520,7 +3520,6 @@
       "external/wpt/trusted-types/navigate-to-javascript-url-004.html",
       "external/wpt/trusted-types/navigate-to-javascript-url-005.html",
       "external/wpt/trusted-types/navigate-to-javascript-url-006.sub.html",
-      "external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html",
       "external/wpt/trusted-types/navigate-to-javascript-url-csp-headers.html",
       "external/wpt/trusted-types/trusted-types-navigation.html",
       "external/wpt/trusted-types/trusted-types-reporting.html"
@@ -3561,7 +3560,6 @@
       "external/wpt/trusted-types/navigate-to-javascript-url-004.html",
       "external/wpt/trusted-types/navigate-to-javascript-url-005.html",
       "external/wpt/trusted-types/navigate-to-javascript-url-006.sub.html",
-      "external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html",
       "external/wpt/trusted-types/navigate-to-javascript-url-csp-headers.html",
       "external/wpt/trusted-types/trusted-types-navigation.html",
       "external/wpt/trusted-types/trusted-types-reporting.html"
