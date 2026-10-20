@@ -14232,6 +14232,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::
              kAutofillEnableWalletDirectOffersNotificationBubble)},
 
+    {"autofill-enable-wallet-gmail-offers",
+     flag_descriptions::kAutofillEnableWalletGmailOffersName,
+     flag_descriptions::kAutofillEnableWalletGmailOffersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableWalletGmailOffers)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"desktop-android-file-picker-for-media",
      flag_descriptions::kDesktopAndroidFilePickerForMediaName,

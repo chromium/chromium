@@ -1250,6 +1250,12 @@ inline constexpr char
         "When enabled, shows the Wallet Disclosure Notice at the end of the "
         "save prompt for public passes.";
 
+inline constexpr char kAutofillEnableWalletGmailOffersName[] =
+    "Enable Wallet Gmail offers";
+inline constexpr char kAutofillEnableWalletGmailOffersDescription[] =
+    "When enabled, offers from Gmail are synced via Google Wallet in addition "
+    "to direct offers.";
+
 inline constexpr char kAutofillEnableWalletReminderNoticeName[] =
     "Enable Wallet Reminder Notice for cards";
 inline constexpr char kAutofillEnableWalletReminderNoticeDescription[] =

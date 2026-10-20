@@ -317,6 +317,11 @@ BASE_FEATURE(kAutofillEnableWalletDirectOffers,
 BASE_FEATURE(kAutofillEnableWalletDirectOffersNotificationBubble,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, offers from the user's Gmail are synced via Google Wallet in
+// addition to direct offers.
+BASE_FEATURE(kAutofillEnableWalletGmailOffers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, shows the Wallet Reminder Notice for credit cards after payment
 // form submission if higher-priority Autofill features (such as mandatory
 // re-auth, VCN, or card save) do not take precedence.
