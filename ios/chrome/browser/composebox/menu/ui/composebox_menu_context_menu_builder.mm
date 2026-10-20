@@ -80,9 +80,10 @@ struct MenuItemAvailability {
   NSMutableArray<UIMenuElement*>* sections = [[NSMutableArray alloc] init];
 
   if (IsPlusButtonMenuMoreOptionsSubmenu()) {
-    UIMenu* attachmentMenu =
-        [self inlineMenuFromItemTypes:{kCurrentTab, kAttachmentGallery,
-                                       kAttachmentCamera, kAttachmentTabs}];
+    UIMenu* attachmentMenu = [self
+        inlineMenuFromItemTypes:{kCurrentTab, kAttachmentGallery,
+                                 kAttachmentCamera, kAttachmentTabs}
+                      withTitle:_inputState.uiConfig.attachmentsSectionHeader];
     UIMenu* aimMenu = [self inlineMenuFromItemTypes:{kAIM}];
     UIMenu* moreOptions = [self createMoreOptionsSubmenu];
 

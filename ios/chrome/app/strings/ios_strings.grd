@@ -1969,10 +1969,10 @@
         Shared tabs
       </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_SUBITITLE_AIM" desc="The Composebox menu option subtitle for AIM. [iOS only].">
-        Smarter, faster answers
+        Brainstorm and summarize
       </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_SUBITITLE_CANVAS" desc="The Composebox menu option subtitle for canvas. [iOS only].">
-        Code, write or make slides
+        Build and code
       </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_SUBITITLE_IMAGE_GENERATION" desc="The Composebox menu option subtitle for image generation. [iOS only].">
         Visualize and edit
