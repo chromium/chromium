@@ -32,7 +32,7 @@ Check off these items before committing your `SECURITY.md`:
 - [ ] Scope: State which directory paths are covered and which are excluded (e.g., testing/, test/).
 - [ ] Process & Sandbox: Name the process type (Browser, Renderer etc.) and sandbox constraints.
 - [ ] Compromised Renderer Assumption: State whether your code defends against an attacker who has compromised a renderer process.
-- [ ] Rule of Two: Explain how this component complies with Chromium's Rule of Two
+- [ ] Rule of Two: Explain if this component complies with Chromium's Rule of Two and, if so, how.
 - [ ] Mojo IPC & Origin Validation: Document argument validation, origin checks (ChildProcessSecurityPolicy), and ReportBadMessage() behavior.
 - [ ] Component-Specific Non-Bugs: Write concrete, testable out-of-scope statements
 - [ ] Accepted Risks: Document architectural trade-offs (e.g., shared memory IPC) and mitigations.
