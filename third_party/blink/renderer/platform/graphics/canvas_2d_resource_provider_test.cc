@@ -173,36 +173,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                          });
 
 TEST_P(Canvas2DResourceProviderSyncTokenTest,
-       DontReclaimUnusedResourcesWhenFeatureIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kCanvas2DReclaimUnusedResources);
-
-  auto provider = MakeCanvas2DResourceProvider(context_provider_wrapper_);
-
-  auto resource = provider->ProduceCanvasResource(/*surface=*/nullptr);
-  MemoryManagedPaintRecorder recorder(provider->Size(), nullptr);
-  recorder.getRecordingCanvas().clear(SkColors::kWhite);
-  provider->RasterRecord(recorder.ReleaseMainRecording(), {});
-  auto new_resource = provider->ProduceCanvasResource(/*surface=*/nullptr);
-  ASSERT_NE(resource, new_resource);
-  if (base::FeatureList::IsEnabled(
-          features::kUseAutomaticSyncTokenManagement)) {
-    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
-    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
-  } else {
-    ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
-  }
-  EXPECT_FALSE(
-      provider->unused_resources_reclaim_timer_is_running_for_testing());
-  EnsureResourceRecycled(std::move(resource));
-  // There is a ready-to-reuse resource
-  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
-  // No task posted.
-  EXPECT_FALSE(
-      provider->unused_resources_reclaim_timer_is_running_for_testing());
-}
-
-TEST_P(Canvas2DResourceProviderSyncTokenTest,
        UnusedResourcesAreNotCollectedWhenYoung) {
   base::test::ScopedFeatureList feature_list{kCanvas2DReclaimUnusedResources};
 

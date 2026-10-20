@@ -625,5 +625,36 @@ TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest, UnusedResources) {
       provider->unused_resources_reclaim_timer_is_running_for_testing());
 }
 
+TEST_P(BaseRenderingContext2DSharedImageSyncTokenTest,
+       DontReclaimUnusedResourcesWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kCanvas2DReclaimUnusedResources);
+  V8TestingScope scope;
+  auto* context = CreateBackedContext(scope, RasterMode::kGPU);
+  auto* provider = context->GetSharedImageProviderForTesting();
+
+  auto resource = context->PaintRenderingResultsToResource(kBackBuffer,
+                                                           FlushReason::kOther);
+  context->fillRect(0, 0, 1, 1);
+  auto new_resource = context->PaintRenderingResultsToResource(
+      kBackBuffer, FlushReason::kOther);
+  ASSERT_NE(resource, new_resource);
+  if (base::FeatureList::IsEnabled(
+          ::features::kUseAutomaticSyncTokenManagement)) {
+    EXPECT_FALSE(GetSyncToken(resource.get()).HasData());
+    EXPECT_FALSE(GetSyncToken(new_resource.get()).HasData());
+  } else {
+    ASSERT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
+  }
+  EXPECT_FALSE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+  EnsureResourceRecycled(std::move(resource));
+  // There is a ready-to-reuse resource.
+  EXPECT_TRUE(provider->HasUnusedResourcesForTesting());
+  // No task posted.
+  EXPECT_FALSE(
+      provider->unused_resources_reclaim_timer_is_running_for_testing());
+}
+
 }  // namespace
 }  // namespace blink
