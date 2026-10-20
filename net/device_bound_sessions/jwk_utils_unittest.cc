@@ -8,10 +8,16 @@
 #include <functional>
 #include <optional>
 #include <string_view>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/json/json_reader.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "components/unexportable_keys/mock_unexportable_key_service.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/keypair.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +26,9 @@
 namespace net::device_bound_sessions {
 
 namespace {
+
+using ::testing::Optional;
+using ::testing::Return;
 
 constexpr uint8_t kES256Spki[] = {
     0x30, 0x59, 0x30, 0x13, 0x06, 0x07, 0x2A, 0x86, 0x48, 0xCE, 0x3D, 0x02,
@@ -39,7 +48,7 @@ TEST(JWKUtilsTest, CreateJwkRS256) {
   ASSERT_OK_AND_ASSIGN(
       base::DictValue expected,
       base::JSONReader::ReadDict(jwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  EXPECT_THAT(CreateJwk(key), testing::Optional(std::ref(expected)));
+  EXPECT_THAT(CreateJwk(key), Optional(std::ref(expected)));
 }
 
 TEST(JWKUtilsTest, CreateJwkES256) {
@@ -55,7 +64,7 @@ TEST(JWKUtilsTest, CreateJwkES256) {
   ASSERT_OK_AND_ASSIGN(
       base::DictValue expected,
       base::JSONReader::ReadDict(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  EXPECT_THAT(CreateJwk(key), testing::Optional(std::ref(expected)));
+  EXPECT_THAT(CreateJwk(key), Optional(std::ref(expected)));
 }
 
 TEST(JWKUtilsTest, CreateJwkUnsupportedKey) {
@@ -109,11 +118,11 @@ TEST(JWKUtilsTest, CreateJwkThumbprintRS256) {
   ASSERT_OK_AND_ASSIGN(
       base::DictValue expected_jwk,
       base::JSONReader::ReadDict(kJwk, base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  ASSERT_THAT(CreateJwk(key), testing::Optional(std::ref(expected_jwk)));
+  ASSERT_THAT(CreateJwk(key), Optional(std::ref(expected_jwk)));
 
   static constexpr std::string_view kExpectedThumbprint =
       "NzbLsXh8uDCcd-6MNwXF4W_7noWXFZAfHkxZsRGC9Xs";
-  EXPECT_THAT(CreateJwkThumbprint(key), testing::Optional(kExpectedThumbprint));
+  EXPECT_THAT(CreateJwkThumbprint(key), Optional(kExpectedThumbprint));
 }
 
 TEST(JWKUtilsTest, CreateJwkThumbprintES256) {
@@ -123,7 +132,7 @@ TEST(JWKUtilsTest, CreateJwkThumbprintES256) {
 
   static constexpr std::string_view kExpectedThumbprint =
       "_ECzPdFweUQepHljFjcCo0Oy5mhyMgyP5_DqdNhevXk";
-  EXPECT_THAT(CreateJwkThumbprint(key), testing::Optional(kExpectedThumbprint));
+  EXPECT_THAT(CreateJwkThumbprint(key), Optional(kExpectedThumbprint));
 }
 
 TEST(JWKUtilsTest, CreateJwkThumbprintUnsupportedKey) {
@@ -136,6 +145,37 @@ TEST(JWKUtilsTest, CreateJwkThumbprintUnsupportedKey) {
       crypto::keypair::PublicKey::FromPrivateKey(
           crypto::keypair::PrivateKey::GenerateEd25519());
   EXPECT_EQ(CreateJwkThumbprint(ed25519_key), std::nullopt);
+}
+
+TEST(JWKUtilsTest, GetJwkThumbprintES256) {
+  unexportable_keys::MockUnexportableKeyService key_service;
+  unexportable_keys::UnexportableSigningKeyId key_id;
+  EXPECT_CALL(key_service, GetSubjectPublicKeyInfo(key_id))
+      .WillOnce(Return(base::ToVector(kES256Spki)));
+
+  static constexpr std::string_view kExpectedThumbprint =
+      "_ECzPdFweUQepHljFjcCo0Oy5mhyMgyP5_DqdNhevXk";
+  EXPECT_THAT(GetJwkThumbprint(key_service, key_id),
+              Optional(kExpectedThumbprint));
+}
+
+TEST(JWKUtilsTest, GetJwkThumbprintKeyNotFound) {
+  unexportable_keys::MockUnexportableKeyService key_service;
+  unexportable_keys::UnexportableSigningKeyId key_id;
+  EXPECT_CALL(key_service, GetSubjectPublicKeyInfo(key_id))
+      .WillOnce(Return(
+          base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
+
+  EXPECT_EQ(GetJwkThumbprint(key_service, key_id), std::nullopt);
+}
+
+TEST(JWKUtilsTest, GetJwkThumbprintInvalidSpki) {
+  unexportable_keys::MockUnexportableKeyService key_service;
+  unexportable_keys::UnexportableSigningKeyId key_id;
+  EXPECT_CALL(key_service, GetSubjectPublicKeyInfo(key_id))
+      .WillOnce(Return(std::vector<uint8_t>{0x30, 0x00}));
+
+  EXPECT_EQ(GetJwkThumbprint(key_service, key_id), std::nullopt);
 }
 
 }  // namespace

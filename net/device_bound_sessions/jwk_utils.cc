@@ -15,7 +15,9 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/json/json_writer.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
+#include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
 
@@ -91,6 +93,16 @@ std::optional<std::string> CreateJwkThumbprint(
       .transform([](std::string_view canonical_jwk) {
         return Base64UrlEncode(crypto::hash::Sha256(canonical_jwk));
       });
+}
+
+std::optional<std::string> GetJwkThumbprint(
+    const unexportable_keys::UnexportableKeyService& key_service,
+    unexportable_keys::UnexportableSigningKeyId key_id) {
+  return base::OptionalFromExpected(key_service.GetSubjectPublicKeyInfo(key_id))
+      .and_then([](base::span<const uint8_t> spki) {
+        return crypto::keypair::PublicKey::FromSubjectPublicKeyInfo(spki);
+      })
+      .and_then(CreateJwkThumbprint);
 }
 
 }  // namespace net::device_bound_sessions

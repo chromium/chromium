@@ -9,11 +9,16 @@
 #include <string>
 
 #include "base/values.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/net_export.h"
 
 namespace crypto::keypair {
 class PublicKey;
 }
+
+namespace unexportable_keys {
+class UnexportableKeyService;
+}  // namespace unexportable_keys
 
 namespace net::device_bound_sessions {
 
@@ -28,6 +33,14 @@ NET_EXPORT std::optional<base::DictValue> CreateJwk(
 // RSA keys, and returns `std::nullopt` for any other key type.
 NET_EXPORT std::optional<std::string> CreateJwkThumbprint(
     const crypto::keypair::PublicKey& key);
+
+// Returns the JWK thumbprint (RFC 7638) of the public key of `key_id`. Returns
+// `std::nullopt` if `key_service` does not know `key_id`, if its
+// SubjectPublicKeyInfo cannot be parsed, or if `CreateJwkThumbprint()` does not
+// support its key type.
+NET_EXPORT std::optional<std::string> GetJwkThumbprint(
+    const unexportable_keys::UnexportableKeyService& key_service,
+    unexportable_keys::UnexportableSigningKeyId key_id);
 
 }  // namespace net::device_bound_sessions
 
