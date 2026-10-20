@@ -854,7 +854,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.ShownInSession"
-    enum="Boolean" expires_after="2026-11-29">
+    enum="Boolean" expires_after="2027-01-17">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Lens.Overlay.ContextualSuggest.ZPS.ByPageContentType.{PageContentType}.SuggestionUsedInSession"
-    enum="Boolean" expires_after="2026-11-29">
+    enum="Boolean" expires_after="2027-01-17">
   <owner>niharm@google.com</owner>
   <owner>lens-chrome@google.com</owner>
   <summary>
