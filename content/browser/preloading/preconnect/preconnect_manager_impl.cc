@@ -315,7 +315,9 @@ std::unique_ptr<ResolveHostClientImpl> PreconnectManagerImpl::PreresolveUrl(
     const base::UnguessableToken& network_restrictions_id,
     ResolveHostCallback callback) const {
   CHECK(url.DeprecatedGetOriginAsURL() == url, base::NotFatalUntil::M159);
-  CHECK(url.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M159);
+  // TODO(crbug.com/573950459): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(url.SchemeIsHTTPOrHTTPS());
 
   auto* network_context = GetNetworkContext(storage_partition_config);
 
@@ -407,7 +409,9 @@ void PreconnectManagerImpl::OnProxyLookupFinished(PreresolveJobId job_id,
                                                   bool success) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M159);
   PreresolveJob* job = preresolve_jobs_.Lookup(job_id);
-  CHECK(job, base::NotFatalUntil::M159);
+  // TODO(crbug.com/573950459): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(job);
 
   if (observer_) {
     observer_->OnProxyLookupFinished(job->url, job->network_anonymization_key,
