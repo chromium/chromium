@@ -16170,6 +16170,13 @@ TEST_P(QuicSessionPoolTest, ReadErrorClosesConnection) {
 }
 
 TEST_P(QuicSessionPoolTest, MessageTooBigReadErrorDoesNotCloseConnection) {
+  // Ignoring ERR_MSG_TOO_BIG only applies to the single-packet read path. In
+  // ReadMultiple, ERR_MSG_TOO_BIG closes the connection to avoid silently
+  // dropping earlier packets read in the same batch. This legacy single-read
+  // test will be removed once Cronet also launches QuicUseReadMultiple.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kQuicUseReadMultiple);
+
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -16196,6 +16203,39 @@ TEST_P(QuicSessionPoolTest, MessageTooBigReadErrorDoesNotCloseConnection) {
   socket_data.Resume();
   // Ensure that the session is still active.
   EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+}
+
+TEST_P(QuicSessionPoolTest,
+       MessageTooBigReadErrorClosesConnectionWithReadMultiple) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kQuicUseReadMultiple);
+
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddReadPause();
+  socket_data.AddRead(ASYNC, ERR_MSG_TOO_BIG);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  // Create request and QuicHttpStream to trigger creation of the session.
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+
+  // Ensure that the session is alive and active before we read the error.
+  QuicChromiumClientSession* session = GetActiveSession(kDefaultDestination);
+  EXPECT_TRUE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), session));
+  EXPECT_TRUE(HasActiveSession(kDefaultDestination));
+
+  // Resume the socket data to get the read error delivered.
+  socket_data.Resume();
+  // Ensure that the session is no longer active.
+  EXPECT_FALSE(HasActiveSession(kDefaultDestination));
 }
 
 TEST_P(QuicSessionPoolTest, ZeroLengthReadDoesNotCloseConnection) {

@@ -7231,25 +7231,6 @@
             ]
         }
     ],
-    "EnableQuicReadMultipleAndUdpGRO": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledQuicUseReadMultipleAndUdpGro_20260729",
-                    "enable_features": [
-                        "EnableUdpGro",
-                        "QuicUseReadMultiple"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableShoppingListIOSM119": [
         {
             "platforms": [
