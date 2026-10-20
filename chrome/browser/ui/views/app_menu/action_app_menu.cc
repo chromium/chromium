@@ -37,6 +37,7 @@
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer_tree_owner.h"
 #include "ui/strings/grit/ax_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -862,8 +863,9 @@ void ActionAppMenu::PopulateSearchBar(views::MenuItemView* view_parent,
   search_item->set_vertical_margin(0);
 
   const auto* provider = ChromeLayoutProvider::Get();
-  gfx::Insets margins =
-      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN);
+  // The search bar applies its own insets, so only the gap below a
+  // notification is set here.
+  gfx::Insets margins;
   if (has_notification_header_) {
     margins.set_top(margins.top() +
                     provider->GetDistanceMetric(

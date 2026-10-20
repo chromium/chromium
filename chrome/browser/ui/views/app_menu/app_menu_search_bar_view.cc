@@ -17,6 +17,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -26,7 +27,9 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/event_monitor.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -39,11 +42,54 @@ constexpr int kIconPadding = 12;
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
+                                      kSearchFieldElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kSearchIconElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuSearchBarView,
                                       kBackButtonElementId);
 
-AppMenuSearchBarView::AppMenuSearchBarView() {
+class AppMenuSearchBarView::SearchField : public views::Textfield,
+                                          public ui::EventObserver {
+  METADATA_HEADER(SearchField, views::Textfield)
+
+ public:
+  using views::Textfield::OnEvent;
+
+  SearchField();
+  SearchField(const SearchField&) = delete;
+  SearchField& operator=(const SearchField&) = delete;
+  ~SearchField() override;
+
+  void SetLeadingIcon(LeadingIcon icon);
+
+  bool is_active() const { return is_active_; }
+
+  void HandleKeyEvent(ui::KeyEvent* event);
+
+  // ui::EventObserver:
+  void OnEvent(const ui::Event& event) override;
+
+  // views::Textfield:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+  void Layout(PassKey) override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
+
+ private:
+  void SetTextfieldFocused(bool focused);
+
+  // Clears the query. The resulting text change drives the menu back
+  // to its normal contents.
+  void OnBackPressed();
+
+  bool is_active_ = false;
+  LeadingIcon leading_icon_ = LeadingIcon::kSearch;
+  raw_ptr<views::ImageView> search_icon_ = nullptr;
+  raw_ptr<views::ImageButton> back_button_ = nullptr;
+  std::unique_ptr<views::EventMonitor> event_monitor_;
+};
+
+AppMenuSearchBarView::SearchField::SearchField() {
   const auto* provider = ChromeLayoutProvider::Get();
   int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
@@ -72,8 +118,7 @@ AppMenuSearchBarView::AppMenuSearchBarView() {
   search_icon_ = AddChildView(std::move(search_icon));
 
   auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-      base::BindRepeating(&AppMenuSearchBarView::OnBackPressed,
-                          base::Unretained(this)),
+      base::BindRepeating(&SearchField::OnBackPressed, base::Unretained(this)),
       features::IsRoundedIconsEnabled() ? vector_icons::kArrowBackIcon
                                         : vector_icons::kArrowBackOldIcon,
       icon_size);
@@ -95,9 +140,9 @@ AppMenuSearchBarView::AppMenuSearchBarView() {
                                                 kCornerRadius);
 }
 
-AppMenuSearchBarView::~AppMenuSearchBarView() = default;
+AppMenuSearchBarView::SearchField::~SearchField() = default;
 
-void AppMenuSearchBarView::AddedToWidget() {
+void AppMenuSearchBarView::SearchField::AddedToWidget() {
   views::Textfield::AddedToWidget();
   SetTextfieldFocused(true);
   if (GetWidget()) {
@@ -106,12 +151,12 @@ void AppMenuSearchBarView::AddedToWidget() {
   }
 }
 
-void AppMenuSearchBarView::RemovedFromWidget() {
+void AppMenuSearchBarView::SearchField::RemovedFromWidget() {
   event_monitor_.reset();
   views::Textfield::RemovedFromWidget();
 }
 
-void AppMenuSearchBarView::Layout(PassKey) {
+void AppMenuSearchBarView::SearchField::Layout(PassKey) {
   LayoutSuperclass<views::Textfield>(this);
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
@@ -122,7 +167,7 @@ void AppMenuSearchBarView::Layout(PassKey) {
   back_button_->SetBoundsRect(leading_bounds);
 }
 
-void AppMenuSearchBarView::SetLeadingIcon(LeadingIcon icon) {
+void AppMenuSearchBarView::SearchField::SetLeadingIcon(LeadingIcon icon) {
   if (leading_icon_ == icon) {
     return;
   }
@@ -131,17 +176,18 @@ void AppMenuSearchBarView::SetLeadingIcon(LeadingIcon icon) {
   back_button_->SetVisible(icon == LeadingIcon::kBack);
 }
 
-void AppMenuSearchBarView::OnBackPressed() {
+void AppMenuSearchBarView::SearchField::OnBackPressed() {
   SetText(std::u16string());
   SetTextfieldFocused(true);
 }
 
-bool AppMenuSearchBarView::OnMousePressed(const ui::MouseEvent& event) {
+bool AppMenuSearchBarView::SearchField::OnMousePressed(
+    const ui::MouseEvent& event) {
   SetTextfieldFocused(true);
   return views::Textfield::OnMousePressed(event);
 }
 
-void AppMenuSearchBarView::SetTextfieldFocused(bool focused) {
+void AppMenuSearchBarView::SearchField::SetTextfieldFocused(bool focused) {
   is_active_ = focused;
   SetCursorEnabled(focused);
   if (focused) {
@@ -152,14 +198,14 @@ void AppMenuSearchBarView::SetTextfieldFocused(bool focused) {
   SchedulePaint();
 }
 
-void AppMenuSearchBarView::OnEvent(const ui::Event& event) {
+void AppMenuSearchBarView::SearchField::OnEvent(const ui::Event& event) {
   if (event.IsKeyEvent()) {
     ui::KeyEvent key_event = *event.AsKeyEvent();
     HandleKeyEvent(&key_event);
   }
 }
 
-void AppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
+void AppMenuSearchBarView::SearchField::HandleKeyEvent(ui::KeyEvent* event) {
   if (event->type() != ui::EventType::kKeyPressed) {
     return;
   }
@@ -193,6 +239,47 @@ void AppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
 
   event->StopPropagation();
   event->SetHandled();
+}
+
+BEGIN_METADATA(AppMenuSearchBarView, SearchField)
+END_METADATA
+
+AppMenuSearchBarView::AppMenuSearchBarView() {
+  SetOrientation(views::BoxLayout::Orientation::kVertical);
+
+  search_field_ = AddChildView(std::make_unique<SearchField>());
+  search_field_->SetProperty(views::kElementIdentifierKey,
+                             kSearchFieldElementId);
+  search_field_->SetProperty(views::kMarginsKey,
+                             ChromeLayoutProvider::Get()->GetInsetsMetric(
+                                 INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
+}
+
+AppMenuSearchBarView::~AppMenuSearchBarView() = default;
+
+void AppMenuSearchBarView::SetLeadingIcon(LeadingIcon icon) {
+  search_field_->SetLeadingIcon(icon);
+}
+
+std::u16string_view AppMenuSearchBarView::GetText() const {
+  return search_field_->GetText();
+}
+
+void AppMenuSearchBarView::SetText(std::u16string_view text) {
+  search_field_->SetText(text);
+}
+
+base::CallbackListSubscription AppMenuSearchBarView::AddTextChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return search_field_->AddTextChangedCallback(std::move(callback));
+}
+
+bool AppMenuSearchBarView::is_active_for_testing() const {
+  return search_field_->is_active();
+}
+
+void AppMenuSearchBarView::HandleKeyEvent(ui::KeyEvent* event) {
+  search_field_->HandleKeyEvent(event);
 }
 
 BEGIN_METADATA(AppMenuSearchBarView)

@@ -1728,6 +1728,11 @@ class ActionAppMenuWithSearchTest : public ActionAppMenuTest {
 
  protected:
   // Finds the search bar's child views by their element identifiers.
+  views::Textfield* GetSearchField(AppMenuSearchBarView* search_bar) {
+    return views::AsViewClass<views::Textfield>(search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kSearchFieldElementId));
+  }
+
   views::View* GetSearchIcon(AppMenuSearchBarView* search_bar) {
     return search_bar->GetViewByElementId(
         AppMenuSearchBarView::kSearchIconElementId);
@@ -1765,12 +1770,14 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_EQ(search_item->children()[0], search_bar);
   EXPECT_EQ(search_item->GetTopMargin(), 0);
 
-  const gfx::Insets* search_bar_margins =
-      search_bar->GetProperty(views::kMarginsKey);
-  ASSERT_TRUE(search_bar_margins);
-  EXPECT_EQ(*search_bar_margins, provider->GetInsetsMetric(
-                                     INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
-  EXPECT_EQ(*search_bar_margins, gfx::Insets::TLBR(0, 12, 12, 12));
+  views::Textfield* search_field = GetSearchField(search_bar);
+  const gfx::Insets* search_field_margins =
+      search_field->GetProperty(views::kMarginsKey);
+  ASSERT_TRUE(search_field_margins);
+  EXPECT_EQ(
+      *search_field_margins,
+      provider->GetInsetsMetric(INSETS_ACTION_APP_MENU_SEARCH_BAR_MARGIN));
+  EXPECT_EQ(*search_field_margins, gfx::Insets::TLBR(0, 12, 12, 12));
 
   // The block section item follows the search bar and has 0dp top margin.
   views::MenuItemView* block_item = root->GetSubmenu()->GetMenuItemAt(1);
@@ -1793,33 +1800,33 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   ASSERT_NE(icon, nullptr);
 
   EXPECT_TRUE(search_bar->GetText().empty());
-  EXPECT_EQ(search_bar->GetPlaceholderText(),
+  EXPECT_EQ(search_field->GetPlaceholderText(),
             l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_PLACEHOLDER));
-  EXPECT_EQ(search_bar->GetPlaceholderText(),
+  EXPECT_EQ(search_field->GetPlaceholderText(),
             u"Search menu, or type an action");
-  EXPECT_EQ(search_bar->placeholder_text_color_id(),
+  EXPECT_EQ(search_field->placeholder_text_color_id(),
             ui::kColorTextfieldForegroundPlaceholder);
   EXPECT_TRUE(icon->GetVisible());
 
   // Verify empty border with insets and background is transparent.
-  ASSERT_NE(search_bar->GetBorder(), nullptr);
+  ASSERT_NE(search_field->GetBorder(), nullptr);
   int icon_size =
       provider->GetDistanceMetric(DISTANCE_ACTION_APP_MENU_DEFAULT_ICON_SIZE);
   int icon_padding = 12;
   int icon_text_spacing =
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL);
   int left_inset = icon_padding + icon_size + icon_text_spacing;
-  EXPECT_EQ(search_bar->GetBorder()->GetInsets(),
+  EXPECT_EQ(search_field->GetBorder()->GetInsets(),
             gfx::Insets::TLBR(6, left_inset, 6, 12));
-  EXPECT_EQ(search_bar->GetBackgroundColor(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(search_field->GetBackgroundColor(), SK_ColorTRANSPARENT);
 
-  // Verify inkdrop is enabled on the search bar.
-  EXPECT_EQ(views::InkDrop::Get(search_bar)->GetMode(),
+  // Verify inkdrop is enabled on the search field.
+  EXPECT_EQ(views::InkDrop::Get(search_field)->GetMode(),
             views::InkDropHost::InkDropMode::ON);
 
   // The search bar is active and focused initially when added to the menu.
   EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(search_bar->GetCursorEnabled());
+  EXPECT_TRUE(search_field->GetCursorEnabled());
 
   // Pressing Down arrow deactivates search bar focus for menu navigation.
   ui::KeyEvent down_key(ui::EventType::kKeyPressed, ui::VKEY_DOWN, ui::EF_NONE);
@@ -1827,11 +1834,11 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   EXPECT_FALSE(search_bar->is_active_for_testing());
 
   // Mouse press re-focuses the textfield and enables the cursor.
-  EXPECT_TRUE(search_bar->OnMousePressed(ui::MouseEvent(
+  EXPECT_TRUE(search_field->OnMousePressed(ui::MouseEvent(
       ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON)));
   EXPECT_TRUE(search_bar->is_active_for_testing());
-  EXPECT_TRUE(search_bar->GetCursorEnabled());
+  EXPECT_TRUE(search_field->GetCursorEnabled());
 
   // Type text: icon remains visible and text appears.
   ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_A, ui::EF_NONE);
@@ -2065,7 +2072,7 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   search_bar->SetText(u"Downloads");
   ASSERT_TRUE(GetBackButton(search_bar)->GetVisible());
   ASSERT_FALSE(search_bar->GetText().empty());
-  ASSERT_TRUE(search_bar->GetCursorEnabled());
+  ASSERT_TRUE(GetSearchField(search_bar)->GetCursorEnabled());
   ASSERT_EQ(root->GetMenuItemByID(kActionPrint), nullptr);
 
   views::test::ButtonTestApi(GetBackButton(search_bar))
@@ -2074,7 +2081,7 @@ TEST_F(ActionAppMenuWithSearchTest, BackButtonRestoresNormalMenu) {
   EXPECT_FALSE(GetBackButton(search_bar)->GetVisible());
   EXPECT_TRUE(GetSearchIcon(search_bar)->GetVisible());
   EXPECT_TRUE(search_bar->GetText().empty());
-  EXPECT_TRUE(search_bar->GetCursorEnabled());
+  EXPECT_TRUE(GetSearchField(search_bar)->GetCursorEnabled());
   EXPECT_EQ(submenu->children().size(), row_count_at_open);
   EXPECT_NE(root->GetMenuItemByID(kActionPrint), nullptr);
 
