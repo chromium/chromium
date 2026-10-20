@@ -46,6 +46,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
+      enableThreadsRailHybrid: true,
       expandedLhsUrl: EXPANDED_LHS_URL,
     });
     windowProxy = installMock(WindowProxy);
@@ -92,8 +93,10 @@ suite('NewTabPageLeftHandSideTest', () => {
       assertEquals('NTP-IFRAME', iframe.tagName);
       assertEquals(EXPANDED_LHS_URL, iframe.src);
       assertEquals('unbounded-element', iframe.allow);
-      assertEquals('261px', iframe.style.width);
-      assertTrue(iframe.hidden);
+      assertEquals(enableThreadsRailHybrid ? '261px' : '', iframe.style.width);
+      assertEquals(enableThreadsRailHybrid, iframe.hidden);
+      assertTrue(iframe.inert);
+      assertFalse(iframe.classList.contains('ready'));
     });
   });
 
@@ -113,6 +116,23 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertEquals(`${EXPANDED_LHS_URL}&cs=0`, iframe.src);
   });
 
+  test('updates ready state on NTP_LHS_READY in non-hybrid mode', async () => {
+    loadTimeData.overrideValues({enableThreadsRailHybrid: false});
+    await createLeftHandSide();
+
+    postLhsMessage({
+      type: NtpLhsMessageType.NTP_LHS_READY,
+    });
+    await microtasksFinished();
+
+    const iframe = getExpandedIframe();
+    assertTrue(!!iframe);
+    assertEquals('', iframe.style.width);
+    assertFalse(iframe.hidden);
+    assertFalse(iframe.inert);
+    assertTrue(iframe.classList.contains('ready'));
+  });
+
   test('updates expanded width and ready state on NTP_LHS_READY', async () => {
     await createLeftHandSide();
 
@@ -126,6 +146,8 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertTrue(!!iframe);
     assertEquals('320px', iframe.style.width);
     assertFalse(iframe.hidden);
+    assertFalse(iframe.inert);
+    assertTrue(iframe.classList.contains('ready'));
   });
 
   test('falls back to default width on invalid or missing width', async () => {

@@ -16,3 +16,14 @@
 #folded {
   height: 100%;
 }
+
+#expanded {
+  frame-sizing: content-width;
+  /* Start at 0 width until ready to avoid the default 300px fallback
+   * (crbug.com/570579609). */
+  width: 0;
+}
+
+#expanded.ready {
+  width: auto;
+}

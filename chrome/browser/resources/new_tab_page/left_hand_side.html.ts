@@ -15,10 +15,15 @@ export function getHtml(this: LeftHandSideElement) {
              </cr-threads-rail>`
       : ''}
   <ntp-iframe id="expanded"
+      class="${this.isExpandedReady_ ? 'ready' : ''}"
       allow="unbounded-element"
-      style="width: ${this.expandedWidth_}px;"
+      style="${this.enableThreadsRailHybrid_
+                 ? `width: ${this.expandedWidth_}px;`
+                 : ''}"
       src="${this.getExpandedLhsUrl_()}"
-      ?hidden="${!this.isExpandedReady_ || !this.isExpanded_}">
+      ?inert="${!this.isExpandedReady_}"
+      ?hidden="${this.enableThreadsRailHybrid_ &&
+                 (!this.isExpandedReady_ || !this.isExpanded_)}">
   </ntp-iframe>
   <!--_html_template_end_-->`;
   // clang-format on
