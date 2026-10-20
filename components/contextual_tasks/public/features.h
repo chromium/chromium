@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE(kContextualTasksDriveOAuthScope);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonContextMenu);
+BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonAutoDismiss);
 BASE_DECLARE_FEATURE(kContextualTasksContext);
 BASE_DECLARE_FEATURE(kContextualTasksSearchQuery);
 BASE_DECLARE_FEATURE(kContextualTasksContextMultiTurnTabRelevance);
@@ -341,6 +342,15 @@ extern bool GetEnableRightHandContextualTasksEphemeralButton();
 BASE_DECLARE_FEATURE_PARAM(bool,
                            kEnableCircularEphemeralButtonNextToBatterySaver);
 
+// Duration in minutes after closing the contextual tasks side panel before the
+// ephemeral toolbar button is automatically dismissed and its task
+// disassociated. Defaults to 1440 minutes (24 hours).
+extern const base::FeatureParam<int>
+    kContextualTasksEphemeralButtonAutoDismissTimeMinutes;
+
+bool IsContextualTasksEphemeralButtonAutoDismissEnabled();
+int GetContextualTasksEphemeralButtonAutoDismissTimeMinutes();
+
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 
@@ -621,6 +631,8 @@ extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedName[];
 extern const char kEphemeralPinningVisibleWhenPermanentlyPinnedDescription[];
 extern const char kContextualTasksEphemeralButtonContextMenuName[];
 extern const char kContextualTasksEphemeralButtonContextMenuDescription[];
+extern const char kContextualTasksEphemeralButtonAutoDismissName[];
+extern const char kContextualTasksEphemeralButtonAutoDismissDescription[];
 extern const char kABASearchJourneysName[];
 extern const char kABASearchJourneysDescription[];
 extern const char kAllowSignedOutUserInDesktopAndroidName[];

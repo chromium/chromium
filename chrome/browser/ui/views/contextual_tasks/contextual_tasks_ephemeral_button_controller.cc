@@ -6,9 +6,14 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -123,6 +128,7 @@ void ContextualTasksEphemeralButtonController::OnTaskRemoved(
 
 void ContextualTasksEphemeralButtonController::OnWillBeDestroyed() {
   should_update_visibility_callbacks_.Notify(false);
+  ephemeral_button_auto_dismiss_timers_.clear();
   contextual_task_observation_.Reset();
   pinned_toolbar_observation_.Reset();
   pref_change_registrar_.Reset();
@@ -140,6 +146,7 @@ void ContextualTasksEphemeralButtonController::OnTaskDisassociatedFromTab(
     const base::Uuid& task_id,
     SessionID tab_id) {
   std::erase(ephemeral_button_eligible_tabs_, tab_id);
+  ephemeral_button_auto_dismiss_timers_.erase(tab_id);
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -154,6 +161,7 @@ void ContextualTasksEphemeralButtonController::OnEntryShown(
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     is_contextual_tasks_panel_open_ = true;
     is_hiding_contextual_tasks_panel_ = false;
+    CancelAutoDismissTimersForActiveTask();
     MaybeNotifyVisibilityShouldChange();
   }
 }
@@ -175,12 +183,27 @@ void ContextualTasksEphemeralButtonController::OnEntryWillHide(
   std::optional<contextual_tasks::ContextualTask> current_task =
       service->GetContextualTaskForTab(GetCurrentTabSessionId().value());
 
+  const base::TimeDelta auto_dismiss_duration = GetAutoDismissDuration();
+
   // Mark every tab associated to the task, not just the active one, so the
   // remaining tabs keep the button if the dismissing tab goes away.
   for (SessionID tab_id :
        service->GetTabsAssociatedWithTask(current_task->GetTaskId())) {
     if (!std::ranges::contains(ephemeral_button_eligible_tabs_, tab_id)) {
       ephemeral_button_eligible_tabs_.emplace_back(tab_id);
+    }
+    if (auto_dismiss_duration.is_positive()) {
+      base::OneShotTimer& timer = ephemeral_button_auto_dismiss_timers_[tab_id];
+      if (task_runner_for_testing_) {
+        timer.Stop();
+        timer.SetTaskRunner(task_runner_for_testing_);
+      }
+      timer.Start(
+          FROM_HERE, auto_dismiss_duration,
+          base::BindOnce(
+              &ContextualTasksEphemeralButtonController::
+                  DismissEphemeralButtonForTab,
+              base::Unretained(this), tab_id));
     }
   }
   MaybeNotifyVisibilityShouldChange();
@@ -192,6 +215,7 @@ void ContextualTasksEphemeralButtonController::OnEntryHideCancelled(
       contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     is_hiding_contextual_tasks_panel_ = false;
     is_contextual_tasks_panel_open_ = true;
+    CancelAutoDismissTimersForActiveTask();
     MaybeNotifyVisibilityShouldChange();
   }
 }
@@ -293,7 +317,8 @@ void ContextualTasksEphemeralButtonController::
 
   std::optional<SessionID> current_tab_session_id = GetCurrentTabSessionId();
   if (current_tab_session_id.has_value()) {
-    std::erase(ephemeral_button_eligible_tabs_, current_tab_session_id.value());
+    DismissEphemeralButtonForTab(current_tab_session_id.value());
+    return;
   }
 
   contextual_tasks::ContextualTasksUiService* ui_service =
@@ -304,6 +329,85 @@ void ContextualTasksEphemeralButtonController::
   }
 
   MaybeNotifyVisibilityShouldChange();
+}
+
+bool ContextualTasksEphemeralButtonController::HasAutoDismissTimerForTesting(
+    SessionID tab_id) const {
+  auto it = ephemeral_button_auto_dismiss_timers_.find(tab_id);
+  return it != ephemeral_button_auto_dismiss_timers_.end() &&
+         it->second.IsRunning();
+}
+
+void ContextualTasksEphemeralButtonController::SetTaskRunnerForTesting(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  task_runner_for_testing_ = std::move(task_runner);
+}
+
+base::TimeDelta
+ContextualTasksEphemeralButtonController::GetAutoDismissDuration() const {
+  const int minutes =
+      contextual_tasks::GetContextualTasksEphemeralButtonAutoDismissTimeMinutes();
+  return minutes > 0 ? base::Minutes(minutes) : base::TimeDelta();
+}
+
+void ContextualTasksEphemeralButtonController::DismissEphemeralButtonForTab(
+    SessionID tab_id) {
+  std::erase(ephemeral_button_eligible_tabs_, tab_id);
+  ephemeral_button_auto_dismiss_timers_.erase(tab_id);
+
+  contextual_tasks::ContextualTasksService* service =
+      GetContextualTasksService();
+  std::optional<contextual_tasks::ContextualTask> task =
+      service ? service->GetContextualTaskForTab(tab_id) : std::nullopt;
+  if (task.has_value()) {
+    for (SessionID associated_tab_id :
+         service->GetTabsAssociatedWithTask(task->GetTaskId())) {
+      std::erase(ephemeral_button_eligible_tabs_, associated_tab_id);
+      ephemeral_button_auto_dismiss_timers_.erase(associated_tab_id);
+    }
+  }
+
+  if (GetCurrentTabSessionId() == tab_id) {
+    contextual_tasks::ContextualTasksUiService* ui_service =
+        contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+            browser_window_interface_->GetProfile());
+    if (ui_service) {
+      ui_service->DestroyClosedSidePanel(browser_window_interface_);
+    }
+  } else if (task.has_value()) {
+    service->DisassociateAllTabsFromTask(task->GetTaskId());
+    if (auto* panel_controller =
+            contextual_tasks::ContextualTasksPanelController::From(
+                browser_window_interface_)) {
+      panel_controller->CleanUpUnusedWebContents();
+    }
+  }
+
+  MaybeNotifyVisibilityShouldChange();
+}
+
+void ContextualTasksEphemeralButtonController::
+    CancelAutoDismissTimersForActiveTask() {
+  std::optional<SessionID> current_tab_session_id = GetCurrentTabSessionId();
+  if (!current_tab_session_id.has_value()) {
+    return;
+  }
+  ephemeral_button_auto_dismiss_timers_.erase(current_tab_session_id.value());
+
+  contextual_tasks::ContextualTasksService* service =
+      GetContextualTasksService();
+  if (!service) {
+    return;
+  }
+  std::optional<contextual_tasks::ContextualTask> current_task =
+      service->GetContextualTaskForTab(current_tab_session_id.value());
+  if (!current_task.has_value()) {
+    return;
+  }
+  for (SessionID tab_id :
+       service->GetTabsAssociatedWithTask(current_task->GetTaskId())) {
+    ephemeral_button_auto_dismiss_timers_.erase(tab_id);
+  }
 }
 
 contextual_tasks::ContextualTasksService*
