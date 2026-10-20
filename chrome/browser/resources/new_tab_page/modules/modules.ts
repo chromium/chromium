@@ -105,18 +105,15 @@ export class ModulesElement extends CrLitElement {
       /** Data about the most recent un-doable action. */
       undoData_: {type: Object},
       /**
-       * The element whose width is used for calculating the number of modules
-       * per row and their widths. The container is expected to be sized
-       * independently of this element, otherwise updating the styles would
-       * trigger a ResizeObserver loop. If null, the window's width is used.
-       * Read when this element is connected; later changes are ignored.
+       * The width of the element's container. If null, the window's width is
+       * used for calculating the number of modules per row and their widths.
        */
-      widthContainer: {type: Object},
+      containerWidth: {type: Number},
     };
   }
 
   accessor modulesShownToUser: boolean = false;
-  accessor widthContainer: HTMLElement|null = null;
+  accessor containerWidth: number|null = null;
   private waitToLoadModules_: boolean =
       loadTimeData.getBoolean('waitToLoadModules');
   accessor moduleInstances_: ModuleInstance[] = [];
@@ -142,14 +139,11 @@ export class ModulesElement extends CrLitElement {
   // loading behavior.
   private modulesReloadable_: boolean =
       loadTimeData.getBoolean('modulesReloadable');
-  private resizeObserver_: ResizeObserver|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    if (this.widthContainer) {
-      this.observeAvailableWidth_(this.widthContainer);
-    } else {
+    if (!loadTimeData.getBoolean('enableThreadsRail')) {
       const widths: Set<number> = new Set();
       for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
         const namedWidth = SUPPORTED_MODULE_WIDTHS[i]!;
@@ -238,7 +232,6 @@ export class ModulesElement extends CrLitElement {
     this.callbackRouter_.removeListener(this.setModulesLoadableListenerId_);
 
     this.eventTracker_.removeAll();
-    this.resizeObserver_?.disconnect();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -260,8 +253,18 @@ export class ModulesElement extends CrLitElement {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
-    this.availableWidth_ =
-        this.computeAvailableWidth_(this.widthContainer || document.body);
+    if (!loadTimeData.getBoolean('enableThreadsRail')) {
+      this.availableWidth_ =
+          this.computeAvailableWidth_(document.body.clientWidth);
+    } else if (
+        changedProperties.has('containerWidth') &&
+        this.containerWidth !== null) {
+      const availableWidth = this.computeAvailableWidth_(this.containerWidth);
+      if (availableWidth !== this.availableWidth_) {
+        this.availableWidth_ = availableWidth;
+        this.updateContainerAndChildrenStyles_(availableWidth);
+      }
+    }
   }
 
   get pageHandler_(): PageHandlerRemote {
@@ -467,27 +470,8 @@ export class ModulesElement extends CrLitElement {
     }
   }
 
-  private observeAvailableWidth_(container: HTMLElement) {
-    let lastAvailableWidth: number|null = null;
-    this.resizeObserver_ = new ResizeObserver(() => {
-      const availableWidth = this.computeAvailableWidth_(container);
-      if (availableWidth === lastAvailableWidth) {
-        return;
-      }
-      lastAvailableWidth = availableWidth;
-      this.availableWidth_ = availableWidth;
-      this.updateContainerAndChildrenStyles_(availableWidth);
-    });
-    this.resizeObserver_.observe(container);
-  }
-
-  /**
-   * Returns the width available to the modules in `container`: its width minus
-   * the side margins, capped at the max container width.
-   */
-  private computeAvailableWidth_(container: HTMLElement): number {
-    return Math.min(
-        container.clientWidth - 2 * MARGIN_WIDTH, this.containerMaxWidth_);
+  private computeAvailableWidth_(containerWidth: number): number {
+    return Math.min(containerWidth - 2 * MARGIN_WIDTH, this.containerMaxWidth_);
   }
 
   private updateContainerAndChildrenStyles_(availableWidth: number) {

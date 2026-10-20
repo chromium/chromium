@@ -949,73 +949,56 @@ suite('Reflow Layouts', () => {
   });
 });
 
-suite('WidthContainer', () => {
-  let container: HTMLElement;
-
-  // Waits for the ResizeObserver to report and for the resulting re-render.
-  async function waitForResize() {
-    for (let i = 0; i < 2; i++) {
-      await new Promise(resolve => requestAnimationFrame(resolve));
-    }
-    await microtasksFinished();
-  }
-
+suite('ContainerWidth', () => {
   setup(async () => {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    mediaListenerLists.clear();
-    createBrowserProxy();
-    createWindowProxy();
-
-    // 700px fits 6 tiles of 112px, so 5 columns.
-    container = document.createElement('div');
-    container.style.width = '700px';
-    document.body.appendChild(container);
-
-    mostVisited = new MostVisitedElement();
-    mostVisited.singleRow = true;
-    mostVisited.widthContainer = container;
-    container.appendChild(mostVisited);
+    await setUpTest({singleRow: true});
     await addTiles(8);
-    await waitForResize();
   });
 
   test('column count follows the container width', async () => {
+    // 700px fits 6 tiles of 112px, so 5 columns.
+    mostVisited.containerWidth = 700;
+    await microtasksFinished();
     assertTileLength(8);
     assertHiddenTileLength(3);
 
     // 10 columns, the maximum for a single row.
-    container.style.width = '1300px';
-    await waitForResize();
+    mostVisited.containerWidth = 1300;
+    await microtasksFinished();
     assertHiddenTileLength(0);
 
     // 3 columns, the minimum.
-    container.style.width = '400px';
-    await waitForResize();
+    mostVisited.containerWidth = 400;
+    await microtasksFinished();
     assertHiddenTileLength(5);
   });
 
-  test('does not use the window width', () => {
-    assertEquals(0, windowProxy.getCallCount('matchMedia'));
-  });
-
   test('switches between the container and window widths', async () => {
-    mostVisited.widthContainer = null;
+    assertHiddenTileLength(0);
+
+    mostVisited.containerWidth = 400;
     await microtasksFinished();
-    await wide();
-    assertHiddenTileLength(0);
-
-    // The container is no longer observed.
-    container.style.width = '400px';
-    await waitForResize();
-    assertHiddenTileLength(0);
-
-    mostVisited.widthContainer = container;
-    await waitForResize();
     assertHiddenTileLength(5);
 
     // The window's width is no longer listened to.
     await wide();
     assertHiddenTileLength(5);
+
+    mostVisited.containerWidth = null;
+    await microtasksFinished();
+    await wide();
+    assertHiddenTileLength(0);
+  });
+
+  test('keeps using the container width when singleRow changes', async () => {
+    mostVisited.containerWidth = 700;
+    await microtasksFinished();
+    assertHiddenTileLength(3);
+
+    // 5 columns in 2 rows.
+    mostVisited.singleRow = false;
+    await microtasksFinished();
+    assertHiddenTileLength(0);
   });
 });
 
