@@ -191,7 +191,6 @@ class EduAccountLoginHandlerTest : public testing::Test {
 
   void SetUp() override {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    base::RunLoop().RunUntilIdle();
   }
 
   void SetupNetwork(bool online = true) {
