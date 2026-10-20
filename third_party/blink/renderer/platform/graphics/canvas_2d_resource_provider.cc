@@ -158,6 +158,8 @@ void Canvas2DResourceProvider::OnGpuChannelLost() {
 
 bool Canvas2DResourceProvider::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
+  CHECK(is_accelerated_);
+
   // If the canvas is single buffered, concurrent read/writes to the resource
   // are allowed. Note that we ignore the resource lost case as well since
   // that only indicates that we did not get a sync token for read/write
@@ -177,19 +179,15 @@ bool Canvas2DResourceProvider::ShouldReplaceTargetBuffer(
     return false;
   }
 
-  // Its possible to have deferred work in skia which uses this resource. Try
-  // flushing once to see if that releases the read refs. We can avoid a copy
-  // by queuing this work before writing to this resource.
-  if (is_accelerated_) {
-    // Another context may have a read reference to this resource. Flush the
-    // deferred queue in that context so that we don't need to copy.
-    FlushForImageListener::Get()->NotifyFlushForImage(content_id);
-  }
+  // Another context may have a read reference to this resource. Flush the
+  // deferred queue in that context so that we don't need to copy.
+  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
 
   return !resource_->HasOneRef();
 }
 
 void Canvas2DResourceProvider::EnsureResourceReadyForDraw() {
+  CHECK(is_accelerated_);
   DCHECK(resource_);
 
   // Since the resource will be updated, the cached snapshot is no longer
@@ -200,11 +198,7 @@ void Canvas2DResourceProvider::EnsureResourceReadyForDraw() {
   // token for these writes.
   cached_snapshot_.reset();
 
-  // Determine if a copy is needed for accelerated resources. This is required
-  // if copy-on-write is required. Note that for unaccelerated resources, this
-  // does not apply: writes to the SharedImage are deferred to
-  // ProduceCanvasResource and hence copy-on-write is never needed here.
-  if (is_accelerated_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
+  if (ShouldReplaceTargetBuffer(cached_content_id_)) {
     cached_content_id_ = PaintImage::kInvalidContentId;
     DCHECK(!current_resource_has_write_access_)
         << "Write access must be released before sharing the resource";
@@ -242,7 +236,6 @@ void Canvas2DResourceProvider::WillDrawUnaccelerated() {
   if (IsSoftware()) {
     return;
   }
-  cached_snapshot_.reset();
   EnsureWriteAccess();
 }
 
