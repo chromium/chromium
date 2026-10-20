@@ -41,6 +41,26 @@ namespace {
 constexpr char kSICreationFailureError[] =
     "SharedImageStub: Unable to create shared image";
 
+bool IsSupportedFormat(viz::SharedImageFormat format) {
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
+  if (format.PrefersExternalSampler()) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format: " << format.ToString();
+    return false;
+  }
+#endif
+
+  // `k16F` channel format does not support UV planes which have 2 channels.
+  if (format.is_multi_plane() &&
+      format.channel_format() == viz::SharedImageFormat::ChannelFormat::k16F &&
+      (format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV ||
+       format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV_A)) {
+    LOG(ERROR) << "SharedImageStub: Incompatible format: " << format.ToString();
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace gpu {
@@ -207,6 +227,11 @@ void SharedImageStub::OnCreateSharedImage(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
+  if (!IsSupportedFormat(params->si_info->meta.format)) {
+    OnError();
+    return;
+  }
+
   bool needs_gl = HasGLES2ReadOrWriteUsage(params->si_info->meta.usage);
   if (!MakeContextCurrent(needs_gl)) {
     OnError();
@@ -231,6 +256,10 @@ void SharedImageStub::OnCreateSharedImageWithData(
                params->si_info->meta.size.height());
 
   auto& metadata = params->si_info->meta;
+  if (!IsSupportedFormat(metadata.format)) {
+    OnError();
+    return;
+  }
 
   if (metadata.array_layers > 1) {
     LOG(ERROR) << "SharedImageStub: array_layers > 1 is not supported for "
@@ -319,13 +348,10 @@ bool SharedImageStub::CreateSharedImage(
     std::optional<SharedImagePoolId> pool_id) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                info.size.width(), "height", info.size.height());
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  if (info.format.PrefersExternalSampler()) {
-    LOG(ERROR) << "SharedImageStub: Incompatible format.";
+  if (!IsSupportedFormat(info.format)) {
     OnError();
     return false;
   }
-#endif
 
   bool needs_gl = HasGLES2ReadOrWriteUsage(info.usage);
   if (!MakeContextCurrent(needs_gl)) {

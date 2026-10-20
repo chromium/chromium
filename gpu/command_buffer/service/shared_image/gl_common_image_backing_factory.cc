@@ -51,11 +51,10 @@ std::optional<viz::SharedImageFormat> GetSupportedPlaneFormat(
       return num_channels == 2 ? viz::SinglePlaneFormat::kRG_1616
                                : viz::SinglePlaneFormat::kR_16;
     case viz::SharedImageFormat::ChannelFormat::k16F:
-      if (!caps.is_atleast_gles3() &&
-          !caps.enable_texture_half_float_linear()) {
+      if (num_channels != 1 || (!caps.is_atleast_gles3() &&
+                                !caps.enable_texture_half_float_linear())) {
         return std::nullopt;
       }
-      CHECK_EQ(num_channels, 1);
       return viz::SinglePlaneFormat::kR_F16;
   }
   NOTREACHED();
