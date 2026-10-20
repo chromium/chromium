@@ -638,11 +638,13 @@ void TracingHandler::OnTraceComplete() {
   if (!trace_data_buffer_state_.data.empty())
     OnTraceDataCollected(std::make_unique<std::string>(""));
 
-  CHECK(trace_data_buffer_state_.data.empty(), base::NotFatalUntil::M159);
-  CHECK_EQ(0u, trace_data_buffer_state_.pos, base::NotFatalUntil::M159);
-  CHECK_EQ(0, trace_data_buffer_state_.open_braces, base::NotFatalUntil::M159);
-  CHECK(!trace_data_buffer_state_.in_string, base::NotFatalUntil::M159);
-  CHECK(!trace_data_buffer_state_.slashed, base::NotFatalUntil::M159);
+  // TODO(crbug.com/575410219): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(trace_data_buffer_state_.data.empty());
+  DCHECK_EQ(0u, trace_data_buffer_state_.pos);
+  DCHECK_EQ(0, trace_data_buffer_state_.open_braces);
+  DCHECK(!trace_data_buffer_state_.in_string);
+  DCHECK(!trace_data_buffer_state_.slashed);
 
   bool data_loss = session_->HasDataLossOccurred();
   process_set_monitor_.reset();
