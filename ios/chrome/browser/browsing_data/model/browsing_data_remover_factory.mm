@@ -6,36 +6,14 @@
 
 #import <utility>
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-// static
-BrowsingDataRemover* BrowsingDataRemoverFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BrowsingDataRemover>(
-      profile, /*create=*/true);
-}
-
-// static
-BrowsingDataRemover* BrowsingDataRemoverFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<BrowsingDataRemover>(
-      profile, /*create=*/false);
-}
-
-// static
-BrowsingDataRemoverFactory* BrowsingDataRemoverFactory::GetInstance() {
-  static base::NoDestructor<BrowsingDataRemoverFactory> instance;
-  return instance.get();
-}
-
-BrowsingDataRemoverFactory::BrowsingDataRemoverFactory()
-    : ProfileKeyedServiceFactoryIOS("BrowsingDataRemover",
-                                    ProfileSelection::kOwnInstanceInIncognito) {
-}
-
-BrowsingDataRemoverFactory::~BrowsingDataRemoverFactory() = default;
+BrowsingDataRemoverFactory::BrowsingDataRemoverFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "BrowsingDataRemover",
+          ProfileSelection::kOwnInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 BrowsingDataRemoverFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

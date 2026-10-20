@@ -7,27 +7,18 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class BrowsingDataRemover;
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all BrowsingDataRemovers and associates them with
 // ProfileIOS.
-class BrowsingDataRemoverFactory : public ProfileKeyedServiceFactoryIOS {
+class BrowsingDataRemoverFactory
+    : public TypedProfileKeyedServiceFactoryIOS<BrowsingDataRemoverFactory,
+                                                BrowsingDataRemover> {
  public:
-  static BrowsingDataRemover* GetForProfile(ProfileIOS* profile);
-  static BrowsingDataRemover* GetForProfileIfExists(ProfileIOS* profile);
-  static BrowsingDataRemoverFactory* GetInstance();
+  explicit BrowsingDataRemoverFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<BrowsingDataRemoverFactory>;
-
-  BrowsingDataRemoverFactory();
-  ~BrowsingDataRemoverFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
