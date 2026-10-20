@@ -176,6 +176,11 @@ struct LeftVsRightValue {
     return *this;
   }
 
+  friend bool operator<(const LeftVsRightValue& lhs,
+                        const LeftVsRightValue& rhs) {
+    return lhs.value < rhs.value;
+  }
+
   RefType ref_type = UNKNOWN;
   int value = 0;
 };
@@ -231,6 +236,88 @@ TEST(MapUtilTest, InsertOrAssignInferKeyType) {
   auto it = InsertOrAssign(pair_mapping, {3, "foo"}, "bar");
   ASSERT_NE(it, pair_mapping.end());
   EXPECT_EQ(it->second, "bar");
+}
+
+struct NonMovableValue {
+  NonMovableValue() = default;
+  NonMovableValue(const NonMovableValue&) = delete;
+  NonMovableValue& operator=(const NonMovableValue&) = delete;
+  int value = 0;
+};
+
+TEST(MapUtilTest, GetOrCreate) {
+  std::map<std::string, NonMovableValue, std::less<>> map;
+
+  const char key1[] = "This is key 1. It is very long";
+  std::string_view key2 = "This is key 2. It is also very long";
+  std::string key3 = "This is key 3. It, like keys 1 and 2, is long";
+
+  // Insert default-constructed entries for missing keys.
+  NonMovableValue& v1 = GetOrCreate(map, key1);
+  EXPECT_EQ(v1.value, 0);
+  v1.value = 10;
+
+  NonMovableValue& v2 = GetOrCreate(map, key2);
+  EXPECT_EQ(v2.value, 0);
+  v2.value = 20;
+
+  NonMovableValue& v3 = GetOrCreate(map, key3);
+  EXPECT_EQ(v3.value, 0);
+  v3.value = 30;
+
+  // Existing keys return the existing entry without overwriting it.
+  EXPECT_EQ(GetOrCreate(map, key1).value, 10);
+  EXPECT_EQ(GetOrCreate(map, key2).value, 20);
+  EXPECT_EQ(GetOrCreate(map, key3).value, 30);
+
+  // Verify lvalue vs rvalue key forwarding and key_comp() comparison (without
+  // operator!=).
+  std::map<LeftVsRightValue, int> key_map;
+  GetOrCreate(key_map, LeftVsRightValue(1)) = 100;
+  EXPECT_EQ(key_map.begin()->first.ref_type, LeftVsRightValue::RVALUE);
+  EXPECT_EQ(GetOrCreate(key_map, LeftVsRightValue(1)), 100);
+
+  LeftVsRightValue lvalue_key(2);
+  GetOrCreate(key_map, lvalue_key) = 200;
+  EXPECT_EQ(key_map.find(lvalue_key)->first.ref_type, LeftVsRightValue::LVALUE);
+  EXPECT_EQ(GetOrCreate(key_map, lvalue_key), 200);
+}
+
+TEST(MapUtilTest, GetOrCreateWithFactory) {
+  std::map<std::string, std::unique_ptr<int>, std::less<>> map;
+
+  std::string_view key = "This is a long heterogeneous key";
+  int factory_calls = 0;
+
+  // Missing key invokes the factory.
+  std::unique_ptr<int>& val = GetOrCreate(map, key, [&] {
+    ++factory_calls;
+    return std::make_unique<int>(42);
+  });
+  EXPECT_EQ(factory_calls, 1);
+  ASSERT_NE(val, nullptr);
+  EXPECT_EQ(*val, 42);
+
+  // Existing key returns the existing entry without invoking the factory.
+  std::unique_ptr<int>& existing = GetOrCreate(map, key, [&] {
+    ++factory_calls;
+    return std::make_unique<int>(99);
+  });
+  EXPECT_EQ(factory_calls, 1);
+  EXPECT_EQ(existing.get(), val.get());
+  EXPECT_EQ(*existing, 42);
+
+  std::map<LeftVsRightValue, int> key_map;
+  EXPECT_EQ(GetOrCreate(key_map, LeftVsRightValue(1), [] { return 100; }), 100);
+  EXPECT_EQ(key_map.begin()->first.ref_type, LeftVsRightValue::RVALUE);
+}
+
+TEST(MapUtilTest, GetOrCreateInferKeyType) {
+  base::flat_map<std::pair<int, std::string>, std::string> pair_mapping;
+  GetOrCreate(pair_mapping, {3, "foo"}) = "bar";
+  EXPECT_EQ(GetOrCreate(pair_mapping, {3, "foo"}), "bar");
+
+  EXPECT_EQ(GetOrCreate(pair_mapping, {4, "baz"}, [] { return "qux"; }), "qux");
 }
 
 }  // namespace
