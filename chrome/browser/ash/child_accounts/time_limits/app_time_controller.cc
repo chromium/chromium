@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -30,7 +29,6 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limits_allowlist_policy_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_policy_helpers.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
-#include "chrome/browser/ash/child_accounts/time_limits/web_time_activity_provider.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -203,11 +201,6 @@ AppActivityRegistry* AppTimeController::TestApi::app_registry() {
   return controller_->app_registry_.get();
 }
 
-WebTimeActivityProvider*
-AppTimeController::TestApi::web_time_activity_provider() {
-  return controller_->web_time_activity_provider_.get();
-}
-
 // static
 void AppTimeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(ash::prefs::kPerAppTimeLimitsLastResetTime, 0);
@@ -226,11 +219,6 @@ AppTimeController::AppTimeController(
                                                 this,
                                                 profile->GetPrefs())),
       on_policy_updated_callback_(on_policy_updated_callback) {
-  if (base::FeatureList::IsEnabled(
-          ash::features::kUnicornChromeActivityReporting)) {
-    web_time_activity_provider_ = std::make_unique<WebTimeActivityProvider>(
-        this, app_service_wrapper_.get());
-  }
   CHECK(profile, base::NotFatalUntil::M160);
 }
 

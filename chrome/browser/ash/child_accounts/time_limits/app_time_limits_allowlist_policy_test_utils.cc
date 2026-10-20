@@ -22,10 +22,6 @@ void AppTimeLimitsAllowlistPolicyBuilder::SetUp() {
   dict_.Set(policy::kAppList, base::ListValue());
 }
 
-void AppTimeLimitsAllowlistPolicyBuilder::Clear() {
-  dict_.clear();
-}
-
 void AppTimeLimitsAllowlistPolicyBuilder::AppendToAllowlistAppList(
     const AppId& app_id) {
   base::DictValue dict_to_append;

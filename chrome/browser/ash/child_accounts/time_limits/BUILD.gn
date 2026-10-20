@@ -25,15 +25,12 @@ static_library("time_limits") {
     "app_types.h",
     "persisted_app_info.cc",
     "persisted_app_info.h",
-    "web_time_activity_provider.cc",
-    "web_time_activity_provider.h",
     "web_time_navigation_observer.cc",
     "web_time_navigation_observer.h",
   ]
 
   public_deps = [
     "//base",
-    "//chromeos/ash/components/browser_delegate",
     "//chromeos/ash/components/dbus/system_clock",
     "//chromeos/ash/components/settings",
     "//components/policy/proto",
@@ -119,10 +116,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "app_time_browsertest.cc",
-    "web_time_calculation_browsertest.cc",
-  ]
+  sources = [ "app_time_browsertest.cc" ]
 
   deps = [
     ":test_support",
@@ -136,10 +130,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_window_header",
-    "//chrome/browser/ui/navigator",
-    "//chrome/browser/ui/tabs:tab_strip",
-    "//chrome/common:chrome_features",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/experiences/arc:arc_test_support",
     "//chromeos/ash/experiences/arc:notification_test_support",

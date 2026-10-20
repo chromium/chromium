@@ -43,7 +43,6 @@ extern const char kPolicyChangeCountMetric[];
 extern const char kEngagementMetric[];
 
 class AppServiceWrapper;
-class WebTimeActivityProvider;
 
 // Coordinates per-app time limit for child user.
 class AppTimeController : public SystemClockClient::Observer,
@@ -62,7 +61,6 @@ class AppTimeController : public SystemClockClient::Observer,
     base::Time GetLastResetTime() const;
 
     AppActivityRegistry* app_registry();
-    WebTimeActivityProvider* web_time_activity_provider();
 
    private:
     const raw_ptr<AppTimeController, DanglingUntriaged> controller_;
@@ -158,7 +156,6 @@ class AppTimeController : public SystemClockClient::Observer,
 
   std::unique_ptr<AppServiceWrapper> app_service_wrapper_;
   std::unique_ptr<AppActivityRegistry> app_registry_;
-  std::unique_ptr<WebTimeActivityProvider> web_time_activity_provider_;
 
   // Used to observe when policy preferences change.
   std::unique_ptr<PrefChangeRegistrar> pref_registrar_;

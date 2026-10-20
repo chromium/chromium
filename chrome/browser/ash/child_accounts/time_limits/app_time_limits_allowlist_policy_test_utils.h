@@ -24,7 +24,6 @@ class AppTimeLimitsAllowlistPolicyBuilder {
       const AppTimeLimitsAllowlistPolicyBuilder&) = delete;
 
   void SetUp();
-  void Clear();
   void AppendToAllowlistAppList(const AppId& app_id);
 
   const base::DictValue& dict() const { return dict_; }
