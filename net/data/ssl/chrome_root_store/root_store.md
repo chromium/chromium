@@ -1,7 +1,7 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
 # Chrome Root Store
-Version: 42
+Version: 43
 
 [TOC]
 
@@ -15,7 +15,6 @@ e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092 | CN=Amazon Roo
 5cc3d78e4e1d5e45547a04e6873e64f90cf9536d1ccc2ef800f355c4c5fd70fd | CN=CFCA EV ROOT,O=China Financial Certification Authority,C=CN | 2012-08-08 | 2029-12-31
 e23d4a036d7b70e9f595b1422079d2b91edfbb1fb651a0633eaa8a9dc5f80703 | CN=CA Disig Root R2,O=Disig a.s.,L=Bratislava,C=SK | 2012-07-19 | 2042-07-19
 40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367 | CN=emSign Root CA - G1,OU=emSign PKI,O=eMudhra Technologies Limited,C=IN | 2018-02-18 | 2043-02-18
-86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b | CN=emSign ECC Root CA - G3,OU=emSign PKI,O=eMudhra Technologies Limited,C=IN | 2018-02-18 | 2043-02-18
 bfff8fd04433487d6a8aa60c1a29767a9fc2bbb05e420f713a13b992891d3893 | CN=GDCA TrustAUTH R5 ROOT,O=GUANG DONG CERTIFICATE AUTHORITY CO.\,LTD.,C=CN | 2014-11-26 | 2040-12-31
 2ce1cb0bf9d2f9e102993fbe215152c3b2dd0cabde1c68e5319b839154dbb7f5 | CN=Starfield Root Certificate Authority - G2,O=Starfield Technologies\, Inc.,L=Scottsdale,ST=Arizona,C=US | 2009-09-01 | 2037-12-31
 45140b3247eb9cc8c5b4f0d7b53091f73292089e6e5a63e2749dd3aca9198eda | CN=Go Daddy Root Certificate Authority - G2,O=GoDaddy.com\, Inc.,L=Scottsdale,ST=Arizona,C=US | 2009-09-01 | 2037-12-31

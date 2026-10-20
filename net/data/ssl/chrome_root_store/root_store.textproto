@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 42
+version_major: 43
 
 # When allocating new crs_root_id values, always start from the value in
 # NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
@@ -274,12 +274,6 @@ trust_anchors {
   sha256_hex: "40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367"
   crs_root_id: 27
   ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=emSign ECC Root CA - G3, O=eMudhra Technologies Limited, OU=emSign PKI, C=IN
-trust_anchors {
-  sha256_hex: "86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b"
-  crs_root_id: 28
 }
 
 # CN=GDCA TrustAUTH R5 ROOT, O=GUANG DONG CERTIFICATE AUTHORITY CO.,LTD., C=CN
