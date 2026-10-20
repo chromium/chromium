@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/main/ui_bundled/default_browser_promo_scene_agent.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
@@ -148,7 +150,34 @@
   }
 }
 
+// Returns whether the current user is eligible for the default browser promo
+// based on default browser status, off-cycle promo state, and FET criteria.
+- (BOOL)isUserEligibleForPromo {
+  if (IsChromeLikelyDefaultBrowser() ||
+      IsDefaultBrowserOffCyclePromoEnabled()) {
+    return NO;
+  }
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  return tracker &&
+         tracker->WouldTriggerHelpUI(
+             feature_engagement::kIPHiOSPromoGenericDefaultBrowserFeature);
+}
+
 - (void)checkSegmentationBeforeUpdatingGenericPromoRegistration {
+  // If off-cycle promo is enabled, `updateOffCyclePromoRegistration` is
+  // scheduled immediately after and handles deregistration of the generic
+  // promo.
+  if (IsDefaultBrowserOffCyclePromoEnabled()) {
+    return;
+  }
+
+  // Only evaluate the propensity model for clients who pass non-model promo
+  // eligibility and read-only FET cooldown checks.
+  if (![self isUserEligibleForPromo]) {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+    return;
+  }
+
   segmentation_platform::PredictionOptions options;
   options.on_demand_execution = true;
 
@@ -204,24 +233,45 @@
   segmentation_platform::SegmentationPlatformService* segmentationService =
       segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
           self.sceneState.profileState.profile);
+  if (!segmentationService) {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+    return;
+  }
   __weak DefaultBrowserPromoSceneAgent* weakSelf = self;
-  segmentationService->GetClassificationResult(
+  segmentationService->GetAnnotatedNumericResult(
       segmentation_platform::kIosDefaultBrowserPromoKey, options, inputContext,
       base::BindOnce(
-          ^(const segmentation_platform::ClassificationResult& result) {
-            [weakSelf didReceiveSegmentationServiceResult:result];
+          ^(const segmentation_platform::AnnotatedNumericResult& result) {
+            [weakSelf didReceiveSegmentationNumericResult:result];
           }));
 }
 
-// Handle the segmentation result to determine whether to register the promo.
-- (void)didReceiveSegmentationServiceResult:
-    (const segmentation_platform::ClassificationResult&)result {
-  // Register the generic promo if the model returned a show result or
-  // if the model execution failed, since failure should not disable
-  // the promo.
-  if (result.status != segmentation_platform::PredictionStatus::kSucceeded ||
-      result.ordered_labels[0] ==
-          segmentation_platform::kIosDefaultBrowserPromoShowLabel) {
+// Handle the segmentation numeric result to log multi-threshold and continuous
+// counterfactual opportunity telemetry and determine promo registration.
+- (void)didReceiveSegmentationNumericResult:
+    (const segmentation_platform::AnnotatedNumericResult&)result {
+  // Verify eligibility in case conditions changed while waiting for async ML.
+  if (![self isUserEligibleForPromo]) {
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
+    return;
+  }
+
+  std::optional<float> score = result.GetResultForLabel(
+      segmentation_platform::kIosDefaultBrowserPromoShowLabel);
+  bool modelSucceeded =
+      result.status == segmentation_platform::PredictionStatus::kSucceeded &&
+      score.has_value();
+
+  LogDefaultBrowserFullscreenPromoOpportunity(modelSucceeded ? score
+                                                             : std::nullopt);
+
+  bool shouldShow =
+      IsLogDefaultBrowserPromoPropensityModelResultAndShowPromoEnabled() ||
+      !modelSucceeded ||
+      (score.has_value() &&
+       score.value() >= GetDefaultBrowserPromoPropensityScoreCutoff());
+
+  if (shouldShow) {
     [self updateGenericPromoRegistration];
   } else {
     self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
