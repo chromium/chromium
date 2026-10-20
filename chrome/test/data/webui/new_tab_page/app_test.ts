@@ -3837,6 +3837,32 @@ suite('NewTabPageAppTest', () => {
       assertEquals(700, mostVisited.containerWidth);
     });
 
+    test('LHS open-composebox event opens and focuses composebox', async () => {
+      await setThreadsRailEnabled(true);
+
+      const leftHandSide = $$(app, 'cr-left-hand-side');
+      assertTrue(!!leftHandSide);
+      assertFalse(!!app.shadowRoot.querySelector('#composebox'));
+
+      leftHandSide.dispatchEvent(new CustomEvent('open-composebox'));
+      await microtasksFinished();
+
+      const composebox =
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+      assertTrue(!!composebox);
+      assertTrue(!!composebox.state);
+
+      let focusCalled = false;
+      composebox.focusInput = () => {
+        focusCalled = true;
+      };
+
+      leftHandSide.dispatchEvent(new CustomEvent('open-composebox'));
+      await microtasksFinished();
+
+      assertTrue(focusCalled);
+    });
+
     test(
         'realbox secondary side uses the window width when feature disabled',
         async () => {

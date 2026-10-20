@@ -2,9 +2,10 @@
 import {SubmitButtonIconType} from '//resources/cr_components/composebox/composebox.js';
 #html_wrapper_imports_end -->
 <div id="content">
-  ${this.enableThreadsRail_ ?
-    html`<cr-left-hand-side id="lhsWrapper"></cr-left-hand-side>` :
-    ''}
+  ${this.enableThreadsRail_ ? html`
+    <cr-left-hand-side id="lhsWrapper"
+        @open-composebox="${this.onOpenComposebox_}">
+    </cr-left-hand-side>` : ''}
   <div id="rhsWrapper">
     <div id="rhsContent" @scroll="${this.onRhsContentScroll_}">
       ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
