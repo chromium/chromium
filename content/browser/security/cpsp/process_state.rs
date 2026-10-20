@@ -7,7 +7,7 @@ chromium::import! {
 }
 
 use std::collections::hash_map::Entry;
-use std::collections::HashMap;
+use std::collections::{BTreeSet, HashMap};
 
 use content_common_id_types::ChildProcessId;
 use cxx::UniquePtr;
@@ -23,12 +23,16 @@ pub(crate) mod ffi {
         include!("content/browser/process_lock.h");
         include!("content/browser/process_lock_shim.h");
         include!("content/browser/site_instance_impl.h");
+        include!("url/origin.rs.h");
 
         #[namespace = "content"]
         type ChildProcessId = content_common_id_types::ChildProcessId;
 
         #[namespace = ""]
         type GURL = url::gurl::ffi::GURL;
+
+        #[namespace = "url"]
+        type Origin = url::origin::ffi::Origin;
 
         #[namespace = "content"]
         #[rust_name = "CppProcessLock"]
@@ -82,6 +86,15 @@ pub(crate) mod ffi {
 
         fn grant_web_ui_bindings(child_id: ChildProcessId);
         fn has_web_ui_bindings(child_id: ChildProcessId) -> bool;
+
+        fn grant_origin_check_exemption_for_webview(
+            child_id: ChildProcessId,
+            origin: UniquePtr<Origin>,
+        );
+        fn has_origin_check_exemption_for_webview(
+            child_id: ChildProcessId,
+            origin: UniquePtr<Origin>,
+        ) -> bool;
 
         fn grant_send_midi_message(child_id: ChildProcessId);
         fn grant_send_midi_sysex_message(child_id: ChildProcessId);
@@ -152,6 +165,26 @@ fn grant_web_ui_bindings(child_id: ChildProcessId) {
 fn has_web_ui_bindings(child_id: ChildProcessId) -> bool {
     let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
     cpsp.process_states.get_for_query(&child_id).is_some_and(|state| state.has_web_ui_bindings())
+}
+
+fn grant_origin_check_exemption_for_webview(
+    child_id: ChildProcessId,
+    origin: UniquePtr<ffi::Origin>,
+) {
+    let mut cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    if let Some(state) = cpsp.process_states.get_mut(&child_id) {
+        state.grant_origin_check_exemption_for_webview(origin);
+    }
+}
+
+fn has_origin_check_exemption_for_webview(
+    child_id: ChildProcessId,
+    origin: UniquePtr<ffi::Origin>,
+) -> bool {
+    let cpsp = ChildProcessSecurityPolicyImpl::get_locked_instance();
+    cpsp.process_states
+        .get_for_query(&child_id)
+        .is_some_and(|state| state.has_origin_check_exemption_for_webview(&origin))
 }
 
 #[allow(unsafe_code)]
@@ -361,6 +394,15 @@ pub(crate) struct ProcessState {
     process_lock: StatefulProcessLock,
     /// Whether a child process can host WebUI pages with bindings.
     has_web_ui_bindings: bool,
+    /// The set of origins in Android WebView and <webview> tags that are
+    /// allowed to bypass some navigation checks. Limited to opaque origins
+    /// loaded with LoadDataWithBaseURL and file origins loaded with
+    /// allow_universal_access_from_file_urls.
+    ///
+    /// Stored as a BTreeSet rather than a HashSet (which the C++ version uses)
+    /// to avoid dealing with hash functions for url::Origin. The ordering is
+    /// based on the C++ url::Origin comparison operators.
+    webview_origin_exemption_set: BTreeSet<UniquePtr<ffi::Origin>>,
     /// Determines if a child process can send MIDI messages.
     midi_permission: MidiPermission,
 }
@@ -372,6 +414,7 @@ impl ProcessState {
         ProcessState {
             process_lock: StatefulProcessLock::default(),
             has_web_ui_bindings: false,
+            webview_origin_exemption_set: BTreeSet::new(),
             midi_permission: MidiPermission::CannotSendMidi,
         }
     }
@@ -382,6 +425,11 @@ impl ProcessState {
 
     fn has_web_ui_bindings(&self) -> bool {
         self.has_web_ui_bindings
+    }
+
+    fn has_origin_check_exemption_for_webview(&self, origin: &UniquePtr<ffi::Origin>) -> bool {
+        assert!(is_valid_webview_exemption_origin(origin));
+        self.webview_origin_exemption_set.contains(origin)
     }
 
     fn can_send_midi_message(&self) -> bool {
@@ -436,6 +484,11 @@ impl MutableProcessState {
         self.0.has_web_ui_bindings = true;
     }
 
+    fn grant_origin_check_exemption_for_webview(&mut self, origin: UniquePtr<ffi::Origin>) {
+        assert!(is_valid_webview_exemption_origin(&origin));
+        self.0.webview_origin_exemption_set.insert(origin);
+    }
+
     fn grant_send_midi_message(&mut self) {
         // MidiPermission::CanSendMidiSysEx is a superset of
         // MidiPermission::CanSendMidi, so no need to update the permission for
@@ -460,4 +513,20 @@ enum MidiPermission {
     /// Permits a child process to send system exclusive (SysEx) messages to any
     /// MIDI device. Granting this also grants `MidiPermission::CanSendMidi`.
     CanSendMidiSysEx,
+}
+
+/// Returns whether `origin` is allowed to be granted a WebView origin check
+/// exemption.
+fn is_valid_webview_exemption_origin(origin: &ffi::Origin) -> bool {
+    // WebView origin check exemptions are only allowed for opaque origins with
+    // LoadDataWithBaseURL and file origins with
+    // allow_universal_access_from_file_urls.
+    //
+    // TODO(crbug.com/471021577): Expose `Origin::scheme()` in `url/origin.rs`
+    // and use `origin.scheme()` here instead of
+    // `origin.get_tuple_or_precursor_tuple_if_opaque().scheme()`.
+    //
+    // TODO(crbug.com/40226863): Use Crubit to access `url::kFileScheme` instead
+    // of a string literal (as CXX does not support C++ constants).
+    origin.opaque() || origin.get_tuple_or_precursor_tuple_if_opaque().scheme() == "file"
 }

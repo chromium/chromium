@@ -577,12 +577,16 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // entire origin, to prevent other code in the origin from bypassing checks.
   void GrantOriginCheckExemptionForWebView(ChildProcessId child_id,
                                            const url::Origin& origin);
+  void GrantOriginCheckExemptionForWebView_Cpp(ChildProcessId child_id,
+                                               const url::Origin& origin);
 
   // Returns whether the given opaque or file origin was granted an exemption
   // due to Android WebView and <webview> APIs, allowing its documents to bypass
   // certain URL and origin checks.
   bool HasOriginCheckExemptionForWebView(ChildProcessId child_id,
                                          const url::Origin& origin);
+  bool HasOriginCheckExemptionForWebView_Cpp(ChildProcessId child_id,
+                                             const url::Origin& origin);
 
   // Explicit permissions checks for FileSystemURL specified files.
   bool CanReadFileSystemFile(ChildProcessId child_id,

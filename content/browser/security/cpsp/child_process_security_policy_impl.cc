@@ -1799,6 +1799,16 @@ void ChildProcessSecurityPolicyImpl::GrantWebUIBindings_Cpp(
 void ChildProcessSecurityPolicyImpl::GrantOriginCheckExemptionForWebView(
     ChildProcessId child_id,
     const url::Origin& origin) {
+  RUST_CPP_PROCESS_STATE_VOID_FUNCTION(
+      rust::child_process_security_policy::
+          grant_origin_check_exemption_for_webview(
+              child_id, std::make_unique<url::Origin>(origin)),
+      GrantOriginCheckExemptionForWebView_Cpp(child_id, origin));
+}
+
+void ChildProcessSecurityPolicyImpl::GrantOriginCheckExemptionForWebView_Cpp(
+    ChildProcessId child_id,
+    const url::Origin& origin) {
   base::AutoLock lock(lock_);
 
   if (auto* state = process_states_.GetProcessStateForMutation(child_id)) {
@@ -1807,6 +1817,16 @@ void ChildProcessSecurityPolicyImpl::GrantOriginCheckExemptionForWebView(
 }
 
 bool ChildProcessSecurityPolicyImpl::HasOriginCheckExemptionForWebView(
+    ChildProcessId child_id,
+    const url::Origin& origin) {
+  RUST_CPP_PROCESS_STATE_RETURN_FUNCTION(
+      rust::child_process_security_policy::
+          has_origin_check_exemption_for_webview(
+              child_id, std::make_unique<url::Origin>(origin)),
+      HasOriginCheckExemptionForWebView_Cpp(child_id, origin));
+}
+
+bool ChildProcessSecurityPolicyImpl::HasOriginCheckExemptionForWebView_Cpp(
     ChildProcessId child_id,
     const url::Origin& origin) {
   base::AutoLock lock(lock_);
