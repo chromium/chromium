@@ -34,8 +34,10 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/buildflag.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -60,6 +62,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -242,8 +245,14 @@ SharedWorker* SharedWorker::CreateImpl(
       break;
     }
   }
-  network::PermissionsPolicyFeaturesBitset parsed_permissions_policy =
-      worker->ParsePermissionsPolicy(script_url, allow_string);
+  std::optional<network::PermissionsPolicyFeaturesBitset>
+      parsed_permissions_policy =
+          worker->ParsePermissionsPolicy(script_url, allow_string);
+  if (!parsed_permissions_policy) {
+    // Return the unconnected worker. The port_ will be closed when remote_port
+    // goes out of scope after returning from this function.
+    return worker;
+  }
   // TODO(https://crbug.com/562705553): Plumb the parsed_permissions_policy to
   // the browser process.
 
@@ -263,9 +272,9 @@ SharedWorker* SharedWorker::CreateImpl(
 
 SharedWorker::~SharedWorker() = default;
 
-network::PermissionsPolicyFeaturesBitset SharedWorker::ParsePermissionsPolicy(
-    const KURL& script_url,
-    const String& allow) {
+std::optional<network::PermissionsPolicyFeaturesBitset>
+SharedWorker::ParsePermissionsPolicy(const KURL& script_url,
+                                     const String& allow) {
   if (!RuntimeEnabledFeatures::PermissionsPolicyForSharedWorkersEnabled()) {
     return network::PermissionsPolicyFeaturesBitset();
   }
@@ -282,6 +291,30 @@ network::PermissionsPolicyFeaturesBitset SharedWorker::ParsePermissionsPolicy(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::blink::ConsoleMessageSource::kOther, message.level,
             message.content));
+  }
+  const network::PermissionsPolicy* permissions_policy =
+      GetExecutionContext()->GetSecurityContext().GetPermissionsPolicy();
+  CHECK(permissions_policy);
+  const url::Origin src_url_origin = src_origin->ToUrlOrigin();
+  for (const auto& entry :
+       GetDefaultFeatureNameMap(GetExecutionContext()->IsIsolatedContext())) {
+    if (parsed_permissions_policy.Contains(entry.value) &&
+        !permissions_policy->CanDelegateFeatureToOrigin(entry.value,
+                                                        src_url_origin)) {
+      GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kSecurity,
+              mojom::blink::ConsoleMessageLevel::kError,
+              StrCat({"Permissions-Policy feature '", entry.key,
+                      "' specified in the 'allow' option cannot be delegated "
+                      "by the creating context to the worker script's "
+                      "origin."})));
+      GetExecutionContext()
+          ->GetTaskRunner(TaskType::kInternalLoading)
+          ->PostTask(FROM_HERE, BindOnce(&SharedWorker::DispatchErrorEvent,
+                                         WrapWeakPersistent(this)));
+      return std::nullopt;
+    }
   }
   return parsed_permissions_policy;
 }

@@ -295,6 +295,16 @@ bool PermissionsPolicy::IsFeatureEnabledForOrigin(
   return false;
 }
 
+bool PermissionsPolicy::CanDelegateFeatureToOrigin(
+    network::mojom::PermissionsPolicyFeature feature,
+    const url::Origin& origin) const {
+  auto it = feature_list_->find(feature);
+  if (it == feature_list_->end()) {
+    return false;
+  }
+  return GetFeatureValueForOrigin(feature, it->second, origin);
+}
+
 // Implements Permissions Policy 9.8: Get feature value for origin.
 // Version https://www.w3.org/TR/2023/WD-permissions-policy-1-20231218/
 bool PermissionsPolicy::GetFeatureValueForOrigin(

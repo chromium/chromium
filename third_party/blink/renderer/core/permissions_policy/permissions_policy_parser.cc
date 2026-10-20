@@ -762,14 +762,8 @@ PermissionsPolicyParser::ParseAllowForWorkers(
     const SecurityOrigin& src_origin,
     PolicyParserMessageBuffer& logger,
     ExecutionContext* execution_context) {
-  bool is_isolated_context =
-      execution_context && execution_context->IsIsolatedContext();
-  const FeatureNameMap& feature_names =
-      GetDefaultFeatureNameMap(is_isolated_context);
-  network::ParsedPermissionsPolicy parsed_policy =
-      ParsingContext(logger, self_origin, &src_origin, feature_names,
-                     execution_context)
-          .ParseFeaturePolicy(policy);
+  network::ParsedPermissionsPolicy parsed_policy = ParseAttribute(
+      policy, self_origin, src_origin, logger, execution_context);
   const url::Origin src_url_origin = src_origin.ToUrlOrigin();
   network::PermissionsPolicyFeaturesBitset allowed_features;
   for (const auto& decl : parsed_policy) {

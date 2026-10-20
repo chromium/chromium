@@ -247,6 +247,18 @@ class COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM) PermissionsPolicy {
       const url::Origin& origin,
       bool override_default_policy_to_all = false) const;
 
+  // Returns whether the document with this policy can delegate the given
+  // feature to `origin`, e.g. via an iframe's `allow` attribute or a worker's
+  // `allow` option. Implements Permissions Policy 9.8 ("Get feature value for
+  // origin"), which is also used when computing the inherited policy of a child
+  // frame: the feature must be enabled by inherited policy, and if there is a
+  // declared policy for the feature, its allowlist must match `origin`;
+  // otherwise, the feature can be delegated if its default allowlist is '*' or
+  // 'self'.
+  bool CanDelegateFeatureToOrigin(
+      network::mojom::PermissionsPolicyFeature feature,
+      const url::Origin& origin) const;
+
   const Allowlist GetAllowlistForDevTools(
       network::mojom::PermissionsPolicyFeature feature) const;
 

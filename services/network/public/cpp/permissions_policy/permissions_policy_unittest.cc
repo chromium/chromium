@@ -223,6 +223,72 @@ TEST_F(PermissionsPolicyTest, TestCanEnableOffFeatureWithSelf) {
   EXPECT_TRUE(policy1->IsFeatureEnabled(kDefaultOffFeature));
 }
 
+TEST_F(PermissionsPolicyTest, CanDelegateFeatureToOriginNoDeclaredPolicy) {
+  // With no declared policy, features with a default allowlist of '*' or
+  // 'self' can be delegated to any origin (including opaque origins), even
+  // though IsFeatureEnabledForOrigin() returns false for 'self' features and
+  // origins other than the document's own origin.
+  url::Origin opaque_origin;
+  std::unique_ptr<PermissionsPolicy> policy =
+      CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
+
+  EXPECT_TRUE(policy->CanDelegateFeatureToOrigin(kDefaultOnFeature, origin_a_));
+  EXPECT_TRUE(policy->CanDelegateFeatureToOrigin(kDefaultOnFeature, origin_b_));
+  EXPECT_TRUE(
+      policy->CanDelegateFeatureToOrigin(kDefaultOnFeature, opaque_origin));
+
+  EXPECT_TRUE(
+      policy->CanDelegateFeatureToOrigin(kDefaultSelfFeature, origin_a_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_TRUE(
+      policy->CanDelegateFeatureToOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_FALSE(
+      policy->IsFeatureEnabledForOrigin(kDefaultSelfFeature, opaque_origin));
+  EXPECT_TRUE(
+      policy->CanDelegateFeatureToOrigin(kDefaultSelfFeature, opaque_origin));
+
+  EXPECT_FALSE(
+      policy->CanDelegateFeatureToOrigin(kDefaultOffFeature, origin_a_));
+  EXPECT_FALSE(
+      policy->CanDelegateFeatureToOrigin(kDefaultOffFeature, opaque_origin));
+}
+
+TEST_F(PermissionsPolicyTest, CanDelegateFeatureToOriginDeclaredSelfPolicy) {
+  // With a declared `default-self=self` policy, the feature cannot be
+  // delegated to an opaque origin.
+  url::Origin opaque_origin;
+  std::unique_ptr<PermissionsPolicy> policy =
+      CreateFromParentPolicy(nullptr,
+                             {{{kDefaultSelfFeature,
+                                /*allowed_origins=*/{},
+                                /*self_if_matches=*/origin_a_,
+                                /*matches_all_origins=*/false,
+                                /*matches_opaque_src=*/false}}},
+                             origin_a_);
+  EXPECT_TRUE(
+      policy->CanDelegateFeatureToOrigin(kDefaultSelfFeature, origin_a_));
+  EXPECT_FALSE(
+      policy->CanDelegateFeatureToOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_FALSE(
+      policy->CanDelegateFeatureToOrigin(kDefaultSelfFeature, opaque_origin));
+}
+
+TEST_F(PermissionsPolicyTest, CanDelegateFeatureToOriginDisabledByInheritance) {
+  // If the feature is disabled in the document by inherited policy, it cannot
+  // be delegated to an opaque origin even without a declared policy.
+  url::Origin opaque_origin;
+  std::unique_ptr<PermissionsPolicy> policy1 =
+      CreateFromParentPolicy(nullptr, /*header_policy=*/{}, origin_a_);
+  std::unique_ptr<PermissionsPolicy> policy2 =
+      CreateFromParentPolicy(policy1.get(), /*header_policy=*/{}, origin_b_);
+  ASSERT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_FALSE(
+      policy2->CanDelegateFeatureToOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_FALSE(
+      policy2->CanDelegateFeatureToOrigin(kDefaultSelfFeature, opaque_origin));
+}
+
 TEST_F(PermissionsPolicyTest, TestInitialSameOriginChildPolicy) {
   // +-----------------+
   // |(1)Origin A      |
