@@ -98,17 +98,12 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   // frame content and enables resource reuse across frames.
   // - `auto_update` if true means that we are continuously submitting frames
   // asynchronously and should redraw full surface regardless of damage.
-  // - `last_submitted_frame_size` and `last_submitted_frame_dsf`
-  // can be used to determine if a new surface needs to be identified on the
-  // `host_window_`.
   // Returns nullptr if a compositor frame cannot be created.
   virtual std::unique_ptr<viz::CompositorFrame> CreateCompositorFrame(
       const viz::BeginFrameAck& begin_frame_ack,
       viz::ClientResourceProvider& client_resource_provider,
       cc::ResourcePool& resource_pool,
-      bool auto_update,
-      const gfx::Size& last_submitted_frame_size,
-      float last_submitted_frame_dsf) = 0;
+      bool auto_update) = 0;
 
   // Callback invoked when frame sink gets the first begin from the display
   // compositor for existing FrameSink. This signifies that the gpu process has
@@ -134,6 +129,12 @@ class ASH_EXPORT FrameSinkHost : public aura::WindowObserver {
   const gfx::Rect& GetContentRect() const { return content_rect_; }
 
  private:
+  std::unique_ptr<viz::CompositorFrame> CreateCompositorFrameInternal(
+      const viz::BeginFrameAck& begin_frame_ack,
+      viz::ClientResourceProvider& client_resource_provider,
+      cc::ResourcePool& resource_pool,
+      bool auto_update);
+
   void InitFrameSinkHolder(
       aura::Window* host_window,
       std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink);

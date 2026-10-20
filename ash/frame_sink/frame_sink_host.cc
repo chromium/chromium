@@ -53,6 +53,30 @@ FrameSinkHost::CreateLayerTreeFrameSink() {
   return host_window_->CreateLayerTreeFrameSink();
 }
 
+std::unique_ptr<viz::CompositorFrame>
+FrameSinkHost::CreateCompositorFrameInternal(
+    const viz::BeginFrameAck& begin_frame_ack,
+    viz::ClientResourceProvider& client_resource_provider,
+    cc::ResourcePool& resource_pool,
+    bool auto_update) {
+  std::unique_ptr<viz::CompositorFrame> frame = CreateCompositorFrame(
+      begin_frame_ack, client_resource_provider, resource_pool, auto_update);
+  if (!frame) {
+    return nullptr;
+  }
+
+  // A change in the size or device scale factor of the compositor frame means
+  // we need to identify a new surface to submit the compositor frame to.
+  if (frame->size_in_pixels() !=
+          frame_sink_holder_->last_frame_size_in_pixels() ||
+      frame->device_scale_factor() !=
+          frame_sink_holder_->last_frame_device_scale_factor()) {
+    host_window_->AllocateLocalSurfaceId();
+  }
+
+  return frame;
+}
+
 void FrameSinkHost::InitFrameSinkHolder(
     aura::Window* host_window,
     std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
@@ -61,7 +85,7 @@ void FrameSinkHost::InitFrameSinkHolder(
 
   frame_sink_holder_ = std::make_unique<FrameSinkHolder>(
       std::move(layer_tree_frame_sink),
-      base::BindRepeating(&FrameSinkHost::CreateCompositorFrame,
+      base::BindRepeating(&FrameSinkHost::CreateCompositorFrameInternal,
                           base::Unretained(this)),
       base::BindOnce(&FrameSinkHost::OnFirstFrameRequested,
                      base::Unretained(this)),

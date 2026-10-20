@@ -4009,7 +4009,6 @@ test("ash_unittests") {
     "rounded_display/rounded_display_frame_factory_unittest.cc",
     "rounded_display/rounded_display_gutter_factory_unittest.cc",
     "rounded_display/rounded_display_gutter_unittest.cc",
-    "rounded_display/rounded_display_host_unittest.cc",
     "rounded_display/rounded_display_provider_unittest.cc",
     "scanner/scanner_action_handler_unittest.cc",
     "scanner/scanner_controller_unittest.cc",

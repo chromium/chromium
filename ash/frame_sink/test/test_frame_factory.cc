@@ -18,9 +18,7 @@ std::unique_ptr<viz::CompositorFrame> TestFrameFactory::CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     viz::ClientResourceProvider& client_resource_provider,
     cc::ResourcePool& resource_pool,
-    bool auto_refresh,
-    const gfx::Size& last_submitted_frame_size,
-    float last_submitted_frame_dsf) {
+    bool auto_refresh) {
   auto frame = std::make_unique<viz::CompositorFrame>();
 
   frame->metadata.begin_frame_ack = begin_frame_ack;

@@ -46,9 +46,7 @@ ViewTreeHostRootView::CreateCompositorFrame(
     const viz::BeginFrameAck& begin_frame_ack,
     viz::ClientResourceProvider& client_resource_provider,
     cc::ResourcePool& resource_pool,
-    bool auto_update,
-    const gfx::Size& last_submitted_frame_size,
-    float last_submitted_frame_dsf) {
+    bool auto_update) {
   TRACE_EVENT1("ui", "ViewTreeHostRootView::SubmitCompositorFrame", "damage",
                GetTotalDamage().ToString());
 
@@ -57,14 +55,6 @@ ViewTreeHostRootView::CreateCompositorFrame(
       is_overlay_candidate_, client_resource_provider, resource_pool);
 
   ResetDamage();
-
-  // A change in the size of the compositor frame means we need to identify a
-  // new surface to submit the compositor frame to since the surface size is now
-  // different.
-  if (last_submitted_frame_size != frame->size_in_pixels() ||
-      last_submitted_frame_dsf != frame->device_scale_factor()) {
-    host_window()->AllocateLocalSurfaceId();
-  }
 
   return frame;
 }

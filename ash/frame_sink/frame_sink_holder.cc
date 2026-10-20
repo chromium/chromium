@@ -174,8 +174,7 @@ void FrameSinkHolder::SubmitCompositorFrame(bool synchronous_draw) {
   std::unique_ptr<viz::CompositorFrame> frame =
       get_compositor_frame_callback_.Run(
           viz::BeginFrameAck::CreateManualAckWithDamage(),
-          *client_resource_provider_, *resource_pool_, auto_update_,
-          last_frame_size_in_pixels_, last_frame_device_scale_factor_);
+          *client_resource_provider_, *resource_pool_, auto_update_);
 
   if (!frame) {
     return;
@@ -230,10 +229,9 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   }
 
   std::unique_ptr<viz::CompositorFrame> frame =
-      get_compositor_frame_callback_.Run(
-          current_begin_frame_ack, *client_resource_provider_, *resource_pool_,
-          auto_update_, last_frame_size_in_pixels_,
-          last_frame_device_scale_factor_);
+      get_compositor_frame_callback_.Run(current_begin_frame_ack,
+                                         *client_resource_provider_,
+                                         *resource_pool_, auto_update_);
 
   if (!frame) {
     // Failure to produce a frame is treated as if there was no damage.

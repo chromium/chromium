@@ -54,9 +54,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
           const viz::BeginFrameAck& begin_frame_ack,
           viz::ClientResourceProvider& resource_provider,
           cc::ResourcePool& resource_pool,
-          bool auto_update,
-          const gfx::Size& last_submitted_frame_size,
-          float last_submitted_frame_dsf)>;
+          bool auto_update)>;
 
   // Refer to declaration of `FrameSinkHost::OnFirstFrameRequested` for a
   // detailed comment.
@@ -93,6 +91,13 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
 
   base::WeakPtr<FrameSinkHolder> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  const gfx::Size& last_frame_size_in_pixels() const {
+    return last_frame_size_in_pixels_;
+  }
+  float last_frame_device_scale_factor() const {
+    return last_frame_device_scale_factor_;
   }
 
   // When auto-update mode is on, we keep on submitting frames asynchronously to
@@ -168,7 +173,7 @@ class ASH_EXPORT FrameSinkHolder final : public cc::LayerTreeFrameSinkClient,
     return !on_first_frame_requested_callback_;
   }
 
-  // The layer tree frame sink created from `host_window_.
+  // The layer tree frame sink created from `host_window_`.
   std::unique_ptr<cc::LayerTreeFrameSink> frame_sink_;
 
   // The currently observed `BeginFrameSource` which will notify us with

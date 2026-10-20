@@ -36,9 +36,7 @@ class TestFrameFactory {
       const viz::BeginFrameAck& begin_frame_ack,
       viz::ClientResourceProvider& client_resource_provider,
       cc::ResourcePool& resource_pool,
-      bool auto_refresh,
-      const gfx::Size& last_submitted_frame_size,
-      float last_submitted_frame_dsf);
+      bool auto_refresh);
 
   void SetFrameResources(
       std::vector<viz::TransferableResource> frame_resources);

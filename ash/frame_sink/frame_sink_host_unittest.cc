@@ -33,12 +33,9 @@ class TestFrameSinkHost : public FrameSinkHost {
       const viz::BeginFrameAck& begin_frame_ack,
       viz::ClientResourceProvider& client_resource_provider,
       cc::ResourcePool& resource_pool,
-      bool auto_refresh,
-      const gfx::Size& last_submitted_frame_size,
-      float last_submitted_frame_dsf) override {
+      bool auto_refresh) override {
     return frame_factory_.CreateCompositorFrame(
-        begin_frame_ack, client_resource_provider, resource_pool, auto_refresh,
-        last_submitted_frame_size, last_submitted_frame_dsf);
+        begin_frame_ack, client_resource_provider, resource_pool, auto_refresh);
   }
 
   TestFrameFactory& frame_factory() { return frame_factory_; }
@@ -98,6 +95,57 @@ TEST_F(FrameSinkHostTest, OnFrameSinkLost) {
   // frame.
   OnBeginFrame();
   EXPECT_EQ(layer_tree_frame_sink()->num_of_frames_received(), 1);
+}
+
+TEST_F(FrameSinkHostTest, NewSurfaceIdIsCreatedWhenNeeded) {
+  // Request the first frame so that FrameSinkHost can submit frames
+  // synchronously.
+  OnBeginFrame();
+
+  frame_sink_host()->frame_factory().SetFrameMetaData(
+      /*frame_size=*/gfx::Size(100, 100), /*dsf=*/1.0f);
+
+  // First frame is submitted.
+  frame_sink_host()->UpdateSurface(host_window()->bounds(),
+                                   host_window()->bounds(),
+                                   /*synchronous_draw=*/true);
+  viz::LocalSurfaceId local_surface_id = host_window()->GetLocalSurfaceId();
+  ASSERT_TRUE(local_surface_id.is_valid());
+  layer_tree_frame_sink()->client()->DidReceiveCompositorFrameAck();
+
+  // Second frame is submitted with a different device scale factor.
+  viz::LocalSurfaceId old_local_surface_id = local_surface_id;
+  frame_sink_host()->frame_factory().SetFrameMetaData(
+      /*frame_size=*/gfx::Size(100, 100), /*dsf=*/2.0f);
+  frame_sink_host()->UpdateSurface(host_window()->bounds(),
+                                   host_window()->bounds(),
+                                   /*synchronous_draw=*/true);
+  viz::LocalSurfaceId new_local_surface_id = host_window()->GetLocalSurfaceId();
+  ASSERT_TRUE(new_local_surface_id.is_valid());
+  EXPECT_TRUE(new_local_surface_id.IsNewerThan(old_local_surface_id));
+  layer_tree_frame_sink()->client()->DidReceiveCompositorFrameAck();
+
+  // Third frame is submitted with a different frame size.
+  old_local_surface_id = new_local_surface_id;
+  frame_sink_host()->frame_factory().SetFrameMetaData(
+      /*frame_size=*/gfx::Size(200, 100), /*dsf=*/2.0f);
+  frame_sink_host()->UpdateSurface(host_window()->bounds(),
+                                   host_window()->bounds(),
+                                   /*synchronous_draw=*/true);
+  new_local_surface_id = host_window()->GetLocalSurfaceId();
+  ASSERT_TRUE(new_local_surface_id.is_valid());
+  EXPECT_TRUE(new_local_surface_id.IsNewerThan(old_local_surface_id));
+  layer_tree_frame_sink()->client()->DidReceiveCompositorFrameAck();
+
+  // Fourth frame is submitted where neither frame size nor device scale factor
+  // has changed.
+  old_local_surface_id = new_local_surface_id;
+  frame_sink_host()->UpdateSurface(host_window()->bounds(),
+                                   host_window()->bounds(),
+                                   /*synchronous_draw=*/true);
+  new_local_surface_id = host_window()->GetLocalSurfaceId();
+  ASSERT_TRUE(new_local_surface_id.is_valid());
+  EXPECT_EQ(new_local_surface_id, old_local_surface_id);
 }
 
 }  // namespace
