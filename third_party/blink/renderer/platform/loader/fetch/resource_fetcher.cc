@@ -3125,15 +3125,6 @@ ResourceFetcher::GetSubresourceBundleToken(const KURL& url) const {
   return bundle->WebBundleToken();
 }
 
-std::optional<KURL> ResourceFetcher::GetSubresourceBundleSourceUrl(
-    const KURL& url) const {
-  SubresourceWebBundle* bundle = GetMatchingBundle(url);
-  if (!bundle) {
-    return std::nullopt;
-  }
-  return bundle->GetBundleUrl();
-}
-
 void ResourceFetcher::EmulateLoadStartedForInspector(
     Resource* resource,
     mojom::blink::RequestContextType request_context,

@@ -336,8 +336,6 @@ class PLATFORM_EXPORT ResourceFetcher
   std::optional<base::UnguessableToken> GetSubresourceBundleToken(
       const KURL& url) const;
 
-  std::optional<KURL> GetSubresourceBundleSourceUrl(const KURL& url) const;
-
   enum IsImageSet { kImageNotImageSet, kImageIsImageSet };
 
   [[nodiscard]] static mojom::blink::RequestContextType DetermineRequestContext(

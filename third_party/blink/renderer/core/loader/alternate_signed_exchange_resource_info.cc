@@ -43,18 +43,17 @@ AlternateSignedExchangeMachingKey MakeKey(const String& anchor,
 void AddAlternateUrlIfValid(
     const LinkHeader& header,
     HashMap<AlternateSignedExchangeMachingKey, KURL>* alternate_urls) {
-  if (!header.Valid() || header.Url().empty() || !header.Anchor().has_value() ||
-      header.Anchor()->empty() ||
+  if (!header.Valid() || header.Url().empty() || header.Anchor().empty() ||
       !EqualIgnoringAsciiCase(header.Rel(), kAlternate) ||
       header.MimeType() != kSignedExchangeMimeType) {
     return;
   }
   const KURL alternative_url(header.Url());
-  const KURL anchor_url(*header.Anchor());
+  const KURL anchor_url(header.Anchor());
   if (!alternative_url.IsValid() || !anchor_url.IsValid())
     return;
   alternate_urls->Set(
-      MakeKey(*header.Anchor(), header.Variants(), header.VariantKey()),
+      MakeKey(header.Anchor(), header.Variants(), header.VariantKey()),
       alternative_url);
 }
 

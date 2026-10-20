@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/link_header.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/strings/string_util.h"
@@ -49,8 +50,6 @@ static LinkHeader::LinkParameterName ParameterNameFromString(
     return LinkHeader::kLinkParameterImageSrcset;
   if (base::EqualsCaseInsensitiveASCII(name, "imagesizes"))
     return LinkHeader::kLinkParameterImageSizes;
-  if (base::EqualsCaseInsensitiveASCII(name, "anchor"))
-    return LinkHeader::kLinkParameterAnchor;
 
   // "header-integrity" and "variants" and "variant-key" are used only for
   // SignedExchangeSubresourcePrefetch.
@@ -130,7 +129,7 @@ LinkHeader::LinkHeader(Iterator begin, Iterator end) : is_valid_(true) {
   // https://tools.ietf.org/html/rfc5988#section-5.2
   // Blink uses "anchor" parameters only for SignedExchangeSubresourcePrefetch
   // and the rel is "alternate".
-  if (anchor_.has_value() && rel_ != "alternate")
+  if (!anchor_.IsNull() && rel_ != "alternate")
     is_valid_ = false;
 }
 
