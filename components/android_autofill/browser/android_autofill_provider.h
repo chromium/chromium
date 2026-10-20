@@ -377,7 +377,7 @@ class AndroidAutofillProvider : public AutofillProvider,
   static constexpr SessionId kMinimumSessionId = SessionId(1);
   static constexpr SessionId kMaximumSessionId = SessionId(0xffff);
   // The last assigned session id.
-  SessionId last_session_id_ = kMaximumSessionId;
+  std::optional<SessionId> last_session_id_;
 
   // The bridge for C++ <-> Java communication.
   std::unique_ptr<AndroidAutofillProviderBridge> bridge_;

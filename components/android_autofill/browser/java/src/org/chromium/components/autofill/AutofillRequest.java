@@ -145,7 +145,7 @@ public class AutofillRequest {
     }
 
     private static int toSessionId(int fieldVirtualId) {
-        return (fieldVirtualId & 0xffff0000) >> 16;
+        return (fieldVirtualId & 0xffff0000) >>> 16;
     }
 
     private static short toIndex(int fieldVirtualId) {

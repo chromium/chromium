@@ -349,6 +349,9 @@ public class AutofillProvider {
         } else {
             notifyVirtualViewEntered(mContainerView, focus, absBound);
         }
+        // A prefill request is only valid for the first session started after it is sent;
+        // clear it so a later session that recycles the same session ID cannot match it.
+        mPrefillRequest = null;
         if (hasServerPrediction) {
             mAutofillUMA.onServerTypeAvailable(formData, /* afterSessionStarted= */ false);
         }
@@ -768,7 +771,13 @@ public class AutofillProvider {
         // finalizer, and so the methods we call will throw. It's not
         // possible to know which case we're in, so just catch the exception
         // in AutofillManagerWrapper.destroy().
-        if (mNativeAutofillProvider != 0) mRequest = null;
+        if (mNativeAutofillProvider != 0) {
+            // Session IDs are minted per native `AndroidAutofillProvider` starting at 1. Cancel the
+            // framework session and clear `mPrefillRequest` when detaching so a replacement native
+            // provider cannot collide with session IDs from the previous one.
+            cancelSession();
+            reset();
+        }
         mNativeAutofillProvider = nativeAutofillProvider;
     }
 
@@ -783,7 +792,14 @@ public class AutofillProvider {
     public void setWebContents(WebContents webContents) {
         if (webContents == mWebContents) return;
         if (mAutofillUMA != null) mAutofillUMA.recordSession();
-        if (mWebContents != null) mRequest = null;
+        if (mWebContents != null) {
+            // Re-binding to a new `WebContents` creates a new native `AndroidAutofillProvider`
+            // whose session ID counter restarts at 1. Cancel the ongoing framework session and
+            // clear `mPrefillRequest` so the new `WebContents` cannot reuse cached responses from
+            // the previous one.
+            cancelSession();
+            reset();
+        }
         mWebContents = webContents;
         detachFromJavaAutofillProvider();
         if (mWebContents != null) {

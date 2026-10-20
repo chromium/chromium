@@ -50,6 +50,10 @@ class AndroidAutofillProviderTestApi {
 
   void OnTriggerPasskeyRequest() { provider_->OnTriggerPasskeyRequest(); }
 
+  void set_last_session_id(SessionId session_id) {
+    provider_->last_session_id_ = session_id;
+  }
+
  private:
   const raw_ref<AndroidAutofillProvider> provider_;
 };

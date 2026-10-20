@@ -862,6 +862,44 @@ TEST_F(AndroidAutofillProviderTest, CancelSessionOnNavigation) {
   Reset(autofill_driver());
 }
 
+// Tests that wrapping the 16-bit SessionId counter cancels the ongoing Android
+// Autofill session so that recycled session IDs cannot collide with responses
+// cached by the framework for an earlier form (crbug.com/574587405).
+TEST_F(AndroidAutofillProviderTest, CancelSessionOnSessionIdWraparound) {
+  FormData form1 =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  FormData form2 = CreateFormDataForFrame(
+      CreateTestPersonalInformationFormData(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form1, form2}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  EXPECT_CALL(provider_bridge(), CancelSession()).Times(0);
+  EXPECT_CALL(
+      provider_bridge(),
+      StartAutofillSession(EqualsFormDataWithSessionId(form1, SessionId(1)),
+                           EqualsFieldInfo(/*index=*/0),
+                           /*has_server_predictions=*/false));
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form1, form1.fields().front().global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Advance the session ID counter to the maximum 16-bit value.
+  test_api(autofill_provider()).set_last_session_id(SessionId(0xffff));
+
+  {
+    InSequence s;
+    EXPECT_CALL(provider_bridge(), CancelSession());
+    EXPECT_CALL(
+        provider_bridge(),
+        StartAutofillSession(EqualsFormDataWithSessionId(form2, SessionId(1)),
+                             EqualsFieldInfo(/*index=*/0),
+                             /*has_server_predictions=*/false));
+  }
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form2, form2.fields().front().global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+}
+
 // Tests that OnSelectControlSelectionChanged updates the current field's origin
 // when the feature flag is enabled.
 TEST_F(AndroidAutofillProviderTest,
@@ -2099,6 +2137,50 @@ TEST_F(AndroidAutofillProviderPrefillRequestTest,
   // before.
   EXPECT_NE(cache_session_id, pw_form_second_session_id);
   EXPECT_NE(pi_form_session_id, pw_form_second_session_id);
+}
+
+// Tests that wrapping the SessionId counter while a prefill request is cached
+// safely cancels the session and clears `cached_data_` without dereferencing a
+// dangling pointer in `StartNewSession()`.
+TEST_F(AndroidAutofillProviderPrefillRequestTest,
+       CancelSessionOnSessionIdWraparoundWithCachedPrefillForm) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_U) {
+    GTEST_SKIP();
+  }
+
+  FormData form =
+      CreateFormDataForFrame(CreateTestLoginForm(), main_frame_token());
+  android_autofill_manager().OnFormsSeen({form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  EXPECT_CALL(provider_bridge(), SendPrefillRequest(EqualsFormDataWithSessionId(
+                                     form, SessionId(1))));
+  android_autofill_manager().SimulatePropagateAutofillPredictions(
+      form.global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
+
+  // Modify the form so `use_cached_form` is false and `CreateSessionId()` is
+  // called while `cached_data_` is still populated.
+  FormData changed_form = form;
+  test_api(changed_form).Remove(-1);
+  android_autofill_manager().OnFormsSeen({changed_form}, /*removed_forms=*/{},
+                                         AutofillManagerTestApi::pass_key());
+
+  test_api(autofill_provider()).set_last_session_id(SessionId(0xffff));
+
+  {
+    InSequence s;
+    EXPECT_CALL(provider_bridge(), CancelSession());
+    EXPECT_CALL(provider_bridge(),
+                StartAutofillSession(
+                    EqualsFormDataWithSessionId(changed_form, SessionId(1)),
+                    EqualsFieldInfo(/*index=*/0),
+                    /*has_server_predictions=*/true));
+  }
+  android_autofill_manager().OnAskForValuesToFillTest(
+      changed_form, changed_form.fields().front().global_id());
+  Mock::VerifyAndClearExpectations(&provider_bridge());
 }
 
 // Tests that metrics are emitted when the bottom sheet is shown.

@@ -299,8 +299,6 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
 
   const FormStructure* form_structure =
       manager->FindCachedFormById(form.global_id());
-  FormDataAndroid* cached_form =
-      cached_data_ ? cached_data_->cached_form.get() : nullptr;
   const bool is_similar_to_cached_form =
       IsFormSimilarToCachedForm(form, form_structure);
 
@@ -315,7 +313,8 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
 
   // Note that beyond this point `form == session_state_->form.form()`.
   session_state_->form = std::make_unique<FormDataAndroid>(
-      form, use_cached_form ? cached_form->session_id() : CreateSessionId());
+      form, use_cached_form ? cached_data_->cached_form->session_id()
+                            : CreateSessionId());
   session_state_->manager = manager->GetWeakPtrToLeafClass();
 
   // Set the field type predictions in `session_state_->form`.
@@ -349,6 +348,9 @@ void AndroidAutofillProvider::StartNewSession(AndroidAutofillManager* manager,
     if (!ArePrefillRequestsSupported() || is_similar_to_cached_form) {
       return;
     }
+
+    const FormDataAndroid* cached_form =
+        cached_data_ ? cached_data_->cached_form.get() : nullptr;
 
     // We sent a cache request for this form element, but the form (or its
     // members) have changed since then.
@@ -889,6 +891,10 @@ void AndroidAutofillProvider::Reset() {
 }
 
 void AndroidAutofillProvider::CancelSession() {
+  // `bridge_->CancelSession()` discards the framework's cached virtual view
+  // responses, so it is safe to recycle session IDs starting from
+  // `kMinimumSessionId` again.
+  last_session_id_ = std::nullopt;
   cached_data_ = std::nullopt;
   has_used_cached_form_ = false;
   was_bottom_sheet_just_shown_ = false;
@@ -897,10 +903,17 @@ void AndroidAutofillProvider::CancelSession() {
 }
 
 SessionId AndroidAutofillProvider::CreateSessionId() {
-  last_session_id_ = last_session_id_ == kMaximumSessionId
-                         ? kMinimumSessionId
-                         : SessionId(last_session_id_.value() + 1);
-  return last_session_id_;
+  // Android's `AutofillSession` retains responses from earlier forms in the
+  // same framework session keyed by virtual view ID (`(session_id << 16) |
+  // field_index`). Cancel the framework session before wrapping the 16-bit
+  // counter so recycled session IDs cannot collide with a previously cached
+  // form or prefill request.
+  if (last_session_id_ == kMaximumSessionId) {
+    CancelSession();
+  }
+  last_session_id_ = last_session_id_ ? SessionId(last_session_id_->value() + 1)
+                                      : kMinimumSessionId;
+  return *last_session_id_;
 }
 
 bool AndroidAutofillProvider::ArePrefillRequestsSupported() const {
@@ -931,10 +944,11 @@ void AndroidAutofillProvider::MaybeSendPrefillRequest(
     return;
   }
 
+  const SessionId session_id = CreateSessionId();
   cached_data_.emplace();
   cached_data_->prefill_request_creation_time = base::TimeTicks::Now();
   cached_data_->cached_form = std::make_unique<FormDataAndroid>(
-      form_structure->ToFormData(), CreateSessionId());
+      form_structure->ToFormData(), session_id);
   cached_data_->cached_form->UpdateFieldTypes(*form_structure);
   if (std::optional<PasswordParserOverrides> overrides =
           PasswordParserOverrides::FromLoginForm(*pw_form, *form_structure)) {
