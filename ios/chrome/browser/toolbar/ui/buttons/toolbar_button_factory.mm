@@ -21,6 +21,8 @@
 
 namespace {
 // Default point size for toolbar buttons.
+constexpr CGFloat kFiveButtonLayoutSymbolPointSize = 23.0;
+// Default point size for toolbar buttons.
 constexpr CGFloat kDefaultSymbolPointSize = 19;
 // Symbol point size for the legacy toolbar button design.
 constexpr CGFloat kLegacySymbolPointSize = 24;
@@ -93,8 +95,14 @@ constexpr CGFloat kLegacySymbolPointSize = 24;
 - (ToolbarButton*)makeShareButton {
   // Shift the button up 2px by adding 4px of padding at the bottom.
   UIImage* (^imageLoader)(void) = ^UIImage* {
-    CGFloat pointSize = IsNextOldDesignEnabled() ? kLegacySymbolPointSize
-                                                 : kDefaultSymbolPointSize;
+    CGFloat pointSize;
+    if (IsFiveButtonAppBarLayoutEnabled()) {
+      pointSize = kFiveButtonLayoutSymbolPointSize;
+    } else if (IsNextOldDesignEnabled()) {
+      pointSize = kLegacySymbolPointSize;
+    } else {
+      pointSize = kDefaultSymbolPointSize;
+    }
     UIImage* image = SymbolWithPointSize(SymbolShare, pointSize);
     CGSize newSize = CGSizeMake(image.size.width, image.size.height + 4);
 
@@ -164,8 +172,14 @@ constexpr CGFloat kLegacySymbolPointSize = 24;
 
 // Returns a toolbar button with the given symbol.
 - (ToolbarButton*)toolbarButtonForSymbol:(Symbol)symbol {
-  CGFloat pointSize = IsNextOldDesignEnabled() ? kLegacySymbolPointSize
-                                               : kDefaultSymbolPointSize;
+  CGFloat pointSize;
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    pointSize = kFiveButtonLayoutSymbolPointSize;
+  } else if (IsNextOldDesignEnabled()) {
+    pointSize = kLegacySymbolPointSize;
+  } else {
+    pointSize = kDefaultSymbolPointSize;
+  }
   ToolbarButton* button = [[ToolbarButton alloc]
       initWithImageLoader:^UIImage* {
         return SymbolWithPointSize(symbol, pointSize);

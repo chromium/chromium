@@ -77,6 +77,7 @@ constexpr CGFloat kStackViewSpacing = 4;
 constexpr CGFloat kStackViewHorizontalMargin = 8;
 // The vertical offset of the stack view in portrait.
 constexpr CGFloat kStackViewPortraitVerticalOffset = 2;
+constexpr CGFloat kFiveButtonStackViewPortraitVerticalOffset = 20;
 
 // The inner padding of the buttons.
 constexpr CGFloat kButtonHorizontalPadding = 4;
@@ -87,13 +88,13 @@ constexpr CGFloat kIPHAnimationDuration = 0.3;
 
 // Returns the color to be used as foreground color for the buttons.
 UIColor* ButtonsForegroundColor() {
-  return IsLightAppBarEnabled() ? [UIColor colorNamed:kSolidBlackColor]
+  return IsLightAppBarEnabled() ? [UIColor colorNamed:kGrey900Color]
                                 : UIColor.whiteColor;
 }
 
 // Returns the inverted foreground color for the buttons.
 UIColor* InvertedButtonsForegroundColor() {
-  return IsLightAppBarEnabled() ? [UIColor colorNamed:kSolidWhiteColor]
+  return IsLightAppBarEnabled() ? [UIColor colorNamed:kGrey50Color]
                                 : UIColor.blackColor;
 }
 
@@ -351,7 +352,12 @@ UIColor* AssistantHighlightBackgroundColor() {
     _leadingSpacer.hidden = YES;
     _trailingSpacer.hidden = YES;
     _heightConstraint.constant = [self currentAppBarHeightPortrait];
-    _stackViewBottomConstraint.constant = 0;
+    if (IsFiveButtonAppBarLayoutEnabled()) {
+      _stackViewBottomConstraint.constant =
+          -kFiveButtonStackViewPortraitVerticalOffset;
+    } else {
+      _stackViewBottomConstraint.constant = 0;
+    }
     _stackViewLeadingConstraint.constant = kStackViewHorizontalMargin;
     _stackViewTrailingConstraint.constant = -kStackViewHorizontalMargin;
     if (IsGlassToolbarEnabled()) {
@@ -511,8 +517,14 @@ UIColor* AssistantHighlightBackgroundColor() {
 
   [_buttonsContainerView addSubview:_stackView];
 
-  _stackViewBottomConstraint = [_stackView.bottomAnchor
-      constraintEqualToAnchor:_buttonsContainerView.bottomAnchor];
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    _stackViewBottomConstraint = [_stackView.bottomAnchor
+        constraintEqualToAnchor:_buttonsContainerView.bottomAnchor
+                       constant:-kFiveButtonStackViewPortraitVerticalOffset];
+  } else {
+    _stackViewBottomConstraint = [_stackView.bottomAnchor
+        constraintEqualToAnchor:_buttonsContainerView.bottomAnchor];
+  }
   _stackViewLeadingConstraint = [_stackView.leadingAnchor
       constraintEqualToAnchor:_buttonsContainerView.leadingAnchor
                      constant:kStackViewHorizontalMargin];
@@ -1015,7 +1027,8 @@ UIColor* AssistantHighlightBackgroundColor() {
 // Returns a new "New Tab" button.
 - (UIButton*)createOpenNewTabButton {
   NSString* title = [self openNewTabButtonTitleForCurrentState];
-  UIImage* image = AppBarSymbol(SymbolPlusInCircle);
+  UIImage* image = AppBarSymbol(
+      IsFiveButtonAppBarLayoutEnabled() ? SymbolPlus : SymbolPlusInCircle);
   UIButton* button = [self buttonWithTitle:title image:image];
   button.accessibilityIdentifier = kAppBarNewTabButtonIdentifier;
 

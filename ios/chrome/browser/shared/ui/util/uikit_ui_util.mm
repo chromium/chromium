@@ -424,8 +424,14 @@ NSAttributedString* TextForTabCount(int count, CGFloat font_size) {
     string = [NSString stringWithFormat:@"%d", count];
   }
 
-  UIFontWeight weight =
-      UIAccessibilityIsBoldTextEnabled() ? UIFontWeightHeavy : UIFontWeightBold;
+  UIFontWeight weight;
+  if (IsFiveButtonAppBarLayoutEnabled()) {
+    weight = UIAccessibilityIsBoldTextEnabled() ? UIFontWeightBlack
+                                                : UIFontWeightHeavy;
+  } else {
+    weight = UIAccessibilityIsBoldTextEnabled() ? UIFontWeightHeavy
+                                                : UIFontWeightBold;
+  }
   UIFont* font = [UIFont systemFontOfSize:font_size weight:weight];
   UIFontDescriptor* descriptor = [font.fontDescriptor
       fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
