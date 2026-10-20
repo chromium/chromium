@@ -5,6 +5,8 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
@@ -42,6 +44,7 @@ namespace actor::ui {
 namespace {
 using ::tabs::MockTabInterface;
 using ::testing::_;
+using ::testing::ElementsAre;
 using ::testing::MockFunction;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -679,6 +682,28 @@ TEST_F(ActorUiTabControllerTest, PropagatesMouseTargetToCallback) {
   base::test::TestFuture<bool> future;
   tab_controller()->OnUiTabStateChange(ui_tab_state, future.GetCallback());
   EXPECT_TRUE(future.Wait());
+}
+
+TEST_F(ActorUiTabControllerTest,
+       SetCursorChipTextNotifiesChangesWithoutOverlayStateUpdate) {
+  std::vector<std::string> chip_texts;
+  base::ScopedClosureRunner subscription =
+      tab_controller()->RegisterCursorChipTextChange(
+          base::BindLambdaForTesting([&](const std::string& text) {
+            // The stored text is updated before the callback runs.
+            EXPECT_EQ(tab_controller()->GetCursorChipText(), text);
+            chip_texts.push_back(text);
+          }));
+  // A text change must not replay the stored mouse move or click.
+  EXPECT_CALL(mock_overlay_callback_, Call).Times(0);
+
+  tab_controller()->SetCursorChipText("Searching");
+  tab_controller()->SetCursorChipText("Searching");
+  tab_controller()->SetCursorChipText("");
+
+  EXPECT_THAT(chip_texts, ElementsAre("Searching", ""));
+  EXPECT_EQ(tab_controller()->GetCursorChipText(), "");
+  testing::Mock::VerifyAndClearExpectations(&mock_overlay_callback_);
 }
 
 }  // namespace

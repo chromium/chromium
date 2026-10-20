@@ -364,6 +364,10 @@ const base::FeatureParam<int> kGlicActorUiMagicCursorMinDuration{
 const base::FeatureParam<int> kGlicActorUiMagicCursorMaxDuration{
     &kGlicActorUiMagicCursor, "magic-cursor-max-duration-ms", 300};
 
+// If enabled, a chip next to the magic cursor shows the actor task's step
+// progress text.
+BASE_FEATURE(kGlicActorUiMagicCursorChip, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, tool execution is split into separate Validate and Execute steps.
 // The Validate step initializes the tool in the renderer and returns the
 // target's coordinate point early, before the actual execution occurs.

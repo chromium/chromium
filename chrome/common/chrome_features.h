@@ -257,6 +257,8 @@ extern const base::FeatureParam<int> kGlicActorUiMagicCursorMinDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicActorUiMagicCursorMaxDuration;
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicActorUiMagicCursorChip);
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicActorSplitValidateAndExecute);
 
 COMPONENT_EXPORT(CHROME_FEATURES)

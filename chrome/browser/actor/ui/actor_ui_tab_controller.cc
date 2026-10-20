@@ -117,6 +117,31 @@ ActorUiTabController::RegisterActorOverlayStateChange(
                      weak_factory_.GetWeakPtr()));
 }
 
+void ActorUiTabController::SetCursorChipText(const std::string& text) {
+  if (cursor_chip_text_ == text) {
+    return;
+  }
+  cursor_chip_text_ = text;
+  if (cursor_chip_text_changed_callback_) {
+    cursor_chip_text_changed_callback_.Run(cursor_chip_text_);
+  }
+}
+
+std::string ActorUiTabController::GetCursorChipText() const {
+  return cursor_chip_text_;
+}
+
+[[nodiscard]] base::ScopedClosureRunner
+ActorUiTabController::RegisterCursorChipTextChange(
+    CursorChipTextChangeCallback callback) {
+  CHECK(!callback.is_null());
+  CHECK(cursor_chip_text_changed_callback_.is_null());
+  cursor_chip_text_changed_callback_ = std::move(callback);
+  return base::ScopedClosureRunner(
+      base::BindOnce(&ActorUiTabController::UnregisterCursorChipTextChange,
+                     weak_factory_.GetWeakPtr()));
+}
+
 void ActorUiTabController::SetActorTabIndicatorVisibility(
     TabIndicatorStatus tab_indicator_status,
     base::OnceClosure callback) {
@@ -300,6 +325,10 @@ void ActorUiTabController::UnregisterActorOverlayStateChange() {
 
 void ActorUiTabController::UnregisterActorOverlayBackgroundChange() {
   actor_overlay_background_changed_callback_.Reset();
+}
+
+void ActorUiTabController::UnregisterCursorChipTextChange() {
+  cursor_chip_text_changed_callback_.Reset();
 }
 
 void ActorUiTabController::UnregisterHandoffButtonController() {

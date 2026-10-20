@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_INTERFACE_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_INTERFACE_H_
 
+#include <string>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -115,6 +117,17 @@ class ActorUiTabControllerInterface : public ActorNavigationThrottle::Delegate {
   [[nodiscard]] virtual base::ScopedClosureRunner
   RegisterActorOverlayBackgroundChange(
       ActorOverlayBackgroundChangeCallback callback) = 0;
+
+  // Sets the text of the chip next to the magic cursor. Empty text hides it.
+  // A change runs only the cursor chip callback, not the overlay state one.
+  // Repeating the current text is a no-op. The text persists until cleared and
+  // is re-sent each time the overlay shows.
+  virtual void SetCursorChipText(const std::string& text) = 0;
+  virtual std::string GetCursorChipText() const = 0;
+  using CursorChipTextChangeCallback =
+      base::RepeatingCallback<void(const std::string&)>;
+  [[nodiscard]] virtual base::ScopedClosureRunner RegisterCursorChipTextChange(
+      CursorChipTextChangeCallback callback) = 0;
 #endif
 
  protected:

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
@@ -22,6 +26,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/test/split_view_browser_test_mixin.h"
@@ -31,6 +36,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -760,6 +766,237 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayMagicCursorTest,
   EXPECT_EQ(
       content::EvalJs(overlay_contents, WaitForCursorClickingScript(false)),
       true);
+}
+
+// Reads the cursor chip text from the overlay page.
+constexpr char kGetCursorChipTextScript[] = R"(
+  document.querySelector('actor-overlay-app')
+      .shadowRoot.querySelector('#cursorChip').textContent
+)";
+
+// Returns whether the overlay page renders the cursor chip.
+constexpr char kHasCursorChipScript[] = R"(
+  !!document.querySelector('actor-overlay-app')
+      .shadowRoot.querySelector('#cursorChip')
+)";
+
+std::string WaitForCursorChipTextScript(const std::string& text) {
+  return content::JsReplace(R"(
+    (async () => {
+      return new Promise(resolve => {
+        const check = () => {
+          const chip = document.querySelector('actor-overlay-app')
+                           ?.shadowRoot
+                           ?.querySelector('#cursorChip');
+          if (chip?.textContent === $1) {
+             resolve(true);
+          } else {
+             requestAnimationFrame(check);
+          }
+        };
+        check();
+      });
+    })();
+  )",
+                            text);
+}
+
+class ActorOverlayCursorChipTest : public InProcessBrowserTest {
+ public:
+  ActorOverlayCursorChipTest()
+      : ActorOverlayCursorChipTest(/*chip_enabled=*/true) {}
+
+ protected:
+  explicit ActorOverlayCursorChipTest(bool chip_enabled) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kGlicActorUi, {{features::kGlicActorUiOverlayName, "true"}}},
+        {features::kGlicActorUiMagicCursor, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (chip_enabled) {
+      enabled_features.push_back({features::kGlicActorUiMagicCursorChip, {}});
+    } else {
+      disabled_features.push_back(features::kGlicActorUiMagicCursorChip);
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
+  }
+
+  ActorUiTabControllerInterface* tab_controller() {
+    return ActorUiTabControllerInterface::From(
+        browser()->GetActiveTabInterface());
+  }
+
+  // Shows the overlay, then moves the cursor. The move replies only after the
+  // page handles every earlier message on the same pipe.
+  void ShowOverlayAndMoveCursor(BrowserWindowInterface* browser) {
+    // OnWebContentsAttached() posts a tab controller update that closes the
+    // overlay, because the tab has no active overlay state. Run it before the
+    // show. On a closed overlay, the first cursor move never replies.
+    TestFuture<void> attach_update;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 attach_update.GetCallback());
+    ASSERT_TRUE(attach_update.Wait());
+
+    ActorUiContentsContainerController* contents_controller =
+        ActorUiWindowController::From(browser)->GetControllerForWebContents(
+            browser->GetActiveTabInterface()->GetContents());
+    ActorOverlayState state;
+    state.is_active = true;
+    TestFuture<void> show_future;
+    contents_controller->OnOverlayStateChanged(true, state,
+                                               show_future.GetCallback());
+    ASSERT_TRUE(show_future.Wait());
+    ASSERT_TRUE(
+        content::WaitForLoadStop(GetActorOverlayWebViewWebContents(browser)));
+
+    FlushOverlay(browser);
+  }
+
+  void ShowOverlayAndMoveCursor() { ShowOverlayAndMoveCursor(browser()); }
+
+  // Waits until the overlay page handles every earlier message. Unlike
+  // OnOverlayStateChanged(), this does not re-send the chip text. If the
+  // cursor is already at this point, the reply skips the move transition.
+  void FlushOverlay(BrowserWindowInterface* browser) {
+    TestFuture<void> future;
+    GetActorOverlayWebView(browser)->MoveCursorTo(gfx::Point(100, 100),
+                                                  future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class ActorOverlayCursorChipDisabledTest : public ActorOverlayCursorChipTest {
+ public:
+  ActorOverlayCursorChipDisabledTest()
+      : ActorOverlayCursorChipTest(/*chip_enabled=*/false) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayCursorChipTest,
+                       ShowsTextSetBeforeOverlayIsReady) {
+  tab_controller()->SetCursorChipText("Searching");
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor());
+
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            kGetCursorChipTextScript),
+            "Searching");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayCursorChipTest,
+                       ShowsTextChangeOnReadyOverlay) {
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor());
+
+  tab_controller()->SetCursorChipText("Adding to cart");
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            WaitForCursorChipTextScript("Adding to cart")),
+            true);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayCursorChipTest, ClearsAndRestoresSameText) {
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor());
+
+  tab_controller()->SetCursorChipText("Searching");
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            WaitForCursorChipTextScript("Searching")),
+            true);
+
+  tab_controller()->SetCursorChipText("");
+  ASSERT_NO_FATAL_FAILURE(FlushOverlay(browser()));
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            kHasCursorChipScript),
+            false);
+
+  tab_controller()->SetCursorChipText("Searching");
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            WaitForCursorChipTextScript("Searching")),
+            true);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayCursorChipTest,
+                       ShowsActiveTabTextAfterTabSwitch) {
+  tab_controller()->SetCursorChipText("Searching");
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor());
+  ASSERT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            kGetCursorChipTextScript),
+            "Searching");
+
+  // CloseUI() keeps the overlay page, so the new tab must clear the old text.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor());
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            kHasCursorChipScript),
+            false);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor());
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            kGetCursorChipTextScript),
+            "Searching");
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayCursorChipTest,
+                       TransfersTextWhenMovingTabToAnotherWindow) {
+  BrowserWindowInterface* browser1 = browser();
+  // A second tab keeps browser1 open after the move.
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
+  browser1->GetTabStripModel()->ActivateTabAt(0);
+
+  ActorUiTabControllerInterface* moved_tab_controller = tab_controller();
+  moved_tab_controller->SetCursorChipText("Searching");
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor(browser1));
+  ASSERT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser1),
+                            kGetCursorChipTextScript),
+            "Searching");
+
+  BrowserWindowInterface* browser2 = CreateBrowser(browser1->GetProfile());
+  ASSERT_NE(browser2, nullptr);
+
+  std::unique_ptr<tabs::TabModel> detached_tab =
+      browser1->GetTabStripModel()->DetachTabAtForInsertion(0);
+  ASSERT_TRUE(detached_tab);
+  browser2->GetTabStripModel()->InsertDetachedTabAt(1, std::move(detached_tab),
+                                                    AddTabTypes::ADD_ACTIVE);
+
+  // The destination overlay picks up the tab's cached chip text on first show.
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor(browser2));
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser2),
+                            kGetCursorChipTextScript),
+            "Searching");
+
+  // Show the overlay on browser1 for its remaining tab, which has no chip text.
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor(browser1));
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser1),
+                            kHasCursorChipScript),
+            false);
+
+  // Subsequent text changes route to the destination window, not the old one.
+  moved_tab_controller->SetCursorChipText("Adding to cart");
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser2),
+                            WaitForCursorChipTextScript("Adding to cart")),
+            true);
+  ASSERT_NO_FATAL_FAILURE(FlushOverlay(browser1));
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser1),
+                            kHasCursorChipScript),
+            false);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorOverlayCursorChipDisabledTest, DoesNotSendText) {
+  tab_controller()->SetCursorChipText("Searching");
+  ASSERT_NO_FATAL_FAILURE(ShowOverlayAndMoveCursor());
+
+  // The chip renders only when its text is non-empty.
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            kHasCursorChipScript),
+            false);
+
+  // A text change after the overlay is ready is not forwarded either.
+  tab_controller()->SetCursorChipText("Adding to cart");
+  ASSERT_NO_FATAL_FAILURE(FlushOverlay(browser()));
+  EXPECT_EQ(content::EvalJs(GetActorOverlayWebViewWebContents(browser()),
+                            kHasCursorChipScript),
+            false);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest,

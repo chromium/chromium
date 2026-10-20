@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -68,6 +69,10 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
       ActorOverlayStateChangeCallback callback) override;
   [[nodiscard]] base::ScopedClosureRunner RegisterActorOverlayBackgroundChange(
       ActorOverlayBackgroundChangeCallback callback) override;
+  void SetCursorChipText(const std::string& text) override;
+  std::string GetCursorChipText() const override;
+  [[nodiscard]] base::ScopedClosureRunner RegisterCursorChipTextChange(
+      CursorChipTextChangeCallback callback) override;
 #endif
 
  private:
@@ -114,6 +119,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
 
   void UnregisterActorOverlayStateChange();
   void UnregisterActorOverlayBackgroundChange();
+  void UnregisterCursorChipTextChange();
   void UnregisterHandoffButtonController();
 
   // The current UiTabState.
@@ -138,6 +144,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   ActorOverlayStateChangeCallback on_actor_overlay_state_changed_callback_;
   ActorOverlayBackgroundChangeCallback
       actor_overlay_background_changed_callback_;
+  CursorChipTextChangeCallback cursor_chip_text_changed_callback_;
+  // Kept outside UiTabState so a text change never replays mouse commands.
+  std::string cursor_chip_text_;
   base::WeakPtr<views::Widget> active_navigation_confirm_widget_;
 #endif
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_WINDOW_CONTROLLER_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -100,6 +101,8 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   void NotifyTabControllerOnViewBoundsChanged();
   // Notified whenever the overlay background status changes.
   void OnActorOverlayBackgroundChange(bool is_visible);
+  // Notified whenever the cursor chip text changes.
+  void OnCursorChipTextChanged(const std::string& text);
   // Notifies the BrowserCommandController that the overlay state has changed.
   void UpdateFindInPageCommandState();
 
