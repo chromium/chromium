@@ -230,6 +230,8 @@ crbug.com/536066868 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLos
 
 crbug.com/545512647 [ mac apple-angle-metal-renderer:-apple-m2 asan ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
 
+crbug.com/575550007 [ mac apple-angle-metal-renderer:-apple-m1 ] ContextLost_WebGLContextNotLostFromFullscreenChange [ RetryOnFailure ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
