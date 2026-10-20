@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
@@ -406,7 +406,7 @@ bool CullRectUpdater::UpdateForSelf(Context& context, PaintLayer& layer) {
   }
 
   for (FragmentData& fragment :
-       MutableFragmentDataIterator(layer.GetLayoutObject())) {
+       layer.GetLayoutObject().GetMutableForPainting().FragmentList()) {
     CullRect cull_rect;
     CullRect contents_cull_rect;
     if (context.current.subtree_is_out_of_cull_rect) {

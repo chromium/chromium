@@ -13,7 +13,7 @@ namespace blink {
 
 AccompaniedFragmentIterator::AccompaniedFragmentIterator(
     const LayoutObject& object)
-    : FragmentDataIterator(object) {
+    : FragmentDataIteratorBase(object.FragmentList()) {
   if (const auto* box = DynamicTo<LayoutBox>(&object)) {
     layout_box_ = box;
     return;
@@ -52,7 +52,7 @@ bool AccompaniedFragmentIterator::Advance() {
   wtf_size_t previous_idx = idx_;
 #endif
 
-  FragmentDataIterator::Advance();
+  FragmentDataIteratorBase::Advance();
 
   if (IsDone()) {
 #if DCHECK_IS_ON()

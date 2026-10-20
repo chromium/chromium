@@ -988,9 +988,10 @@ void PaintLayer::CollectFragments(
   // The inherited offset_from_root does not include any pagination offsets.
   // In the presence of fragmentation, we cannot use it.
   wtf_size_t physical_fragment_idx = 0u;
-  for (FragmentDataIterator iterator(GetLayoutObject()); !iterator.IsDone();
+  const FragmentDataList& fragment_list = GetLayoutObject().FragmentList();
+  for (auto iterator = fragment_list.begin(); iterator != fragment_list.end();
        ++iterator, physical_fragment_idx++) {
-    const FragmentData* fragment_data = iterator.GetFragmentData();
+    const FragmentData* fragment_data = &*iterator;
     const FragmentData* root_fragment_data = nullptr;
     if (root_fragment_arg) {
       DCHECK(this != root_layer);
@@ -1456,7 +1457,7 @@ PaintLayer* PaintLayer::HitTestLayer(
                     .Transform())) {
           break;
         }
-        ++iterator;
+        iterator.Advance();
         local_fragment_for_transform_state = iterator.GetFragmentData();
       }
       if (!local_fragment_for_transform_state)

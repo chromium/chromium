@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/inline_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
@@ -782,7 +782,7 @@ void PaintLayerPainter::PaintWithPhase(PaintPhase phase,
       CanPaintMultipleFragments(paint_layer_.GetLayoutObject());
 
   for (const FragmentData& fragment :
-       FragmentDataIterator(paint_layer_.GetLayoutObject())) {
+       paint_layer_.GetLayoutObject().FragmentList()) {
     const PhysicalBoxFragment* physical_fragment = nullptr;
     if (layout_box_with_fragments) {
       physical_fragment =

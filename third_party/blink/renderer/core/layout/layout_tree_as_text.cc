@@ -55,7 +55,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_tree_as_text.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/print_context.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -357,7 +357,7 @@ static void WritePaintProperties(StringBuilder& ts,
     ts << "fragments:\n";
   }
   int fragment_index = 0;
-  for (const FragmentData& fragment : FragmentDataIterator(o)) {
+  for (const FragmentData& fragment : o.FragmentList()) {
     WriteIndent(ts, indent);
     if (has_fragments)
       ts << " " << fragment_index++ << ":";

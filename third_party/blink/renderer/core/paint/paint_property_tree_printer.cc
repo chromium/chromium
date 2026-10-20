@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
+#include "third_party/blink/renderer/core/paint/fragment_data.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -65,7 +65,7 @@ class FrameViewPropertyTreePrinter : public PropertyTreePrinter {
   }
 
   void CollectNodes(const LayoutObject& object) {
-    for (const FragmentData& fragment : FragmentDataIterator(object)) {
+    for (const FragmentData& fragment : object.FragmentList()) {
       if (const auto* properties = fragment.PaintProperties()) {
         collector_.AddObjectPaintProperties(*properties, *this);
       }

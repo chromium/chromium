@@ -17,7 +17,7 @@ class LayoutBox;
 class LayoutObject;
 class PhysicalBoxFragment;
 
-template <typename Iterator, typename Data, typename Head>
+template <typename Data, typename Head>
 class FragmentDataIteratorBase {
   STACK_ALLOCATED();
 
@@ -43,47 +43,17 @@ class FragmentDataIteratorBase {
 
   bool IsDone() const { return idx_ == kNotFound; }
 
-  Iterator& begin() {
-    DCHECK_EQ(idx_, 0u);
-    return *static_cast<Iterator*>(this);
-  }
-  Iterator end() {
-    Iterator end_it(*static_cast<Iterator*>(this));
-    end_it.idx_ = kNotFound;
-    return end_it;
-  }
-  bool operator!=(const Iterator& other) {
-    DCHECK_EQ(&fragment_head_, &other.fragment_head_);
-    return idx_ != other.idx_;
-  }
-  Data& operator*() const { return fragment_head_.at(idx_); }
-  Iterator& operator++() {
-    Advance();
-    return *static_cast<Iterator*>(this);
-  }
-
  protected:
   Head& fragment_head_;
   wtf_size_t idx_ = 0u;
 };
 
 class FragmentDataIterator
-    : public FragmentDataIteratorBase<FragmentDataIterator,
-                                      const FragmentData,
+    : public FragmentDataIteratorBase<const FragmentData,
                                       const FragmentDataList> {
  public:
   explicit FragmentDataIterator(const LayoutObject& object)
       : FragmentDataIteratorBase(object.FragmentList()) {}
-};
-
-class MutableFragmentDataIterator
-    : public FragmentDataIteratorBase<MutableFragmentDataIterator,
-                                      FragmentData,
-                                      FragmentDataList> {
- public:
-  explicit MutableFragmentDataIterator(const LayoutObject& object)
-      : FragmentDataIteratorBase(
-            object.GetMutableForPainting().FragmentList()) {}
 };
 
 // FragmentData iterator, accompanied by "corresponding" NG layout structures.
@@ -93,7 +63,9 @@ class MutableFragmentDataIterator
 // be multiple lines per FragmentData (whereas there's just one FragmentData per
 // fragmentainer), meaning that Advance() may stop several times at the same
 // FragmentData while progressing through the lines.
-class AccompaniedFragmentIterator : public FragmentDataIterator {
+class AccompaniedFragmentIterator
+    : public FragmentDataIteratorBase<const FragmentData,
+                                      const FragmentDataList> {
   STACK_ALLOCATED();
 
  public:

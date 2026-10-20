@@ -269,6 +269,37 @@ class CORE_EXPORT FragmentDataList final : public FragmentData {
   FragmentData& at(wtf_size_t idx);
   const FragmentData& at(wtf_size_t idx) const;
   wtf_size_t size() const;
+
+  // The entries aren't stored contiguously, so iterate by index.
+  template <typename List, typename Data>
+  class IteratorTemplate {
+    STACK_ALLOCATED();
+
+   public:
+    IteratorTemplate(List& list, wtf_size_t index)
+        : list_(list), index_(index) {}
+    Data& operator*() const { return list_.at(index_); }
+    IteratorTemplate& operator++() {
+      ++index_;
+      return *this;
+    }
+    bool operator!=(const IteratorTemplate& other) const {
+      DCHECK(&list_ == &other.list_);
+      return index_ != other.index_;
+    }
+
+   private:
+    List& list_;
+    wtf_size_t index_;
+  };
+  using iterator = IteratorTemplate<FragmentDataList, FragmentData>;
+  using const_iterator =
+      IteratorTemplate<const FragmentDataList, const FragmentData>;
+
+  iterator begin() { return {*this, 0u}; }
+  iterator end() { return {*this, size()}; }
+  const_iterator begin() const { return {*this, 0u}; }
+  const_iterator end() const { return {*this, size()}; }
 };
 
 }  // namespace blink
