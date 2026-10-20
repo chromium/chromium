@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -420,6 +421,277 @@ TEST_P(CSSAnimationsTest, NoneBackdropFilterAnimationIsStackingContext) {
   EXPECT_TRUE(is_stacking_context("none-to-none"));
   EXPECT_FALSE(is_stacking_context(""));
   EXPECT_TRUE(is_stacking_context("from-none"));
+}
+
+// StyleRecalcContext::has_animating_ancestor disables the transition: all
+// fast path for every descendant, so it must be set only while an ancestor
+// actually animates, not for as long as its ElementAnimations object exists.
+TEST_P(CSSAnimationsTest, AnimatingAncestorFlagFollowsRunningAnimations) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #ancestor { width: 100px; transition: width 1s linear; }
+      #ancestor.wide { width: 200px; }
+    </style>
+    <div id="ancestor"><div id="child"></div></div>
+  )HTML");
+  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  // A CSS transition on the ancestor.
+  ancestor->setAttribute(html_names::kClassAttr, AtomicString("wide"));
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(ancestor->GetElementAnimations());
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  AdvanceClockSeconds(1.5);
+  UpdateAllLifecyclePhasesForTest();
+  // The finished transition's Animation still waits to be collected.
+  EXPECT_TRUE(ancestor->GetElementAnimations());
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  // A script animation on the ancestor. A main-thread property, so that the
+  // animation does not depend on a compositor start notification.
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+  auto* effect = MakeGarbageCollected<KeyframeEffect>(
+      ancestor,
+      animation_test_helpers::CreateSimpleKeyframeEffectModelForTest(
+          CSSPropertyID::kColor, "red", "blue"),
+      timing);
+  Animation* animation = GetDocument().Timeline().Play(effect);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
+            animation->CalculateAnimationPlayState());
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  AdvanceClockSeconds(2);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(V8AnimationPlayState::Enum::kFinished,
+            animation->CalculateAnimationPlayState());
+  EXPECT_TRUE(ancestor->GetElementAnimations());
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+}
+
+// A CSS animation that has finished is still named by the animation property,
+// so CSSAnimations keeps its (finished) animation object around. That must not
+// count as an active effect.
+TEST_P(CSSAnimationsTest, AnimatingAncestorFlagClearsWhenCssAnimationEnds) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes color { from { color: red; } }
+      #target { animation: color 100ms; color: lime; }
+    </style>
+    <div id="target"><div id="child"></div></div>
+  )HTML");
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  AdvanceClockSeconds(1);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  // Nor does a later restyle of the ancestor bring it back.
+  GetDocument().documentElement()->setAttribute(html_names::kStyleAttr,
+                                                AtomicString("--x: 1"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+}
+
+// The animation is applied in the effect stack when its timing is updated at
+// the start of the style update, before any style recalc that reads the flag,
+// so an animation started since the last frame is already counted.
+TEST_P(CSSAnimationsTest, AnimatingAncestorFlagSetForNewAnimationBeforeFrame) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="ancestor"><div id="child"></div></div>
+  )HTML");
+  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  ASSERT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  Timing timing;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+  auto* effect = MakeGarbageCollected<KeyframeEffect>(
+      ancestor,
+      animation_test_helpers::CreateSimpleKeyframeEffectModelForTest(
+          CSSPropertyID::kColor, "red", "blue"),
+      timing);
+  GetDocument().Timeline().Play(effect);
+  // No frame has run; this is what getComputedStyle() would do.
+  GetDocument().UpdateStyleAndLayoutTree();
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+}
+
+// An animation that finished but fills forwards, or that is paused, still has
+// an effect on the ancestor's style, so descendants keep seeing it.
+TEST_P(CSSAnimationsTest, AnimatingAncestorFlagWhileEffectStillApplies) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="ancestor"><div id="child"></div></div>
+  )HTML");
+  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  auto make_animation = [&](Timing::FillMode fill_mode) {
+    Timing timing;
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+    timing.fill_mode = fill_mode;
+    auto* effect = MakeGarbageCollected<KeyframeEffect>(
+        ancestor,
+        animation_test_helpers::CreateSimpleKeyframeEffectModelForTest(
+            CSSPropertyID::kColor, "red", "blue"),
+        timing);
+    return GetDocument().Timeline().Play(effect);
+  };
+
+  Animation* filling = make_animation(Timing::FillMode::FORWARDS);
+  UpdateAllLifecyclePhasesForTest();
+  AdvanceClockSeconds(2);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(V8AnimationPlayState::Enum::kFinished,
+            filling->CalculateAnimationPlayState());
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  // Once it no longer fills, nothing applies.
+  filling->cancel();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  Animation* paused = make_animation(Timing::FillMode::NONE);
+  UpdateAllLifecyclePhasesForTest();
+  paused->pause();
+  UpdateAllLifecyclePhasesForTest();
+  AdvanceClockSeconds(5);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(V8AnimationPlayState::Enum::kPaused,
+            paused->CalculateAnimationPlayState());
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+
+  // Playing it again to the end, then cancelling, both stop applying.
+  paused->cancel();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+}
+
+// Before its start delay has elapsed an animation has no effect on the style,
+// unless it fills backwards.
+TEST_P(CSSAnimationsTest, AnimatingAncestorFlagFollowsStartDelay) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="ancestor"><div id="child"></div></div>
+  )HTML");
+  // The first advance of the clock moves the document timeline to the platform
+  // time; do that now so that the delays below are measured from the first
+  // frame of each animation.
+  AdvanceClockSeconds(1);
+  UpdateAllLifecyclePhasesForTest();
+  Element* ancestor = GetDocument().getElementById(AtomicString("ancestor"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  auto play = [&](Timing::FillMode fill_mode) {
+    Timing timing;
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+    timing.start_delay = Timing::Delay(ANIMATION_TIME_DELTA_FROM_SECONDS(2));
+    timing.fill_mode = fill_mode;
+    auto* effect = MakeGarbageCollected<KeyframeEffect>(
+        ancestor,
+        animation_test_helpers::CreateSimpleKeyframeEffectModelForTest(
+            CSSPropertyID::kColor, "red", "blue"),
+        timing);
+    return GetDocument().Timeline().Play(effect);
+  };
+
+  Animation* delayed = play(Timing::FillMode::NONE);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+  AdvanceClockSeconds(2.5);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+  AdvanceClockSeconds(2);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+  delayed->cancel();
+
+  Animation* backfilled = play(Timing::FillMode::BACKWARDS);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+  backfilled->cancel();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      StyleRecalcContext::FromAncestors(*child).has_animating_ancestor);
+}
+
+// Only the ancestors of an element count: any of them, across a shadow
+// boundary too, but not the element itself and not its siblings.
+TEST_P(CSSAnimationsTest, AnimatingAncestorFlagOnlyForAncestors) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grandparent">
+      <div id="parent"><div id="child"></div></div>
+      <div id="sibling"></div>
+    </div>
+    <div id="host"></div>
+  )HTML");
+  Element* grandparent =
+      GetDocument().getElementById(AtomicString("grandparent"));
+  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* sibling = GetDocument().getElementById(AtomicString("sibling"));
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
+  shadow_root.SetInnerHTMLWithoutTrustedTypes("<div id='in_shadow'></div>");
+  Element* in_shadow = shadow_root.getElementById(AtomicString("in_shadow"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto animate = [&](Element* element) {
+    Timing timing;
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
+    auto* effect = MakeGarbageCollected<KeyframeEffect>(
+        element,
+        animation_test_helpers::CreateSimpleKeyframeEffectModelForTest(
+            CSSPropertyID::kColor, "red", "blue"),
+        timing);
+    return GetDocument().Timeline().Play(effect);
+  };
+  auto flag = [](Element* element) {
+    return StyleRecalcContext::FromAncestors(*element).has_animating_ancestor;
+  };
+
+  // Not the element itself, nor a sibling.
+  Animation* on_child = animate(child);
+  Animation* on_sibling = animate(sibling);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(flag(child));
+  EXPECT_FALSE(flag(parent));
+  EXPECT_FALSE(flag(in_shadow));
+  on_child->cancel();
+  on_sibling->cancel();
+
+  // A grandparent counts for its descendants.
+  Animation* on_grandparent = animate(grandparent);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(flag(parent));
+  EXPECT_TRUE(flag(child));
+  EXPECT_TRUE(flag(sibling));
+  EXPECT_FALSE(flag(grandparent));
+  EXPECT_FALSE(flag(in_shadow));
+  on_grandparent->cancel();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(flag(child));
+
+  // A shadow host counts for the content of its shadow tree.
+  Animation* on_host = animate(host);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(flag(in_shadow));
+  EXPECT_FALSE(flag(child));
+  on_host->cancel();
 }
 
 namespace {

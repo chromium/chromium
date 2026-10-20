@@ -84,6 +84,19 @@ class CORE_EXPORT ElementAnimations final
            animations_.empty() && worklet_animations_.empty();
   }
 
+  // True while some animation or transition has an effect on this element's
+  // style, or while a CSS animation update is pending for it. A pending update
+  // is not necessarily a new effect (it can cancel one, or start one with a
+  // delay), so this can be true for an element with no active effect; it is
+  // never false for one that has an active effect. Unlike !IsEmpty(), this
+  // becomes false once every animation has finished without filling forwards,
+  // even though the ElementAnimations and the finished Animation objects stay
+  // around.
+  bool MayHaveActiveEffects() const {
+    return !effect_stack_.IsEmpty() ||
+           !css_animations_.PendingUpdate().IsEmpty();
+  }
+
   CSSImageAnimations& CssImageAnimations() { return css_image_animations_; }
   const CSSImageAnimations& CssImageAnimations() const {
     return css_image_animations_;
