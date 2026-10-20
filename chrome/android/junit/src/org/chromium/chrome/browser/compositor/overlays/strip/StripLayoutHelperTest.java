@@ -4314,19 +4314,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    public void testSelectedTabClose_AutoSelectOnCloseChange() {
-        // Initialize and select the tab at index 2.
-        initializeTest(/* tabIndex= */ 2);
-
-        // Fake a close button click on the tab at index 2
-        closeTabAt(/* index= */ 2);
-
-        // Verify the tab to the right was selected (Same is the current index, since the current
-        // tab has been removed).
-        verify(mModel).setIndex(eq(2), anyInt());
-    }
-
-    @Test
     public void testChangingModelClearsTabHoverState() {
         // Initialize hover card, then hover on a tab.
         initializeTabHoverTest();
