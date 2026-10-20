@@ -21,33 +21,17 @@ std::unique_ptr<KeyedService> BuildContextualCueingCapTrackerService(
 }  // namespace
 
 // static
-ContextualCueingCapTrackerService*
-ContextualCueingCapTrackerServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<ContextualCueingCapTrackerService>(
-          profile, /*create=*/true);
-}
-
-// static
-ContextualCueingCapTrackerServiceFactory*
-ContextualCueingCapTrackerServiceFactory::GetInstance() {
-  static base::NoDestructor<ContextualCueingCapTrackerServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 ProfileKeyedServiceFactoryIOS::TestingFactory
 ContextualCueingCapTrackerServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildContextualCueingCapTrackerService);
 }
 
 ContextualCueingCapTrackerServiceFactory::
-    ContextualCueingCapTrackerServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ContextualCueingCapTrackerService",
-                                    ProfileSelection::kNoInstanceInIncognito) {}
-
-ContextualCueingCapTrackerServiceFactory::
-    ~ContextualCueingCapTrackerServiceFactory() = default;
+    ContextualCueingCapTrackerServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ContextualCueingCapTrackerService",
+          ProfileSelection::kNoInstanceInIncognito) {}
 
 std::unique_ptr<KeyedService>
 ContextualCueingCapTrackerServiceFactory::BuildServiceInstanceFor(

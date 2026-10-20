@@ -24,39 +24,17 @@ std::unique_ptr<KeyedService> BuildPageClassificationService(
 }  // namespace
 
 // static
-PageClassificationService* PageClassificationServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<PageClassificationService>(
-      profile, /*create=*/true);
-}
-
-// static
-PageClassificationService*
-PageClassificationServiceFactory::GetForProfileIfExists(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<PageClassificationService>(
-      profile, /*create=*/false);
-}
-
-// static
-PageClassificationServiceFactory*
-PageClassificationServiceFactory::GetInstance() {
-  static base::NoDestructor<PageClassificationServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 ProfileKeyedServiceFactoryIOS::TestingFactory
 PageClassificationServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildPageClassificationService);
 }
 
-PageClassificationServiceFactory::PageClassificationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("PageClassificationService") {
+PageClassificationServiceFactory::PageClassificationServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "PageClassificationService") {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
   DependsOn(commerce::ShoppingServiceFactory::GetInstance());
 }
-
-PageClassificationServiceFactory::~PageClassificationServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 PageClassificationServiceFactory::BuildServiceInstanceFor(

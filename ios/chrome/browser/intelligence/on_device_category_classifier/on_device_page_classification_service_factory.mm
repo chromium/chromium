@@ -28,43 +28,17 @@ std::unique_ptr<KeyedService> BuildOnDevicePageClassificationService(
 }  // namespace
 
 // static
-OnDevicePageClassificationService*
-OnDevicePageClassificationServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<OnDevicePageClassificationService>(
-          profile, /*create=*/true);
-}
-
-// static
-OnDevicePageClassificationService*
-OnDevicePageClassificationServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<OnDevicePageClassificationService>(
-          profile, /*create=*/false);
-}
-
-// static
-OnDevicePageClassificationServiceFactory*
-OnDevicePageClassificationServiceFactory::GetInstance() {
-  static base::NoDestructor<OnDevicePageClassificationServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 ProfileKeyedServiceFactoryIOS::TestingFactory
 OnDevicePageClassificationServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildOnDevicePageClassificationService);
 }
 
 OnDevicePageClassificationServiceFactory::
-    OnDevicePageClassificationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("OnDevicePageClassificationService") {
+    OnDevicePageClassificationServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "OnDevicePageClassificationService") {
   DependsOn(InProcessCategoryClassificationServiceFactory::GetInstance());
 }
-
-OnDevicePageClassificationServiceFactory::
-    ~OnDevicePageClassificationServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 OnDevicePageClassificationServiceFactory::BuildServiceInstanceFor(

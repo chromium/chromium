@@ -7,30 +7,22 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/intelligence/contextual_cueing/contextual_cueing_cap_tracker_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace contextual_cueing {
-
-class ContextualCueingCapTrackerService;
 
 // Singleton that owns all ContextualCueingCapTrackerServices and associates
 // them with ProfileIOS.
 class ContextualCueingCapTrackerServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          ContextualCueingCapTrackerServiceFactory,
+          ContextualCueingCapTrackerService> {
  public:
-  static ContextualCueingCapTrackerService* GetForProfile(ProfileIOS* profile);
-  static ContextualCueingCapTrackerServiceFactory* GetInstance();
+  explicit ContextualCueingCapTrackerServiceFactory(PassKey key);
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<ContextualCueingCapTrackerServiceFactory>;
-
-  ContextualCueingCapTrackerServiceFactory();
-  ~ContextualCueingCapTrackerServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

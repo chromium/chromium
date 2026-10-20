@@ -34,39 +34,21 @@ std::unique_ptr<KeyedService> BuildInProcessCategoryClassificationService(
 }  // namespace
 
 // static
-InProcessCategoryClassificationService*
-InProcessCategoryClassificationServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<InProcessCategoryClassificationService>(
-          profile, /*create=*/true);
-}
-
-// static
-InProcessCategoryClassificationServiceFactory*
-InProcessCategoryClassificationServiceFactory::GetInstance() {
-  static base::NoDestructor<InProcessCategoryClassificationServiceFactory>
-      instance;
-  return instance.get();
-}
-
-// static
 ProfileKeyedServiceFactoryIOS::TestingFactory
 InProcessCategoryClassificationServiceFactory::GetDefaultFactory() {
   return base::BindRepeating(&BuildInProcessCategoryClassificationService);
 }
 
 InProcessCategoryClassificationServiceFactory::
-    InProcessCategoryClassificationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("InProcessCategoryClassificationService",
-                                    ProfileSelection::kOwnInstanceInIncognito,
-                                    ServiceCreation::kCreateLazily,
-                                    TestingCreation::kNoServiceForTests) {
+    InProcessCategoryClassificationServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "InProcessCategoryClassificationService",
+          ProfileSelection::kOwnInstanceInIncognito,
+          ServiceCreation::kCreateLazily,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
-
-InProcessCategoryClassificationServiceFactory::
-    ~InProcessCategoryClassificationServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 InProcessCategoryClassificationServiceFactory::BuildServiceInstanceFor(

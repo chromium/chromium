@@ -5,30 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PERSIST_TAB_CONTEXT_MODEL_PAGE_CONTENT_CACHE_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-class PageContentCacheService;
+#import "ios/chrome/browser/intelligence/persist_tab_context/model/page_content_cache_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Associates PageContentCacheService instances with a ProfileIOS object.
-class PageContentCacheServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class PageContentCacheServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<PageContentCacheServiceFactory,
+                                                PageContentCacheService> {
  public:
-  // Returns the PageContentCacheService associated with `profile`.
-  static PageContentCacheService* GetForProfile(ProfileIOS* profile);
+  explicit PageContentCacheServiceFactory(PassKey key);
 
   // Returns the storage path for the PageContentCacheService for `profile`.
   static base::FilePath GetStoragePathForProfile(ProfileIOS* profile);
 
-  // Returns the factory instance.
-  static PageContentCacheServiceFactory* GetInstance();
-
  private:
-  friend class base::NoDestructor<PageContentCacheServiceFactory>;
-
-  PageContentCacheServiceFactory();
-  ~PageContentCacheServiceFactory() override = default;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

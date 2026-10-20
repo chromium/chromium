@@ -5,30 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_ACTOR_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace actor {
 
-class ActorService;
-
 // Singleton that owns all ActorServices and associates them with
 // ProfileIOS.
-class ActorServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class ActorServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<ActorServiceFactory,
+                                                ActorService> {
  public:
-  static ActorService* GetForProfile(ProfileIOS* profile);
-  // Returns the service for `profile` without creating it, or null.
-  static ActorService* GetForProfileIfExists(ProfileIOS* profile);
-  static ActorServiceFactory* GetInstance();
+  explicit ActorServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<ActorServiceFactory>;
-
-  ActorServiceFactory();
-  ~ActorServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

@@ -7,32 +7,20 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class OnDevicePageClassificationService;
-class ProfileIOS;
+#import "ios/chrome/browser/intelligence/on_device_category_classifier/on_device_page_classification_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all OnDevicePageClassificationServices and associates
 // them with ProfileIOS.
 class OnDevicePageClassificationServiceFactory
-    : public ProfileKeyedServiceFactoryIOS {
+    : public TypedProfileKeyedServiceFactoryIOS<
+          OnDevicePageClassificationServiceFactory,
+          OnDevicePageClassificationService> {
  public:
-  // Returns the service for `profile`. Creates it if necessary.
-  static OnDevicePageClassificationService* GetForProfile(ProfileIOS* profile);
-  // Returns the service for `profile` if it has already been created, or
-  // nullptr otherwise.
-  static OnDevicePageClassificationService* GetForProfileIfExists(
-      ProfileIOS* profile);
-  static OnDevicePageClassificationServiceFactory* GetInstance();
+  explicit OnDevicePageClassificationServiceFactory(PassKey key);
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<OnDevicePageClassificationServiceFactory>;
-
-  OnDevicePageClassificationServiceFactory();
-  ~OnDevicePageClassificationServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
