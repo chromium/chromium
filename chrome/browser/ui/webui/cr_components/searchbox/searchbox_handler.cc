@@ -92,6 +92,7 @@
 #include "content/public/common/url_constants.h"
 #include "net/cert/cert_status_flags.h"
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
+#include "third_party/omnibox_proto/formatted_string.pb.h"
 #include "third_party/omnibox_proto/groups.pb.h"
 #include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/rule_set.pb.h"
@@ -288,6 +289,23 @@ std::string GetBase64UrlVariations(Profile* profile) {
 }
 
 BASE_FEATURE(kDropMismatchedSelections, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Returns the text to narrate for `match` in its a11y labels. Like the classic
+// omnibox, that's `fill_into_edit`, unless the server sent accessibility text
+// for the SuggestTemplateInfo primary text (e.g. for text with symbols that
+// screen readers don't read well). That text is only used as long as `contents`
+// still equals the primary text, since it describes that exact text.
+std::u16string GetNarratedMatchText(const AutocompleteMatch& match) {
+  if (match.suggest_template.has_value()) {
+    const omnibox::FormattedString& primary_text =
+        match.suggest_template->primary_text();
+    if (!primary_text.a11y_text().empty() &&
+        match.contents == base::UTF8ToUTF16(primary_text.text())) {
+      return base::UTF8ToUTF16(primary_text.a11y_text());
+    }
+  }
+  return match.fill_into_edit;
+}
 
 }  // namespace
 
@@ -914,15 +932,17 @@ void SearchboxHandler::PopulateAccessibilityLabels(
   // Use the same logic as the omnibox edit model so that screen readers
   // announce the same text regardless of which omnibox UI is in use. The
   // narrated match text mirrors the omnibox edit model, which narrates the
-  // temporary text shown in the input when a match is selected.
+  // temporary text shown in the input when a match is selected, unless the
+  // server sent accessibility text (see `GetNarratedMatchText()`).
   const AutocompleteMatch& match = result.match_at(line);
   const std::u16string header_text =
       autocomplete_controller()->GetSuggestionGroupHeaderText(
           match.suggestion_group_id);
+  const std::u16string narrated_text = GetNarratedMatchText(match);
   auto label_for_state = [&](OmniboxPopupSelection::LineState state) {
     const OmniboxPopupSelection selection(line, state);
     std::u16string label = searchbox::GetAccessibilityLabelForSelection(
-        result, selection, header_text, match.fill_into_edit,
+        result, selection, header_text, narrated_text,
         /*include_positional_info=*/true, turl_service);
     // AIM button visibility isn't known here. It only affects whether the IPH
     // row's dismiss button suffix is read after the first match, when the AIM

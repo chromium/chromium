@@ -13,6 +13,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/suggest_template_info.pb.h"
 #include "url/gurl.h"
 
 namespace {
@@ -98,6 +99,34 @@ TEST(AutocompleteMatchTypeTest, AccessibilityLabelPedal) {
   EXPECT_EQ(
       kAccessibilityHint + u", 2 of 5",
       omnibox::AutocompleteMatchToAccessibilityLabel(match, u"", kPedal, 1, 5));
+}
+
+TEST(AutocompleteMatchTypeTest, AccessibilityLabelServerA11yText) {
+  const std::u16string kStars = u"\u2605\u2605\u2605\u2605\u2606 Restaurant";
+
+  AutocompleteMatch match;
+  match.type = omnibox::AutocompleteMatchType::kSearchSuggestEntity;
+  match.description = kStars;
+  omnibox::SuggestTemplateInfo suggest_template;
+  suggest_template.mutable_secondary_text()->set_text(
+      base::UTF16ToUTF8(kStars));
+  suggest_template.mutable_secondary_text()->set_a11y_text(
+      "Rated 4 out of 5, Restaurant");
+  match.suggest_template = suggest_template;
+
+  // The server's accessibility text is read instead of the description.
+  EXPECT_EQ(
+      u"pizza place, Rated 4 out of 5, Restaurant, search suggestion, "
+      u"2 of 3",
+      omnibox::AutocompleteMatchToAccessibilityLabel(match, u"", u"pizza place",
+                                                     1, 3));
+
+  // It describes the server's text, so it isn't read once the description
+  // differs from that text.
+  match.description = u"Pizza restaurant";
+  EXPECT_EQ(u"pizza place, Pizza restaurant, search suggestion, 2 of 3",
+            omnibox::AutocompleteMatchToAccessibilityLabel(
+                match, u"", u"pizza place", 1, 3));
 }
 
 namespace {

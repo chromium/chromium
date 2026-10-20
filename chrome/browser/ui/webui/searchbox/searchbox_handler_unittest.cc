@@ -1825,6 +1825,52 @@ TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatches_A11yLabels) {
       mojom_matches[1]->remove_button_a11y_label);
 }
 
+// If the server sent accessibility text for the primary text, it's narrated
+// instead of `fill_into_edit`, as long as `contents` is still that text.
+TEST_F(WebuiOmniboxHandlerTest,
+       CreateAutocompleteMatches_A11yLabelsUseServerA11yText) {
+  omnibox::SuggestTemplateInfo suggest_template;
+  suggest_template.mutable_primary_text()->set_text("Create image");
+  suggest_template.mutable_primary_text()->set_a11y_text(
+      "Create an image with AI");
+  AutocompleteMatch match1(nullptr, 1000, false,
+                           omnibox::AutocompleteMatchType::kSearchSuggest);
+  match1.destination_url = GURL("https://www.google.com/search?q=cat");
+  match1.fill_into_edit = u"cat";
+  match1.contents = u"Create image";
+  match1.suggest_template = suggest_template;
+  AutocompleteMatch match2 = match1;
+  match2.destination_url = GURL("https://www.google.com/search?q=dog");
+  match2.fill_into_edit = u"dog";
+  match2.contents = u"dog";
+  AutocompleteResult result;
+  result.AppendMatches({match1, match2});
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  auto mojom_matches = handler_->CreateAutocompleteMatches(
+      result, bookmark_model, omnibox::GroupConfigMap(),
+      omnibox_controller_->client()->GetTemplateURLService());
+  ASSERT_EQ(2u, mojom_matches.size());
+
+  EXPECT_EQ(
+      l10n_util::GetStringFUTF16(
+          IDS_ACC_AUTOCOMPLETE_N_OF_M,
+          l10n_util::GetStringFUTF16(IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH,
+                                     u"Create an image with AI"),
+          u"1", u"2"),
+      mojom_matches[0]->a11y_label);
+  // `match2`'s contents differ from the server's primary text.
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ACC_AUTOCOMPLETE_N_OF_M,
+                l10n_util::GetStringFUTF16(
+                    IDS_ACC_AUTOCOMPLETE_SUGGESTED_SEARCH, u"dog"),
+                u"2", u"2"),
+            mojom_matches[1]->a11y_label);
+}
+
 TEST_F(WebuiOmniboxHandlerTest,
        CreateAutocompleteMatches_PopulatesUrlEmphasis) {
   bookmarks::BookmarkModel* bookmark_model =
