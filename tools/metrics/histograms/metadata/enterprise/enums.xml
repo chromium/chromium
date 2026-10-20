@@ -2791,7 +2791,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Sign-in"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/android/enterprise_signals_disclaimer/java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/MetricsHelper.java:EnterpriseSignalsDisclaimerShownOn) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/android/enterprise_signals_disclaimer/java/src/org/chromium/chrome/browser/ui/enterprise_signals_disclaimer/EnterpriseSignalsDisclaimerController.java:EnterpriseSignalsDisclaimerShownOn) -->
 
 <!-- LINT.IfChange(EnterpriseSkillValidationResult) -->
 

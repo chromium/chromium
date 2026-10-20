@@ -4,70 +4,69 @@
 
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator.PresentationMode;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.components.signin.metrics.SignoutReason;
-import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.List;
-import java.util.Objects;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.function.Consumer;
 
 /**
- * Controller for the Enterprise Signals Disclaimer.
+ * Presents the enterprise signals disclaimer and reports the user's decision.
  *
- * <p>The disclaimer should be shown for managed users who have not accepted the disclaimer
- * previously. An attempt to show the disclaimer is made during startup and on the primary account
- * change.
- *
- * <p>The controller acts as the embedder of {@link EnterpriseSignalsDisclaimerCoordinator}: it
- * decides how the disclaimer is presented (a modal dialog on large form factors, a bottom sheet
- * otherwise), hosts the disclaimer view, records metrics and handles the result of the user
- * interaction.
+ * <p>This class acts as the embedder of {@link EnterpriseSignalsDisclaimerCoordinator}: it decides
+ * how the disclaimer is presented (a modal dialog on large form factors, a bottom sheet otherwise)
+ * and hosts the disclaimer view. It also records metrics about the user's interaction with the
+ * disclaimer. It contains no business logic: it doesn't decide whether the disclaimer should be
+ * shown, and doesn't act on the user's decision beyond notifying the {@link Listener}. See {@link
+ * StartupEnterpriseSignalsDisclaimerController} for the startup/sign-in flow.
  */
 @NullMarked
-public class EnterpriseSignalsDisclaimerController implements SigninManager.SignInStateObserver {
+public class EnterpriseSignalsDisclaimerController {
     private static final long UNSET_TIME = -1;
 
-    private final AppCompatActivity mActivity;
-    private final CoordinatorFactory mCoordinatorFactory;
-    private final HostFactory mHostFactory;
-    private final Callback<String> mShowInfoPageCallback;
-    private final Profile mProfile;
-    private final SigninManager mSigninManager;
-    private final MetricsHelper mMetricsHelper = new MetricsHelper();
-    private final EnterpriseSignalsDisclaimerCoordinator.Delegate mCoordinatorDelegate =
-            new CoordinatorDelegate();
+    /** The event that triggered showing the disclaimer. Used for metrics. */
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // LINT.IfChange(EnterpriseSignalsDisclaimerShownOn)
+    @IntDef({ShownOn.STARTUP, ShownOn.SIGN_IN, ShownOn.COUNT})
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ShownOn {
+        int STARTUP = 0;
+        int SIGN_IN = 1;
+        int COUNT = 2;
+    }
 
-    private @Nullable EnterpriseSignalsDisclaimerCoordinator mCoordinator;
-    private @Nullable EnterpriseSignalsDisclaimerHost mDisclaimerHost;
-    private @Nullable @MetricsHelper.ShownOn Integer mShownOn;
-    private long mShownAtUptimeMillis = UNSET_TIME;
-    private boolean mIsDestroyed;
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSignalsDisclaimerShownOn)
+
+    /** Notified about the user's decision. */
+    public interface Listener {
+        /** The user accepted the disclaimer. */
+        void onAccepted();
+
+        /**
+         * The user declined the disclaimer, either explicitly or by dismissing it (e.g. back press,
+         * swipe down, tap outside).
+         */
+        void onDeclined();
+    }
 
     /** Used for testing to mock EnterpriseSignalsDisclaimerCoordinator. */
     interface CoordinatorFactory {
@@ -96,8 +95,7 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
 
         @Override
         public void onShown() {
-            MetricsHelper.recordShown(assertNonNull(mShownOn));
-            mShownAtUptimeMillis = TimeUtils.uptimeMillis();
+            EnterpriseSignalsDisclaimerController.this.onShown();
         }
 
         @Override
@@ -115,56 +113,48 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
         }
     }
 
+    private final Context mContext;
+    private final Callback<String> mShowInfoPageCallback;
+    private final CoordinatorFactory mCoordinatorFactory;
+    private final HostFactory mHostFactory;
+    private final EnterpriseSignalsDisclaimerCoordinator.Delegate mCoordinatorDelegate =
+            new CoordinatorDelegate();
+    // Must persist across multiple disclaimer instances, see MetricsHelper#recordResult.
+    private final MetricsHelper mMetricsHelper = new MetricsHelper();
+
+    private @Nullable EnterpriseSignalsDisclaimerCoordinator mCoordinator;
+    private @Nullable EnterpriseSignalsDisclaimerHost mDisclaimerHost;
+    private boolean mIsDestroyed;
+    private @Nullable @ShownOn Integer mShownOn;
+    private long mShownAtUptimeMillis = UNSET_TIME;
+
     /**
-     * Creates an instance of {@link EnterpriseSignalsDisclaimerController} for non-OTR profiles.
-     *
-     * @param profile The {@link Profile} associated with the controller.
+     * @param context The Activity {@link Context} the disclaimer is shown in.
      * @param bottomSheetController The {@link BottomSheetController} for showing the disclaimer.
      * @param modalDialogManager The {@link ModalDialogManager} for showing the modal dialog.
-     * @param activity The {@link AppCompatActivity} context.
      * @param showInfoPageCallback Callback invoked with a URL to open an info page.
-     * @return The {@link EnterpriseSignalsDisclaimerController} instance, or null if the profile is
-     *     off-the-record.
      */
-    public static @Nullable EnterpriseSignalsDisclaimerController maybeCreateForProfile(
-            Profile profile,
+    public EnterpriseSignalsDisclaimerController(
+            Context context,
             BottomSheetController bottomSheetController,
             ModalDialogManager modalDialogManager,
-            AppCompatActivity activity,
             Callback<String> showInfoPageCallback) {
-        return maybeCreateForProfile(
-                profile,
-                activity,
+        this(
+                context,
                 showInfoPageCallback,
                 EnterpriseSignalsDisclaimerCoordinator::new,
                 createDefaultHostFactory(bottomSheetController, modalDialogManager));
     }
 
-    @VisibleForTesting
-    static @Nullable EnterpriseSignalsDisclaimerController maybeCreateForProfile(
-            Profile profile,
-            AppCompatActivity activity,
+    EnterpriseSignalsDisclaimerController(
+            Context context,
             Callback<String> showInfoPageCallback,
             CoordinatorFactory coordinatorFactory,
             HostFactory hostFactory) {
-        if (profile.isOffTheRecord()) {
-            return null;
-        }
-
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)) {
-            return null;
-        }
-
-        final SigninManager signinManager =
-                Objects.requireNonNull(IdentityServicesProvider.get().getSigninManager(profile));
-
-        return new EnterpriseSignalsDisclaimerController(
-                signinManager,
-                activity,
-                profile,
-                showInfoPageCallback,
-                coordinatorFactory,
-                hostFactory);
+        mContext = context;
+        mShowInfoPageCallback = showInfoPageCallback;
+        mCoordinatorFactory = coordinatorFactory;
+        mHostFactory = hostFactory;
     }
 
     /**
@@ -187,127 +177,63 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
         };
     }
 
-    @VisibleForTesting
-    EnterpriseSignalsDisclaimerController(
-            SigninManager signinManager,
-            AppCompatActivity activity,
-            Profile profile,
-            Callback<String> showInfoPageCallback,
-            CoordinatorFactory coordinatorFactory,
-            HostFactory hostFactory) {
-        mSigninManager = signinManager;
-        mActivity = activity;
-        mProfile = profile;
-        mShowInfoPageCallback = showInfoPageCallback;
-        mCoordinatorFactory = coordinatorFactory;
-        mHostFactory = hostFactory;
-        mIsDestroyed = false;
-        mSigninManager.addSignInStateObserver(this);
-    }
-
     /**
-     * Attempts to show the enterprise signals disclaimer bottom sheet if necessary.
+     * Shows the disclaimer for the given account. If it can't be shown immediately it is queued and
+     * shown whenever possible. No checks on whether the disclaimer should be shown are made.
      *
-     * @return true if the disclaimer was shown (or put in a queue), false otherwise.
+     * @param identityManager The {@link IdentityManager} used to fetch the account information.
+     * @param account The account the disclaimer is shown for.
+     * @param shownOn The event that triggered showing the disclaimer, used for metrics.
+     * @param listener Notified about the user's decision.
+     * @return true if the disclaimer was shown (or queued), false if this controller was destroyed
+     *     or a disclaimer is already active.
      */
-    public boolean maybeShowOnStartup() {
-        // This is used for testing only and will be removed together with the flag.
-        if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER,
-                ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT)) {
-            // Passing an empty list of known accounts clears the acknowledgment for every
-            // account, so the disclaimer is shown again on each startup.
-            EnterpriseSignalsDisclaimerBridge.removeUnknownAccounts(List.of());
-        }
-
-        return maybeShow(MetricsHelper.ShownOn.STARTUP);
-    }
-
-    @VisibleForTesting
-    boolean maybeShow(@MetricsHelper.ShownOn int shownOn) {
-        if (mIsDestroyed) {
-            return false;
-        }
-
-        // The disclaimer is already being shown or will be shown in the future.
-        if (isDisclaimerActive()) {
-            return false;
-        }
-
-        final IdentityManager identityManager = mSigninManager.getIdentityManager();
-        final AccountInfo primaryAccountInfo = identityManager.getPrimaryAccountInfo();
-        if (primaryAccountInfo == null) {
-            return false;
-        }
-
-        if (!ManagedBrowserUtils.isProfileManaged(mProfile)) {
-            return false;
-        }
-
-        final GaiaId gaiaId = primaryAccountInfo.getGaiaId();
-        if (gaiaId.toString().isEmpty()) {
-            // If this happens something is very wrong.
-            return false;
-        }
-        if (EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(gaiaId)) {
+    public boolean show(
+            IdentityManager identityManager,
+            CoreAccountInfo account,
+            @ShownOn int shownOn,
+            Listener listener) {
+        if (mIsDestroyed || isDisclaimerActive()) {
             return false;
         }
 
         destroyDisclaimer();
 
+        // If the disclaimer can't be shown immediately it will be queued by the host and shown
+        // whenever possible.
+        MetricsHelper.recordShownRequested(shownOn);
         mShownOn = shownOn;
+
         @PresentationMode int presentationMode = getPresentationMode();
         mCoordinator =
                 mCoordinatorFactory.create(
-                        mActivity,
-                        identityManager,
-                        primaryAccountInfo,
-                        presentationMode,
-                        mCoordinatorDelegate);
+                        mContext, identityManager, account, presentationMode, mCoordinatorDelegate);
         mDisclaimerHost =
                 mHostFactory.create(
                         presentationMode,
                         mCoordinator,
-                        (dismissalCause) -> onDialogDismissed(dismissalCause, primaryAccountInfo));
-        // If the dialog is not shown immediately it will be queued by the host and shown
-        // whenever possible.
-        MetricsHelper.recordShownRequested(shownOn);
+                        dismissalCause -> onHostDismissed(dismissalCause, listener));
         mDisclaimerHost.show();
         return true;
     }
 
-    public void destroy() {
-        mIsDestroyed = true;
-        mSigninManager.removeSignInStateObserver(this);
-        destroyDisclaimer();
-    }
-
-    // SignInStateObserver implementation.
-    @Override
-    public void onSignedIn() {
-        // TODO(b/553341908): Once the existing management disclaimer is replaced with the
-        // enterprise signals disclaimer, this function should be removed.
-        maybeShow(MetricsHelper.ShownOn.SIGN_IN);
-    }
-
-    @Override
-    public void onSignedOut() {
-        destroyDisclaimer();
-    }
-
-    /** Large form factors get a modal dialog, while smaller screens get a bottom sheet. */
-    private @PresentationMode int getPresentationMode() {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                ? PresentationMode.MODAL_DIALOG
-                : PresentationMode.BOTTOM_SHEET;
-    }
-
-    private boolean isDisclaimerActive() {
+    /** Returns whether the disclaimer is being shown or is queued to be shown. */
+    public boolean isDisclaimerActive() {
         return mDisclaimerHost != null && mDisclaimerHost.isActive();
     }
 
+    /** Destroys the controller, tearing down the disclaimer if it's showing or queued. */
+    public void destroy() {
+        mIsDestroyed = true;
+        destroyDisclaimer();
+    }
+
+    protected boolean isDestroyed() {
+        return mIsDestroyed;
+    }
+
     /** Tears down the currently displayed (or queued) disclaimer, if any. */
-    private void destroyDisclaimer() {
+    protected void destroyDisclaimer() {
         if (mDisclaimerHost != null) {
             var host = mDisclaimerHost;
             mDisclaimerHost = null;
@@ -322,31 +248,41 @@ public class EnterpriseSignalsDisclaimerController implements SigninManager.Sign
         mShownAtUptimeMillis = UNSET_TIME;
     }
 
-    private void onDialogDismissed(@DismissalCause int dismissalCause, CoreAccountInfo account) {
+    /** Called the first time the disclaimer view is shown. */
+    private void onShown() {
+        if (mShownOn == null) return;
+        MetricsHelper.recordShown(mShownOn);
+        mShownAtUptimeMillis = TimeUtils.uptimeMillis();
+    }
+
+    /** Called when the disclaimer is dismissed, before it's torn down. */
+    private void onDismissed(@DismissalCause int dismissalCause) {
         mMetricsHelper.recordResult(dismissalCause);
         if (mShownAtUptimeMillis != UNSET_TIME) {
             MetricsHelper.recordTimeToUserAction(TimeUtils.uptimeMillis() - mShownAtUptimeMillis);
-            mShownAtUptimeMillis = UNSET_TIME;
-        }
-
-        destroyDisclaimer();
-
-        if (dismissalCause == DismissalCause.TAPPED_ACCEPT) {
-            assert !account.getGaiaId().toString().isEmpty();
-            EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
-                    account.getGaiaId());
-        } else if (shouldSignOutBasedOnDismissalCause(dismissalCause)) {
-            mSigninManager.runAfterOperationInProgress(
-                    () -> {
-                        if (mSigninManager.isSignOutAllowed()) {
-                            mSigninManager.signOut(
-                                    SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER);
-                        }
-                    });
         }
     }
 
-    private static boolean shouldSignOutBasedOnDismissalCause(@DismissalCause int dismissalCause) {
+    /** Large form factors get a modal dialog, while smaller screens get a bottom sheet. */
+    private @PresentationMode int getPresentationMode() {
+        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                ? PresentationMode.MODAL_DIALOG
+                : PresentationMode.BOTTOM_SHEET;
+    }
+
+    private void onHostDismissed(@DismissalCause int dismissalCause, Listener listener) {
+        onDismissed(dismissalCause);
+        destroyDisclaimer();
+
+        if (dismissalCause == DismissalCause.TAPPED_ACCEPT) {
+            listener.onAccepted();
+        } else if (isDeclined(dismissalCause)) {
+            listener.onDeclined();
+        }
+        // Dismissals without an explicit user action are not reported.
+    }
+
+    private static boolean isDeclined(@DismissalCause int dismissalCause) {
         return dismissalCause == DismissalCause.TAPPED_SIGN_OUT
                 || dismissalCause == DismissalCause.DISMISSED_BY_BACK_PRESS
                 || dismissalCause == DismissalCause.DISMISSED_BY_SWIPE_DOWN

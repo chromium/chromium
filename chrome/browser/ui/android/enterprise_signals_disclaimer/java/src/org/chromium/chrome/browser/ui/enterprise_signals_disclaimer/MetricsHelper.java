@@ -4,18 +4,14 @@
 
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerController.ShownOn;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.concurrent.TimeUnit;
@@ -40,20 +36,6 @@ class MetricsHelper {
     @VisibleForTesting
     static final String HISTOGRAM_IMPLICIT_DISMISSALS_BEFORE_ACCEPTANCE =
             "Enterprise.SignalsDisclaimer.ExistingProfiles.ImplicitDismissalsBeforeAcceptance";
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    // LINT.IfChange(EnterpriseSignalsDisclaimerShownOn)
-    @IntDef({ShownOn.STARTUP, ShownOn.SIGN_IN, ShownOn.COUNT})
-    @Target(ElementType.TYPE_USE)
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ShownOn {
-        int STARTUP = 0;
-        int SIGN_IN = 1;
-        int COUNT = 2;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseSignalsDisclaimerShownOn)
 
     public static void recordShownRequested(@ShownOn int shownOn) {
         RecordHistogram.recordEnumeratedHistogram(
