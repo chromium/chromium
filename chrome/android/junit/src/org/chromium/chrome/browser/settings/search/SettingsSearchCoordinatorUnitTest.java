@@ -1634,4 +1634,23 @@ public class SettingsSearchCoordinatorUnitTest {
         assertEquals(View.GONE, queryContainer.getVisibility());
         assertNull(fragmentManager.findFragmentByTag(SettingsSearchCoordinator.RESULT_FRAGMENT));
     }
+
+    /**
+     * Regression test for crbug.com/574207996: When SettingsIndexData is created statically (e.g.
+     * via ensureIndexBuilt() during breadcrumb computation in SettingsActivity.onCreate()) without
+     * the user ever entering search mode, destroying the coordinator must still reset the static
+     * SettingsIndexData singleton so stale entries do not leak into subsequent Settings sessions.
+     */
+    @Test
+    public void testDestroy_resetsIndexDataWhenBuiltStaticallyWithoutEnteringSearch() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        SettingsIndexData indexData =
+                SettingsSearchCoordinator.ensureIndexBuilt(mActivity, mProfile);
+        assertNotNull(indexData);
+        assertNotNull(SettingsIndexData.getInstance());
+
+        mCoordinator.destroy();
+
+        assertNull(SettingsIndexData.getInstance());
+    }
 }

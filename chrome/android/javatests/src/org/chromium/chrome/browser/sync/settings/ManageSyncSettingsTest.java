@@ -1766,6 +1766,27 @@ public class ManageSyncSettingsTest {
         assertNoSearchResultsFound();
     }
 
+    /**
+     * Regression test for crbug.com/574207996: the search index built while Settings was open on a
+     * sub-page must not outlive that Settings session.
+     */
+    @Test
+    @SmallTest
+    public void testSearchHistoryAndTabs_signedOutAfterSignedInSettingsSession() {
+        // Open Settings directly on Manage Sync while signed in, without searching. This builds
+        // the search index for the initial breadcrumbs.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        startManageSyncPreferences();
+        ApplicationTestUtils.finishActivity(mSettingsTestRule.getActivity());
+
+        mSyncTestRule.signOut();
+
+        mSettingsSearchTestRule.startSettingsActivity();
+        typeSearchQuery("history and tabs");
+
+        assertNoSearchResultsFound();
+    }
+
     @Test
     @SmallTest
     public void testPreferenceScreenMatchesSearchIndex_signedIn_nonEea() {

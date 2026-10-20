@@ -61,7 +61,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.ui.KeyboardUtils;
-import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -165,7 +164,6 @@ public class SettingsSearchCoordinator
 
     // Set to {@code true} after queries are entered. Used to conditionally clear up the screen.
     private boolean mQueryEntered;
-    private SettingsIndexData mIndexData;
 
     // True while local search (language, site settings) UI is enabled, so that settings search
     // should remain hidden across configuration changes.
@@ -533,8 +531,9 @@ public class SettingsSearchCoordinator
         if (fm == null || fm.isStateSaved()) return;
 
         if (!oldAccessibilityState.equals(newAccessibilityState)) {
-            if (mIndexData != null) {
-                mIndexData.setNeedsIndexing();
+            SettingsIndexData indexData = SettingsIndexData.getInstance();
+            if (indexData != null) {
+                indexData.setNeedsIndexing();
                 initIndex();
 
                 EditText queryEdit = findViewById(R.id.search_query);
@@ -942,10 +941,8 @@ public class SettingsSearchCoordinator
      * Initializes the in-memory search index for all settings. It uses the providers found in
      * {@link SearchIndexProviderRegistry.ALL_PROVIDERS}.
      */
-    @Initializer
-    @EnsuresNonNull("mIndexData")
     private void initIndex() {
-        mIndexData = ensureIndexBuilt(mActivity, mProfile);
+        ensureIndexBuilt(mActivity, mProfile);
     }
 
     /**
@@ -1240,10 +1237,11 @@ public class SettingsSearchCoordinator
         queryEdit.requestFocus();
         // Search again to reflect the changes to the index that might have been made
         // while browsing results.
-        if (mIndexData != null && mIndexData.shouldRefreshResult()) {
-            if (mIndexData.needsIndexing()) initIndex();
+        SettingsIndexData indexData = SettingsIndexData.getInstance();
+        if (indexData != null && indexData.shouldRefreshResult()) {
+            if (indexData.needsIndexing()) initIndex();
             onQueryUpdated(queryEdit.getText().toString());
-            mIndexData.setRefreshResult(false);
+            indexData.setRefreshResult(false);
         }
         showBackArrowInSingleColumnMode(false);
     }
@@ -1327,8 +1325,12 @@ public class SettingsSearchCoordinator
     @VisibleForTesting(otherwise = PRIVATE)
     ArrayList<SettingsIndexData.Entry> getRecentSearchesInIndex() {
         ArrayList<SettingsIndexData.Entry> entries = new ArrayList<>();
-        for (SettingsIndexData.Entry entry : RecentSearchQueue.getInstance().values()) {
-            if (mIndexData.getEntry(entry.id) != null) entries.add(entry);
+        var recentSearches = RecentSearchQueue.getInstance().values();
+        if (recentSearches.isEmpty()) return entries;
+
+        SettingsIndexData indexData = ensureIndexBuilt(mActivity, mProfile);
+        for (SettingsIndexData.Entry entry : recentSearches) {
+            if (indexData.getEntry(entry.id) != null) entries.add(entry);
         }
         return entries;
     }
@@ -1880,7 +1882,10 @@ public class SettingsSearchCoordinator
         }
         if (!query.isEmpty()) {
             mQueryEntered = true;
-            mSearchRunnable = () -> callback.onSearchResults(mIndexData.search(query));
+            mSearchRunnable =
+                    () ->
+                            callback.onSearchResults(
+                                    ensureIndexBuilt(mActivity, mProfile).search(query));
             mHandler.postDelayed(mSearchRunnable, 200);
         } else if (mQueryEntered) {
             // Do this only after a query has been entered at least once.
@@ -2035,9 +2040,7 @@ public class SettingsSearchCoordinator
         }
         // Title supplier should be nulled out as we step out of Settings for cleanup.
         SearchResultsPreferenceFragment.reset();
-        if (mIndexData != null) {
-            SettingsIndexData.reset();
-        }
+        SettingsIndexData.reset();
         mHandler.removeCallbacksAndMessages(null);
         mContainmentHelper.destroy();
 
