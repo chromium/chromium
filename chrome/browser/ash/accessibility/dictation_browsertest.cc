@@ -744,7 +744,10 @@ class DictationWithAutoclickTest : public DictationTestBase {
     DictationTestBase::SetUpOnMainThread();
   }
 
-  void TearDownOnMainThread() override { autoclick_test_utils_.reset(); }
+  void TearDownOnMainThread() override {
+    autoclick_test_utils_.reset();
+    DictationTestBase::TearDownOnMainThread();
+  }
 
   AutoclickTestUtils* autoclick_test_utils() {
     return autoclick_test_utils_.get();

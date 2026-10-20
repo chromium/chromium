@@ -87,6 +87,8 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
   void AddAllowedError(const std::u16string& allowed);
 
  private:
+  bool IsShuttingDown() const;
+
   std::vector<std::u16string> errors_;
   raw_ptr<ErrorConsole> error_console_;
   std::set<std::u16string> allowed_errors_;

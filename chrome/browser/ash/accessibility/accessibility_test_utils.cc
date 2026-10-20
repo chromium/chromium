@@ -12,6 +12,7 @@
 #include "base/timer/timer.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extensions_browser_client.h"
 
 namespace ash {
 
@@ -54,6 +55,14 @@ ExtensionConsoleErrorObserver::~ExtensionConsoleErrorObserver() {
 
 void ExtensionConsoleErrorObserver::OnErrorAdded(
     const extensions::ExtensionError* error) {
+  // Ignore "The browser is shutting down." errors from in-flight extension API
+  // calls rejected by `ExtensionFunction::PreRunValidation()` during browser
+  // teardown at the end of a test.
+  if (IsShuttingDown() &&
+      base::EndsWith(error->message(), kErrorBrowserIsShuttingDown)) {
+    return;
+  }
+
   auto it = std::find_if(allowed_errors_.begin(), allowed_errors_.end(),
                          [error](const std::u16string& allowed) {
                            return base::EndsWith(error->message(), allowed);
@@ -90,6 +99,11 @@ size_t ExtensionConsoleErrorObserver::GetErrorsAndWarningsCount() const {
 void ExtensionConsoleErrorObserver::AddAllowedError(
     const std::u16string& allowed) {
   allowed_errors_.insert(allowed);
+}
+
+bool ExtensionConsoleErrorObserver::IsShuttingDown() const {
+  auto* client = extensions::ExtensionsBrowserClient::Get();
+  return client && client->IsShuttingDown();
 }
 
 MagnifierAnimationWaiter::MagnifierAnimationWaiter(

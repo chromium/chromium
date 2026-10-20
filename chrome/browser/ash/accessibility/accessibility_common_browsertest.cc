@@ -2,24 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+
 #include "ash/constants/ash_extension_constants.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry_test_helper.h"
+#include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/test_extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature_channel.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "url/gurl.h"
 
 namespace ash {
+namespace {
+
+class ShutdownTestExtensionsBrowserClient
+    : public extensions::TestExtensionsBrowserClient {
+ public:
+  explicit ShutdownTestExtensionsBrowserClient(
+      content::BrowserContext* main_context)
+      : extensions::TestExtensionsBrowserClient(main_context) {}
+  ShutdownTestExtensionsBrowserClient(
+      const ShutdownTestExtensionsBrowserClient&) = delete;
+  ShutdownTestExtensionsBrowserClient& operator=(
+      const ShutdownTestExtensionsBrowserClient&) = delete;
+  ~ShutdownTestExtensionsBrowserClient() override = default;
+
+  // extensions::TestExtensionsBrowserClient:
+  bool IsShuttingDown() override { return is_shutting_down_; }
+
+  void set_is_shutting_down(bool is_shutting_down) {
+    is_shutting_down_ = is_shutting_down;
+  }
+
+ private:
+  bool is_shutting_down_ = false;
+};
+
+}  // namespace
 
 class AccessibilityCommonTest
     : public InProcessBrowserTest,
@@ -181,6 +220,65 @@ IN_PROC_BROWSER_TEST_P(AccessibilityCommonFaceGazeTest, ToggleFaceGaze) {
   EXPECT_TRUE(enabled_features.empty());
   EXPECT_FALSE(DoesComponentExtensionExist(
       extension_misc::kAccessibilityCommonExtensionId));
+}
+
+using ExtensionConsoleErrorObserverTest = InProcessBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(ExtensionConsoleErrorObserverTest,
+                       IgnoresShutdownErrorOnlyDuringShutdown) {
+  ExtensionConsoleErrorObserver observer(
+      browser()->GetProfile(), extension_misc::kAccessibilityCommonExtensionId);
+
+  auto* original_client = extensions::ExtensionsBrowserClient::Get();
+  ShutdownTestExtensionsBrowserClient test_client(browser()->GetProfile());
+  extensions::ExtensionsBrowserClient::Set(&test_client);
+  base::ScopedClosureRunner reset_client(
+      base::BindOnce(&extensions::ExtensionsBrowserClient::Set,
+                     base::Unretained(original_client)));
+
+  auto make_runtime_error = [](const std::u16string& message) {
+    return std::make_unique<extensions::RuntimeError>(
+        extension_misc::kAccessibilityCommonExtensionId,
+        /*from_incognito=*/false,
+        base::ASCIIToUTF16(
+            base::StrCat({"chrome-extension://",
+                          extension_misc::kAccessibilityCommonExtensionId,
+                          "/background.js"})),
+        message, extensions::StackTrace(), GURL(), logging::LOGGING_ERROR,
+        /*render_frame_id=*/0, /*render_process_id=*/0);
+  };
+
+  auto* error_console = extensions::ErrorConsole::Get(browser()->GetProfile());
+
+  // 1. Non-shutdown error during active test execution -> fails & recorded.
+  EXPECT_NONFATAL_FAILURE(
+      error_console->ReportError(
+          make_runtime_error(u"Uncaught TypeError: Cannot read properties")),
+      "Found extension console warning or error with message");
+  EXPECT_TRUE(observer.HasErrorsOrWarnings());
+  EXPECT_EQ(1u, observer.GetErrorsAndWarningsCount());
+
+  // 2. "The browser is shutting down." during active test execution
+  //    (`IsShuttingDown()` returns `false`) -> still fails & recorded.
+  EXPECT_NONFATAL_FAILURE(
+      error_console->ReportError(make_runtime_error(
+          u"Uncaught (in promise) Error: The browser is shutting down.")),
+      "Found extension console warning or error with message");
+  EXPECT_EQ(2u, observer.GetErrorsAndWarningsCount());
+
+  // 3. Transition to browser shutdown (`IsShuttingDown()` returns `true`):
+  //    "The browser is shutting down." -> ignored (no failure, count stays 2).
+  test_client.set_is_shutting_down(true);
+  error_console->ReportError(make_runtime_error(
+      u"Uncaught (in promise) Error: The browser is shutting down."));
+  EXPECT_EQ(2u, observer.GetErrorsAndWarningsCount());
+
+  // 4. Any other error during shutdown -> still fails and is recorded.
+  EXPECT_NONFATAL_FAILURE(
+      error_console->ReportError(
+          make_runtime_error(u"Uncaught ReferenceError: foo is not defined")),
+      "Found extension console warning or error with message");
+  EXPECT_EQ(3u, observer.GetErrorsAndWarningsCount());
 }
 
 }  // namespace ash
