@@ -6,8 +6,9 @@
 
 #include <jni.h>
 
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/android/enterprise_signals_disclaimer/acknowledgment_manager.h"
+#include "base/check.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "google_apis/gaia/gaia_id.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -15,27 +16,46 @@
 
 namespace enterprise_signals {
 
+namespace {
+
+void SetDeviceSignalsPermanentConsentReceived(Profile* profile,
+                                              const GaiaId& gaia_id,
+                                              bool received) {
+  CHECK(profile);
+  CHECK(!gaia_id.empty());
+  SigninPrefs(*profile->GetPrefs())
+      .SetDeviceSignalsPermanentConsentReceived(gaia_id, received);
+}
+
+}  // namespace
+
 static bool
 JNI_EnterpriseSignalsDisclaimerBridge_HasAccountAcknowledgedSignalsDisclaimer(
     JNIEnv* env,
+    Profile* profile,
     const GaiaId& gaia_id) {
-  return enterprise_signals_disclaimer::HasAccountAckedSignalsDisclaimer(
-      *g_browser_process->local_state(), gaia_id);
+  CHECK(profile);
+  CHECK(!gaia_id.empty());
+  return SigninPrefs(*profile->GetPrefs())
+      .GetDeviceSignalsPermanentConsentReceived(gaia_id);
 }
 
 static void
 JNI_EnterpriseSignalsDisclaimerBridge_SetAccountAcknowledgedSignalsDisclaimer(
     JNIEnv* env,
+    Profile* profile,
     const GaiaId& gaia_id) {
-  enterprise_signals_disclaimer::SetAccountAckedSignalsDisclaimer(
-      *g_browser_process->local_state(), gaia_id);
+  SetDeviceSignalsPermanentConsentReceived(profile, gaia_id,
+                                           /*received=*/true);
 }
 
-static void JNI_EnterpriseSignalsDisclaimerBridge_RemoveUnknownAccounts(
+static void
+JNI_EnterpriseSignalsDisclaimerBridge_ClearAccountAcknowledgedSignalsDisclaimer(
     JNIEnv* env,
-    const std::vector<GaiaId>& gaia_ids) {
-  enterprise_signals_disclaimer::RemoveUnknownAccounts(
-      *g_browser_process->local_state(), gaia_ids);
+    Profile* profile,
+    const GaiaId& gaia_id) {
+  SetDeviceSignalsPermanentConsentReceived(profile, gaia_id,
+                                           /*received=*/false);
 }
 
 DEFINE_JNI(EnterpriseSignalsDisclaimerBridge)

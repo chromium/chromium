@@ -51,11 +51,9 @@ import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSi
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerCoordinator.PresentationMode;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
-import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.function.Consumer;
 
@@ -234,7 +232,8 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
         createManagedControllerAndShow();
 
         verify(mBridgeNativesMock)
-                .hasAccountAcknowledgedSignalsDisclaimer(eq(TestAccounts.ACCOUNT1.getGaiaId()));
+                .hasAccountAcknowledgedSignalsDisclaimer(
+                        eq(mProfile), eq(TestAccounts.ACCOUNT1.getGaiaId()));
         verify(mCoordinatorFactory)
                 .create(
                         eq(mActivity),
@@ -270,7 +269,7 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
     public void maybeShow_accountAlreadyAcknowledged_returnsFalse() {
         when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
         when(mBridgeNativesMock.hasAccountAcknowledgedSignalsDisclaimer(
-                        eq(TestAccounts.ACCOUNT1.getGaiaId())))
+                        eq(mProfile), eq(TestAccounts.ACCOUNT1.getGaiaId())))
                 .thenReturn(true);
 
         StartupEnterpriseSignalsDisclaimerController controller = createController();
@@ -291,27 +290,6 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
         verifyCoordinatorCreated(times(1));
         verifyHostCreated(times(1));
         verify(mHost, times(1)).show();
-    }
-
-    @Test
-    public void maybeShow_emptyGaiaId_returnsFalse() {
-        mIdentityManager.setPrimaryAccount(null);
-
-        when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
-        mIdentityManager.setPrimaryAccount(
-                new AccountInfo.Builder(TestAccounts.MANAGED_ACCOUNT.getEmail(), new GaiaId(""))
-                        .fullName(TestAccounts.MANAGED_ACCOUNT.getFullName())
-                        .givenName(TestAccounts.MANAGED_ACCOUNT.getGivenName())
-                        .accountImage(TestAccounts.MANAGED_ACCOUNT.getAccountImage())
-                        .accountCapabilities(TestAccounts.MANAGED_ACCOUNT.getAccountCapabilities())
-                        .build());
-
-        StartupEnterpriseSignalsDisclaimerController controller = createController();
-        Assert.assertNotNull(controller);
-
-        Assert.assertFalse(controller.maybeShow(ShownOn.STARTUP));
-        verifyCoordinatorCreated(never());
-        verifyHostCreated(never());
     }
 
     @Test
@@ -398,7 +376,7 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
     public void onSignedIn_accountAlreadyAcknowledged_doesNotShowDisclaimer() {
         when(mManagedBrowserUtilsJniMock.isProfileManaged(mProfile)).thenReturn(true);
         when(mBridgeNativesMock.hasAccountAcknowledgedSignalsDisclaimer(
-                        eq(TestAccounts.ACCOUNT1.getGaiaId())))
+                        eq(mProfile), eq(TestAccounts.ACCOUNT1.getGaiaId())))
                 .thenReturn(true);
 
         StartupEnterpriseSignalsDisclaimerController controller = createController();
@@ -567,7 +545,7 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
         delegate.onAccept();
 
         verify(mHost, never()).dismiss(anyInt());
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any(), any());
     }
 
     @Test
@@ -609,7 +587,8 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
         simulateHostDismissed(DismissalCause.TAPPED_ACCEPT);
 
         verify(mBridgeNativesMock)
-                .setAccountAcknowledgedSignalsDisclaimer(eq(TestAccounts.ACCOUNT1.getGaiaId()));
+                .setAccountAcknowledgedSignalsDisclaimer(
+                        eq(mProfile), eq(TestAccounts.ACCOUNT1.getGaiaId()));
         verify(mSigninManager, never()).signOut(anyInt());
     }
 
@@ -623,7 +602,7 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
 
         verify(mSigninManager)
                 .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any(), any());
     }
 
     @Test
@@ -636,7 +615,7 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
 
         verify(mSigninManager)
                 .signOut(eq(SignoutReason.USER_DECLINED_ENTERPRISE_SIGNALS_DISCLAIMER));
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any(), any());
     }
 
     @Test
@@ -648,7 +627,7 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
         simulateHostDismissed(DismissalCause.TAPPED_SIGN_OUT);
 
         verify(mSigninManager, never()).signOut(anyInt());
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any(), any());
     }
 
     @Test
@@ -658,6 +637,6 @@ public class StartupEnterpriseSignalsDisclaimerControllerUnitTest {
         simulateHostDismissed(DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION);
 
         verify(mSigninManager, never()).signOut(anyInt());
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any(), any());
     }
 }

@@ -296,7 +296,6 @@
 #include "chrome/browser/partnerbookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/readaloud/android/prefs.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
-#include "chrome/browser/ui/android/enterprise_signals_disclaimer/acknowledgment_manager.h"
 #include "components/cdm/browser/media_drm_storage_impl.h"  // nogncheck crbug.com/40147906
 #include "components/feed/core/common/pref_names.h"        // nogncheck
 #include "components/feed/core/shared_prefs/pref_names.h"  // nogncheck
@@ -1157,6 +1156,12 @@ constexpr char kSupervisedUserManualUrls[] = "profile.managed.manual_urls";
 // Deprecated 10/2026.
 inline constexpr char kTabSearchUsed[] = "tab_search.used";
 
+#if BUILDFLAG(IS_ANDROID)
+// Deprecated 10/2026.
+constexpr char kAcknowledgmentSetPrefPath[] =
+    "enterprise_signals.acknowledgment_set";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1244,6 +1249,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
       kInvalidationPerSenderRegisteredForInvalidation);
   registry->RegisterDictionaryPref(
       kInvalidationPerSenderActiveRegistrationTokens);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Deprecated 10/2026.
+  registry->RegisterListPref(kAcknowledgmentSetPrefPath);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1684,9 +1694,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   domain_reliability::RegisterPrefs(registry);
   embedder_support::OriginTrialPrefs::RegisterPrefs(registry);
   enterprise_reporting::RegisterLocalStatePrefs(registry);
-#if BUILDFLAG(IS_ANDROID)
-  enterprise_signals_disclaimer::RegisterLocalStatePrefs(registry);
-#endif
   ExternalProtocolHandler::RegisterPrefs(registry);
   flags_ui::PrefServiceFlagsStorage::RegisterPrefs(registry);
   GpuModeManager::RegisterPrefs(registry);
@@ -2686,6 +2693,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 09/2026.
   local_state->ClearPref(kInvalidationPerSenderRegisteredForInvalidation);
   local_state->ClearPref(kInvalidationPerSenderActiveRegistrationTokens);
+
+#if BUILDFLAG(IS_ANDROID)
+  // Added 10/2026.
+  local_state->ClearPref(kAcknowledgmentSetPrefPath);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

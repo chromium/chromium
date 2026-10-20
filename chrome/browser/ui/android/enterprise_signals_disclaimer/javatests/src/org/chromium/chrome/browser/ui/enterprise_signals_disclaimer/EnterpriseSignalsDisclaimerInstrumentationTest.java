@@ -40,7 +40,6 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.HistogramBucket;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -350,7 +349,7 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
         return ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(
-                                account.getGaiaId()));
+                                ProfileManager.getLastUsedRegularProfile(), account.getGaiaId()));
     }
 
     private void acceptDisclaimerForAccount(CoreAccountInfo account) {
@@ -827,42 +826,12 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
-    public void syncAcknowledgmentSetAfterRestart() {
-        // Accept the disclaimer for the first account.
-        acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
-
-        // Switch to the second account.
-        mSigninTestRule.signOut();
-        waitForDisclaimerNotShowing();
-        mSigninTestRule.addAccountThenSignin(MANAGED_ACCOUNT_2);
-
-        // Accept the disclaimer for the second account.
-        acceptDisclaimerForAccount(MANAGED_ACCOUNT_2);
-
-        // Simulate a restart, the account is removed before the restart.
-        ThreadUtils.runOnUiThreadBlocking(EnterpriseSignalsDisclaimerAckSyncer::resetForTesting);
-        ApplicationTestUtils.finishActivity(activity());
-
-        mSigninTestRule.removeAccount(MANAGED_ACCOUNT_2.getId());
-
-        mActivityTestRule.startOnBlankPage();
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        EnterpriseSignalsDisclaimerAckSyncer.initialize(
-                                ProfileManager.getLastUsedRegularProfile()));
-
-        // Verify that the second account is not acknowledged.
-        Assert.assertTrue(hasAccountAcknowledgedSignalsDisclaimer(TestAccounts.MANAGED_ACCOUNT));
-        Assert.assertFalse(hasAccountAcknowledgedSignalsDisclaimer(MANAGED_ACCOUNT_2));
-    }
-
-    @Test
-    @LargeTest
-    public void syncsAcksWhenAccountIsRemoved() {
+    public void removesAcknowledgmentWhenAccountIsRemoved() {
         // Accept the disclaimer shown on startup.
         acceptDisclaimerForAccount(TestAccounts.MANAGED_ACCOUNT);
 
-        // Remove the account. The acknowledgment should be removed in result.
+        // Remove the account. The acknowledgment is stored in SigninPrefs, which are cleaned up
+        // for accounts that are no longer known to Chrome.
         mSigninTestRule.removeAccount(TestAccounts.MANAGED_ACCOUNT.getId());
 
         CriteriaHelper.pollUiThread(
