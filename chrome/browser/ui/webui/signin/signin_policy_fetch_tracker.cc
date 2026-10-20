@@ -2,17 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
+#include "chrome/browser/ui/webui/signin/signin_policy_fetch_tracker.h"
 
-#include "base/memory/raw_ptr.h"
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/not_fatal_until.h"
 #include "base/scoped_observation.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_id_from_account_info.h"
 #include "components/policy/core/browser/policy_conversions.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
@@ -24,7 +35,7 @@ namespace {
 constexpr base::TimeDelta kPolicyUpdateTimeout = base::Seconds(3);
 
 class PolicyFetchTracker
-    : public TurnSyncOnHelperPolicyFetchTracker,
+    : public SigninPolicyFetchTracker,
       public policy::PolicyService::ProviderUpdateObserver {
  public:
   PolicyFetchTracker(Profile* profile, const CoreAccountInfo& account_info)
@@ -170,9 +181,8 @@ class PolicyFetchTracker
 
 }  // namespace
 
-std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>
-TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
-    Profile* profile,
-    const CoreAccountInfo& account_info) {
+std::unique_ptr<SigninPolicyFetchTracker>
+SigninPolicyFetchTracker::CreateInstance(Profile* profile,
+                                         const CoreAccountInfo& account_info) {
   return std::make_unique<PolicyFetchTracker>(profile, account_info);
 }

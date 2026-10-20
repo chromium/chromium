@@ -27,8 +27,8 @@
 #endif
 
 class BrowserWindowInterface;
+class SigninPolicyFetchTracker;
 class SigninUIError;
-class TurnSyncOnHelperPolicyFetchTracker;
 
 class DiceSignedInProfileCreator;
 class SyncServiceStartupStateObserver;
@@ -281,7 +281,7 @@ class TurnSyncOnHelper {
   base::ScopedClosureRunner scoped_callback_runner_;
 
   std::unique_ptr<SyncServiceStartupStateObserver> sync_startup_state_observer_;
-  std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
+  std::unique_ptr<SigninPolicyFetchTracker> policy_fetch_tracker_;
   std::unique_ptr<DiceSignedInProfileCreator> dice_signed_in_profile_creator_;
 
   // The initial primary account is restored if the flow aborts.

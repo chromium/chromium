@@ -40,7 +40,7 @@ ProfileManagementDisclaimerServiceFactory::
   // initialized properly in AccountConsistencyModeManager.
   DependsOn(AccountConsistencyModeManagerFactory::GetInstance());
   DependsOn(DiceWebSigninInterceptorFactory::GetInstance());
-  // This dependency is needed through `TurnSyncOnHelperPolicyFetchTracker`.
+  // This dependency is needed through `SigninPolicyFetchTracker`.
   DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
 }
 

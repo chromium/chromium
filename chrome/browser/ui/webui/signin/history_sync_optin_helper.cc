@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
+#include "chrome/browser/ui/webui/signin/signin_policy_fetch_tracker.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -460,8 +460,8 @@ HistorySyncOptinPolicyHelper::~HistorySyncOptinPolicyHelper() = default;
 
 void HistorySyncOptinPolicyHelper::RegisterForPolicies() {
   CHECK(!policy_fetch_tracker_);
-  policy_fetch_tracker_ = TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
-      profile_, account_info_);
+  policy_fetch_tracker_ =
+      SigninPolicyFetchTracker::CreateInstance(profile_, account_info_);
   policy_fetch_tracker_->RegisterForPolicy(
       std::move(on_register_for_policies_callback_),
       /*is_registration_for_management_consistency_check=*/false);

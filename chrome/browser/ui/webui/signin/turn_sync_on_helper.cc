@@ -36,10 +36,10 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_policy_fetch_tracker.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_delegate_impl.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
@@ -342,9 +342,8 @@ void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
       // If this is a new signin (no account authenticated yet) try loading
       // policy for this user now, before any signed in services are
       // initialized.
-      policy_fetch_tracker_ =
-          TurnSyncOnHelperPolicyFetchTracker::CreateInstance(
-              profile_, account_info_.GetCoreAccountInfo());
+      policy_fetch_tracker_ = SigninPolicyFetchTracker::CreateInstance(
+          profile_, account_info_.GetCoreAccountInfo());
       policy_fetch_tracker_->RegisterForPolicy(base::BindOnce(
           &TurnSyncOnHelper::OnRegisteredForPolicy, base::Unretained(this)),
           /*is_registration_for_management_consistency_check=*/false);

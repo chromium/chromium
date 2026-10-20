@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_POLICY_FETCH_TRACKER_H_
-#define CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_POLICY_FETCH_TRACKER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_POLICY_FETCH_TRACKER_H_
+#define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_POLICY_FETCH_TRACKER_H_
+
+#include <memory>
+#include <optional>
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "components/signin/public/identity_manager/account_info.h"
 
 class Profile;
 
 // A helper class to watch the status of policy fetching.
-class TurnSyncOnHelperPolicyFetchTracker {
+class SigninPolicyFetchTracker {
  public:
-  TurnSyncOnHelperPolicyFetchTracker() = default;
-  TurnSyncOnHelperPolicyFetchTracker(
-      const TurnSyncOnHelperPolicyFetchTracker&) = delete;
-  TurnSyncOnHelperPolicyFetchTracker& operator=(
-      const TurnSyncOnHelperPolicyFetchTracker&) = delete;
+  SigninPolicyFetchTracker() = default;
+  SigninPolicyFetchTracker(const SigninPolicyFetchTracker&) = delete;
+  SigninPolicyFetchTracker& operator=(const SigninPolicyFetchTracker&) = delete;
 
-  virtual ~TurnSyncOnHelperPolicyFetchTracker() = default;
+  virtual ~SigninPolicyFetchTracker() = default;
 
-  // Notifies the tracker that `TurnSyncOnHelper` is switching to a new profile.
+  // Notifies the tracker that the sign-in flow is switching to a new profile.
   virtual void SwitchToProfile(Profile* profile) = 0;
 
   // Registers with the server to check if policies can be fetched for the
@@ -42,9 +42,9 @@ class TurnSyncOnHelperPolicyFetchTracker {
 
   virtual std::optional<bool> GetPolicyRegistrationResult() const = 0;
 
-  static std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> CreateInstance(
+  static std::unique_ptr<SigninPolicyFetchTracker> CreateInstance(
       Profile* profile,
       const CoreAccountInfo& account_info);
 };
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_TURN_SYNC_ON_HELPER_POLICY_FETCH_TRACKER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_POLICY_FETCH_TRACKER_H_

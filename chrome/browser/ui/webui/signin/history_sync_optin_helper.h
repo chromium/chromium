@@ -24,8 +24,8 @@
 
 class AccountStateFetcher;
 class Profile;
-class TurnSyncOnHelperPolicyFetchTracker;
 class ProfileManagementDisclaimerService;
+class SigninPolicyFetchTracker;
 
 namespace signin {
 class IdentityManager;
@@ -102,7 +102,7 @@ class HistorySyncOptinPolicyHelper {
   // Callback executed when the policies are fetched.
   base::OnceCallback<void(bool)> on_register_for_policies_callback_;
   base::OnceClosure on_policies_fetched_callback_;
-  std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker> policy_fetch_tracker_;
+  std::unique_ptr<SigninPolicyFetchTracker> policy_fetch_tracker_;
   base::WeakPtrFactory<HistorySyncOptinPolicyHelper> weak_ptr_factory_{this};
 };
 

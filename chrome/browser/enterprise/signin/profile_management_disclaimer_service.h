@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNIN_PROFILE_MANAGEMENT_DISCLAIMER_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_PROFILE_MANAGEMENT_DISCLAIMER_SERVICE_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
-#include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/signin/public/base/signin_prefs.h"
@@ -31,6 +31,7 @@
 class Profile;
 class ProfileAttributesEntry;
 class ProfileBrowserCollection;
+class SigninPolicyFetchTracker;
 
 namespace signin {
 class IdentityManager;
@@ -244,7 +245,7 @@ class ProfileManagementDisclaimerService
   base::WeakPtr<BrowserWindowInterface> privacy_article_browser_;
   bool bypass_no_first_run_ = false;
 
-  std::map<CoreAccountId, std::unique_ptr<TurnSyncOnHelperPolicyFetchTracker>>
+  std::map<CoreAccountId, std::unique_ptr<SigninPolicyFetchTracker>>
       policy_fetch_tracker_by_account_id_;
 
   base::ScopedObservation<signin::IdentityManager,
