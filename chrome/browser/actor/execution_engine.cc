@@ -1439,7 +1439,7 @@ void ExecutionEngine::KickOffNextAction() {
   // TODO(b/467984847): ActorTask::AddTab isn't the best way to track a crashed
   // tab here. We should refactor this to be more explicit.
   if (ActorSurface* actor_surface =
-          GetNextAction().GetActorSurfaceHandle().Get();
+          GetNextAction().GetActorSurfaceForValidation().Get();
       actor_surface &&
       base::FeatureList::IsEnabled(kActorReloadCrashedTabBeforeAct)) {
     content::WebContents* contents = actor_surface->GetWebContents();
@@ -1449,7 +1449,12 @@ void ExecutionEngine::KickOffNextAction() {
           contents->GetLastCommittedURL(), task_->id(),
           "ExecutionEngine::KickOffNextAction",
           JournalDetailsBuilder().AddError("Renderer crashed").Build());
-      CHECK(task_->IsActingOnActorSurface(actor_surface->GetHandle()));
+      if (GetNextAction().GetActorSurfaceHandle().is_null()) {
+        task_->ObserveActorSurfaceOnce(
+            GetNextAction().GetActorSurfaceForValidation());
+      } else {
+        CHECK(task_->IsActingOnActorSurface(actor_surface->GetHandle()));
+      }
       CompleteActions(MakeResult(mojom::ActionResultCode::kRendererCrashed,
                                  /*requires_page_stabilization=*/false,
                                  "Renderer crashed."),
@@ -1528,6 +1533,15 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     return;
   }
 
+  auto ensure_surface_observed = [&]() {
+    const ToolRequest& action = GetNextAction();
+    if (action.GetActorSurfaceHandle().is_null()) {
+      task_->ObserveActorSurfaceOnce(action.GetActorSurfaceForValidation());
+    } else {
+      CHECK(task_->IsActingOnActorSurface(action.GetActorSurfaceHandle()));
+    }
+  };
+
   TaskId task_id = task_->id();
   if (!committed_origin.IsSameOriginWith(actor_surface->GetWebContents()
                                              ->GetPrimaryMainFrame()
@@ -1539,9 +1553,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
                   JournalDetailsBuilder()
                       .AddError("Acting after cross-origin navigation occurred")
                       .Build());
-    CHECK(
-        GetNextAction().GetActorSurfaceHandle().is_null() ||
-        task_->IsActingOnActorSurface(GetNextAction().GetActorSurfaceHandle()));
+    ensure_surface_observed();
     CompleteActions(MakeResult(mojom::ActionResultCode::kCrossOriginNavigation,
                                /*requires_page_stabilization=*/false,
                                "Acting after cross-origin navigation occurred"),
@@ -1553,9 +1565,7 @@ void ExecutionEngine::DidFinishAsyncSafetyChecks(
     journal_->Log(
         GetNextAction().GetURLForJournal(), task_id, "Act Failed",
         JournalDetailsBuilder().AddError("URL blocked for actions").Build());
-    CHECK(
-        GetNextAction().GetActorSurfaceHandle().is_null() ||
-        task_->IsActingOnActorSurface(GetNextAction().GetActorSurfaceHandle()));
+    ensure_surface_observed();
     CompleteActions(MakeResult(result_code,
                                /*requires_page_stabilization=*/false,
                                "URL blocked for actions"),
