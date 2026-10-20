@@ -200,12 +200,6 @@ export interface DevicePageBrowserProxy {
    */
   highlightDisplay(id: string): void;
 
-  /**
-   * Updates the position of the dragged display to render preview indicators
-   * as the display is being dragged around.
-   */
-  dragDisplayDelta(displayId: string, deltaX: number, deltaY: number): void;
-
   updateStorageInfo(): void;
 
   getStorageEncryptionInfo(): Promise<string>;
@@ -308,10 +302,6 @@ export class DevicePageBrowserProxyImpl implements DevicePageBrowserProxy {
 
   highlightDisplay(id: string): void {
     chrome.send('highlightDisplay', [id]);
-  }
-
-  dragDisplayDelta(displayId: string, deltaX: number, deltaY: number): void {
-    chrome.send('dragDisplayDelta', [displayId, deltaX, deltaY]);
   }
 
   updateStorageInfo(): void {

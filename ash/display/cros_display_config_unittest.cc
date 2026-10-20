@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-#include "ash/constants/ash_features.h"
-#include "ash/display/display_alignment_controller.h"
 #include "ash/display/display_highlight_controller.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -19,7 +17,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/test/touch_transform_controller_test_api.h"
@@ -87,8 +84,6 @@ class CrosDisplayConfigTest : public AshTestBase {
   ~CrosDisplayConfigTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kDisplayAlignAssist);
-
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kUseFirstDisplayAsInternal);
     AshTestBase::SetUp();
@@ -171,22 +166,10 @@ class CrosDisplayConfigTest : public AshTestBase {
     cros_display_config_->HighlightDisplay(id);
   }
 
-  void DragDisplayDelta(int64_t id, int32_t delta_x, int32_t delta_y) {
-    cros_display_config_->DragDisplayDelta(id, delta_x, delta_y);
-  }
-
-  bool PreviewIndicatorsExist() {
-    return !Shell::Get()
-                ->display_alignment_controller()
-                ->GetActiveIndicatorsForTesting()
-                .empty();
-  }
-
   CrosDisplayConfigImpl* cros_display_config() { return cros_display_config_; }
 
  private:
   raw_ptr<CrosDisplayConfigImpl> cros_display_config_ = nullptr;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
@@ -918,18 +901,6 @@ TEST_F(CrosDisplayConfigTest, HighlightDisplayInvalid) {
 
   EXPECT_EQ(Shell::Get()->display_highlight_controller()->GetWidgetForTesting(),
             nullptr);
-}
-
-TEST_F(CrosDisplayConfigTest, DragDisplayDelta) {
-  UpdateDisplay("500x400,500x400");
-
-  const auto& display = display_manager()->GetDisplayAt(0);
-
-  EXPECT_FALSE(PreviewIndicatorsExist());
-
-  DragDisplayDelta(display.id(), 0, 16);
-
-  EXPECT_TRUE(PreviewIndicatorsExist());
 }
 
 }  // namespace ash

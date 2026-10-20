@@ -27,11 +27,6 @@ void DisplayHandler::RegisterMessages() {
       "highlightDisplay",
       base::BindRepeating(&DisplayHandler::HandleHighlightDisplay,
                           base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "dragDisplayDelta",
-      base::BindRepeating(&DisplayHandler::HandleDragDisplayDelta,
-                          base::Unretained(this)));
 }
 
 void DisplayHandler::HandleHighlightDisplay(const base::ListValue& args) {
@@ -46,22 +41,6 @@ void DisplayHandler::HandleHighlightDisplay(const base::ListValue& args) {
   }
 
   cros_display_config_->HighlightDisplay(display_id);
-}
-
-void DisplayHandler::HandleDragDisplayDelta(const base::ListValue& args) {
-  CHECK_EQ(3U, args.size(), base::NotFatalUntil::M162);
-  AllowJavascript();
-
-  const std::string& display_id_str = args[0].GetString();
-  int32_t delta_x = static_cast<int32_t>(args[1].GetInt());
-  int32_t delta_y = static_cast<int32_t>(args[2].GetInt());
-
-  int64_t display_id;
-  if (!base::StringToInt64(display_id_str, &display_id)) {
-    NOTREACHED() << "Unable to parse |display_id| for HandleDragDisplayDelta";
-  }
-
-  cros_display_config_->DragDisplayDelta(display_id, delta_x, delta_y);
 }
 
 }  // namespace ash::settings

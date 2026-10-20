@@ -145,8 +145,6 @@ export class TestDevicePageBrowserProxy extends TestBrowserProxy implements
     this.lastHighlightedDisplayId = id;
   }
 
-  dragDisplayDelta() {}
-
   openMyFiles() {}
 
   openBrowsingDataSettings() {}

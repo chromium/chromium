@@ -70,9 +70,6 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
     NOTREACHED();
   }
   void HighlightDisplay(int64_t id) override {}
-  void DragDisplayDelta(int64_t display_id,
-                        int32_t delta_x,
-                        int32_t delta_y) override {}
 };
 
 class OobeDisplayChooserTest : public ChromeAshTestBase {

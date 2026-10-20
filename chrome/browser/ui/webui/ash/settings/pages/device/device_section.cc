@@ -1617,10 +1617,6 @@ void DeviceSection::AddDeviceDisplayStrings(
       "enableDriveFsBulkPinning",
       drive::util::IsDriveFsBulkPinningAvailable(profile()));
 
-  html_source->AddBoolean(
-      "allowDisplayAlignmentApi",
-      base::FeatureList::IsEnabled(ash::features::kDisplayAlignAssist));
-
   html_source->AddBoolean("isDisplayPerformanceSupported",
                           IsDisplayPerformanceSupported());
 

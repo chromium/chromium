@@ -8,8 +8,6 @@
 #include <sstream>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
-#include "ash/display/display_alignment_controller.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/display/display_highlight_controller.h"
 #include "ash/display/display_prefs.h"
@@ -986,14 +984,6 @@ OverscanCalibrator* CrosDisplayConfigImpl::GetOverscanCalibrator(
 void CrosDisplayConfigImpl::HighlightDisplay(int64_t display_id) {
   Shell::Get()->display_highlight_controller()->SetHighlightedDisplay(
       display_id);
-}
-
-void CrosDisplayConfigImpl::DragDisplayDelta(int64_t display_id,
-                                             int32_t delta_x,
-                                             int32_t delta_y) {
-  DCHECK(features::IsDisplayAlignmentAssistanceEnabled());
-  Shell::Get()->display_alignment_controller()->DisplayDragged(
-      display_id, delta_x, delta_y);
 }
 
 bool CrosDisplayConfigImpl::IsCalibrating() const {

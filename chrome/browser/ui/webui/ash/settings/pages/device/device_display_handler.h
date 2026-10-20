@@ -33,7 +33,6 @@ class DisplayHandler : public content::WebUIMessageHandler {
 
  private:
   void HandleHighlightDisplay(const base::ListValue& args);
-  void HandleDragDisplayDelta(const base::ListValue& args);
 
   const raw_ref<CrosDisplayConfig> cros_display_config_;
 };
