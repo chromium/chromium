@@ -899,6 +899,25 @@ void FedCmAccountSelectionView::OnLoginToIdP(const GURL& idp_config_url,
   }
 }
 
+void FedCmAccountSelectionView::OnIdpPickerRowClicked(
+    const GURL& idp_config_url,
+    const GURL& idp_login_url,
+    const ui::Event& event) {
+  // The modal stays clickable while a pop-up is open. If the user clicks
+  // another IDP row, starting a second login would point the request at the
+  // new IDP while the pop-up still shows the first IDP's login page. Bringing
+  // that pop-up back would not be safe either: the user could enter the
+  // credentials of the IDP they just clicked on the other IDP's login page.
+  // So ignore the click.
+  // TODO(crbug.com/575549004): Decide on the UX for this case, e.g. closing
+  // the open pop-up or disabling the modal while a pop-up is open.
+  if (popup_window_) {
+    return;
+  }
+
+  OnLoginToIdP(idp_config_url, idp_login_url, event);
+}
+
 void FedCmAccountSelectionView::OnGotIt(const ui::Event& event) {
   if (input_protector_->IsPossiblyUnintendedInteraction(
           event, /*allow_key_events=*/false) ||

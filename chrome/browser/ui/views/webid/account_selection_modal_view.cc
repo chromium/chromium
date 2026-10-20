@@ -452,21 +452,10 @@ void AccountSelectionModalView::ShowAccounts(
                          base::UTF8ToUTF16(idp_list[0]->idp_for_display));
   UpdateTitleAndSubtitle(rp_data_);
 
-  // TODO(crbug.com/551927981): RP icon is provided by the IDP, which is
-  // problematic in multi-IDP mode.
-  const gfx::Image& icon =
-      is_multi_idp_ ? rp_icon : idp_list[0]->idp_metadata.brand_decoded_icon;
-  if (!icon.IsEmpty()) {
-    if (idp_brand_icon_->SetBrandIconImage(icon,
-                                           /*should_circle_crop=*/true)) {
-      OnIdpBrandIconSet();
-    }
-  } else {
-    idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        features::IsRoundedIconsEnabled() ? kGlobeIcon : kWebidGlobeOldIcon,
-        ui::kColorIconSecondary, kModalIdpIconSize));
-  }
-  idp_brand_icon_->SetVisible(/*visible=*/true);
+  // TODO(crbug.com/575550088): `rp_icon` is the 16 DIP favicon, which is too
+  // small for the header, so the globe is shown instead.
+  SetHeaderIcon(is_multi_idp_ ? rp_icon
+                              : idp_list[0]->idp_metadata.brand_decoded_icon);
 
   // `combined_icons_` is created in `ShowRequestPermissionDialog` and is only
   // meant to be shown there, but it might be present here when the user clicks
@@ -782,6 +771,105 @@ void AccountSelectionModalView::OnUseOtherAccountButtonClicked(
   owner_->OnLoginToIdP(idp_config_url, idp_login_url, event);
 }
 
+void AccountSelectionModalView::ShowIdpPicker(
+    const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
+    bool show_back_button) {
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
+
+  // Add the IDP rows first, since GetBodyText() checks `idp_picker_`. The IDP
+  // rows are not stored in `account_chooser_`, since they are not accounts and
+  // the verifying sheet is never shown over them.
+  idp_picker_ = AddChildView(CreateIdpRows(idp_list));
+
+  // The IDP picker is only shown when there are multiple IDPs, so the title
+  // does not name any IDP and the header shows the RP icon.
+  is_multi_idp_ = true;
+  idp_title_ = std::nullopt;
+  UpdateTitleAndSubtitle(rp_data_);
+  // TODO(crbug.com/575550088): Use an RP icon that is large enough.
+  SetHeaderIcon(rp_icon);
+  MaybeRemoveCombinedIconsView();
+
+  // Show the "Choose a ... to continue" label. This is set here as well as in
+  // UpdateTitleAndSubtitle(), which returns early while the RP display strings
+  // may still change.
+  CHECK(body_label_);
+  body_label_->SetText(GetBodyText());
+  body_label_->SetVisible(/*visible=*/true);
+
+  std::optional<views::Button::PressedCallback> back_callback = std::nullopt;
+  if (show_back_button) {
+    back_callback =
+        base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
+                            base::Unretained(owner_));
+  }
+  AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
+                               /*use_other_account_callback=*/std::nullopt,
+                               std::move(back_callback)));
+}
+
+std::unique_ptr<views::View> AccountSelectionModalView::CreateIdpRows(
+    const std::vector<IdentityProviderDataPtr>& idp_list) {
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  if (idp_list.empty()) {
+    return scroll_view;
+  }
+
+  auto content = std::make_unique<views::View>();
+  content->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      gfx::Insets::VH(/*vertical=*/kVerticalPadding,
+                      /*horizontal=*/kDialogMargin)));
+  content->AddChildView(std::make_unique<views::Separator>());
+
+  for (const auto& idp_data : idp_list) {
+    content->AddChildView(CreateIdpRow(idp_data));
+  }
+  // Close the list with a separator above the button row, like the account
+  // chooser does.
+  content->AddChildView(std::make_unique<views::Separator>());
+
+  views::View* const content_ptr = scroll_view->SetContents(std::move(content));
+
+  constexpr float kMaxIdpsToShow = 3.5f;
+  const int per_idp_size =
+      content_ptr->GetPreferredSize().height() / idp_list.size();
+  scroll_view->ClipHeightTo(0, static_cast<int>(per_idp_size * kMaxIdpsToShow));
+  return scroll_view;
+}
+
+std::unique_ptr<views::View> AccountSelectionModalView::CreateIdpRow(
+    const IdentityProviderDataPtr& idp_data) {
+  return std::make_unique<IdpHoverButton>(
+      base::BindRepeating(&FedCmAccountSelectionView::OnIdpPickerRowClicked,
+                          base::Unretained(owner_),
+                          idp_data->idp_metadata.config_url,
+                          idp_data->idp_metadata.idp_login_url),
+      *idp_data);
+}
+
+// TODO(crbug.com/575549886): Make it explicit which icon each sheet shows in
+// the header, with matching names, rather than reusing `idp_brand_icon_` for
+// both IDP and RP icons.
+void AccountSelectionModalView::SetHeaderIcon(const gfx::Image& icon) {
+  if (!icon.IsEmpty() &&
+      idp_brand_icon_->SetBrandIconImage(icon, /*should_circle_crop=*/true)) {
+    OnIdpBrandIconSet();
+  } else {
+    // There is no icon, or it could not be used (e.g. it is too small), so
+    // show a globe instead of keeping the previous sheet's icon.
+    // TODO(crbug.com/575549646): Stop the header spinner when showing the
+    // globe.
+    idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? kGlobeIcon : kWebidGlobeOldIcon,
+        ui::kColorIconSecondary, kModalIdpIconSize));
+  }
+  idp_brand_icon_->SetVisible(/*visible=*/true);
+}
+
 std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {
   // Create background image view.
   std::unique_ptr<BackgroundImageView> background_image_view =
@@ -930,16 +1018,22 @@ void AccountSelectionModalView::UpdateTitleAndSubtitle(
   title_label_->SetText(title_);
   title_label_->SetVisible(true);
   if (body_label_) {
-    body_label_->SetText(
-        subtitle_.empty()
-            ? l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT)
-            : subtitle_);
+    body_label_->SetText(GetBodyText());
     body_label_->SetVisible(true);
   }
   // Otherwise, we will set the text when we create body_label_.
   if (auto* widget = GetWidget()) {
     widget->widget_delegate()->SetTitle(title_);
   }
+}
+
+std::u16string AccountSelectionModalView::GetBodyText() const {
+  if (!subtitle_.empty()) {
+    return subtitle_;
+  }
+  return l10n_util::GetStringUTF16(
+      idp_picker_ ? IDS_ACCOUNT_SELECTION_IDP_PICKER_BODY
+                  : IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT);
 }
 
 std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
@@ -1006,12 +1100,8 @@ void AccountSelectionModalView::
   // body_label_ does not apply to the loading modal so it's added to header
   // here.
   if (!body_label_) {
-    std::u16string body_text =
-        subtitle_.empty()
-            ? l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT)
-            : subtitle_;
     body_label_ = header_view_->AddChildView(std::make_unique<views::Label>(
-        body_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        GetBodyText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
         views::style::STYLE_BODY_4));
     SetLabelProperties(body_label_);
   }
@@ -1023,6 +1113,7 @@ void AccountSelectionModalView::
   continue_button_ = nullptr;
   cancel_button_ = nullptr;
   account_chooser_ = nullptr;
+  idp_picker_ = nullptr;
   verifying_focus_view_ = nullptr;
 
   const std::vector<raw_ptr<views::View, VectorExperimental>> child_views =

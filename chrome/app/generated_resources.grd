@@ -19361,6 +19361,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_ACCOUNT_SELECTION_BACK" desc="Title of the button that lets the user go back to a previous sheet.">
       Back
     </message>
+    <message name="IDS_ACCOUNT_SELECTION_IDP_PICKER_BODY" desc="Text to prompt a user to choose an identity provider to sign in with, shown above a list of identity providers. Placeholder text that is not translated yet." translateable="false">
+      Choose a provider to continue
+    </message>
     <message name="IDS_SIGNIN_CONTINUE" desc="Title of the button that allows the user to continue with signing in to an account from an identity provider.">
       Continue
     </message>

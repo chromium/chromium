@@ -75,6 +75,8 @@ inline constexpr int kModalIconSpinnerSize = 28;
 // The size of the spinner used in a button when the user clicks on an account
 // row, continue button or use other account button.
 inline constexpr int kModalButtonSpinnerSize = 20;
+// The size of the IDP icon shown in each row of the modal IDP picker sheet.
+inline constexpr int kModalIdpPickerIconSize = 24;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -94,6 +96,10 @@ class BrandIconImageView : public views::ImageView {
   // attempt to set it into the BrandIconImageView. Returns whether the image
   // was successfully set or not.
   bool SetBrandIconImage(const gfx::Image& image, bool should_circle_crop);
+
+  // Like SetBrandIconImage() with circle cropping, but shows a globe icon if
+  // `image` is empty or cannot be set. Returns whether `image` was set.
+  bool SetBrandIconImageOrGlobe(const gfx::Image& image);
 
  private:
   int image_size_;
@@ -146,14 +152,31 @@ class AccountHoverButton : public HoverButton {
   base::WeakPtrFactory<AccountHoverButton> weak_ptr_factory_{this};
 };
 
-class AccountHoverButtonSecondaryView : public views::View {
+// A clickable row for an IDP, used on the IDP picker sheet. It shows the IDP's
+// brand icon (or a globe icon), the IDP's domain and an arrow.
+class IdpHoverButton : public HoverButton {
+  METADATA_HEADER(IdpHoverButton, HoverButton)
+
  public:
-  AccountHoverButtonSecondaryView();
-  AccountHoverButtonSecondaryView(const AccountHoverButtonSecondaryView&) =
-      delete;
-  AccountHoverButtonSecondaryView& operator=(
-      const AccountHoverButtonSecondaryView&) = delete;
-  ~AccountHoverButtonSecondaryView() override = default;
+  IdpHoverButton(views::Button::PressedCallback callback,
+                 const content::IdentityProviderData& idp_data);
+  IdpHoverButton(const IdpHoverButton&) = delete;
+  IdpHoverButton& operator=(const IdpHoverButton&) = delete;
+  ~IdpHoverButton() override;
+
+  // HoverButton:
+  void StateChanged(ButtonState old_state) override;
+};
+
+// The secondary view shown at the end of account rows and IDP rows in the
+// modal: an arrow, which can be replaced with a spinner while the verifying
+// sheet is showing.
+class HoverButtonSecondaryView : public views::View {
+ public:
+  HoverButtonSecondaryView();
+  HoverButtonSecondaryView(const HoverButtonSecondaryView&) = delete;
+  HoverButtonSecondaryView& operator=(const HoverButtonSecondaryView&) = delete;
+  ~HoverButtonSecondaryView() override = default;
 
   void ReplaceWithSpinner();
   void SetDisabledOpacity();
@@ -206,6 +229,18 @@ class AccountSelectionViewBase {
   // Updates the FedCM dialog to show the "request permission" sheet.
   virtual void ShowRequestPermissionDialog(
       const IdentityRequestAccountPtr& account) = 0;
+
+  // Updates the FedCM dialog to show the "IDP picker" sheet, which lists the
+  // IDPs in `idp_list` so that the user can sign in to one of them. `rp_icon`
+  // is shown in the header. `show_back_button` determines whether a button to
+  // go back to the account chooser is shown. Only implemented for the modal
+  // (active mode) dialog.
+  // `idp_list` must only contain IDPs from the current request: clicking a row
+  // opens that IDP's login URL, which the request CHECKs it knows about.
+  virtual void ShowIdpPicker(
+      const std::vector<IdentityProviderDataPtr>& idp_list,
+      const gfx::Image& rp_icon,
+      bool show_back_button) = 0;
 
   // Gets the title of the dialog.
   virtual std::string GetDialogTitle() const = 0;

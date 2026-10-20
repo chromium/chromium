@@ -160,7 +160,7 @@ END_METADATA
 
 }  // namespace
 
-AccountHoverButtonSecondaryView::AccountHoverButtonSecondaryView() {
+HoverButtonSecondaryView::HoverButtonSecondaryView() {
   constexpr int kSecondaryViewRightPadding = 8;
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(/*top=*/0, /*left=*/0, /*bottom=*/0,
@@ -176,7 +176,7 @@ AccountHoverButtonSecondaryView::AccountHoverButtonSecondaryView() {
   arrow_image_view_ = AddChildView(std::move(arrow_image_view));
 }
 
-void AccountHoverButtonSecondaryView::ReplaceWithSpinner() {
+void HoverButtonSecondaryView::ReplaceWithSpinner() {
   std::unique_ptr<views::Throbber> spinner =
       std::make_unique<views::Throbber>();
   constexpr int kSpinnerSize = 24;
@@ -187,7 +187,7 @@ void AccountHoverButtonSecondaryView::ReplaceWithSpinner() {
   AddChildView(std::move(spinner));
 }
 
-void AccountHoverButtonSecondaryView::SetDisabledOpacity() {
+void HoverButtonSecondaryView::SetDisabledOpacity() {
   if (!arrow_image_view_) {
     return;
   }
@@ -225,7 +225,77 @@ bool BrandIconImageView::SetBrandIconImage(const gfx::Image& image,
   return true;
 }
 
+bool BrandIconImageView::SetBrandIconImageOrGlobe(const gfx::Image& image) {
+  if (!image.IsEmpty() &&
+      SetBrandIconImage(image, /*should_circle_crop=*/true)) {
+    return true;
+  }
+  SetImage(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kGlobeIcon : kWebidGlobeOldIcon,
+      ui::kColorIconSecondary, image_size_));
+  return false;
+}
+
 BEGIN_METADATA(BrandIconImageView)
+END_METADATA
+
+namespace {
+
+std::unique_ptr<views::View> CreateIdpRowIcon(
+    const content::IdentityProviderData& idp_data) {
+  auto icon_view =
+      std::make_unique<BrandIconImageView>(kModalIdpPickerIconSize);
+  icon_view->SetBrandIconImageOrGlobe(idp_data.idp_metadata.brand_decoded_icon);
+  // Center the icon where the avatar sits in the multi-IDP account rows, and
+  // make the icon column as wide as the badged avatar, so that the IDP domains
+  // line up with the account names in the account chooser.
+  constexpr int kIdpIconLeftPadding =
+      (webid::kModalAvatarSize - kModalIdpPickerIconSize) / 2;
+  constexpr int kIdpIconRightPadding =
+      webid::kModalAvatarSize + webid::kIdpBadgeOffset -
+      kModalIdpPickerIconSize - kIdpIconLeftPadding;
+  icon_view->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(/*top=*/0, /*left=*/kIdpIconLeftPadding, /*bottom=*/0,
+                        /*right=*/kIdpIconRightPadding)));
+  return icon_view;
+}
+
+}  // namespace
+
+IdpHoverButton::IdpHoverButton(views::Button::PressedCallback callback,
+                               const content::IdentityProviderData& idp_data)
+    : HoverButton(std::move(callback),
+                  CreateIdpRowIcon(idp_data),
+                  /*title=*/base::UTF8ToUTF16(idp_data.idp_for_display),
+                  /*subtitle=*/std::u16string(),
+                  /*secondary_view=*/
+                  std::make_unique<HoverButtonSecondaryView>(),
+                  /*add_vertical_label_spacing=*/true,
+                  /*footer=*/std::u16string()) {
+  constexpr int kIdpRowVerticalPadding = 4;
+  SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(/*vertical=*/kIdpRowVerticalPadding,
+                      /*horizontal=*/kModalHorizontalSpacing)));
+  // Use the same text style as the modal account rows.
+  SetTitleTextStyle(views::style::STYLE_BODY_3_MEDIUM,
+                    ui::kColorDialogBackground, /*color_id=*/std::nullopt);
+  AddExtraAccessibleText(
+      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_OPENS_IN_NEW_TAB));
+  // Highlight on hover as well as focus, like the account rows.
+  views::InkDrop::UseInkDropForFloodFillRipple(views::InkDrop::Get(this),
+                                               /*highlight_on_hover=*/true,
+                                               /*highlight_on_focus=*/true);
+}
+
+IdpHoverButton::~IdpHoverButton() = default;
+
+void IdpHoverButton::StateChanged(ButtonState old_state) {
+  // Do not focus on hover since it causes odd scrolling, like the account
+  // rows. Do this by skipping the code in HoverButton::StateChanged.
+  views::LabelButton::StateChanged(old_state);
+}
+
+BEGIN_METADATA(IdpHoverButton)
 END_METADATA
 
 AccountHoverButton::AccountHoverButton(
@@ -310,7 +380,7 @@ void AccountHoverButton::SetDisabledOpacity() {
   }
 
   if (secondary_view()) {
-    static_cast<AccountHoverButtonSecondaryView*>(secondary_view())
+    static_cast<HoverButtonSecondaryView*>(secondary_view())
         ->SetDisabledOpacity();
   }
 
@@ -326,7 +396,7 @@ bool AccountHoverButton::HasDisabledOpacity() {
 
 void AccountHoverButton::ReplaceSecondaryViewWithSpinner() {
   has_spinner_ = true;
-  static_cast<AccountHoverButtonSecondaryView*>(secondary_view())
+  static_cast<HoverButtonSecondaryView*>(secondary_view())
       ->ReplaceWithSpinner();
 }
 
@@ -431,7 +501,7 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
                             base::Unretained(owner_), account),
         std::move(account_image_view), title, subtitle,
         /*secondary_view=*/
-        is_modal_dialog ? std::make_unique<AccountHoverButtonSecondaryView>()
+        is_modal_dialog ? std::make_unique<HoverButtonSecondaryView>()
                         : nullptr,
         /*add_vertical_label_spacing=*/true, footer, *clickable_position);
     row->SetProperty(views::kElementIdentifierKey,

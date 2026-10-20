@@ -276,8 +276,8 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
 
   if (is_modal_dialog) {
     // Check for arrow icon in secondary view.
-    AccountHoverButtonSecondaryView* secondary_view =
-        static_cast<AccountHoverButtonSecondaryView*>(
+    HoverButtonSecondaryView* secondary_view =
+        static_cast<HoverButtonSecondaryView*>(
             GetHoverButtonSecondaryView(account_row));
     EXPECT_TRUE(secondary_view);
 

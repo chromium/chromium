@@ -95,6 +95,10 @@ class AccountSelectionModalView : public views::BoxLayoutView,
   void ShowRequestPermissionDialog(
       const IdentityRequestAccountPtr& account) override;
 
+  void ShowIdpPicker(const std::vector<IdentityProviderDataPtr>& idp_list,
+                     const gfx::Image& rp_icon,
+                     bool show_back_button) override;
+
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
 
@@ -186,6 +190,24 @@ class AccountSelectionModalView : public views::BoxLayoutView,
                                       const GURL& idp_login_url,
                                       const ui::Event& event);
 
+  // Returns a scrollable View containing one clickable row per IDP.
+  std::unique_ptr<views::View> CreateIdpRows(
+      const std::vector<IdentityProviderDataPtr>& idp_list);
+
+  // Returns a single clickable IDP row: brand icon, IDP domain and arrow.
+  std::unique_ptr<views::View> CreateIdpRow(
+      const IdentityProviderDataPtr& idp_data);
+
+  // Shows `icon` in the header, or a globe icon if `icon` is empty.
+  void SetHeaderIcon(const gfx::Image& icon);
+
+  // Returns the text for `body_label_`: the subtitle if there is one,
+  // otherwise a prompt to pick an IDP or an account depending on the sheet.
+  // This text is only meant for the account chooser and the IDP picker. The
+  // verifying sheet keeps the body label of the sheet it was shown from, and
+  // the other sheets either hide `body_label_` or set their own text.
+  std::u16string GetBodyText() const;
+
   // Updates the button to have a spinner appear in the middle of it.
   void ReplaceButtonWithSpinner(
       views::MdTextButton* button,
@@ -239,6 +261,8 @@ class AccountSelectionModalView : public views::BoxLayoutView,
   raw_ptr<views::View> cancel_button_ = nullptr;
   // View containing the account chooser.
   raw_ptr<views::View> account_chooser_ = nullptr;
+  // View containing the IDP rows of the IDP picker.
+  raw_ptr<views::View> idp_picker_ = nullptr;
   // View containing the view to focus on in the verifying sheet.
   raw_ptr<views::View> verifying_focus_view_ = nullptr;
 

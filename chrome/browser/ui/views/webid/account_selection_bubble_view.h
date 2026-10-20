@@ -92,6 +92,10 @@ class AccountSelectionBubbleView : public views::BoxLayoutView,
   void ShowRequestPermissionDialog(
       const IdentityRequestAccountPtr& account) override;
 
+  void ShowIdpPicker(const std::vector<IdentityProviderDataPtr>& idp_list,
+                     const gfx::Image& rp_icon,
+                     bool show_back_button) override;
+
   std::string GetDialogTitle() const override;
   std::optional<std::string> GetDialogSubtitle() const override;
 

@@ -440,6 +440,14 @@ void AccountSelectionBubbleView::ShowRequestPermissionDialog(
                   "AccountSelectionModalView";
 }
 
+void AccountSelectionBubbleView::ShowIdpPicker(
+    const std::vector<IdentityProviderDataPtr>& idp_list,
+    const gfx::Image& rp_icon,
+    bool show_back_button) {
+  NOTREACHED()
+      << "ShowIdpPicker is only implemented for AccountSelectionModalView";
+}
+
 std::string AccountSelectionBubbleView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_);
 }

@@ -223,6 +223,12 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                     const GURL& idp_login_url,
                     const ui::Event& event);
 
+  // Called when the user clicks an IDP row on the IDP picker. Like
+  // OnLoginToIdP(), but ignored while a pop-up is already open.
+  void OnIdpPickerRowClicked(const GURL& idp_config_url,
+                             const GURL& idp_login_url,
+                             const ui::Event& event);
+
   // Called when the user clicks "got it" button.
   void OnGotIt(const ui::Event& event);
 

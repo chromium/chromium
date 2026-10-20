@@ -31,6 +31,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace webid {
@@ -518,6 +520,80 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
                    /*expect_add_account_button=*/false,
                    /*expect_back_button=*/false);
+  }
+
+  void TestIdpPicker() {
+    IdentityProviderDataPtr idp_data_2 =
+        base::MakeRefCounted<content::IdentityProviderData>(
+            kSecondIdpForDisplay, content::IdentityProviderMetadata(),
+            CreateTestClientMetadata(), blink::mojom::RpContext::kSignIn,
+            /*format=*/std::nullopt, kDefaultDisclosureFields,
+            /*has_login_status_mismatch=*/false);
+    std::vector<IdentityProviderDataPtr> idp_list = {idp_data_, idp_data_2};
+
+    if (!dialog_) {
+      CreateAccountSelectionModal();
+    }
+    dialog_->ShowIdpPicker(idp_list, /*rp_icon=*/gfx::Image(),
+                           /*show_back_button=*/true);
+    account_selection_view_->UpdateDialogPosition();
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    // The standard header is shown, with the multi-IDP title and a prompt to
+    // pick an IDP.
+    std::vector<raw_ptr<views::View, VectorExperimental>> header_children =
+        children[0]->children();
+    ASSERT_EQ(header_children.size(), 3u);
+    views::Label* title_view = static_cast<views::Label*>(header_children[1]);
+    views::Label* body_view = static_cast<views::Label*>(header_children[2]);
+    EXPECT_TRUE(body_view->GetVisible());
+    if (iframe_for_display_.empty()) {
+      EXPECT_EQ(title_view->GetText(), kTitleSignInWithoutIdp);
+      EXPECT_EQ(
+          body_view->GetText(),
+          l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_IDP_PICKER_BODY));
+    } else {
+      EXPECT_EQ(title_view->GetText(), kTitleIframeSignInWithoutIdp);
+      EXPECT_EQ(body_view->GetText(), kSubtitleIframeSignIn);
+    }
+
+    // One row per IDP, between a leading and a trailing separator.
+    std::vector<raw_ptr<views::View, VectorExperimental>> rows =
+        TestStructureAndGetAccounts(children[1]);
+    ASSERT_EQ(rows.size(), idp_list.size() + 2u);
+    EXPECT_EQ("Separator", rows[0]->GetClassName());
+    EXPECT_EQ("Separator", rows.back()->GetClassName());
+
+    // Each IDP row shows just the IDP domain, with no subtitle.
+    for (size_t i = 0; i < idp_list.size(); ++i) {
+      IdpHoverButton* idp_row = views::AsViewClass<IdpHoverButton>(rows[i + 1]);
+      ASSERT_TRUE(idp_row);
+      EXPECT_EQ(idp_row->title()->GetText(),
+                base::UTF8ToUTF16(idp_list[i]->idp_for_display));
+      EXPECT_FALSE(GetHoverButtonSubtitle(idp_row));
+    }
+
+    // A back button and a cancel button.
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   /*expect_add_account_button=*/false,
+                   /*expect_back_button=*/true);
+  }
+
+  void TestIdpRowCanBeClickedMoreThanOnce() {
+    int num_clicks = 0;
+    IdpHoverButton row(
+        base::BindRepeating([](int* num_clicks) { ++*num_clicks; },
+                            base::Unretained(&num_clicks)),
+        *idp_data_);
+    ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
+                         gfx::Point(), ui::EventTimeForNow(),
+                         ui::EF_LEFT_MOUSE_BUTTON, 0);
+    views::test::ButtonTestApi(&row).NotifyClick(event);
+    views::test::ButtonTestApi(&row).NotifyClick(event);
+    EXPECT_EQ(num_clicks, 2);
   }
 
   std::vector<raw_ptr<views::View, VectorExperimental>>
@@ -1202,6 +1278,35 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
                        MultipleIdpsAfterRequestPermission) {
   TestRequestPermission(/*has_display_identifier=*/true);
   TestMultipleIdps();
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, IdpPicker) {
+  TestIdpPicker();
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, IdpPickerInIframe) {
+  iframe_for_display_ = kIframeETLDPlusOne;
+  TestIdpPicker();
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       IdpPickerAfterMultipleIdps) {
+  TestMultipleIdps();
+  TestIdpPicker();
+}
+
+// The account chooser must show its own body text again after the IDP picker.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       MultipleIdpsAfterIdpPicker) {
+  TestIdpPicker();
+  TestMultipleIdps();
+}
+
+// Unlike account rows, an IDP row can be clicked more than once, e.g. to retry
+// after closing the IDP login pop-up.
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       IdpRowCanBeClickedMoreThanOnce) {
+  TestIdpRowCanBeClickedMoreThanOnce();
 }
 
 }  //  namespace webid
