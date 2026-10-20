@@ -10,10 +10,7 @@
 #include <limits>
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/data_object_builder.h"
@@ -133,17 +130,19 @@ bool SetIconNatives::ConvertImageDataToBitmapValue(
   }
   bitmap.eraseARGB(0, 0, 0, 0);
 
-  base::span UNSAFE_TODO(pixels(bitmap.getAddr32(0, 0),
-                                base::checked_cast<uint32_t>(width * height)));
-  auto image_data_bytes = [&](size_t index) {
+  auto image_data_bytes = [&](int index) {
     return GetIntPropertyFromV8Object(data, v8_context, index) & 0xFF;
   };
-  for (size_t t = 0; t < pixels.size(); ++t) {
-    // |data| is RGBA, pixels is ARGB.
-    pixels[t] = SkPreMultiplyColor((image_data_bytes(4 * t + 3) << 24) |
-                                   (image_data_bytes(4 * t + 0) << 16) |
-                                   (image_data_bytes(4 * t + 1) << 8) |
-                                   (image_data_bytes(4 * t + 2) << 0));
+  for (int y = 0; y < height; ++y) {
+    for (int x = 0; x < width; ++x) {
+      int t = y * width + x;
+      // |data| is RGBA, pixels is ARGB.
+      *bitmap.getAddr32(x, y) =
+          SkPreMultiplyColor((image_data_bytes(4 * t + 3) << 24) |
+                             (image_data_bytes(4 * t + 0) << 16) |
+                             (image_data_bytes(4 * t + 1) << 8) |
+                             (image_data_bytes(4 * t + 2) << 0));
+    }
   }
 
   // Construct the Value object.

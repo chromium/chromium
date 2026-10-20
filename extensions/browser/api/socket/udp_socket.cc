@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "extensions/browser/api/api_resource.h"
@@ -244,8 +243,7 @@ void UDPSocket::OnReceived(int32_t result,
 
   auto io_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(data.value().size());
-  UNSAFE_TODO(
-      memcpy(io_buffer->data(), data.value().data(), data.value().size()));
+  io_buffer->span().copy_from(data.value());
 
   if (!read_callback_.is_null()) {
     std::move(read_callback_)

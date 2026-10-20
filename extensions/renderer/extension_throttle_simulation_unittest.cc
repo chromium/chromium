@@ -12,7 +12,6 @@
 //    anti-DDoS throttling for various different actual downtimes is what
 //    we expect it to be.
 
-#include <stdarg.h>
 #include <stddef.h>
 
 #include <array>
@@ -21,7 +20,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -31,6 +29,7 @@
 #include "extensions/renderer/extension_throttle_entry.h"
 #include "extensions/renderer/extension_throttle_test_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using base::TimeTicks;
 using net::BackoffEntry;
@@ -45,21 +44,16 @@ const char kShowSimulationVariableName[] = "SHOW_SIMULATION_RESULTS";
 // Prints output only if a given environment variable is set. We use this
 // to not print any output for human evaluation when the test is run without
 // supervision.
-void VerboseOut(const char* format, ...) {
-  static bool have_checked_environment = false;
-  static bool should_print = false;
-  if (!have_checked_environment) {
-    have_checked_environment = true;
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    if (env->HasVar(kShowSimulationVariableName))
-      should_print = true;
-  }
+bool ShouldPrintVerbose() {
+  static const bool should_print =
+      base::Environment::Create()->HasVar(kShowSimulationVariableName);
+  return should_print;
+}
 
-  if (should_print) {
-    va_list arglist;
-    va_start(arglist, format);
-    UNSAFE_TODO(vprintf(format, arglist));
-    va_end(arglist);
+template <typename... Args>
+void VerboseOut(const absl::FormatSpec<Args...>& format, const Args&... args) {
+  if (ShouldPrintVerbose()) {
+    absl::PrintF(format, args...);
   }
 }
 
@@ -193,7 +187,7 @@ class Server : public DiscreteTimeSimulation::Actor {
     // Account for | characters we place at left of graph.
     terminal_width -= 1;
 
-    VerboseOut("Overloaded for %d of %d ticks.\n", num_overloaded_ticks_,
+    VerboseOut("Overloaded for %d of %zu ticks.\n", num_overloaded_ticks_,
                requests_per_tick_.size());
     VerboseOut("Got maximum of %d requests in a tick.\n\n",
                max_experienced_queries_per_tick_);
@@ -540,11 +534,9 @@ TEST(URLRequestThrottlerSimulation, HelpsInAttack) {
   // in particular the traffic pattern is interesting.
 
   VerboseOut("\nUnprotected server's results:\n\n");
-  VerboseOut(unprotected_server.VisualizeASCII(132).c_str());
-  VerboseOut("\n\n");
+  VerboseOut("%s\n\n", unprotected_server.VisualizeASCII(132));
   VerboseOut("Protected server's results:\n\n");
-  VerboseOut(protected_server.VisualizeASCII(132).c_str());
-  VerboseOut("\n\n");
+  VerboseOut("%s\n\n", protected_server.VisualizeASCII(132));
 
   unprotected_attacker_results.PrintResults(
       "attackers attacking unprotected server.");
@@ -628,7 +620,7 @@ TEST(URLRequestThrottlerSimulation, PerceivedDowntimeRatio) {
       VerboseOut(
           "  Perceived downtime with throttling is %.4f times without.\n",
           increase_ratio);
-      VerboseOut("  Test result after %d trials.\n", num_runs);
+      VerboseOut("  Test result after %zu trials.\n", num_runs);
     }
   };
 
