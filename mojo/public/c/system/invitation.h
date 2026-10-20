@@ -123,8 +123,17 @@ struct MOJO_ALIGNAS(8) MojoInvitationTransportEndpoint {
   //   - On other POSIX systems, this is a single Unix domain socket file
   //     descriptor.
   MOJO_POINTER_FIELD(const struct MojoPlatformHandle*, platform_handles);
+
+  // An optional constraint on the identity of the process at the remote end of
+  // this endpoint, or null. Only supported on macOS, where a non-null value
+  // must point to a base::mac::ProcessRequirement owned by the caller and
+  // valid for the duration of the |MojoSendInvitation()| or
+  // |MojoAcceptInvitation()| call. Messages received over the endpoint are not
+  // accepted, and the connection cannot be established, unless the sending
+  // process satisfies the requirement. Must be null on all other platforms.
+  MOJO_POINTER_FIELD(const void*, peer_process_requirement);
 };
-MOJO_STATIC_ASSERT(sizeof(struct MojoInvitationTransportEndpoint) == 24,
+MOJO_STATIC_ASSERT(sizeof(struct MojoInvitationTransportEndpoint) == 32,
                    "MojoInvitationTransportEndpoint has wrong size.");
 
 // Flags passed to |MojoCreateInvitation()| via |MojoCreateInvitationOptions|.

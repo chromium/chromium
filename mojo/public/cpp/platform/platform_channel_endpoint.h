@@ -14,6 +14,12 @@
 #include "mojo/buildflags.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <optional>
+
+#include "base/mac/process_requirement.h"
+#endif
+
 namespace mojo {
 
 // A PlatformHandle with a little extra type information to convey that it's
@@ -57,6 +63,29 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
     return std::move(handle_);
   }
 
+#if BUILDFLAG(IS_MAC)
+  // Requires that the process on the remote end of this endpoint satisfy
+  // `requirement`. The channel that consumes this endpoint enforces it: no
+  // message from the remote process is accepted, and no queued outgoing
+  // message is delivered, until that process has been validated against the
+  // requirement. The connection is refused if validation fails.
+  //
+  // `requirement` must not need Info.plist data to validate (i.e. it must not
+  // have been built with CheckDynamicValidityOnly()).
+  void set_peer_process_requirement(base::mac::ProcessRequirement requirement);
+
+  // Takes the requirement previously set by set_peer_process_requirement(),
+  // if any.
+  std::optional<base::mac::ProcessRequirement> TakePeerProcessRequirement();
+
+  // Whether a peer process requirement has been set on this endpoint. Used to
+  // guard paths that would otherwise silently drop the requirement (and with
+  // it the peer-authentication guarantee) rather than enforce it.
+  bool has_peer_process_requirement() const {
+    return peer_process_requirement_.has_value();
+  }
+#endif
+
   // Prepares to pass this endpoint handle to a process that will soon be
   // launched. Returns a string that can be used in the remote process with
   // RecoverFromString() (see below). The string can be passed on the new
@@ -90,6 +119,9 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
 
  private:
   PlatformHandle handle_;
+#if BUILDFLAG(IS_MAC)
+  std::optional<base::mac::ProcessRequirement> peer_process_requirement_;
+#endif
 };
 
 }  // namespace mojo

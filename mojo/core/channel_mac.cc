@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -25,6 +26,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/mac/process_requirement.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
@@ -53,6 +55,15 @@ constexpr mach_msg_id_t kChannelMacHandshakeMsgId = 'mjhs';
 constexpr mach_msg_id_t kChannelMacInlineMsgId = 'MOJO';
 constexpr mach_msg_id_t kChannelMacOOLMsgId = 'MOJ+';
 
+// When a peer process requirement is set, the peer must authenticate itself
+// within this interval after the channel starts. The security decision is the
+// audit-token check itself; this is only a liveness backstop so that a peer
+// that completes the channel handshake but never sends a qualifying message
+// (for example, a process squatting the bootstrap name that stalls on purpose)
+// cannot hold this channel's outbound messages indefinitely. It is deliberately
+// generous so a slow-but-legitimate server is not disconnected.
+constexpr base::TimeDelta kPeerValidationTimeout = base::Seconds(10);
+
 class ChannelMac : public Channel,
                    public base::CurrentThread::DestructionObserver,
                    public base::MessagePumpKqueue::MachPortWatcher {
@@ -65,8 +76,14 @@ class ChannelMac : public Channel,
         self_(this),
         io_task_runner_(io_task_runner),
         watch_controller_(FROM_HERE) {
-    PlatformHandle channel_handle =
-        connection_params.TakeEndpoint().TakePlatformHandle();
+    PlatformChannelEndpoint endpoint = connection_params.TakeEndpoint();
+
+    // If the consumer attached a server process requirement, the peer
+    // (server) must satisfy it before it is trusted. Attaching a requirement
+    // is the consumer's decision; this channel honors whatever was set.
+    peer_process_requirement_ = endpoint.TakePeerProcessRequirement();
+
+    PlatformHandle channel_handle = endpoint.TakePlatformHandle();
     if (channel_handle.is_mach_send()) {
       send_port_ = channel_handle.TakeMachSendRight();
     } else if (channel_handle.is_mach_receive()) {
@@ -103,8 +120,9 @@ class ChannelMac : public Channel,
       return;
     }
 
-    // If the channel is not fully established, queue pending messages.
-    if (!handshake_done_) {
+    // Queue pending messages until the channel is fully established, or until
+    // the peer has been authenticated against `peer_process_requirement_`.
+    if (!handshake_done_ || (peer_process_requirement_ && !peer_validated_)) {
       pending_messages_.emplace_back(std::move(message), creation_time);
       return;
     }
@@ -246,6 +264,16 @@ class ChannelMac : public Channel,
     base::CurrentThread::Get()->AddDestructionObserver(this);
     base::CurrentIOThread::Get()->WatchMachReceivePort(
         receive_port_.get(), &watch_controller_, this);
+
+    // If the peer must satisfy a process requirement, it has to authenticate
+    // itself within kPeerValidationTimeout. Failing closed converts a peer that
+    // stalls without ever sending a qualifying message into a clean connection
+    // error instead of an indefinite hold on outbound messages.
+    if (peer_process_requirement_) {
+      io_task_runner_->PostDelayedTask(
+          FROM_HERE, base::BindOnce(&ChannelMac::OnPeerValidationTimeout, this),
+          kPeerValidationTimeout);
+    }
   }
 
   void ShutDownOnIOThread() {
@@ -350,11 +378,24 @@ class ChannelMac : public Channel,
     // Record the audit token of the sender. All messages received by the
     // channel must be from this same sender.
     auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
-    peer_audit_token_ = std::make_unique<audit_token_t>();
-    UNSAFE_TODO(memcpy(peer_audit_token_.get(), &trailer->msgh_audit,
-                       sizeof(audit_token_t)));
+    audit_token_t audit_token;
+    UNSAFE_TODO(
+        memcpy(&audit_token, &trailer->msgh_audit, sizeof(audit_token_t)));
+
+    // If a requirement was supplied, the handshake sender is the peer that must
+    // satisfy it before any of its messages are trusted.
+    if (peer_process_requirement_ &&
+        !peer_process_requirement_->ValidateProcess(audit_token)) {
+      send_port_.reset();
+      LOG(ERROR) << "Rejecting peer that does not meet the process requirement";
+      OnError(Error::kConnectionFailed);
+      return false;
+    }
+
+    peer_audit_token_ = std::make_unique<audit_token_t>(audit_token);
 
     base::AutoLock lock(write_lock_);
+    peer_validated_ = true;
     handshake_done_ = true;
     SendPendingMessagesLocked();
 
@@ -363,6 +404,13 @@ class ChannelMac : public Channel,
 
   void SendPendingMessagesLocked() EXCLUSIVE_LOCKS_REQUIRED(write_lock_) {
     if (!send_buffer_.address()) {
+      return;
+    }
+
+    // Hold all outbound messages until the peer has been authenticated against
+    // `peer_process_requirement_`. The receive path flushes them once
+    // validation succeeds.
+    if (peer_process_requirement_ && !peer_validated_) {
       return;
     }
 
@@ -557,6 +605,23 @@ class ChannelMac : public Channel,
     SendPendingMessagesLocked();
   }
 
+  // Called kPeerValidationTimeout after StartOnIOThread() when a peer process
+  // requirement is set. If the peer still has not been authenticated, the
+  // channel is torn down so callers observe a connection failure instead of an
+  // indefinite stall.
+  void OnPeerValidationTimeout() {
+    {
+      base::AutoLock lock(write_lock_);
+      // Already authenticated, or the channel is already shutting down.
+      if (peer_validated_ || reject_writes_) {
+        return;
+      }
+    }
+    LOG(ERROR) << "Peer did not satisfy the process requirement within the "
+                  "validation timeout";
+    OnError(Error::kConnectionFailed);
+  }
+
   // base::CurrentThread::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -649,7 +714,30 @@ class ChannelMac : public Channel,
       return;
     }
 
-    if (peer_audit_token_) {
+    // On a channel created from a bootstrap name lookup, the first message
+    // received from the peer (server) is used to authenticate it against
+    // `peer_process_requirement_`. Outbound messages are held until this
+    // succeeds (see Write() and SendPendingMessagesLocked()).
+    if (peer_process_requirement_ && !peer_audit_token_) {
+      buffer.Seek(header->msgh_size);
+      auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
+      audit_token_t audit_token;
+      UNSAFE_TODO(
+          memcpy(&audit_token, &trailer->msgh_audit, sizeof(audit_token_t)));
+      if (!peer_process_requirement_->ValidateProcess(audit_token)) {
+        LOG(ERROR)
+            << "Rejecting server that does not meet the process requirement";
+        OnError(Error::kConnectionFailed);
+        return;
+      }
+      peer_audit_token_ = std::make_unique<audit_token_t>(audit_token);
+      {
+        base::AutoLock lock(write_lock_);
+        peer_validated_ = true;
+        SendPendingMessagesLocked();
+      }
+      buffer.Seek(sizeof(*header));
+    } else if (peer_audit_token_) {
       buffer.Seek(header->msgh_size);
       auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
       if (UNSAFE_TODO(memcmp(&trailer->msgh_audit, peer_audit_token_.get(),
@@ -795,6 +883,11 @@ class ChannelMac : public Channel,
   // from that sender.
   std::unique_ptr<audit_token_t> peer_audit_token_;
 
+  // If non-null, the requirement the peer must satisfy before this channel
+  // trusts any message from it or flushes queued messages to it. Set from the
+  // endpoint at construction (a bootstrap name lookup on the client side).
+  std::optional<base::mac::ProcessRequirement> peer_process_requirement_;
+
   // IO buffer for receiving Mach messages. Only accessed on |io_task_runner_|.
   base::apple::ScopedMachVM receive_buffer_;
 
@@ -825,6 +918,10 @@ class ChannelMac : public Channel,
   // Creation timestamp of the message currently serialized in `send_buffer_`,
   // or null if not subsampled for latency metrics.
   base::TimeTicks send_buffer_creation_time_ GUARDED_BY(write_lock_);
+  // Whether the peer has been authenticated against
+  // |peer_process_requirement_|. Until true, outbound messages are held in
+  // |pending_messages_|. Always true when no requirement was supplied.
+  bool peer_validated_ GUARDED_BY(write_lock_) = false;
   // When |handshake_done_| is false or |send_buffer_contains_message_| is true,
   // calls to Write() will enqueue messages here.
   base::circular_deque<PendingMessage> pending_messages_

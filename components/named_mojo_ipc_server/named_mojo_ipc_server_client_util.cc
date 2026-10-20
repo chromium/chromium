@@ -48,7 +48,16 @@ mojo::PlatformChannelEndpoint ConnectToServer(
     return mojo::PlatformChannelEndpoint();
   }
 
-  return channel.TakeRemoteEndpoint();
+  mojo::PlatformChannelEndpoint remote_endpoint = channel.TakeRemoteEndpoint();
+  // The real communication channel is `channel`, not the bootstrap endpoint
+  // used above to hand a port to the server. Messages over `channel` come from
+  // whoever owns the bootstrap-registered name, so the server requirement must
+  // be enforced on this endpoint.
+  if (options.server_process_requirement) {
+    remote_endpoint.set_peer_process_requirement(
+        *options.server_process_requirement);
+  }
+  return remote_endpoint;
 #else
   NOTREACHED() << "Unsupported platform.";
 #endif

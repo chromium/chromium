@@ -180,6 +180,7 @@ TEST_F(MAYBE_InvitationTest, InvalidArguments) {
   valid_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
   valid_endpoint.num_platform_handles = 1;
   valid_endpoint.platform_handles = &endpoint_handle;
+  valid_endpoint.peer_process_requirement = nullptr;
 
   MojoSendInvitationOptions invalid_send_options;
   invalid_send_options.struct_size = 0;
@@ -195,6 +196,7 @@ TEST_F(MAYBE_InvitationTest, InvalidArguments) {
   invalid_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
   invalid_endpoint.num_platform_handles = 1;
   invalid_endpoint.platform_handles = &endpoint_handle;
+  invalid_endpoint.peer_process_requirement = nullptr;
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
             MojoSendInvitation(invitation, nullptr, &invalid_endpoint, nullptr,
                                0, nullptr));
@@ -396,6 +398,7 @@ void MAYBE_InvitationTest::SendInvitationToClient(
   transport_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
   transport_endpoint.num_platform_handles = 1;
   transport_endpoint.platform_handles = &handle;
+  transport_endpoint.peer_process_requirement = nullptr;
 
   MojoSendInvitationOptions options;
   options.struct_size = sizeof(options);
@@ -429,6 +432,7 @@ class TestClientBase : public MAYBE_InvitationTest {
     transport_endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
     transport_endpoint.num_platform_handles = 1;
     transport_endpoint.platform_handles = &endpoint_handle;
+    transport_endpoint.peer_process_requirement = nullptr;
 
     MojoAcceptInvitationOptions options;
     options.struct_size = sizeof(options);
@@ -911,6 +915,7 @@ TEST_F(MAYBE_InvitationTest, NoLeakOnFailedSend) {
     endpoint.type = MOJO_INVITATION_TRANSPORT_TYPE_CHANNEL;
     endpoint.num_platform_handles = 1;
     endpoint.platform_handles = &endpoint_handle;
+    endpoint.peer_process_requirement = nullptr;
 
     MojoHandle invitation;
     EXPECT_EQ(MOJO_RESULT_OK, MojoCreateInvitation(nullptr, &invitation));

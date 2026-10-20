@@ -663,6 +663,13 @@ bool Transport::Serialize(Transport& transmitter,
   }
 
   CHECK(inactive_endpoint_.is_valid());
+#if BUILDFLAG(IS_MAC)
+  // A peer process requirement is enforced only when the endpoint is activated
+  // locally. Serializing (relaying) the endpoint to another process would drop
+  // the requirement and silently disable peer authentication, so refuse to
+  // relay a requirement-bearing endpoint instead of weakening it.
+  CHECK(!inactive_endpoint_.has_peer_process_requirement());
+#endif
   handles[0] = inactive_endpoint_.TakePlatformHandle();
   return true;
 }

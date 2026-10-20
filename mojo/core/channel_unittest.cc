@@ -32,6 +32,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif
+
 namespace mojo::core {
 
 class TestChannel : public Channel {
@@ -736,6 +740,172 @@ TEST(ChannelTest, SendToDeadMachPortName) {
   get_send_name_refs();
   EXPECT_EQ(0u, send);
   EXPECT_EQ(1u, dead);
+}
+
+// Starts a pair of connected channels where `client_endpoint` (the send-right
+// end) and `server_endpoint` (the receive-right end) may carry a peer process
+// requirement. Returns whether the server's message was dispatched to the
+// client without the client's channel reporting an error.
+namespace {
+
+enum class RequirementResult { kMessageDispatched, kChannelError };
+
+RequirementResult RunPeerRequirementExchange(
+    PlatformChannelEndpoint client_endpoint,
+    PlatformChannelEndpoint server_endpoint) {
+  CallbackChannelDelegate client_delegate;
+  scoped_refptr<Channel> client = Channel::Create(
+      &client_delegate, ConnectionParams(std::move(client_endpoint)),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  client->Start();
+
+  CallbackChannelDelegate server_delegate;
+  scoped_refptr<Channel> server = Channel::Create(
+      &server_delegate, ConnectionParams(std::move(server_endpoint)),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  server->Start();
+
+  // The receive-right (server) end validates the send-right (client) end during
+  // the handshake, so watch both ends for an error.
+  bool got_message = false;
+  bool got_error = false;
+  base::RunLoop loop;
+  auto quit = loop.QuitClosure();
+  client_delegate.set_on_message(base::BindLambdaForTesting([&]() {
+    got_message = true;
+    quit.Run();
+  }));
+  client_delegate.set_on_error(base::BindLambdaForTesting([&]() {
+    got_error = true;
+    quit.Run();
+  }));
+  server_delegate.set_on_error(base::BindLambdaForTesting([&]() {
+    got_error = true;
+    quit.Run();
+  }));
+
+  server->Write(Channel::Message::CreateMessage(0, 0));
+  loop.Run();
+
+  client->ShutDown();
+  server->ShutDown();
+  base::RunLoop().RunUntilIdle();
+
+  if (got_error) {
+    return RequirementResult::kChannelError;
+  }
+  CHECK(got_message);
+  return RequirementResult::kMessageDispatched;
+}
+
+}  // namespace
+
+TEST(ChannelTest, PeerProcessRequirementMet) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+
+  PlatformChannelEndpoint client_endpoint =
+      platform_channel.TakeLocalEndpoint();
+  client_endpoint.set_peer_process_requirement(
+      base::mac::ProcessRequirement::AlwaysMatchesForTesting());
+
+  EXPECT_EQ(RequirementResult::kMessageDispatched,
+            RunPeerRequirementExchange(std::move(client_endpoint),
+                                       platform_channel.TakeRemoteEndpoint()));
+}
+
+TEST(ChannelTest, PeerProcessRequirementUnmetOnSendRight) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+
+  PlatformChannelEndpoint client_endpoint =
+      platform_channel.TakeLocalEndpoint();
+  client_endpoint.set_peer_process_requirement(
+      base::mac::ProcessRequirement::NeverMatchesForTesting());
+
+  EXPECT_EQ(RequirementResult::kChannelError,
+            RunPeerRequirementExchange(std::move(client_endpoint),
+                                       platform_channel.TakeRemoteEndpoint()));
+}
+
+TEST(ChannelTest, PeerProcessRequirementUnmetOnReceiveRight) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+
+  PlatformChannelEndpoint server_endpoint =
+      platform_channel.TakeRemoteEndpoint();
+  server_endpoint.set_peer_process_requirement(
+      base::mac::ProcessRequirement::NeverMatchesForTesting());
+
+  EXPECT_EQ(RequirementResult::kChannelError,
+            RunPeerRequirementExchange(platform_channel.TakeLocalEndpoint(),
+                                       std::move(server_endpoint)));
+}
+
+// Mirror of PeerProcessRequirementMet for the receive-right end: when the
+// endpoint that receives the handshake carries a requirement the handshake
+// sender satisfies, the exchange succeeds. This is the symmetric accept path
+// to PeerProcessRequirementUnmetOnReceiveRight.
+TEST(ChannelTest, PeerProcessRequirementMetOnReceiveRight) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  PlatformChannel platform_channel;
+
+  PlatformChannelEndpoint server_endpoint =
+      platform_channel.TakeRemoteEndpoint();
+  server_endpoint.set_peer_process_requirement(
+      base::mac::ProcessRequirement::AlwaysMatchesForTesting());
+
+  EXPECT_EQ(RequirementResult::kMessageDispatched,
+            RunPeerRequirementExchange(platform_channel.TakeLocalEndpoint(),
+                                       std::move(server_endpoint)));
+}
+
+// A peer that completes the channel handshake but never sends a message that
+// satisfies the requirement (for example, a process squatting the bootstrap
+// name that stalls on purpose) must not hold the channel open indefinitely.
+// After kPeerValidationTimeout (see channel_mac.cc) the client fails closed.
+TEST(ChannelTest, PeerProcessRequirementTimesOutWhenPeerSilent) {
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  PlatformChannel platform_channel;
+
+  PlatformChannelEndpoint client_endpoint =
+      platform_channel.TakeLocalEndpoint();
+  client_endpoint.set_peer_process_requirement(
+      base::mac::ProcessRequirement::AlwaysMatchesForTesting());
+
+  CallbackChannelDelegate client_delegate;
+  scoped_refptr<Channel> client = Channel::Create(
+      &client_delegate, ConnectionParams(std::move(client_endpoint)),
+      Channel::HandlePolicy::kAcceptHandles,
+      base::SingleThreadTaskRunner::GetCurrentDefault());
+  client->Start();
+
+  // Keep the receive-right end alive but never create a channel on it, so the
+  // peer stays silent and is never authenticated. Holding the endpoint keeps
+  // the client's send right from going dead (which would error via a different
+  // path), isolating the validation-timeout behavior under test.
+  PlatformChannelEndpoint server_endpoint =
+      platform_channel.TakeRemoteEndpoint();
+
+  bool got_error = false;
+  client_delegate.set_on_error(
+      base::BindLambdaForTesting([&]() { got_error = true; }));
+
+  // Advance past the validation deadline; the client should fail closed.
+  task_environment.FastForwardBy(base::Seconds(15));
+
+  EXPECT_TRUE(got_error);
+
+  client->ShutDown();
+  base::RunLoop().RunUntilIdle();
 }
 #endif  // BUILDFLAG(IS_MAC)
 

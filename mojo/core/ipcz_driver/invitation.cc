@@ -28,6 +28,10 @@
 #include "base/process/process_info.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif
+
 namespace mojo::core::ipcz_driver {
 
 namespace {
@@ -96,9 +100,18 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     return IPCZ_INVALID_DRIVER_HANDLE;
   }
 
-  auto transport = Transport::Create(
-      endpoint_types, PlatformChannelEndpoint(std::move(handle)),
-      std::move(remote_process), remote_process_trust);
+  PlatformChannelEndpoint channel_endpoint(std::move(handle));
+#if BUILDFLAG(IS_MAC)
+  if (endpoint.peer_process_requirement) {
+    channel_endpoint.set_peer_process_requirement(
+        *static_cast<const base::mac::ProcessRequirement*>(
+            endpoint.peer_process_requirement));
+  }
+#endif
+
+  auto transport =
+      Transport::Create(endpoint_types, std::move(channel_endpoint),
+                        std::move(remote_process), remote_process_trust);
   transport->SetErrorHandler(error_handler, error_handler_context);
   transport->set_leak_channel_on_shutdown(options.leak_channel_on_shutdown);
   transport->set_is_peer_trusted(options.is_peer_trusted);

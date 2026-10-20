@@ -70,7 +70,15 @@ PlatformChannelEndpoint NamedPlatformChannel::CreateClientEndpoint(
     return PlatformChannelEndpoint();
   }
 
-  return PlatformChannelEndpoint(PlatformHandle(std::move(send_right)));
+  // The bootstrap server hands out a send right to whichever process owns
+  // `server_name`, with no authentication of the registrant. If the caller
+  // supplied a server process requirement, attach it to the endpoint so that
+  // the channel refuses the connection unless the server satisfies it.
+  PlatformChannelEndpoint endpoint(PlatformHandle(std::move(send_right)));
+  if (options.server_process_requirement) {
+    endpoint.set_peer_process_requirement(*options.server_process_requirement);
+  }
+  return endpoint;
 }
 
 }  // namespace mojo

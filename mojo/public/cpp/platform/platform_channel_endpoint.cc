@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -71,11 +72,31 @@ PlatformChannelEndpoint& PlatformChannelEndpoint::operator=(
 
 void PlatformChannelEndpoint::reset() {
   handle_.reset();
+#if BUILDFLAG(IS_MAC)
+  peer_process_requirement_.reset();
+#endif
 }
 
 PlatformChannelEndpoint PlatformChannelEndpoint::Clone() const {
-  return PlatformChannelEndpoint(handle_.Clone());
+  PlatformChannelEndpoint endpoint(handle_.Clone());
+#if BUILDFLAG(IS_MAC)
+  endpoint.peer_process_requirement_ = peer_process_requirement_;
+#endif
+  return endpoint;
 }
+
+#if BUILDFLAG(IS_MAC)
+void PlatformChannelEndpoint::set_peer_process_requirement(
+    base::mac::ProcessRequirement requirement) {
+  CHECK(!requirement.ShouldCheckDynamicValidityOnly());
+  peer_process_requirement_ = std::move(requirement);
+}
+
+std::optional<base::mac::ProcessRequirement>
+PlatformChannelEndpoint::TakePeerProcessRequirement() {
+  return std::exchange(peer_process_requirement_, std::nullopt);
+}
+#endif
 
 void PlatformChannelEndpoint::PrepareToPass(HandlePassingInfo& info,
                                             base::CommandLine& command_line) {
