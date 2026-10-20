@@ -113,6 +113,12 @@
   white-space: nowrap;
 }
 
+/* Grey the label while the browser window is inactive. The browser only sets
+ * controls-appear-inactive on Mac. The icon keeps its color. */
+:host-context(toolbar-app[controls-appear-inactive]) #text {
+  color: var(--color-label-foreground-disabled);
+}
+
 /* SlideAndCrossfade animation styling: used by the AI Mode page action chip
  * to drop the leading icon, slide the label left, and transition in a trailing
  * arrow icon when user typing begins, and vice-versa when cleared.

@@ -12,7 +12,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {TestSearchboxBrowserProxy} from 'chrome://webui-test/cr_components/searchbox/test_searchbox_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, resetInitialStateForTesting, SearchboxBrowserProxy, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {AppMenuIconType, AppMenuSeverity, AvatarToolbarButtonState, BrowserProxyImpl, ContentSettingImageType, createDefaultLocationBarState, INVALID_FOCUS_REQUEST_HANDLE, PageActionAnimationStyle, PageActionId, resetInitialStateForTesting, SearchboxBrowserProxy, TrackedElementManager} from 'chrome://webui-toolbar.top-chrome/app.js';
 import type {BrowserProxy, FocusRequestListener, LhsChipIdentifier, ToolbarAppElement, ToolbarStateListener} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 import {TestToolbarUiHandler} from './test_toolbar_browser_proxy.js';
@@ -1189,33 +1189,72 @@ suite('ToolbarAppTest', () => {
     const state = createMockToolbarState();
     state.avatarControlState.text = 'Paused';
     state.appMenuControlState.labelText = 'Update';
+    state.locationBarState.selectedKeyword = {
+      shortName: 'Bookmarks',
+      fullName: 'Search Bookmarks',
+      icon: {handleId: 0n},
+    };
+    state.locationBarState.contentSettingImageStates = [{
+      type: ContentSettingImageType.kPopups,
+      isBlocked: true,
+      tooltip: '',
+      accessibilityString: '',
+      shouldRunAnimation: false,
+      explanatoryString: 'Pop-up blocked',
+      identifier: {nativeIdentifier: '', secondaryIdentifier: ''},
+    }];
+    state.locationBarState.pageActionStates = [{
+      pageActionId: PageActionId.kActionShowTranslate,
+      accessibleName: '',
+      tooltipText: '',
+      icon: {handleId: 0n},
+      text: 'Translate',
+      shouldShowChip: true,
+      shouldAnimateChipIn: false,
+      shouldAnimateChipOut: false,
+      backgroundColorOverride: null,
+      foregroundColorOverride: null,
+      identifier: {nativeIdentifier: '', secondaryIdentifier: ''},
+      isActive: false,
+      tabSwitchToken: 0,
+      animationStyle: PageActionAnimationStyle.kStandard,
+      trailingIcon: null,
+      showTrailingIcon: false,
+    }];
     browserProxy.fireToolbarStateListener([], state);
     await microtasksFinished();
 
-    const avatarText =
-        app.shadowRoot.querySelector('avatar-button')!.shadowRoot.querySelector(
-            '#text')!;
-    const appMenuText =
-        app.shadowRoot.querySelector(
-                          'app-menu-button')!.shadowRoot.querySelector('#text')!
-        ;
-    const avatarTextColor = getComputedStyle(avatarText).color;
-    const appMenuTextColor = getComputedStyle(appMenuText).color;
-    assertTrue(avatarTextColor !== disabledLabelColor);
-    assertTrue(appMenuTextColor !== disabledLabelColor);
+    const root = app.shadowRoot;
+    const locationBar = root.querySelector('location-bar')!.shadowRoot;
+    const labels = [
+      root.querySelector('avatar-button')!.shadowRoot.querySelector('#text')!,
+      root.querySelector('app-menu-button')!.shadowRoot.querySelector('#text')!,
+      locationBar.querySelector('selected-keyword')!.shadowRoot.querySelector(
+          '#text-wrap')!,
+      locationBar.querySelector('content-settings-icons')!.shadowRoot
+          .querySelector('content-setting-icon')!.shadowRoot.querySelector(
+              '#label')!,
+      locationBar.querySelector('page-action-icons')!.shadowRoot
+          .querySelector('page-action-icon')!.shadowRoot.querySelector('#text')!
+      ,
+    ];
+    const activeColors = labels.map(label => getComputedStyle(label).color);
+    assertFalse(activeColors.includes(disabledLabelColor));
 
     // Labels use the disabled label color while the window is inactive.
     state.controlsAppearInactive = true;
     browserProxy.fireToolbarStateListener([], {...state});
     await microtasksFinished();
-    assertEquals(disabledLabelColor, getComputedStyle(avatarText).color);
-    assertEquals(disabledLabelColor, getComputedStyle(appMenuText).color);
+    for (const label of labels) {
+      assertEquals(disabledLabelColor, getComputedStyle(label).color);
+    }
 
     state.controlsAppearInactive = false;
     browserProxy.fireToolbarStateListener([], {...state});
     await microtasksFinished();
-    assertEquals(avatarTextColor, getComputedStyle(avatarText).color);
-    assertEquals(appMenuTextColor, getComputedStyle(appMenuText).color);
+    labels.forEach((label, i) => {
+      assertEquals(activeColors[i], getComputedStyle(label).color);
+    });
 
     rootStyle.removeProperty('--color-label-foreground-disabled');
   });

@@ -137,6 +137,12 @@ icon-from-table {
   text-wrap: nowrap;
 }
 
+/* Grey the label while the browser window is inactive. The browser only sets
+ * controls-appear-inactive on Mac. The icon keeps its color. */
+:host-context(toolbar-app[controls-appear-inactive]) #text-wrap {
+  color: var(--color-label-foreground-disabled);
+}
+
 /* If short overflows, we show it; otherwise we use long.
 */
 @container short-wrap scroll-state(scrollable:inline) {
