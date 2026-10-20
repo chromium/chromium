@@ -32,6 +32,17 @@ NavigationInitiatorHolder::AttacherCallback(NavigationInitiator initiator) {
 
 NavigationInitiator GetNavigationInitiator(
     content::NavigationHandle& navigation_handle) {
+  // The initiator explicitly attached by a trigger, e.g. `kBookmarkBar`.
+  if (NavigationInitiatorHolder* holder =
+          NavigationInitiatorHolder::GetForNavigationHandle(
+              navigation_handle)) {
+    return holder->initiator();
+  }
+
+  // Below are heuristics using `ui::PageTransition` and other properties of
+  // `navigation_handle`, mainly targeting renderer-initiated navigations (plus
+  // history/reload navigations).
+
   // Check forward/back and BFCache before reload, as reloaded entries preserve
   // `PAGE_TRANSITION_FORWARD_BACK` which `PageTransitionCoreTypeIs()` strips.
   if ((navigation_handle.GetPageTransition() &
@@ -55,15 +66,6 @@ NavigationInitiator GetNavigationInitiator(
   if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
                                    ui::PAGE_TRANSITION_RELOAD)) {
     return navigation_initiator::kReload;
-  }
-
-  // The initiator that a trigger attached, e.g. `kBookmarkBar`. It is more
-  // specific than the ones derived from `ui::PageTransition` below, so it
-  // takes precedence over them.
-  if (NavigationInitiatorHolder* holder =
-          NavigationInitiatorHolder::GetForNavigationHandle(
-              navigation_handle)) {
-    return holder->initiator();
   }
 
   if (navigation_handle.IsRendererInitiated() &&

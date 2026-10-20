@@ -171,9 +171,9 @@ class NavigationInitiatorHolder
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
-// Returns the `NavigationInitiator` for `navigation_handle`, derived from
-// `ui::PageTransition` or an attached `NavigationInitiatorHolder`, falling back
-// to `kOther`.
+// Returns the `NavigationInitiator` for `navigation_handle`, derived from an
+// attached `NavigationInitiatorHolder` or `ui::PageTransition`, falling back to
+// `kOther`.
 //
 // Timing of availability: The attachment is not guaranteed to be done at
 // `PageLoadMetricsObserver::OnStart()`. `PageLoadMetricsObserver::OnCommit()`
