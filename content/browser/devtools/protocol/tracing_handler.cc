@@ -674,7 +674,9 @@ std::string TracingHandler::UpdateTraceDataBuffer(
         break;
       case '}':
         if (!state.in_string && !state.slashed) {
-          CHECK_GT(state.open_braces, 0, base::NotFatalUntil::M159);
+          // TODO(crbug.com/573976460): CHECK-exclusion: Convert to a CHECK once
+          // we are confident it won't be triggered.
+          DCHECK_GT(state.open_braces, 0);
           state.open_braces--;
           if (state.open_braces == 0)
             end = state.data.size() + state.pos + 1;
