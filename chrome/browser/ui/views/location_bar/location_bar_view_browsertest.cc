@@ -775,46 +775,6 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewAddContextButtonBrowserTest,
       [&]() { return location_bar_view->ShouldShowAddContextButton(); }));
 }
 
-IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, OmniboxActionsRegistered) {
-  LocationBarView* location_bar_view = GetLocationBarView();
-  ASSERT_TRUE(location_bar_view);
-
-  auto* action_manager = &actions::ActionManager::Get();
-  ASSERT_TRUE(action_manager);
-  auto* const root_action_item =
-      BrowserActions::From(browser())->root_action_item();
-
-  struct ExpectedAction {
-    actions::ActionId action_id;
-    int string_id;
-  };
-
-  std::vector<ExpectedAction> expected_actions = {
-      {kActionOmniboxContextAddImage, IDS_NTP_COMPOSE_ADD_IMAGE},
-      {kActionOmniboxContextAddFile, IDS_NTP_COMPOSE_ADD_FILE},
-      {kActionOmniboxContextCreateImages, IDS_NTP_COMPOSE_CREATE_IMAGES},
-      {kActionOmniboxContextDeepResearch, IDS_NTP_COMPOSE_DEEP_SEARCH},
-      {kActionOmniboxContextCanvas, IDS_NTP_COMPOSE_CANVAS},
-      {kActionOmniboxContextSetModelAuto, IDS_NTP_COMPOSE_AUTO_MODEL},
-      {kActionOmniboxContextSetModelThinking, IDS_NTP_COMPOSE_THINKING_3_PRO},
-  };
-
-  for (const auto& expected : expected_actions) {
-    auto* action =
-        action_manager->FindAction(expected.action_id, root_action_item);
-    ASSERT_TRUE(action) << "Action not found: " << expected.action_id;
-    EXPECT_EQ(action->GetText(), l10n_util::GetStringUTF16(expected.string_id));
-    EXPECT_FALSE(action->GetImage().IsEmpty());
-  }
-
-  // kActionOmniboxContextSetModelRegular has no text (only icon).
-  auto* regular_model_action = action_manager->FindAction(
-      kActionOmniboxContextSetModelRegular, root_action_item);
-  ASSERT_TRUE(regular_model_action);
-  EXPECT_TRUE(regular_model_action->GetText().empty());
-  EXPECT_FALSE(regular_model_action->GetImage().IsEmpty());
-}
-
 // Tests that unsafe schemes are not allowed to be opened from middle clicks.
 IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest,
                        MiddleClickPasteAndGoBlocksUnsafeSchemes) {

@@ -1382,19 +1382,3 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationPendingBrowserTest,
   ASSERT_TRUE(menu_controller);
   menu_controller->Cancel(views::MenuController::ExitType::kAll);
 }
-
-// A location bar action that selects an AIM tool opens AI Mode, which creates
-// the pending AIM content.
-IN_PROC_BROWSER_TEST_F(OmniboxAimPopupDeferCreationPendingBrowserTest,
-                       LocationBarActionCreatesAimContent) {
-  auto* aim_presenter = location_bar()->GetOmniboxPopupAimPresenter();
-  ASSERT_TRUE(aim_presenter);
-  ASSERT_FALSE(aim_presenter->GetWebUIContent());
-
-  actions::ActionItem* action = actions::ActionManager::Get().FindAction(
-      kActionOmniboxContextDeepResearch,
-      BrowserActions::From(browser())->root_action_item());
-  ASSERT_TRUE(action);
-  action->InvokeAction();
-  EXPECT_TRUE(aim_presenter->GetWebUIContent());
-}

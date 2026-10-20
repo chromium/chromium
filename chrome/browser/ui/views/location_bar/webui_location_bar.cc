@@ -35,7 +35,6 @@
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_actions.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
@@ -211,8 +210,6 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
       omnibox_controller_->popup_state_manager()->AddPopupStateChangedCallback(
           base::BindRepeating(&WebUILocationBar::OnPopupStateChanged,
                               base::Unretained(this)));
-
-  RegisterOmniboxActions(browser_);
 
   is_initialized_ = true;
 }

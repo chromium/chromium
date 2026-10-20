@@ -432,11 +432,6 @@ void BrowserActions::InitializeBrowserActions() {
   AddListeners();
 }
 
-actions::ActionItem* BrowserActions::RegisterAction(
-    std::unique_ptr<actions::ActionItem> action_item) {
-  return root_action_item_->AddChild(std::move(action_item));
-}
-
 void BrowserActions::InitializeSidePanelActions() {
   Profile* const profile = base::to_address(profile_);
   BrowserWindowInterface* const bwi = base::to_address(bwi_);
@@ -3680,17 +3675,6 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kZoomInIcon : kZoomInOldIcon))
-          .Build());
-
-  root_action_item_->AddChild(
-      actions::ActionItem::Builder(
-          base::BindRepeating(
-              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
-                 actions::ActionInvocationContext context) {
-                chrome::ToggleBookmarkBarWhenVisible(bwi->GetProfile());
-              },
-              bwi))
-          .SetActionId(kActionBookmarkBarAlwaysShow)
           .Build());
 
   root_action_item_->AddChild(

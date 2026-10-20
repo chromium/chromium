@@ -83,15 +83,11 @@ source_set("impl") {
   ]
 
   if (toolkit_views) {
-    public += [
-      "location_bar_actions.h",
-      "zoom_bubble_manager_views.h",
-    ]
+    public += [ "zoom_bubble_manager_views.h" ]
     sources += [
       "content_setting_image_view.cc",
       "custom_tab_bar_view.cc",
       "lens_overlay_homework_page_action_controller.cc",
-      "location_bar_actions.cc",
       "location_bar_bubble_delegate_view.cc",
       "location_bar_layout.cc",
       "location_bar_view.cc",
@@ -122,7 +118,6 @@ source_set("impl") {
       "//chrome/browser/glic",
       "//chrome/browser/history_embeddings",
       "//chrome/browser/page_info",
-      "//chrome/browser/resources/omnibox_popup:resources_grit",
       "//chrome/browser/search_engines",
       "//chrome/browser/sharing_hub",
       "//chrome/browser/signin",

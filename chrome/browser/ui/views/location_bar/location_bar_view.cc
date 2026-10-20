@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_actions.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
@@ -94,7 +93,6 @@
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/omnibox_popup_resources.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/contextual_search/input_state_model.h"
@@ -512,8 +510,6 @@ void LocationBarView::Init() {
   Update(nullptr);
 
   hover_animation_.SetSlideDuration(base::Milliseconds(200));
-
-  RegisterOmniboxActions(browser_);
 
   is_initialized_ = true;
 }
