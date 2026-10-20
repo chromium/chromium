@@ -303,7 +303,9 @@ DownloadTargetDeterminer::Result
       return QUIT_DOLOOP;
     }
 
-    CHECK(virtual_path_.IsAbsolute(), base::NotFatalUntil::M161);
+    // TODO(crbug.com/573944055): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(virtual_path_.IsAbsolute());
     return CONTINUE;
   }
 
