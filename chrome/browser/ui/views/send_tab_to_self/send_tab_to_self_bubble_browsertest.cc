@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
+#include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -128,14 +128,7 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest {
       controller_->SetEntryPointDisplayReason(
           send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice);
     }
-    ShowToolbarBubble();
-  }
-
-  void ShowToolbarBubble() {
     controller_->ShowBubble(ShareEntryPoint::kToolbarIcon);
-    if (!controller_->IsBubbleShown()) {
-      PinnedActionTestAccessor::WaitForAnimation(browser());
-    }
   }
 
  protected:
@@ -202,66 +195,86 @@ IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
       kActionSendTabToSelf, browser_action_item);
   action_item->SetEnabled(true);
   action_item->SetVisible(true);
-  PinnedToolbarActions* container =
-      browser_view->toolbar_button_provider()->GetPinnedToolbarActions();
+  PinnedToolbarActionsContainer* container =
+      static_cast<PinnedToolbarActionsContainer*>(
+          browser_view->toolbar_button_provider()->GetPinnedToolbarActions());
   container->UpdateActionState(kActionSendTabToSelf, true);
-  PinnedActionTestAccessor::WaitForAnimation(browser());
+  views::test::WaitForAnimatingLayoutManager(container);
 
   // Find the send tab to self button.
-  PinnedActionTestAccessor accessor(browser(), kActionSendTabToSelf);
-  EXPECT_TRUE(accessor.GetVisible());
-  ASSERT_TRUE(accessor.GetElement());
-  EXPECT_EQ(accessor.GetElement()->identifier(),
+  PinnedActionToolbarButton* send_tab_to_self_button = nullptr;
+  for (views::View* child : container->children()) {
+    if (views::Button::AsButton(child)) {
+      PinnedActionToolbarButton* button =
+          static_cast<PinnedActionToolbarButton*>(child);
+      if (button->GetActionId() == kActionSendTabToSelf) {
+        send_tab_to_self_button = button;
+        break;
+      }
+    }
+  }
+  EXPECT_NE(send_tab_to_self_button, nullptr);
+  EXPECT_EQ(send_tab_to_self_button->GetProperty(views::kElementIdentifierKey),
             kPinnedToolbarActionSendTabToSelfElementId);
 
-  // Clicking the button triggers the bubble and confirm it is shown.
-  EXPECT_EQ(action_item->GetInvokeCount(), 0);
-  accessor.Click();
-  ASSERT_TRUE(controller_->IsBubbleShown());
-  controller_->send_tab_to_self_bubble_view()->set_close_on_deactivate(false);
-  EXPECT_TRUE(action_item->GetIsShowingBubble());
-  EXPECT_EQ(action_item->GetInvokeCount(), 1);
-
-  // Clicking the button while the bubble is shown skips executing the action
-  // rather than re-triggering the bubble.
-  accessor.Click();
-  EXPECT_EQ(action_item->GetInvokeCount(), 1);
+  // Simulate triggering the bubble and confirm it is shown.
+  ui::MouseEvent press_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON, 0);
+  ui::MouseEvent release_event(ui::EventType::kMouseReleased, gfx::Point(),
+                               gfx::Point(), ui::EventTimeForNow(),
+                               ui::EF_LEFT_MOUSE_BUTTON, 0);
+  controller_->ShowBubble(ShareEntryPoint::kToolbarIcon);
   EXPECT_TRUE(controller_->IsBubbleShown());
+
+  // Confirm execution is skipped for the next mouse release.
+  send_tab_to_self_button->OnMousePressed(press_event);
+  EXPECT_TRUE(send_tab_to_self_button->ShouldSkipExecutionForTesting());
+  send_tab_to_self_button->OnMouseReleased(release_event);
+  EXPECT_FALSE(send_tab_to_self_button->ShouldSkipExecutionForTesting());
 }
 
 IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
                        BubbleTriggersCorrectlyWhenNotPinned) {
-  PinnedActionTestAccessor accessor(browser(), kActionSendTabToSelf);
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  PinnedToolbarActionsContainer* container =
+      static_cast<PinnedToolbarActionsContainer*>(
+          browser_view->toolbar_button_provider()->GetPinnedToolbarActions());
 
   // Ensure it is not pinned or popped out.
-  ASSERT_FALSE(accessor.IsPinnedOrPoppedOut());
+  ASSERT_FALSE(container->IsActionPinnedOrPoppedOut(kActionSendTabToSelf));
 
   // Trigger the bubble.
-  ShowToolbarBubble();
+  controller_->ShowBubble(ShareEntryPoint::kToolbarIcon);
   EXPECT_TRUE(controller_->IsBubbleShown());
 
   // Confirm it is now popped out.
-  EXPECT_TRUE(accessor.IsPoppedOut());
-  EXPECT_TRUE(accessor.GetVisible());
+  EXPECT_TRUE(container->IsActionPoppedOut(kActionSendTabToSelf));
+
+  // Find the send tab to self button.
+  PinnedActionToolbarButton* send_tab_to_self_button =
+      container->GetButtonFor(kActionSendTabToSelf);
+  ASSERT_TRUE(send_tab_to_self_button);
+  EXPECT_TRUE(send_tab_to_self_button->GetVisible());
 
   // Confirm the bubble is anchored to the button.
   auto* bubble_delegate = controller_->send_tab_to_self_bubble_view();
-  ASSERT_TRUE(bubble_delegate);
-  EXPECT_FALSE(accessor.GetBubbleAnchor().IsNull());
-  EXPECT_TRUE(bubble_delegate->IsSameAnchor(accessor.GetBubbleAnchor()));
+  EXPECT_EQ(bubble_delegate->GetAnchorView(), send_tab_to_self_button);
+  EXPECT_EQ(send_tab_to_self_button->GetProperty(views::kElementIdentifierKey),
+            kPinnedToolbarActionSendTabToSelfElementId);
 
   // Close the bubble.
   bubble_delegate->GetWidget()->CloseNow();
   EXPECT_FALSE(controller_->IsBubbleShown());
 
   // Confirm it is no longer popped out.
-  EXPECT_FALSE(accessor.IsPoppedOut());
+  EXPECT_FALSE(container->IsActionPoppedOut(kActionSendTabToSelf));
 }
 
 IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleParameterizedTest,
                        ShowBubbleMultipleTimes) {
   // Call ShowBubble multiple times. The early return prevents re-creation.
-  ShowToolbarBubble();
+  controller_->ShowBubble(ShareEntryPoint::kToolbarIcon);
   SendTabToSelfBubbleView* first_view =
       controller_->send_tab_to_self_bubble_view();
   EXPECT_TRUE(first_view);

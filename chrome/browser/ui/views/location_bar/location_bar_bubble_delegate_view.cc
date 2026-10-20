@@ -151,7 +151,6 @@ void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
   set_adjust_if_offscreen(true);
   GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
-  SizeToContents();
 
   if (reason == USER_GESTURE) {
     GetWidget()->Show();
