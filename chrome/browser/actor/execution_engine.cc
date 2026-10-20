@@ -9,11 +9,14 @@
 #include <cstddef>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
@@ -29,6 +32,7 @@
 #include "base/state_transitions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -88,6 +92,8 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -99,6 +105,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/event_dispatcher.h"
@@ -231,9 +238,16 @@ ExecutionEngine::NavigationDecisionCallback TrackPendingNavigation(
 
 struct OriginGatingDecisionContext
     : public origin_gating::GatingDecisionContext {
+  explicit OriginGatingDecisionContext(bool is_dry_run = false)
+      : is_dry_run(is_dry_run) {}
+  ~OriginGatingDecisionContext() override = default;
+
   // Whether the destination origin is considered sensitive. Nullopt until
   // optimization guide has been queried.
   std::optional<bool> destination_is_sensitive;
+  // When true, the evaluation must not prompt the user or mutate the origin
+  // gating cache.
+  const bool is_dry_run = false;
 };
 
 struct NavigationResponseContext : public OriginGatingDecisionContext {
@@ -258,8 +272,10 @@ struct NavigationResponseContext : public OriginGatingDecisionContext {
 // it.
 struct PageActionGatingContext : public OriginGatingDecisionContext {
   explicit PageActionGatingContext(
-      base::WeakPtr<content::WebContents> web_contents)
-      : web_contents(std::move(web_contents)) {}
+      base::WeakPtr<content::WebContents> web_contents,
+      bool is_dry_run = false)
+      : OriginGatingDecisionContext(is_dry_run),
+        web_contents(std::move(web_contents)) {}
   ~PageActionGatingContext() override = default;
 
   base::WeakPtr<content::WebContents> web_contents;
@@ -751,6 +767,43 @@ GetOriginGatingCacheScope() {
                                                      : CacheScope::kOrigin;
 }
 
+struct WouldBeAllowed {};
+struct WouldRequireUserConfirmation {};
+struct WouldBlock {
+  MayActOnUrlBlockReason reason;
+};
+
+// Outcome of dry-run page-action gating for a single origin, ordered from least
+// to most restrictive so that `index()` increases with restrictiveness.
+using SubframeDryRunResult =
+    std::variant<WouldBeAllowed, WouldRequireUserConfirmation, WouldBlock>;
+
+// Records the most restrictive of `results`, since that is what would apply to
+// the action if every frame were gated.
+void RecordMostRestrictiveSubframeDryRunResult(
+    std::vector<SubframeDryRunResult> results) {
+  CHECK(!results.empty());
+  const SubframeDryRunResult& most_restrictive =
+      *std::ranges::max_element(results, {}, &SubframeDryRunResult::index);
+  std::visit(
+      absl::Overload{
+          [](WouldBeAllowed) {
+            RecordSubframeGatingDryRunOutcome(
+                SubframeGatingDryRunOutcome::kWouldBeAllowed);
+          },
+          [](WouldRequireUserConfirmation) {
+            RecordSubframeGatingDryRunOutcome(
+                SubframeGatingDryRunOutcome::kWouldRequireUserConfirmation);
+          },
+          [](WouldBlock block) {
+            RecordSubframeGatingDryRunOutcome(
+                SubframeGatingDryRunOutcome::kWouldBlock);
+            RecordSubframeGatingDryRunBlockReason(block.reason);
+          },
+      },
+      most_restrictive);
+}
+
 }  // namespace
 
 ToolDelegate::CredentialWithPermission::CredentialWithPermission() = default;
@@ -1121,6 +1174,15 @@ void ExecutionEngine::OnNoVerdict(
   if (event.is_navigation_request()) {
     std::move(callback).Run(
         {.is_allowed = true, .did_prompt_user = false, .bypass_cache = true});
+    return;
+  }
+
+  auto* decision_context = static_cast<OriginGatingDecisionContext*>(context);
+  CHECK(decision_context);
+  if (decision_context->is_dry_run) {
+    std::move(callback).Run({.is_allowed = !requires_user_confirmation,
+                             .did_prompt_user = false,
+                             .bypass_cache = true});
     return;
   }
 
@@ -2015,6 +2077,100 @@ void ExecutionEngine::RemoveActorSurface(
 base::WeakPtr<actor_login::ActionSequenceDelegate>
 ExecutionEngine::GetActionSequenceDelegate() {
   return GetActionSequenceWeakPtr();
+}
+
+void ExecutionEngine::OnActionTargetFrameResolved(
+    RenderFrameHost& target_frame) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!base::FeatureList::IsEnabled(kGlicActorSubframeGatingDryRun)) {
+    return;
+  }
+  // Only measure actions that are subject to page-action gating on the main
+  // frame (see `KickOffNextAction`).
+  if (!GetInProgressAction().RequiresUrlCheckInCurrentTab()) {
+    return;
+  }
+
+  // Page actions are only gated on the main frame's origin (see
+  // `SafetyChecksForNextAction`). Walk up to the main frame, collecting the
+  // distinct origins of the frames between the target and the main frame.
+  std::set<url::Origin> origins;
+  RenderFrameHost* main_frame = &target_frame;
+  while (RenderFrameHost* parent = main_frame->GetParentOrOuterDocument()) {
+    origins.insert(
+        OriginOrPrecursorIfOpaque(main_frame->GetLastCommittedOrigin()));
+    main_frame = parent;
+  }
+  if (main_frame == &target_frame) {
+    RecordPageActionTargetFrameType(PageActionTargetFrameType::kMainFrame);
+    // The dry run wouldn't add anything on top of the existing main-frame
+    // checks, so skip it.
+    return;
+  }
+
+  origins.erase(
+      OriginOrPrecursorIfOpaque(main_frame->GetLastCommittedOrigin()));
+  if (origins.empty()) {
+    RecordPageActionTargetFrameType(
+        PageActionTargetFrameType::kSameOriginSubframe);
+    // Every subframe in the chain is same-origin with the main frame, so the
+    // dry run wouldn't add anything on top of the main-frame check.
+    return;
+  }
+  RecordPageActionTargetFrameType(
+      PageActionTargetFrameType::kCrossOriginSubframe);
+
+  // The dry run is for metrics only, so keep it off the action's critical path.
+  // Bound to `GetWeakPtr()` rather than the action sequence so the outcome is
+  // still recorded if the action sequence ends first.
+  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(
+                     &ExecutionEngine::RunSubframeGatingDryRun, GetWeakPtr(),
+                     WebContents::FromRenderFrameHost(main_frame)->GetWeakPtr(),
+                     GetClientToolForRequest(GetInProgressAction()),
+                     std::move(origins)));
+}
+
+void ExecutionEngine::RunSubframeGatingDryRun(
+    base::WeakPtr<WebContents> web_contents,
+    origin_gating::ClientTool tool,
+    std::set<url::Origin> origins) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!web_contents) {
+    return;
+  }
+
+  auto barrier = base::BarrierCallback<SubframeDryRunResult>(
+      origins.size(),
+      base::BindOnce(&RecordMostRestrictiveSubframeDryRunResult));
+  for (const url::Origin& origin : origins) {
+    GURL url = origin.GetURL();
+    GetOriginGatingChecker().ComputeGatingDecision(
+        std::make_unique<PageActionGatingContext>(web_contents,
+                                                  /*is_dry_run=*/true),
+        GateableEvent(
+            origin_gating::PageActionEvent{.destination = url, .tool = tool}),
+        base::BindOnce(
+            [](const GURL& url,
+               std::unique_ptr<origin_gating::GatingDecisionContext>,
+               origin_gating::GatingDecision decision) -> SubframeDryRunResult {
+              if (decision.is_allowed) {
+                return WouldBeAllowed{};
+              }
+              if (decision.attribution == DecisionSource::kNoVerdict) {
+                // A disallowed dry run without a verdict means the destination
+                // requires user confirmation, so a live evaluation's
+                // `OnNoVerdict` would prompt the user.
+                return WouldRequireUserConfirmation{};
+              }
+              return WouldBlock{
+                  .reason = MapGatingDecisionToBlockReason(decision, url),
+              };
+            },
+            url)
+            .Then(barrier));
+  }
 }
 
 base::CallbackListSubscription ExecutionEngine::RegisterActionSequenceEnded(

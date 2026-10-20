@@ -229,6 +229,21 @@ void RecordNavigationGatingDecision(ExecutionEngine::GatingDecision decision) {
                                 decision);
 }
 
+void RecordPageActionTargetFrameType(PageActionTargetFrameType type) {
+  base::UmaHistogramEnumeration("Actor.OriginGating.TargetFrameType", type);
+}
+
+void RecordSubframeGatingDryRunOutcome(SubframeGatingDryRunOutcome outcome) {
+  base::UmaHistogramEnumeration("Actor.OriginGating.SubframeDryRun.Outcome",
+                                outcome);
+}
+
+void RecordSubframeGatingDryRunBlockReason(
+    MayActOnUrlBlockReason block_reason) {
+  base::UmaHistogramEnumeration("Actor.OriginGating.SubframeDryRun.BlockReason",
+                                block_reason);
+}
+
 // Records the outcome of an post-performActions observation fetch.
 void RecordObservationOutcomeHistogram(
     const optimization_guide::proto::ActionsResult& result,

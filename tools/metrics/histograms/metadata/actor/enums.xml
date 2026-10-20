@@ -304,6 +304,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:ActorLoginSelectedAccountType) -->
 
+<!-- LINT.IfChange(ActorMayActOnUrlBlockReason) -->
+
+<enum name="ActorMayActOnUrlBlockReason">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="ExternalProtocol"/>
+  <int value="2" label="IpAddress"/>
+  <int value="3" label="LookalikeDomain"/>
+  <int value="4" label="OptimizationGuideBlock"/>
+  <int value="5" label="SafeBrowsing"/>
+  <int value="6" label="TabIsErrorDocument"/>
+  <int value="7" label="WrongScheme"/>
+  <int value="8" label="EnterprisePolicy"/>
+  <int value="9" label="BlockedByStaticList"/>
+  <int value="10" label="BlockedByContainerConfig"/>
+  <int value="11" label="DangerousMimeType"/>
+  <int value="12" label="TaskCancelled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/site_policy.h:MayActOnUrlBlockReason) -->
+
 <!-- LINT.IfChange(ActorNotificationPermissionState) -->
 
 <enum name="ActorNotificationPermissionState">
@@ -324,6 +344,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.h:ActorObservationOutcome) -->
+
+<!-- LINT.IfChange(ActorPageActionTargetFrameType) -->
+
+<enum name="ActorPageActionTargetFrameType">
+  <int value="0" label="MainFrame"/>
+  <int value="1" label="SameOriginSubframe"/>
+  <int value="2" label="CrossOriginSubframe"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.h:ActorPageActionTargetFrameType) -->
 
 <!-- LINT.IfChange(ActorPipExitReason) -->
 
@@ -363,6 +393,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:ActorServerConfirmationResult) -->
+
+<!-- LINT.IfChange(ActorSubframeGatingDryRunOutcome) -->
+
+<enum name="ActorSubframeGatingDryRunOutcome">
+  <int value="0" label="WouldBeAllowed"/>
+  <int value="1" label="WouldRequireUserConfirmation"/>
+  <int value="2" label="WouldBlock"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.h:ActorSubframeGatingDryRunOutcome) -->
 
 <!-- LINT.IfChange(ActorTabObservationResult) -->
 

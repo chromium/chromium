@@ -194,6 +194,32 @@ mojom::ObservedToolTargetPtr ToMojoObservedToolTarget(
   return observed_target;
 }
 
+// Returns the most specific frame targeted by `target`, which may be a
+// descendant of `local_root` rendered in the same process. For DOM node
+// targets this is the document named by the target; for coordinate targets it
+// is the document hit in the last observation, if that document is rendered by
+// `local_root`'s widget. Falls back to `local_root`.
+RenderFrameHost& GetMostSpecificTargetFrame(
+    const PageTarget& target,
+    RenderFrameHost& local_root,
+    WebContents& web_contents,
+    base::optional_ref<const TargetNodeInfo> observed_target_node_info) {
+  RenderFrameHost* frame = nullptr;
+  if (const DomNode* node = std::get_if<DomNode>(&target)) {
+    frame = optimization_guide::GetRenderFrameForDocumentIdentifier(
+        web_contents, node->document_identifier);
+  } else if (observed_target_node_info) {
+    frame = optimization_guide::GetRenderFrameForDocumentIdentifier(
+        web_contents,
+        observed_target_node_info->document_identifier.serialized_token());
+  }
+  if (!frame ||
+      frame->GetRenderWidgetHost() != local_root.GetRenderWidgetHost()) {
+    return local_root;
+  }
+  return *frame;
+}
+
 }  // namespace
 
 // Observer to track if the a given RenderFrameHost is changed.
@@ -279,13 +305,13 @@ void PageTool::Validate(ToolCallback callback) {
   }
 
   if (validation_supported) {
-    mojom::ActionResultPtr observation_result =
+    base::expected<RenderFrameHost*, mojom::ActionResultPtr> target_frame =
         ComputeObservedTargetAndValidateFrame(last_observation, frame);
 
-    if (!IsOk(*observation_result)) {
+    if (!target_frame.has_value()) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(callback), std::move(observation_result)));
+          base::BindOnce(std::move(callback), std::move(target_frame).error()));
       return;
     }
   }
@@ -459,27 +485,28 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     RecordSplitModeTimeOfUseFrameStatus(SplitModeTimeOfUseFrameStatus::kMatch);
   }
 
-  mojom::ActionResultPtr observation_result =
+  base::expected<RenderFrameHost*, mojom::ActionResultPtr> target_frame =
       ComputeObservedTargetAndValidateFrame(last_observation, frame);
-  bool is_observation_ok = IsOk(*observation_result);
-  RecordTimeOfUseObservationSuccess(is_observation_ok);
+  RecordTimeOfUseObservationSuccess(target_frame.has_value());
 
-  if (!is_observation_ok) {
-    return observation_result;
+  if (!target_frame.has_value()) {
+    return std::move(target_frame).error();
   }
 
   has_completed_time_of_use_ = true;
   target_document_ = frame->GetWeakDocumentPtr();
+  tool_delegate().OnActionTargetFrameResolved(**target_frame);
 
   return MakeOkResult();
 }
 
-mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
+base::expected<RenderFrameHost*, mojom::ActionResultPtr>
+PageTool::ComputeObservedTargetAndValidateFrame(
     const AnnotatedPageContent* last_observation,
     content::RenderFrameHost* frame) {
   ActorSurface* actor_surface = actor_surface_handle_.Get();
   if (!actor_surface) {
-    return MakeResult(mojom::ActionResultCode::kTabWentAway);
+    return base::unexpected(MakeResult(mojom::ActionResultCode::kTabWentAway));
   }
   WebContents* web_contents = actor_surface->GetWebContents();
 
@@ -493,7 +520,8 @@ mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
     const gfx::Point& point = std::get<gfx::Point>(request_->GetTarget());
     gfx::Size content_size = web_contents->GetSize();
     if (!gfx::Rect(content_size).Contains(point)) {
-      return MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds);
+      return base::unexpected(
+          MakeResult(mojom::ActionResultCode::kCoordinatesOutOfBounds));
     }
   }
 
@@ -510,7 +538,8 @@ mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
 
   if (mojom::ActionResultPtr validation_result = ValidateTargetInLastApc(
           *request_, *web_contents, observed_target_node_info)) {
-    return validation_result;
+    CHECK(!IsOk(*validation_result));
+    return base::unexpected(std::move(validation_result));
   }
 
   // Perform validation for coordinate based target only.
@@ -520,22 +549,23 @@ mojom::ActionResultPtr PageTool::ComputeObservedTargetAndValidateFrame(
     // for the first action.
     if (base::FeatureList::IsEnabled(features::kGlicActorToctouValidation) &&
         !last_observation) {
-      return MakeResult(
+      return base::unexpected(MakeResult(
           mojom::ActionResultCode::kFrameLocationChangedSinceObservation,
           /*requires_page_stabilization=*/false,
-          "No prior observation available for TOCTOU validation");
+          "No prior observation available for TOCTOU validation"));
     } else if (last_observation &&
                !ValidateTargetFrameCandidate(request_->GetTarget(), frame,
                                              *web_contents,
                                              observed_target_node_info)) {
-      return MakeResult(
-          mojom::ActionResultCode::kFrameLocationChangedSinceObservation);
+      return base::unexpected(MakeResult(
+          mojom::ActionResultCode::kFrameLocationChangedSinceObservation));
     }
   }
 
   observed_target_ =
       ToMojoObservedToolTarget(observed_target_node_info, *frame);
-  return MakeOkResult();
+  return &GetMostSpecificTargetFrame(request_->GetTarget(), *frame,
+                                     *web_contents, observed_target_node_info);
 }
 
 mojom::ToolInvocationPtr PageTool::CreateToolInvocation(

@@ -115,6 +115,10 @@ class MockToolDelegate : public ToolDelegate {
               GetActionSequenceDelegate,
               (),
               (override));
+  MOCK_METHOD(void,
+              OnActionTargetFrameResolved,
+              (content::RenderFrameHost&),
+              (override));
 };
 
 actor_login::Credential MakeTestCredential(const std::u16string& username,

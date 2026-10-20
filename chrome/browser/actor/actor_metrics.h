@@ -6,10 +6,12 @@
 #define CHROME_BROWSER_ACTOR_ACTOR_METRICS_H_
 
 #include <cstddef>
+#include <optional>
 #include <string_view>
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
@@ -123,6 +125,45 @@ void RecordScriptToolOutputSizeBytes(size_t size_bytes);
 
 // Records the outcome of navigation gating decisions.
 void RecordNavigationGatingDecision(ExecutionEngine::GatingDecision decision);
+
+// The frame a page action targets, relative to the tab's main frame.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ActorPageActionTargetFrameType)
+enum class PageActionTargetFrameType {
+  kMainFrame = 0,
+  // The target frame and all of its ancestors are same-origin with the main
+  // frame.
+  kSameOriginSubframe = 1,
+  // The target frame or one of its ancestors is cross-origin to the main frame
+  // (including when the target frame itself is same-origin with the main frame
+  // but has a cross-origin ancestor, e.g. the inner A in A(B(A))).
+  kCrossOriginSubframe = 2,
+  kMaxValue = kCrossOriginSubframe,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorPageActionTargetFrameType)
+
+// Records the type of frame targeted by a page action that is about to be
+// invoked.
+void RecordPageActionTargetFrameType(PageActionTargetFrameType type);
+
+// The most restrictive outcome of dry-run page-action gating across the frames
+// between a page action's target frame and the tab's main frame.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ActorSubframeGatingDryRunOutcome)
+enum class SubframeGatingDryRunOutcome {
+  kWouldBeAllowed = 0,
+  kWouldRequireUserConfirmation = 1,
+  kWouldBlock = 2,
+  kMaxValue = kWouldBlock,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorSubframeGatingDryRunOutcome)
+
+// Records the outcome of dry-run page-action gating on a page action's target
+// subframe chain.
+void RecordSubframeGatingDryRunOutcome(SubframeGatingDryRunOutcome outcome);
+void RecordSubframeGatingDryRunBlockReason(MayActOnUrlBlockReason block_reason);
 
 void RecordObservationOutcomeHistogram(
     const optimization_guide::proto::ActionsResult& result,

@@ -12,10 +12,12 @@
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -162,6 +164,12 @@ constexpr std::string_view kSameOriginInitiatorHistogram =
     "Actor.NavigationGating.SameOriginInitiator";
 constexpr std::string_view kSameSiteInitiatorHistogram =
     "Actor.NavigationGating.SameSiteInitiator";
+constexpr std::string_view kTargetFrameTypeHistogram =
+    "Actor.OriginGating.TargetFrameType";
+constexpr std::string_view kSubframeDryRunOutcomeHistogram =
+    "Actor.OriginGating.SubframeDryRun.Outcome";
+constexpr std::string_view kSubframeDryRunBlockReasonHistogram =
+    "Actor.OriginGating.SubframeDryRun.BlockReason";
 
 optimization_guide::proto::LocationRule* AddAllowlistedSiteToActorConfig(
     std::string_view domain,
@@ -3429,6 +3437,276 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineHardcodedSensitiveSiteBrowserTest,
       base::test::ParseJsonDict(content::JsReplace(
           R"({"navigationOrigin": $1, "forBlocklistedOrigin": true})",
           url::Origin::Create(sensitive_url)))));
+}
+
+// Tests the page-action origin-gating dry run on the target subframe and its
+// ancestors (see `ExecutionEngine::OnActionTargetFrameResolved`), which records
+// what gating would decide without affecting the action.
+class ExecutionEngineSubframeGatingDryRunBrowserTest
+    : public ExecutionEngineOriginGatingBrowserTestBase {
+ protected:
+  void SetUpOnMainThread() override {
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "content/test/data");
+    ExecutionEngineOriginGatingBrowserTestBase::SetUpOnMainThread();
+    OpenGlicAndCreateTask();
+  }
+
+  // Navigates the main frame to `/cross_site_iframe_factory.html?<frame_tree>`.
+  void SetUpFrameTree(std::string_view frame_tree) {
+    std::string_view root_host = frame_tree.substr(0, frame_tree.find('('));
+    ASSERT_TRUE(content::NavigateToURL(
+        web_contents(),
+        embedded_https_test_server().GetURL(
+            root_host,
+            base::StrCat({"/cross_site_iframe_factory.html?", frame_tree}))));
+  }
+
+  // Walks `child-0` down from the main frame to the innermost frame and clicks
+  // `#siteNameHeading` in it.
+  mojom::ActionResultCode ClickInLeafFrame() {
+    content::RenderFrameHost* frame = main_frame();
+    while (content::RenderFrameHost* child = content::ChildFrameAt(frame, 0)) {
+      frame = child;
+    }
+
+    // A subframe in its parent's process shares the parent's DevTools session,
+    // so its nodes must be looked up through the parent document.
+    content::RenderFrameHost* parent = frame->GetParent();
+    std::optional<int> dom_node_id =
+        parent && frame->GetProcess() == parent->GetProcess()
+            ? content::GetDOMNodeIdFromSubframe(*parent, "#child-0",
+                                                "#siteNameHeading")
+            : content::GetDOMNodeId(*frame, "#siteNameHeading");
+    EXPECT_TRUE(dom_node_id);
+    std::unique_ptr<ToolRequest> click =
+        MakeClickRequest(*frame, dom_node_id.value());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(click), result.GetCallback());
+    EXPECT_EQ(result.Get().size(), 1u);
+    return result.Get()[0].result->code;
+  }
+
+  // Makes page-action gating explicitly allow a.com and explicitly block b.com
+  // via the static safety list.
+  void ConfigureSafetyLists() {
+    SetSafetyListsForTesting(SafetyListManager::GetInstance(), R"json(
+      {
+        "navigation_allowed": [
+          { "from": "[*.]a.com", "to": "[*.]a.com" }
+        ],
+        "navigation_blocked": [
+          { "from": "[*.]b.com", "to": "[*.]b.com" }
+        ]
+      }
+    )json");
+  }
+
+  void WaitForDryRunOutcome(const base::HistogramTester& histogram_tester) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return !histogram_tester.GetAllSamples(kSubframeDryRunOutcomeHistogram)
+                  .empty();
+    }));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       MainFrameTarget) {
+  base::HistogramTester histogram_tester;
+  SetUpFrameTree("example.com");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(kTargetFrameTypeHistogram,
+                                      PageActionTargetFrameType::kMainFrame, 1);
+  WaitForPostedTask();
+  histogram_tester.ExpectTotalCount(kSubframeDryRunOutcomeHistogram, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       SameOriginSubframeTarget) {
+  base::HistogramTester histogram_tester;
+  SetUpFrameTree("example.com(example.com)");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram, PageActionTargetFrameType::kSameOriginSubframe,
+      1);
+  // Same-origin subframes are covered by the main frame's gating.
+  WaitForPostedTask();
+  histogram_tester.ExpectTotalCount(kSubframeDryRunOutcomeHistogram, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       CrossOriginSubframeTarget_WouldBeAllowed) {
+  base::HistogramTester histogram_tester;
+  SetUpFrameTree("example.com(a.com)");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram,
+      PageActionTargetFrameType::kCrossOriginSubframe, 1);
+  WaitForDryRunOutcome(histogram_tester);
+  histogram_tester.ExpectUniqueSample(
+      kSubframeDryRunOutcomeHistogram,
+      SubframeGatingDryRunOutcome::kWouldBeAllowed, 1);
+  histogram_tester.ExpectTotalCount(kSubframeDryRunBlockReasonHistogram, 0);
+}
+
+// A cross-origin subframe that would require user confirmation if gated is
+// acted on without prompting the user.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       CrossOriginSubframeTarget_WouldRequireUserConfirmation) {
+  base::HistogramTester histogram_tester;
+  SetUpFrameTree("example.com(sensitive.example.com)");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram,
+      PageActionTargetFrameType::kCrossOriginSubframe, 1);
+  WaitForDryRunOutcome(histogram_tester);
+  histogram_tester.ExpectUniqueSample(
+      kSubframeDryRunOutcomeHistogram,
+      SubframeGatingDryRunOutcome::kWouldRequireUserConfirmation, 1);
+  histogram_tester.ExpectTotalCount(kSubframeDryRunBlockReasonHistogram, 0);
+  // The dry run must not have cached sensitive.example.com as user-confirmed.
+  EXPECT_EQ(actor_task()
+                .GetExecutionEngine()
+                .GetOriginGatingChecker()
+                .GetCacheSizeMetrics()
+                .confirmed_list_size,
+            0u);
+}
+
+// A cross-origin subframe that would be blocked if gated is acted on anyway.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       CrossOriginSubframeTarget_WouldBlock) {
+  base::HistogramTester histogram_tester;
+  ConfigureSafetyLists();
+  SetUpFrameTree("example.com(b.com)");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram,
+      PageActionTargetFrameType::kCrossOriginSubframe, 1);
+  WaitForDryRunOutcome(histogram_tester);
+  histogram_tester.ExpectUniqueSample(kSubframeDryRunOutcomeHistogram,
+                                      SubframeGatingDryRunOutcome::kWouldBlock,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kSubframeDryRunBlockReasonHistogram,
+      MayActOnUrlBlockReason::kBlockedByStaticList, 1);
+}
+
+// The target frame is same-origin with the main frame, but an intermediate
+// ancestor would be blocked, so the dry run reports a block.
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       IntermediateAncestor_WouldBlock) {
+  base::HistogramTester histogram_tester;
+  ConfigureSafetyLists();
+  SetUpFrameTree("example.com(b.com(example.com))");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram,
+      PageActionTargetFrameType::kCrossOriginSubframe, 1);
+  WaitForDryRunOutcome(histogram_tester);
+  histogram_tester.ExpectUniqueSample(kSubframeDryRunOutcomeHistogram,
+                                      SubframeGatingDryRunOutcome::kWouldBlock,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kSubframeDryRunBlockReasonHistogram,
+      MayActOnUrlBlockReason::kBlockedByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       AllowedAndBlockedOrigins_WouldBlock) {
+  base::HistogramTester histogram_tester;
+  ConfigureSafetyLists();
+  SetUpFrameTree("example.com(a.com(b.com))");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram,
+      PageActionTargetFrameType::kCrossOriginSubframe, 1);
+  WaitForDryRunOutcome(histogram_tester);
+  histogram_tester.ExpectUniqueSample(kSubframeDryRunOutcomeHistogram,
+                                      SubframeGatingDryRunOutcome::kWouldBlock,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kSubframeDryRunBlockReasonHistogram,
+      MayActOnUrlBlockReason::kBlockedByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExecutionEngineSubframeGatingDryRunBrowserTest,
+    AllowedAndSensitiveOrigins_WouldRequireUserConfirmation) {
+  base::HistogramTester histogram_tester;
+  ConfigureSafetyLists();
+  SetUpFrameTree("example.com(a.com(sensitive.example.com))");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram,
+      PageActionTargetFrameType::kCrossOriginSubframe, 1);
+  WaitForDryRunOutcome(histogram_tester);
+  histogram_tester.ExpectUniqueSample(
+      kSubframeDryRunOutcomeHistogram,
+      SubframeGatingDryRunOutcome::kWouldRequireUserConfirmation, 1);
+  histogram_tester.ExpectTotalCount(kSubframeDryRunBlockReasonHistogram, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       SensitiveAndBlockedOrigins_WouldBlock) {
+  base::HistogramTester histogram_tester;
+  ConfigureSafetyLists();
+  SetUpFrameTree("example.com(sensitive.example.com(b.com))");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  histogram_tester.ExpectUniqueSample(
+      kTargetFrameTypeHistogram,
+      PageActionTargetFrameType::kCrossOriginSubframe, 1);
+  WaitForDryRunOutcome(histogram_tester);
+  histogram_tester.ExpectUniqueSample(kSubframeDryRunOutcomeHistogram,
+                                      SubframeGatingDryRunOutcome::kWouldBlock,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kSubframeDryRunBlockReasonHistogram,
+      MayActOnUrlBlockReason::kBlockedByStaticList, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunBrowserTest,
+                       BlockedMainFrame_DoesNotRunDryRun) {
+  base::HistogramTester histogram_tester;
+  ConfigureSafetyLists();
+  SetUpFrameTree("b.com(a.com)");
+  EXPECT_EQ(ClickInLeafFrame(),
+            mojom::ActionResultCode::kActionsBlockedForSiteRisk);
+
+  WaitForPostedTask();
+  histogram_tester.ExpectTotalCount(kTargetFrameTypeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSubframeDryRunOutcomeHistogram, 0);
+}
+
+class ExecutionEngineSubframeGatingDryRunDisabledBrowserTest
+    : public ExecutionEngineSubframeGatingDryRunBrowserTest {
+ public:
+  ExecutionEngineSubframeGatingDryRunDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(kGlicActorSubframeGatingDryRun);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineSubframeGatingDryRunDisabledBrowserTest,
+                       RecordsNothing) {
+  base::HistogramTester histogram_tester;
+  SetUpFrameTree("example.com(sensitive.example.com)");
+  EXPECT_EQ(ClickInLeafFrame(), mojom::ActionResultCode::kOk);
+
+  WaitForPostedTask();
+  histogram_tester.ExpectTotalCount(kTargetFrameTypeHistogram, 0);
+  histogram_tester.ExpectTotalCount(kSubframeDryRunOutcomeHistogram, 0);
 }
 
 }  // namespace actor

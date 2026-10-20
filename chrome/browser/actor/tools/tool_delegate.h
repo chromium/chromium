@@ -33,6 +33,10 @@ class ActorFormFillingService;
 class ActorOneTimeTokenFillingService;
 }  // namespace autofill
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace favicon {
 class FaviconService;
 }  // namespace favicon
@@ -175,6 +179,11 @@ class ToolDelegate {
 
   virtual base::WeakPtr<actor_login::ActionSequenceDelegate>
   GetActionSequenceDelegate() = 0;
+
+  // Called when a tool has resolved its target into `target_frame` and is about
+  // to act on it. Must not block or alter the action.
+  virtual void OnActionTargetFrameResolved(
+      content::RenderFrameHost& target_frame) = 0;
 };
 
 }  // namespace actor

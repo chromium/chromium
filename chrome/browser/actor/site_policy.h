@@ -20,21 +20,26 @@ namespace actor {
 // Called during initialization of the given profile, to load the blocklist.
 void InitActionBlocklist(Profile* profile);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(MayActOnUrlBlockReason)
 enum class MayActOnUrlBlockReason {
-  kAllowed,
-  kExternalProtocol,
-  kIpAddress,
-  kLookalikeDomain,
-  kOptimizationGuideBlock,
-  kSafeBrowsing,
-  kTabIsErrorDocument,
-  kWrongScheme,
-  kEnterprisePolicy,
-  kBlockedByStaticList,
-  kBlockedByContainerConfig,
-  kDangerousMimeType,
-  kTaskCancelled,
+  kAllowed = 0,
+  kExternalProtocol = 1,
+  kIpAddress = 2,
+  kLookalikeDomain = 3,
+  kOptimizationGuideBlock = 4,
+  kSafeBrowsing = 5,
+  kTabIsErrorDocument = 6,
+  kWrongScheme = 7,
+  kEnterprisePolicy = 8,
+  kBlockedByStaticList = 9,
+  kBlockedByContainerConfig = 10,
+  kDangerousMimeType = 11,
+  kTaskCancelled = 12,
+  kMaxValue = kTaskCancelled,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorMayActOnUrlBlockReason)
 
 using DecisionCallback = base::OnceCallback<void(/*may_act=*/bool)>;
 using DecisionCallbackWithReason =

@@ -216,6 +216,8 @@ class FakeToolDelegate : public ToolDelegate {
       override {
     return nullptr;
   }
+  void OnActionTargetFrameResolved(
+      content::RenderFrameHost& target_frame) override {}
 
  private:
   raw_ptr<Profile> profile_;

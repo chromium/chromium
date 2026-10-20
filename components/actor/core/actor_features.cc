@@ -30,6 +30,8 @@ BASE_FEATURE(kGlicDeferDownloadFilePickerToUserTakeover,
 
 BASE_FEATURE(kGlicActorLocalhostIsSensitive, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicActorSubframeGatingDryRun, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicCrossOriginNavigationGating,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,

@@ -10,6 +10,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -74,7 +75,11 @@ class PageTool : public Tool {
   mojom::ToolInvocationPtr CreateToolInvocation(
       content::RenderFrameHost& frame);
 
-  mojom::ActionResultPtr ComputeObservedTargetAndValidateFrame(
+  // On success, returns the most specific frame the action targets, which may
+  // be a same-process descendant of `frame`. On failure, returns a non-OK
+  // `ActionResultPtr`.
+  base::expected<content::RenderFrameHost*, mojom::ActionResultPtr>
+  ComputeObservedTargetAndValidateFrame(
       const optimization_guide::proto::AnnotatedPageContent* last_observation,
       content::RenderFrameHost* frame);
 

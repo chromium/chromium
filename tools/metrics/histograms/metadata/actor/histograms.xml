@@ -716,6 +716,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.OriginGating.SubframeDryRun.BlockReason"
+    enum="ActorMayActOnUrlBlockReason" expires_after="2027-03-24">
+  <owner>masnoble@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Page actions are currently origin-gated only on the tab's main frame. When
+    an approved page action targets a subframe that is cross-origin to the main
+    frame (or has a cross-origin ancestor), each distinct cross-origin frame in
+    the target's ancestor chain is evaluated against page-action origin gating
+    as a dry run. When the most restrictive outcome across those origins is
+    WouldBlock, records the block reason from the dry run. Recorded whenever
+    Actor.OriginGating.SubframeDryRun.Outcome records WouldBlock.
+  </summary>
+</histogram>
+
+<histogram name="Actor.OriginGating.SubframeDryRun.Outcome"
+    enum="ActorSubframeGatingDryRunOutcome" expires_after="2027-03-24">
+  <owner>masnoble@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Page actions are currently origin-gated only on the tab's main frame. When
+    an approved page action targets a subframe that is cross-origin to the main
+    frame (or has a cross-origin ancestor), each distinct cross-origin frame in
+    the target's ancestor chain is evaluated against page-action origin gating
+    as a dry run. Records the most restrictive outcome across those origins,
+    asynchronously after the action starts.
+  </summary>
+</histogram>
+
+<histogram name="Actor.OriginGating.TargetFrameType"
+    enum="ActorPageActionTargetFrameType" expires_after="2027-03-24">
+  <owner>masnoble@google.com</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Records the frame targeted by a page action, relative to the tab's main
+    frame. Recorded each time a page action has passed time-of-use validation
+    and is about to act on its target frame.
+  </summary>
+</histogram>
+
 <histogram
     name="Actor.PageContext.APC.Comparison.{Source}.IsIdenticalToPreviousFetch"
     enum="Boolean" expires_after="2027-03-07">
