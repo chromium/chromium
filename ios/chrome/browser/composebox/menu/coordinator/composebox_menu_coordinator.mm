@@ -377,6 +377,13 @@ CGFloat const kSheetPresentationCornerRadius = 38.0f;
 
 - (void)composeboxMenuMediatorDidRequestDriveFileSelection:
     (ComposeboxMenuMediator*)mediator {
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kDriveFiles];
+
+  if (![_mediator canAddMoreAttachments]) {
+    [self showMaxAttachmentSnackbarError];
+    return;
+  }
   [_pickerPresenter presentDriveFilePicker];
 }
 
