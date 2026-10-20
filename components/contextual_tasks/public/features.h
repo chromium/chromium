@@ -239,8 +239,10 @@ bool GetContextualTasksSpatialModelToolbarLayoutNewThreadInOverflow();
 
 // Returns whether the Contextual Tasks side panel container, coordinator,
 // and supporting response services should be initialized.
-// Returns true if either full Contextual Tasks (`kContextualTasks`) or
-// infrastructure-only mode (`kContextualTasksSidePanel`) is enabled.
+// Returns true if full Contextual Tasks (`kContextualTasks`),
+// infrastructure-only mode (`kContextualTasksSidePanel`), or the Contextual
+// Tasks rearchitecture (`kContextualTasksRearchitecture` /
+// `kContextualTasksSidePanelRearchitecture`) is enabled.
 bool IsContextualTasksUIEnabled();
 
 bool IsStickyConversationEnabled();

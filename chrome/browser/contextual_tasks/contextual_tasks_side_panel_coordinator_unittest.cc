@@ -107,6 +107,19 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               GetInitialUrlForTask,
               (const base::Uuid& task_id),
               (override));
+  MOCK_METHOD(bool,
+              HandleNavigation,
+              (content::OpenURLParams url_params,
+               content::WebContents* source_contents,
+               bool is_from_embedded_page,
+               bool from_can_create_window,
+               bool is_same_site_or_from_ui,
+               bool is_mobile_ua,
+               const std::optional<url::Origin>& initiator_origin,
+               const std::optional<content::GlobalRenderFrameHostToken>&
+                   initiator_frame_token,
+               const blink::mojom::WindowFeatures& window_features),
+              (override));
 };
 
 class MockActiveTaskContextProvider : public ActiveTaskContextProvider {

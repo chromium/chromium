@@ -1099,7 +1099,8 @@ bool IsContextualTasksUnboundedMenuEnabled() {
 bool IsContextualTasksUIEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSidePanel) ||
          base::FeatureList::IsEnabled(kContextualTasks) ||
-         base::FeatureList::IsEnabled(kContextualTasksRearchitecture);
+         base::FeatureList::IsEnabled(kContextualTasksRearchitecture) ||
+         base::FeatureList::IsEnabled(kContextualTasksSidePanelRearchitecture);
 }
 
 namespace flag_descriptions {

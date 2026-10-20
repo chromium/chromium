@@ -3539,7 +3539,7 @@ TEST_F(
 
   webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
 
-  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  service_for_nav_->SetSidePanelWebContentsForTesting(panel_contents.get());
 
   GURL citation_url("https://example.com/article#:~:text=sample+text");
 
@@ -3625,7 +3625,7 @@ TEST_F(
 
   webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
 
-  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  service_for_nav_->SetSidePanelWebContentsForTesting(panel_contents.get());
 
   GURL citation_url("https://example.com/article#:~:text=sample+text");
 
@@ -3851,7 +3851,7 @@ TEST_F(
 
   webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
 
-  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  service_for_nav_->SetSidePanelWebContentsForTesting(panel_contents.get());
 
   GURL citation_url("https://example.com/article#:~:text=sample+text");
 
@@ -3908,7 +3908,7 @@ TEST_F(
 
   webui::SetBrowserWindowInterface(panel_contents.get(), &browser);
 
-  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  service_for_nav_->SetSidePanelWebContentsForTesting(panel_contents.get());
 
   GURL new_citation_url(
       "https://new-citation.example.com/paper#:~:text=sample+citation");

@@ -118,4 +118,12 @@ TEST(FeaturesTest,
   EXPECT_TRUE(IsContextualTasksUnboundedMenuEnabled());
 }
 
+TEST(FeaturesTest, IsContextualTasksUIEnabled_SidePanelRearchitectureEnabled) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitWithFeatures({kContextualTasksSidePanelRearchitecture},
+                                   {kContextualTasks, kContextualTasksSidePanel,
+                                    kContextualTasksRearchitecture});
+  EXPECT_TRUE(IsContextualTasksUIEnabled());
+}
+
 }  // namespace contextual_tasks

@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
@@ -146,10 +147,17 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
 
   bool IsWebContentsInSidePanel(
       content::WebContents* web_contents) const override {
+    if (side_panel_web_contents_.contains(web_contents)) {
+      return true;
+    }
     if (is_web_contents_in_side_panel_override_.has_value()) {
       return *is_web_contents_in_side_panel_override_;
     }
     return ContextualTasksUiService::IsWebContentsInSidePanel(web_contents);
+  }
+
+  void SetSidePanelWebContentsForTesting(content::WebContents* web_contents) {
+    side_panel_web_contents_.insert(web_contents);
   }
 
   void SetIsWebContentsInSidePanelForTesting(
@@ -185,6 +193,8 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
 
  private:
   std::optional<bool> is_web_contents_in_side_panel_override_;
+  base::flat_set<raw_ptr<content::WebContents, CtnExperimental>>
+      side_panel_web_contents_;
 };
 
 inline content::OpenURLParams CreateOpenUrlParams(
