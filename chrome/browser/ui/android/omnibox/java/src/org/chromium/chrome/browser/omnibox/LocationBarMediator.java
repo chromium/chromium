@@ -994,7 +994,7 @@ public class LocationBarMediator
         updateActivationChipCompact();
         if (mCurrentInput == null) return;
 
-        if (mSelectionController.getSelectedView() == mActivationChipSelectableView) {
+        if (mSelectionController.getSelectedView() != mUrlBarSelectableView) {
             mSelectionController.reset();
         }
 
@@ -2764,7 +2764,8 @@ public class LocationBarMediator
         }
 
         if (isDownKey || isUpKey) {
-            if (mCurrentInput != null
+            if (!mIsTextWrapping
+                    && mCurrentInput != null
                     && mCurrentInput.getAutocompleteState() == AutocompleteState.STANDBY) {
                 mCurrentInput.setAutocompleteState(AutocompleteState.ENABLED);
                 return true;
@@ -2773,8 +2774,9 @@ public class LocationBarMediator
             // Move selection focus to the autocomplete list so the delegated handling logic below
             // will route to suggestions, avoiding intermediate toolbar components (e.g. action
             // chips or buttons).
-            if (!mSelectionController.isAutocompleteListSelected()) {
-                mSelectionController.selectAutocompleteList();
+            if (!mSelectionController.isAutocompleteListSelected()
+                    && !mSelectionController.selectAutocompleteList()) {
+                return false;
             }
         }
 
@@ -3619,6 +3621,9 @@ public class LocationBarMediator
     private void onTextWrappingChanged(boolean isTextWrapping) {
         if (mIsTextWrapping == isTextWrapping) return;
         mIsTextWrapping = isTextWrapping;
+        if (isTextWrapping && mSelectionController.getSelectedView() != mUrlBarSelectableView) {
+            mSelectionController.reset();
+        }
         updateActivationChipCompact();
     }
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -62,6 +63,19 @@ public class AutocompleteCoordinatorUnitTest {
         }
     }
 
+    private static class TestOmniboxSuggestionsDropdown extends OmniboxSuggestionsDropdown {
+        private boolean mIsShown = true;
+
+        TestOmniboxSuggestionsDropdown(Context context) {
+            super(context, null);
+        }
+
+        @Override
+        public boolean isShown() {
+            return mIsShown;
+        }
+    }
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -76,6 +90,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private Profile mProfile;
 
     private TestOmniboxSuggestionsContainer mSuggestionsContainer;
+    private TestOmniboxSuggestionsDropdown mSuggestionsDropdown;
     private ViewGroup mParentView;
 
     @Before
@@ -87,6 +102,7 @@ public class AutocompleteCoordinatorUnitTest {
 
         mParentView = new FrameLayout(context);
         mSuggestionsContainer = new TestOmniboxSuggestionsContainer(context);
+        mSuggestionsDropdown = new TestOmniboxSuggestionsDropdown(context);
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
@@ -98,6 +114,7 @@ public class AutocompleteCoordinatorUnitTest {
                         mResourceProvider);
 
         mAutocompleteCoordinator.setSuggestionsContainerForTest(mSuggestionsContainer);
+        mAutocompleteCoordinator.setSuggestionsDropdownForTest(mSuggestionsDropdown);
     }
 
     @Test
@@ -164,6 +181,19 @@ public class AutocompleteCoordinatorUnitTest {
                 mResourceProvider);
 
         verify(mAutocompleteMediator).setAutocompleteProfile(mProfile);
+    }
+
+    @Test
+    public void testIsServingSuggestions_requiresContainerAndDropdownShown() {
+        doReturn(true).when(mAutocompleteMediator).isInInputSession();
+        doReturn(2).when(mAutocompleteMediator).getSuggestionCount();
+        mSuggestionsContainer.mIsShown = true;
+
+        mSuggestionsDropdown.mIsShown = false;
+        assertFalse(mAutocompleteCoordinator.isServingSuggestions());
+
+        mSuggestionsDropdown.mIsShown = true;
+        assertTrue(mAutocompleteCoordinator.isServingSuggestions());
     }
 
     private boolean sendKeyDownEvent(int keyCode, int metaState) {

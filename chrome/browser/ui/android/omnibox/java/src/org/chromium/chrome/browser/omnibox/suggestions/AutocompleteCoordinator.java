@@ -489,7 +489,11 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             return false;
         }
 
-        boolean isShowingList = mContainer != null && mContainer.isShown();
+        boolean isShowingList =
+                mContainer != null
+                        && mContainer.isShown()
+                        && mDropdown != null
+                        && mDropdown.isShown();
 
         // Do not attempt to interpret any navigation keys when the suggestions list is not showing.
         if (!isShowingList) {
@@ -499,9 +503,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         // Do not attempt to interpret non-navigaton keys.
         // There are cases where the SPACE key may gen inappropriately routed to the
         // Suggestion, simulating press/long press of the UI element.
-        if ((keyCode == KeyEvent.KEYCODE_DPAD_UP)
-                || (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
-                || KeyNavigationUtil.isTabNavigation(event)) {
+        if (KeyNavigationUtil.isGoUpOrDown(event) || KeyNavigationUtil.isTabNavigation(event)) {
             mMediator.allowPendingItemSelection();
             return assumeNonNull(mContainer).onKeyDown(keyCode, event);
         } else if (KeyNavigationUtil.isEnter(event)) {
@@ -640,6 +642,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         return mMediator.isInInputSession()
                 && mContainer != null
                 && mContainer.isShown()
+                && mDropdown != null
+                && mDropdown.isShown()
                 && mMediator.getSuggestionCount() > 0;
     }
 
