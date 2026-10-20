@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE(kContextualTasksDriveOAuthScope);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonInToolbar);
 BASE_DECLARE_FEATURE(kEnableContextualTasksPinButtonOnSrp);
 BASE_DECLARE_FEATURE(kContextualTasksPinningV2);
+BASE_DECLARE_FEATURE(kContextualTasksUnifyPinButtonLogos);
 BASE_DECLARE_FEATURE(kEphemeralPinningVisibleWhenPermanentlyPinned);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonContextMenu);
 BASE_DECLARE_FEATURE(kContextualTasksEphemeralButtonAutoDismiss);
@@ -369,6 +370,24 @@ extern const base::FeatureParam<int>
 bool IsContextualTasksEphemeralButtonAutoDismissEnabled();
 int GetContextualTasksEphemeralButtonAutoDismissTimeMinutes();
 
+// Logo option for unifying the SIC (Contextual Tasks) toolbar and ephemeral
+// pin buttons.
+enum class UnifyPinButtonLogoOption {
+  kSpark,
+  kSuperG,
+};
+
+extern const base::FeatureParam<UnifyPinButtonLogoOption>
+    kContextualTasksUnifyPinButtonLogoOption;
+
+// Returns whether both the toolbar and ephemeral pin buttons should be
+// unified to use the Spark logo.
+bool ShouldUseSparkIconForPinButtons();
+
+// Returns whether both the toolbar and ephemeral pin buttons should be
+// unified to use the Super G logo.
+bool ShouldUseSuperGIconForPinButtons();
+
 // UI Options to expand the contextual tasks side panel to tab.
 extern const base::FeatureParam<ExpandButtonOption, true> kExpandButtonOptions;
 
@@ -662,6 +681,8 @@ extern const char kContextualTasksEphemeralButtonContextMenuName[];
 extern const char kContextualTasksEphemeralButtonContextMenuDescription[];
 extern const char kContextualTasksEphemeralButtonAutoDismissName[];
 extern const char kContextualTasksEphemeralButtonAutoDismissDescription[];
+extern const char kContextualTasksUnifyPinButtonLogosName[];
+extern const char kContextualTasksUnifyPinButtonLogosDescription[];
 extern const char kABASearchJourneysName[];
 extern const char kABASearchJourneysDescription[];
 extern const char kAllowSignedOutUserInDesktopAndroidName[];

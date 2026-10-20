@@ -39,6 +39,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -484,10 +485,18 @@ void ContextualTasksButton::OnShouldUpdatePosition() {
     UpdateDropShadow();
     MaybeUpdateVisibility();
   } else {
-    const gfx::VectorIcon& contextual_tasks_icon =
-        IsSidePanelRightAligned() ? kDockToRightSparkCustomIcon
-                                  : kDockToLeftSparkCustomIcon;
-    SetVectorIcon(contextual_tasks_icon);
+    if (contextual_tasks::ShouldUseSparkIconForPinButtons()) {
+      SetVectorIcon(features::IsRoundedIconsEnabled()
+                        ? omnibox::kSearchSparkIcon
+                        : omnibox::kSearchSparkOldIcon);
+    } else if (contextual_tasks::ShouldUseSuperGIconForPinButtons()) {
+      SetImageModel(views::Button::STATE_NORMAL, GetButtonImage());
+    } else {
+      const gfx::VectorIcon& contextual_tasks_icon =
+          IsSidePanelRightAligned() ? kDockToRightSparkCustomIcon
+                                    : kDockToLeftSparkCustomIcon;
+      SetVectorIcon(contextual_tasks_icon);
+    }
   }
 }
 
@@ -841,9 +850,18 @@ void ContextualTasksButton::ClearDropShadow() {
 }
 
 ui::ImageModel ContextualTasksButton::GetButtonImage() {
+  if (contextual_tasks::ShouldUseSparkIconForPinButtons()) {
+    return ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                          : omnibox::kSearchSparkOldIcon,
+        ui::kColorIcon,
+        GetShape() == Shape::kCircle ? kGLogoCircularShapeIconSize
+                                     : kGLogoPillShapeIconSize);
+  }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (contextual_tasks::kShowEntryPoint.Get() ==
-      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+  if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
+      contextual_tasks::kShowEntryPoint.Get() ==
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
     return ui::ImageModel::FromImageSkia(
         *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             IDR_GOOGLE_G_GRADIENT_16_ALT));

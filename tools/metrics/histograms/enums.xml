@@ -10870,6 +10870,7 @@ from previous Chrome versions.
   <int value="-1248232229"
       label="UsernameFirstFlowWithIntermediateValuesPredictions:enabled"/>
   <int value="-1247919270" label="SyncGeminiThread:enabled"/>
+  <int value="-1247578716" label="ContextualTasksUnifyPinButtonLogos:enabled"/>
   <int value="-1247069079"
       label="EnableDownloadEnterpriseScanOnClank:disabled"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
@@ -13903,6 +13904,7 @@ from previous Chrome versions.
   <int value="-334873793" label="MediaSessionNotification:enabled"/>
   <int value="-334654963" label="JupiterScreensaver:enabled"/>
   <int value="-334487969" label="ContextualPanelCloseButtonOnTablets:enabled"/>
+  <int value="-332988362" label="ContextualTasksUnifyPinButtonLogos:disabled"/>
   <int value="-332313804" label="enable-account-preview-data:disabled"/>
   <int value="-332018524" label="ContextualTasksContextLibrary:enabled"/>
   <int value="-332010491" label="RetailCoupons:enabled"/>

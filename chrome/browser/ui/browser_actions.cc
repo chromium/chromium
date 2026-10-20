@@ -194,6 +194,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/bookmarks/common/bookmark_bar_visibility_state.h"
@@ -246,6 +247,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -668,6 +670,20 @@ void BrowserActions::InitializeSidePanelActions() {
   }
 
   if (contextual_tasks::IsContextualTasksUIEnabled()) {
+    ui::ImageModel contextual_tasks_image = ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                          : omnibox::kSearchSparkOldIcon,
+        ui::kColorIcon);
+    if (contextual_tasks::ShouldUseSuperGIconForPinButtons()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      contextual_tasks_image = ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_GOOGLE_G_GRADIENT_16_ALT));
+#else
+      contextual_tasks_image = ui::ImageModel::FromVectorIcon(
+          vector_icons::kGoogleColorIcon, ui::kColorIcon);
+#endif
+    }
     root_action_item_->AddChild(
         actions::ActionItem::Builder(
             base::BindRepeating(
@@ -712,11 +728,7 @@ void BrowserActions::InitializeSidePanelActions() {
                     profile)
                     ? IDS_ASK_GOOGLE_ABOUT_THIS_PAGE
                     : IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL))
-            .SetImage(ui::ImageModel::FromVectorIcon(
-                features::IsRoundedIconsEnabled()
-                    ? omnibox::kSearchSparkIcon
-                    : omnibox::kSearchSparkOldIcon,
-                ui::kColorIcon))
+            .SetImage(contextual_tasks_image)
             .SetProperty(
                 actions::kActionItemPinnableKey,
                 static_cast<

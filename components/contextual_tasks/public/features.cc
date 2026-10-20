@@ -120,6 +120,36 @@ int GetContextualTasksEphemeralButtonAutoDismissTimeMinutes() {
   return kContextualTasksEphemeralButtonAutoDismissTimeMinutes.Get();
 }
 
+// Unifies the logo (Spark or Super G) used for both the SIC (Contextual
+// Tasks) permanent toolbar pin button and ephemeral toolbar button.
+BASE_FEATURE(kContextualTasksUnifyPinButtonLogos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<UnifyPinButtonLogoOption>::Option
+    kContextualTasksUnifyPinButtonLogoOptions[] = {
+        {UnifyPinButtonLogoOption::kSpark, "spark"},
+        {UnifyPinButtonLogoOption::kSuperG, "super-g"},
+};
+
+const base::FeatureParam<UnifyPinButtonLogoOption>
+    kContextualTasksUnifyPinButtonLogoOption(
+        &kContextualTasksUnifyPinButtonLogos,
+        "ContextualTasksUnifyPinButtonLogo",
+        UnifyPinButtonLogoOption::kSpark,
+        &kContextualTasksUnifyPinButtonLogoOptions);
+
+bool ShouldUseSparkIconForPinButtons() {
+  return base::FeatureList::IsEnabled(kContextualTasksUnifyPinButtonLogos) &&
+         kContextualTasksUnifyPinButtonLogoOption.Get() ==
+             UnifyPinButtonLogoOption::kSpark;
+}
+
+bool ShouldUseSuperGIconForPinButtons() {
+  return base::FeatureList::IsEnabled(kContextualTasksUnifyPinButtonLogos) &&
+         kContextualTasksUnifyPinButtonLogoOption.Get() ==
+             UnifyPinButtonLogoOption::kSuperG;
+}
+
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -1221,6 +1251,12 @@ const char kContextualTasksEphemeralButtonAutoDismissName[] =
 const char kContextualTasksEphemeralButtonAutoDismissDescription[] =
     "Automatically dismisses the ephemeral contextual tasks toolbar button "
     "after a period of inactivity.";
+
+const char kContextualTasksUnifyPinButtonLogosName[] =
+    "Unify SIC Pin Button Logos";
+const char kContextualTasksUnifyPinButtonLogosDescription[] =
+    "Unifies the logo (Spark or Super G) used across the Contextual Tasks "
+    "(Search in Chrome) permanent toolbar and ephemeral pin buttons.";
 
 const char kABASearchJourneysName[] = "ABA Search Journeys";
 const char kABASearchJourneysDescription[] =
