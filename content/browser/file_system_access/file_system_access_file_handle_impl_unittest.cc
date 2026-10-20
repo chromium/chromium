@@ -38,6 +38,7 @@
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
@@ -46,6 +47,7 @@
 #include "content/test/test_web_contents.h"
 #include "file_system_access_directory_handle_impl.h"
 #include "mock_file_system_access_permission_context.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/io_buffer.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_errors.h"
@@ -962,6 +964,188 @@ TEST_F(FileSystemAccessAccessHandleIncognitoTest, OpenAccessHandle) {
   EXPECT_TRUE(file->is_incognito_file_delegate());
   EXPECT_TRUE(file->get_incognito_file_delegate().is_valid());
   EXPECT_TRUE(access_handle_remote.is_valid());
+}
+
+TEST_F(FileSystemAccessAccessHandleIncognitoTest,
+       ManagerDestructionWithPendingOpenAccessHandle) {
+  auto* bfcache_rfh =
+      static_cast<RenderFrameHostImpl*>(web_contents_->GetPrimaryMainFrame());
+  const FileSystemAccessManagerImpl::BindingContext bfcache_context(
+      test_src_storage_key_, test_src_url_, bfcache_rfh->GetGlobalId());
+  const FileSystemAccessManagerImpl::SharedHandleState shared_handle_state(
+      allow_grant_, allow_grant_);
+
+  constexpr size_t kNumFiles = 4;
+  std::vector<FileSystemURL> file_urls;
+  std::vector<mojo::Remote<blink::mojom::FileSystemAccessFileHandle>>
+      bfcache_file_handles;
+  std::vector<
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>
+      held_access_handles;
+
+  auto [initial_result, initial_file, initial_access_handle_remote] =
+      OpenAccessHandle(
+          blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwrite);
+  ASSERT_EQ(initial_result->status, FileSystemAccessStatus::kOk);
+  ASSERT_TRUE(initial_access_handle_remote.is_valid());
+  held_access_handles.push_back(std::move(initial_access_handle_remote));
+
+  for (size_t i = 0; i < kNumFiles; ++i) {
+    auto safe_name = base::SafeBaseName::Create(
+        base::FilePath::FromUTF8Unsafe(base::StringPrintf("file_%zu", i)));
+    ASSERT_TRUE(safe_name.has_value());
+    FileSystemURL url = test_file_url_.CreateSibling(*safe_name);
+    ASSERT_EQ(base::File::FILE_OK, storage::AsyncFileTestHelper::CreateFile(
+                                       file_system_context_.get(), url));
+    file_urls.push_back(url);
+
+    mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle(
+        manager_->CreateFileHandle(bfcache_context, url,
+                                   base::StringPrintf("file_%zu", i),
+                                   shared_handle_state));
+    base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        blink::mojom::FileSystemAccessAccessHandleFilePtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>
+        open_future;
+    file_handle->OpenAccessHandle(
+        blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwrite,
+        open_future.GetCallback());
+    auto [result, file, access_handle_remote] = open_future.Take();
+    ASSERT_EQ(result->status, FileSystemAccessStatus::kOk);
+    ASSERT_TRUE(access_handle_remote.is_valid());
+    bfcache_file_handles.push_back(std::move(file_handle));
+    held_access_handles.push_back(std::move(access_handle_remote));
+  }
+
+  bfcache_rfh->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+  EXPECT_FALSE(bfcache_rfh->is_evicted_from_back_forward_cache());
+
+  WebContents* active_web_contents =
+      web_contents_factory_.CreateWebContents(&browser_context_);
+  static_cast<TestWebContents*>(active_web_contents)
+      ->NavigateAndCommit(test_src_url_);
+  const FileSystemAccessManagerImpl::BindingContext active_context(
+      test_src_storage_key_, test_src_url_,
+      active_web_contents->GetPrimaryMainFrame()->GetGlobalId());
+
+  std::vector<mojo::Remote<blink::mojom::FileSystemAccessFileHandle>>
+      active_file_handles;
+  std::vector<std::unique_ptr<base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      blink::mojom::FileSystemAccessAccessHandleFilePtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>>>
+      pending_futures;
+
+  for (size_t i = 0; i < kNumFiles; ++i) {
+    mojo::Remote<blink::mojom::FileSystemAccessFileHandle> file_handle(
+        manager_->CreateFileHandle(active_context, file_urls[i],
+                                   base::StringPrintf("file_%zu", i),
+                                   shared_handle_state));
+    auto pending_future = std::make_unique<base::test::TestFuture<
+        blink::mojom::FileSystemAccessErrorPtr,
+        blink::mojom::FileSystemAccessAccessHandleFilePtr,
+        mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>>();
+    file_handle->OpenAccessHandle(
+        blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwrite,
+        pending_future->GetCallback());
+    file_handle.FlushForTesting();
+    EXPECT_FALSE(pending_future->IsReady());
+    active_file_handles.push_back(std::move(file_handle));
+    pending_futures.push_back(std::move(pending_future));
+  }
+
+  // Also queue a pending OpenAccessHandle request on a standalone handle
+  // owned outside `manager_->file_receivers_`.
+  auto standalone_handle = std::make_unique<FileSystemAccessFileHandleImpl>(
+      manager_.get(), active_context, test_file_url_, "test",
+      shared_handle_state);
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      blink::mojom::FileSystemAccessAccessHandleFilePtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>
+      standalone_future;
+  standalone_handle->OpenAccessHandle(
+      blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwrite,
+      standalone_future.GetCallback());
+  EXPECT_TRUE(bfcache_rfh->is_evicted_from_back_forward_cache());
+  ASSERT_FALSE(standalone_future.IsReady());
+
+  // Destroying the manager while access handles are held by a BFCache frame
+  // and contending OpenAccessHandle requests are pending must not re-entrantly
+  // mutate `access_handle_host_receivers_` during its destruction.
+  handle_.reset();
+  manager_.reset();
+
+  ASSERT_TRUE(standalone_future.IsReady());
+  EXPECT_EQ(std::get<0>(standalone_future.Take())->status,
+            FileSystemAccessStatus::kNoModificationAllowedError);
+  standalone_handle.reset();
+}
+
+TEST_F(FileSystemAccessAccessHandleIncognitoTest,
+       ManagerDestructionWithPendingOpenAccessHandleAndFileWriter) {
+  auto* bfcache_rfh =
+      static_cast<RenderFrameHostImpl*>(web_contents_->GetPrimaryMainFrame());
+  const FileSystemAccessManagerImpl::SharedHandleState shared_handle_state(
+      allow_grant_, allow_grant_);
+
+  // Open and close an access handle first so `access_handle_host_receivers_`
+  // retains non-zero capacity while empty when the manager is later destroyed.
+  {
+    auto [warmup_result, warmup_file, warmup_access_handle_remote] =
+        OpenAccessHandle(
+            blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwrite);
+    ASSERT_EQ(warmup_result->status, FileSystemAccessStatus::kOk);
+    ASSERT_TRUE(warmup_access_handle_remote.is_valid());
+    mojo::Remote<blink::mojom::FileSystemAccessAccessHandleHost> warmup_remote(
+        std::move(warmup_access_handle_remote));
+    base::test::TestFuture<void> close_future;
+    warmup_remote->Close(close_future.GetCallback());
+    EXPECT_TRUE(close_future.Wait());
+  }
+
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>>
+      writer_future;
+  handle_->CreateFileWriter(
+      /*keep_existing_data=*/false, /*auto_close=*/false,
+      blink::mojom::FileSystemAccessWritableFileStreamLockMode::kExclusive,
+      writer_future.GetCallback());
+  auto [writer_result, writer_remote] = writer_future.Take();
+  ASSERT_EQ(writer_result->status, FileSystemAccessStatus::kOk);
+  ASSERT_TRUE(writer_remote.is_valid());
+
+  bfcache_rfh->SetLifecycleState(
+      RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache);
+
+  WebContents* active_web_contents =
+      web_contents_factory_.CreateWebContents(&browser_context_);
+  static_cast<TestWebContents*>(active_web_contents)
+      ->NavigateAndCommit(test_src_url_);
+  const FileSystemAccessManagerImpl::BindingContext active_context(
+      test_src_storage_key_, test_src_url_,
+      active_web_contents->GetPrimaryMainFrame()->GetGlobalId());
+
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> active_file_handle(
+      manager_->CreateFileHandle(active_context, test_file_url_, "test",
+                                 shared_handle_state));
+  base::test::TestFuture<
+      blink::mojom::FileSystemAccessErrorPtr,
+      blink::mojom::FileSystemAccessAccessHandleFilePtr,
+      mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>>
+      pending_future;
+  active_file_handle->OpenAccessHandle(
+      blink::mojom::FileSystemAccessAccessHandleLockMode::kReadwrite,
+      pending_future.GetCallback());
+  active_file_handle.FlushForTesting();
+  EXPECT_FALSE(pending_future.IsReady());
+  EXPECT_TRUE(bfcache_rfh->is_evicted_from_back_forward_cache());
+
+  handle_.reset();
+  manager_.reset();
 }
 
 TEST_F(FileSystemAccessAccessHandleTest, OpenAccessHandleLockModes_Readwrite) {
