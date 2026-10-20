@@ -10453,6 +10453,16 @@
     "expiry_milestone": 180
   },
   {
+    "name": "webpage-alternative-text-zoom",
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
+    "name": "webpage-text-zoom-ipad",
+    "owners": [ "rkgibson@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "webrtc-hw-decoding",
     "owners": [ "hiroh@chromium.org", "chromeos-video-eng@google.com" ],
     // This flag does not expire because it allows users to enable or disable

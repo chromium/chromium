@@ -2058,6 +2058,15 @@ inline constexpr char kWebFrameTreeDescription[] =
     "Enables building a tree structure of WebFrames using isolated world "
     "messaging.";
 
+inline constexpr char kWebPageAlternativeTextZoomName[] =
+    "Use different method for zooming web pages";
+inline constexpr char kWebPageAlternativeTextZoomDescription[] =
+    "When enabled, switches the method used to zoom web pages.";
+
+inline constexpr char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
+inline constexpr char kWebPageTextZoomIPadDescription[] =
+    "When enabled, text zoom works on iPad";
+
 inline constexpr char kWelcomeBackName[] = "Enable Welcome Back screen";
 inline constexpr char kWelcomeBackDescription[] =
     "When enabled, returning users will see the Welcome Back screen.";

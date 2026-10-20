@@ -574,3 +574,11 @@ source_set("eg2_tests") {
 
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("feature_flags") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
