@@ -1093,7 +1093,10 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             preference.setTitle(info.getName());
             preference.setImageView(
                     R.drawable.ic_delete_white_24dp,
-                    R.string.website_settings_revoke_device_permission,
+                    requireContext()
+                            .getString(
+                                    R.string.website_settings_revoke_device_permission,
+                                    info.getName()),
                     (View view) -> {
                         info.revoke(getBrowserContextHandle());
                         preferenceScreen.removePreference(preference);

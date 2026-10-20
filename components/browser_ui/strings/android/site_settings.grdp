@@ -1120,10 +1120,10 @@
   </message>
 
   <message name="IDS_WEBSITE_SETTINGS_REVOKE_ALL_PERMISSIONS_FOR_DEVICE" desc="Content description for revoking all of the website permissions for a device.">
-    Revoke all permissions for device
+    Revoke all permissions for device <ph name="DEVICE_NAME">%1$s<ex>DualShock 4</ex></ph>
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_REVOKE_DEVICE_PERMISSION" desc="Content description for revoking a website's permission to access a device.">
-    Revoke device permission
+  <message name="IDS_WEBSITE_SETTINGS_REVOKE_DEVICE_PERMISSION" desc="Content description for revoking a website's permission to access a device. NAME can be a website name or a device name.">
+    Revoke device permission for <ph name="NAME">%1$s<ex>example.com</ex></ph>
   </message>
   <message name="IDS_WEBSITE_SETTINGS_USB" desc="Title for USB settings, which control which of the user's USB devices can be accessed from websites.">
     USB

@@ -705,7 +705,11 @@ public class SingleWebsiteSettingsTest {
         // Open site settings and check that permissions are displayed.
         SettingsActivity activity = SiteSettingsTestUtils.startSingleWebsitePreferences(website);
         onView(withText("Some device")).check(matches(isDisplayed()));
+        onView(withContentDescription("Revoke device permission for Some device"))
+                .check(matches(isDisplayed()));
         onView(withText("A managed device")).check(matches(isDisplayed()));
+        onView(withContentDescription("Revoke device permission for A managed device"))
+                .check(doesNotExist());
 
         SingleWebsiteSettings websitePreferences =
                 (SingleWebsiteSettings) activity.getMainFragment();
