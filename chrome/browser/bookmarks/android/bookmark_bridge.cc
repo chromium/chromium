@@ -1476,7 +1476,9 @@ bool BookmarkBridge::IsManaged(const BookmarkNode* node) const {
 }
 
 const BookmarkNode* BookmarkBridge::GetParentNode(const BookmarkNode* node) {
-  CHECK(IsLoaded(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/573810976): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(IsLoaded());
   if (node == partner_bookmarks_shim_->GetPartnerBookmarksRoot())
     return bookmark_model_->mobile_node();
 
