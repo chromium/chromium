@@ -990,7 +990,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
 
   ::actor::ExpectErrorResult(
       result,
-      ::actor::mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling);
+      ::actor::mojom::ActionResultCode::kOtpUserDeclinedFillingConfirmation);
 
   EXPECT_EQ(
       content::EvalJs(web_contents(), "document.querySelector('#otp').value"),
@@ -1167,9 +1167,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleGmailOtpEnabledBrowserTest,
     if (tc.response_mode == "accept") {
       ::actor::ExpectOkResult(result);
     } else {
-      ::actor::ExpectErrorResult(
-          result,
-          ::actor::mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling);
+      ::actor::ExpectErrorResult(result,
+                                 ::actor::mojom::ActionResultCode::
+                                     kOtpUserDeclinedFillingConfirmation);
     }
 
     EXPECT_EQ(

@@ -357,6 +357,7 @@ using mojom::ActionResultCode::kOtpNoLastTabObservation;
 using mojom::ActionResultCode::kOtpRetrievalError;
 using mojom::ActionResultCode::kOtpTargetFrameNotFound;
 using mojom::ActionResultCode::kOtpUnableToFill;
+using mojom::ActionResultCode::kOtpUserDeclinedFillingConfirmation;
 using mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling;
 using mojom::ActionResultCode::kTabWentAway;
 using mojom::ActionResultCode::kToolTimeout;
@@ -1045,8 +1046,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_ActorLoginVerificationFailed) {
   TestFuture<ActionResultPtr> future;
   tool.Invoke(future.GetCallback());
 
-  EXPECT_EQ(mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling,
-            future.Take()->code);
+  EXPECT_EQ(kOtpUserDeclinedFillingConfirmation, future.Take()->code);
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);
@@ -1177,8 +1177,7 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_NoLoginContextAvailable_Declined) {
   TestFuture<ActionResultPtr> future;
   tool.Invoke(future.GetCallback());
 
-  EXPECT_EQ(mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling,
-            future.Take()->code);
+  EXPECT_EQ(kOtpUserDeclinedFillingConfirmation, future.Take()->code);
   histogram_tester_.ExpectBucketCount(
       kAttemptOtpFillingToolHistogram,
       AttemptOtpFillingToolEvent::kGmailOtpConfirmationDeclinedByUser, 1);

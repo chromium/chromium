@@ -540,6 +540,9 @@ enum ActionResultCode {
   // The trigger field for OTP filling was not found.
   kOtpFieldNotFound = 1416,
 
+  // The user declined the Gmail OTP filling confirmation dialog.
+  kOtpUserDeclinedFillingConfirmation = 1417,
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 1500-1599: Errors for translate page.
 

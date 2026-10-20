@@ -56,7 +56,8 @@ std::string GetMockOtpValue() {
       switches::kAttemptOtpFillingToolMockValueSkipsChecks);
 }
 
-const char* PredictedOtpTypeToString(AttemptOtpFillingToolRequest::OtpType type) {
+const char* PredictedOtpTypeToString(
+    AttemptOtpFillingToolRequest::OtpType type) {
   switch (type) {
     case AttemptOtpFillingToolRequest::OtpType::kUnknown:
       return "Unknown";
@@ -386,14 +387,13 @@ mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
 }
 
 void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
-  journal().Log(
-      JournalURL(), task_id(), "AttemptOtpFillingTool::Invoke",
-      JournalDetailsBuilder()
-          .Add("trigger_fields_count", trigger_field_ids_.size())
-          .Add("for_signin", for_signin_)
-          .Add("predicted_otp_type",
-               PredictedOtpTypeToString(predicted_otp_type_))
-          .Build());
+  journal().Log(JournalURL(), task_id(), "AttemptOtpFillingTool::Invoke",
+                JournalDetailsBuilder()
+                    .Add("trigger_fields_count", trigger_field_ids_.size())
+                    .Add("for_signin", for_signin_)
+                    .Add("predicted_otp_type",
+                         PredictedOtpTypeToString(predicted_otp_type_))
+                    .Build());
 
   ukm::SourceId source_id = ukm::kInvalidSourceId;
   if (ActorSurface* actor_surface = actor_surface_handle_.Get()) {
@@ -427,9 +427,7 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
     tool_delegate().GetActorOneTimeTokenFillingService().ConsumeLoginContext();
     LogJournalEvent(
         "AttemptOtpFillingTool::Invoke",
-        JournalDetailsBuilder()
-            .Add("status", "Using mock OTP")
-            .Build());
+        JournalDetailsBuilder().Add("status", "Using mock OTP").Build());
     tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
         actor_surface_handle_.GetTabHandle(), trigger_field_ids_,
         std::move(mock_otp),
@@ -750,7 +748,7 @@ void AttemptOtpFillingTool::OnGmailOtpConfirmationResponse(
     RecordGmailOtpConfirmationDialogInteraction(
         GmailOtpConfirmationDialogInteraction::kPermissionDenied);
     std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kOtpUserDeclinedOptingIntoFilling,
+        MakeResult(mojom::ActionResultCode::kOtpUserDeclinedFillingConfirmation,
                    /*requires_page_stabilization=*/false,
                    "User declined Gmail OTP confirmation."));
     return;
