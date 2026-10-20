@@ -21,7 +21,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversion) {
                                      false),
       base::flat_map<CSPDirectiveName, std::string>(),
       base::flat_map<CSPDirectiveName, network::mojom::CSPSourceListPtr>(),
-      false, false, false, network::mojom::WebSandboxFlags::kNone,
+      false, false, network::mojom::WebSandboxFlags::kNone,
       ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP),
@@ -43,7 +43,6 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversion) {
             " http://www.example.org:443/path 'self' invalid ";
       },
       [](ContentSecurityPolicy& csp) { csp.upgrade_insecure_requests = true; },
-      [](ContentSecurityPolicy& csp) { csp.treat_as_public_address = true; },
       [](ContentSecurityPolicy& csp) { csp.block_all_mixed_content = true; },
       [](ContentSecurityPolicy& csp) {
         csp.sandbox = network::mojom::WebSandboxFlags::kPointerLock |
@@ -100,7 +99,7 @@ TEST(ContentSecurityPolicyUtilTest, BackAndForthConversionForCSPSourceList) {
       CSPSource::New("http", "www.example.org", 80, "", false, false),
       base::flat_map<CSPDirectiveName, std::string>(),
       base::flat_map<CSPDirectiveName, network::mojom::CSPSourceListPtr>(),
-      false, false, false, network::mojom::WebSandboxFlags::kNone,
+      false, false, network::mojom::WebSandboxFlags::kNone,
       network::mojom::ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::ContentSecurityPolicyType::kEnforce,
           network::mojom::ContentSecurityPolicySource::kHTTP),

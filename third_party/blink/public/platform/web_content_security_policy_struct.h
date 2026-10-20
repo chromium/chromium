@@ -99,7 +99,6 @@ struct WebContentSecurityPolicy {
   std::vector<WebContentSecurityPolicyRawDirective> raw_directives;
   std::vector<WebContentSecurityPolicyDirective> directives;
   bool upgrade_insecure_requests;
-  bool treat_as_public_address;
   bool block_all_mixed_content;
   network::mojom::WebSandboxFlags sandbox =
       network::mojom::WebSandboxFlags::kNone;

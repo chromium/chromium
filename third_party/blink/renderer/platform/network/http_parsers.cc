@@ -241,10 +241,10 @@ blink::ContentSecurityPolicyPtr ConvertToBlink(
   return blink::ContentSecurityPolicy::New(
       ConvertToBlink(in->self_origin), ConvertToBlink(in->raw_directives),
       ConvertToBlink(in->directives), in->upgrade_insecure_requests,
-      in->treat_as_public_address, in->block_all_mixed_content, in->sandbox,
-      ConvertToBlink(in->header), in->use_reporting_api,
-      ConvertToBlink(in->report_endpoints), in->require_trusted_types_for,
-      ConvertToBlink(in->trusted_types), ConvertToBlink(in->parsing_errors));
+      in->block_all_mixed_content, in->sandbox, ConvertToBlink(in->header),
+      in->use_reporting_api, ConvertToBlink(in->report_endpoints),
+      in->require_trusted_types_for, ConvertToBlink(in->trusted_types),
+      ConvertToBlink(in->parsing_errors));
 }
 
 blink::OriginOrWildcardHeaderValuePtr ConvertToBlink(

@@ -30,7 +30,7 @@ TEST(PolicyContainerUtilsTest, ContentSecurityPolicyBackAndForthConversion) {
                                             false, false),
       HashMap<CSPDirectiveName, String>(),
       HashMap<CSPDirectiveName, network::mojom::blink::CSPSourceListPtr>(),
-      false, false, false, network::mojom::blink::WebSandboxFlags::kNone,
+      false, false, network::mojom::blink::WebSandboxFlags::kNone,
       ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::blink::ContentSecurityPolicyType::kEnforce,
           network::mojom::blink::ContentSecurityPolicySource::kHTTP),
@@ -54,7 +54,6 @@ TEST(PolicyContainerUtilsTest, ContentSecurityPolicyBackAndForthConversion) {
             " http://www.example.org:443/path 'self' invalid ");
       },
       [](ContentSecurityPolicy& csp) { csp.upgrade_insecure_requests = true; },
-      [](ContentSecurityPolicy& csp) { csp.treat_as_public_address = true; },
       [](ContentSecurityPolicy& csp) { csp.block_all_mixed_content = true; },
       [](ContentSecurityPolicy& csp) {
         csp.sandbox = network::mojom::blink::WebSandboxFlags::kPointerLock |
@@ -112,7 +111,7 @@ TEST(PolicyContainerUtilsTest, BackAndForthConversionForCSPSourceList) {
       CSPSource::New("http", "www.example.org", 80, "", false, false),
       HashMap<CSPDirectiveName, String>(),
       HashMap<CSPDirectiveName, network::mojom::blink::CSPSourceListPtr>(),
-      false, false, false, network::mojom::blink::WebSandboxFlags::kNone,
+      false, false, network::mojom::blink::WebSandboxFlags::kNone,
       network::mojom::blink::ContentSecurityPolicyHeader::New(
           "my-csp", network::mojom::blink::ContentSecurityPolicyType::kEnforce,
           network::mojom::blink::ContentSecurityPolicySource::kHTTP),

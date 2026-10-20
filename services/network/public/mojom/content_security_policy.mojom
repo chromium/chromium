@@ -120,7 +120,6 @@ enum CSPDirectiveName {
   StyleSrc,
   StyleSrcAttr,
   StyleSrcElem,
-  TreatAsPublicAddress,
   TrustedTypes,
   UpgradeInsecureRequests,
   WorkerSrc,
@@ -164,9 +163,6 @@ struct ContentSecurityPolicy {
   // We might want to reverse this. The browser could 'push' its value to the
   // renderer instead of 'pulling' it after the navigation commit.
   bool upgrade_insecure_requests = false;
-
-  // https://wicg.github.io/local-network-access/#treat-as-public-address
-  bool treat_as_public_address = false;
 
   // https://www.w3.org/TR/mixed-content/#strict-opt-in
   bool block_all_mixed_content = false;

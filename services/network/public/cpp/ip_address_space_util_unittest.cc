@@ -801,7 +801,6 @@ TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceFileURL) {
 
 TEST(IPAddressSpaceUtilTest,
      CalculateClientAddressSpaceInheritedFromServiceWorker) {
-  auto parsed_headers = ParsedHeaders::New();
   auto remote_endpoint = IPEndPoint();
   for (const auto ip_address_space : {
            mojom::IPAddressSpace::kLoopback,
@@ -815,7 +814,6 @@ TEST(IPAddressSpaceUtilTest,
       CalculateClientAddressSpaceParams params{
           .client_address_space_inherited_from_service_worker =
               ip_address_space,
-          .parsed_headers = &parsed_headers,
           .remote_endpoint = &remote_endpoint,
       };
       EXPECT_EQ(ip_address_space,
@@ -830,11 +828,9 @@ TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceNullParams) {
 }
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceEmptyParams) {
-  auto parsed_headers = ParsedHeaders::New();
   auto remote_endpoint = net::IPEndPoint();
   CalculateClientAddressSpaceParams params{
       .client_address_space_inherited_from_service_worker = std::nullopt,
-      .parsed_headers = &parsed_headers,
       .remote_endpoint = &remote_endpoint,
   };
   EXPECT_EQ(IPAddressSpace::kUnknown,
@@ -842,32 +838,13 @@ TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceEmptyParams) {
 }
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceIPAddress) {
-  auto parsed_headers = ParsedHeaders::New();
   auto remote_endpoint = IPEndPoint(PrivateIPv4Address(), 1234);
   CalculateClientAddressSpaceParams params{
       .client_address_space_inherited_from_service_worker = std::nullopt,
-      .parsed_headers = &parsed_headers,
       .remote_endpoint = &remote_endpoint,
   };
 
   EXPECT_EQ(IPAddressSpace::kLocal,
-            CalculateClientAddressSpace(GURL("http://foo.test"), params));
-}
-
-TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceTreatAsPublicAddress) {
-  auto csp = ContentSecurityPolicy::New();
-  csp->treat_as_public_address = true;
-  auto parsed_headers = ParsedHeaders::New();
-  parsed_headers->content_security_policy.push_back(std::move(csp));
-  auto remote_endpoint = IPEndPoint(IPAddress::IPv4Localhost(), 1234);
-
-  CalculateClientAddressSpaceParams params{
-      .client_address_space_inherited_from_service_worker = std::nullopt,
-      .parsed_headers = &parsed_headers,
-      .remote_endpoint = &remote_endpoint,
-  };
-
-  EXPECT_EQ(IPAddressSpace::kPublic,
             CalculateClientAddressSpace(GURL("http://foo.test"), params));
 }
 
@@ -877,12 +854,10 @@ TEST_F(IPAddressSpaceOverridesTest, CalculateClientAddressSpaceOverride) {
       "10.2.3.4:80=public,8.8.8.8:8888=local", &rejected_patterns);
   EXPECT_TRUE(rejected_patterns.empty());
 
-  auto parsed_headers = ParsedHeaders::New();
   auto remote_endpoint = IPEndPoint(IPAddress(10, 2, 3, 4), 80);
 
   CalculateClientAddressSpaceParams params{
       .client_address_space_inherited_from_service_worker = std::nullopt,
-      .parsed_headers = &parsed_headers,
       .remote_endpoint = &remote_endpoint,
   };
 

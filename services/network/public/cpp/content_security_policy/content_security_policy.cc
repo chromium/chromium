@@ -154,9 +154,6 @@ CSPDirectiveName ToCSPDirectiveName(std::string_view name) {
   if (base::EqualsCaseInsensitiveASCII(name, "style-src-elem")) {
     return CSPDirectiveName::StyleSrcElem;
   }
-  if (base::EqualsCaseInsensitiveASCII(name, "treat-as-public-address")) {
-    return CSPDirectiveName::TreatAsPublicAddress;
-  }
   if (base::EqualsCaseInsensitiveASCII(name, "trusted-types")) {
     return CSPDirectiveName::TrustedTypes;
   }
@@ -177,7 +174,6 @@ bool SupportedInReportOnly(CSPDirectiveName directive) {
   switch (directive) {
     case CSPDirectiveName::Sandbox:
     case CSPDirectiveName::UpgradeInsecureRequests:
-    case CSPDirectiveName::TreatAsPublicAddress:
       return false;
 
     case CSPDirectiveName::BaseURI:
@@ -216,7 +212,6 @@ bool SupportedInMeta(CSPDirectiveName directive) {
     case CSPDirectiveName::FrameAncestors:
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::Sandbox:
-    case CSPDirectiveName::TreatAsPublicAddress:
       return false;
 
     case CSPDirectiveName::BaseURI:
@@ -290,7 +285,6 @@ std::string ErrorMessage(CSPDirectiveName directive,
     case CSPDirectiveName::StyleSrc:
     case CSPDirectiveName::StyleSrcAttr:
     case CSPDirectiveName::StyleSrcElem:
-    case CSPDirectiveName::TreatAsPublicAddress:
     case CSPDirectiveName::TrustedTypes:
     case CSPDirectiveName::UpgradeInsecureRequests:
     case CSPDirectiveName::WorkerSrc:
@@ -972,10 +966,6 @@ void AddContentSecurityPolicyFromHeader(
         out->upgrade_insecure_requests = true;
         WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
         break;
-      case CSPDirectiveName::TreatAsPublicAddress:
-        out->treat_as_public_address = true;
-        WarnIfDirectiveValueNotEmpty(directive, out->parsing_errors);
-        break;
       case CSPDirectiveName::RequireTrustedTypesFor:
         out->require_trusted_types_for =
             ParseRequireTrustedTypesFor(directive.second, out->parsing_errors);
@@ -1344,7 +1334,6 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::ReportURI:
     case CSPDirectiveName::RequireTrustedTypesFor:
     case CSPDirectiveName::Sandbox:
-    case CSPDirectiveName::TreatAsPublicAddress:
     case CSPDirectiveName::TrustedTypes:
     case CSPDirectiveName::UpgradeInsecureRequests:
       return CSPDirectiveName::Unknown;
@@ -1566,16 +1555,6 @@ bool ShouldUpgradeInsecureRequest(
   return false;
 }
 
-bool ShouldTreatAsPublicAddress(
-    const std::vector<mojom::ContentSecurityPolicyPtr>& policies) {
-  for (const auto& policy : policies) {
-    if (policy->treat_as_public_address)
-      return true;
-  }
-
-  return false;
-}
-
 void UpgradeInsecureRequest(GURL* url) {
   // Only HTTP URL can be upgraded to HTTPS.
   if (!url->SchemeIs(url::kHttpScheme))
@@ -1727,8 +1706,6 @@ std::string ToString(CSPDirectiveName name) {
       return "style-src-elem";
     case CSPDirectiveName::UpgradeInsecureRequests:
       return "upgrade-insecure-requests";
-    case CSPDirectiveName::TreatAsPublicAddress:
-      return "treat-as-public-address";
     case CSPDirectiveName::TrustedTypes:
       return "trusted-types";
     case CSPDirectiveName::WorkerSrc:

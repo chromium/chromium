@@ -335,7 +335,6 @@ AddressSpace CalculateIPAddressSpace(
     params.emplace<network::CalculateClientAddressSpaceParams>({
         .client_address_space_inherited_from_service_worker =
             client_address_space,
-        .parsed_headers = &response_head->parsed_headers,
         .remote_endpoint = &response_head->remote_endpoint,
     });
   }

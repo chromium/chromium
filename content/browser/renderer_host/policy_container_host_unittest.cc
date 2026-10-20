@@ -65,9 +65,6 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   connection_allowlists.enforced = enforced;
 
   std::vector<network::mojom::ContentSecurityPolicyPtr> csps;
-  auto csp = network::mojom::ContentSecurityPolicy::New();
-  csp->treat_as_public_address = true;
-  csps.push_back(std::move(csp));
 
   network::CrossOriginOpenerPolicy coop;
   network::mojom::WebSandboxFlags sandbox_flags =

@@ -43,6 +43,5 @@
 "sandbox"
 "script-src"
 "style-src"
-"treat-as-public-address"
 "upgrade-insecure-requests"
 "application/octet-stream"

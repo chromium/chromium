@@ -72,7 +72,6 @@ WebContentSecurityPolicy ToWebContentSecurityPolicy(
                            directive.key, ConvertSourceList(directive.value)};
                      }),
       policy.upgrade_insecure_requests,
-      policy.treat_as_public_address,
       policy.block_all_mixed_content,
       policy.sandbox,
       {policy.header->header_value, policy.header->type, policy.header->source},
@@ -168,8 +167,8 @@ network::mojom::blink::ContentSecurityPolicyPtr FromWebContentSecurityPolicy(
   return network::mojom::blink::ContentSecurityPolicy::New(
       ConvertSourceToMojoBlink(policy_in.self_origin),
       std::move(raw_directives), std::move(directives),
-      policy_in.upgrade_insecure_requests, policy_in.treat_as_public_address,
-      policy_in.block_all_mixed_content, policy_in.sandbox,
+      policy_in.upgrade_insecure_requests, policy_in.block_all_mixed_content,
+      policy_in.sandbox,
       network::mojom::blink::ContentSecurityPolicyHeader::New(
           policy_in.header.header_value, policy_in.header.type,
           policy_in.header.source),

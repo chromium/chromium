@@ -2090,18 +2090,6 @@ TEST(ContentSecurityPolicy, InvalidPolicyInReportOnlyUpgradeInsecureRequest) {
       policy->parsing_errors[0]);
 }
 
-TEST(ContentSecurityPolicy, InvalidPolicyInReportTreatAsPublicAddress) {
-  mojom::ContentSecurityPolicyPtr policy =
-      ParseOneCspReportOnly("treat-as-public-address");
-
-  EXPECT_FALSE(policy->treat_as_public_address);
-  ASSERT_EQ(1u, policy->parsing_errors.size());
-  EXPECT_EQ(
-      "The Content Security Policy directive 'treat-as-public-address' is "
-      "ignored when delivered in a report-only policy.",
-      policy->parsing_errors[0]);
-}
-
 TEST(ContentSecurityPolicy, InvalidPolicyInMetaFrameAncestors) {
   std::vector<mojom::ContentSecurityPolicyPtr> policies =
       ParseContentSecurityPolicies(
@@ -2165,28 +2153,6 @@ TEST(ContentSecurityPolicy, InvalidPolicyInMetaSandbox) {
   EXPECT_EQ(
       "The Content Security Policy directive 'sandbox' is ignored when "
       "delivered via a <meta> element.",
-      policy->parsing_errors[0]);
-}
-
-TEST(ContentSecurityPolicy, InvalidPolicyInMetaTreatAsPublicAddress) {
-  std::vector<mojom::ContentSecurityPolicyPtr> policies =
-      ParseContentSecurityPolicies("treat-as-public-address; script-src 'none'",
-                                   mojom::ContentSecurityPolicyType::kEnforce,
-                                   mojom::ContentSecurityPolicySource::kMeta,
-                                   GURL("https://www.example.org"));
-
-  ASSERT_EQ(1u, policies.size());
-  mojom::ContentSecurityPolicyPtr& policy = policies[0];
-  EXPECT_FALSE(policy->treat_as_public_address);
-  EXPECT_EQ(1u, policy->directives.size());
-
-  auto& script_src = policy->directives[mojom::CSPDirectiveName::ScriptSrc];
-  EXPECT_EQ(script_src->sources.size(), 0U);
-
-  ASSERT_EQ(1u, policy->parsing_errors.size());
-  EXPECT_EQ(
-      "The Content Security Policy directive 'treat-as-public-address' is "
-      "ignored when delivered via a <meta> element.",
       policy->parsing_errors[0]);
 }
 

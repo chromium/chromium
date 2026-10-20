@@ -352,9 +352,6 @@ void ContentSecurityPolicy::ReportUseCounters(
     const Vector<network::mojom::blink::ContentSecurityPolicyPtr>& policies) {
   for (const auto& policy : policies) {
     Count(GetUseCounterType(policy->header->type));
-    if (policy->treat_as_public_address) {
-      Count(WebFeature::kLocalNetworkAccessShouldTreatAsPublicAddressCsp);
-    }
     if (CSPDirectiveListAllowDynamic(*policy,
                                      CSPDirectiveName::ScriptSrcAttr) ||
         CSPDirectiveListAllowDynamic(*policy,
@@ -577,7 +574,6 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
       case CSPDirectiveName::ReportURI:
       case CSPDirectiveName::RequireTrustedTypesFor:
       case CSPDirectiveName::Sandbox:
-      case CSPDirectiveName::TreatAsPublicAddress:
       case CSPDirectiveName::TrustedTypes:
       case CSPDirectiveName::UpgradeInsecureRequests:
       case CSPDirectiveName::WorkerSrc:
@@ -1682,8 +1678,6 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "style-src-attr";
     case CSPDirectiveName::StyleSrcElem:
       return "style-src-elem";
-    case CSPDirectiveName::TreatAsPublicAddress:
-      return "treat-as-public-address";
     case CSPDirectiveName::TrustedTypes:
       return "trusted-types";
     case CSPDirectiveName::UpgradeInsecureRequests:
@@ -1751,8 +1745,6 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::StyleSrcAttr;
   if (name == "style-src-elem")
     return CSPDirectiveName::StyleSrcElem;
-  if (name == "treat-as-public-address")
-    return CSPDirectiveName::TreatAsPublicAddress;
   if (name == "trusted-types")
     return CSPDirectiveName::TrustedTypes;
   if (name == "upgrade-insecure-requests")

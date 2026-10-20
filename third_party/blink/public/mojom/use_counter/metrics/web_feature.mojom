@@ -5297,7 +5297,7 @@ enum WebFeature {
   kUAReplaceEndAddListener = 5980,
   kAdImageHDR = 5981,
   kAdVideoHDR = 5982,
-  kLocalNetworkAccessShouldTreatAsPublicAddressCsp = 5983,
+  kOBSOLETE_LocalNetworkAccessShouldTreatAsPublicAddressCsp = 5983,
   kCreateBytesModuleScript = 5984,
   kV8ModuleNamespaceMissingDefaultWithStarExport = 5985,
   kV8WasmGCAllocation = 5986,

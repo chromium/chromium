@@ -442,17 +442,7 @@ mojom::IPAddressSpace CalculateClientAddressSpace(
     return mojom::IPAddressSpace::kUnknown;
   }
 
-  // First, check whether the response forces itself into a public address
-  // space as per
-  // https://wicg.github.io/local-network-access/#treat-as-public-address.
-  DCHECK(*params->parsed_headers) << "CalculateIPAddressSpace() called for URL "
-                                  << url << " with null parsed_headers.";
-  if (ShouldTreatAsPublicAddress(
-          (*params->parsed_headers)->content_security_policy)) {
-    return mojom::IPAddressSpace::kPublic;
-  }
-
-  // Otherwise, calculate the address space via the provided IP address.
+  // Calculate the address space via the provided IP address.
   return IPEndPointToIPAddressSpace(*params->remote_endpoint);
 }
 

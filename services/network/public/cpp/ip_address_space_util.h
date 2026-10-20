@@ -130,7 +130,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpaceParams {
 
   const std::optional<mojom::IPAddressSpace>
       client_address_space_inherited_from_service_worker;
-  const raw_ptr<const mojom::ParsedHeadersPtr> parsed_headers;
   const raw_ptr<const net::IPEndPoint> remote_endpoint;
 };
 
