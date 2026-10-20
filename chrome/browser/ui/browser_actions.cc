@@ -2345,7 +2345,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .Build());
 
   if (glic::GlicEnabling::IsProfileEligible(profile) &&
-      base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
+      ttc::AiOverlayDialogController::IsEnabledForProfile(profile)) {
     std::unique_ptr<actions::ActionItem> item =
         actions::ActionItem::Builder(
             base::BindRepeating(

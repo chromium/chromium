@@ -154,8 +154,13 @@ source_set("unit_tests") {
   if (!is_android) {
     sources += [ "ai_overlay_dialog_page_handler_unittest.cc" ]
     deps += [
+      "//chrome/browser/metrics",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/tabs:test_support",
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//components/variations",
+      "//components/variations/service",
     ]
   }
 }

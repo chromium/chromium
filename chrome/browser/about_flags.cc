@@ -4038,21 +4038,6 @@ const FeatureEntry::FeatureVariation kGlicShowNotTellTutorialsVariations[] = {
     {"Arm 2", kGlicShowNotTellTutorialsArm2, nullptr},
 };
 
-const FeatureEntry::FeatureParam kAiOverlayDialog_Mes[] = {{"use_mes", "true"}};
-const FeatureEntry::FeatureParam kAiOverlayDialog_PageTools[] = {
-    {"enable_page_tools", "true"}};
-const FeatureEntry::FeatureParam kAiOverlayDialog_MesAndPageTools[] = {
-    {"use_mes", "true"},
-    {"enable_page_tools", "true"}};
-const FeatureEntry::FeatureParam kAiOverlayDialog_Next[] = {
-    {"enable_next", "true"}};
-
-const FeatureEntry::FeatureVariation kAiOverlayDialogVariations[] = {
-    {"with MES", kAiOverlayDialog_Mes, nullptr},
-    {"with Page Tools", kAiOverlayDialog_PageTools, nullptr},
-    {"with MES and Page Tools", kAiOverlayDialog_MesAndPageTools, nullptr},
-    {"Next", kAiOverlayDialog_Next, nullptr}};
-
 const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
     {"as-title", "true"}};
 const FeatureEntry::FeatureVariation kAutofillShowTypePredictionsVariations[] =
@@ -11084,12 +11069,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kAiOverlayDisableNavigationContext)},
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-    {"ai-overlay-dialog", flag_descriptions::kAiOverlayDialogName,
-     flag_descriptions::kAiOverlayDialogDescription, kOsDesktop | kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kAiOverlayDialog,
-                                    kAiOverlayDialogVariations,
-                                    "AiOverlayDialog")},
 
     {"glic", flag_descriptions::kGlicName, flag_descriptions::kGlicDescription,
      kOsDesktop | kOsAndroid, FEATURE_VALUE_TYPE(features::kGlic)},

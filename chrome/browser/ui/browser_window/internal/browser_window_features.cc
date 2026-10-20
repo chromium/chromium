@@ -565,7 +565,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // instantiated in this block (please keep this list ordered without taking
   // into consideration buildflags, repeating buildflags is ok):
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
-    if (base::FeatureList::IsEnabled(features::kAiOverlayDialog)) {
+    if (ttc::AiOverlayDialogController::IsEnabledForProfile(profile)) {
       ai_overlay_dialog_controller_ =
           GetUserDataFactory()
               .CreateInstance<ttc::AiOverlayDialogControllerViews>(*browser,

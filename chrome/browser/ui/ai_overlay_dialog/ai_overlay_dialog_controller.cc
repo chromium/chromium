@@ -9,13 +9,16 @@
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/variations/service/google_groups_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
@@ -30,6 +33,17 @@ namespace ttc {
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionAiOverlayActiveKey, false)
 
 DEFINE_USER_DATA(AiOverlayDialogController);
+
+// static
+bool AiOverlayDialogController::IsEnabledForProfile(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  GoogleGroupsManager* groups_manager =
+      GoogleGroupsManagerFactory::GetForBrowserContext(profile);
+  return groups_manager &&
+         groups_manager->IsFeatureEnabledForProfile(features::kAiOverlayDialog);
+}
 
 // static
 AiOverlayDialogController* AiOverlayDialogController::From(

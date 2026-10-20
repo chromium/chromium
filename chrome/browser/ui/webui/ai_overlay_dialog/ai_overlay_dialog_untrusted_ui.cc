@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/switches.h"
+#include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_page_handler.h"
@@ -52,9 +53,9 @@ bool AiOverlayDialogUntrustedUIConfig::IsWebUIEnabled(
       command_line->HasSwitch(ttc::switches::kEnableTtcTestApi)) {
     return true;
   }
-  return base::FeatureList::IsEnabled(features::kAiOverlayDialog) &&
-         glic::GlicEnabling::IsProfileEligible(
-             Profile::FromBrowserContext(browser_context));
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return AiOverlayDialogController::IsEnabledForProfile(profile) &&
+         glic::GlicEnabling::IsProfileEligible(profile);
 }
 
 AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
@@ -160,8 +161,9 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
   html_source->AddString("apiKey", features::kAiOverlayDialogApiKey.Get());
   const version_info::Channel channel = chrome::GetChannel();
   html_source->AddBoolean("allowBuiltInDefaults",
-                          channel != version_info::Channel::BETA &&
-                              channel != version_info::Channel::STABLE);
+                          channel == version_info::Channel::CANARY ||
+                              channel == version_info::Channel::DEV ||
+                              channel == version_info::Channel::UNKNOWN);
   html_source->AddBoolean(
       "useMes", base::FeatureList::IsEnabled(features::kAiOverlayDialog) &&
                     features::kAiOverlayDialogUseMes.Get());

@@ -23,6 +23,7 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 class HostContentSettingsMap;
+class Profile;
 
 namespace ttc {
 
@@ -41,6 +42,8 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   };
 
   DECLARE_USER_DATA(AiOverlayDialogController);
+
+  static bool IsEnabledForProfile(Profile* profile);
 
   static AiOverlayDialogController* From(BrowserWindowInterface* browser);
 

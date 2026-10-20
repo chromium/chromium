@@ -8643,10 +8643,6 @@ inline constexpr char kComposeSelectionNudgeName[] = "Compose Selection Nudge";
 inline constexpr char kComposeSelectionNudgeDescription[] =
     "Enables nudge on selection for Compose";
 
-inline constexpr char kAiOverlayDialogName[] = "AI Overlay Dialog";
-inline constexpr char kAiOverlayDialogDescription[] =
-    "Enables the AI overlay dialog.";
-
 inline constexpr char kAiOverlayDisableNavigationContextName[] =
     "AI Overlay Disable Navigation Context";
 inline constexpr char kAiOverlayDisableNavigationContextDescription[] =

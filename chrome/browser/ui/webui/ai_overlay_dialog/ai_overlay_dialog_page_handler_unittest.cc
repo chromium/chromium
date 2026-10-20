@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller_views.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -21,6 +22,13 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/variations/pref_names.h"
+#include "components/variations/service/google_groups_manager.h"
+#include "components/variations/service/google_groups_manager_prefs.h"
+#include "components/variations/variations_seed_processor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -85,8 +93,23 @@ class TestAiOverlayDialogController : public AiOverlayDialogControllerViews {
 
 class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
-  AiOverlayDialogPageHandlerTest() = default;
+  AiOverlayDialogPageHandlerTest() {
+    local_state_.registry()->RegisterDictionaryPref(
+        variations::prefs::kVariationsGoogleGroups);
+  }
   ~AiOverlayDialogPageHandlerTest() override = default;
+
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {TestingProfile::TestingFactory{
+        GoogleGroupsManagerFactory::GetInstance(),
+        base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          Profile* p = Profile::FromBrowserContext(context);
+          return std::make_unique<GoogleGroupsManager>(
+              local_state_, p->GetPath().BaseName().AsUTF8Unsafe(),
+              *p->GetPrefs());
+        })}};
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -150,6 +173,7 @@ class AiOverlayDialogPageHandlerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
+  mutable TestingPrefServiceSimple local_state_;
   const tabs::TabModel::PreventFeatureInitializationForTesting
       prevent_tab_features_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
@@ -360,7 +384,11 @@ TEST_F(AiOverlayDialogPageHandlerTest, StreamingSession_HandlesToolCall) {
   handler_remote().FlushForTesting();
 }
 
-TEST_F(AiOverlayDialogPageHandlerTest, ExecuteWebMcpToolDisabledByDefault) {
+TEST_F(AiOverlayDialogPageHandlerTest, ExecuteWebMcpToolWhenDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAiOverlayDialog, {{"enable_page_tools", "false"}}}}, {});
+
   base::test::TestFuture<base::expected<base::Value, std::string>> future;
   handler()->ExecuteWebMcpTool(
       "test_tool", base::Value(base::Value::Type::DICT), future.GetCallback());
@@ -371,9 +399,7 @@ TEST_F(AiOverlayDialogPageHandlerTest, ExecuteWebMcpToolDisabledByDefault) {
 }
 
 TEST_F(AiOverlayDialogPageHandlerTest, ExecuteWebMcpToolNoActiveTab) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kAiOverlayDialog, {{"enable_page_tools", "true"}}}}, {});
+  base::test::ScopedFeatureList feature_list{features::kAiOverlayDialog};
 
   base::test::TestFuture<base::expected<base::Value, std::string>> future;
   handler()->ExecuteWebMcpTool(
@@ -382,6 +408,35 @@ TEST_F(AiOverlayDialogPageHandlerTest, ExecuteWebMcpToolNoActiveTab) {
   auto result = future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), "No active browser tab.");
+}
+
+TEST_F(AiOverlayDialogPageHandlerTest, IsEnabledForProfileWithGoogleGroups) {
+  EXPECT_FALSE(AiOverlayDialogController::IsEnabledForProfile(nullptr));
+  EXPECT_FALSE(AiOverlayDialogController::IsEnabledForProfile(profile()));
+
+  constexpr char kTargetGroupId[] = "123456789";
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kAiOverlayDialog,
+        {{variations::internal::kGoogleGroupFeatureParamName,
+          kTargetGroupId}}}},
+      {});
+
+  EXPECT_FALSE(AiOverlayDialogController::IsEnabledForProfile(profile()));
+
+  {
+    ScopedListPrefUpdate update(profile()->GetPrefs(),
+#if BUILDFLAG(IS_CHROMEOS)
+                                variations::kOsDogfoodGroupsSyncPrefName
+#else
+                                variations::kDogfoodGroupsSyncPrefName
+#endif
+    );
+    update->Append(base::DictValue().Set(
+        variations::kDogfoodGroupsSyncPrefGaiaIdKey, kTargetGroupId));
+  }
+
+  EXPECT_TRUE(AiOverlayDialogController::IsEnabledForProfile(profile()));
 }
 
 }  // namespace
