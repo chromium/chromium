@@ -2968,6 +2968,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kVoiceSearchEvolutionPhase1Name,
      flag_descriptions::kVoiceSearchEvolutionPhase1Description,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kVoiceSearchEvolutionPhase1)},
+    {"five-button-app-bar-layout",
+     flag_descriptions::kFiveButtonAppBarLayoutName,
+     flag_descriptions::kFiveButtonAppBarLayoutDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kFiveButtonAppBarLayout)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
