@@ -1740,8 +1740,17 @@ void OmniboxViewViews::OnMouseCaptureLost() {
 void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
   PermitExternalProtocolHandler();
 
+  const bool is_popup_open =
+      controller()->IsPopupOpen() ||
+      (IsFullWebUIOmnibox() && location_bar_view_ &&
+       location_bar_view_->GetOmniboxPopupView() &&
+       location_bar_view_->GetOmniboxPopupView()->IsOpen());
+  const bool is_tap_valid =
+      event->type() == ui::EventType::kGestureTap &&
+      (!IsFullWebUIOmniboxReady() || event->details().tap_count() == 1);
+
   const bool gesture_should_take_focus =
-      !HasFocus() && event->type() == ui::EventType::kGestureTap;
+      !is_popup_open && is_tap_valid && !HasFocus();
   if (gesture_should_take_focus) {
     select_all_on_gesture_tap_ = true;
 
@@ -1775,6 +1784,19 @@ void OmniboxViewViews::OnGestureEvent(ui::GestureEvent* event) {
       event->type() == ui::EventType::kGestureLongPress ||
       event->type() == ui::EventType::kGestureLongTap) {
     select_all_on_gesture_tap_ = false;
+  }
+
+  if (event->type() == ui::EventType::kGestureTap &&
+      IsFullWebUIOmniboxReady()) {
+    if (location_bar_view_) {
+      location_bar_view_->OpenOmniboxPopup(/*query_zps=*/true);
+      if (location_bar_view_->GetOmniboxPopupView() &&
+          base::FeatureList::IsEnabled(
+              omnibox::kWebUIOmniboxFullPopupDoubleClick)) {
+        location_bar_view_->GetOmniboxPopupView()->SyncNativeStateToWebUI(
+            /*query_zps=*/false);
+      }
+    }
   }
 }
 

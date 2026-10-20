@@ -131,7 +131,7 @@ void OmniboxPopupFullPresenter::Show() {
   if (browser_widget && !event_monitor_) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, browser_widget->GetNativeWindow(),
-        {ui::EventType::kMousePressed});
+        {ui::EventType::kMousePressed, ui::EventType::kTouchPressed});
   }
 
   if (browser_widget) {
@@ -751,17 +751,13 @@ void OmniboxPopupFullPresenter::StopForwardingEvents() {
 }
 
 void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
-  // TODO(b/543851644): Figure out how to handle touch events.
-  if (!event.IsMouseEvent()) {
-    return;
-  }
-  const ui::MouseEvent* mouse_event = event.AsMouseEvent();
-  if (mouse_event->type() != ui::EventType::kMousePressed) {
+  if (event.type() != ui::EventType::kMousePressed &&
+      event.type() != ui::EventType::kTouchPressed) {
     return;
   }
 
   // Right-clicks (context menu triggers) should never clear focus.
-  if (mouse_event->IsRightMouseButton()) {
+  if (event.IsMouseEvent() && event.AsMouseEvent()->IsRightMouseButton()) {
     return;
   }
 
@@ -781,17 +777,26 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
     return;
   }
 
-  gfx::Point cursor_point = display::Screen::Get()->GetCursorScreenPoint();
+  gfx::Point event_screen_point;
+  if (event.IsTouchEvent()) {
+    // The event monitor already reports `root_location()` in screen
+    // coordinates.
+    event_screen_point = event.AsTouchEvent()->root_location();
+  } else {
+    event_screen_point = display::Screen::Get()->GetCursorScreenPoint();
+  }
+
   bool contains_top_container = false;
 
   if (browser_view->top_container()) {
     gfx::Rect top_container_bounds =
         browser_view->top_container()->GetBoundsInScreen();
     gfx::Rect window_bounds = browser_widget->GetWindowBoundsInScreen();
-    contains_top_container = cursor_point.x() >= window_bounds.x() &&
-                             cursor_point.x() < window_bounds.right() &&
-                             cursor_point.y() >= window_bounds.y() &&
-                             cursor_point.y() < top_container_bounds.bottom();
+    contains_top_container =
+        event_screen_point.x() >= window_bounds.x() &&
+        event_screen_point.x() < window_bounds.right() &&
+        event_screen_point.y() >= window_bounds.y() &&
+        event_screen_point.y() < top_container_bounds.bottom();
   }
 
   bool contains_popup = false;
@@ -800,7 +805,7 @@ void OmniboxPopupFullPresenter::OnEvent(const ui::Event& event) {
     // clicks there pass through to the browser window, so they are outside.
     gfx::Rect popup_bounds = GetWidget()->GetWindowBoundsInScreen();
     popup_bounds.Inset(GetShadowMargin());
-    contains_popup = popup_bounds.Contains(cursor_point);
+    contains_popup = popup_bounds.Contains(event_screen_point);
   }
 
   if (contains_popup) {
