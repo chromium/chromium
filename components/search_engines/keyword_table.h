@@ -146,11 +146,15 @@ class KeywordTable : public WebDatabaseTable {
 
   // Loads valid keywords into the specified vector and removes invalid rows.
   // Sets `had_prepopulated_decryption_failure` if hash decryption failed for
-  // any row with a positive prepopulate_id. Other rejections and skipped hash
-  // verification do not set this signal.
+  // any row with a positive prepopulate_id, and
+  // `had_starter_pack_decryption_failure` for failures on rows with
+  // a positive starter_pack_id. The signals are independent; a row with both
+  // IDs positive sets both. Other rejections and skipped hash verification do
+  // not set either signal.
   // Returns true on success.
   bool GetKeywords(Keywords* keywords,
-                   bool& had_prepopulated_decryption_failure);
+                   bool& had_prepopulated_decryption_failure,
+                   bool& had_starter_pack_decryption_failure);
 
   // Version of the built-in keyword data. It gets set from the
   // `TemplateURLPrepopulateData::kCurrentDataVersion` when the data was
@@ -199,10 +203,12 @@ class KeywordTable : public WebDatabaseTable {
   // couldn't fill for some reason, e.g. `s` tried to set one of the fields to
   // an illegal value. Sets `had_prepopulated_decryption_failure` to true only
   // if hash decryption failed and prepopulate_id > 0; otherwise leaves it
-  // unchanged.
+  // unchanged. Similarly sets `had_starter_pack_decryption_failure` if hash
+  // decryption failed and starter_pack_id > 0, regardless of prepopulate_id.
   std::optional<TemplateURLData> GetKeywordDataFromStatement(
       sql::Statement& s,
-      bool& had_prepopulated_decryption_failure);
+      bool& had_prepopulated_decryption_failure,
+      bool& had_starter_pack_decryption_failure);
 
   // Inserts the data from `data` into `s`. `s` is assumed to have slots for all
   // the columns in the keyword table. `id_column` is the slot number to bind

@@ -32,7 +32,8 @@ std::unique_ptr<WDTypedResult> GetKeywordsImpl(WebDatabase* db) {
   WDKeywordsResult result;
   if (!keyword_table ||
       !keyword_table->GetKeywords(&result.keywords,
-                                  result.had_prepopulated_decryption_failure)) {
+                                  result.had_prepopulated_decryption_failure,
+                                  result.had_starter_pack_decryption_failure)) {
     return nullptr;
   }
 

@@ -140,9 +140,10 @@ ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
 // MergeEnginesFromStarterPackData merges search engines from the built-in
 // `template_url_starter_pack_data` class into `template_urls`. Calls
 // CreateActionsFromCurrentStarterPackData() to collect actions and then applies
-// them on `template_urls`. MergeEgninesFromStarterPackData is invoked when the
-// version of the starter pack data changes. If `removed_keyword_guids` is not
-// nullptr, the Sync GUID of each item removed from the DB will be added to it.
+// them on `template_urls`. Invoked when the starter pack data version changes
+// or a starter pack row is rejected after a hash decryption failure. If
+// `removed_keyword_guids` is not nullptr, the Sync GUID of each item removed
+// from the DB will be added to it.
 // `merge_option` specifies whether user-modified fields are preserved when
 // merging.  It should be set to default except for very specific use cases
 // where a reset to defaults is required.
@@ -183,8 +184,9 @@ void ApplyActionsFromCurrentData(
 //  * `out_updated_keywords_metadata` indicating any required metadata updates.
 //    Individual fields will be set to the new associated metadata and
 //    `HasBuiltinKeywordData()` and `HasStarterPackData()` will indicate this.
-// Hash decryption failures on prepopulated rows trigger regional prepopulation
-// reconciliation, without requiring a metadata change or a starter pack update.
+// Hash decryption failures on prepopulated or starter pack rows trigger
+// reconciliation of the corresponding built-in set, without requiring a
+// metadata change or an update to the other set.
 // Only pass in a non-NULL value for service if the KeywordWebDataService should
 // be updated. If `removed_keyword_guids` is not NULL, any TemplateURLs removed
 // from the keyword table in the KeywordWebDataService will have their Sync
@@ -209,6 +211,8 @@ void GetSearchProvidersUsingKeywordResult(
 // set as in GetSearchProvidersUsingKeywordResult().
 // `had_prepopulated_decryption_failure` forces regional prepopulation
 // reconciliation even when that metadata is current.
+// `had_starter_pack_decryption_failure` similarly forces starter pack
+// reconciliation independently of the regional set.
 void GetSearchProvidersUsingLoadedEngines(
     KeywordWebDataService* service,
     PrefService* prefs,
@@ -218,6 +222,7 @@ void GetSearchProvidersUsingLoadedEngines(
     const SearchTermsData& search_terms_data,
     WDKeywordsResult::Metadata& in_out_keywords_metadata,
     bool had_prepopulated_decryption_failure,
+    bool had_starter_pack_decryption_failure,
     std::set<std::string>* removed_keyword_guids);
 
 // Due to a bug, the |input_encodings| field of TemplateURLData could have

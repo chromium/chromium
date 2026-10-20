@@ -118,14 +118,20 @@ class KeywordTableTest : public testing::Test {
   }
 
   KeywordTable::Keywords GetKeywords(
-      bool expected_prepopulated_decryption_failure = false) const {
+      bool expected_prepopulated_decryption_failure = false,
+      bool expected_starter_pack_decryption_failure = false) const {
     KeywordTable::Keywords keywords;
     bool had_prepopulated_decryption_failure =
         !expected_prepopulated_decryption_failure;
-    EXPECT_TRUE(
-        table_->GetKeywords(&keywords, had_prepopulated_decryption_failure));
+    bool had_starter_pack_decryption_failure =
+        !expected_starter_pack_decryption_failure;
+    EXPECT_TRUE(table_->GetKeywords(&keywords,
+                                    had_prepopulated_decryption_failure,
+                                    had_starter_pack_decryption_failure));
     EXPECT_EQ(expected_prepopulated_decryption_failure,
               had_prepopulated_decryption_failure);
+    EXPECT_EQ(expected_starter_pack_decryption_failure,
+              had_starter_pack_decryption_failure);
     return keywords;
   }
 
@@ -430,8 +436,10 @@ TEST_F(KeywordTableTest, KeywordBadCrypto) {
     const auto new_encryptor = os_crypt_async::GetTestEncryptorForTesting();
     InitDatabase(new_encryptor);
     {
+      // The test row has both built-in IDs set, so both sets need recovery.
       KeywordTable::Keywords keywords(
-          GetKeywords(/*expected_prepopulated_decryption_failure=*/true));
+          GetKeywords(/*expected_prepopulated_decryption_failure=*/true,
+                      /*expected_starter_pack_decryption_failure=*/true));
       EXPECT_TRUE(keywords.empty());
     }
 
@@ -444,9 +452,9 @@ TEST_F(KeywordTableTest, KeywordBadCrypto) {
   }
 }
 
-TEST_F(KeywordTableTest, KeywordBadCryptoNonPrepopulated) {
-  for (int prepopulate_id : {-1, 0}) {
-    for (int starter_pack_id : {0, 1}) {
+TEST_F(KeywordTableTest, KeywordBadCryptoEngineTypes) {
+  for (int prepopulate_id : {-1, 0, 10}) {
+    for (int starter_pack_id : {-1, 0, 1}) {
       SCOPED_TRACE(prepopulate_id);
       SCOPED_TRACE(starter_pack_id);
       CloseDatabase();
@@ -459,18 +467,30 @@ TEST_F(KeywordTableTest, KeywordBadCryptoNonPrepopulated) {
 
       InitDatabase(os_crypt_async::GetTestEncryptorForTesting());
       base::HistogramTester histograms;
-      EXPECT_TRUE(GetKeywords().empty());
+      EXPECT_TRUE(
+          GetKeywords(
+              /*expected_prepopulated_decryption_failure=*/prepopulate_id > 0,
+              /*expected_starter_pack_decryption_failure=*/starter_pack_id > 0)
+              .empty());
       histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",
                                     /*kDecryptFailed=*/1, 1);
       ExpectStoredKeywordCount(0);
+      EXPECT_TRUE(GetKeywords().empty());
     }
   }
 }
 
 TEST_F(KeywordTableTest, KeywordBadCryptoRecoverySurvivesLaterRows) {
   TemplateURLData prepopulated(CreateAndAddKeyword());
+  prepopulated.starter_pack_id = 0;
+  UpdateKeyword(prepopulated);
+  TemplateURLData starter_pack = prepopulated;
+  starter_pack.id = TemplateURLID(2);
+  starter_pack.prepopulate_id = 0;
+  starter_pack.starter_pack_id = 1;
+  AddKeyword(starter_pack);
   TemplateURLData custom = prepopulated;
-  custom.id = TemplateURLID(2);
+  custom.id = TemplateURLID(3);
   custom.prepopulate_id = 0;
   custom.starter_pack_id = 0;
   AddKeyword(custom);
@@ -478,19 +498,74 @@ TEST_F(KeywordTableTest, KeywordBadCryptoRecoverySurvivesLaterRows) {
   InitDatabase(os_crypt_async::GetTestEncryptorForTesting());
 
   TemplateURLData valid = custom;
-  valid.id = TemplateURLID(3);
+  valid.id = TemplateURLID(4);
   AddKeyword(valid);
 
   base::HistogramTester histograms;
   // Neither the later custom decryption failure nor a valid row may clear the
-  // earlier request to reconcile prepopulated engines.
-  EXPECT_THAT(GetKeywords(/*expected_prepopulated_decryption_failure=*/true),
+  // earlier requests to reconcile prepopulated and starter pack engines.
+  EXPECT_THAT(GetKeywords(/*expected_prepopulated_decryption_failure=*/true,
+                          /*expected_starter_pack_decryption_failure=*/true),
               testing::ElementsAre(valid));
   histograms.ExpectBucketCount("Search.KeywordTable.HashValidationStatus",
-                               /*kDecryptFailed=*/1, 2);
+                               /*kDecryptFailed=*/1, 3);
   histograms.ExpectBucketCount("Search.KeywordTable.HashValidationStatus",
                                /*kSuccess=*/0, 1);
   ExpectStoredKeywordCount(1);
+}
+
+TEST_F(KeywordTableTest, StarterPackNoCrypto) {
+  TemplateURLData keyword(CreateAndAddKeyword());
+  keyword.prepopulate_id = 0;
+  UpdateKeyword(keyword);
+  CloseDatabase();
+
+  const auto unavailable_encryptor =
+      os_crypt_async::GetTestEncryptorForTesting();
+  unavailable_encryptor->set_decryption_available_for_testing(false);
+  InitDatabase(unavailable_encryptor);
+  base::HistogramTester histograms;
+  EXPECT_THAT(GetKeywords(), testing::ElementsAre(keyword));
+  histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",
+                                /*kNotVerifiedNoCrypto=*/4, 1);
+  ExpectStoredKeywordCount(1);
+}
+
+TEST_F(KeywordTableTest, StarterPackInvalidRowsDoNotRequestRecovery) {
+  for (int expected_status : {/*kInvalidHash=*/2, /*kIncorrectHash=*/3,
+                              /*empty URL, no validation=*/-1}) {
+    SCOPED_TRACE(expected_status);
+    TemplateURLData keyword(CreateAndAddKeyword());
+    keyword.prepopulate_id = 0;
+    UpdateKeyword(keyword);
+    auto hash = keyword.GenerateHash();
+    if (expected_status == 2) {
+      hash.pop_back();
+    } else {
+      hash.back() ^= 1;
+    }
+    const auto encrypted_hash =
+        encryptor_->EncryptString(std::string(hash.begin(), hash.end()));
+    ASSERT_TRUE(encrypted_hash);
+    {
+      sql::Statement s;
+      GetStatement("UPDATE keywords SET url_hash=?, url=? WHERE id=1", &s);
+      s.BindBlob(0, *encrypted_hash);
+      s.BindString(1, expected_status == -1 ? "" : keyword.url());
+      ASSERT_TRUE(s.Run());
+    }
+
+    base::HistogramTester histograms;
+    EXPECT_TRUE(GetKeywords().empty());
+    if (expected_status == -1) {
+      histograms.ExpectTotalCount("Search.KeywordTable.HashValidationStatus",
+                                  0);
+    } else {
+      histograms.ExpectUniqueSample("Search.KeywordTable.HashValidationStatus",
+                                    expected_status, 1);
+    }
+    ExpectStoredKeywordCount(0);
+  }
 }
 
 TEST_F(KeywordTableTest, KeywordInvalidHash) {
@@ -568,19 +643,23 @@ TEST_F(KeywordTableTest, KeywordWeakHash) {
                                       reject_weak_hashes);
     CloseDatabase();
     InitDatabase(weak_encryptor);
-    CreateAndAddKeyword();
-    EXPECT_EQ(1u, GetKeywords().size());
+    TemplateURLData starter_pack(CreateAndAddKeyword());
+    starter_pack.id = TemplateURLID(2);
+    starter_pack.prepopulate_id = 0;
+    AddKeyword(starter_pack);
+    EXPECT_EQ(2u, GetKeywords().size());
 
     CloseDatabase();
     InitDatabase(strong_encryptor);
     base::HistogramTester histograms;
-    EXPECT_EQ(reject_weak_hashes ? 0u : 1u, GetKeywords().size());
+    EXPECT_EQ(reject_weak_hashes ? 0u : 2u, GetKeywords().size());
     histograms.ExpectUniqueSample(
         "Search.KeywordTable.HashValidationStatus",
-        reject_weak_hashes ? /*kWeakAlgorithmUsed=*/6 : /*kSuccess=*/0, 1);
-    ExpectStoredKeywordCount(reject_weak_hashes ? 0 : 1);
+        reject_weak_hashes ? /*kWeakAlgorithmUsed=*/6 : /*kSuccess=*/0, 2);
+    ExpectStoredKeywordCount(reject_weak_hashes ? 0 : 2);
     if (!reject_weak_hashes) {
       RemoveKeyword(TemplateURLID(1));
+      RemoveKeyword(TemplateURLID(2));
     }
   }
 }

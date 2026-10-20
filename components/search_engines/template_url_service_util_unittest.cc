@@ -517,6 +517,7 @@ class TemplateURLServiceUtilLoadTest : public testing::Test {
           /*default_search_provider=*/nullptr, search_terms_data,
           inout_resource_metadata,
           /*had_prepopulated_decryption_failure=*/false,
+          /*had_starter_pack_decryption_failure=*/false,
           &removed_keyword_guids);
 
       EXPECT_TRUE(removed_keyword_guids.empty());
@@ -786,11 +787,93 @@ TEST_F(TemplateURLServiceUtilLoadTest, PrepopulatedDecryptionRecovery) {
   }
 }
 
+TEST_F(TemplateURLServiceUtilLoadTest, StarterPackDecryptionRecovery) {
+  auto& resolver = search_engines_test_environment_.prepopulate_data_resolver();
+  const auto current_metadata = resolver.ComputeDatabaseUpdateRequirements({});
+  ASSERT_TRUE(current_metadata);
+  const auto starter_pack =
+      template_url_starter_pack_data::GetStarterPackEngines();
+  ASSERT_GT(starter_pack.size(), 1u);
+
+  WDKeywordsResult result;
+  result.metadata.builtin_keyword_data_version = current_metadata->data_version;
+  result.metadata.builtin_keyword_country = current_metadata->country_id;
+  result.metadata.prepopulated_engines_migration_state =
+      current_metadata->prepopulated_engines_migration_state;
+  ASSERT_FALSE(resolver.ComputeDatabaseUpdateRequirements(result.metadata));
+
+  TemplateURLData custom;
+  custom.SetShortName(u"Custom");
+  custom.SetKeyword(u"custom");
+  custom.SetURL("https://custom.example/?q={searchTerms}");
+  custom.id = TemplateURLID(1);
+  custom.safe_for_autoreplace = false;
+  result.keywords.push_back(custom);
+  TemplateURL default_search_provider(custom);
+  TemplateURLData edited = *starter_pack.front();
+  edited.id = TemplateURLID(2);
+  edited.SetShortName(u"My bookmarks");
+  edited.SetKeyword(u"@mine");
+  edited.safe_for_autoreplace = false;
+  result.keywords.push_back(edited);
+
+  for (bool outdated_metadata : {false, true}) {
+    SCOPED_TRACE(outdated_metadata);
+    result.metadata.starter_pack_version =
+        template_url_starter_pack_data::GetDataVersion() - outdated_metadata;
+    for (bool decryption_failure : {false, true}) {
+      SCOPED_TRACE(decryption_failure);
+      result.had_starter_pack_decryption_failure = decryption_failure;
+      TemplateURLService::OwnedTemplateURLVector urls;
+      WDKeywordsResult::Metadata updated_metadata;
+      std::set<std::string> removed_guids;
+      GetSearchProvidersUsingKeywordResult(
+          result, /*service=*/nullptr,
+          &search_engines_test_environment_.pref_service(), resolver, &urls,
+          &default_search_provider, SearchTermsData(), updated_metadata,
+          &removed_guids);
+
+      // Starter pack recovery neither refreshes regional engines nor fakes a
+      // metadata migration. Normal version updates still work independently.
+      EXPECT_FALSE(updated_metadata.HasBuiltinKeywordData());
+      EXPECT_EQ(updated_metadata.starter_pack_version,
+                outdated_metadata
+                    ? template_url_starter_pack_data::GetDataVersion()
+                    : 0);
+      EXPECT_TRUE(removed_guids.empty());
+      const bool reconciled = outdated_metadata || decryption_failure;
+      EXPECT_EQ(reconciled ? starter_pack.size() + 1 : 2, urls.size());
+      auto custom_it =
+          std::ranges::find(urls, custom.sync_guid, &TemplateURL::sync_guid);
+      ASSERT_NE(custom_it, urls.end());
+      EXPECT_EQ((*custom_it)->data(), custom);
+      auto edited_it =
+          std::ranges::find(urls, edited.sync_guid, &TemplateURL::sync_guid);
+      ASSERT_NE(edited_it, urls.end());
+      EXPECT_EQ((*edited_it)->short_name(), edited.short_name());
+      EXPECT_EQ((*edited_it)->keyword(), edited.keyword());
+      if (reconciled) {
+        for (const auto& engine : starter_pack) {
+          EXPECT_NE(
+              std::ranges::find(
+                  urls,
+                  static_cast<template_url_starter_pack_data::StarterPackId>(
+                      engine->starter_pack_id),
+                  &TemplateURL::starter_pack_id),
+              urls.end());
+        }
+      }
+    }
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 class TemplateURLServiceDecryptionLoadTest
     : public TemplateURLServiceUtilLoadTest,
       public testing::WithParamInterface<bool> {
  protected:
+  enum class EngineSet { kPrepopulated, kStarterPack, kCustom, kAllBuiltins };
+
   void SetUp() override {
     regional_capabilities_service().SetCacheForTesting(
         kRawNonEeaCountryId, regional_capabilities::GetSettingsForProgram(
@@ -836,12 +919,15 @@ class TemplateURLServiceDecryptionLoadTest
     TemplateURLServiceLoadWaiter().WaitForLoadComplete(*service_);
   }
 
-  void MakeHashesUndecryptable(bool prepopulated) {
+  void MakeHashesUndecryptable(EngineSet engine_set) {
     // Flush queued keyword writes and verify that recovery cannot rely on a
     // version or country migration.
     auto keywords = ReadKeywords();
     ASSERT_TRUE(keywords);
     EXPECT_FALSE(keywords->had_prepopulated_decryption_failure);
+    EXPECT_FALSE(keywords->had_starter_pack_decryption_failure);
+    ASSERT_EQ(keywords->metadata.starter_pack_version,
+              template_url_starter_pack_data::GetDataVersion());
     ASSERT_FALSE(search_engines_test_environment_.prepopulate_data_resolver()
                      .ComputeDatabaseUpdateRequirements(keywords->metadata));
     const auto hash =
@@ -856,11 +942,21 @@ class TemplateURLServiceDecryptionLoadTest
     ASSERT_TRUE(encrypted_hash);
     database_->ScheduleDBTask(
         FROM_HERE, base::BindLambdaForTesting([&](WebDatabase* db) {
-          const std::string query =
-              prepopulated
-                  ? "UPDATE keywords SET url_hash=? WHERE prepopulate_id>0"
-                  : "UPDATE keywords SET url_hash=? WHERE prepopulate_id=0 "
-                    "AND starter_pack_id=0";
+          std::string query = "UPDATE keywords SET url_hash=? WHERE ";
+          switch (engine_set) {
+            case EngineSet::kPrepopulated:
+              query += "prepopulate_id>0";
+              break;
+            case EngineSet::kStarterPack:
+              query += "starter_pack_id>0";
+              break;
+            case EngineSet::kCustom:
+              query += "prepopulate_id=0 AND starter_pack_id=0";
+              break;
+            case EngineSet::kAllBuiltins:
+              query += "prepopulate_id>0 OR starter_pack_id>0";
+              break;
+          }
           sql::Statement s(db->GetSQLConnection()->GetUniqueStatement(query));
           s.BindBlob(0, *encrypted_hash);
           EXPECT_TRUE(s.Run());
@@ -908,6 +1004,27 @@ class TemplateURLServiceDecryptionLoadTest
     }
   }
 
+  void ExpectStarterPackEngines() {
+    const auto starter_pack =
+        template_url_starter_pack_data::GetStarterPackEngines();
+    const auto urls = service_->GetTemplateURLs();
+    EXPECT_EQ(starter_pack.size(),
+              static_cast<size_t>(
+                  std::ranges::count_if(urls, [](const TemplateURL* url) {
+                    return url->starter_pack_id() !=
+                           template_url_starter_pack_data::StarterPackId::kNone;
+                  })));
+    for (const auto& engine : starter_pack) {
+      const auto found = std::ranges::find(
+          urls,
+          static_cast<template_url_starter_pack_data::StarterPackId>(
+              engine->starter_pack_id),
+          &TemplateURL::starter_pack_id);
+      ASSERT_NE(found, urls.end());
+      EXPECT_EQ((*found)->url(), engine->url());
+    }
+  }
+
   scoped_refptr<WebDatabaseService> database_;
   scoped_refptr<KeywordWebDataService> keyword_service_;
   std::unique_ptr<TemplateURLService> service_;
@@ -915,10 +1032,11 @@ class TemplateURLServiceDecryptionLoadTest
 
 TEST_F(TemplateURLServiceDecryptionLoadTest,
        PrepopulatedDecryptionFailurePropagatesToResult) {
-  MakeHashesUndecryptable(/*prepopulated=*/true);
+  MakeHashesUndecryptable(EngineSet::kPrepopulated);
   const auto result = ReadKeywords();
   ASSERT_TRUE(result);
   EXPECT_TRUE(result->had_prepopulated_decryption_failure);
+  EXPECT_FALSE(result->had_starter_pack_decryption_failure);
   EXPECT_FALSE(search_engines_test_environment_.prepopulate_data_resolver()
                    .ComputeDatabaseUpdateRequirements(result->metadata));
   EXPECT_TRUE(std::ranges::none_of(
@@ -926,8 +1044,106 @@ TEST_F(TemplateURLServiceDecryptionLoadTest,
       [](const TemplateURLData& data) { return data.prepopulate_id > 0; }));
 }
 
+TEST_P(TemplateURLServiceDecryptionLoadTest,
+       StarterPackDecryptionFailurePropagatesToResult) {
+  MakeHashesUndecryptable(GetParam() ? EngineSet::kAllBuiltins
+                                     : EngineSet::kStarterPack);
+  const auto result = ReadKeywords();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(result->had_prepopulated_decryption_failure, GetParam());
+  EXPECT_TRUE(result->had_starter_pack_decryption_failure);
+  EXPECT_EQ(result->metadata.starter_pack_version,
+            template_url_starter_pack_data::GetDataVersion());
+  EXPECT_FALSE(search_engines_test_environment_.prepopulate_data_resolver()
+                   .ComputeDatabaseUpdateRequirements(result->metadata));
+  EXPECT_TRUE(std::ranges::none_of(
+      result->keywords,
+      [](const TemplateURLData& data) { return data.starter_pack_id > 0; }));
+}
+
+TEST_P(TemplateURLServiceDecryptionLoadTest, StarterPackDecryptionRecovery) {
+  auto& env = search_engines_test_environment_;
+  const auto prepopulated =
+      env.prepopulate_data_resolver().GetPrepopulatedEngines();
+  ASSERT_GT(prepopulated.size(), 2u);
+  const int fallback_id =
+      env.prepopulate_data_resolver().GetFallbackSearch()->prepopulate_id;
+  const auto selected =
+      std::ranges::find_if(prepopulated, [fallback_id](const auto& data) {
+        return data->prepopulate_id != fallback_id;
+      });
+  ASSERT_NE(selected, prepopulated.end());
+  auto* selected_engine =
+      service_->GetTemplateURLForKeyword((*selected)->keyword());
+  ASSERT_TRUE(selected_engine);
+  service_->SetUserSelectedDefaultSearchProvider(selected_engine);
+  const int selected_id = selected_engine->prepopulate_id();
+  const std::string selected_guid = selected_engine->sync_guid();
+
+  std::u16string removed_keyword;
+  if (!GetParam()) {
+    // A starter pack failure must not undo a deliberate regional deletion.
+    const auto removed = std::ranges::find_if(
+        prepopulated, [fallback_id, selected_id](const auto& data) {
+          return data->prepopulate_id != fallback_id &&
+                 data->prepopulate_id != selected_id;
+        });
+    ASSERT_NE(removed, prepopulated.end());
+    removed_keyword = (*removed)->keyword();
+    auto* removed_engine = service_->GetTemplateURLForKeyword(removed_keyword);
+    ASSERT_TRUE(removed_engine);
+    service_->Remove(removed_engine);
+  }
+
+  TemplateURLData custom;
+  custom.SetShortName(u"Custom");
+  custom.SetKeyword(u"custom");
+  custom.SetURL("https://custom.example/?q={searchTerms}");
+  ASSERT_TRUE(service_->Add(std::make_unique<TemplateURL>(custom)));
+  MakeHashesUndecryptable(GetParam() ? EngineSet::kAllBuiltins
+                                     : EngineSet::kStarterPack);
+  base::HistogramTester histograms;
+  LoadService();
+  histograms.ExpectBucketCount(
+      "Search.KeywordTable.HashValidationStatus", /*kDecryptFailed=*/1,
+      template_url_starter_pack_data::GetStarterPackEngines().size() +
+          (GetParam() ? prepopulated.size() : 0));
+  ExpectStarterPackEngines();
+  if (GetParam()) {
+    ExpectRegionalEngines();
+  } else {
+    EXPECT_FALSE(service_->GetTemplateURLForKeyword(removed_keyword));
+  }
+  ASSERT_TRUE(service_->GetDefaultSearchProvider());
+  EXPECT_EQ(service_->GetDefaultSearchProvider()->prepopulate_id(),
+            selected_id);
+  EXPECT_EQ(service_->GetDefaultSearchProvider()->sync_guid(), selected_guid);
+  EXPECT_EQ(service_->GetDefaultSearchManager()->GetDefaultSearchEngineSource(),
+            DefaultSearchManager::FROM_USER);
+  const auto* custom_engine =
+      service_->GetTemplateURLForKeyword(custom.keyword());
+  ASSERT_TRUE(custom_engine);
+  EXPECT_EQ(custom_engine->url(), custom.url());
+  EXPECT_EQ(custom_engine->sync_guid(), custom.sync_guid);
+
+  // Flush the reconstructed rows and verify that neither failure signal sticks.
+  const auto persisted = ReadKeywords();
+  ASSERT_TRUE(persisted);
+  EXPECT_FALSE(persisted->had_prepopulated_decryption_failure);
+  EXPECT_FALSE(persisted->had_starter_pack_decryption_failure);
+  EXPECT_EQ(persisted->metadata.starter_pack_version,
+            template_url_starter_pack_data::GetDataVersion());
+  service_->Shutdown();
+  service_.reset();
+  LoadService();
+  ExpectStarterPackEngines();
+  if (!GetParam()) {
+    EXPECT_FALSE(service_->GetTemplateURLForKeyword(removed_keyword));
+  }
+}
+
 TEST_F(TemplateURLServiceDecryptionLoadTest,
-       CustomDecryptionFailureDoesNotReconcilePrepopulatedEngines) {
+       CustomDecryptionFailureDoesNotReconcileBuiltinEngines) {
   const auto prepopulated =
       search_engines_test_environment_.prepopulate_data_resolver()
           .GetPrepopulatedEngines();
@@ -942,21 +1158,30 @@ TEST_F(TemplateURLServiceDecryptionLoadTest,
       service_->GetTemplateURLForKeyword((*removed)->keyword());
   ASSERT_TRUE(removed_engine);
   service_->Remove(removed_engine);
+  const auto starter_pack =
+      template_url_starter_pack_data::GetStarterPackEngines();
+  ASSERT_FALSE(starter_pack.empty());
+  const auto removed_starter_keyword = starter_pack.front()->keyword();
+  auto* removed_starter =
+      service_->GetTemplateURLForKeyword(removed_starter_keyword);
+  ASSERT_TRUE(removed_starter);
+  service_->Remove(removed_starter);
 
   TemplateURLData custom;
   custom.SetKeyword(u"custom");
   custom.SetURL("https://custom.example/?q={searchTerms}");
   ASSERT_TRUE(service_->Add(std::make_unique<TemplateURL>(custom)));
-  MakeHashesUndecryptable(/*prepopulated=*/false);
+  MakeHashesUndecryptable(EngineSet::kCustom);
 
   base::HistogramTester histograms;
   LoadService();
   histograms.ExpectBucketCount("Search.KeywordTable.HashValidationStatus",
                                /*kDecryptFailed=*/1, 1);
   EXPECT_FALSE(service_->GetTemplateURLForKeyword(custom.keyword()));
-  // A custom row's decryption failure must not restore a deliberately removed
-  // regional engine when the metadata is current.
+  // A custom row's decryption failure must not restore deliberately removed
+  // built-in engines when the metadata is current.
   EXPECT_FALSE(service_->GetTemplateURLForKeyword((*removed)->keyword()));
+  EXPECT_FALSE(service_->GetTemplateURLForKeyword(removed_starter_keyword));
   const auto urls = service_->GetTemplateURLs();
   EXPECT_EQ(prepopulated.size() - 1, static_cast<size_t>(std::ranges::count_if(
                                          urls, [](const TemplateURL* url) {
@@ -990,7 +1215,7 @@ TEST_P(TemplateURLServiceDecryptionLoadTest,
   custom.SetURL("https://custom.example/?q={searchTerms}");
   custom.safe_for_autoreplace = false;
   ASSERT_TRUE(service_->Add(std::make_unique<TemplateURL>(custom)));
-  MakeHashesUndecryptable(/*prepopulated=*/true);
+  MakeHashesUndecryptable(EngineSet::kPrepopulated);
 
   if (!GetParam()) {
     // Model the result of the separate tracked-pref reset path. Keyword

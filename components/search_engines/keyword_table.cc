@@ -353,8 +353,10 @@ bool KeywordTable::PerformOperations(const Operations& operations) {
 }
 
 bool KeywordTable::GetKeywords(Keywords* keywords,
-                               bool& had_prepopulated_decryption_failure) {
+                               bool& had_prepopulated_decryption_failure,
+                               bool& had_starter_pack_decryption_failure) {
   had_prepopulated_decryption_failure = false;
+  had_starter_pack_decryption_failure = false;
   const std::string query = base::StrCat(
       {"SELECT ", GetKeywordColumns(), " FROM keywords ORDER BY id ASC"});
   sql::Statement s(db()->GetUniqueStatement(query));
@@ -362,7 +364,8 @@ bool KeywordTable::GetKeywords(Keywords* keywords,
   std::set<TemplateURLID> bad_entries;
   while (s.Step()) {
     const auto data =
-        GetKeywordDataFromStatement(s, had_prepopulated_decryption_failure);
+        GetKeywordDataFromStatement(s, had_prepopulated_decryption_failure,
+                                    had_starter_pack_decryption_failure);
     if (data) {
       keywords->emplace_back(*std::move(data));
     } else {
@@ -614,7 +617,8 @@ bool KeywordTable::MigrateToVersion152ExpandHashColumn() {
 
 std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
     sql::Statement& s,
-    bool& had_prepopulated_decryption_failure) {
+    bool& had_prepopulated_decryption_failure,
+    bool& had_starter_pack_decryption_failure) {
   TemplateURLData data;
 
   data.SetShortName(s.ColumnString16(1));
@@ -694,6 +698,11 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
         // reconciliation of the built-in engine set from current regional
         // prepopulation data.
         had_prepopulated_decryption_failure = true;
+      }
+      if (data.starter_pack_id > 0) {
+        // The IDs are unverified, so either may independently require
+        // reconciliation, including when both are positive.
+        had_starter_pack_decryption_failure = true;
       }
       return std::nullopt;
     }

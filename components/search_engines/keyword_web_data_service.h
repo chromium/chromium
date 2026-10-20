@@ -37,6 +37,11 @@ struct WDKeywordsResult {
   // from authoritative data, even when the keyword metadata is current.
   bool had_prepopulated_decryption_failure = false;
 
+  // At least one row with a positive starter_pack_id was rejected because its
+  // hash could not be decrypted, regardless of prepopulate_id. Reconcile the
+  // starter pack engine set even when its metadata is current.
+  bool had_starter_pack_decryption_failure = false;
+
   // Context qualifying the built-in keywords and starter pack engines data.
   struct Metadata {
     // Version number of the most recent prepopulate data that has been merged
