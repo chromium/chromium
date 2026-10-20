@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +22,7 @@
 #include "ui/base/resource/resource_bundle.h"
 
 namespace supervised_user {
+namespace {
 
 struct InterstitialMessageIDTestParameter {
   FilteringBehaviorReason reason;
@@ -158,31 +160,34 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
   }
 }
 
-BuildHtmlTestParameter build_html_test_parameter[] = {
-    {true, Custodian("custodian", "custodian_email", "url1"), std::nullopt,
-     FilteringBehaviorReason::DEFAULT},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT},
-    {false, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT},
-    {false, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::DEFAULT},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::ASYNC_CHECKER},
-    {true, Custodian("custodian", "custodian_email", "url1"),
-     Custodian("custodian2", "custodian2_email", "url2"),
-     FilteringBehaviorReason::MANUAL},
-};
+std::vector<BuildHtmlTestParameter> GetBuildHtmlTestParameters() {
+  return {
+      {true, Custodian("custodian", "custodian_email", "url1"), std::nullopt,
+       FilteringBehaviorReason::DEFAULT},
+      {true, Custodian("custodian", "custodian_email", "url1"),
+       Custodian("custodian2", "custodian2_email", "url2"),
+       FilteringBehaviorReason::DEFAULT},
+      {false, Custodian("custodian", "custodian_email", "url1"),
+       Custodian("custodian2", "custodian2_email", "url2"),
+       FilteringBehaviorReason::DEFAULT},
+      {false, Custodian("custodian", "custodian_email", "url1"),
+       Custodian("custodian2", "custodian2_email", "url2"),
+       FilteringBehaviorReason::DEFAULT},
+      {true, Custodian("custodian", "custodian_email", "url1"),
+       Custodian("custodian2", "custodian2_email", "url2"),
+       FilteringBehaviorReason::DEFAULT},
+      {true, Custodian("custodian", "custodian_email", "url1"),
+       Custodian("custodian2", "custodian2_email", "url2"),
+       FilteringBehaviorReason::ASYNC_CHECKER},
+      {true, Custodian("custodian", "custodian_email", "url1"),
+       Custodian("custodian2", "custodian2_email", "url2"),
+       FilteringBehaviorReason::MANUAL},
+  };
+}
 
 INSTANTIATE_TEST_SUITE_P(BuildHtmlParameterized,
                          SupervisedUserErrorPageTest_BuildHtml,
-                         ::testing::ValuesIn(build_html_test_parameter));
+                         ::testing::ValuesIn(GetBuildHtmlTestParameters()));
 
+}  // namespace
 }  // namespace supervised_user

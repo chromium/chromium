@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -337,28 +338,30 @@ TEST_P(FamilyLinkUrlFilterMetricsTest, RecordsTopLevelMetricsForAsyncAllow) {
       SupervisedUserFilterTopLevelResult::kAllow, 1);
 }
 
-const MetricTestParam kMetricTestParams[] = {
-    {.context = FilteringContext::kNavigationThrottle,
-     .context_specific_histogram =
-         "ManagedUsers.TopLevelFilteringResult2.NavigationThrottle",
-     .label = "NavigationThrottleContext"},
-    {.context = FilteringContext::kDefault,
-     .context_specific_histogram =
-         "ManagedUsers.TopLevelFilteringResult2.Default",
-     .label = "DefaultContext"},
-    {.context = FilteringContext::kNavigationObserver,
-     .context_specific_histogram =
-         "ManagedUsers.TopLevelFilteringResult2.NavigationObserver",
-     .label = "NavigationObserverContext"},
-    {.context = FilteringContext::kFamilyLinkSettingsUpdated,
-     .context_specific_histogram =
-         "ManagedUsers.TopLevelFilteringResult2.FamilyLinkSettingsUpdated",
-     .label = "FamilyLinkSettingsUpdated"},
-};
+std::vector<MetricTestParam> GetMetricTestParams() {
+  return {
+      {.context = FilteringContext::kNavigationThrottle,
+       .context_specific_histogram =
+           "ManagedUsers.TopLevelFilteringResult2.NavigationThrottle",
+       .label = "NavigationThrottleContext"},
+      {.context = FilteringContext::kDefault,
+       .context_specific_histogram =
+           "ManagedUsers.TopLevelFilteringResult2.Default",
+       .label = "DefaultContext"},
+      {.context = FilteringContext::kNavigationObserver,
+       .context_specific_histogram =
+           "ManagedUsers.TopLevelFilteringResult2.NavigationObserver",
+       .label = "NavigationObserverContext"},
+      {.context = FilteringContext::kFamilyLinkSettingsUpdated,
+       .context_specific_histogram =
+           "ManagedUsers.TopLevelFilteringResult2.FamilyLinkSettingsUpdated",
+       .label = "FamilyLinkSettingsUpdated"},
+  };
+}
 
 INSTANTIATE_TEST_SUITE_P(,
                          FamilyLinkUrlFilterMetricsTest,
-                         testing::ValuesIn(kMetricTestParams),
+                         testing::ValuesIn(GetMetricTestParams()),
                          [](const auto& info) { return info.param.label; });
 
 TEST(FamilyLinkUrlFilterResultTest, IsFromManualList) {

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -211,31 +212,34 @@ TEST_P(SupervisedUserMetricsServiceWebFilterTypePeriodicalTest,
   }
 }
 
-const PeriodicalWebFilterTypeTestParams kPeriodicalWebFilterTypeTestParams[] = {
-    {"Unsupervised",
-     InitialSupervisionState::kUnsupervised,
-     {kWebFilterTypeHistogramName,
+std::vector<PeriodicalWebFilterTypeTestParams>
+GetPeriodicalWebFilterTypeTestParams() {
+  return {
+      {"Unsupervised",
+       InitialSupervisionState::kUnsupervised,
+       {kWebFilterTypeHistogramName,
 #if BUILDFLAG(IS_ANDROID)
-      kWebFilterTypeForLocallySupervisedHistogramName,
+        kWebFilterTypeForLocallySupervisedHistogramName,
 #endif  // BUILDFLAG(IS_ANDROID)
-      kWebFilterTypeForFamilyUserHistogramName},
-     /*expect_emissions=*/false},
-    {"SupervisedWithParentalControls",
-     InitialSupervisionState::kFamilyLinkDefault,
-     {kWebFilterTypeHistogramName, kWebFilterTypeForFamilyUserHistogramName},
-     /*expect_emissions=*/true},
+        kWebFilterTypeForFamilyUserHistogramName},
+       /*expect_emissions=*/false},
+      {"SupervisedWithParentalControls",
+       InitialSupervisionState::kFamilyLinkDefault,
+       {kWebFilterTypeHistogramName, kWebFilterTypeForFamilyUserHistogramName},
+       /*expect_emissions=*/true},
 #if BUILDFLAG(IS_ANDROID)
-    {"SupervisedLocally",
-     InitialSupervisionState::kSupervisedWithAllContentFilters,
-     {kWebFilterTypeForLocallySupervisedHistogramName},
-     /*expect_emissions=*/true},
+      {"SupervisedLocally",
+       InitialSupervisionState::kSupervisedWithAllContentFilters,
+       {kWebFilterTypeForLocallySupervisedHistogramName},
+       /*expect_emissions=*/true},
 #endif  // BUILDFLAG(IS_ANDROID)
-};
+  };
+}
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     SupervisedUserMetricsServiceWebFilterTypePeriodicalTest,
-    testing::ValuesIn(kPeriodicalWebFilterTypeTestParams),
+    testing::ValuesIn(GetPeriodicalWebFilterTypeTestParams()),
     [](const testing::TestParamInfo<
         SupervisedUserMetricsServiceWebFilterTypePeriodicalTest::ParamType>&
            info) { return info.param.test_name; });
