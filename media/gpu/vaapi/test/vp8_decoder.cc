@@ -8,8 +8,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "media/gpu/vaapi/test/macros.h"
 #include "media/parsers/ivf_parser.h"
 #include "media/parsers/vp8_parser.h"
@@ -73,30 +75,27 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
       "incorrect quantization matrix segment size");
   static_assert(std::size(decltype(iq_matrix_buf.quantization_index){}[0]) == 6,
                 "incorrect quantization matrix Q index size");
-  for (size_t i = 0; i < kMaxMBSegments; ++i) {
+  for (auto [q_index, quantizer_update_value] :
+       std::views::zip(iq_matrix_buf.quantization_index,
+                       sgmnt_hdr.quantizer_update_value)) {
     int q = quant_hdr.y_ac_qi;
 
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        q = sgmnt_hdr.quantizer_update_value[i];
+        q = quantizer_update_value;
       } else {
-        q += sgmnt_hdr.quantizer_update_value[i];
+        q += quantizer_update_value;
       }
     }
 
 #define CLAMP_Q(q) std::clamp(q, 0, 127)
-    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])[0] = CLAMP_Q(q);
-    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
-    [1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
-    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
-    [2] = CLAMP_Q(q + quant_hdr.y2_dc_delta);
-    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
-    [3] = CLAMP_Q(q + quant_hdr.y2_ac_delta);
-    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
-    [4] = CLAMP_Q(q + quant_hdr.uv_dc_delta);
-    UNSAFE_TODO(iq_matrix_buf.quantization_index[i])
-    [5] = CLAMP_Q(q + quant_hdr.uv_ac_delta);
+    q_index[0] = CLAMP_Q(q);
+    q_index[1] = CLAMP_Q(q + quant_hdr.y_dc_delta);
+    q_index[2] = CLAMP_Q(q + quant_hdr.y2_dc_delta);
+    q_index[3] = CLAMP_Q(q + quant_hdr.y2_ac_delta);
+    q_index[4] = CLAMP_Q(q + quant_hdr.uv_dc_delta);
+    q_index[5] = CLAMP_Q(q + quant_hdr.uv_ac_delta);
 #undef CLAMP_Q
   }
 
@@ -140,18 +139,19 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
   static_assert(std::tuple_size_v<decltype(sgmnt_hdr.lf_update_value)> ==
                     std::extent<decltype(pic_param.loop_filter_level)>(),
                 "loop filter level arrays mismatch");
-  for (size_t i = 0; i < std::size(sgmnt_hdr.lf_update_value); ++i) {
+  for (auto [va_lf_level, lf_update_value] : std::views::zip(
+           pic_param.loop_filter_level, sgmnt_hdr.lf_update_value)) {
     int lf_level = lf_hdr.level;
     if (sgmnt_hdr.segmentation_enabled) {
       if (sgmnt_hdr.segment_feature_mode ==
           Vp8SegmentationHeader::FEATURE_MODE_ABSOLUTE) {
-        lf_level = sgmnt_hdr.lf_update_value[i];
+        lf_level = lf_update_value;
       } else {
-        lf_level += sgmnt_hdr.lf_update_value[i];
+        lf_level += lf_update_value;
       }
     }
 
-    UNSAFE_TODO(pic_param.loop_filter_level[i]) = std::clamp(lf_level, 0, 63);
+    va_lf_level = std::clamp(lf_level, 0, 63);
   }
 
   static_assert(
@@ -164,11 +164,9 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
   static_assert(std::tuple_size_v<decltype(lf_hdr.ref_frame_delta)> ==
                     std::tuple_size_v<decltype(lf_hdr.mb_mode_delta)>,
                 "loop filter deltas arrays size mismatch");
-  for (size_t i = 0; i < std::size(lf_hdr.ref_frame_delta); ++i) {
-    UNSAFE_TODO(pic_param.loop_filter_deltas_ref_frame[i]) =
-        lf_hdr.ref_frame_delta[i];
-    UNSAFE_TODO(pic_param.loop_filter_deltas_mode[i]) = lf_hdr.mb_mode_delta[i];
-  }
+  base::span(pic_param.loop_filter_deltas_ref_frame)
+      .copy_from(lf_hdr.ref_frame_delta);
+  base::span(pic_param.loop_filter_deltas_mode).copy_from(lf_hdr.mb_mode_delta);
 
 #define FHDR_TO_PP(a) pic_param.a = frame_hdr.a
   FHDR_TO_PP(prob_skip_false);
@@ -198,9 +196,13 @@ void Vp8Decoder::FillVp8DataStructures(const Vp8FrameHeader& frame_hdr,
   slice_param.partition_size[0] =
       frame_hdr.first_part_size - ((frame_hdr.macroblock_bit_offset + 7) / 8);
 
-  for (size_t i = 0; i < frame_hdr.num_of_dct_partitions; ++i)
-    UNSAFE_TODO(slice_param.partition_size[i + 1]) =
-        frame_hdr.dct_partition_sizes[i];
+  base::span dct_partition_sizes = base::span(frame_hdr.dct_partition_sizes)
+                                       .first(frame_hdr.num_of_dct_partitions);
+  for (auto [va_partition_size, dct_partition_size] :
+       std::views::zip(base::span(slice_param.partition_size).subspan<1u>(),
+                       dct_partition_sizes)) {
+    va_partition_size = dct_partition_size;
+  }
 }
 
 // Based on update_reference_frames() in libvpx: vp8/encoder/onyx_if.c

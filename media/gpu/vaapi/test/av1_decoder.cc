@@ -7,13 +7,15 @@
 #include <va/va.h>
 #include <va/va_dec_av1.h>
 
+#include <algorithm>
 #include <bitset>
+#include <ranges>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"
@@ -51,19 +53,20 @@ void FillSegmentInfo(VASegmentationStructAV1& va_seg_info,
                     ARRAY_SIZE(va_seg_info.feature_data[0]) == 8 &&
                     ARRAY_SIZE(va_seg_info.feature_mask) == 8,
                 "Invalid feature array size");
-  for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
-    for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j)
-      UNSAFE_TODO(va_seg_info.feature_data[i][j]) =
-          UNSAFE_TODO(segmentation.feature_data[i][j]);
+  for (auto [va_data, seg_data] :
+       std::views::zip(va_seg_info.feature_data, segmentation.feature_data)) {
+    base::span(va_data).copy_from(seg_data);
   }
-  for (size_t i = 0; i < libgav1::kMaxSegments; ++i) {
+  for (auto [va_mask, seg_enabled] : std::views::zip(
+           va_seg_info.feature_mask, segmentation.feature_enabled)) {
     uint8_t feature_mask = 0;
-    for (size_t j = 0; j < libgav1::kSegmentFeatureMax; ++j) {
-      if (UNSAFE_TODO(segmentation.feature_enabled[i][j])) {
+    for (size_t j = 0; bool enabled : seg_enabled) {
+      if (enabled) {
         feature_mask |= 1 << j;
       }
+      ++j;
     }
-    UNSAFE_TODO(va_seg_info.feature_mask[i]) = feature_mask;
+    va_mask = feature_mask;
   }
 }
 
@@ -120,25 +123,29 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
   DCHECK_LE(film_grain_params.num_v_points, kFilmGrainPointUVSize);
 #define COPY_FILM_GRAIN_FIELD2(a, b) va_film_grain_info.a = film_grain_params.b
 #define COPY_FILM_GRAIN_FIELD3(a) COPY_FILM_GRAIN_FIELD2(a, a)
+  auto copy_n = [](auto& dst_arr, const auto& src_arr,
+                   base::StrictNumeric<size_t> n) {
+    auto dst = base::span(dst_arr).first(n);
+    auto src = base::span(src_arr).first(n);
+    dst.copy_from(src);
+  };
   COPY_FILM_GRAIN_FIELD3(grain_seed);
   COPY_FILM_GRAIN_FIELD3(num_y_points);
-  for (uint8_t i = 0; i < film_grain_params.num_y_points; ++i) {
-    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD3(point_y_value[i]));
-    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD3(point_y_scaling[i]));
-  }
+  copy_n(va_film_grain_info.point_y_value, film_grain_params.point_y_value,
+         film_grain_params.num_y_points);
+  copy_n(va_film_grain_info.point_y_scaling, film_grain_params.point_y_scaling,
+         film_grain_params.num_y_points);
 #undef COPY_FILM_GRAIN_FIELD3
   COPY_FILM_GRAIN_FIELD2(num_cb_points, num_u_points);
-  for (uint8_t i = 0; i < film_grain_params.num_u_points; ++i) {
-    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(point_cb_value[i], point_u_value[i]));
-    UNSAFE_TODO(
-        COPY_FILM_GRAIN_FIELD2(point_cb_scaling[i], point_u_scaling[i]));
-  }
+  copy_n(va_film_grain_info.point_cb_value, film_grain_params.point_u_value,
+         film_grain_params.num_u_points);
+  copy_n(va_film_grain_info.point_cb_scaling, film_grain_params.point_u_scaling,
+         film_grain_params.num_u_points);
   COPY_FILM_GRAIN_FIELD2(num_cr_points, num_v_points);
-  for (uint8_t i = 0; i < film_grain_params.num_v_points; ++i) {
-    UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(point_cr_value[i], point_v_value[i]));
-    UNSAFE_TODO(
-        COPY_FILM_GRAIN_FIELD2(point_cr_scaling[i], point_v_scaling[i]));
-  }
+  copy_n(va_film_grain_info.point_cr_value, film_grain_params.point_v_value,
+         film_grain_params.num_v_points);
+  copy_n(va_film_grain_info.point_cr_scaling, film_grain_params.point_v_scaling,
+         film_grain_params.num_v_points);
 
   constexpr size_t kAutoRegressionCoeffYSize = 24;
   constexpr size_t kAutoRegressionCoeffUVSize = 25;
@@ -160,25 +167,22 @@ void FillFilmGrainInfo(VAFilmGrainStructAV1& va_film_grain_info,
   const size_t num_pos_uv = num_pos_y + (film_grain_params.num_y_points > 0);
   if (film_grain_params.num_y_points > 0) {
     DCHECK_LE(num_pos_y, kAutoRegressionCoeffYSize);
-    for (size_t i = 0; i < num_pos_y; ++i)
-      UNSAFE_TODO(
-          COPY_FILM_GRAIN_FIELD2(ar_coeffs_y[i], auto_regression_coeff_y[i]));
+    copy_n(va_film_grain_info.ar_coeffs_y,
+           film_grain_params.auto_regression_coeff_y, num_pos_y);
   }
   if (film_grain_params.chroma_scaling_from_luma ||
       film_grain_params.num_u_points > 0 ||
       film_grain_params.num_v_points > 0) {
     DCHECK_LE(num_pos_uv, kAutoRegressionCoeffUVSize);
-    for (size_t i = 0; i < num_pos_uv; ++i) {
-      if (film_grain_params.chroma_scaling_from_luma ||
-          film_grain_params.num_u_points > 0) {
-        UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(ar_coeffs_cb[i],
-                                           auto_regression_coeff_u[i]));
-      }
-      if (film_grain_params.chroma_scaling_from_luma ||
-          film_grain_params.num_v_points > 0) {
-        UNSAFE_TODO(COPY_FILM_GRAIN_FIELD2(ar_coeffs_cr[i],
-                                           auto_regression_coeff_v[i]));
-      }
+    if (film_grain_params.chroma_scaling_from_luma ||
+        film_grain_params.num_u_points > 0) {
+      copy_n(va_film_grain_info.ar_coeffs_cb,
+             film_grain_params.auto_regression_coeff_u, num_pos_uv);
+    }
+    if (film_grain_params.chroma_scaling_from_luma ||
+        film_grain_params.num_v_points > 0) {
+      copy_n(va_film_grain_info.ar_coeffs_cr,
+             film_grain_params.auto_regression_coeff_v, num_pos_uv);
     }
   }
   if (film_grain_params.num_u_points > 0) {
@@ -224,8 +228,7 @@ void FillGlobalMotionInfo(
     static_assert(ARRAY_SIZE(va_warped_motion[i].wmmat) == 8 &&
                       ARRAY_SIZE(gm.params) == 6,
                   "Invalid size of warp motion parameters");
-    for (size_t j = 0; j < 6; ++j)
-      UNSAFE_TODO(va_warped_motion[i].wmmat[j]) = UNSAFE_TODO(gm.params[j]);
+    base::span(va_warped_motion[i].wmmat).first<6>().copy_from(gm.params);
     va_warped_motion[i].wmmat[6] = 0;
     va_warped_motion[i].wmmat[7] = 0;
     va_warped_motion[i].invalid = !libgav1::SetupShear(&gm);
@@ -254,23 +257,24 @@ bool FillTileInfo(VADecPictureParameterBufferAV1& va_pic_param,
             ARRAY_SIZE(va_pic_param.height_in_sbs_minus_1) ==
                 kVaSizeOfTileWidthAndHeightArray,
         "Invalid sizes of tile column widths and row heights");
-    const int tile_columns =
-        std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_columns);
-    for (int i = 0; i < tile_columns; i++) {
-      if (!base::CheckSub<int>(
-               UNSAFE_TODO(tile_info.tile_column_width_in_superblocks[i]), 1)
-               .AssignIfValid(
-                   &UNSAFE_TODO(va_pic_param.width_in_sbs_minus_1[i]))) {
+    const size_t tile_columns = base::checked_cast<size_t>(
+        std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_columns));
+    base::span width_in_sbs_minus_1 =
+        base::span(va_pic_param.width_in_sbs_minus_1).first(tile_columns);
+    for (auto [va_width, tile_column_width] :
+         std::views::zip(width_in_sbs_minus_1,
+                         tile_info.tile_column_width_in_superblocks)) {
+      if (!base::CheckSub<int>(tile_column_width, 1).AssignIfValid(&va_width)) {
         return false;
       }
     }
-    const int tile_rows =
-        std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_rows);
-    for (int i = 0; i < tile_rows; i++) {
-      if (!base::CheckSub<int>(
-               UNSAFE_TODO(tile_info.tile_row_height_in_superblocks[i]), 1)
-               .AssignIfValid(
-                   &UNSAFE_TODO(va_pic_param.height_in_sbs_minus_1[i]))) {
+    const size_t tile_rows = base::checked_cast<size_t>(
+        std::min(kVaSizeOfTileWidthAndHeightArray, tile_info.tile_rows));
+    base::span height_in_sbs_minus_1 =
+        base::span(va_pic_param.height_in_sbs_minus_1).first(tile_rows);
+    for (auto [va_height, tile_row_height] : std::views::zip(
+             height_in_sbs_minus_1, tile_info.tile_row_height_in_superblocks)) {
+      if (!base::CheckSub<int>(tile_row_height, 1).AssignIfValid(&va_height)) {
         return false;
       }
     }
@@ -315,10 +319,8 @@ void FillLoopFilterInfo(VADecPictureParameterBufferAV1& va_pic_param,
                     STD_ARRAY_SIZE(loop_filter.mode_deltas) ==
                         libgav1::kLoopFilterMaxModeDeltas,
                 "Invalid size of mode deltas array");
-  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
-    UNSAFE_TODO(va_pic_param.ref_deltas[i]) = loop_filter.ref_deltas[i];
-  for (size_t i = 0; i < libgav1::kLoopFilterMaxModeDeltas; i++)
-    UNSAFE_TODO(va_pic_param.mode_deltas[i]) = loop_filter.mode_deltas[i];
+  base::span(va_pic_param.ref_deltas).copy_from(loop_filter.ref_deltas);
+  base::span(va_pic_param.mode_deltas).copy_from(loop_filter.mode_deltas);
 }
 
 void FillQuantizationInfo(VADecPictureParameterBufferAV1& va_pic_param,
@@ -378,28 +380,30 @@ void FillCdefInfo(VADecPictureParameterBufferAV1& va_pic_param,
   const size_t num_cdef_strengths = 1 << cdef.bits;
   DCHECK_LE(num_cdef_strengths,
             static_cast<size_t>(libgav1::kMaxCdefStrengths));
-  for (size_t i = 0; i < num_cdef_strengths; ++i) {
-    const uint8_t prim_strength =
-        UNSAFE_TODO(cdef.y_primary_strength[i]) >> coeff_shift;
-    uint8_t sec_strength =
-        UNSAFE_TODO(cdef.y_secondary_strength[i]) >> coeff_shift;
+  base::span cdef_y_strengths =
+      base::span(va_pic_param.cdef_y_strengths).first(num_cdef_strengths);
+  for (auto [va_y, y_pri, y_sec] :
+       std::views::zip(cdef_y_strengths, cdef.y_primary_strength,
+                       cdef.y_secondary_strength)) {
+    const uint8_t prim_strength = y_pri >> coeff_shift;
+    uint8_t sec_strength = y_sec >> coeff_shift;
     DCHECK_LE(sec_strength, 4u);
     if (sec_strength == 4)
       sec_strength--;
-    UNSAFE_TODO(va_pic_param.cdef_y_strengths[i]) =
-        ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
+    va_y = ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
   }
 
-  for (size_t i = 0; i < num_cdef_strengths; ++i) {
-    const uint8_t prim_strength =
-        UNSAFE_TODO(cdef.uv_primary_strength[i]) >> coeff_shift;
-    uint8_t sec_strength =
-        UNSAFE_TODO(cdef.uv_secondary_strength[i]) >> coeff_shift;
+  base::span cdef_uv_strengths =
+      base::span(va_pic_param.cdef_uv_strengths).first(num_cdef_strengths);
+  for (auto [va_uv, uv_pri, uv_sec] :
+       std::views::zip(cdef_uv_strengths, cdef.uv_primary_strength,
+                       cdef.uv_secondary_strength)) {
+    const uint8_t prim_strength = uv_pri >> coeff_shift;
+    uint8_t sec_strength = uv_sec >> coeff_shift;
     DCHECK_LE(sec_strength, 4u);
     if (sec_strength == 4)
       sec_strength--;
-    UNSAFE_TODO(va_pic_param.cdef_uv_strengths[i]) =
-        ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
+    va_uv = ((prim_strength & 0xf) << 2) | (sec_strength & 0x03);
   }
 }
 
@@ -452,13 +456,10 @@ void FillLoopRestorationInfo(VADecPictureParameterBufferAV1& va_pic_param,
   va_loop_restoration.crframe_restoration_type =
       to_frame_restoration_type(loop_restoration.type[2]);
 
-  const size_t num_planes = libgav1::kMaxPlanes;
   const bool use_loop_restoration =
-      std::find_if(std::begin(loop_restoration.type),
-                   UNSAFE_TODO(std::begin(loop_restoration.type) + num_planes),
-                   [](const auto type) {
-                     return type != libgav1::kLoopRestorationTypeNone;
-                   }) != (UNSAFE_TODO(loop_restoration.type + num_planes));
+      std::ranges::any_of(loop_restoration.type, [](const auto type) {
+        return type != libgav1::kLoopRestorationTypeNone;
+      });
   if (!use_loop_restoration)
     return;
   static_assert(libgav1::kPlaneY == 0u && libgav1::kPlaneU == 1u,
@@ -813,21 +814,20 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   pic_parameters.frame_width_minus1 = current_frame_header.width - 1;
   pic_parameters.frame_height_minus1 = current_frame_header.height - 1;
 
-  for (size_t i = 0; i < kAv1NumRefFrames; ++i) {
-    UNSAFE_TODO(pic_parameters.ref_frame_map[i]) =
-        ref_frames_[i] ? ref_frames_[i]->id() : VA_INVALID_SURFACE;
+  for (auto [va_ref_frame, ref_frame] :
+       std::views::zip(pic_parameters.ref_frame_map, ref_frames_)) {
+    va_ref_frame = ref_frame ? ref_frame->id() : VA_INVALID_SURFACE;
   }
 
   // |pic_parameters.ref_frame_idx| doesn't need to be filled in for intra
   // frames (it can be left zero initialized).
   if (!libgav1::IsIntraFrame(current_frame_header.frame_type)) {
-    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
-      const int8_t index =
-          UNSAFE_TODO(current_frame_header.reference_frame_index[i]);
-      CHECK_GE(index, 0);
-      CHECK_LT(static_cast<size_t>(index), kAv1NumRefFrames);
-      UNSAFE_TODO(pic_parameters.ref_frame_idx[i]) =
-          base::checked_cast<uint8_t>(index);
+    for (auto [va_ref_idx, header_ref_idx] :
+         std::views::zip(pic_parameters.ref_frame_idx,
+                         current_frame_header.reference_frame_index)) {
+      CHECK_GE(header_ref_idx, 0);
+      CHECK_LT(static_cast<size_t>(header_ref_idx), kAv1NumRefFrames);
+      va_ref_idx = base::checked_cast<uint8_t>(header_ref_idx);
     }
   }
   pic_parameters.primary_ref_frame =
