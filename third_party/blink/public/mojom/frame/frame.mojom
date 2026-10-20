@@ -1080,7 +1080,7 @@ interface LocalFrame {
   // TODO(crbug.com/515541906): This method is to be merged with the InvokeTool
   // method in chrome/common/chrome_render_frame.mojom once //chrome
   // implementation for script tools is moved to //content.
-  InvokeScriptToolForInspector(mojo_base.mojom.UnguessableToken invocation_id,
+  InvokeScriptToolForInspector(blink.mojom.ToolInvocationToken invocation_id,
                                string tool_name,
                                string input_arguments) => (bool success);
 
@@ -1095,7 +1095,7 @@ interface LocalFrame {
   // chrome/common/chrome_render_frame.mojom once //chrome implementation for
   // script tools is moved to //content.
   NotifyInspectorOfCrossDocumentScriptToolResult(
-      mojo_base.mojom.UnguessableToken invocation_id);
+      blink.mojom.ToolInvocationToken invocation_id);
 
   // Requests the index of a character in the frame's text stream at the given
   // point. The point is in the viewport coordinate space. Replies using

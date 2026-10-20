@@ -11,7 +11,7 @@ namespace blink {
 
 ModelContextToolInvocation::ModelContextToolInvocation(
     ModelContext* model_context,
-    const base::UnguessableToken& invocation_id)
+    const ToolInvocationToken& invocation_id)
     : model_context_(model_context), invocation_id_(invocation_id) {}
 
 ScriptPromise<IDLString> ModelContextToolInvocation::requestToken(

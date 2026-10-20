@@ -118,7 +118,7 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
   }
 
   void ExecuteRemoteScriptTool(
-      const base::UnguessableToken& invocation_id,
+      const ToolInvocationToken& invocation_id,
       const base::UnguessableToken& tool_id,
       const ::blink::FrameToken& tool_owner_frame_token,
       const ::scoped_refptr<const ::blink::SecurityOrigin>&
@@ -129,7 +129,7 @@ class MockModelContextHost : public mojom::blink::ModelContextHost {
         String(), mojom::blink::ExecuteRemoteScriptToolError::kNotFoundError);
   }
   void CancelRemoteScriptTool(
-      const base::UnguessableToken& invocation_id) override {}
+      const ToolInvocationToken& invocation_id) override {}
 
   const Vector<String>& registered_tools() const { return registered_tools_; }
 
@@ -221,7 +221,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
   base::RunLoop run_loop;
   // Test with a field that doesn't exist in the form
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(), ToolIdFor(model_context, "search_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "search_tool"),
       "{\"nonexistent\": \"value\"}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -252,7 +252,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidSelectValue) {
 
   base::RunLoop run_loop;
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(), ToolIdFor(model_context, "select_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "select_tool"),
       "{\"choice\": \"c\"}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -291,7 +291,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
   base::RunLoop run_loop;
   bool got_result = false;
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(), ToolIdFor(model_context, "search_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "search_tool"),
       "{\"query\": \"testing\"}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -332,7 +332,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoRespondWith) {
   base::RunLoop run_loop;
   bool got_result = false;
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(), ToolIdFor(model_context, "search_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "search_tool"),
       "{\"query\": \"testing\"}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -428,8 +428,7 @@ TEST_F(ModelContextValidationTest,
   base::RunLoop run_loop;
   bool got_result = false;
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(),
-      ToolIdFor(model_context, "validation_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "validation_tool"),
       "{\"text_required\": \"\", \"number_min\": 5}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -467,7 +466,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Reset_Cancels) {
   base::RunLoop run_loop;
   bool got_error = false;
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(), ToolIdFor(model_context, "search_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "search_tool"),
       "{\"query\": \"testing\"}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -529,7 +528,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_UnrelatedSubmitAndRemove) {
   base::RunLoop run_loop;
   bool got_callback = false;
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(), ToolIdFor(model_context, "search_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "search_tool"),
       "{\"query\": \"testing\"}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -578,7 +577,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PauseExecution) {
   mock_host.set_run_loop(&run_loop);
 
   model_context->ExecuteTool(
-      base::UnguessableToken::Create(), ToolIdFor(model_context, "search_tool"),
+      ToolInvocationToken(), ToolIdFor(model_context, "search_tool"),
       "{\"query\": \"testing\"}",
       base::BindLambdaForTesting(
           [&](base::expected<String, ScriptToolError> res) {
@@ -631,7 +630,7 @@ TEST_F(ModelContextTest, CancelTool) {
 
   base::RunLoop run_loop;
 
-  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  ToolInvocationToken invocation_id;
   bool success = model_context->ExecuteTool(
       invocation_id, ToolIdFor(model_context, "echo"), "{\"text\": \"hello\"}",
       base::BindLambdaForTesting(
@@ -651,7 +650,7 @@ class ReentrantListener : public NativeEventListener {
       : model_context_(model_context) {}
   void Invoke(ExecutionContext*, Event*) override {
     // Trigger HashMap modification by adding a new execution.
-    model_context_->ExecuteTool(base::UnguessableToken::Create(),
+    model_context_->ExecuteTool(ToolInvocationToken(),
                                 ToolIdFor(model_context_, "echo"), "{}",
                                 base::DoNothing());
   }
@@ -701,7 +700,7 @@ TEST_F(ModelContextTest, CancelToolReentrancy) {
 
   base::RunLoop run_loop;
 
-  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  ToolInvocationToken invocation_id;
   bool success = model_context->ExecuteTool(
       invocation_id, ToolIdFor(model_context, "hang"), "{}",
       base::BindLambdaForTesting(
@@ -726,7 +725,7 @@ TEST_F(ModelContextTest, CancelToolNonExistent) {
   main_resource.Complete(R"(<body></body>)");
 
   auto* model_context = ModelContextSupplement::modelContext(GetDocument());
-  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  ToolInvocationToken invocation_id;
   // Cancel invocation that has not been executed.
   EXPECT_FALSE(model_context->CancelTool(invocation_id));
 }
@@ -749,7 +748,7 @@ TEST_F(ModelContextTest, CancelToolAfterFinished) {
   auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   base::RunLoop run_loop;
 
-  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  ToolInvocationToken invocation_id;
   bool success = model_context->ExecuteTool(
       invocation_id, ToolIdFor(model_context, "echo"), "{}",
       base::BindLambdaForTesting(
@@ -790,7 +789,7 @@ TEST_F(ModelContextTest, CancelToolUnregistered) {
   auto* model_context = ModelContextSupplement::modelContext(GetDocument());
   base::RunLoop run_loop;
 
-  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  ToolInvocationToken invocation_id;
   bool success = model_context->ExecuteTool(
       invocation_id, ToolIdFor(model_context, "hang"), "{}",
       base::BindLambdaForTesting(
@@ -854,7 +853,7 @@ TEST_F(ModelContextTest, CancelToolDetachesDocument) {
   auto* child_model_context = ModelContextSupplement::modelContext(*child_doc);
   ASSERT_TRUE(child_model_context);
 
-  base::UnguessableToken invocation_id = base::UnguessableToken::Create();
+  ToolInvocationToken invocation_id;
 
   bool success = child_model_context->ExecuteTool(
       invocation_id, ToolIdFor(child_model_context, "hang"), "{}",
@@ -874,7 +873,7 @@ class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
                             public DeclarativeWebMCPTool {
  public:
   void ExecuteTool(
-      const base::UnguessableToken& invocation_id,
+      const ToolInvocationToken& invocation_id,
       String input_arguments,
       base::OnceCallback<void(base::expected<String, ScriptToolError>)>
           done_callback) override {}

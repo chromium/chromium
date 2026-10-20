@@ -137,6 +137,10 @@ using ExecutionContextToken = MultiToken<LocalFrameToken,
 using SameDocNavigationScreenshotDestinationToken = base::TokenType<
     class SameDocNavigationScreenshotDestinationTokenTypeMarker>;
 
+// Identifies an invocation of a WebMCP script tool.
+using ToolInvocationToken =
+    base::TokenType<class ToolInvocationTokenTypeMarker>;
+
 // Identifies a v8::Context / blink::ScriptState.
 using V8ContextToken = base::TokenType<class V8ContextTokenTypeMarker>;
 

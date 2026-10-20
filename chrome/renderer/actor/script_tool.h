@@ -9,10 +9,10 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
-#include "base/unguessable_token.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "components/actor/core/task_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 class RenderFrame;
@@ -25,7 +25,7 @@ class ScriptTool : public ToolBase {
  public:
   ScriptTool(content::RenderFrame& frame,
              TaskId task_id,
-             base::UnguessableToken execution_id,
+             blink::ToolInvocationToken execution_id,
              Journal& journal,
              mojom::ToolTargetPtr target,
              mojom::ObservedToolTargetPtr observed_target,
@@ -42,7 +42,7 @@ class ScriptTool : public ToolBase {
 
  private:
   mojom::ScriptToolActionPtr action_;
-  std::optional<base::UnguessableToken> execution_id_;
+  std::optional<blink::ToolInvocationToken> execution_id_;
   base::WeakPtrFactory<ScriptTool> weak_ptr_factory_{this};
 };
 

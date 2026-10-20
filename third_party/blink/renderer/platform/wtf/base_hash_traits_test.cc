@@ -6,12 +6,14 @@
 
 #include "base/i18n/language_tag.h"
 #include "base/token.h"
+#include "base/types/token_type.h"
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -65,6 +67,61 @@ TEST(BaseHashTraitsTest, UnguessableTokenHashTraitsValues) {
             0u);
 
   EXPECT_FALSE(HashTraits<base::UnguessableToken>::DeletedValue().is_empty());
+}
+
+using TestTokenType = base::TokenType<class TestTokenTypeMarker>;
+
+TEST(BaseHashTraitsTest, TokenTypeHashMap) {
+  HashMap<TestTokenType, String> map;
+  TestTokenType token1;
+  TestTokenType token2;
+
+  EXPECT_TRUE(map.empty());
+  map.insert(token1, "token1");
+  map.insert(token2, "token2");
+  EXPECT_EQ(map.size(), 2u);
+
+  EXPECT_TRUE(map.Contains(token1));
+  EXPECT_TRUE(map.Contains(token2));
+  EXPECT_EQ(map.at(token1), "token1");
+  EXPECT_EQ(map.at(token2), "token2");
+
+  EXPECT_EQ(map.Take(token1), "token1");
+  EXPECT_EQ(map.size(), 1u);
+  EXPECT_FALSE(map.Contains(token1));
+  EXPECT_TRUE(map.Contains(token2));
+
+  // Iteration only visits live entries, never empty or deleted slots.
+  for (const auto& entry : map) {
+    EXPECT_EQ(entry.key, token2);
+  }
+}
+
+TEST(BaseHashTraitsTest, TokenTypeHashSetRehash) {
+  // Insert and erase enough entries to force rehashing, and to leave deleted
+  // slots behind.
+  HashSet<TestTokenType> set;
+  Vector<TestTokenType> tokens;
+  for (int i = 0; i < 100; ++i) {
+    tokens.push_back(TestTokenType());
+    set.insert(tokens.back());
+  }
+  for (int i = 0; i < 100; i += 2) {
+    set.erase(tokens[i]);
+  }
+  EXPECT_EQ(set.size(), 50u);
+  for (int i = 0; i < 100; ++i) {
+    EXPECT_EQ(set.Contains(tokens[i]), i % 2 == 1);
+  }
+}
+
+TEST(BaseHashTraitsTest, TokenTypeHashTraitsValues) {
+  using Traits = HashTraits<TestTokenType>;
+  TestTokenType token;
+  EXPECT_FALSE(Traits::IsEmptyValue(token));
+  EXPECT_FALSE(Traits::IsDeletedValue(token));
+  EXPECT_EQ(Traits::GetHash(token),
+            HashTraits<base::UnguessableToken>::GetHash(token.value()));
 }
 
 TEST(BaseHashTraitsTest, TokenHashMap) {

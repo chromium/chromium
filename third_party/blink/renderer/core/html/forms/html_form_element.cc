@@ -165,7 +165,7 @@ bool HTMLFormElement::MatchesToolFormActivePseudoClass() const {
   return active_webmcp_tool_ && active_webmcp_tool_->CurrentlyRunning();
 }
 
-std::optional<base::UnguessableToken>
+std::optional<ToolInvocationToken>
 HTMLFormElement::GetActiveWebMCPToolInvocationId() const {
   return (active_webmcp_tool_ && active_webmcp_tool_->CurrentlyRunning())
              ? active_webmcp_tool_->InvocationId()
@@ -173,7 +173,7 @@ HTMLFormElement::GetActiveWebMCPToolInvocationId() const {
 }
 
 void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
-    const base::UnguessableToken& invocation_id,
+    const ToolInvocationToken& invocation_id,
     String input_arguments,
     base::OnceCallback<void(McpToolCallbackResult)> done_callback) {
   invocation_id_ = invocation_id;

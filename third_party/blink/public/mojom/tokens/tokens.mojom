@@ -123,6 +123,10 @@ struct SameDocNavigationScreenshotDestinationToken {
   mojo_base.mojom.UnguessableToken value;
 };
 
+struct ToolInvocationToken {
+  mojo_base.mojom.UnguessableToken value;
+};
+
 struct V8ContextToken {
   mojo_base.mojom.UnguessableToken value;
 };

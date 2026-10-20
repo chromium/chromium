@@ -50,6 +50,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -523,7 +524,7 @@ void AiOverlayDialogPageHandler::ExecuteWebMcpTool(
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->task_id = actor::TaskId();
-  invocation->execution_id = base::UnguessableToken::Create();
+  invocation->execution_id = blink::ToolInvocationToken();
   auto script_action = actor::mojom::ScriptToolAction::New();
   script_action->name = tool_name;
   script_action->input_arguments = std::move(arguments_json);

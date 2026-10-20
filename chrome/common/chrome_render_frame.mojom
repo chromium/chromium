@@ -11,6 +11,7 @@ import "components/page_content_annotations/content/mojom/page_stability.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "skia/public/mojom/bitmap.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -152,7 +153,7 @@ interface ChromeRenderFrame {
   //
   // Note that both documents involved are same-origin with each other.
   GetCrossDocumentScriptToolResult(
-      mojo_base.mojom.UnguessableToken execution_id) => (string result);
+      blink.mojom.ToolInvocationToken execution_id) => (string result);
 
   // Requests actor automation framework journaling. Journaling can be
   // stopped by disconnecting the passed in remote. We use an associated

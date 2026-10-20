@@ -731,7 +731,7 @@ void ChromeRenderFrameObserver::StartActorJournal(
 }
 
 void ChromeRenderFrameObserver::GetCrossDocumentScriptToolResult(
-    const base::UnguessableToken& execution_id,
+    const blink::ToolInvocationToken& execution_id,
     GetCrossDocumentScriptToolResultCallback callback) {
   render_frame()->GetWebFrame()->GetDocument().GetCrossDocumentScriptToolResult(
       execution_id,

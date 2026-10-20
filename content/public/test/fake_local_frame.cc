@@ -260,7 +260,7 @@ void FakeLocalFrame::GetScrollPosition(GetScrollPositionCallback callback) {
 }
 
 void FakeLocalFrame::InvokeScriptToolForInspector(
-    const base::UnguessableToken& invocation_id,
+    const blink::ToolInvocationToken& invocation_id,
     const std::string& tool_name,
     const std::string& input_arguments,
     InvokeScriptToolForInspectorCallback callback) {
@@ -268,7 +268,7 @@ void FakeLocalFrame::InvokeScriptToolForInspector(
 }
 
 void FakeLocalFrame::NotifyInspectorOfCrossDocumentScriptToolResult(
-    const base::UnguessableToken& invocation_id) {}
+    const blink::ToolInvocationToken& invocation_id) {}
 
 #if BUILDFLAG(IS_ANDROID)
 void FakeLocalFrame::PerformFullContentSpellCheck() {}

@@ -202,7 +202,7 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
 
   // If the navigation was triggered by a script tool, this contains the
   // ID of the tool invocation.
-  virtual const std::optional<base::UnguessableToken>&
+  virtual const std::optional<blink::ToolInvocationToken>&
   GetScriptToolInvocationId() const = 0;
 
   // Whether the navigation is taking place in a main frame which does not have

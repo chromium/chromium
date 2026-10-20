@@ -6,12 +6,12 @@
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_WEBMCP_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/web_mcp.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/origin.h"
 
 namespace content {
@@ -50,7 +50,7 @@ class CONTENT_EXPORT WebMCPHandler : public DevToolsDomainHandler,
  private:
   raw_ptr<RenderFrameHostImpl> host_;
   bool enabled_ = false;
-  absl::flat_hash_map<base::UnguessableToken, url::Origin>
+  absl::flat_hash_map<blink::ToolInvocationToken, url::Origin>
       initiated_invocations_;
   std::unique_ptr<WebMCP::Frontend> frontend_;
 };

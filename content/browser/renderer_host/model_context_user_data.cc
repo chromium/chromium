@@ -284,7 +284,7 @@ void ModelContextUserData::GetScriptTools(
 }
 
 void ModelContextUserData::ExecuteRemoteScriptTool(
-    const base::UnguessableToken& invocation_id,
+    const blink::ToolInvocationToken& invocation_id,
     const base::UnguessableToken& tool_id,
     const blink::FrameToken& tool_owner_frame_token,
     const url::Origin& expected_target_origin,
@@ -415,7 +415,7 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
       invocation_id, tool_id, input_arguments,
       base::BindOnce(
           [](base::WeakPtr<ModelContextPageUserData> page_data,
-             base::UnguessableToken invocation_id,
+             blink::ToolInvocationToken invocation_id,
              const std::optional<std::string>& result,
              std::optional<blink::mojom::ScriptToolErrorCode> error_code) {
             if (page_data) {
@@ -431,7 +431,7 @@ void ModelContextUserData::ExecuteRemoteScriptTool(
 }
 
 void ModelContextUserData::CancelRemoteScriptTool(
-    const base::UnguessableToken& invocation_id) {
+    const blink::ToolInvocationToken& invocation_id) {
   if (ModelContextPageUserData* page_data =
           ModelContextPageUserData::GetOrCreateForPage(
               render_frame_host().GetPage())) {
@@ -489,13 +489,13 @@ ModelContextPageUserData::ModelContextPageUserData(Page& page)
 ModelContextPageUserData::~ModelContextPageUserData() = default;
 
 void ModelContextPageUserData::AddPendingScriptToolExecution(
-    const base::UnguessableToken& invocation_id,
+    const blink::ToolInvocationToken& invocation_id,
     PendingScriptToolExecution execution) {
   pending_script_tool_executions_.emplace(invocation_id, std::move(execution));
 }
 
 void ModelContextPageUserData::CompletePendingScriptToolExecution(
-    const base::UnguessableToken& invocation_id,
+    const blink::ToolInvocationToken& invocation_id,
     const std::optional<std::string>& result,
     std::optional<blink::mojom::ExecuteRemoteScriptToolError> error) {
   // We are here because a tool just returned a result, and we should forward
@@ -520,7 +520,7 @@ void ModelContextPageUserData::CompletePendingScriptToolExecution(
 
 void ModelContextPageUserData::SendCancelScriptToolToTarget(
     WeakDocumentPtr target_document,
-    const base::UnguessableToken& invocation_id) {
+    const blink::ToolInvocationToken& invocation_id) {
   RenderFrameHost* target_rfh = target_document.AsRenderFrameHostIfValid();
   // `target_rfh` and `target_data` are always non-null, because they are only
   // cleared or invalidated during destruction when the tool owner is destroyed,
@@ -533,7 +533,7 @@ void ModelContextPageUserData::SendCancelScriptToolToTarget(
 }
 
 void ModelContextPageUserData::CancelPendingScriptToolExecution(
-    const base::UnguessableToken& invocation_id) {
+    const blink::ToolInvocationToken& invocation_id) {
   // We are here because a caller document aborted its execution signal for a
   // tool. However, it is possible that no pending execution exists for this
   // `invocation_id` anymore. This can happen in legitimate, non-compromised

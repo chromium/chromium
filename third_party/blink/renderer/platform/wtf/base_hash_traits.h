@@ -7,11 +7,13 @@
 
 #include <cstdint>
 #include <limits>
+#include <new>
 
 #include "base/containers/span.h"
 #include "base/i18n/language_tag.h"
 #include "base/token.h"
 #include "base/types/pass_key.h"
+#include "base/types/token_type.h"
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -55,6 +57,45 @@ struct HashTraits<base::UnguessableToken>
                std::numeric_limits<uint64_t>::max(),
                std::numeric_limits<uint64_t>::max())
         .value();
+  }
+};
+
+// Hash traits for strongly-typed `base::UnguessableToken`s, e.g.,
+// `blink::LocalFrameToken`. These forward to the `base::UnguessableToken`
+// traits above.
+//
+// Unlike `base::UnguessableToken`, a `base::TokenType` deliberately can't be
+// constructed empty: its default constructor mints a random token, and its
+// explicit constructor CHECKs that the token isn't empty. So rather than
+// defining `EmptyValue()`, these traits let the hash table fill empty slots
+// with zeroed memory (an empty underlying token), and detect them with
+// `IsEmptyValue()`. Such slots are never exposed outside of the hash table.
+template <typename TypeMarker>
+struct HashTraits<base::TokenType<TypeMarker>>
+    : GenericHashTraits<base::TokenType<TypeMarker>> {
+  using TokenType = base::TokenType<TypeMarker>;
+  using UnderlyingTraits = HashTraits<base::UnguessableToken>;
+
+  static uint32_t GetHash(const TokenType& token) {
+    return UnderlyingTraits::GetHash(token.value());
+  }
+
+  static constexpr bool kEmptyValueIsZero = true;
+  // `TokenType` can't represent an empty value; see above. This also means the
+  // hash table can't compare keys against an `EmptyValue()`, so it must check
+  // slots with `IsEmptyValue()` and `IsDeletedValue()` instead.
+  static TokenType EmptyValue() = delete;
+  static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
+  static bool IsEmptyValue(const TokenType& token) {
+    return token.value().is_empty();
+  }
+
+  static bool IsDeletedValue(const TokenType& token) {
+    return token.value() == UnderlyingTraits::DeletedValue();
+  }
+  static void ConstructDeletedValue(TokenType& slot) {
+    // The deleted value is a non-empty token, so this is a valid `TokenType`.
+    new (&slot) TokenType(UnderlyingTraits::DeletedValue());
   }
 };
 

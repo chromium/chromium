@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace {
 
@@ -42,7 +43,7 @@ ButtonClickHelper::ButtonClickHelper(
     ClickResult callback)
     : callback_(std::move(callback)), client_(client) {
   auto invocation = actor::mojom::ToolInvocation::New();
-  invocation->execution_id = base::UnguessableToken::Create();
+  invocation->execution_id = blink::ToolInvocationToken();
 
   auto click = actor::mojom::ClickAction::New();
   click->type = actor::mojom::ClickType::kLeft;

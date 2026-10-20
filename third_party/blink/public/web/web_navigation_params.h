@@ -131,7 +131,7 @@ struct BLINK_EXPORT WebNavigationInfo {
   // If the navigation was triggered by a script tool, this contains the
   // ID of the tool invocation. This helps the browser to associate the
   // navigation with the tool that caused it.
-  std::optional<base::UnguessableToken> script_tool_invocation_id;
+  std::optional<ToolInvocationToken> script_tool_invocation_id;
 
   // The host of the entity that injected the script initiating this
   // navigation. This is only populated when the initiator document's
@@ -446,7 +446,7 @@ struct BLINK_EXPORT WebNavigationParams {
   // If the navigation was triggered by a script tool, this contains the
   // ID of the tool invocation. This helps the browser to associate the
   // navigation with the tool that caused it.
-  std::optional<base::UnguessableToken> script_tool_invocation_id;
+  std::optional<ToolInvocationToken> script_tool_invocation_id;
 
   // Seed for all PAAPI Auction Nonces generated in this document.
   base::Uuid base_auction_nonce;

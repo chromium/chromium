@@ -422,7 +422,7 @@ uint64_t WebDocument::CookieModificationCount() const {
 }
 
 bool WebDocument::ExecuteScriptTool(
-    const base::UnguessableToken& invocation_id,
+    const ToolInvocationToken& invocation_id,
     const WebString& name,
     const WebString& input_arguments,
     WebScriptToolResultCallback tool_result_cb) {
@@ -466,15 +466,14 @@ bool WebDocument::ExecuteScriptTool(
           std::move(tool_result_cb), std::move(web_tool_declaration)));
 }
 
-void WebDocument::CancelScriptTool(
-    const base::UnguessableToken& invocation_id) {
+void WebDocument::CancelScriptTool(const ToolInvocationToken& invocation_id) {
   auto* model_context =
       ModelContextSupplement::modelContext(*Unwrap<Document>());
   model_context->CancelTool(invocation_id);
 }
 
 void WebDocument::GetCrossDocumentScriptToolResult(
-    const base::UnguessableToken& invocation_id,
+    const ToolInvocationToken& invocation_id,
     CrossDocumentScriptToolResultCallback result_callback) {
   auto* model_context =
       ModelContextSupplement::modelContext(*Unwrap<Document>());

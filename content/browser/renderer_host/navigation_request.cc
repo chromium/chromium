@@ -10785,9 +10785,10 @@ bool NavigationRequest::IsInPrimaryMainFrame() const {
   return GetNavigatingFrameType() == FrameType::kPrimaryMainFrame;
 }
 
-const std::optional<base::UnguessableToken>&
+const std::optional<blink::ToolInvocationToken>&
 NavigationRequest::GetScriptToolInvocationId() const {
-  static const std::optional<base::UnguessableToken> empty_id = std::nullopt;
+  static const std::optional<blink::ToolInvocationToken> empty_id =
+      std::nullopt;
   if (!begin_params_) {
     return empty_id;
   }

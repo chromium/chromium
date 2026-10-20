@@ -139,9 +139,12 @@ protocol::Response InspectorWebMCPAgent::disable() {
 
 protocol::Response InspectorWebMCPAgent::cancelInvocation(
     const String& invocationId) {
-  auto invocation_token =
-      base::UnguessableToken::DeserializeFromString(invocationId.Ascii());
-  if (!invocation_token) {
+  std::optional<ToolInvocationToken> invocation_id =
+      base::UnguessableToken::DeserializeFromString(invocationId.Ascii())
+          .transform([](const base::UnguessableToken& token) {
+            return ToolInvocationToken(token);
+          });
+  if (!invocation_id) {
     return protocol::Response::InvalidParams("Invalid invocation id");
   }
 
@@ -150,7 +153,7 @@ protocol::Response InspectorWebMCPAgent::cancelInvocation(
   bool cancelled = false;
   for (LocalFrame* frame : *inspected_frames_) {
     if (auto* model_context = GetModelContext(frame)) {
-      if (model_context->CancelTool(*invocation_token)) {
+      if (model_context->CancelTool(*invocation_id)) {
         cancelled = true;
         break;
       }
@@ -195,7 +198,7 @@ void InspectorWebMCPAgent::WebMCPToolExecuted(
     Document* document,
     const String& name,
     const String& input_arguments,
-    const base::UnguessableToken& invocation_id) {
+    const ToolInvocationToken& invocation_id) {
   if (!enabled_.Get()) {
     return;
   }
@@ -209,7 +212,7 @@ void InspectorWebMCPAgent::WebMCPToolExecuted(
 void InspectorWebMCPAgent::WebMCPToolResponded(
     Document* document,
     const String& result,
-    const base::UnguessableToken& invocation_id) {
+    const ToolInvocationToken& invocation_id) {
   if (!enabled_.Get()) {
     return;
   }
@@ -221,7 +224,7 @@ void InspectorWebMCPAgent::WebMCPToolResponded(
 void InspectorWebMCPAgent::WebMCPToolFailed(
     Document* document,
     const ScriptToolError& error,
-    const base::UnguessableToken& invocation_id,
+    const ToolInvocationToken& invocation_id,
     std::optional<std::pair<ScriptValue, ScriptState*>> exception) {
   if (!enabled_.Get()) {
     return;

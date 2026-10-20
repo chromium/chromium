@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom";
 import "third_party/blink/public/mojom/content_extraction/script_tools.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/events/mojom/scroll_granularity.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
@@ -155,7 +156,7 @@ struct ToolInvocation {
   // navigations
   // (e.g., PageTools). Currently, it is only set by ScriptToolHost to associate
   // the tool invocation with any navigations it triggers.
-  mojo_base.mojom.UnguessableToken? execution_id;
+  blink.mojom.ToolInvocationToken? execution_id;
 
   // The action to carry out in this invocation.
   ToolAction action;

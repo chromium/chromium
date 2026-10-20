@@ -44,6 +44,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -138,7 +139,7 @@ class MockChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
               (override));
   MOCK_METHOD(void,
               GetCrossDocumentScriptToolResult,
-              (const base::UnguessableToken&,
+              (const blink::ToolInvocationToken&,
                GetCrossDocumentScriptToolResultCallback),
               (override));
 #if BUILDFLAG(ENABLE_PDF)

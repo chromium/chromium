@@ -5,24 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_SCRIPT_TOOL_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_TOOLS_SCRIPT_TOOL_CONTEXT_H_
 
-#include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 class ScriptToolContext : public GarbageCollected<ScriptToolContext> {
  public:
-  explicit ScriptToolContext(const base::UnguessableToken& invocation_id)
+  explicit ScriptToolContext(const ToolInvocationToken& invocation_id)
       : invocation_id_(invocation_id) {}
 
-  const base::UnguessableToken& GetInvocationId() const {
-    return invocation_id_;
-  }
+  const ToolInvocationToken& GetInvocationId() const { return invocation_id_; }
 
   void Trace(Visitor*) const {}
 
  private:
-  base::UnguessableToken invocation_id_;
+  ToolInvocationToken invocation_id_;
 };
 
 }  // namespace blink

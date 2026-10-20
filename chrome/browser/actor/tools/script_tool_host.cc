@@ -156,7 +156,6 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->action = action_->Clone();
   invocation->task_id = task_id();
-  execution_id_ = base::UnguessableToken::Create();
   invocation->execution_id = execution_id_;
   invocation->target =
       actor::mojom::ToolTarget::NewDomNodeId(kRootElementDomNodeId);

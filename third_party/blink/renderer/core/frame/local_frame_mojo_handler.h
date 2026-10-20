@@ -173,12 +173,12 @@ class LocalFrameMojoHandler
       int32_t world_id,
       JavaScriptExecuteRequestInIsolatedWorldCallback callback) final;
   void InvokeScriptToolForInspector(
-      const base::UnguessableToken& invocation_id,
+      const ToolInvocationToken& invocation_id,
       const String& tool_name,
       const String& input_arguments,
       InvokeScriptToolForInspectorCallback callback) final;
   void NotifyInspectorOfCrossDocumentScriptToolResult(
-      const base::UnguessableToken& invocation_id) final;
+      const ToolInvocationToken& invocation_id) final;
 #if BUILDFLAG(IS_MAC)
   void GetCharacterIndexAtPoint(const base::UnguessableToken& request_token,
                                 const gfx::Point& point) final;

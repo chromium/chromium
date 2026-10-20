@@ -17,6 +17,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace actor {
 
@@ -82,7 +83,7 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
 
   // Unique ID for this tool execution, used to track task attribution
   // across microtasks and navigations.
-  base::UnguessableToken execution_id_;
+  blink::ToolInvocationToken execution_id_;
   // The ID of a navigation that was triggered by this script tool, if any.
   std::optional<int64_t> active_navigation_id_;
   Lifecycle lifecycle_{Lifecycle::kInitial};

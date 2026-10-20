@@ -142,7 +142,7 @@ interface ModelContextHost {
   //
   // If tool execution fails, `error` is set to a `ExecuteRemoteScriptToolError`
   // corresponding to the `DOMException` that will be exposed to the caller.
-  ExecuteRemoteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
+  ExecuteRemoteScriptTool(blink.mojom.ToolInvocationToken invocation_id,
                           mojo_base.mojom.UnguessableToken tool_id,
                           blink.mojom.FrameToken tool_owner_frame_token,
                           url.mojom.Origin expected_target_origin,
@@ -150,7 +150,7 @@ interface ModelContextHost {
       => (string? result, ExecuteRemoteScriptToolError? error);
 
   // Cancels a pending execution of a remote script tool.
-  CancelRemoteScriptTool(mojo_base.mojom.UnguessableToken invocation_id);
+  CancelRemoteScriptTool(blink.mojom.ToolInvocationToken invocation_id);
 };
 
 // Interface implemented by `blink::ModelContext` for the browser to notify the
@@ -167,10 +167,10 @@ interface ModelContext {
   // Resolution of the JavaScript Promise results in the callback being called
   // with the result and a null error_code, while failure passes a null result
   // and a non-null error_code.
-  ExecuteScriptTool(mojo_base.mojom.UnguessableToken invocation_id,
+  ExecuteScriptTool(blink.mojom.ToolInvocationToken invocation_id,
                     mojo_base.mojom.UnguessableToken tool_id, string input_arguments)
       => (string? result, ScriptToolErrorCode? error_code);
 
   // Cancels a pending execution of a script tool in this Document.
-  CancelScriptTool(mojo_base.mojom.UnguessableToken invocation_id);
+  CancelScriptTool(blink.mojom.ToolInvocationToken invocation_id);
 };

@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -45,7 +46,7 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
   // if the execution resulted in a navigation, or an error if the execution
   // failed.
   virtual void ExecuteTool(
-      const base::UnguessableToken& invocation_id,
+      const ToolInvocationToken& invocation_id,
       String input_arguments,
       base::OnceCallback<void(base::expected<String, ScriptToolError>)>
           done_callback) = 0;
@@ -180,13 +181,13 @@ class CORE_EXPORT ModelContext : public EventTarget,
   ScriptPromise<IDLString> RequestContinuationToken(
       base::PassKey<ModelContextToolInvocation>,
       ScriptState* script_state,
-      const base::UnguessableToken& invocation_id,
+      const ToolInvocationToken& invocation_id,
       bool& did_request_token);
 
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
       const String& name) const;
 
-  bool ExecuteTool(base::UnguessableToken invocation_id,
+  bool ExecuteTool(ToolInvocationToken invocation_id,
                    const base::UnguessableToken& tool_id,
                    const String& input_arguments,
                    ScriptToolExecutedCallback tool_executed_cb);
@@ -202,17 +203,17 @@ class CORE_EXPORT ModelContext : public EventTarget,
   //     migrate to `toolId`.
   //   - Actor: it executes by ID when a prior observation pinned one, but falls
   //     back to the name when the model acts without one.
-  bool ExecuteToolByName(base::UnguessableToken invocation_id,
+  bool ExecuteToolByName(ToolInvocationToken invocation_id,
                          const String& name,
                          const String& input_arguments,
                          ScriptToolExecutedCallback tool_executed_cb);
   using CrossDocumentScriptToolResultCallback =
       base::OnceCallback<void(String)>;
   void GetCrossDocumentScriptToolResult(
-      const base::UnguessableToken& invocation_id,
+      const ToolInvocationToken& invocation_id,
       CrossDocumentScriptToolResultCallback result_callback);
 
-  bool CancelTool(base::UnguessableToken invocation_id);
+  bool CancelTool(ToolInvocationToken invocation_id);
 
   // Returns whether `tool` was registered. Registration is rejected if, e.g.,
   // the `tools` permissions policy is disabled, or `tool`'s name is invalid or
@@ -226,11 +227,11 @@ class CORE_EXPORT ModelContext : public EventTarget,
 
   // mojom::blink::ModelContext implementation:
   void NotifyToolChange() override;
-  void ExecuteScriptTool(const base::UnguessableToken& invocation_id,
+  void ExecuteScriptTool(const ToolInvocationToken& invocation_id,
                          const base::UnguessableToken& tool_id,
                          const String& input_arguments,
                          ExecuteScriptToolCallback callback) override;
-  void CancelScriptTool(const base::UnguessableToken& invocation_id) override;
+  void CancelScriptTool(const ToolInvocationToken& invocation_id) override;
 
   void DidFinishParsing();
 
@@ -265,13 +266,13 @@ class CORE_EXPORT ModelContext : public EventTarget,
   class ToolUnregisterAbortAlgorithm;
 
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
-                              base::UnguessableToken invocation_id,
+                              ToolInvocationToken invocation_id,
                               const base::UnguessableToken& tool_id,
                               const String& input_arguments,
                               AbortController* abort_controller,
                               ScriptToolExecutedCallback tool_executed_cb);
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
-                     base::UnguessableToken invocation_id,
+                     ToolInvocationToken invocation_id,
                      const base::UnguessableToken& tool_id,
                      const String& name,
                      const String& input_arguments,
@@ -279,21 +280,27 @@ class CORE_EXPORT ModelContext : public EventTarget,
                      ScriptToolExecutedCallback tool_executed_cb);
 
   void OnToolFailed(ScriptToolExecutedCallback callback,
-                    const base::UnguessableToken& invocation_id,
+                    const ToolInvocationToken& invocation_id,
                     ScriptToolError&& error);
 
   void OnToolExecuted(
-      const base::UnguessableToken& invocation_id,
+      const ToolInvocationToken& invocation_id,
       base::expected<String, std::pair<ScriptValue, ScriptState*>> result);
 
   void MaybeRecordToolCount();
 
   HeapHashMap<base::UnguessableToken, Member<ToolData>> tool_map_;
 
-  struct PendingExecution {
-    DISALLOW_NEW();
+  struct PendingExecution final : public GarbageCollected<PendingExecution> {
+    PendingExecution(String tool_name,
+                     const base::UnguessableToken& tool_id,
+                     ScriptToolExecutedCallback callback,
+                     AbortController* abort_controller)
+        : tool_name(std::move(tool_name)),
+          tool_id(tool_id),
+          callback(std::move(callback)),
+          abort_controller(abort_controller) {}
 
-   public:
     void Trace(Visitor* visitor) const;
     String tool_name;
     // The tool being executed. Used to look the tool back up in `tool_map_`,
@@ -304,7 +311,8 @@ class CORE_EXPORT ModelContext : public EventTarget,
     // Created for every tool execution; never null.
     Member<AbortController> abort_controller;
   };
-  HeapHashMap<base::UnguessableToken, PendingExecution> pending_executions_;
+  HeapHashMap<ToolInvocationToken, Member<PendingExecution>>
+      pending_executions_;
 
   Vector<CrossDocumentScriptToolResultCallback>
       cross_document_result_callbacks_;
