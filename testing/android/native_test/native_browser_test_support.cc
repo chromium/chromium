@@ -9,7 +9,14 @@
 // These markers are read by the test runner script to generate test results.
 // It installs signal handlers to detect crashes.
 
+#include "testing/android/native_test/native_browser_test_support.h"
+
+#include <utility>
+
 #include "base/android/jni_android.h"
+#include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/no_destructor.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "testing/android/native_test/native_browser_test_jni/NativeBrowserTest_jni.h"
@@ -24,24 +31,52 @@ namespace {
 bool g_java_startup_tasks_complete = false;
 bool g_activity_teardown_complete = false;
 
+base::OnceClosure& GetJavaStartupTasksCompleteCallback() {
+  static base::NoDestructor<base::OnceClosure> callback;
+  return *callback;
+}
+
+base::OnceClosure& GetActivityTeardownCompleteCallback() {
+  static base::NoDestructor<base::OnceClosure> callback;
+  return *callback;
+}
+
 }  // namespace
 
 static void JNI_NativeBrowserTest_JavaStartupTasksCompleteForBrowserTests(
     JNIEnv* env) {
   g_java_startup_tasks_complete = true;
+  if (auto& callback = GetJavaStartupTasksCompleteCallback()) {
+    std::move(callback).Run();
+  }
 }
 
 static void JNI_NativeBrowserTest_ActivityTeardownCompleteForBrowserTests(
     JNIEnv* env) {
   g_activity_teardown_complete = true;
+  if (auto& callback = GetActivityTeardownCompleteCallback()) {
+    std::move(callback).Run();
+  }
 }
 
-bool JavaAsyncStartupTasksCompleteForBrowserTests() {
-  return g_java_startup_tasks_complete;
+void SetJavaStartupTasksCompleteCallbackForBrowserTests(
+    base::OnceClosure callback) {
+  if (g_java_startup_tasks_complete) {
+    std::move(callback).Run();
+    return;
+  }
+  CHECK(!GetJavaStartupTasksCompleteCallback());
+  GetJavaStartupTasksCompleteCallback() = std::move(callback);
 }
 
-bool JavaActivityTeardownCompleteForBrowserTests() {
-  return g_activity_teardown_complete;
+void SetActivityTeardownCompleteCallbackForBrowserTests(
+    base::OnceClosure callback) {
+  if (g_activity_teardown_complete) {
+    std::move(callback).Run();
+    return;
+  }
+  CHECK(!GetActivityTeardownCompleteCallback());
+  GetActivityTeardownCompleteCallback() = std::move(callback);
 }
 
 void RunActivityTeardownCallback() {

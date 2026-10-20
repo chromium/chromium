@@ -42,6 +42,7 @@
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -747,16 +748,20 @@ void BrowserTestBase::SetUp() {
     params.created_main_parts_closure =
         std::move(content_main_params.created_main_parts_closure);
     params.startup_data = std::move(startup_data);
-    params.ui_task = base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
-                                    base::Unretained(this), loop.QuitClosure(),
-                                    /*wait_retry_left=*/
-                                    TestTimeouts::action_max_timeout());
+    params.ui_task = base::BindOnce(
+        &testing::android::SetJavaStartupTasksCompleteCallbackForBrowserTests,
+        loop.QuitClosure());
     // Passing "" as the process type to indicate the browser process.
     auto exit_code = delegate->RunProcess("", std::move(params));
     DCHECK(std::holds_alternative<int>(exit_code));
     DCHECK_EQ(std::get<int>(exit_code), 0);
 
     // Waits for Java to finish initialization, then we can run the test.
+    base::OneShotTimer timeout_timer;
+    timeout_timer.Start(FROM_HERE, TestTimeouts::action_max_timeout(),
+                        base::BindOnce([]() {
+                          LOG(FATAL) << "WaitUntilJavaIsReady() timed out.";
+                        }));
     loop.Run();
   }
 
@@ -779,9 +784,14 @@ void BrowserTestBase::SetUp() {
     // otherwise we will crash when finishing the Activity as too much
     // infrastructure has been torn down.
     base::RunLoop loop{base::RunLoop::Type::kNestableTasksAllowed};
+    testing::android::SetActivityTeardownCompleteCallbackForBrowserTests(
+        loop.QuitClosure());
     testing::android::RunActivityTeardownCallback();
-    WaitUntilActivityTeardownIsFinished(loop.QuitClosure(),
-                                        TestTimeouts::action_max_timeout());
+    base::OneShotTimer timeout_timer;
+    timeout_timer.Start(
+        FROM_HERE, TestTimeouts::action_max_timeout(), base::BindOnce([]() {
+          LOG(FATAL) << "WaitUntilActivityTeardownIsFinished() timed out.";
+        }));
     loop.Run();
   }
 
@@ -862,48 +872,6 @@ void BrowserTestBase::SimulateNetworkServiceCrash() {
 void BrowserTestBase::IgnoreNetworkServiceCrashes() {
   network_service_test_.reset();
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void BrowserTestBase::WaitUntilJavaIsReady(
-    base::OnceClosure quit_closure,
-    const base::TimeDelta& wait_retry_left) {
-  CHECK_GE(wait_retry_left.InMilliseconds(), 0)
-      << "WaitUntilJavaIsReady() timed out.";
-
-  if (testing::android::JavaAsyncStartupTasksCompleteForBrowserTests()) {
-    std::move(quit_closure).Run();
-    return;
-  }
-
-  base::TimeDelta retry_interval = base::Milliseconds(100);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserTestBase::WaitUntilJavaIsReady,
-                     base::Unretained(this), std::move(quit_closure),
-                     wait_retry_left - retry_interval),
-      retry_interval);
-}
-
-void BrowserTestBase::WaitUntilActivityTeardownIsFinished(
-    base::OnceClosure quit_closure,
-    const base::TimeDelta& wait_retry_left) {
-  CHECK_GE(wait_retry_left.InMilliseconds(), 0)
-      << "WaitUntilActivityTeardownIsFinished() timed out.";
-
-  if (testing::android::JavaActivityTeardownCompleteForBrowserTests()) {
-    std::move(quit_closure).Run();
-    return;
-  }
-
-  base::TimeDelta retry_interval = base::Milliseconds(100);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&BrowserTestBase::WaitUntilActivityTeardownIsFinished,
-                     base::Unretained(this), std::move(quit_closure),
-                     wait_retry_left - retry_interval),
-      retry_interval);
-}
-#endif
 
 void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
   // Chrome bans unresponsive tasks just before starting the main message loop.

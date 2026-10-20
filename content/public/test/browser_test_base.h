@@ -42,7 +42,6 @@
 
 namespace base {
 class FilePath;
-class TimeDelta;
 }  // namespace base
 
 #if BUILDFLAG(IS_ANDROID)
@@ -293,18 +292,6 @@ class BrowserTestBase : public ::testing::Test {
   void SetAllowFeaturesSwitches(bool allow);
 
  private:
-#if BUILDFLAG(IS_ANDROID)
-  // Android browser tests need to wait for async initialization in Java code.
-  // This waits for those to complete before we can continue with the test.
-  void WaitUntilJavaIsReady(base::OnceClosure quit_closure,
-                            const base::TimeDelta& wait_retry_left);
-  // Android browser tests need to wait for the Activity to finish after tests
-  // run to properly shut down the browser.
-  void WaitUntilActivityTeardownIsFinished(
-      base::OnceClosure quit_closure,
-      const base::TimeDelta& wait_retry_left);
-
-#endif
   // Performs a bunch of setup, and then runs the browser test body.
   void ProxyRunTestOnMainThreadLoop();
 

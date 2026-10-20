@@ -6,6 +6,8 @@ package org.chromium.content_shell.browsertests;
 
 import android.content.Context;
 import android.net.Uri;
+import android.view.Choreographer;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
@@ -96,9 +98,19 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
                             @Override
                             public void onSuccess(@Nullable StartupMetrics metrics) {
                                 // The C++ test harness is running thanks to runTests() above, but
-                                // it waits for Java initialization to complete. This tells C++
-                                // that it may continue now to finish running the tests.
-                                NativeBrowserTest.javaStartupTasksComplete();
+                                // it waits for Java initialization to complete. Wait until the
+                                // Shell view hierarchy created during PreMainMessageLoopRun() has
+                                // been laid out and its first frame has completed drawing so
+                                // WebContents has non-empty bounds and RenderThread surface setup
+                                // finishes before tests run or tear down.
+                                View renderView = mShellManager.getContentViewRenderView();
+                                if (renderView != null) {
+                                    waitForLayoutAndFirstFrame(
+                                            renderView,
+                                            NativeBrowserTest::javaStartupTasksComplete);
+                                } else {
+                                    NativeBrowserTest.javaStartupTasksComplete();
+                                }
                             }
 
                             @Override
@@ -107,6 +119,33 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
                                         "Failed to startBrowserProcessesAsync()");
                             }
                         });
+    }
+
+    private static void waitForLayoutAndFirstFrame(View view, Runnable callback) {
+        if (view.getWidth() > 0 && view.getHeight() > 0) {
+            Choreographer.getInstance().postFrameCallback(frameTimeNanos -> callback.run());
+            return;
+        }
+        view.addOnLayoutChangeListener(
+                new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(
+                            View v,
+                            int left,
+                            int top,
+                            int right,
+                            int bottom,
+                            int oldLeft,
+                            int oldTop,
+                            int oldRight,
+                            int oldBottom) {
+                        if (v.getWidth() > 0 && v.getHeight() > 0) {
+                            v.removeOnLayoutChangeListener(this);
+                            Choreographer.getInstance()
+                                    .postFrameCallback(frameTimeNanos -> callback.run());
+                        }
+                    }
+                });
     }
 
     /**
