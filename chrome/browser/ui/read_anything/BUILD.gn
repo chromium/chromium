@@ -34,7 +34,6 @@ source_set("read_anything") {
     "read_anything_entry_point_controller.h",
     "read_anything_enums.h",
     "read_anything_immersive_activation_observer.h",
-    "read_anything_immersive_overlay_view.h",
     "read_anything_lifecycle_observer.h",
     "read_anything_service.h",
     "read_anything_service_factory.h",
@@ -51,17 +50,52 @@ source_set("read_anything") {
     "//components/user_education/common",
     "//content/public/browser",
     "//pdf:buildflags",
-    "//printing/buildflags",
     "//ui/base",
     "//ui/base/unowned_user_data",
-    "//ui/views",
-    "//ui/views/controls/webview",
     "//url",
   ]
   deps = [
     "//chrome/browser/ui/side_panel",
     "//components/page_load_metrics/browser",
   ]
+}
+
+# The views that host the Reading Mode WebUI.
+source_set("views") {
+  sources = [
+    "read_anything_immersive_overlay_view.cc",
+    "read_anything_immersive_overlay_view.h",
+    "read_anything_immersive_web_view.cc",
+    "read_anything_immersive_web_view.h",
+    "read_anything_side_panel_web_view.cc",
+    "read_anything_side_panel_web_view.h",
+  ]
+  public_deps = [
+    ":read_anything",
+    "//base",
+    "//chrome/browser/ui/views/side_panel",
+    "//chrome/browser/ui/webui/side_panel/read_anything",
+    "//printing/buildflags",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views/controls/webview",
+  ]
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ui:view_ids",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/side_panel",
+    "//chrome/browser/ui/views/frame:contents_web_view",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/find_in_page",
+    "//components/input",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/accessibility",
+  ]
+  if (enable_printing) {
+    deps += [ "//chrome/browser/printing" ]
+  }
 }
 
 source_set("impl") {
@@ -71,9 +105,6 @@ source_set("impl") {
     "read_anything_entry_point_controller.cc",
     "read_anything_hats_survey_controller.cc",
     "read_anything_hats_survey_controller.h",
-    "read_anything_immersive_overlay_view.cc",
-    "read_anything_immersive_web_view.cc",
-    "read_anything_immersive_web_view.h",
     "read_anything_omnibox_controller.cc",
     "read_anything_omnibox_controller.h",
     "read_anything_service.cc",
@@ -81,12 +112,11 @@ source_set("impl") {
     "read_anything_side_panel_controller.cc",
     "read_anything_side_panel_controller.h",
     "read_anything_side_panel_navigation_throttle.cc",
-    "read_anything_side_panel_web_view.cc",
-    "read_anything_side_panel_web_view.h",
     "read_anything_soft_navigation_observer.cc",
   ]
   deps = [
     ":read_anything",
+    ":views",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
@@ -97,7 +127,6 @@ source_set("impl") {
     "//chrome/browser/language",
     "//chrome/browser/profiles",
     "//chrome/browser/ui:ui_features",
-    "//chrome/browser/ui:view_ids",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",
@@ -105,10 +134,8 @@ source_set("impl") {
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/user_education",
-    "//chrome/browser/ui/views/frame:contents_web_view",
     "//chrome/browser/ui/views/interaction",
     "//chrome/browser/ui/views/page_action",
-    "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/side_panel/read_anything",
     "//chrome/browser/ui/webui_browser:headers",
@@ -149,6 +176,7 @@ source_set("browser_tests") {
   deps = [
     ":impl",
     ":read_anything",
+    ":views",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
