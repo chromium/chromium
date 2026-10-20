@@ -14,6 +14,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
@@ -112,9 +113,8 @@ bool ChromePingManagerFactory::ShouldSendPersistedReport(Profile* profile) {
 
 bool ChromePingManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   // PingManager is created at startup to send persisted reports.
-  return true;
+  return !::features::IsLazyAfterStartupKeyedServicesEnabled();
 }
-
 bool ChromePingManagerFactory::ServiceIsNULLWhileTesting() const {
   return !kAllowPingManagerInTests;
 }

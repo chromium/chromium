@@ -27,6 +27,7 @@
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_ai_util.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -283,6 +284,9 @@ AutofillPrivateExtensionFunction::address_data_manager() {
 
 autofill::ContentAutofillClient*
 AutofillPrivateExtensionFunction::autofill_client() {
+  if (browser_context()) {
+    AutofillPrivateEventRouterFactory::GetForProfile(browser_context());
+  }
   return autofill::ContentAutofillClient::FromWebContents(
       GetSenderWebContents());
 }
@@ -293,6 +297,7 @@ AutofillPrivateExtensionFunction::entity_data_manager() {
   if (!context) {
     return nullptr;
   }
+  AutofillPrivateEventRouterFactory::GetForProfile(context);
   Profile* profile = Profile::FromBrowserContext(context);
   return profile ? autofill::AutofillEntityDataManagerFactory::GetForProfile(
                        profile)

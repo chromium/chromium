@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_client_service.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 
@@ -94,9 +95,8 @@ SendTabToSelfClientServiceFactory::BuildServiceInstanceForBrowserContext(
 
 bool SendTabToSelfClientServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return true;
+  return !::features::IsLazyAfterStartupKeyedServicesEnabled();
 }
-
 bool SendTabToSelfClientServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

@@ -112,6 +112,7 @@ source_set("misc") {
     "//chrome/browser/reading_list",
     "//chrome/browser/reduce_accept_language",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/send_tab_to_self",
     "//chrome/browser/sessions",
     "//chrome/browser/ssl",
     "//chrome/browser/storage",
@@ -268,6 +269,10 @@ source_set("misc") {
 
   if (enable_extensions_core) {
     deps += [ "//chrome/browser/extensions" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions/api/autofill_private" ]
   }
 
   if (enable_bound_session_credentials) {

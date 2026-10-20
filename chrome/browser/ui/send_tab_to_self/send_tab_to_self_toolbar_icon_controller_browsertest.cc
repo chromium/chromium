@@ -129,6 +129,7 @@ class SendTabToSelfAutoOpenBrowserTest
   }
 
   FakeSendTabToSelfModel* GetModel(Profile* profile) {
+    SendTabToSelfClientServiceFactory::GetForProfile(profile);
     return static_cast<StubSendTabToSelfSyncService*>(
                SendTabToSelfSyncServiceFactory::GetForProfile(profile))
         ->GetFakeSendTabToSelfModel();

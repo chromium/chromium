@@ -1116,6 +1116,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
         "OptimizationGuideGlobalStateHolderKeyedService");
     guest_active_services.erase("PredictionModelHandlerProvider");
   }
+  if (features::IsLazyAfterStartupKeyedServicesEnabled()) {
+    guest_active_services.erase("AutofillPrivateEventRouter");
+  }
   if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
       features::kLazyKeyedServiceInstantiationExtensions.Get()) {
     guest_active_services.erase("SafeBrowsingPrivateEventRouter");

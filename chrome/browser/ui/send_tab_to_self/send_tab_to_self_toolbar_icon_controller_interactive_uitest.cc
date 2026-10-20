@@ -67,6 +67,7 @@ class SendTabToSelfToolbarIconControllerInteractiveUiTest
 
   auto SimulateReceivingNewEntries() {
     return Do([this]() {
+      SendTabToSelfClientServiceFactory::GetForProfile(browser()->GetProfile());
       FakeSendTabToSelfModel* model =
           static_cast<StubSendTabToSelfSyncService*>(
               SendTabToSelfSyncServiceFactory::GetForProfile(

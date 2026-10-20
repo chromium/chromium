@@ -1393,6 +1393,19 @@ BASE_FEATURE(kListWebAppsSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 // on demand rather than eagerly at startup.
 BASE_FEATURE(kLazyKeyedServiceInstantiation, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, background observer keyed services (ChromePingManager,
+// SendTabToSelfClientService, AutofillPrivateEventRouter) are created after
+// browser startup completes rather than eagerly during BrowserContext creation.
+BASE_FEATURE_PARAM(bool,
+                   kLazyKeyedServiceInstantiationAfterStartup,
+                   &kLazyKeyedServiceInstantiation,
+                   true);
+
+bool IsLazyAfterStartupKeyedServicesEnabled() {
+  return base::FeatureList::IsEnabled(kLazyKeyedServiceInstantiation) &&
+         kLazyKeyedServiceInstantiationAfterStartup.Get();
+}
+
 // When enabled, autofill and password manager keyed services are instantiated
 // lazily.
 BASE_FEATURE_PARAM(bool,
