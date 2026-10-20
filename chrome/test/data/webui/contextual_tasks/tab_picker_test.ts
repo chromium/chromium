@@ -11,6 +11,7 @@ import {TabPickerBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_ta
 import type {TabPickerBrowserProxy} from 'chrome://contextual-tasks/contextual_tasks_extension/tab_picker.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -173,13 +174,108 @@ suite('TabPickerTest', () => {
         await microtasksFinished();
         assertTrue(app.$.tabMenu.open);
 
-        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerleave'));
-        // Menu remains open immediately after pointer leave due to close delay.
-        assertTrue(app.$.tabMenu.open);
+        const originalSetTimeout = window.setTimeout.bind(window);
+        const scheduledTimeouts: Array<number|undefined> = [];
+        window.setTimeout =
+            ((handler: TimerHandler, timeout?: number, ...args: unknown[]) => {
+              scheduledTimeouts.push(timeout);
+              return originalSetTimeout(handler, timeout, ...args);
+            }) as typeof window.setTimeout;
 
-        // Cancel timer with pointerenter.
-        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
-        assertTrue(app.$.tabMenu.open);
+        try {
+          app.$.shareTabsTrigger.dispatchEvent(
+              new PointerEvent('pointerleave'));
+          assertEquals(1, scheduledTimeouts.length);
+          assertEquals(50, scheduledTimeouts[0]);
+          // Menu remains open immediately after pointer leave due to close
+          // delay.
+          assertTrue(app.$.tabMenu.open);
+
+          // Cancel timer with pointerenter on trigger.
+          app.$.shareTabsTrigger.dispatchEvent(
+              new PointerEvent('pointerenter'));
+          assertTrue(app.$.tabMenu.open);
+
+          // Handoff from trigger to menu cancels close timer, and leaving menu
+          // schedules close timer.
+          app.$.shareTabsTrigger.dispatchEvent(
+              new PointerEvent('pointerleave'));
+          assertEquals(2, scheduledTimeouts.length);
+          assertEquals(50, scheduledTimeouts[1]);
+          app.$.tabMenu.dispatchEvent(new PointerEvent('pointerenter'));
+          await new Promise(resolve => originalSetTimeout(resolve, 60));
+          assertTrue(app.$.tabMenu.open);
+
+          const closePromise = eventToPromise('close', app.$.tabMenu);
+          app.$.tabMenu.dispatchEvent(new PointerEvent('pointerleave'));
+          assertEquals(3, scheduledTimeouts.length);
+          assertEquals(50, scheduledTimeouts[2]);
+          assertTrue(app.$.tabMenu.open);
+          await closePromise;
+          assertFalse(app.$.tabMenu.open);
+        } finally {
+          window.setTimeout = originalSetTimeout;
+        }
+      });
+
+  test(
+      'Does not open unbounded menu if pointer leaves while setUnbounded ' +
+          'is pending',
+      async () => {
+        const dialog = app.$.tabMenu.getDialog();
+        dialog.removeAttribute('unbounded');
+
+        let setUnboundedResolver = new PromiseResolver<boolean>();
+        const originalSetUnbounded =
+            app.$.tabMenu.setUnbounded.bind(app.$.tabMenu);
+        const originalShowAt = app.$.tabMenu.showAt.bind(app.$.tabMenu);
+        let showAtCalls = 0;
+        app.$.tabMenu.setUnbounded = async () => {
+          const result = await setUnboundedResolver.promise;
+          dialog.setAttribute('unbounded', '');
+          return result;
+        };
+        app.$.tabMenu.showAt = (...args) => {
+          showAtCalls++;
+          originalShowAt(...args);
+        };
+
+        try {
+          // Pointer enters and then leaves while setUnbounded() is still
+          // pending.
+          app.$.shareTabsTrigger.dispatchEvent(
+              new PointerEvent('pointerenter'));
+          app.$.shareTabsTrigger.dispatchEvent(
+              new PointerEvent('pointerleave'));
+
+          // Wait for the close timer to fire while setUnbounded() is still in
+          // flight, then resolve setUnbounded().
+          await new Promise(resolve => window.setTimeout(resolve, 60));
+          setUnboundedResolver.resolve(true);
+          await microtasksFinished();
+
+          assertFalse(app.$.tabMenu.open);
+          assertFalse(app.tabMenuOpen);
+          assertEquals(0, showAtCalls);
+
+          // Concurrent pointerenter and keyboard activation after a completed
+          // close timer open the menu once when setUnbounded() resolves.
+          dialog.removeAttribute('unbounded');
+          setUnboundedResolver = new PromiseResolver<boolean>();
+          app.$.shareTabsTrigger.dispatchEvent(
+              new PointerEvent('pointerenter'));
+          app.$.shareTabsTrigger.dispatchEvent(
+              new KeyboardEvent('keydown', {key: 'Enter', bubbles: true}));
+          setUnboundedResolver.resolve(true);
+          await microtasksFinished();
+
+          assertTrue(app.$.tabMenu.open);
+          assertTrue(app.tabMenuOpen);
+          assertEquals(1, showAtCalls);
+        } finally {
+          app.$.tabMenu.setUnbounded = originalSetUnbounded;
+          app.$.tabMenu.showAt = originalShowAt;
+        }
       });
 
   test(

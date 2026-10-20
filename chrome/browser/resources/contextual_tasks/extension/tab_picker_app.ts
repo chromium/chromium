@@ -25,6 +25,8 @@ import {getHtml} from './tab_picker_app.html.js';
 import {TabPickerBrowserProxyImpl} from './tab_picker_browser_proxy.js';
 import type {TabPickerBrowserProxy} from './tab_picker_browser_proxy.js';
 
+const CLOSE_MENU_DELAY_MS = 50;
+
 export interface TabPickerAppElement {
   $: {
     shareTabsTrigger: HTMLButtonElement,
@@ -76,6 +78,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   private closeTimer_: number|null = null;
   private pointerDownOnTrigger_: boolean = false;
+  private shouldOpenMenu_: boolean = false;
   private listenerIds_: number[] = [];
   private browserProxy_: TabPickerBrowserProxy =
       TabPickerBrowserProxyImpl.getInstance();
@@ -205,6 +208,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   protected onShareTabsRowPointerenter_() {
     this.pointerDownOnTrigger_ = false;
     this.setFocusOutlineVisible_(false);
+    this.shouldOpenMenu_ = true;
     this.cancelCloseTimer_();
     this.openTabMenu_();
   }
@@ -220,6 +224,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   protected onShareTabsRowPointerleave_() {
     this.pointerDownOnTrigger_ = false;
+    this.shouldOpenMenu_ = false;
     this.$.shareTabsTrigger.blur();
     this.scheduleCloseTimer_();
   }
@@ -232,9 +237,12 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   protected onShareTabsRowClick_() {
     this.setFocusOutlineVisible_(false);
+    this.cancelCloseTimer_();
     if (this.$.tabMenu.open) {
+      this.shouldOpenMenu_ = false;
       this.$.tabMenu.close();
     } else {
+      this.shouldOpenMenu_ = true;
       this.openTabMenu_();
     }
     this.pointerDownOnTrigger_ = false;
@@ -244,6 +252,8 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     this.setFocusOutlineVisible_(true);
     if (e.key === 'ArrowRight' || e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
+      this.shouldOpenMenu_ = true;
+      this.cancelCloseTimer_();
       this.openTabMenu_();
     }
   }
@@ -270,6 +280,7 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   }
 
   protected onMenuClose_() {
+    this.shouldOpenMenu_ = false;
     this.tabMenuOpen = false;
     if (!FocusOutlineManager.forDocument(document).visible) {
       this.$.shareTabsTrigger.blur();
@@ -307,6 +318,11 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
     if (this.isUnboundedMenuEnabled_() &&
         !this.$.tabMenu.getDialog().hasAttribute('unbounded')) {
       await this.$.tabMenu.setUnbounded();
+      // Abort if the pointer left or the menu state changed while awaiting
+      // setUnbounded().
+      if (!this.shouldOpenMenu_ || this.$.tabMenu.open) {
+        return;
+      }
     }
     this.tabMenuOpen = true;
     this.$.tabMenu.showAt(this.$.shareTabsTrigger, {
@@ -319,11 +335,12 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   private scheduleCloseTimer_() {
     this.cancelCloseTimer_();
     this.closeTimer_ = window.setTimeout(() => {
+      this.closeTimer_ = null;
       if (this.$.tabMenu.open) {
         this.$.tabMenu.close();
         this.$.shareTabsTrigger.blur();
       }
-    }, 300);
+    }, CLOSE_MENU_DELAY_MS);
   }
 
   private cancelCloseTimer_() {
