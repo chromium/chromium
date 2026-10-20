@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSug
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -139,6 +140,7 @@ public class BasicSuggestionProcessorUnitTest {
     private AutocompleteMatch mSuggestion;
     private PropertyModel mModel;
     private AutocompleteInput mInput;
+    private OmniboxResourceProvider mResourceProvider;
 
     private static class BookmarkPredicate implements BasicSuggestionProcessor.BookmarkState {
         boolean mState;
@@ -156,9 +158,11 @@ public class BasicSuggestionProcessorUnitTest {
         var context =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mResourceProvider = new OmniboxResourceProvider(context, BrandedColorScheme.APP_DEFAULT);
         mUiContext =
                 new AutocompleteUIContext(
                         context,
+                        mResourceProvider,
                         mSuggestionHost,
                         null,
                         mImageSupplier,
