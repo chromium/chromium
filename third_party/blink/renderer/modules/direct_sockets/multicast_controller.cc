@@ -16,8 +16,10 @@
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -172,6 +174,12 @@ ScriptPromise<IDLUndefined> MulticastController::joinGroup(
     const String& ip_address,
     const MulticastGroupOptions* options,
     ExceptionState& exception_state) {
+  UseCounter::Count(
+      GetExecutionContext(),
+      options && options->hasSourceAddress()
+          ? WebFeature::kMulticastControllerJoinGroupWithSourceAddress
+          : WebFeature::kMulticastControllerJoinGroupFunction);
+
   if (state_ != State::kOpen) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,

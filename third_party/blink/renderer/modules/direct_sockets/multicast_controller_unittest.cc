@@ -13,7 +13,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_multicast_group_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_multicast_membership.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -811,6 +813,27 @@ TEST_F(MulticastControllerSsmTest, PendingAsmBlocksSsmJoin) {
   creator->fake_udp_socket()->CompleteJoinGroup(net::OK);
   ScriptPromiseTester asm_tester(script_state, asm_promise);
   asm_tester.WaitUntilSettled();
+}
+
+TEST_F(MulticastControllerSsmTest, JoinGroupUseCounters) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScopedMulticastCreator creator(MakeGarbageCollected<MulticastCreator>(scope));
+  MulticastController* multicast_controller = creator->Create(scope);
+  ScriptState* script_state = scope.GetScriptState();
+
+  ASSERT_NO_FATAL_FAILURE(JoinGroupExpectFulfilled(
+      creator, multicast_controller, script_state, kIPv4MulticastAddress,
+      MakeSourceOptions(kIPv4SourceAddress)));
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kMulticastControllerJoinGroupWithSourceAddress));
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kMulticastControllerJoinGroupFunction));
+
+  ASSERT_NO_FATAL_FAILURE(JoinGroupExpectFulfilled(
+      creator, multicast_controller, script_state, kIPv6MulticastAddress));
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kMulticastControllerJoinGroupFunction));
 }
 
 }  // namespace

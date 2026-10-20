@@ -6859,6 +6859,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6041" label="WebTransportExportKeyingMaterial"/>
   <int value="6042" label="OfflineAudioContextClose"/>
   <int value="6043" label="ViewTransitionPreventSvgFilterPaint"/>
+  <int value="6044" label="MulticastControllerJoinGroupWithSourceAddress"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

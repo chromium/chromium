@@ -23,7 +23,7 @@ dictionary MulticastGroupOptions {
     SecureContext
 ]
 interface MulticastController {
-  [CallWith=ScriptState, RaisesException, MeasureAs=MulticastControllerJoinGroupFunction]
+  [CallWith=ScriptState, RaisesException]
   Promise<undefined> joinGroup(
       DOMString ipAddress,
       optional MulticastGroupOptions options = {});
