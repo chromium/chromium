@@ -182,16 +182,6 @@ SecurityStatusOr<T> GetNCryptProperty(NCRYPT_HANDLE handle, LPCWSTR property) {
   return base::ok(value);
 }
 
-template <typename T>
-SecurityStatusOr<void> SetNCryptProperty(NCRYPT_HANDLE handle,
-                                         LPCWSTR property,
-                                         T value) {
-  SECURITY_STATUS status = NCryptSetProperty(
-      handle, property, reinterpret_cast<PBYTE>(&value), sizeof(value), 0);
-  return SUCCEEDED(status) ? SecurityStatusOr<void>()
-                           : base::unexpected(status);
-}
-
 // Logs `status` and `selected_algorithm` to an error histogram capturing that
 // `operation` failed for a TPM-backed key.
 void LogTPMOperationError(TPMOperation operation,
@@ -1320,20 +1310,9 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         return nullptr;
       }
 
-      if (provider_type_ == ProviderType::kTPM &&
-          algo == sign::RSA_PKCS1_SHA256) {
-        // TPM 2.0 RSA keys created via the Platform Crypto Provider default to
-        // SHA-1 for signing if left unset. Restrict the key to SHA-256 instead.
-        RETURN_IF_ERROR(
-            SetNCryptProperty(key.get(),
-                              NCRYPT_PCP_RSA_SCHEME_HASH_ALG_PROPERTY,
-                              static_cast<DWORD>(tpm::TPM_ALG_SHA256)),
-            [&](SECURITY_STATUS status) {
-              LogTPMOperationError(TPMOperation::kNewKeyCreation, status, algo);
-              return nullptr;
-            });
-      }
-
+      // RSA keys don't set `NCRYPT_PCP_RSA_SCHEME_HASH_ALG_PROPERTY`: TPM 1.2
+      // rejects it with `NTE_NOT_SUPPORTED`, and `SignRSA()` already requests
+      // SHA-256 through `BCRYPT_PKCS1_PADDING_INFO`.
       if (FAILED(NCryptFinalizeKey(key.get(), NCRYPT_SILENT_FLAG))) {
         return nullptr;
       }
