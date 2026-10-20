@@ -1406,6 +1406,35 @@ TEST_F(OriginGatingCheckerTest,
                                DecisionSource::kCacheWithUserConfirmation));
 }
 
+TEST_F(
+    OriginGatingCheckerTest,
+    CacheHit_UserConfirmedOrigin_SameSiteSubdomain_ShortCircuitsEvenWithOriginScope) {
+  auto checker = OriginGatingChecker::CreateForTesting(
+      delegate_.GetWeakPtr(),
+      OriginGatingConfiguration(
+          {
+              {DecisionSource::kCacheWithUserConfirmation,
+               GateableEventSet::All()},
+          },
+          OriginGatingConfiguration::CacheScope::kOrigin));
+
+  GURL source("https://example.com");
+  GURL destination("https://sub.foo.com");
+  url::Origin confirmed_origin = url::Origin::Create(GURL("https://foo.com"));
+
+  checker->AllowNavigationTo(confirmed_origin, /*is_user_confirmed=*/true);
+
+  EXPECT_CALL(delegate_, DoesOriginRequireUserConfirmation(_, _, _)).Times(0);
+  EXPECT_CALL(delegate_, OnNoVerdict(_, _, _, _)).Times(0);
+
+  EXPECT_THAT(ComputeGatingDecisionAndVerifyAsynchrony(
+                  *checker, nullptr,
+                  GateableEvent(NavigationResponseEvent{
+                      .source = source, .destination = destination})),
+              GatingDecisionIs(/*is_allowed*/ true,
+                               DecisionSource::kCacheWithUserConfirmation));
+}
+
 TEST_F(OriginGatingCheckerTest,
        CacheMiss_NonConfirmedOrigin_SensitiveDestination_QueriesDelegate) {
   auto checker = OriginGatingChecker::CreateForTesting(

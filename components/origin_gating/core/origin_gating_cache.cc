@@ -4,25 +4,24 @@
 
 #include "components/origin_gating/core/origin_gating_cache.h"
 
-#include <algorithm>
+#include <utility>
 #include <variant>
 
-#include "base/containers/map_util.h"
 #include "base/notreached.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/origin.h"
 
 namespace origin_gating {
 
 OriginGatingCache::OriginGatingCache(CacheScope scope)
-    : allowed_navigation_origins_([&] -> StateMap {
+    : allowed_navigation_origins_([&] -> OriginOrSiteSet {
         switch (scope) {
           case CacheScope::kOrigin:
-            return OriginMap();
+            return OriginSet();
           case CacheScope::kSite:
-            return SiteMap();
+            return SiteSet();
         }
         NOTREACHED();
       }()) {}
@@ -37,11 +36,11 @@ bool OriginGatingCache::IsNavigationAllowed(
     const url::Origin& destination_origin) const {
   return std::visit(
       absl::Overload{
-          [&](const OriginMap& origins) -> bool {
+          [&](const OriginSet& origins) -> bool {
             return source_origin == destination_origin ||
                    origins.contains(destination_origin);
           },
-          [&](const SiteMap& sites) -> bool {
+          [&](const SiteSet& sites) -> bool {
             return net::SchemefulSite::IsSameSite(source_origin,
                                                   destination_origin) ||
                    sites.contains(net::SchemefulSite(destination_origin));
@@ -52,84 +51,42 @@ bool OriginGatingCache::IsNavigationAllowed(
 
 bool OriginGatingCache::IsNavigationConfirmedByUser(
     const url::Origin& origin) const {
-  const auto* state = std::visit(absl::Overload{
-                                     [&](const OriginMap& origins) {
-                                       return base::FindOrNull(origins, origin);
-                                     },
-                                     [&](const SiteMap& sites) {
-                                       return base::FindOrNull(
-                                           sites, net::SchemefulSite(origin));
-                                     },
-                                 },
-                                 allowed_navigation_origins_);
-  return state && state->is_user_confirmed;
+  return confirmed_navigation_sites_.contains(net::SchemefulSite(origin));
 }
 
 void OriginGatingCache::AllowNavigationTo(url::Origin origin,
                                           bool is_user_confirmed) {
-  auto& state = std::visit(
-      absl::Overload{
-          [&](OriginMap& origins) -> State& {
-            return origins.emplace(origin, State{is_user_confirmed})
-                .first->second;
-          },
-          [&](SiteMap& sites) -> State& {
-            return sites
-                .emplace(net::SchemefulSite(origin), State{is_user_confirmed})
-                .first->second;
-          },
-      },
-      allowed_navigation_origins_);
   if (is_user_confirmed) {
-    state.is_user_confirmed = true;
+    confirmed_navigation_sites_.insert(net::SchemefulSite(origin));
   }
+  std::visit(absl::Overload{
+                 [&](OriginSet& origins) { origins.insert(std::move(origin)); },
+                 [&](SiteSet& sites) {
+                   sites.insert(net::SchemefulSite(std::move(origin)));
+                 },
+             },
+             allowed_navigation_origins_);
 }
 
 void OriginGatingCache::AllowNavigationTo(
     const absl::flat_hash_set<url::Origin>& origins) {
-  std::visit(
-      absl::Overload{
-          [&](OriginMap& origin_states) {
-            std::ranges::transform(
-                origins, std::inserter(origin_states, origin_states.end()),
-                [](const auto& origin) {
-                  return std::make_pair(origin,
-                                        State{/*is_user_confirmed=*/false});
-                });
-          },
-          [&](SiteMap& sites) {
-            std::ranges::transform(origins, std::inserter(sites, sites.end()),
-                                   [](const auto& origin) {
-                                     return std::make_pair(
-                                         net::SchemefulSite(origin),
-                                         State{/*is_user_confirmed=*/false});
-                                   });
-          },
-      },
-      allowed_navigation_origins_);
+  std::visit(absl::Overload{
+                 [&](OriginSet& origin_set) {
+                   origin_set.insert(origins.begin(), origins.end());
+                 },
+                 [&](SiteSet& site_set) {
+                   for (const auto& origin : origins) {
+                     site_set.insert(net::SchemefulSite(origin));
+                   }
+                 },
+             },
+             allowed_navigation_origins_);
 }
 
 OriginGatingCache::SizeMetrics OriginGatingCache::GetSizeMetrics() const {
-  auto [total, user_confirmed_total] =
-      std::visit(absl::Overload{
-                     [](const OriginMap& origins) {
-                       return std::make_pair(
-                           origins.size(),
-                           std::ranges::count_if(origins, [](const auto& pair) {
-                             return pair.second.is_user_confirmed;
-                           }));
-                     },
-                     [](const SiteMap& sites) {
-                       return std::make_pair(
-                           sites.size(),
-                           std::ranges::count_if(sites, [](const auto& pair) {
-                             return pair.second.is_user_confirmed;
-                           }));
-                     },
-                 },
-                 allowed_navigation_origins_);
-  return SizeMetrics{static_cast<size_t>(total),
-                     static_cast<size_t>(user_confirmed_total)};
+  size_t total = std::visit([](const auto& set) { return set.size(); },
+                            allowed_navigation_origins_);
+  return SizeMetrics{total, confirmed_navigation_sites_.size()};
 }
 
 }  // namespace origin_gating

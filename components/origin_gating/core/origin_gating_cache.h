@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/origin.h"
 
@@ -16,7 +15,8 @@ namespace origin_gating {
 
 // This class acts as a cache for origin- or site-keyed decisions. Permission
 // to navigate to an origin/site can be recorded, optionally recording that user
-// confirmation was obtained for that permission.
+// confirmation was obtained for that permission. User confirmations are always
+// cached by site.
 class OriginGatingCache {
  public:
   struct SizeMetrics {
@@ -43,15 +43,15 @@ class OriginGatingCache {
   bool IsNavigationAllowed(const url::Origin& source_origin,
                            const url::Origin& destination_origin) const;
 
-  // Returns true iff navigation to or interaction with `origin` has been
-  // allowed (via a previous call to `AllowNavigationTo`) with
+  // Returns true iff navigation to or interaction with the site of `origin` has
+  // been allowed (via a previous call to `AllowNavigationTo`) with
   // `is_user_confirmed` set to true.
   bool IsNavigationConfirmedByUser(const url::Origin& origin) const;
 
   // Adds the given origin to the set of origins to which the actor is allowed
-  // to navigate. `is_user_confirmed` controls whether
-  // `IsNavigationConfirmedByUser` will return true for this origin in the
-  // future.
+  // to navigate. If `is_user_confirmed` is true, the site of `origin` is marked
+  // as confirmed by the user, so `IsNavigationConfirmedByUser` will return true
+  // for any origin on this site in the future.
   void AllowNavigationTo(url::Origin origin, bool is_user_confirmed);
 
   // Adds the given origins to the set of origins to which the actor is allowed
@@ -62,22 +62,20 @@ class OriginGatingCache {
   SizeMetrics GetSizeMetrics() const;
 
  private:
-  struct State {
-    // Whether the user has explicitly confirmed navigation to this origin/site.
-    bool is_user_confirmed = false;
-  };
-
-  using OriginMap = absl::flat_hash_map<url::Origin, State>;
-  using SiteMap = absl::flat_hash_map<net::SchemefulSite, State>;
-  using StateMap = std::variant<OriginMap, SiteMap>;
+  using OriginSet = absl::flat_hash_set<url::Origin>;
+  using SiteSet = absl::flat_hash_set<net::SchemefulSite>;
+  using OriginOrSiteSet = std::variant<OriginSet, SiteSet>;
 
   // The set of origins/sites which the browser is allowed to navigate to under
-  // actor control. Note that presence in this map does *not* imply that the
+  // actor control. Note that presence in this set does *not* imply that the
   // actor may navigate without confirming with the user first. This set can
   // have origins/sites added to it by the server actions or by confirming the
   // new origin with the model or user. Sensitive origins/sites that are on the
   // optimization guide blocklist are not exempt by this set.
-  StateMap allowed_navigation_origins_;
+  OriginOrSiteSet allowed_navigation_origins_;
+
+  // The set of sites for which user confirmation has been obtained.
+  SiteSet confirmed_navigation_sites_;
 };
 
 }  // namespace origin_gating

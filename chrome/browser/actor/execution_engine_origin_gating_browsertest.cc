@@ -75,6 +75,25 @@ constexpr char kHandleUserConfirmationDialogTempl[] =
   })();
 )js";
 
+constexpr char kCountAndHandleUserConfirmationDialogTempl[] =
+    R"js(
+  (() => {
+    window.userConfirmationDialogRequestCount = 0;
+    client.browser
+        .selectUserConfirmationDialogRequestHandler()
+        .subscribe(
+      request => {
+        window.userConfirmationDialogRequestCount++;
+        request.onDialogClosed({
+          response: {
+            permissionGranted: $1,
+          },
+        });
+      }
+    );
+  })();
+)js";
+
 constexpr char kHandleNavigationConfirmationTempl[] =
     R"js(
   (() => {
@@ -258,6 +277,23 @@ class ExecutionEngineOriginGatingBrowserTestBase
         )js";
     return VerifyWebClientRequest(kGetUserConfirmationDialogRequest,
                                   expected_request, location);
+  }
+
+  [[nodiscard]] InteractiveTestApi::MultiStep
+  VerifyUserConfirmationDialogRequestCount(
+      int expected_count,
+      const base::Location& location = FROM_HERE) {
+    return InAnyContext(WithElement(
+        glic::kGlicContentsElementId,
+        [expected_count, location](::ui::TrackedElement* el) {
+          content::WebContents* glic_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          EXPECT_EQ(
+              expected_count,
+              content::EvalJs(glic_contents,
+                              "window.userConfirmationDialogRequestCount"))
+              << ", expected at " << location.ToString();
+        }));
   }
 
   [[nodiscard]] InteractiveTestApi::MultiStep
@@ -888,6 +924,46 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
               base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
   histogram_tester.ExpectUniqueSample(kSameSiteInitiatorHistogram, true, 2);
   // Should log that permission was *granted* once.
+  histogram_tester.ExpectUniqueSample(
+      "Actor.NavigationGating.PermissionGranted", true, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ExecutionEngineOriginGatingBrowserTest,
+    ConfirmSensitiveOriginWithUser_SameSiteSubdomainAllowedWithoutPrompt) {
+  base::HistogramTester histogram_tester;
+  const GURL start_url =
+      embedded_https_test_server().GetURL("example.com", "/actor/link.html");
+  const GURL sensitive_url = embedded_https_test_server().GetURL(
+      "sensitive.example.com", "/actor/link.html");
+  const GURL sensitive_subdomain_url = embedded_https_test_server().GetURL(
+      "sub.sensitive.example.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_url));
+  OpenGlicAndCreateTask();
+
+  RunTestSequence(CreateMockWebClientRequest(
+      content::JsReplace(kCountAndHandleUserConfirmationDialogTempl, true)));
+
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(), content::JsReplace("setLink($1);", sensitive_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+  RunTestSequence(VerifyUserConfirmationDialogRequestCount(1));
+
+  // From sensitive.example.com, navigate to sub.sensitive.example.com.
+  // Sensitive site confirmations are cached by site, so navigating to
+  // a subdomain on the same site should not require another user confirmation.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace("setLink($1);", sensitive_subdomain_url)));
+
+  ClickTarget("#link", mojom::ActionResultCode::kOk);
+
+  // Directly verify that the user confirmation dialog was only requested once.
+  RunTestSequence(VerifyUserConfirmationDialogRequestCount(1));
+
+  // Also verify that the permission grant metric was only recorded once.
   histogram_tester.ExpectUniqueSample(
       "Actor.NavigationGating.PermissionGranted", true, 1);
 }

@@ -121,8 +121,7 @@ TEST_P(OriginGatingCacheTest, ConfirmOrigin_Query) {
                                         /*is_user_confirmed=*/true);
 
   EXPECT_TRUE(origin_gating_cache.IsNavigationConfirmedByUser(example));
-  EXPECT_EQ(origin_gating_cache.IsNavigationConfirmedByUser(example_sub),
-            cache_scope() == CacheScope::kSite);
+  EXPECT_TRUE(origin_gating_cache.IsNavigationConfirmedByUser(example_sub));
   EXPECT_FALSE(origin_gating_cache.IsNavigationConfirmedByUser(
       url::Origin::Create(GURL(kAnother))));
 }
@@ -169,8 +168,7 @@ TEST_P(OriginGatingCacheTest,
                                         /*is_user_confirmed=*/false);
 
   EXPECT_TRUE(origin_gating_cache.IsNavigationConfirmedByUser(example));
-  EXPECT_EQ(origin_gating_cache.IsNavigationConfirmedByUser(example_sub),
-            cache_scope() == CacheScope::kSite);
+  EXPECT_TRUE(origin_gating_cache.IsNavigationConfirmedByUser(example_sub));
 }
 
 TEST_P(OriginGatingCacheTest, GetSizeMetrics) {
@@ -184,15 +182,14 @@ TEST_P(OriginGatingCacheTest, GetSizeMetrics) {
   origin_gating_cache.AllowNavigationTo(another, /*is_user_confirmed=*/false);
 
   OriginGatingCache::SizeMetrics metrics = origin_gating_cache.GetSizeMetrics();
+  EXPECT_EQ(metrics.confirmed_list_size, 1u);
 
   switch (cache_scope()) {
     case OriginGatingCache::CacheScope::kOrigin:
       EXPECT_EQ(metrics.allow_list_size, 3u);
-      EXPECT_EQ(metrics.confirmed_list_size, 2u);
       break;
     case OriginGatingCache::CacheScope::kSite:
       EXPECT_EQ(metrics.allow_list_size, 2u);
-      EXPECT_EQ(metrics.confirmed_list_size, 1u);
       break;
   }
 }

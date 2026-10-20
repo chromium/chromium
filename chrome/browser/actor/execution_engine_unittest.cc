@@ -1558,12 +1558,18 @@ TEST_F(ExecutionEngineUrlGatingTest,
               RequestToShowUserConfirmationDialog(_, _, _, _))
       .Times(0);
   CheckUrl(url, /*expected_allowed=*/true);
+
+  // Subsequent check for a same-site subdomain is also allowed via cache
+  // without re-prompting.
+  const GURL sub_url("https://sub.c.test/");
+  CheckUrl(sub_url, /*expected_allowed=*/true);
 }
 
 TEST_F(ExecutionEngineUrlGatingTest,
        SafetyChecksForNextAction_PromptsForSensitiveSiteFromCommandLine) {
   const GURL url("https://c.test/");
   const GURL sub_url("https://sub.c.test/");
+  const GURL other_sub_url("https://sub.d.test/");
   const GURL non_matching_url("https://other.test/");
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1571,7 +1577,7 @@ TEST_F(ExecutionEngineUrlGatingTest,
 
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
-      switches::kActorSensitiveSites, "https://c.test");
+      switches::kActorSensitiveSites, "https://c.test,https://d.test");
 
   // Matching URL prompts for confirmation without querying Optimization Guide.
   EXPECT_CALL(
@@ -1598,23 +1604,26 @@ TEST_F(ExecutionEngineUrlGatingTest,
       .Times(0);
   CheckUrl(url, /*expected_allowed=*/true);
 
-  // Same-site subdomain matches SchemefulSite and prompts without Optimization
-  // Guide.
+  // Same-site subdomain is also allowed via cache without re-prompting.
+  CheckUrl(sub_url, /*expected_allowed=*/true);
+
+  // Same-site subdomain of an unconfirmed sensitive site matches SchemefulSite
+  // and prompts without Optimization Guide.
   EXPECT_CALL(
       *mock_optimization_guide_keyed_service_,
       CanApplyOptimization(
-          sub_url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
+          other_sub_url, optimization_guide::proto::GLIC_ACTION_PAGE_BLOCK,
           testing::An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
   EXPECT_CALL(
       mock_actor_task_delegate(),
-      RequestToShowUserConfirmationDialog(_, url::Origin::Create(sub_url),
+      RequestToShowUserConfirmationDialog(_, url::Origin::Create(other_sub_url),
                                           /*for_blocklisted_origin=*/true, _))
       .WillOnce(base::test::RunOnceCallback<3>(
           webui::mojom::UserConfirmationDialogResponse::New(
               webui::mojom::ConfirmationRequestResult::NewPermissionGranted(
                   true))));
-  CheckUrl(sub_url, /*expected_allowed=*/true);
+  CheckUrl(other_sub_url, /*expected_allowed=*/true);
 
   // Non-matching URL falls back to Optimization Guide.
   SetExpectedOptimizationGuideCall(
