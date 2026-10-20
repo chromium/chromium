@@ -2688,7 +2688,7 @@ void MaybeRegisterChromeTutorials(
                 .InAnyContext());
 
     contextual_tasks_tutorial.metadata.additional_description =
-        "Tutorial for pinning Google Search AI Mode.";
+        "Tutorial for pinning Google Search in side panel.";
     contextual_tasks_tutorial.metadata.launch_milestone = 147;
     contextual_tasks_tutorial.metadata.owners = "dianaou@google.com";
 

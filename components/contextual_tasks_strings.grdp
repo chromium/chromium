@@ -5,7 +5,7 @@
     Browse with AI
   </message>
   <message name="IDS_CONTEXTUAL_TASKS_CUSTOMIZE_CHROME_LABEL" desc="The label shown in the Customize Chrome settings menu to pin Contextual Tasks to the toolbar.">
-    Google Search AI Mode
+    Google Search in side panel
   </message>
   <message name ="IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP" desc="The tooltip text used for contextual task entry points.">
     Browse with AI

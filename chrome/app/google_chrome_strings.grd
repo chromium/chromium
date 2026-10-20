@@ -2109,15 +2109,15 @@ Google Chrome is unable to recover your settings.
         </message>
 
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
-          You can pin Google Search AI Mode to ask questions as you browse
+          You can pin Google Search in side panel to ask questions as you browse
         </message>
-        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search AI Mode.">
-          You can reopen Google Search AI Mode to ask questions while you browse
+        <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search in side panel.">
+          You can reopen Google Search in side panel to ask questions while you browse
         </message>
         <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH_SCREENREADER"
-          desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search AI Mode."
+          desc="The screen reader text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search in side panel."
           is_accessibility_with_no_ui="true">
-          From the "Google Search AI Mode" button on the toolbar, you can reopen Google Search AI Mode to ask questions while you browse
+          From the "Google Search in side panel" button on the toolbar, you can reopen Google Search in side panel to ask questions while you browse
         </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP1" desc="The body text of the first step of the Contextual Tasks tutorial. THREE_DOTS_ICON is the vertical three-dot overflow menu icon that we are instructing users to click on.">
           Open the more <ph name="THREE_DOTS_ICON">⋮</ph> menu
@@ -2126,7 +2126,7 @@ Google Chrome is unable to recover your settings.
           Select "Pin to toolbar"
         </message>
         <message name="IDS_TUTORIAL_CONTEXTUAL_TASKS_STEP3" desc="The body text of the third step of the Contextual Tasks tutorial.">
-          Success! You can now easily ask questions as you browse with Google Search AI Mode
+          Success! You can now easily ask questions as you browse with Google Search in side panel
         </message>
 
         <!-- Overlay WebUI Strings -->
@@ -3731,7 +3731,7 @@ If this page isn’t working as expected, try allowing optimization.
 
        <!-- Contextual Tasks -->
       <message name="IDS_CONTEXTUAL_TASKS_ENTRY_POINT_TOOLTIP_V2" desc="The tooltip text used for contextual task toolbar button">
-        Reopen Google Search AI Mode
+        Reopen Google Search in side panel
       </message>
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and hiding the side panel.">
         Hide side panel
