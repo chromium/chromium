@@ -100,7 +100,8 @@ shared_gpu.ci.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -150,7 +151,8 @@ shared_gpu.ci.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -189,7 +191,8 @@ shared_gpu.ci.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -236,7 +239,8 @@ shared_gpu.ci.linux_builder(
         configs = [
             "android_builder",
             "android_fastbuild",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -277,7 +281,8 @@ shared_gpu.ci.linux_builder(
             "android_builder",
             "android_fastbuild",
             "arm64",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -690,7 +695,8 @@ shared_gpu.ci.linux_builder(
         configs = [
             "android_builder",
             "android_fastbuild",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -732,7 +738,8 @@ shared_gpu.ci.linux_builder(
             "android_builder",
             "android_fastbuild",
             "arm64",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -1456,7 +1463,8 @@ shared_gpu.ci.mac_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "arm64",
@@ -1493,7 +1501,8 @@ shared_gpu.ci.mac_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "arm64",
@@ -1685,7 +1694,8 @@ shared_gpu.ci.mac_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "x64",
@@ -1723,7 +1733,8 @@ shared_gpu.ci.mac_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "x64",
@@ -2159,7 +2170,8 @@ shared_gpu.ci.windows_builder(
             "dawn_use_built_dxc",
             "dawn_enable_opengles",
             "asan",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -2329,7 +2341,8 @@ shared_gpu.ci.windows_builder(
         configs = [
             "dawn_use_built_dxc",
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -2368,7 +2381,8 @@ shared_gpu.ci.windows_builder(
         configs = [
             "dawn_use_built_dxc",
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -2415,7 +2429,8 @@ shared_gpu.ci.windows_builder(
             "arm64",
             "dawn_use_built_dxc",
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -2466,7 +2481,8 @@ shared_gpu.ci.windows_builder(
             "arm64",
             "dawn_use_built_dxc",
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "gpu_tests",
@@ -3065,7 +3081,8 @@ shared_gpu.ci.windows_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "x86",
@@ -3103,7 +3120,8 @@ shared_gpu.ci.windows_builder(
     gn_args = gn_args.config(
         configs = [
             "dawn_enable_opengles",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "x86",

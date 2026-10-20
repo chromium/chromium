@@ -124,7 +124,8 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "try_builder",
+            "dcheck_always_on",
+            "minimal_symbols",
             "remoteexec",
             "linux",
             "x64",
@@ -1461,7 +1462,8 @@ fyi_ios_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder_blink",
-            "try_builder",
+            "dcheck_always_on",
+            "minimal_symbols",
             "remoteexec",
             "ios_simulator",
             "arm64",
@@ -1519,7 +1521,8 @@ fyi_ios_builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder_blink",
-            "try_builder",
+            "dcheck_always_on",
+            "minimal_symbols",
             "remoteexec",
             "ios_simulator",
             "arm64",
@@ -2035,7 +2038,8 @@ ci.builder(
     gn_args = gn_args.config(
         configs = [
             "release_builder",
-            "try_builder",
+            "dcheck_always_on",
+            "minimal_symbols",
             "remoteexec",
             "win",
             "x64",

@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "dcheck_always_on": true,
+    "enable_expensive_dchecks": false,
     "extended_tracing_enabled": true,
     "is_component_build": false,
     "is_debug": false,

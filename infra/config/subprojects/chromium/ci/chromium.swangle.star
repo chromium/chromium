@@ -80,7 +80,8 @@ shared_gpu.ci.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "linux",
@@ -133,7 +134,8 @@ shared_gpu.ci.linux_builder(
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "linux",
@@ -339,7 +341,8 @@ shared_gpu.ci.mac_builder(
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "mac",
@@ -390,7 +393,8 @@ shared_gpu.ci.windows_builder(
     gn_args = gn_args.config(
         configs = [
             "gpu_tests",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "x86",

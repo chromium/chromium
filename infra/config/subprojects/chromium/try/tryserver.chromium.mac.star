@@ -167,8 +167,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/mac-perfetto-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     cpu = cpu.ARM64,

@@ -3,6 +3,7 @@
     "android_static_analysis": "on",
     "dcheck_always_on": true,
     "debuggable_apks": false,
+    "enable_expensive_dchecks": false,
     "is_component_build": false,
     "is_debug": false,
     "strip_debug_info": true,

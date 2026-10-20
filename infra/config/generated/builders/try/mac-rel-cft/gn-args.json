@@ -1,6 +1,7 @@
 {
   "gn_args": {
     "dcheck_always_on": true,
+    "enable_expensive_dchecks": false,
     "ffmpeg_branding": "Chrome",
     "is_chrome_for_testing": true,
     "is_component_build": false,

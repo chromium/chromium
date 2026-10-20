@@ -96,7 +96,8 @@ shared_gpu.ci.linux_builder(
         configs = [
             "gpu_tests",
             "android_builder_without_codecs",
-            "release_try_builder",
+            "release_builder",
+            "dcheck_always_on",
             "minimal_symbols",
             "remoteexec",
             "arm64",

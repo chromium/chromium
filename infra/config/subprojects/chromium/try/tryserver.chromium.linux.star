@@ -150,8 +150,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-annotator-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     ssd = True,
@@ -263,7 +262,8 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-blink-heap-verification",
-            "try_builder",
+            "release_try_builder",
+            "minimal_symbols",
         ],
     ),
     ssd = True,
@@ -452,8 +452,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-perfetto-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     ssd = True,
@@ -752,7 +751,7 @@ try_.orchestrator_builder(
             "ci/Linux ASan LSan Builder",
             # TODO(crbug.com/507993636): Restore symbol_level=1 if/when CAS
             # uploads and downloads are no longer slow.
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     compilator = "linux_chromium_asan_rel_ng-compilator",
@@ -830,7 +829,13 @@ try_.builder(
         "ci/Linux Chromium OS ASan LSan Builder",
         "ci/Linux Chromium OS ASan LSan Tests (1)",
     ],
-    gn_args = "ci/Linux Chromium OS ASan LSan Builder",
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Chromium OS ASan LSan Builder",
+            "release_try_builder",
+            "minimal_symbols",
+        ],
+    ),
     # TODO(crbug.com/41482936): Remove this when memory consumption during links
     # is reduced.
     cores = 16,

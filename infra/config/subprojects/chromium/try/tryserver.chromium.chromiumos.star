@@ -281,8 +281,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/linux-chromeos-annotator-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
             "enable_dangling_raw_ptr_feature_flag",
             "enable_backup_ref_ptr_feature_flag",
         ],

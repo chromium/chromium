@@ -451,8 +451,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/android-annotator-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     ssd = True,
@@ -1061,8 +1060,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/android-fieldtrial-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     ssd = True,
@@ -1076,8 +1074,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/android-perfetto-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     ssd = True,

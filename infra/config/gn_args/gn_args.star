@@ -1238,6 +1238,9 @@ gn_args.config(
 
 gn_args.config(
     name = "release_try_builder",
+    args = {
+        "enable_expensive_dchecks": False,
+    },
     configs = [
         "release_builder",
         "try_builder",

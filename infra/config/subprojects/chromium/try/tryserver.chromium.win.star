@@ -73,8 +73,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/win-annotator-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
     contact_team_email = "cbe-compliance@google.com",
@@ -526,8 +525,7 @@ try_.builder(
     gn_args = gn_args.config(
         configs = [
             "ci/win-perfetto-rel",
-            "try_builder",
-            "no_symbols",
+            "release_try_builder",
         ],
     ),
 )

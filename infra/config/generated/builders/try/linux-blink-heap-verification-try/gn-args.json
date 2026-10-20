@@ -2,6 +2,7 @@
   "gn_args": {
     "cppgc_enable_verify_heap": true,
     "dcheck_always_on": true,
+    "enable_expensive_dchecks": false,
     "ffmpeg_branding": "Chrome",
     "is_component_build": false,
     "is_debug": false,
