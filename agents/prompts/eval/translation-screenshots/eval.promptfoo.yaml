@@ -1,0 +1,32 @@
+description: Verify the translation-screenshots skill correctly guides capturing and uploading screenshots.
+owner: agale@chromium.org
+prompts:
+  - "{{query}}"
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 300
+      extensions: []
+      skills:
+        - translation-screenshots
+tests:
+  - vars:
+      query: "I added a new translatable string IDS_SETTINGS_FOO to chrome/app/settings_strings.grdp. What tool do I use to upload the screenshot?"
+    assert:
+      - type: contains
+        value: "upload_screenshots.py"
+  - vars:
+      query: "Where should the screenshot image file be located before running upload_screenshots.py for chrome/app/settings_strings.grdp?"
+    assert:
+      - type: contains
+        value: "settings_strings_grdp"
+  - vars:
+      query: "What file extension is generated and committed after uploading a translation screenshot?"
+    assert:
+      - type: contains
+        value: ".sha1"
+  - vars:
+      query: "How can I view uploaded screenshots if I am a Google employee?"
+    assert:
+      - type: contains
+        value: "go/translation-hash"
