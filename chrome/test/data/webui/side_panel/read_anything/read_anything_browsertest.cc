@@ -65,6 +65,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, NodeStore) {
                    "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, TranslatedSelectionMapper) {
+  RunSidePanelTest(
+      "side_panel/read_anything/translated_selection_mapper_test.js",
+      "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, SpeechControllerContent) {
   RunSidePanelTest("side_panel/read_anything/speech_controller_content_test.js",
                    "mocha.run()");
