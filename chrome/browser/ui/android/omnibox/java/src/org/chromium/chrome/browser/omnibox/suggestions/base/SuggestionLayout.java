@@ -424,9 +424,11 @@ class SuggestionLayout extends ViewGroup {
                 Math.max(contentHeightPx, hasFooter ? mCompactContentHeightPx : mContentHeightPx);
         // Some views (e.g. TextView) won't render correctly unless measure specs are explicitly
         // supplied, failing to properly center the content.
-        contentView.measure(
-                MeasureSpec.makeMeasureSpec(contentWidthPx, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        if (contentView.getMeasuredHeight() != height) {
+            contentView.measure(
+                    MeasureSpec.makeMeasureSpec(contentWidthPx, MeasureSpec.EXACTLY),
+                    MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+        }
         return height;
     }
 

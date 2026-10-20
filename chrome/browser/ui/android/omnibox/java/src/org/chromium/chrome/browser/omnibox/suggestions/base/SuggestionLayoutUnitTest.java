@@ -232,4 +232,62 @@ public class SuggestionLayoutUnitTest {
                                         R.dimen.omnibox_suggestion_end_padding_no_action_button),
                 mContentView.getRight());
     }
+
+    @Test
+    public void testMeasureContentView_avoidsDoubleMeasureWhenHeightMatches() {
+        mLayout.setSuggestionDimensions(
+                mResourceProvider.getSuggestionDecorationIconSizeWidth(),
+                /* contentHeightPx= */ 48,
+                /* compactContentHeightPx= */ 48,
+                /* contentVerticalPaddingPx= */ 0);
+
+        int[] measureCount = new int[1];
+        View contentView =
+                new View(mContext) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        measureCount[0]++;
+                        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+                    }
+                };
+        contentView.setMinimumHeight(48);
+        mLayout.addView(
+                contentView, SuggestionLayout.LayoutParams.forViewType(SuggestionViewType.CONTENT));
+
+        mLayout.measure(
+                MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+
+        assertEquals(48, contentView.getMeasuredHeight());
+        assertEquals(1, measureCount[0]);
+    }
+
+    @Test
+    public void testMeasureContentView_remeasuresWhenHeightDiffers() {
+        mLayout.setSuggestionDimensions(
+                mResourceProvider.getSuggestionDecorationIconSizeWidth(),
+                /* contentHeightPx= */ 56,
+                /* compactContentHeightPx= */ 48,
+                /* contentVerticalPaddingPx= */ 8);
+
+        int[] measureCount = new int[1];
+        View contentView =
+                new View(mContext) {
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        measureCount[0]++;
+                        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+                    }
+                };
+        contentView.setMinimumHeight(40);
+        mLayout.addView(
+                contentView, SuggestionLayout.LayoutParams.forViewType(SuggestionViewType.CONTENT));
+
+        mLayout.measure(
+                MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+
+        assertEquals(56, contentView.getMeasuredHeight());
+        assertEquals(2, measureCount[0]);
+    }
 }
