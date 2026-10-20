@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
+#include "ui/gfx/x/xkb.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
@@ -30,12 +31,99 @@ Window CreateWindow(Connection* connection) {
   return window;
 }
 
+std::vector<uint32_t> GetKeysymsForRange(const Connection& connection,
+                                         KeyCode min_keycode,
+                                         KeyCode max_keycode) {
+  std::vector<uint32_t> keysyms;
+  keysyms.reserve(
+      (static_cast<int>(max_keycode) - static_cast<int>(min_keycode) + 1) * 2);
+  for (int keycode = static_cast<int>(min_keycode);
+       keycode <= static_cast<int>(max_keycode); ++keycode) {
+    keysyms.push_back(
+        connection.KeycodeToKeysym(static_cast<KeyCode>(keycode), 0));
+    keysyms.push_back(
+        connection.KeycodeToKeysym(static_cast<KeyCode>(keycode),
+                                   static_cast<uint32_t>(KeyButMask::Shift)));
+  }
+  return keysyms;
+}
+
 }  // namespace
 
 // Connection setup and teardown.
 TEST(X11ConnectionTest, Basic) {
   Connection connection;
   ASSERT_TRUE(connection.Ready());
+}
+
+TEST(X11ConnectionTest, PartialKeyboardMappingPreservesKeycodeRange) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+
+  const KeyCode min_keycode = connection.setup().min_keycode;
+  const KeyCode max_keycode = connection.setup().max_keycode;
+  const auto keysyms = GetKeysymsForRange(connection, min_keycode, max_keycode);
+
+  connection.DispatchEvent(Event(false, MappingNotifyEvent{
+                                            .request = Mapping::Keyboard,
+                                            .first_keycode = max_keycode,
+                                            .count = 1,
+                                        }));
+
+  ASSERT_EQ(connection.setup().min_keycode, min_keycode);
+  ASSERT_EQ(connection.setup().max_keycode, max_keycode);
+  EXPECT_EQ(GetKeysymsForRange(connection, min_keycode, max_keycode), keysyms);
+}
+
+TEST(X11ConnectionTest, ModifierMappingPreservesKeycodeRange) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+
+  const KeyCode min_keycode = connection.setup().min_keycode;
+  const KeyCode max_keycode = connection.setup().max_keycode;
+  const auto keysyms = GetKeysymsForRange(connection, min_keycode, max_keycode);
+
+  // The keycode fields are not defined for modifier mapping notifications.
+  connection.DispatchEvent(
+      Event(false, MappingNotifyEvent{.request = Mapping::Modifier}));
+
+  ASSERT_EQ(connection.setup().min_keycode, min_keycode);
+  ASSERT_EQ(connection.setup().max_keycode, max_keycode);
+  EXPECT_EQ(GetKeysymsForRange(connection, min_keycode, max_keycode), keysyms);
+}
+
+TEST(X11ConnectionTest, NewKeyboardNotifyUpdatesKeycodeRange) {
+  Connection connection;
+  ASSERT_TRUE(connection.Ready());
+
+  const KeyCode min_keycode = connection.setup().min_keycode;
+  const KeyCode max_keycode = connection.setup().max_keycode;
+  const auto keysyms = GetKeysymsForRange(connection, min_keycode, max_keycode);
+  const auto new_min_keycode =
+      static_cast<KeyCode>(static_cast<int>(min_keycode) + 1);
+  ASSERT_LT(new_min_keycode, max_keycode);
+
+  connection.DispatchEvent(Event(false, Xkb::NewKeyboardNotifyEvent{
+                                            .minKeyCode = new_min_keycode,
+                                            .maxKeyCode = max_keycode,
+                                            .oldMinKeyCode = min_keycode,
+                                            .oldMaxKeyCode = max_keycode,
+                                            .changed = Xkb::NKNDetail::Keycodes,
+                                        }));
+
+  EXPECT_EQ(connection.setup().min_keycode, new_min_keycode);
+  EXPECT_EQ(connection.setup().max_keycode, max_keycode);
+
+  connection.DispatchEvent(Event(false, Xkb::NewKeyboardNotifyEvent{
+                                            .minKeyCode = min_keycode,
+                                            .maxKeyCode = max_keycode,
+                                            .oldMinKeyCode = new_min_keycode,
+                                            .oldMaxKeyCode = max_keycode,
+                                            .changed = Xkb::NKNDetail::Keycodes,
+                                        }));
+  ASSERT_EQ(connection.setup().min_keycode, min_keycode);
+  ASSERT_EQ(connection.setup().max_keycode, max_keycode);
+  EXPECT_EQ(GetKeysymsForRange(connection, min_keycode, max_keycode), keysyms);
 }
 
 TEST(X11ConnectionTest, Request) {
