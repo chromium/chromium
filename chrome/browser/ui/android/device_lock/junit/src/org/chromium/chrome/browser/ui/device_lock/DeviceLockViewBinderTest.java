@@ -30,7 +30,6 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.TestActivity;
@@ -92,7 +91,6 @@ public class DeviceLockViewBinderTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/347214230")
     public void testDeviceLockView_preExistingLock_showsAppropriateTexts() {
         mViewModel.set(PREEXISTING_DEVICE_LOCK, true);
 
