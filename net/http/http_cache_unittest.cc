@@ -10821,7 +10821,8 @@ TEST_F(HttpCacheGetTest, IncompleteResourceFailedResumeDoomsEntry) {
 
   transaction.request_headers = EXTRA_HEADER;
   transaction.start_handler =
-      base::BindLambdaForTesting([&](const HttpRequestInfo* request) -> Error {
+      base::BindLambdaForTesting([&](const HttpRequestInfo* request,
+                                     CompletionOnceCallback callback) -> Error {
         std::optional<std::string_view> range_header =
             request->extra_headers.GetHeaderView(HttpRequestHeaders::kRange);
         if (!range_header) {
@@ -17492,6 +17493,78 @@ class HttpCacheTestWithMockTime : public TestWithTaskEnvironment {
       : TestWithTaskEnvironment(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
+
+// Test for cache timeout triggering at strange time when a transaction
+// already had a restart queued since saved entry's validation failed.
+//
+// See crbug.com/569674221
+TEST_F(HttpCacheTestWithMockTime, LockTimeoutRace) {
+  MockHttpCache cache;
+
+  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  transaction.response_headers = "Cache-Control: max-age=0;\n ETag: 'a'\n";
+  transaction.test_mode = TEST_MODE_STUCK_READ;
+
+  // Request 1: gets stuck reading data.
+  MockHttpRequest request1(transaction);
+  std::unique_ptr<HttpTransaction> trans_stuck_in_data_phase;
+  {
+    TestCompletionCallback callback;
+    trans_stuck_in_data_phase = cache.CreateTransaction();
+
+    int rv = callback.GetResult(trans_stuck_in_data_phase->Start(
+        &request1, callback.callback(), NetLogWithSource()));
+    ASSERT_EQ(rv, OK);
+
+    TestCompletionCallback read_callback;
+    auto buf = base::MakeRefCounted<IOBufferWithSize>(256);
+    rv = trans_stuck_in_data_phase->Read(buf.get(), 256,
+                                         read_callback.callback());
+    ASSERT_EQ(rv, ERR_IO_PENDING);
+  }
+
+  // Request 2: paused in sending request; will try (and fail) validation
+  // once resumed.
+  base::RunLoop run_loop;
+  CompletionOnceCallback concurrent1_callback;
+  transaction.start_handler =
+      base::BindLambdaForTesting([&](const HttpRequestInfo* request,
+                                     CompletionOnceCallback callback) -> Error {
+        concurrent1_callback = std::move(callback);
+        run_loop.Quit();
+        return ERR_IO_PENDING;
+      });
+
+  MockHttpRequest request2(transaction);
+  std::unique_ptr<HttpTransaction> trans_concurrent_1;
+
+  TestCompletionCallback callback2;
+  trans_concurrent_1 = cache.CreateTransaction();
+
+  int rv = trans_concurrent_1->Start(&request2, callback2.callback(),
+                                     NetLogWithSource());
+  ASSERT_EQ(rv, ERR_IO_PENDING);
+
+  run_loop.Run();
+
+  // Request 3: to same URL; we resume request 2 once it returns from
+  // Start when it should be trying to be added to the entry.
+  MockHttpRequest request3(transaction);
+  std::unique_ptr<HttpTransaction> trans_concurrent_2;
+
+  TestCompletionCallback callback3;
+  trans_concurrent_2 = cache.CreateTransaction();
+
+  rv = trans_concurrent_2->Start(&request3, callback3.callback(),
+                                 NetLogWithSource());
+  ASSERT_EQ(rv, ERR_IO_PENDING);
+  std::move(concurrent1_callback).Run(net::OK);
+
+  // Advance past the timeline for cache lock, so it can beat the
+  // restart.
+  AdvanceClock(base::Seconds(30));
+  EXPECT_EQ(OK, callback2.WaitForResult());
+}
 
 TEST_F(HttpCacheTestWithMockTime, InvalidationFilterTimeBoundaries) {
   AddScopedFeatureList().InitAndEnableFeature(

@@ -52,14 +52,15 @@ struct HttpRequestInfo;
 enum {
   TEST_MODE_NORMAL = 0,
   TEST_MODE_SYNC_NET_START = 1 << 0,
-  TEST_MODE_SYNC_NET_READ  = 1 << 1,
+  TEST_MODE_SYNC_NET_READ = 1 << 1,
   TEST_MODE_SYNC_CACHE_START = 1 << 2,
-  TEST_MODE_SYNC_CACHE_READ  = 1 << 3,
-  TEST_MODE_SYNC_CACHE_WRITE  = 1 << 4,
+  TEST_MODE_SYNC_CACHE_READ = 1 << 3,
+  TEST_MODE_SYNC_CACHE_WRITE = 1 << 4,
   TEST_MODE_SYNC_ALL = (TEST_MODE_SYNC_NET_START | TEST_MODE_SYNC_NET_READ |
                         TEST_MODE_SYNC_CACHE_START | TEST_MODE_SYNC_CACHE_READ |
                         TEST_MODE_SYNC_CACHE_WRITE),
-  TEST_MODE_SLOW_READ = 1 << 5
+  TEST_MODE_SLOW_READ = 1 << 5,
+  TEST_MODE_STUCK_READ = 1 << 6
 };
 
 using MockTransactionReadHandler = base::RepeatingCallback<
@@ -71,7 +72,8 @@ using MockTransactionHandler =
                                  std::string* response_headers,
                                  std::string* response_data)>;
 using MockTransactionStartHandler =
-    base::RepeatingCallback<Error(const HttpRequestInfo* request)>;
+    base::RepeatingCallback<Error(const HttpRequestInfo* request,
+                                  CompletionOnceCallback callback)>;
 
 // Default TransportInfo suitable for most MockTransactions.
 // Describes a direct connection to (127.0.0.1, 80).
