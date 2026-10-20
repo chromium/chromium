@@ -4,6 +4,9 @@
 
 #include "extensions/renderer/bindings/api_signature.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -121,7 +124,7 @@ class ArgumentParser {
   virtual void AddNull() = 0;
   virtual void AddNullCallback() = 0;
   // Returns a base::Value to be populated during argument matching.
-  virtual std::unique_ptr<base::Value>* GetBaseBuffer() = 0;
+  virtual std::optional<base::Value>* GetBaseBuffer() = 0;
   // Returns a v8::Value to be populated during argument matching.
   virtual v8::Local<v8::Value>* GetV8Buffer() = 0;
   // Adds the argument parsed into the appropriate buffer.
@@ -162,7 +165,7 @@ class V8ArgumentParser : public ArgumentParser {
     // https://crbug.com/1220910 for details.
     values_.push_back(v8::Null(GetIsolate()));
   }
-  std::unique_ptr<base::Value>* GetBaseBuffer() override { return nullptr; }
+  std::optional<base::Value>* GetBaseBuffer() override { return nullptr; }
   v8::Local<v8::Value>* GetV8Buffer() override { return &last_arg_; }
   void AddParsedArgument() override {
     DCHECK(!last_arg_.IsEmpty());
@@ -196,20 +199,21 @@ class BaseValueArgumentParser : public ArgumentParser {
     // The base::Value conversion doesn't include the callback directly, so we
     // don't add a null parameter here.
   }
-  std::unique_ptr<base::Value>* GetBaseBuffer() override { return &last_arg_; }
+  std::optional<base::Value>* GetBaseBuffer() override { return &last_arg_; }
   v8::Local<v8::Value>* GetV8Buffer() override { return nullptr; }
   void AddParsedArgument() override {
     // The corresponding base::Value is expected to have been stored in
     // |last_arg_| already.
     DCHECK(last_arg_);
-    list_value_.Append(base::Value::FromUniquePtrValue(std::move(last_arg_)));
+    list_value_.Append(*std::move(last_arg_));
+    last_arg_.reset();
   }
   void SetCallback(v8::Local<v8::Function> callback) override {
     callback_ = callback;
   }
 
   base::ListValue list_value_;
-  std::unique_ptr<base::Value> last_arg_;
+  std::optional<base::Value> last_arg_;
   v8::Local<v8::Function> callback_;
 };
 

@@ -69,7 +69,7 @@ class ArgumentSpec {
   bool ParseArgument(v8::Local<v8::Context> context,
                      v8::Local<v8::Value> value,
                      const APITypeReferenceMap& refs,
-                     std::unique_ptr<base::Value>* out_value,
+                     std::optional<base::Value>* out_value,
                      v8::Local<v8::Value>* v8_out_value,
                      std::string* error) const;
 
@@ -118,29 +118,29 @@ class ArgumentSpec {
   // type (otherwise, they will DCHECK).
   bool ParseArgumentToFundamental(v8::Local<v8::Context> context,
                                   v8::Local<v8::Value> value,
-                                  std::unique_ptr<base::Value>* out_value,
+                                  std::optional<base::Value>* out_value,
                                   v8::Local<v8::Value>* v8_out_value,
                                   std::string* error) const;
   bool ParseArgumentToObject(v8::Local<v8::Context> context,
                              v8::Local<v8::Object> object,
                              const APITypeReferenceMap& refs,
-                             std::unique_ptr<base::Value>* out_value,
+                             std::optional<base::Value>* out_value,
                              v8::Local<v8::Value>* v8_out_value,
                              std::string* error) const;
   bool ParseArgumentToArray(v8::Local<v8::Context> context,
                             v8::Local<v8::Array> value,
                             const APITypeReferenceMap& refs,
-                            std::unique_ptr<base::Value>* out_value,
+                            std::optional<base::Value>* out_value,
                             v8::Local<v8::Value>* v8_out_value,
                             std::string* error) const;
   bool ParseArgumentToAny(v8::Local<v8::Context> context,
                           v8::Local<v8::Value> value,
-                          std::unique_ptr<base::Value>* out_value,
+                          std::optional<base::Value>* out_value,
                           v8::Local<v8::Value>* v8_out_value,
                           std::string* error) const;
   bool ParseArgumentToFunction(v8::Local<v8::Context> context,
                                v8::Local<v8::Value> value,
-                               std::unique_ptr<base::Value>* out_value,
+                               std::optional<base::Value>* out_value,
                                v8::Local<v8::Value>* v8_out_value,
                                std::string* error) const;
 

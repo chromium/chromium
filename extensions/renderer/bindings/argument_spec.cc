@@ -5,7 +5,9 @@
 #include "extensions/renderer/bindings/argument_spec.h"
 
 #include <cmath>
+#include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/strings/string_util.h"
@@ -273,7 +275,7 @@ bool ArgumentSpec::IsCorrectType(v8::Local<v8::Value> value,
 bool ArgumentSpec::ParseArgument(v8::Local<v8::Context> context,
                                  v8::Local<v8::Value> value,
                                  const APITypeReferenceMap& refs,
-                                 std::unique_ptr<base::Value>* out_value,
+                                 std::optional<base::Value>* out_value,
                                  v8::Local<v8::Value>* v8_out_value,
                                  std::string* error) const {
   // Note: for top-level arguments (i.e., those passed directly to the function,
@@ -377,7 +379,7 @@ const std::string& ArgumentSpec::GetTypeName() const {
 bool ArgumentSpec::ParseArgumentToFundamental(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> value,
-    std::unique_ptr<base::Value>* out_value,
+    std::optional<base::Value>* out_value,
     v8::Local<v8::Value>* v8_out_value,
     std::string* error) const {
   switch (type_) {
@@ -394,7 +396,7 @@ bool ArgumentSpec::ParseArgumentToFundamental(
       if (!CheckFundamentalBounds(int_val, minimum_, maximum_, error))
         return false;
       if (out_value)
-        *out_value = std::make_unique<base::Value>(int_val);
+        *out_value = base::Value(int_val);
       if (v8_out_value)
         *v8_out_value = v8::Integer::New(v8::Isolate::GetCurrent(), int_val);
       return true;
@@ -409,7 +411,7 @@ bool ArgumentSpec::ParseArgumentToFundamental(
       if (!CheckFundamentalBounds(double_val, minimum_, maximum_, error))
         return false;
       if (out_value)
-        *out_value = std::make_unique<base::Value>(double_val);
+        *out_value = base::Value(double_val);
       if (v8_out_value)
         *v8_out_value = value;
       return true;
@@ -440,7 +442,7 @@ bool ArgumentSpec::ParseArgumentToFundamental(
         }
 
         if (out_value)
-          *out_value = std::make_unique<base::Value>(std::move(str));
+          *out_value = base::Value(std::move(str));
       }
 
       if (v8_out_value)
@@ -451,8 +453,7 @@ bool ArgumentSpec::ParseArgumentToFundamental(
     case ArgumentType::BOOLEAN: {
       DCHECK(value->IsBoolean());
       if (out_value) {
-        *out_value =
-            std::make_unique<base::Value>(value.As<v8::Boolean>()->Value());
+        *out_value = base::Value(value.As<v8::Boolean>()->Value());
       }
       if (v8_out_value)
         *v8_out_value = value;
@@ -464,13 +465,12 @@ bool ArgumentSpec::ParseArgumentToFundamental(
   }
 }
 
-bool ArgumentSpec::ParseArgumentToObject(
-    v8::Local<v8::Context> context,
-    v8::Local<v8::Object> object,
-    const APITypeReferenceMap& refs,
-    std::unique_ptr<base::Value>* out_value,
-    v8::Local<v8::Value>* v8_out_value,
-    std::string* error) const {
+bool ArgumentSpec::ParseArgumentToObject(v8::Local<v8::Context> context,
+                                         v8::Local<v8::Object> object,
+                                         const APITypeReferenceMap& refs,
+                                         std::optional<base::Value>* out_value,
+                                         v8::Local<v8::Value>* v8_out_value,
+                                         std::string* error) const {
   DCHECK_EQ(ArgumentType::OBJECT, type_);
   base::DictValue result;
 
@@ -569,7 +569,7 @@ bool ArgumentSpec::ParseArgumentToObject(
       continue;
     }
 
-    std::unique_ptr<base::Value> property;
+    std::optional<base::Value> property;
     v8::Local<v8::Value> v8_property;
     if (!property_spec->ParseArgument(
             context, prop_value, refs, out_value ? &property : nullptr,
@@ -580,8 +580,7 @@ bool ArgumentSpec::ParseArgumentToObject(
       return false;
     }
     if (out_value)
-      result.Set(*utf8_key,
-                 base::Value::FromUniquePtrValue(std::move(property)));
+      result.Set(*utf8_key, *std::move(property));
     if (convert_to_v8)
       v8_result.Set(*utf8_key, v8_property);
   }
@@ -628,7 +627,7 @@ bool ArgumentSpec::ParseArgumentToObject(
   }
 
   if (out_value)
-    *out_value = std::make_unique<base::Value>(std::move(result));
+    *out_value = base::Value(std::move(result));
 
   if (v8_out_value) {
     if (convert_to_v8) {
@@ -648,7 +647,7 @@ bool ArgumentSpec::ParseArgumentToObject(
 bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
                                         v8::Local<v8::Array> value,
                                         const APITypeReferenceMap& refs,
-                                        std::unique_ptr<base::Value>* out_value,
+                                        std::optional<base::Value>* out_value,
                                         v8::Local<v8::Value>* v8_out_value,
                                         std::string* error) const {
   DCHECK_EQ(ArgumentType::LIST, type_);
@@ -682,7 +681,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
     // catching the error and throwing our own.
     if (!maybe_subvalue.ToLocal(&subvalue))
       return false;
-    std::unique_ptr<base::Value> item;
+    std::optional<base::Value> item;
     v8::Local<v8::Value> v8_item;
     if (!list_element_type_->ParseArgument(
             context, subvalue, refs, out_value ? &item : nullptr,
@@ -691,7 +690,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
       return false;
     }
     if (out_value)
-      result.Append(base::Value::FromUniquePtrValue(std::move(item)));
+      result.Append(*std::move(item));
     if (v8_out_value) {
       // This should never fail, since it's a newly-created array with
       // CreateDataProperty().
@@ -700,7 +699,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
   }
 
   if (out_value)
-    *out_value = std::make_unique<base::Value>(std::move(result));
+    *out_value = base::Value(std::move(result));
   if (v8_out_value)
     *v8_out_value = v8_result;
 
@@ -709,7 +708,7 @@ bool ArgumentSpec::ParseArgumentToArray(v8::Local<v8::Context> context,
 
 bool ArgumentSpec::ParseArgumentToAny(v8::Local<v8::Context> context,
                                       v8::Local<v8::Value> value,
-                                      std::unique_ptr<base::Value>* out_value,
+                                      std::optional<base::Value>* out_value,
                                       v8::Local<v8::Value>* v8_out_value,
                                       std::string* error) const {
   DCHECK(type_ == ArgumentType::ANY || type_ == ArgumentType::BINARY);
@@ -731,7 +730,7 @@ bool ArgumentSpec::ParseArgumentToAny(v8::Local<v8::Context> context,
     }
     if (type_ == ArgumentType::BINARY)
       DCHECK_EQ(base::Value::Type::BINARY, converted->type());
-    *out_value = std::move(converted);
+    *out_value = std::move(*converted);
   }
   if (v8_out_value)
     *v8_out_value = value;
@@ -742,7 +741,7 @@ bool ArgumentSpec::ParseArgumentToAny(v8::Local<v8::Context> context,
 bool ArgumentSpec::ParseArgumentToFunction(
     v8::Local<v8::Context> context,
     v8::Local<v8::Value> value,
-    std::unique_ptr<base::Value>* out_value,
+    std::optional<base::Value>* out_value,
     v8::Local<v8::Value>* v8_out_value,
     std::string* error) const {
   DCHECK_EQ(ArgumentType::FUNCTION, type_);
@@ -759,14 +758,14 @@ bool ArgumentSpec::ParseArgumentToFunction(
       // If ToLocal() succeeds, this should always be a string.
       CHECK(gin::Converter<std::string>::FromV8(v8::Isolate::GetCurrent(),
                                                 serialized_function, &str));
-      *out_value = std::make_unique<base::Value>(std::move(str));
+      *out_value = base::Value(std::move(str));
     } else {  // Not a serializable function.
       // Certain APIs (contextMenus) have functions as parameters other than
       // the callback (contextMenus uses it for an onclick listener). Our
       // generated types have adapted to consider functions "objects" and
       // serialize them as dictionaries.
       // TODO(devlin): It'd be awfully nice to get rid of this eccentricity.
-      *out_value = std::make_unique<base::Value>(base::Value::Type::DICT);
+      *out_value = base::Value(base::Value::Type::DICT);
     }
   }
 

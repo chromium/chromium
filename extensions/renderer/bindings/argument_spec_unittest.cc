@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/argument_spec.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/functional/bind.h"
@@ -165,7 +166,7 @@ void ArgumentSpecUnitTest::RunTest(RunTestParams& params) {
   ASSERT_FALSE(val.IsEmpty()) << params.script_source;
 
   std::string error;
-  std::unique_ptr<base::Value> out_value;
+  std::optional<base::Value> out_value;
   v8::Local<v8::Value> v8_out_value;
   bool did_succeed = params.spec->ParseArgument(
       context, val, type_refs_,
