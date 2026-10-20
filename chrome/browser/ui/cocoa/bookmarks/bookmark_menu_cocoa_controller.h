@@ -12,7 +12,6 @@
 
 class BookmarkMenuBridge;
 class Profile;
-enum class WindowOpenDisposition;
 
 namespace bookmarks {
 class BookmarkNode;

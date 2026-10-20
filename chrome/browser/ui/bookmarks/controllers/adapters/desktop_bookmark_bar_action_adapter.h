@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/bookmarks/controllers/adapters/bookmark_bar_action_adapter.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
+#include "ui/base/window_open_disposition.h"
 
 class BrowserWindowInterface;
 

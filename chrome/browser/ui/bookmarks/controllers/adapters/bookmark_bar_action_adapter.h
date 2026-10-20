@@ -9,8 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-
-enum class WindowOpenDisposition;
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace bookmarks {
 class BookmarkNode;
@@ -25,11 +24,11 @@ class BookmarkBarActionAdapter {
   virtual ~BookmarkBarActionAdapter() = default;
 
   // Opens the bookmark app page.
-  virtual void OpenAppsPage(WindowOpenDisposition disposition) = 0;
+  virtual void OpenAppsPage(ui::mojom::WindowOpenDisposition disposition) = 0;
 
   // Opens the given bookmark node.
   virtual void OpenBookmark(const bookmarks::BookmarkNode* node,
-                            WindowOpenDisposition disposition) = 0;
+                            ui::mojom::WindowOpenDisposition disposition) = 0;
 
   // Notifies the adapter that a folder menu was opened.
   virtual void NotifyFolderOpened() = 0;
@@ -37,7 +36,7 @@ class BookmarkBarActionAdapter {
   // Opens all given bookmark nodes using the given disposition.
   virtual void OpenFolderNodes(
       const std::vector<const bookmarks::BookmarkNode*>& nodes,
-      WindowOpenDisposition disposition) = 0;
+      ui::mojom::WindowOpenDisposition disposition) = 0;
 
   // Shows the context menu for the given selection at the screen point.
   virtual void ShowContextMenu(

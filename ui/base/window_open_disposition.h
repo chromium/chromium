@@ -5,31 +5,11 @@
 #ifndef UI_BASE_WINDOW_OPEN_DISPOSITION_H_
 #define UI_BASE_WINDOW_OPEN_DISPOSITION_H_
 
-enum class WindowOpenDisposition {
-  UNKNOWN,
-  CURRENT_TAB,
-  // Indicates that only one tab with the url should exist in the same window.
-  SINGLETON_TAB,
-  NEW_FOREGROUND_TAB,
-  NEW_BACKGROUND_TAB,
-  NEW_POPUP,
-  NEW_WINDOW,
-  SAVE_TO_DISK,
-  OFF_THE_RECORD,
-  IGNORE_ACTION,
-  // Activates an existing tab containing the url, rather than navigating.
-  // This is similar to SINGLETON_TAB, but searches across all windows from
-  // the current profile and anonymity (instead of just the current one);
-  // closes the current tab on switching if the current tab was the NTP with
-  // no session history; and behaves like CURRENT_TAB instead of
-  // NEW_FOREGROUND_TAB when no existing tab is found.
-  SWITCH_TO_TAB,
-  // Creates a new document picture-in-picture window showing a child WebView.
-  NEW_PICTURE_IN_PICTURE,
-  // Opens a link in a split view alongside the current tab.
-  NEW_SPLIT_VIEW,
-  // Update when adding a new disposition.
-  MAX_VALUE = NEW_SPLIT_VIEW,
-};
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
+
+// Alias until all clients of `WindowOpenDisposition` have been migrated to
+// `ui::mojom::WindowOpenDisposition`. Will be removed once that is complete.
+// TODO(crbug.com/373551504): Remove this alias.
+using WindowOpenDisposition = ::ui::mojom::WindowOpenDisposition;
 
 #endif  // UI_BASE_WINDOW_OPEN_DISPOSITION_H_

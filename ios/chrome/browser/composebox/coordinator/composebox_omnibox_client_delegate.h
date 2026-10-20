@@ -10,7 +10,6 @@
 #import "third_party/omnibox_proto/tool_mode.pb.h"
 
 struct UrlLoadParams;
-enum class WindowOpenDisposition;
 
 namespace web {
 class WebState;

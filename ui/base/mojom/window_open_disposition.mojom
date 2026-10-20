@@ -8,30 +8,33 @@ module ui.mojom;
 // "window open disposition" concept. It's here to support existing uses of
 // ui::WindowOpenDisposition.
 //
-// This maps to WindowOpenDisposition in //ui/base/window_open_disposition.h.
+// //ui/base/window_open_disposition.h aliases this as `WindowOpenDisposition`
+// until all clients have been migrated (crbug.com/373551504).
+// These values are persisted (e.g. app restore data), logged to UKM and passed
+// to and from Java as integers. Entries must not be renumbered.
 enum WindowOpenDisposition {
-  UNKNOWN,
-  CURRENT_TAB,
+  UNKNOWN = 0,
+  CURRENT_TAB = 1,
   // Indicates that only one tab with the url should exist in the same window.
-  SINGLETON_TAB,
-  NEW_FOREGROUND_TAB,
-  NEW_BACKGROUND_TAB,
-  NEW_POPUP,
-  NEW_WINDOW,
-  SAVE_TO_DISK,
-  OFF_THE_RECORD,
-  IGNORE_ACTION,
+  SINGLETON_TAB = 2,
+  NEW_FOREGROUND_TAB = 3,
+  NEW_BACKGROUND_TAB = 4,
+  NEW_POPUP = 5,
+  NEW_WINDOW = 6,
+  SAVE_TO_DISK = 7,
+  OFF_THE_RECORD = 8,
+  IGNORE_ACTION = 9,
   // Activates an existing tab containing the url, rather than navigating.
   // This is similar to SINGLETON_TAB, but searches across all windows from
   // the current profile and anonymity (instead of just the current one);
   // closes the current tab on switching if the current tab was the NTP with
   // no session history; and behaves like CURRENT_TAB instead of
   // NEW_FOREGROUND_TAB when no existing tab is found.
-  SWITCH_TO_TAB,
+  SWITCH_TO_TAB = 10,
   // Creates a new document picture-in-picture window showing a child WebView.
-  NEW_PICTURE_IN_PICTURE,
+  NEW_PICTURE_IN_PICTURE = 11,
   // Opens a link in a split view alongside the current tab.
-  NEW_SPLIT_VIEW,
+  NEW_SPLIT_VIEW = 12,
 };
 
 // Click information needed to determine user's desired window disposition using

@@ -25,6 +25,7 @@
 #include "ui/accelerated_widget_mac/accelerated_widget_mac.h"
 #include "ui/base/cocoa/accessibility_focus_overrider.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/views/cocoa/drag_drop_client_mac.h"

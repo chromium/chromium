@@ -248,6 +248,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/events/base_event_utils.h"
 #include "url/origin.h"
 #include "url/url_constants.h"

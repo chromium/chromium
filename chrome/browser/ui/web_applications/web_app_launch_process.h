@@ -10,9 +10,9 @@
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
-enum class WindowOpenDisposition;
 class GURL;
 class Profile;
 
@@ -66,7 +66,8 @@ class WebAppLaunchProcess {
   const apps::ShareTarget* MaybeGetShareTarget() const;
   std::tuple<GURL, bool /*is_file_handling*/> GetLaunchUrl(
       const apps::ShareTarget* share_target) const;
-  WindowOpenDisposition GetNavigationDisposition(bool is_new_browser) const;
+  ui::mojom::WindowOpenDisposition GetNavigationDisposition(
+      bool is_new_browser) const;
   std::tuple<BrowserWindowInterface*, bool /*is_new_browser*/> EnsureBrowser();
   LaunchHandler GetLaunchHandler() const;
   LaunchHandler::ClientMode GetLaunchClientMode() const;

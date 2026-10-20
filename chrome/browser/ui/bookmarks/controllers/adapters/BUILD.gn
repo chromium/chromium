@@ -11,6 +11,7 @@ source_set("adapters") {
   public_deps = [
     "//base",
     "//chrome/browser/bookmarks:types",
+    "//ui/base/mojom",
     "//ui/base/mojom:ui_base_types",
   ]
 }

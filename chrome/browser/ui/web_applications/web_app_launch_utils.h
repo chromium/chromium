@@ -24,7 +24,6 @@ class Profile;
 struct BrowserWindowCreateParams;
 class BrowserWindowInterface;
 class GURL;
-enum class WindowOpenDisposition;
 
 namespace apps {
 struct AppLaunchParams;

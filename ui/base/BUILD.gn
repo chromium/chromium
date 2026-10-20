@@ -107,6 +107,10 @@ source_set("constants") {
 # (ideally none).
 source_set("types") {
   sources = [ "window_open_disposition.h" ]
+
+  # TODO(crbug.com/373551504): Remove once the `WindowOpenDisposition` alias is
+  # removed.
+  public_deps = [ "//ui/base/mojom" ]
   if (!is_ios) {
     sources += [ "ui_base_types.h" ]
   }

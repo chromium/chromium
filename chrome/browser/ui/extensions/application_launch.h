@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
@@ -25,8 +26,6 @@ class WebContents;
 namespace extensions {
 class Extension;
 }  // namespace extensions
-
-enum class WindowOpenDisposition;
 
 // Opens the application, possibly prompting the user to re-enable it.
 void OpenApplicationWithReenablePrompt(Profile* profile,
@@ -49,7 +48,7 @@ content::WebContents* NavigateApplicationWindow(
     BrowserWindowInterface* browser,
     const apps::AppLaunchParams& params,
     const GURL& url,
-    WindowOpenDisposition disposition);
+    ui::mojom::WindowOpenDisposition disposition);
 
 // Open the application in a way specified by |params| in a new window.
 // Returns nullptr if a browser window cannot be opened.

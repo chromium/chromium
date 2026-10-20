@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/controllers/bookmark_bar_ui_controller.h"
+#include "ui/base/window_open_disposition.h"
 
 class BookmarkBarUIControllerInjector;
 

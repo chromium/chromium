@@ -10,8 +10,8 @@
 
 #include "components/sessions/core/tab_restore_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
-enum class WindowOpenDisposition;
 class SessionID;
 
 namespace sessions {
@@ -114,7 +114,7 @@ class MockTabRestoreService : public sessions::TabRestoreService {
               RestoreEntryById,
               (sessions::LiveTabContext * context,
                SessionID id,
-               WindowOpenDisposition disposition),
+               ui::mojom::WindowOpenDisposition disposition),
               (override));
 
   MOCK_METHOD(void, LoadTabsFromLastSession, (), (override));

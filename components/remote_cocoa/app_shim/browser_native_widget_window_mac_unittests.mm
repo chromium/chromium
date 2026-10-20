@@ -22,6 +22,7 @@
 #include "testing/platform_test.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/base/cocoa/window_size_constants.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 

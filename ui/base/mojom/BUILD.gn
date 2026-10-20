@@ -4,7 +4,11 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom") {
+# A component so that generated non-inline code (e.g. the `operator<<` of
+# `ui.mojom.WindowOpenDisposition`) is exported in component builds.
+mojom_component("mojom") {
+  output_prefix = "ui_base_mojom"
+  macro_prefix = "UI_BASE_MOJOM"
   generate_blink = true
   generate_java = true
   sources = [
@@ -36,19 +40,6 @@ mojom("mojom") {
       },
     ]
   }
-
-  cpp_typemaps += [
-    {
-      types = [
-        {
-          mojom = "ui.mojom.WindowOpenDisposition"
-          cpp = "::WindowOpenDisposition"
-        },
-      ]
-      traits_headers = [ "window_open_disposition_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/base:types" ]
-    },
-  ]
 
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
