@@ -325,23 +325,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Invalid session."/>
 </enum>
 
-<enum name="PageInsightsEvent">
-  <int value="0" label="Tap on Page Insights tab from Overflow menu"/>
-  <int value="1" label="Page Insights is auto-triggered in Peek state"/>
-  <int value="2" label="Page Insights is in Peek state"/>
-  <int value="3" label="Page Insights is in Expanded state"/>
-  <int value="4" label="Dismiss Page Insights from Peek state"/>
-  <int value="5" label="Dismiss Page Insights from Expanded state"/>
-  <int value="6"
-      label="Tap on XSurface view in Page Insights feature that opens a new
-             URL"/>
-  <int value="7"
-      label="Tap on XSurface view in Page Insights feature that shares a URL"/>
-  <int value="8"
-      label="Tap on XSurface view in Page Insights feature that opens a new
-             child page within the feature"/>
-</enum>
-
 <enum name="TwaLaunchHandlerClientMode">
   <int value="0" label="Initial intent (client mode is ignored)"/>
   <int value="1" label="Client mode navigate_existing"/>
