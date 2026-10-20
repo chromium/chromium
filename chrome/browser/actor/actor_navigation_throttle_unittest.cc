@@ -770,10 +770,14 @@ TEST_F(ActorNavigationThrottleTest, UserConfirmedLeave_Proceed) {
   service->StopTask(task_id, ActorTask::StoppedReason::kUserNavigatedAway);
   ASSERT_EQ(nullptr, service->GetTask(task_id));
 
-  // 4. Verify that subsequent checks (like a redirect) PROCEED because of the
-  // flag.
+  // 4. Verify that subsequent checks (both redirect and response processing,
+  // even before `StopTask()`'s deferred `RunLater()` deletion destroys the
+  // `ActorTask` in `pending_delete_tasks_`) PROCEED because the user confirmed
+  // leaving the task.
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             throttle.WillRedirectRequest().action());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            throttle.WillProcessResponse().action());
 }
 
 TEST_F(ActorNavigationThrottleTest, PlainAutoToplevel_Proceed) {

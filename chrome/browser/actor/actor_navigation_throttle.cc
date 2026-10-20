@@ -104,7 +104,13 @@ ActorNavigationThrottle::WillRedirectRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 ActorNavigationThrottle::WillProcessResponse() {
-  if (!execution_engine_) {
+  // Proceed if the execution engine is already gone or if the user explicitly
+  // confirmed leaving the task. `StopTask()` defers `ActorTask` and
+  // `ExecutionEngine` destruction via `RunLater()` (`pending_delete_tasks_`),
+  // so `execution_engine_` can still be non-null when `WillProcessResponse()`
+  // runs; deferring on the stopping engine would cause `~ExecutionEngine()` to
+  // cancel the navigation via `CancelPendingNavigations()`.
+  if (!execution_engine_ || was_user_confirmed_leave_) {
     return content::NavigationThrottle::PROCEED;
   }
   execution_engine_->ShouldNavigationCommit(
