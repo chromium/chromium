@@ -81,28 +81,42 @@ T&& Lift(ContentAutofillDriver& source, T&& x) {
 }
 
 gfx::RectF Lift(ContentAutofillDriver& source, gfx::RectF r) {
-  content::RenderWidgetHostView* view = source.render_frame_host()->GetView();
+  // Transforms all corners to handle CSS `transform: scale(...)` correctly
+  // (crbug.com/562177779).
+  auto transform_to_root = [](content::RenderWidgetHostView& view,
+                              const gfx::RectF& r) {
+    return gfx::QuadF(view.TransformPointToRootCoordSpaceF(r.origin()),
+                      view.TransformPointToRootCoordSpaceF(r.top_right()),
+                      view.TransformPointToRootCoordSpaceF(r.bottom_right()),
+                      view.TransformPointToRootCoordSpaceF(r.bottom_left()))
+        .BoundingBox();
+  };
+
+  content::RenderFrameHost* rfh = source.render_frame_host();
+  content::RenderWidgetHostView* view = rfh->GetView();
   if (!view) {
     return r;
   }
+  r = transform_to_root(*view, r);
 
-  // Intersect the coordinates with the view's bounds. This is to make it hard
-  // for a malicious frame to position an Autofill popup over a field from
-  // different frame (provided the attacker's and the victim's frames do not
-  // share the same local root).
-  gfx::RectF bounds = gfx::RectF(view->GetViewBounds().size());
-  gfx::PointF origin = r.origin();
-  if (!r.InclusiveIntersect(bounds)) {
-    r = gfx::RectF(bounds.ClosestPoint(origin), gfx::SizeF());
+  // Intersect the coordinates with the view's bounds and all ancestor views'
+  // bounds. This is to make it hard for a malicious frame to position an
+  // Autofill popup over a field from a different frame (provided the
+  // attacker's and the victim's frames do not share the same local root).
+  content::RenderWidgetHostView* last_view = nullptr;
+  for (; rfh; rfh = rfh->GetParentOrOuterDocument()) {
+    view = rfh->GetView();
+    if (!view || view == std::exchange(last_view, view)) {
+      continue;
+    }
+    gfx::RectF bounds =
+        transform_to_root(*view, gfx::RectF(view->GetViewBounds().size()));
+    gfx::PointF origin = r.origin();
+    if (!r.InclusiveIntersect(bounds)) {
+      r = gfx::RectF(bounds.ClosestPoint(origin), gfx::SizeF());
+    }
   }
-
-  // We transform all corners to handle CSS `transform: scale(...)` correctly
-  // (crbug.com/562177779).
-  return gfx::QuadF(view->TransformPointToRootCoordSpaceF(r.origin()),
-                    view->TransformPointToRootCoordSpaceF(r.top_right()),
-                    view->TransformPointToRootCoordSpaceF(r.bottom_right()),
-                    view->TransformPointToRootCoordSpaceF(r.bottom_left()))
-      .BoundingBox();
+  return r;
 }
 
 gfx::Rect Lift(ContentAutofillDriver& source, gfx::Rect r) {
