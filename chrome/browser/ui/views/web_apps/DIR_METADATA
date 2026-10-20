@@ -1,7 +1,2 @@
-monorail: {
-  component: "UI>Browser>WebAppInstalls"
-}
-team_email: "pwa-dev@chromium.org"
-buganizer_public: {
-  component_id: 1457043
-}
+mixins: "//chrome/browser/web_applications/COMMON_METADATA"
+mixins: "//components/webapps/COMMON_METADATA"

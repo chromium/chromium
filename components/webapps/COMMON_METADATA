@@ -5,3 +5,6 @@ team_email: "pwa-dev@chromium.org"
 buganizer_public: {
   component_id: 1457043
 }
+
+# Opt in to agentic code review.
+agentic_review {}
