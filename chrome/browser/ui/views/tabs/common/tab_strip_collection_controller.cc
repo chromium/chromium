@@ -866,5 +866,8 @@ bool TabStripCollectionController::IsAnimationAllowed() const {
   if (!has_tab_strip_initialized_) {
     return false;
   }
+  if (user_widget_resizing_) {
+    return false;
+  }
   return true;
 }
