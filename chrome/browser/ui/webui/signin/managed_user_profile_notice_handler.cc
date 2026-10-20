@@ -618,7 +618,9 @@ std::string ManagedUserProfileNoticeHandler::GetPictureUrl() {
     AccountInfo account_info =
         IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()))
             ->FindExtendedAccountInfoByAccountId(account_id_);
-    CHECK(!account_info.IsEmpty(), base::NotFatalUntil::M162);
+    // TODO(crbug.com/575097335): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!account_info.IsEmpty());
     icon = account_info.GetAvatarImage().value_or(
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             profiles::GetPlaceholderAvatarIconResourceID()));
