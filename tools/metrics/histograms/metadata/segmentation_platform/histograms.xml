@@ -310,8 +310,7 @@ chromium-metrics-reviews@google.com.
     Each device is identified by one unique guid. No deduping is applied. May be
     0 when there are no signed in/syncing profiles open. Recorded once on
     browser startup iff DeviceInfo sync is enabled. Note that the threshold on
-    the number of days for determining active statuses may change based on the
-    config of the kSegmentationDeviceCountByOsType feature.
+    the number of days for determining active statuses is 14 days.
   </summary>
   <token key="OsType">
     <variant name="Android"/>

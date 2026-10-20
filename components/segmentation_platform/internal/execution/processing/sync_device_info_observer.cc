@@ -6,8 +6,6 @@
 
 #include <optional>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -31,13 +29,6 @@ constexpr int kActiveDayThresholdForInputDelegate = 60;
 
 #define AS_FLOAT_VAL(x) ProcessedValue(static_cast<float>(x))
 
-base::TimeDelta GetActivePeriodForMetrics() {
-  TRACE_EVENT0("ui", "sync_device_info_observer.cc::GetActivePeriodForMetrics");
-  return base::Days(base::GetFieldTrialParamByFeatureAsInt(
-      kSegmentationDeviceCountByOsType, "active_days_threshold",
-      kActiveDaysThresholdForMetrics));
-}
-
 base::TimeDelta Age(base::Time last_update, base::Time now) {
   // Don't allow negative age for things somehow updated in the future.
   return std::max(base::TimeDelta(), now - last_update);
@@ -48,9 +39,10 @@ base::TimeDelta Age(base::Time last_update, base::Time now) {
 bool IsDeviceActive(base::Time last_update,
                     base::Time now,
                     std::optional<base::TimeDelta> active_threshold) {
-  TRACE_EVENT0("ui", "sync_device_info_observer.cc::GetActivePeriodForMetrics");
+  TRACE_EVENT0("ui", "sync_device_info_observer.cc::IsDeviceActive");
   base::TimeDelta active_days_threshold =
-      active_threshold ? *active_threshold : GetActivePeriodForMetrics();
+      active_threshold ? *active_threshold
+                       : base::Days(kActiveDaysThresholdForMetrics);
   return Age(last_update, now) < active_days_threshold;
 }
 
@@ -80,9 +72,6 @@ const char* ConvertOsTypeToString(OsType os_type) {
 }
 
 }  // namespace
-
-BASE_FEATURE(kSegmentationDeviceCountByOsType,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 SyncDeviceInfoObserver::SyncDeviceInfoObserver(
     syncer::DeviceInfoTracker* device_info_tracker)
@@ -117,7 +106,7 @@ void SyncDeviceInfoObserver::OnDeviceInfoChange() {
 
   // Record device count by OS types.
   std::map<OsType, int> count_by_os_type =
-      CountActiveDevicesByOsType(GetActivePeriodForMetrics());
+      CountActiveDevicesByOsType(base::Days(kActiveDaysThresholdForMetrics));
 
   // Record UMA metrics of device counts by OS types.
   // Record 0 when there are no devices associated with one OS type.

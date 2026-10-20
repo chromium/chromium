@@ -6,7 +6,6 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_SYNC_DEVICE_INFO_OBSERVER_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/input_context.h"
@@ -15,8 +14,6 @@
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace segmentation_platform::processing {
-
-BASE_DECLARE_FEATURE(kSegmentationDeviceCountByOsType);
 
 class SyncDeviceInfoObserver : public syncer::DeviceInfoTracker::Observer,
                                public InputDelegate {
