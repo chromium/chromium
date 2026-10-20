@@ -12,7 +12,7 @@ import "mojo/public/mojom/base/string16.mojom";
 [EnableIf=is_win]
 feature kWinSboxProxyLocale {
   const string name = "WinSboxProxyLocale";
-  const bool enabled_state = false;
+  const bool default_state = false;
 };
 
 // Interface for a sandboxed child process to request services of
