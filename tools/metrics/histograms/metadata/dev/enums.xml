@@ -1711,6 +1711,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="67" label="Drawer - Autofill"/>
   <int value="68" label="AI Assistance"/>
   <int value="69" label="Application - Ads"/>
+  <int value="70" label="Application - Private Verification Tokens"/>
 </enum>
 
 <enum name="DevToolsRecordingReplayFinished">
