@@ -681,7 +681,9 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
 
   // Initialize the OSCrypt.
   bool os_crypt_init = os_crypt_async::Init(local_state);
-  CHECK(os_crypt_init, base::NotFatalUntil::M162);
+  // TODO(crbug.com/574803658): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(os_crypt_init);
 
   base::SetExtraNoExecuteAllowedPath(chrome::DIR_USER_DATA);
 
