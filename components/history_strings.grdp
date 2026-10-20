@@ -333,58 +333,59 @@
   </message>
 
   <!-- Critical actions -->
-  <!-- TODO(b/538113758): Make translatable when strings are finalized. -->
-  <message name="IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR_GEMINI" desc="This string is found on a chip that filters the history results when the user selects it; it sits next to its opposite filter: 'You' (the user's browsing activity). It is at the top of the Chrome history page, where users can see their browsing history when Gemini performs tasks." translateable="false">
+  <message name="IDS_HISTORY_SOURCE_FILTER_CHIP_ACTOR_GEMINI" desc="This string is found on a chip that filters the history results when the user selects it; it sits next to its opposite filter: 'You' (the user's browsing activity). It is at the top of the Chrome history page, where users can see their browsing history when Gemini performs tasks.">
     Gemini
   </message>
-  <message name="IDS_HISTORY_REVIEW_GEMINI_ACTIVITY" desc="Command in the history entry drop-down menu. Opens Gemini Apps Activity page." translateable="false">
+  <message name="IDS_HISTORY_REVIEW_GEMINI_ACTIVITY" desc="Command in the history entry drop-down menu. Opens Gemini Apps Activity page.">
     Review Gemini activity
   </message>
-  <message name="IDS_HISTORY_GO_TO_GEMINI_CHAT" desc="Command in the history entry drop-down menu. Opens the Gemini conversation in split view." translateable="false">
+  <message name="IDS_HISTORY_GO_TO_GEMINI_CHAT" desc="Command in the history entry drop-down menu. Opens the Gemini conversation in split view.">
     Go to Gemini chat
   </message>
-  <message name="IDS_HISTORY_GO_TO_GEMINI_CHAT_ERROR" desc="Toast notification shown when opening Gemini chat fails." translateable="false">
+  <message name="IDS_HISTORY_GO_TO_GEMINI_CHAT_ERROR" desc="Toast notification shown when opening Gemini chat fails.">
     Couldn't open Gemini chat
   </message>
-  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_AND_GAA_CRITICAL_ACTIONS" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity and Gemini Apps Activity, shown when critical actions are enabled." translateable="false">
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_AND_GAA_CRITICAL_ACTIONS" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity and Gemini Apps Activity, shown when critical actions are enabled.">
     Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA">&lt;a target="_blank" id="footerGoogleMyActivityLink" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK_GMA">&lt;/a&gt;</ph>, such as auto browse visits in your <ph name="BEGIN_LINK_GAA">&lt;a target="_blank" id="footerGeminiAppsActivityLink" href="$2"&gt;</ph>Gemini Apps Activity<ph name="END_LINK_GAA">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_HISTORY_GEMINI_KEY_BROWSING_ACTIONS_TITLE" desc="Tooltip text for the expand button on history items for Gemini actor visits." translateable="false">
+  <message name="IDS_HISTORY_GEMINI_KEY_BROWSING_ACTIONS_TITLE" desc="Tooltip text for the expand button on history items for Gemini actor visits.">
     Gemini key browsing actions
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_LINKOUT_A11Y_LABEL" desc="Accessibility label for a critical action linkout icon in history item indicating the destination." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_LINKOUT_A11Y_LABEL" desc="Accessibility label for a critical action linkout icon in history item indicating the destination.">
     <ph name="DESTINATION">$1<ex>Go to contact info</ex></ph>, opens in a new tab
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_FILLED" desc="Label for password filled critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_FILLED" desc="Label for password filled critical action in history item.">
     Signed in using a Google service like Password Manager
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_TOOLTIP" desc="Tooltip for password filled critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_PASSWORD_TOOLTIP" desc="Tooltip for password filled critical action in history item.">
     Go to Google Password Manager
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED" desc="Label for form filled critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_FILLED" desc="Label for form filled critical action in history item.">
     Contact info filled
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP" desc="Tooltip for form filled critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FORM_TOOLTIP" desc="Tooltip for form filled critical action in history item.">
     Go to contact info
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD" desc="Label for download critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD" desc="Label for download critical action in history item.">
     File downloaded
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD_TOOLTIP" desc="Tooltip for download critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_DOWNLOAD_TOOLTIP" desc="Tooltip for download critical action in history item.">
     Go to downloads
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_CHANGE" desc="Label for setting change critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_CHANGE" desc="Label for setting change critical action in history item.">
     Site settings changed
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_TOOLTIP" desc="Tooltip for setting change critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_SETTING_TOOLTIP" desc="Tooltip for setting change critical action in history item.">
     Go to site settings
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN" desc="Label for federated login critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN" desc="Label for federated login critical action in history item.">
     Signed in with account
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN_TOOLTIP" desc="Tooltip for federated login critical action in history item." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FEDERATED_LOGIN_TOOLTIP" desc="Tooltip for federated login critical action in history item.">
     Go to account sign-in
   </message>
+  <!-- TODO(b/538113758): Make the OTP and WebMCP strings below translatable
+       when they are finalized. -->
   <message name="IDS_HISTORY_CRITICAL_ACTION_CREDENTIALS_OTP" desc="Label for credentials OTP verification code critical action in history item." translateable="false">
     Verification code filled
   </message>
@@ -400,16 +401,16 @@
   <message name="IDS_HISTORY_CRITICAL_ACTION_WEBMCP_TOOL_TOOLTIP" desc="Tooltip for WebMCP tool execution critical action in history item." translateable="false">
     See website actions
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_APP_MENU_IPH_BODY" desc="Text shown in the IPH bubble attached to the Chrome app menu teaching users where to view Gemini's auto browse actions." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_APP_MENU_IPH_BODY" desc="Text shown in the IPH bubble attached to the Chrome app menu teaching users where to view Gemini's auto browse actions.">
     In Chrome history, you can see the key actions that Gemini completed while browsing for you
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_APP_MENU_IPH_ACTION" desc="Button label on the app menu IPH bubble to navigate to Chrome history." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_APP_MENU_IPH_ACTION" desc="Button label on the app menu IPH bubble to navigate to Chrome history.">
     Review key actions
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_FILTER_CHIP_IPH_BODY" desc="Text shown in the IPH bubble attached to the Gemini filter chip on the Chrome history page." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FILTER_CHIP_IPH_BODY" desc="Text shown in the IPH bubble attached to the Gemini filter chip on the Chrome history page.">
     See the key actions that Gemini completed while browsing for you
   </message>
-  <message name="IDS_HISTORY_CRITICAL_ACTION_FILTER_CHIP_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible screen reader text for the IPH bubble attached to the Gemini filter chip on the Chrome history page." translateable="false">
+  <message name="IDS_HISTORY_CRITICAL_ACTION_FILTER_CHIP_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Accessible screen reader text for the IPH bubble attached to the Gemini filter chip on the Chrome history page.">
     See the key actions that Gemini completed while browsing for you
   </message>
 
