@@ -16,7 +16,6 @@
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
 #include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
@@ -349,12 +348,10 @@ void ChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
   // TODO(crbug.com/575133530): CHECK-exclusion: Convert to a CHECK once we are
   // confident it won't be triggered.
   DCHECK(options.show_prompt);
-  Profile* profile =
-      !web_contents()
-          ? nullptr
-          : Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+  signin::IdentityManager* identity_manager = client_->GetIdentityManager();
+  if (!identity_manager) {
+    return;
+  }
   AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
@@ -1472,16 +1469,7 @@ void ChromePaymentsAutofillClient::OnPaymentsDataChanged() {
 }
 
 std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {
-  if (!web_contents()) {
-    return std::u16string();
-  }
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (!profile) {
-    return std::u16string();
-  }
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+  signin::IdentityManager* identity_manager = client_->GetIdentityManager();
   if (!identity_manager) {
     return std::u16string();
   }
