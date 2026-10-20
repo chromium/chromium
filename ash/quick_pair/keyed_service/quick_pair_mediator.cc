@@ -133,6 +133,8 @@ Mediator::~Mediator() {
   // The metrics logger must be deleted first because it depends on other
   // members.
   metrics_logger_.reset();
+  scanner_broker_observation_.Reset();
+  scanner_broker_.reset();
 }
 
 // static
