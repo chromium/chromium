@@ -6,7 +6,6 @@ bpastene@chromium.org
 gatong@chromium.org
 hypan@google.com
 sshrimp@google.com
-svenzheng@chromium.org
 
 # For Mac bot related changes.
 wyeager@google.com
@@ -21,6 +20,7 @@ hans@chromium.org
 thakis@chromium.org
 
 # For reclient/siso bot related changes.
+jwata@google.com
 tikuta@chromium.org
 
 # Specific OWNERS to review changes to the non-inclusive terms PRESUBMIT checks
