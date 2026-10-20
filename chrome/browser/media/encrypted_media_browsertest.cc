@@ -1769,6 +1769,16 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
     GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
   }
 
+  // TODO(crbug.com/575560149): Re-enable once flakiness on these GPUs is
+  // resolved.
+  const auto& active_gpu =
+      content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu();
+  if (active_gpu.device_id == 0x2783 || active_gpu.device_id == 0x7480 ||
+      active_gpu.device_id == 0x4680) {
+    GTEST_SKIP() << "Skipped on NVIDIA RTX 4070 Super (0x2783), AMD RX 7600 "
+                    "(0x7480), and Intel UHD 770 (0x4680).";
+  }
+
   TestMediaFoundationTrackSwitchPlayback(
       "bear-640x360-v_frag-cenc.mp4", gfx::Size(640, 360),    // H.264 640x360
       "bear-1280x720-v_frag-cenc.mp4", gfx::Size(1280, 720),  // H.264 1280x720
