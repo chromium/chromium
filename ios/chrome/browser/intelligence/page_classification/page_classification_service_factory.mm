@@ -24,9 +24,9 @@ std::unique_ptr<KeyedService> BuildPageClassificationService(
 }  // namespace
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+PageClassificationServiceFactory::TestingFactory
 PageClassificationServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildPageClassificationService);
+  return base::BindOnce(&BuildPageClassificationService);
 }
 
 PageClassificationServiceFactory::PageClassificationServiceFactory(PassKey key)

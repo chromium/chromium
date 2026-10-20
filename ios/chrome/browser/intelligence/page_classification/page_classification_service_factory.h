@@ -19,7 +19,7 @@ class PageClassificationServiceFactory
  public:
   explicit PageClassificationServiceFactory(PassKey key);
 
-  static ProfileKeyedServiceFactoryIOS::TestingFactory GetDefaultFactory();
+  static TestingFactory GetDefaultFactory();
 
  private:
   // ProfileKeyedServiceFactoryIOS:

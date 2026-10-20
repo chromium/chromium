@@ -17,7 +17,7 @@ std::unique_ptr<KeyedService> BuildDeviceSharingManager(ProfileIOS* profile) {
 // static
 DeviceSharingManagerFactory::TestingFactory
 DeviceSharingManagerFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildDeviceSharingManager);
+  return base::BindOnce(&BuildDeviceSharingManager);
 }
 
 DeviceSharingManagerFactory::DeviceSharingManagerFactory(PassKey key)

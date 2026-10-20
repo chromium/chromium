@@ -21,9 +21,9 @@ std::unique_ptr<KeyedService> BuildContextualCueingCapTrackerService(
 }  // namespace
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+ContextualCueingCapTrackerServiceFactory::TestingFactory
 ContextualCueingCapTrackerServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildContextualCueingCapTrackerService);
+  return base::BindOnce(&BuildContextualCueingCapTrackerService);
 }
 
 ContextualCueingCapTrackerServiceFactory::

@@ -26,7 +26,7 @@ std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
 // static
 TextClassifierModelServiceFake::TestingFactory
 TextClassifierModelServiceFake::GetTestingFactory() {
-  return base::BindOnce(BuildInstance);
+  return base::BindOnce(&BuildInstance);
 }
 
 TextClassifierModelServiceFake::~TextClassifierModelServiceFake() {}

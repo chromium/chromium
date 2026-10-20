@@ -11,6 +11,15 @@
 #import "components/sessions/core/tab_restore_types.h"
 #import "components/split_tabs/split_tab_id.h"
 
+namespace {
+
+// Build an instance of FakeTabRestoreService.
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
+  return std::make_unique<FakeTabRestoreService>();
+}
+
+}  // anonymous namespace
+
 FakeTabRestoreService::FakeTabRestoreService() = default;
 
 FakeTabRestoreService::~FakeTabRestoreService() = default;
@@ -18,9 +27,7 @@ FakeTabRestoreService::~FakeTabRestoreService() = default;
 // static
 FakeTabRestoreService::TestingFactory
 FakeTabRestoreService::GetTestingFactory() {
-  return base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-    return std::make_unique<FakeTabRestoreService>();
-  });
+  return base::BindOnce(&BuildInstance);
 }
 
 void FakeTabRestoreService::AddObserver(

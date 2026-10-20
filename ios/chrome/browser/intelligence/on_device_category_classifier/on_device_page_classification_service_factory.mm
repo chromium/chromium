@@ -28,9 +28,9 @@ std::unique_ptr<KeyedService> BuildOnDevicePageClassificationService(
 }  // namespace
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+OnDevicePageClassificationServiceFactory::TestingFactory
 OnDevicePageClassificationServiceFactory::GetDefaultFactory() {
-  return base::BindRepeating(&BuildOnDevicePageClassificationService);
+  return base::BindOnce(&BuildOnDevicePageClassificationService);
 }
 
 OnDevicePageClassificationServiceFactory::

@@ -112,7 +112,7 @@ std::unique_ptr<KeyedService> CreateDeviceTrustService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-ProfileKeyedServiceFactoryIOS::TestingFactory
+DeviceTrustServiceFactoryIOS::TestingFactory
 DeviceTrustServiceFactoryIOS::GetDefaultFactory() {
   return base::BindOnce(&CreateDeviceTrustService);
 }

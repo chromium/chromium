@@ -13,6 +13,15 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
+namespace {
+
+// Build an instance of TestSessionRestorationService.
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
+  return std::make_unique<TestSessionRestorationService>();
+}
+
+}  // anonymous namespace
+
 TestSessionRestorationService::TestSessionRestorationService() = default;
 
 TestSessionRestorationService::~TestSessionRestorationService() = default;
@@ -20,9 +29,7 @@ TestSessionRestorationService::~TestSessionRestorationService() = default;
 // static
 TestSessionRestorationService::TestingFactory
 TestSessionRestorationService::GetTestingFactory() {
-  return base::BindOnce([](ProfileIOS*) -> std::unique_ptr<KeyedService> {
-    return std::make_unique<TestSessionRestorationService>();
-  });
+  return base::BindOnce(&BuildInstance);
 }
 
 void TestSessionRestorationService::AddObserver(
