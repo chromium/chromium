@@ -175,6 +175,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_alloc_token": false,
       "use_partition_alloc_as_malloc": false,
       "use_raw_ptr_backup_ref_impl": false,
       "use_reclient": false,

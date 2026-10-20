@@ -32,6 +32,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/logging.gni")
+import("//build/config/sanitizers/alloc_token.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 
 if (is_ios) {
@@ -62,6 +63,10 @@ if (!is_debug || partition_alloc_optimized_debug) {
       [ "//build/config/compiler:default_optimization" ]
   partition_alloc_add_configs = [ "//build/config/compiler:no_optimize" ]
 }
+
+# allocator_shim defines the __alloc_token_* functions, so PartitionAlloc's own
+# allocation calls must not be redirected to them.
+partition_alloc_remove_configs += [ "//build/config/sanitizers:alloc_token" ]
 
 # - Component build support is disabled on all platforms except Linux. It is
 #   known to cause issues on some (e.g. Windows with shims, Android with
@@ -98,6 +103,8 @@ if (is_cronet_for_aosp_build) {
 }
 
 shim_supports_sized_dealloc_default = use_sized_deallocation
+
+shim_supports_alloc_token_default = use_alloc_token
 
 use_partition_alloc_as_malloc_default =
     use_allocator_shim_default && !_disable_partition_alloc_everywhere

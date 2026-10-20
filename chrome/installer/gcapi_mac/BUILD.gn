@@ -39,6 +39,9 @@ static_library("gcapi_lib") {
   configs -= [ "//build/config/compiler:runtime_library" ]
   configs += [ ":gcapi_config" ]
 
+  # Linked into partners' binaries, which lack the alloc token fallbacks.
+  configs -= [ "//build/config/sanitizers:alloc_token" ]
+
   # no_default_deps has no effect in static_libraries, so set it only below.
 }
 

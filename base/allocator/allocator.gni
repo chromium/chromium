@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//base/allocator/partition_allocator/partition_alloc.gni")
+import("//build/config/sanitizers/alloc_token.gni")
 
 # Chromium-specific asserts. External embedders _may_ elect to use these
 # features even without PA-E.
@@ -25,3 +26,9 @@ if (!use_partition_alloc_as_malloc) {
 
 assert(use_allocator_shim || !use_partition_alloc_as_malloc,
        "PartitionAlloc-Everywhere requires the allocator shim")
+
+# //build applies -fsanitize=alloc-token based on use_alloc_token. Make sure
+# allocator_shim handles the instrumented calls.
+assert(!use_alloc_token || shim_supports_alloc_token,
+       "use_alloc_token requires shim_supports_alloc_token. " +
+           "Set use_alloc_token=false.")

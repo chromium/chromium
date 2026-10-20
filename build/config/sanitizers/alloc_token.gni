@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/c++/c++.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/cronet/config.gni")
+import("//build/config/features.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/toolchain/toolchain.gni")
+import("//build_overrides/build.gni")
+
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+}
+
+declare_args() {
+  # Whether -fsanitize=alloc-token is applied to all targets by default. This
+  # requires allocator_shim support, as asserted in //base/allocator.
+  use_alloc_token =
+      build_with_chromium && is_clang && !is_component_build &&
+      # A shared libc++ has no_default_deps, so it lacks the fallbacks.
+      !libcxx_is_shared &&
+      # AllocToken increases the binary size.
+      !optimize_for_size &&
+      # PartitionAlloc-Everywhere is disabled in these configurations.
+      !is_cronet_build && !is_asan && !is_hwasan && !is_lsan && !is_tsan &&
+      !is_msan && !(is_win && is_debug)
+
+  # TODO(crbug.com/477186304): Remove this when enabling AllocToken.
+  use_alloc_token = false
+}
+
+# PartitionAlloc-Everywhere is disabled in these toolchains, regardless of
+# args.gn.
+if (!toolchain_allows_use_partition_alloc_as_malloc ||
+    toolchain_for_rust_host_build_tools || is_wasm ||
+    (is_ios && ios_is_app_extension && !use_blink)) {
+  use_alloc_token = false
+}

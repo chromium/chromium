@@ -33,7 +33,12 @@ config("qt_internal_config") {
 source_set("qt_interface") {
   visibility = [ ":*" ]
 
-  configs -= [ "//build/config/compiler:runtime_library" ]
+  configs -= [
+    "//build/config/compiler:runtime_library",
+
+    # Linked into qt_shim, which has no_default_deps.
+    "//build/config/sanitizers:alloc_token",
+  ]
   configs += [ ":qt_internal_config" ]
 
   # Since `:qt` depends on `qt_shim` via data_deps, gn check would error-out

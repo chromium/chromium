@@ -76,6 +76,11 @@ if (!defined(use_partition_alloc_default)) {
   use_partition_alloc_default = true
 }
 
+# Allows embedders to enable alloc token support by default.
+if (!defined(shim_supports_alloc_token_default)) {
+  shim_supports_alloc_token_default = false
+}
+
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
 # access the generate "buildflags" and the "raw_ptr" definitions implemented
 # with RawPtrNoOpImpl. Everything else is considered not supported.
@@ -174,12 +179,14 @@ declare_args() {
 declare_args() {
   # Whether the allocator shim supports alloc token or not. If true, malloc()
   # and operator new() families are injected with an alloc token parameter.
-  # shim_supports_alloc_token = use_partition_alloc_as_malloc
-  shim_supports_alloc_token = false
+  # In Chromium, the default follows use_alloc_token.
+  shim_supports_alloc_token =
+      shim_supports_alloc_token_default && use_partition_alloc_as_malloc &&
+      is_clang && !is_component_build
 }
 
-assert(!is_component_build || is_linux || !shim_supports_alloc_token,
-       "In the component build, alloc token is only supported on Linux.")
+assert(!is_component_build || !shim_supports_alloc_token,
+       "Alloc token is not supported in the component build.")
 
 declare_args() {
   # Whether the allocator shim supports automatic heap partitioning based on

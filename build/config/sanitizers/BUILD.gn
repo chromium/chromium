@@ -6,6 +6,7 @@ import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/rust.gni")
+import("//build/config/sanitizers/alloc_token.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
@@ -742,39 +743,17 @@ config("not_fuzzed") {
 
 # This config defines the Clang flags required for alloc_token sanitization, and
 # linker flags to dynamically export the new symbols on Linux/ChromeOS.
-# This is used by allocator_shim on non-component builds if
-# shim_supports_alloc_token, and is propagated to the dependant targets via
-# all_dependent_config. In linux component build, it is propagated to directly
-# dependant targets using public_config.
+# It is applied to all targets via default_compiler_configs. The symbols are
+# defined by allocator_shim, or by the weak fallbacks below.
+# Binaries with `no_default_deps` lack the fallbacks, so their own sources are
+# opted out automatically, but their dependencies that allocate memory must opt
+# out themselves with:
+#   configs -= [ "//build/config/sanitizers:alloc_token" ]
 # By default the number of tokens is bounded by SIZE_MAX.
 # See: https://clang.llvm.org/docs/AllocToken.html
 config("alloc_token") {
-  if (is_clang) {
+  if (use_alloc_token) {
     cflags = [ "-fsanitize=alloc-token" ]
-    if (is_linux) {
-      if (!defined(alloc_token_linux_ignorelist_path)) {
-        alloc_token_linux_ignorelist_path =
-            rebase_path("//tools/clang/alloc_token/ignores_linux.txt",
-                        root_build_dir)
-      }
-      cflags += [ "-fsanitize-ignorelist=$alloc_token_linux_ignorelist_path" ]
-    }
-    if (is_apple) {
-      if (!defined(alloc_token_apple_ignorelist_path)) {
-        alloc_token_apple_ignorelist_path =
-            rebase_path("//tools/clang/alloc_token/ignores_apple.txt",
-                        root_build_dir)
-      }
-      cflags += [ "-fsanitize-ignorelist=$alloc_token_apple_ignorelist_path" ]
-    }
-    if (is_android) {
-      if (!defined(alloc_token_android_ignorelist_path)) {
-        alloc_token_android_ignorelist_path =
-            rebase_path("//tools/clang/alloc_token/ignores_android.txt",
-                        root_build_dir)
-      }
-      cflags += [ "-fsanitize-ignorelist=$alloc_token_android_ignorelist_path" ]
-    }
     if (is_linux || is_chromeos) {
       ldflags = [
         # go/keep-sorted start
@@ -799,4 +778,23 @@ config("alloc_token") {
       ]
     }
   }
+}
+
+# Weak fallbacks of the __alloc_token_* functions, linked into every binary via
+# //build/config:common_deps. These are source_sets so that the fallbacks are
+# linked, and exported, even if the binary itself doesn't reference them.
+source_set("alloc_token_aliases") {
+  visibility = [ "//build/config:common_deps_without_libcxx" ]
+  if (use_alloc_token) {
+    sources = [ "//build/sanitizers/alloc_token_aliases.c" ]
+  }
+  configs -= [ "//build/config/sanitizers:alloc_token" ]
+}
+
+source_set("alloc_token_aliases_cxx") {
+  visibility = [ "//build/config:common_deps" ]
+  if (use_alloc_token) {
+    sources = [ "//build/sanitizers/alloc_token_aliases_cxx.cc" ]
+  }
+  configs -= [ "//build/config/sanitizers:alloc_token" ]
 }

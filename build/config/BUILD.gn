@@ -17,6 +17,7 @@ import("//build/config/mac/mac_sdk_overrides.gni")
 
 import("//build/config/pch.gni")
 import("//build/config/rust.gni")
+import("//build/config/sanitizers/alloc_token.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 if (is_android) {
@@ -236,6 +237,10 @@ group("common_deps_without_libcxx") {
     public_deps += [ "//build/config/sanitizers:dlclose_shim" ]
   }
 
+  if (use_alloc_token) {
+    public_deps += [ "//build/config/sanitizers:alloc_token_aliases" ]
+  }
+
   if (is_android && use_order_profiling) {
     public_deps += [ "//base/android/orderfile:orderfile_instrumentation" ]
   }
@@ -285,6 +290,10 @@ group("common_deps") {
 
   if (use_custom_libcxx) {
     public_deps += [ "//buildtools/third_party/libc++" ]
+  }
+
+  if (use_alloc_token) {
+    public_deps += [ "//build/config/sanitizers:alloc_token_aliases_cxx" ]
   }
 
   if (use_llvm_libatomic) {

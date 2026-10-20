@@ -390,6 +390,7 @@ default_compiler_configs = [
   "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler:tot_warnings",
   "//build/config/coverage:default_coverage",
+  "//build/config/sanitizers:alloc_token",
   "//build/config/sanitizers:default_sanitizer_flags",
   "//build/config:feature_flags",
 ]
@@ -738,6 +739,11 @@ foreach(_target_type,
         # (This explicit list is so that grepping for these configs finds where
         # they are used.)
         deps += [ "//build/config:${_target_type}_deps" ]
+      } else {
+        # The default deps provide the __alloc_token_* fallbacks, so don't
+        # instrument the sources of binaries without them.
+        configs -=
+            filter_include(configs, [ "//build/config/sanitizers:alloc_token" ])
       }
 
       if (!defined(public_deps)) {

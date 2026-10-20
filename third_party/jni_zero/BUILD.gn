@@ -95,6 +95,10 @@ component("jni_zero") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
+  # Linked into //base/android/linker:chromium_android_linker, which has
+  # no_default_deps.
+  configs -= [ "//build/config/sanitizers:alloc_token" ]
+
   public_configs = [ ":jni_zero_chromium_defines" ]
   defines = []
   if (enable_jni_multiplexing) {

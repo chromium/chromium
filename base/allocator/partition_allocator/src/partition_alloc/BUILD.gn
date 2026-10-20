@@ -894,24 +894,6 @@ if (is_clang_or_gcc) {
     deps = []
     all_dependent_configs = []
     public_configs = [ ":public_includes" ]
-    if (shim_supports_alloc_token) {
-      if (is_component_build) {
-        # Currently, partition_alloc_everywhere is disabled on component builds
-        # except for Linux. Therefore, we support alloc token on component build
-        # only for Linux.
-        # TODO(crbug.com/477186304): Support alloc token on all platforms in
-        # component build if partition_alloc_everywhere is enabled.
-        if (is_linux) {
-          # We are using public_configs instead of all_dependent_configs here
-          # because the linker does not resolve symbols in indirect dependencies
-          # of dynamic libraries within a component build.
-          # TODO(crbug.com/477186304): Consider using all_dependent_configs.
-          public_configs += [ "//build/config/sanitizers:alloc_token" ]
-        }
-      } else {
-        all_dependent_configs += [ "//build/config/sanitizers:alloc_token" ]
-      }
-    }
     configs += [
       ":allocator_shim_implementation",
       ":wexit_time_destructors",
