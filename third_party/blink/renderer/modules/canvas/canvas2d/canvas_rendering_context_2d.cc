@@ -726,24 +726,6 @@ int CanvasRenderingContext2D::Height() const {
   return Host()->Size().height();
 }
 
-scoped_refptr<CanvasResource>
-CanvasRenderingContext2D::PaintRenderingResultsToResource(
-    SourceDrawingBuffer source_buffer,
-    FlushReason reason) {
-  if (!IsBackingValid()) {
-    return nullptr;
-  }
-
-  // Only CRPSI can produce CanvasResources.
-  auto* si_provider = GetSharedImageProvider();
-  if (!si_provider) {
-    return nullptr;
-  }
-
-  FlushCanvas(reason);
-  return si_provider->ProduceCanvasResource(GetSoftwareSurface());
-}
-
 const std::optional<cc::PaintRecord>&
 CanvasRenderingContext2D::GetLastRecording() {
   return last_recording_;

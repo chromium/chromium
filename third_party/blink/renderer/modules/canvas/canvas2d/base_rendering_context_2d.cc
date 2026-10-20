@@ -515,6 +515,17 @@ BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
   return Snapshot();
 }
 
+scoped_refptr<CanvasResource>
+BaseRenderingContext2D::PaintRenderingResultsToResource(
+    SourceDrawingBuffer source_buffer,
+    FlushReason reason) {
+  if (!IsBackingValid() || !shared_image_provider_) {
+    return nullptr;
+  }
+  FlushCanvas(reason);
+  return shared_image_provider_->ProduceCanvasResource(surface_.get());
+}
+
 const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {
   if (isContextLost() || !IsPaintable()) [[unlikely]] {
     return nullptr;
