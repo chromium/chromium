@@ -45,6 +45,7 @@
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
 #include "components/autofill/core/browser/payments/test/mock_multiple_request_payments_network_interface.h"
+#include "components/autofill/core/browser/permissions/device_reauth_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -59,6 +60,8 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
 #include "components/autofill/core/common/test_utils/autofill_form_test_util.h"
+#include "components/device_reauth/mock_device_auth_availability_checker.h"
+#include "components/device_reauth/mock_device_authenticator.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
@@ -106,8 +109,33 @@ constexpr base::TimeDelta kFetchingMessageInterval = base::Seconds(3);
 
 class MockAutofillClient : public TestAutofillClient {
  public:
-  MockAutofillClient() = default;
+  MockAutofillClient() {
+    ON_CALL(*this, GetDeviceAuthenticator).WillByDefault([] {
+      auto authenticator =
+          std::make_unique<NiceMock<device_reauth::MockDeviceAuthenticator>>();
+      ON_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
+          .WillByDefault(Return(true));
+      return authenticator;
+    });
+    ON_CALL(*this, GetDeviceAuthAvailabilityChecker).WillByDefault([] {
+      auto checker = std::make_unique<
+          NiceMock<device_reauth::MockDeviceAuthAvailabilityChecker>>();
+      ON_CALL(*checker, CanAuthenticateWithBiometricOrScreenLock)
+          .WillByDefault(Return(true));
+      return checker;
+    });
+  }
   ~MockAutofillClient() override = default;
+
+  using AutofillClient::GetDeviceAuthenticator;
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (std::string),
+              (const, override));
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>,
+              GetDeviceAuthAvailabilityChecker,
+              (),
+              (const, override));
 
   MOCK_METHOD(void,
               ShowAutofillAiFetchEntityFailureNotification,
@@ -1206,7 +1234,13 @@ TEST_P(AtMemoryManagerTest, FiltersSpiiInInsecureContext) {
 // Tests that SPII entries and metadata are filtered out from the search
 // results when the device does not support OS reauth, even in a secure context.
 TEST_P(AtMemoryManagerTest, FiltersSpiiWhenDeviceReauthNotSupported) {
-  autofill_client().set_supports_device_reauth(false);
+  // This disables device reauth.
+  ON_CALL(autofill_client(), GetDeviceAuthenticator).WillByDefault([] {
+    return nullptr;
+  });
+  ON_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
+      .WillByDefault([] { return nullptr; });
+  ASSERT_FALSE(SupportsDeviceReauth(autofill_client()));
 
   // The search results delivered by the server.
   std::vector<MemorySearchResult> entries;
@@ -1260,7 +1294,14 @@ TEST_P(AtMemoryManagerTest,
        KeepsSpiiWhenDeviceReauthNotSupportedWithDebugFlag) {
   base::test::ScopedFeatureList debug_features(
       features::debug::kAtMemoryNoDeviceReauthCheck);
-  autofill_client().set_supports_device_reauth(false);
+
+  // This disables device reauth.
+  ON_CALL(autofill_client(), GetDeviceAuthenticator).WillByDefault([] {
+    return nullptr;
+  });
+  ON_CALL(autofill_client(), GetDeviceAuthAvailabilityChecker)
+      .WillByDefault([] { return nullptr; });
+  ASSERT_FALSE(SupportsDeviceReauth(autofill_client()));
 
   MemorySearchResults results(
       MemorySearchStatus::kFinalResponseSuccess,

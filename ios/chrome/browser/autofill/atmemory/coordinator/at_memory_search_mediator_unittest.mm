@@ -132,9 +132,10 @@ class AtMemorySearchMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{autofill::features::kAutofillAtMemory,
-                              autofill::features::debug::
-                                  kAtMemorySkipEnablementChecks},
+        /*enabled_features=*/
+        {autofill::features::kAutofillAtMemory,
+         autofill::features::debug::kAtMemoryNoDeviceReauthCheck,
+         autofill::features::debug::kAtMemorySkipEnablementChecks},
         /*disabled_features=*/{});
     web_state_.SetVisibleURL(GURL("http://example.org"));
     web_state_.SetTitle(u"Example Title");

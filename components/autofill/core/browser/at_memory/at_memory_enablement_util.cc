@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/integrators/at_memory/memory_search_result.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/browser/permissions/device_reauth_util.h"
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -172,7 +173,6 @@ base::flat_set<int32_t> GetAutofillAtMemoryEligibleTiers() {
     const subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
     std::string* debug_message) {
-
   if (!IsPersonalContextEligible(personal_context_service, debug_message)) {
     return false;
   }
@@ -369,10 +369,11 @@ bool MayPerformAtMemoryAction(
 
   if (retrieve_params.has_value()) {
     if (retrieve_params->is_spii) {
-      bool reauth_ok = client.SupportsDeviceReauth() ||
-                       base::FeatureList::IsEnabled(
-                           features::debug::kAtMemoryNoDeviceReauthCheck);
-      if (!retrieve_params->is_context_secure || !reauth_ok) {
+      bool reauth_ok = retrieve_params->is_context_secure &&
+                       (SupportsDeviceReauth(client) ||
+                        base::FeatureList::IsEnabled(
+                            features::debug::kAtMemoryNoDeviceReauthCheck));
+      if (!reauth_ok) {
         MaybeOutputReason(
             debug_message,
             "SPII data is not allowed in insecure contexts or when "

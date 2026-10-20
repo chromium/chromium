@@ -35,6 +35,7 @@
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/payments/payments_network_interface.h"
 #import "components/autofill/core/browser/permissions/autofill_policy_service.h"
+#import "components/autofill/core/browser/permissions/device_reauth_util.h"
 #import "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -190,7 +191,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
             &EntityDataManager::SetReauthAvailability, edm->GetWeakPtr()));
       }
     } else {
-      edm->SetReauthAvailability(SupportsDeviceReauth());
+      edm->SetReauthAvailability(SupportsDeviceReauth(*this));
     }
   }
 
@@ -758,7 +759,8 @@ std::unique_ptr<IOSDeviceAuthenticator>
 ChromeAutofillClientIOS::GetIOSDeviceAuthenticator(
     std::string histogram) const {
   device_reauth::DeviceAuthParams params(
-      base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill, std::move(histogram));
+      base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill,
+      std::move(histogram));
   id<ReauthenticationProtocol> reauthModule =
       ReauthenticationServiceFactory::GetForProfile(profile_)
           ->GetReauthModule();

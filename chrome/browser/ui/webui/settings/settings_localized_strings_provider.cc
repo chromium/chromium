@@ -79,6 +79,7 @@
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
+#include "components/autofill/core/browser/permissions/device_reauth_util.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1587,7 +1588,7 @@ bool CheckDeviceAuthAvailability(content::WebContents* web_contents) {
   // If `client` is not available, then don't show toggle switch.
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(web_contents);
-  return client && client->SupportsDeviceReauth();
+  return client && autofill::SupportsDeviceReauth(*client);
 }
 
 bool IsWalletServerStorageEnabled() {

@@ -61,6 +61,7 @@
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_util.h"
+#include "components/autofill/core/browser/permissions/device_reauth_util.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1108,7 +1109,7 @@ AutofillPrivateCheckIfDeviceAuthAvailableFunction::Run() {
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
   if (client) {
-    return RespondNow(WithArguments(client->SupportsDeviceReauth()));
+    return RespondNow(WithArguments(autofill::SupportsDeviceReauth(*client)));
   }
 #endif  // BUILDFLAG (IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   return RespondNow(Error(base::StrCat(

@@ -566,8 +566,6 @@ class TestAutofillClientTemplate : public T {
     return format_for_large_keyboard_accessory_;
   }
 
-  bool SupportsDeviceReauth() const override { return supports_device_reauth_; }
-
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
       std::string histogram) const override {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
@@ -813,10 +811,6 @@ class TestAutofillClientTemplate : public T {
     is_credit_card_upload_enabled_ = is_credit_card_upload_enabled;
   }
 
-  void set_supports_device_reauth(bool supports_device_reauth) {
-    supports_device_reauth_ = supports_device_reauth;
-  }
-
   void set_crowdsourcing_manager(
       std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager) {
     crowdsourcing_manager_ = std::move(crowdsourcing_manager);
@@ -1018,8 +1012,6 @@ class TestAutofillClientTemplate : public T {
   bool is_cvc_saving_supported_ = true;
 
   bool is_credit_card_upload_enabled_ = true;
-
-  bool supports_device_reauth_ = true;
 
   bool is_tab_in_actor_mode_ = false;
 

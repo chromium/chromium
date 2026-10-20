@@ -139,6 +139,7 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/permissions/autofill_policy_service.h"
+#include "components/autofill/core/browser/permissions/device_reauth_util.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
@@ -1424,7 +1425,7 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
                                            features::kAutofillAmbientAutofill)
                                    ? GetEntityDataManager()
                                    : nullptr) {
-    edm->SetReauthAvailability(SupportsDeviceReauth());
+    edm->SetReauthAvailability(SupportsDeviceReauth(*this));
   }
 }
 

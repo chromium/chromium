@@ -873,9 +873,6 @@ class AutofillClient {
   virtual std::unique_ptr<device_reauth::DeviceAuthAvailabilityChecker>
   GetDeviceAuthAvailabilityChecker() const = 0;
 
-  // Returns `true` if the device supports any kind of re-auth.
-  virtual bool SupportsDeviceReauth() const;
-
   // Attaches the IPH for `feature` to the `field`, on
   // platforms that it. If another IPH has been shown for the tab, the IPH is
   // granteed not to be shown. Returns `true` if the IPH bubble is shown after

@@ -1175,6 +1175,8 @@ static_library("browser") {
     "permissions/autofill_ai/autofill_ai_permission_util.h",
     "permissions/autofill_policy_service.cc",
     "permissions/autofill_policy_service.h",
+    "permissions/device_reauth_util.cc",
+    "permissions/device_reauth_util.h",
     "single_field_fillers/autocomplete/autocomplete_history_manager.cc",
     "single_field_fillers/autocomplete/autocomplete_history_manager.h",
     "single_field_fillers/payments/merchant_promo_code_manager.cc",
