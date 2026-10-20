@@ -269,6 +269,7 @@ def AddCommonOptions(parser):
         def __call__(self, parser, namespace, values, option_string=None):
             namespace.enable_concurrent_adb = True
             namespace.enable_device_cache = True
+            namespace.enable_test_data_cache = True
             namespace.extract_test_list_from_filter = True
             namespace.local_output = True
             namespace.num_retries = 0
@@ -280,7 +281,7 @@ def AddCommonOptions(parser):
         nargs=0,
         action=FastLocalDevAction,
         help='Alias for: --num-retries=0 --enable-device-cache '
-        '--enable-concurrent-adb --skip-clear-data '
+        '--enable-test-data-cache --enable-concurrent-adb --skip-clear-data '
         '--extract-test-list-from-filter --local-output',
     )
 
