@@ -33,10 +33,6 @@ BASE_FEATURE(kActorLoginSyncsPasswordPermissions,
 BASE_FEATURE(kActorLoginPermissionsUi, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-#if !BUILDFLAG(IS_IOS)
-BASE_FEATURE(kActorLoginQualityLogs, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_IOS)
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kAndroidSelectPasswordContextMenu,
              base::FEATURE_ENABLED_BY_DEFAULT);

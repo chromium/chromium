@@ -78,12 +78,6 @@ std::string MaybeTargetDebugString(const std::optional<PageTarget>& target) {
 // logging is disabled, in which case the log is collected but never uploaded.
 optimization_guide::ModelQualityLogsUploaderService*
 GetModelQualityLogsUploader(Profile& profile) {
-  // TODO(crbug.com/562029939): Clean up kActorLoginQualityLogs.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginQualityLogs)) {
-    return nullptr;
-  }
-
   // Disable MQLS upload if Password Change is enabled while prototyping to
   // avoid uploading incorrect logs.
   // TODO(crbug.com/485620841): Remove this check once the prototyping is
