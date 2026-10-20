@@ -258,6 +258,11 @@ void GetDawnTogglesForWebGPU(
   // Disallows usage of SPIR-V by default for security (we only ensure that WGSL
   // is secure).
   force_enabled_toggles->push_back("disallow_spirv");
+  // Allows usage of unsafe WebGPU features when `--enable-unsafe-webgpu` is
+  // specified.
+  if (enable_unsafe_webgpu) {
+    force_enabled_toggles->push_back("allow_unsafe_apis");
+  }
   // Enable timestamp quantization by default for privacy, unless
   // --enable-webgpu-developer-features is used.
   if (!enable_webgpu_developer_features) {
