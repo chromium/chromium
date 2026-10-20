@@ -64,6 +64,7 @@
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/oobe_config/oobe_configuration_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -77,6 +78,8 @@
 #include "chromeos/ash/components/settings/device_settings_cache.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/fake_session_manager_delegate.h"
@@ -599,6 +602,46 @@ TEST_F(WizardControllerTest,
 
   MakeNonCriticalUpdateAvailable();
   ASSERT_TRUE(AwaitScreen(kUserCreationScreen));
+}
+
+TEST_F(WizardControllerTest,
+       ConsumerOobeFlowInstallsRegionalLanguagePackFromLocalState) {
+  session_manager::SessionManager::Get()->SetSessionState(
+      session_manager::SessionState::OOBE);
+
+  wizard_controller_->Init(/*first_screen=*/ash::OOBE_SCREEN_UNKNOWN);
+  ASSERT_TRUE(AwaitScreen(kWelcomeScreen));
+
+  // Simulate selecting a regional locale (`en-AU`) on the Welcome screen whose
+  // UI resource bundle falls back to a sibling locale (`en-GB`).
+  TestingBrowserProcess::GetGlobal()
+      ->GetFeatures()
+      ->application_locale_storage()
+      ->Set("en-GB");
+  TestingBrowserProcess::GetGlobal()->local_state()->SetString(
+      language::prefs::kApplicationLocale, "en-AU");
+
+  PerformUserAction(kActionContinue);
+  ASSERT_TRUE(AwaitScreen(kNetworkScreen));
+
+  StartNetworkConnection();
+  ASSERT_TRUE(AwaitScreen(kUpdateScreen));
+
+  MakeNonCriticalUpdateAvailable();
+  ASSERT_TRUE(AwaitScreen(kUserCreationScreen));
+
+  base::test::TestFuture<std::string_view, const dlcservice::DlcsWithContent&>
+      dlcs_future;
+  DlcserviceClient::Get()->GetExistingDlcs(dlcs_future.GetCallback());
+  const dlcservice::DlcsWithContent& dlcs = dlcs_future.Get<1>();
+  std::vector<std::string> installed_dlc_ids;
+  for (const dlcservice::DlcsWithContent::DlcInfo& dlc_info :
+       dlcs.dlc_infos()) {
+    installed_dlc_ids.push_back(dlc_info.id());
+  }
+  EXPECT_THAT(installed_dlc_ids, testing::Contains("tts-en-au-c"));
+  EXPECT_THAT(installed_dlc_ids,
+              testing::Not(testing::Contains("tts-en-gb-c")));
 }
 
 TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {

@@ -271,6 +271,7 @@
 #include "chromeos/ash/services/cros_healthd/private/cpp/dlc_utils.h"
 #include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -2404,7 +2405,14 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 
 void WizardController::OnUpdateCompleted() {
   // Install language packs based on the user selected language.
-  const std::string locale(application_locale_storage_->GetTag().tag_string());
+  // Prefer `kApplicationLocale` from `Local State` so regional locales whose
+  // UI resource bundle falls back to a base or sibling locale (such as `en-AU`
+  // -> `en-GB` or `fr-CA` -> `fr`) install the regional TTS DLC during OOBE.
+  std::string locale =
+      GetLocalState()->GetString(language::prefs::kApplicationLocale);
+  if (locale.empty()) {
+    locale = std::string(application_locale_storage_->GetTag().tag_string());
+  }
   language_packs::LanguagePackManager::UpdatePacksForOobe(locale,
                                                           base::DoNothing());
 
