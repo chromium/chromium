@@ -104,6 +104,13 @@ struct NET_EXPORT CookieDeletionInfo {
   bool Matches(const CanonicalCookie& cookie,
                const CookieAccessParams& params) const;
 
+  // Returns the single registrable domain (eTLD+1) or host bucket key if this
+  // CookieDeletionInfo's active filters guarantee that all matching cookies
+  // belong to that key (as computed by CookieMonster::GetKey). Returns
+  // std::nullopt if the filter might match cookies across multiple domains,
+  // or if no domain-constraining filter is set.
+  std::optional<std::string> SingleMatchingRegistrableDomain() const;
+
   // See comment above for TimeRange::Contains() for more info.
   TimeRange creation_range;
 

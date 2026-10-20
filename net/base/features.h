@@ -1085,6 +1085,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kShaderDiskCacheBackendExperiment);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(DiskCacheBackend,
                                       kShaderDiskCacheBackendType);
 
+// Enables per-key (eTLD+1) task queueing for single-domain cookie deletions
+// (`DeleteCanonicalCookieAsync` and single-domain `DeleteAllMatchingInfoAsync`)
+// so they do not set `seen_global_task_` and block concurrent navigations on
+// the full SQLite cookie store load.
+NET_EXPORT BASE_DECLARE_FEATURE(kCookieMonsterPerKeyDelete);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

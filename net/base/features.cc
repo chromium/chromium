@@ -1108,5 +1108,7 @@ BASE_FEATURE_ENUM_PARAM(DiskCacheBackend,
                         DiskCacheBackend::kSimple,
                         &kShaderDiskCacheBackendTypeOptions);
 
+BASE_FEATURE(kCookieMonsterPerKeyDelete, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
 

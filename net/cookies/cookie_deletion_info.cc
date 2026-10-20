@@ -4,13 +4,34 @@
 
 #include "net/cookies/cookie_deletion_info.h"
 
+#include <string_view>
+
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_util.h"
 
 namespace net {
 
 namespace {
+
+// Returns the registrable domain (eTLD+1) of `domain`, or `domain` without a
+// leading dot if it is not parsed as belonging to a registry (e.g. for IP
+// addresses or internal hostnames).
+std::string GetEffectiveDomainOrHost(std::string_view domain) {
+  // GetDomainAndRegistry() is insensitive to leading dots, i.e. to host/domain
+  // cookie distinctions. If `domain` is an IP address or internal hostname, an
+  // empty string will be returned; in that case, fall back to `domain` without
+  // any leading dot.
+  std::string effective_domain(
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          domain,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
+  if (effective_domain.empty()) {
+    return cookie_util::CookieDomainAsHost(domain);
+  }
+  return effective_domain;
+}
 
 // Return true if the eTLD+1 of the cookies domain matches any of the strings
 // in |match_domains|, false otherwise.
@@ -19,20 +40,7 @@ bool DomainMatchesDomains(const net::CanonicalCookie& cookie,
   if (match_domains.empty())
     return false;
 
-  // If domain is an IP address it returns an empty string.
-  std::string effective_domain(
-      net::registry_controlled_domains::GetDomainAndRegistry(
-          // GetDomainAndRegistry() is insensitive to leading dots, i.e.
-          // to host/domain cookie distinctions.
-          cookie.Domain(),
-          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
-  // If the cookie's domain is is not parsed as belonging to a registry
-  // (e.g. for IP addresses or internal hostnames) an empty string will be
-  // returned.  In this case, use the domain in the cookie.
-  if (effective_domain.empty())
-    effective_domain = cookie.DomainWithoutDot();
-
-  return match_domains.count(effective_domain) != 0;
+  return match_domains.count(GetEffectiveDomainOrHost(cookie.Domain())) != 0;
 }
 
 }  // anonymous namespace
@@ -141,6 +149,39 @@ bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
   }
 
   return true;
+}
+
+std::optional<std::string> CookieDeletionInfo::SingleMatchingRegistrableDomain()
+    const {
+  // `CookieDeletionInfo::Matches` evaluates a conjunction (logical AND) of
+  // all active filter fields. When at least one filter constrains matching
+  // cookies to a single registrable domain (eTLD+1) or host bucket `key`,
+  // every matching cookie is guaranteed to be loaded by
+  // `LoadCookiesForKey(*key)`.
+  if (host.has_value()) {
+    // `host` only matches host cookies (`IsHostCookie()`) where
+    // `IsDomainMatch(*host)` holds, which requires `cookie.Domain() == *host`.
+    return GetEffectiveDomainOrHost(*host);
+  }
+  if (url.has_value() && url->is_valid()) {
+    // `url` requires `IncludeForRequestURL(*url)`, which domain-matches
+    // against `url->host()`, placing all matching host and domain cookies
+    // under `GetEffectiveDomainOrHost(url->host())`.
+    return GetEffectiveDomainOrHost(url->host());
+  }
+  if (domains_and_ips_to_delete.has_value() &&
+      domains_and_ips_to_delete->size() == 1) {
+    // `DomainMatchesDomains` computes the same registrable domain via
+    // `GetEffectiveDomainOrHost`. Checking `candidate_key == candidate` ensures
+    // non-canonical subdomain entries (which match no cookies in
+    // `DomainMatchesDomains`) are not misidentified as single-domain filters.
+    const std::string& candidate = *domains_and_ips_to_delete->begin();
+    std::string candidate_key = GetEffectiveDomainOrHost(candidate);
+    if (candidate_key == candidate) {
+      return candidate_key;
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace net

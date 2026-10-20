@@ -677,4 +677,57 @@ TEST(CookieDeletionInfoTest, MatchesExcludeUnpartitionedCookies) {
   }
 }
 
+TEST(CookieDeletionInfoTest, SingleMatchingRegistrableDomain) {
+  // Sub-scenario 1: Default empty deletion info matches all cookies, so it has
+  // no single matching domain.
+  {
+    CookieDeletionInfo delete_info;
+    EXPECT_EQ(std::nullopt, delete_info.SingleMatchingRegistrableDomain());
+  }
+
+  // Sub-scenario 2: `host` specifies a single host or domain cookie target.
+  {
+    CookieDeletionInfo delete_info;
+    delete_info.host = "www.example.com";
+    EXPECT_EQ("example.com", delete_info.SingleMatchingRegistrableDomain());
+
+    delete_info.host = "example.com";
+    EXPECT_EQ("example.com", delete_info.SingleMatchingRegistrableDomain());
+
+    delete_info.host = "192.168.1.1";
+    EXPECT_EQ("192.168.1.1", delete_info.SingleMatchingRegistrableDomain());
+  }
+
+  // Sub-scenario 3: `url` constrains matching cookies to the request URL's
+  // domain key.
+  {
+    CookieDeletionInfo delete_info;
+    delete_info.url = GURL("https://sub.example.com/path?query=1");
+    EXPECT_EQ("example.com", delete_info.SingleMatchingRegistrableDomain());
+
+    delete_info.url = GURL("invalid-url");
+    EXPECT_EQ(std::nullopt, delete_info.SingleMatchingRegistrableDomain());
+  }
+
+  // Sub-scenario 4: `domains_and_ips_to_delete` with a single canonical eTLD+1
+  // returns that domain, but subdomains or multiple domains return nullopt.
+  {
+    CookieDeletionInfo delete_info;
+    delete_info.domains_and_ips_to_delete =
+        std::set<std::string>{"example.com"};
+    EXPECT_EQ("example.com", delete_info.SingleMatchingRegistrableDomain());
+
+    // Non-canonical subdomain does not match the computed key, so it returns
+    // nullopt to avoid misrouting.
+    delete_info.domains_and_ips_to_delete =
+        std::set<std::string>{"www.example.com"};
+    EXPECT_EQ(std::nullopt, delete_info.SingleMatchingRegistrableDomain());
+
+    // Multi-domain set returns nullopt.
+    delete_info.domains_and_ips_to_delete =
+        std::set<std::string>{"a.com", "b.com"};
+    EXPECT_EQ(std::nullopt, delete_info.SingleMatchingRegistrableDomain());
+  }
+}
+
 }  // namespace net

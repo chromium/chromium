@@ -213,6 +213,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Cookie.DeleteAllMatchingInfoAsync.HasSingleMatchingDomain"
+    enum="Boolean" expires_after="2027-04-04">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Records whether a cookie deletion request passed to
+    CookieMonster::DeleteAllMatchingInfoAsync matched cookies constrained to a
+    single registrable domain (eTLD+1). Recorded once per call to
+    CookieMonster::DeleteAllMatchingInfoAsync.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.DeleteCanonicalCookie.Duration" units="microseconds"
+    expires_after="2027-04-04">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>src/net/cookies/OWNERS</owner>
+  <summary>
+    Records the time spent executing CookieMonster::DeleteCanonicalCookie.
+    Recorded once per call to CookieMonster::DeleteCanonicalCookie.
+
+    Not reported for clients with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.DomainHasNonASCII" enum="Boolean"
     expires_after="2024-11-17">
   <owner>johannhof@chromium.org</owner>

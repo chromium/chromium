@@ -82,6 +82,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
@@ -610,12 +611,24 @@ void CookieMonster::GetAllCookiesWithAccessSemanticsAsync(
 
 void CookieMonster::DeleteCanonicalCookieAsync(const CanonicalCookie& cookie,
                                                DeleteCallback callback) {
-  DoCookieCallback(base::BindOnce(
+  auto delete_callback = base::BindOnce(
       // base::Unretained is safe as DoCookieCallback stores
       // the callback on |*this|, so the callback will not outlive
       // the object.
       &CookieMonster::DeleteCanonicalCookie, base::Unretained(this), cookie,
-      std::move(callback)));
+      std::move(callback));
+  if (base::FeatureList::IsEnabled(features::kCookieMonsterPerKeyDelete)) {
+    // `DeleteCanonicalCookie` only inspects
+    // `equal_range(GetKey(cookie.Domain()))`. Dispatching via
+    // `DoCookieCallbackForHostOrDomain` instead of `DoCookieCallback` avoids
+    // setting `seen_global_task_ = true`, which would otherwise disable per-key
+    // loading and force all subsequent cookie reads and writes across all
+    // domains to wait for the full SQLite store load.
+    DoCookieCallbackForHostOrDomain(std::move(delete_callback),
+                                    cookie.Domain());
+    return;
+  }
+  DoCookieCallback(std::move(delete_callback));
 }
 
 void CookieMonster::DeleteAllCreatedInTimeRangeAsync(
@@ -631,16 +644,28 @@ void CookieMonster::DeleteAllCreatedInTimeRangeAsync(
 
 void CookieMonster::DeleteAllMatchingInfoAsync(CookieDeletionInfo delete_info,
                                                DeleteCallback callback) {
+  std::optional<std::string> key =
+      delete_info.SingleMatchingRegistrableDomain();
+  base::UmaHistogramBoolean(
+      "Cookie.DeleteAllMatchingInfoAsync.HasSingleMatchingDomain",
+      key.has_value());
+
   auto cookie_matcher =
       base::BindRepeating(&CookieMonster::MatchCookieDeletionInfo,
                           base::Unretained(this), std::move(delete_info));
-
-  DoCookieCallback(base::BindOnce(
+  auto delete_callback = base::BindOnce(
       // base::Unretained is safe as DoCookieCallback stores
       // the callback on |*this|, so the callback will not outlive
       // the object.
       &CookieMonster::DeleteMatchingCookies, base::Unretained(this),
-      std::move(cookie_matcher), DELETE_COOKIE_EXPLICIT, std::move(callback)));
+      std::move(cookie_matcher), DELETE_COOKIE_EXPLICIT, std::move(callback));
+
+  if (key.has_value() &&
+      base::FeatureList::IsEnabled(features::kCookieMonsterPerKeyDelete)) {
+    DoCookieCallbackForHostOrDomain(std::move(delete_callback), *key);
+    return;
+  }
+  DoCookieCallback(std::move(delete_callback));
 }
 
 void CookieMonster::DeleteSessionCookiesAsync(
@@ -902,6 +927,7 @@ bool CookieMonster::MatchCookieDeletionInfo(
 void CookieMonster::DeleteCanonicalCookie(const CanonicalCookie& cookie,
                                           DeleteCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  base::ElapsedTimer timer;
   uint32_t result = 0u;
   CookieMap* cookie_map = nullptr;
   PartitionedCookieMap::iterator cookie_partition_it;
@@ -939,6 +965,9 @@ void CookieMonster::DeleteCanonicalCookie(const CanonicalCookie& cookie,
       base::BindOnce(&MaybeRunDeleteCallback, weak_ptr_factory_.GetWeakPtr(),
                      callback ? base::BindOnce(std::move(callback), result)
                               : base::OnceClosure()));
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Cookie.DeleteCanonicalCookie.Duration", timer.Elapsed(),
+      base::Microseconds(1), base::Milliseconds(128), 100);
 }
 
 void CookieMonster::DeleteMatchingCookies(DeletePredicate predicate,

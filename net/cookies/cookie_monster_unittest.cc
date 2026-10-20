@@ -1434,6 +1434,211 @@ TEST_F(DeferredCookieTaskTest, DeferredDeleteCanonicalCookie) {
   EXPECT_EQ("", TakeCommandSummary());
 }
 
+// Verifies that calling `DeleteCanonicalCookieAsync` or single-domain
+// `DeleteAllMatchingInfoAsync` while the persistent store is still loading
+// uses the per-key queue (`DoCookieCallbackForHostOrDomain`) and does NOT set
+// `seen_global_task_ = true`, allowing subsequent `SetCanonicalCookieAsync` and
+// `GetCookieListWithOptionsAsync` calls on other domains to complete via
+// `LOAD_COOKIES_FOR_KEY` without blocking on the full database `LOAD`.
+TEST_F(DeferredCookieTaskTest,
+       DeferredDeleteCanonicalCookieDoesNotBlockOtherDomainsOnGlobalLoad) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kCookieMonsterPerKeyDelete);
+  base::HistogramTester histogram_tester;
+  cookie_monster_->SetPersistSessionCookies(true);
+
+  // Pre-populate mock store with cookies for `foo.com` and `bar.com` to verify
+  // that deferred deletes actually remove stored cookies and issue REMOVE
+  // commands when key loading finishes. Note that `bar_delete_info` below
+  // matches a host cookie (`host`), so we insert a host cookie for `bar.com`
+  // (domain without a leading dot) into `loaded_cookies_`.
+  DeclareLoadedCookie(http_www_foo_.url(),
+                      "X=1; path=/" + FutureCookieExpirationString(),
+                      Time::Now() + base::Days(3));
+  loaded_cookies_.push_back(CanonicalCookie::CreateUnsafeCookieForTesting(
+      "Y", "2", http_www_bar_.host(), "/",
+      /*creation=*/Time::Now() + base::Days(3),
+      /*expiration=*/Time::Now() + base::Days(10),
+      /*last_access=*/base::Time(), /*last_update=*/base::Time(),
+      /*secure=*/false, /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+      CookiePriority::COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther));
+
+  // Sub-scenario 1: Queue `DeleteCanonicalCookieAsync` on `foo.com` before the
+  // persistent cookie store finishes loading.
+  std::unique_ptr<CanonicalCookie> foo_cookie = BuildCanonicalCookie(
+      http_www_foo_.url(), "X=1; path=/", base::Time::Now());
+  ResultSavingCookieCallback<uint32_t> delete_foo_call;
+  cookie_monster_->DeleteCanonicalCookieAsync(*foo_cookie,
+                                              delete_foo_call.MakeCallback());
+
+  // Sub-scenario 2: Queue single-domain `DeleteAllMatchingInfoAsync` (`host`)
+  // on `bar.com` while the store is still loading.
+  CookieDeletionInfo bar_delete_info;
+  bar_delete_info.host = http_www_bar_.host();
+  ResultSavingCookieCallback<uint32_t> delete_bar_info_call;
+  cookie_monster_->DeleteAllMatchingInfoAsync(
+      std::move(bar_delete_info), delete_bar_info_call.MakeCallback());
+
+  // Sub-scenario 3: Issue `SetCanonicalCookieAsync` on `bar.com` while the full
+  // store `LOAD` has not completed. Because neither deletion above poisoned
+  // `seen_global_task_`, `SetCanonicalCookieAsync` must complete as soon as
+  // `LOAD_COOKIES_FOR_KEY` finishes, without waiting for `LOAD`.
+  std::unique_ptr<CanonicalCookie> bar_cookie = BuildCanonicalCookie(
+      http_www_bar_.url(), "Z=3; path=/", base::Time::Now());
+  ResultSavingCookieCallback<CookieAccessResult> set_bar_call;
+  cookie_monster_->SetCanonicalCookieAsync(
+      std::move(bar_cookie), http_www_bar_.url(),
+      CookieOptions::MakeAllInclusive(), set_bar_call.MakeCallback(),
+      /*cookie_access_result=*/std::nullopt);
+
+  ExecuteLoads(CookieStoreCommand::LOAD_COOKIES_FOR_KEY);
+  delete_foo_call.WaitUntilDone();
+  delete_bar_info_call.WaitUntilDone();
+  set_bar_call.WaitUntilDone();
+
+  EXPECT_EQ(1u, delete_foo_call.result());
+  EXPECT_EQ(1u, delete_bar_info_call.result());
+  EXPECT_TRUE(set_bar_call.result().status.IsInclude());
+  EXPECT_EQ(
+      "LOAD; LOAD_FOR_KEY:foo.com; LOAD_FOR_KEY:bar.com; REMOVE; REMOVE; ADD; ",
+      TakeCommandSummary());
+
+  histogram_tester.ExpectTotalCount(
+      "Cookie.DeleteCanonicalCookie.Duration",
+      base::TimeTicks::IsHighResolution() ? 1 : 0);
+  histogram_tester.ExpectUniqueSample(
+      "Cookie.DeleteAllMatchingInfoAsync.HasSingleMatchingDomain", true, 1);
+}
+
+// Verifies that `DeleteAllMatchingInfoAsync` with a deferred store routes `url`
+// and single-eTLD+1 `domains_and_ips_to_delete` filters to per-key loading
+// without triggering or waiting for the full store `LOAD`.
+TEST_F(DeferredCookieTaskTest,
+       DeferredDeleteAllMatchingInfoPerKeyFastPathWithStore) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kCookieMonsterPerKeyDelete);
+  base::HistogramTester histogram_tester;
+  cookie_monster_->SetPersistSessionCookies(true);
+
+  DeclareLoadedCookie(http_www_foo_.url(),
+                      "X=1; path=/" + FutureCookieExpirationString(),
+                      Time::Now() + base::Days(3));
+  DeclareLoadedCookie(http_www_bar_.url(),
+                      "Y=2; path=/" + FutureCookieExpirationString(),
+                      Time::Now() + base::Days(3));
+
+  // Sub-scenario 1: Queue `DeleteAllMatchingInfoAsync` using `url` while the
+  // store is loading.
+  CookieDeletionInfo url_info;
+  url_info.url = http_www_foo_.url();
+  ResultSavingCookieCallback<uint32_t> delete_url_call;
+  cookie_monster_->DeleteAllMatchingInfoAsync(std::move(url_info),
+                                              delete_url_call.MakeCallback());
+
+  // Sub-scenario 2: Queue `DeleteAllMatchingInfoAsync` using
+  // `domains_and_ips_to_delete` (single canonical eTLD+1) while the store is
+  // loading.
+  CookieDeletionInfo domain_info;
+  domain_info.domains_and_ips_to_delete = std::set<std::string>{"bar.com"};
+  ResultSavingCookieCallback<uint32_t> delete_domain_call;
+  cookie_monster_->DeleteAllMatchingInfoAsync(
+      std::move(domain_info), delete_domain_call.MakeCallback());
+
+  ExecuteLoads(CookieStoreCommand::LOAD_COOKIES_FOR_KEY);
+  delete_url_call.WaitUntilDone();
+  delete_domain_call.WaitUntilDone();
+
+  EXPECT_EQ(1u, delete_url_call.result());
+  EXPECT_EQ(1u, delete_domain_call.result());
+  EXPECT_EQ(
+      "LOAD; LOAD_FOR_KEY:foo.com; LOAD_FOR_KEY:bar.com; REMOVE; REMOVE; ",
+      TakeCommandSummary());
+
+  histogram_tester.ExpectUniqueSample(
+      "Cookie.DeleteAllMatchingInfoAsync.HasSingleMatchingDomain", true, 2);
+}
+
+// Verifies that `DeleteAllMatchingInfoAsync` routes `url` and single-eTLD+1
+// `domains_and_ips_to_delete` filters through the per-key fast path (deleting
+// both unpartitioned and partitioned cookies for that key while preserving
+// other keys), and falls back to the global queue (`DoCookieCallback`) for
+// non-canonical subdomains or multi-domain filters.
+TEST_F(CookieMonsterTest, DeleteAllMatchingInfoPerKeyFastPathAndFallback) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kCookieMonsterPerKeyDelete);
+  auto cm = std::make_unique<CookieMonster>(nullptr, net::NetLog::Get());
+  Time now = Time::Now();
+  const auto partition_key =
+      CookiePartitionKey::FromURLForTesting(GURL("https://toplevelsite.com"));
+
+  // Populate unpartitioned and partitioned cookies across `a.com` and `b.com`.
+  EXPECT_TRUE(SetCookieWithCreationTime(cm.get(), GURL("https://www.a.com"),
+                                        "a_host=1;Secure", now));
+  EXPECT_TRUE(SetCookieWithCreationTime(
+      cm.get(), GURL("https://a.com"),
+      "__Host-a_part=1; path=/; secure; partitioned", now, partition_key));
+  EXPECT_TRUE(SetCookieWithCreationTime(cm.get(), GURL("https://www.b.com"),
+                                        "b_dom=1; domain=b.com; Secure", now));
+  EXPECT_TRUE(SetCookieWithCreationTime(
+      cm.get(), GURL("https://b.com"),
+      "__Host-b_part=1; path=/; secure; partitioned", now, partition_key));
+
+  // Sub-scenario 1: `delete_info.url` uses the per-key fast path (`a.com`) and
+  // deletes both unpartitioned and partitioned cookies matching `https://a.com`
+  // (plus `https://www.a.com` via a second URL delete) without touching
+  // `b.com`.
+  {
+    base::HistogramTester histogram_tester;
+    CookieDeletionInfo url_info;
+    url_info.url = GURL("https://a.com/");
+    EXPECT_EQ(1u, DeleteAllMatchingInfo(cm.get(), std::move(url_info)));
+
+    CookieDeletionInfo sub_url_info;
+    sub_url_info.url = GURL("https://www.a.com/");
+    EXPECT_EQ(1u, DeleteAllMatchingInfo(cm.get(), std::move(sub_url_info)));
+
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.DeleteAllMatchingInfoAsync.HasSingleMatchingDomain", true, 2);
+    EXPECT_THAT(GetAllCookies(cm.get()),
+                ElementsAre(MatchesCookieNameDomain("b_dom", ".b.com"),
+                            MatchesCookieNameDomain("__Host-b_part", "b.com")));
+  }
+
+  // Sub-scenario 2: `domains_and_ips_to_delete` with a single canonical eTLD+1
+  // (`{"b.com"}`) uses the per-key fast path and deletes both the domain cookie
+  // and the last partitioned cookie in `partition_key`.
+  {
+    base::HistogramTester histogram_tester;
+    CookieDeletionInfo domain_info;
+    domain_info.domains_and_ips_to_delete = std::set<std::string>{"b.com"};
+    EXPECT_EQ(2u, DeleteAllMatchingInfo(cm.get(), std::move(domain_info)));
+
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.DeleteAllMatchingInfoAsync.HasSingleMatchingDomain", true, 1);
+    EXPECT_TRUE(GetAllCookies(cm.get()).empty());
+  }
+
+  // Sub-scenario 3: Non-canonical subdomain in `domains_and_ips_to_delete`
+  // (`{"www.b.com"}`, where `GetKey("www.b.com") != "www.b.com"`) and
+  // multi-domain sets (`{"a.com", "b.com"}`) fall back to the global path.
+  {
+    base::HistogramTester histogram_tester;
+    CookieDeletionInfo subdomain_info;
+    subdomain_info.domains_and_ips_to_delete =
+        std::set<std::string>{"www.b.com"};
+    EXPECT_EQ(0u, DeleteAllMatchingInfo(cm.get(), std::move(subdomain_info)));
+
+    CookieDeletionInfo multi_domain_info;
+    multi_domain_info.domains_and_ips_to_delete =
+        std::set<std::string>{"a.com", "b.com"};
+    EXPECT_EQ(0u,
+              DeleteAllMatchingInfo(cm.get(), std::move(multi_domain_info)));
+
+    histogram_tester.ExpectUniqueSample(
+        "Cookie.DeleteAllMatchingInfoAsync.HasSingleMatchingDomain", false, 2);
+  }
+}
+
 TEST_F(DeferredCookieTaskTest, DeferredDeleteSessionCookies) {
   ResultSavingCookieCallback<uint32_t> call1;
   cookie_monster_->DeleteSessionCookiesAsync(call1.MakeCallback());
