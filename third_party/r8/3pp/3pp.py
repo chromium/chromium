@@ -22,7 +22,6 @@ sys.path.insert(1, str(_SRC_ROOT / 'build' / '3pp_common'))
 import common
 import graalvm
 
-
 # If false we roll to the latest branch, otherwise we roll to the latest commit.
 _ROLL_TO_TIP_OF_TREE = False
 
@@ -73,6 +72,7 @@ package org.chromium.sample;
 public record Point(int x, int y) {}
 """
 
+
 # Examples of version strings:
 # 1.8, 2.5.10, 3.7-dev-aosp
 def version_tuple(version):
@@ -86,7 +86,7 @@ def version_tuple(version):
         except:
             version_segments.append(split)
     if len(version_segments) < 3:
-        version_segments += [0]*(3-len(version_segments))
+        version_segments += [0] * (3 - len(version_segments))
     return (*version_segments, suffix)
 
 
@@ -162,7 +162,10 @@ def _install(version, output_prefix):
     # R8's gradle build (d8_r8/commonBuildSrc/.../R8SettingsPlugin.kt) enables
     # its GCS remote build cache whenever SWARMING_BOT_ID is set, which the 3pp
     # bot's service account cannot read (403 on bucket r8-build-cache).
-    gradle_env = {k: v for k, v in os.environ.items() if k != 'SWARMING_BOT_ID'}
+    gradle_env = {
+        k: v
+        for k, v in os.environ.items() if k != 'SWARMING_BOT_ID'
+    }
     common.run_cmd(['tools/gradle.py', 'r8'], env=gradle_env)
 
     # Shrink (improves r8/d8 launch time):
@@ -241,16 +244,17 @@ def _build_global_synthetics_dex(r8_jar, java_home, output_path):
         z.write(os.path.join(dex_dir, 'classes.dex'), 'classes.dex')
 
 
-def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_class_files,
-                    tmp_prefix):
+def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_jar,
+                    program_entry, service_file):
     """Returns argv lists covering the ways that dex.py invokes CustomD8."""
     os.makedirs(out_dir)
-    intermediate_zip = os.path.join(out_dir, 'intermediate.zip')
-    merged_dir = os.path.join(out_dir, 'merged')
-    os.makedirs(merged_dir)
+    intermediate_jar = os.path.join(out_dir, 'intermediate.jar')
+    incremental_jar = os.path.join(out_dir, 'incremental.jar')
+    merged_jar = os.path.join(out_dir, 'merged.jar')
+    service_arg = f'META-INF/services/org.chromium.sample.Iface={service_file}'
     common_args = ['--min-api', '21', '--lib', jdk_home]
     return [
-        # Per-library dexing with desugaring.
+        # Per-library dexing with desugaring from --jar-input.
         common_args + [
             '--intermediate',
             '--ignore-globals',
@@ -259,13 +263,42 @@ def _sample_d8_args(out_dir, jdk_home, classpath_jar, program_class_files,
             classpath_jar,
             '--desugar-dependencies',
             os.path.join(out_dir, 'desugar_deps.txt'),
-            '--file-tmp-prefix',
-            tmp_prefix,
+            '--jar-input',
+            program_jar,
+            '--add-file',
+            service_arg,
             '--output',
-            intermediate_zip,
-        ] + program_class_files,
-        # Dex merging.
-        common_args + ['--release', '--output', merged_dir, intermediate_zip],
+            intermediate_jar,
+        ],
+        # Incremental per-library dexing with --jar-class and --base-jar.
+        common_args + [
+            '--intermediate',
+            '--ignore-globals',
+            '--file-per-class-file',
+            '--classpath',
+            classpath_jar,
+            '--jar-input',
+            program_jar,
+            '--jar-class',
+            program_entry,
+            '--base-jar',
+            intermediate_jar,
+            '--exclude-entry',
+            'org/chromium/sample/NonExistent.dex',
+            '--add-file',
+            service_arg,
+            '--output',
+            incremental_jar,
+        ],
+        # Dex merging into a stored .jar.
+        common_args + [
+            '--release',
+            '--add-file',
+            service_arg,
+            '--output',
+            merged_jar,
+            incremental_jar,
+        ],
     ]
 
 
@@ -306,10 +339,17 @@ def _build_native_custom_d8(r8_jar, output_path):
     iface_jar = os.path.abspath('sample_classpath.jar')
     with zipfile.ZipFile(iface_jar, 'w') as z:
         z.write(os.path.join(sample_classes, iface_class), iface_class)
-    program_class_files = sorted(
-        str(p) for p in pathlib.Path(sample_classes).glob('**/*.class')
-        if not p.name.startswith('Iface'))
-    tmp_prefix = sample_classes + os.path.sep
+    program_jar = os.path.abspath('sample_program.jar')
+    program_entries = []
+    with zipfile.ZipFile(program_jar, 'w') as z:
+        for p in sorted(pathlib.Path(sample_classes).glob('**/*.class')):
+            if not p.name.startswith('Iface'):
+                rel = p.relative_to(sample_classes).as_posix()
+                z.write(str(p), rel)
+                program_entries.append(rel)
+    service_file = os.path.abspath('sample_service.txt')
+    pathlib.Path(service_file).write_text('org.chromium.sample.Sample\n',
+                                          encoding='utf-8')
 
     os.makedirs(os.path.dirname(output_path))
     graalvm.build_native_image(
@@ -318,8 +358,8 @@ def _build_native_custom_d8(r8_jar, output_path):
         main_class=_CUSTOM_D8_MAIN_CLASS,
         extra_cp=[custom_d8_classes],
         tracing_args_list=_sample_d8_args(os.path.abspath('tracing_out'),
-                                          graal_home, iface_jar,
-                                          program_class_files, tmp_prefix),
+                                          graal_home, iface_jar, program_jar,
+                                          program_entries[0], service_file),
         extra_native_image_args=[
             '-H:+UnlockExperimentalVMOptions',
             # R8 reads the JDK passed via --lib using the jrt:/ filesystem.
@@ -330,17 +370,20 @@ def _build_native_custom_d8(r8_jar, output_path):
     # Tracing runs ignore failures, so check that the binary actually works
     # (e.g. that no reflection config is missing).
     smoke_out = os.path.abspath('smoke_test_out')
-    for args in _sample_d8_args(smoke_out, graal_home, iface_jar,
-                                program_class_files, tmp_prefix):
+    for args in _sample_d8_args(smoke_out, graal_home, iface_jar, program_jar,
+                                program_entries[0], service_file):
         common.run_cmd([output_path, f'-Djava.home={graal_home}'] + args)
     deps = pathlib.Path(smoke_out, 'desugar_deps.txt').read_text()
     if 'Iface.class' not in deps:
         raise RuntimeError(f'Unexpected desugar deps from custom_d8:\n{deps}')
-    if not os.path.exists(os.path.join(smoke_out, 'merged', 'classes.dex')):
-        raise RuntimeError('custom_d8 smoke test did not produce classes.dex')
+    with zipfile.ZipFile(os.path.join(smoke_out, 'merged.jar')) as z:
+        if 'classes.dex' not in z.namelist():
+            raise RuntimeError(
+                'custom_d8 smoke test did not produce classes.dex')
 
 
 def main():
+
     def do_latest():
         if _ROLL_TO_TIP_OF_TREE:
             return get_commit_before_today()
