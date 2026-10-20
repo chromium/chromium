@@ -585,6 +585,11 @@
     "expiry_milestone": 168
   },
   {
+    "name": "android-switcher-default-browser-promo-in-fre",
+    "owners": [ "fernandex@google.com", "bling-squid-squad@google.com" ],
+    "expiry_milestone": 168
+  },
+  {
     "name": "android-tab-declutter-archive-on-desktop",
     "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 160

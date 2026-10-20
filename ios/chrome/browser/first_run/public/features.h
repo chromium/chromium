@@ -80,6 +80,9 @@ BASE_DECLARE_FEATURE(kQueryDeviceSwitcherSignalsInFirstRun);
 // Feature flag to query switcher info API signal and record metrics in the FRE.
 BASE_DECLARE_FEATURE(kQuerySwitcherInfoSignalInFirstRun);
 
+// Feature flag to enable the Android Switcher Default Browser Promo in the FRE.
+BASE_DECLARE_FEATURE(kAndroidSwitcherDefaultBrowserPromoInFRE);
+
 // Name of the parameter that controls the experiment type for the Animated
 // Default Browser Promo in the FRE experiment, which determines the layout of
 // the promo.
@@ -122,6 +125,10 @@ bool IsQueryDeviceSwitcherSignalsInFirstRunEnabled();
 
 // Returns whether switcher info API signal should be queried in the FRE.
 bool IsQuerySwitcherInfoSignalInFirstRunEnabled();
+
+// Returns whether the Android Switcher Default Browser Promo in the FRE is
+// enabled.
+bool IsAndroidSwitcherDefaultBrowserPromoInFREEnabled();
 
 }  // namespace first_run
 

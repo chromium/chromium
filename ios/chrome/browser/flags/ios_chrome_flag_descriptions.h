@@ -88,6 +88,12 @@ inline constexpr char kAimUrlNavigationFetchEnabledName[] =
 inline constexpr char kAimUrlNavigationFetchEnabledDescription[] =
     "Enables the AimUrlNavigationFetchEnabled feature.";
 
+inline constexpr char kAndroidSwitcherDefaultBrowserPromoInFREName[] =
+    "Enable the Android Switcher Default Browser Promo in the FRE";
+inline constexpr char kAndroidSwitcherDefaultBrowserPromoInFREDescription[] =
+    "When enabled, signed-in Android switchers will see the Android Switcher "
+    "Default Browser Promo in the FRE.";
+
 inline constexpr char kAnimatedDefaultBrowserPromoInFREName[] =
     "Enable the animated Default Browser Promo in the FRE";
 inline constexpr char kAnimatedDefaultBrowserPromoInFREDescription[] =

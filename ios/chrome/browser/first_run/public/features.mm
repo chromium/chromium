@@ -29,6 +29,9 @@ BASE_FEATURE(kQueryDeviceSwitcherSignalsInFirstRun,
 BASE_FEATURE(kQuerySwitcherInfoSignalInFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAndroidSwitcherDefaultBrowserPromoInFRE,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kAnimatedDefaultBrowserPromoInFREExperimentType[] =
     "AnimatedDefaultBrowserPromoInFREExperimentType";
 
@@ -102,6 +105,10 @@ bool IsQueryDeviceSwitcherSignalsInFirstRunEnabled() {
 
 bool IsQuerySwitcherInfoSignalInFirstRunEnabled() {
   return base::FeatureList::IsEnabled(kQuerySwitcherInfoSignalInFirstRun);
+}
+
+bool IsAndroidSwitcherDefaultBrowserPromoInFREEnabled() {
+  return base::FeatureList::IsEnabled(kAndroidSwitcherDefaultBrowserPromoInFRE);
 }
 
 }  // namespace first_run

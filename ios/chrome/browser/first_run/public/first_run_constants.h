@@ -21,6 +21,11 @@ extern NSString* const kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
 extern NSString* const
     kFirstRunAnimatedDefaultBrowserScreenAccessibilityIdentifier;
 
+// The accessibility identifier for the Android switcher Default browser screen
+// shown in first run.
+extern NSString* const
+    kFirstRunDefaultBrowserAndroidSwitcherScreenAccessibilityIdentifier;
+
 // The accessibility identifier for the Omnibox position choice screen shown in
 // first run.
 extern NSString* const

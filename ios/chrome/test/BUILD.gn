@@ -395,6 +395,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/find_in_page/model:unit_tests",
     "//ios/chrome/browser/first_run/best_features/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/coordinator:unit_tests",
+    "//ios/chrome/browser/first_run/default_browser/coordinator:unit_tests",
     "//ios/chrome/browser/first_run/tos/coordinator:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
     "//ios/chrome/browser/fullscreen/coordinator:unit_tests",

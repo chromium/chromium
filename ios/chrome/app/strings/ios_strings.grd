@@ -3498,6 +3498,21 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SECOND_STEP" desc="Text of the row indicating the second step of setting the default browser [iOS only]">
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Default Browser App<ph name="END_BOLD">END_BOLD</ph>
       </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_DRIVE_PHOTOS_ROW" translateable="false" desc="Text of the row on the Android switcher Default Browser screen in First Run explaining Google Drive and Photos integration [iOS only]">
+        Quick-save to Google Drive and Photos
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_MAPS_ROW" translateable="false" desc="Text of the row on the Android switcher Default Browser screen in First Run explaining Google Maps integration [iOS only]">
+        Open Google Maps seamlessly
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE" translateable="false" desc="Subtitle of the Android switcher Default Browser screen on First Run explaining the default browser feature's utility on iPhone [iOS only]">
+        Built for iPhone to work seamlessly with your favorite apps
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_SUBTITLE_IPAD" translateable="false" desc="Subtitle of the Android switcher Default Browser screen on First Run explaining the default browser feature's utility on iPad [iOS only]">
+        Built for iPad to work seamlessly with your favorite apps
+      </message>
+      <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SWITCHER_YOUTUBE_ROW" translateable="false" desc="Text of the row on the Android switcher Default Browser screen in First Run explaining YouTube links integration [iOS only]">
+        Launch YouTube links instantly
+      </message>
       <message name="IDS_IOS_FIRST_RUN_GUIDED_TOUR_NTP_IPH_TEXT" desc="Text of the Guided Tour IPH for the NTP step focusing on the tab grid." meaning="Title-cased">
           See and manage everything you have open
     </message>

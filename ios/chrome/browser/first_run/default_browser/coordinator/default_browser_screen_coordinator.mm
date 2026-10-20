@@ -8,12 +8,16 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/coordinator/first_run_screen_provider.h"
 #import "ios/chrome/browser/first_run/default_browser/coordinator/default_browser_screen_mediator.h"
+#import "ios/chrome/browser/first_run/default_browser/ui/default_browser_android_switcher_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_animated_screen_view_controller.h"
+#import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_consumer.h"
 #import "ios/chrome/browser/first_run/default_browser/ui/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/first_run/public/features.h"
@@ -26,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -35,12 +40,7 @@
 @end
 
 @implementation DefaultBrowserScreenCoordinator {
-  // The Default Browser Promo can be displayed as either a Static promo or an
-  // Animated promo depending on the `kAnimatedDefaultBrowserPromoInFRE` flag.
-  // Seperate view controllers are used to create each view and set the
-  // necessary properties, but only one view is presented.
-  DefaultBrowserScreenViewController* _staticViewController;
-  DefaultBrowserAnimatedScreenViewController* _animatedViewController;
+  PromoStyleViewController<DefaultBrowserScreenConsumer>* _viewController;
   InstructionsBottomSheetCoordinator* _instructionsCoordinator;
   DefaultBrowserScreenMediator* _mediator;
   __weak id<FirstRunScreenDelegate> _delegate;
@@ -66,8 +66,7 @@
 - (void)dealloc {
   CHECK(!_instructionsCoordinator, base::NotFatalUntil::M155);
   CHECK(!_mediator, base::NotFatalUntil::M155);
-  CHECK(!_animatedViewController, base::NotFatalUntil::M155);
-  CHECK(!_staticViewController, base::NotFatalUntil::M155);
+  CHECK(!_viewController, base::NotFatalUntil::M155);
 }
 
 #pragma mark - ChromeCoordinator
@@ -81,17 +80,24 @@
   default_browser::NotifyDefaultBrowserFREPromoShown(
       feature_engagement::TrackerFactory::GetForProfile(_profile));
 
-  if (first_run::IsAnimatedDefaultBrowserPromoInFREEnabled()) {
-    [self displayAnimatedPromo];
-  } else {
-    [self displayStaticPromo];
+  _viewController = [self createViewController];
+  _viewController.delegate = self;
+  _viewController.modalInPresentation = YES;
+
+  if (!first_run::IsAnimatedDefaultBrowserPromoInFREEnabled() &&
+      base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence)) {
+    _mediator = [[DefaultBrowserScreenMediator alloc] init];
+    _mediator.consumer = _viewController;
   }
+
+  BOOL animated = self.baseNavigationController.topViewController != nil;
+  [self.baseNavigationController setViewControllers:@[ _viewController ]
+                                           animated:animated];
 }
 
 - (void)stop {
-  _animatedViewController = nil;
-  _staticViewController.delegate = nil;
-  _staticViewController = nil;
+  _viewController.delegate = nil;
+  _viewController = nil;
   _delegate = nil;
   _mediator.consumer = nil;
   [_mediator disconnect];
@@ -155,7 +161,7 @@
         addObject:l10n_util::GetNSString(
                       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_THIRD_STEP)];
     _instructionsCoordinator = [[InstructionsBottomSheetCoordinator alloc]
-        initWithBaseViewController:_animatedViewController
+        initWithBaseViewController:_viewController
                            browser:self.browser
                              title:nil
                              steps:defaultBrowserSteps];
@@ -205,42 +211,42 @@
 
 - (void)showTOSPage {
   DCHECK(!_TOSCoordinator);
-  CHECK(_staticViewController);
+  CHECK(_viewController);
   _mediator.TOSLinkWasTapped = YES;
   _TOSCoordinator =
-      [[TOSCoordinator alloc] initWithBaseViewController:_staticViewController
+      [[TOSCoordinator alloc] initWithBaseViewController:_viewController
                                                  browser:self.browser];
   _TOSCoordinator.delegate = self;
   [_TOSCoordinator start];
 }
 
-- (void)displayStaticPromo {
-  _staticViewController = [[DefaultBrowserScreenViewController alloc] init];
-  _staticViewController.delegate = self;
-
-  if (base::FeatureList::IsEnabled(first_run::kUpdatedFirstRunSequence)) {
-    _mediator = [[DefaultBrowserScreenMediator alloc] init];
-
-    _mediator.consumer = _staticViewController;
+// Returns YES if the Android Switcher Default Browser promo should be
+// displayed.
+- (BOOL)shouldDisplayAndroidSwitcherPromo {
+  // TODO(crbug.com/573558105): Update the triggering criteria from the
+  // signed-in status to the actual Android switcher signal.
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(_profile);
+  if (!identityManager ||
+      !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return NO;
   }
-
-  BOOL animated = self.baseNavigationController.topViewController != nil;
-  _staticViewController.delegate = self;
-  _staticViewController.modalInPresentation = YES;
-  [self.baseNavigationController setViewControllers:@[ _staticViewController ]
-                                           animated:animated];
+  return first_run::IsAndroidSwitcherDefaultBrowserPromoInFREEnabled();
 }
 
-- (void)displayAnimatedPromo {
-  _animatedViewController =
-      [[DefaultBrowserAnimatedScreenViewController alloc] init];
-  _animatedViewController.shouldHideBanner = YES;
-
-  BOOL animated = self.baseNavigationController.topViewController != nil;
-  _animatedViewController.delegate = self;
-  _animatedViewController.modalInPresentation = YES;
-  [self.baseNavigationController setViewControllers:@[ _animatedViewController ]
-                                           animated:animated];
+// Creates and configures the promo view controller to present.
+- (PromoStyleViewController<DefaultBrowserScreenConsumer>*)
+    createViewController {
+  if (first_run::IsAnimatedDefaultBrowserPromoInFREEnabled()) {
+    DefaultBrowserAnimatedScreenViewController* viewController =
+        [[DefaultBrowserAnimatedScreenViewController alloc] init];
+    viewController.shouldHideBanner = YES;
+    return viewController;
+  }
+  if ([self shouldDisplayAndroidSwitcherPromo]) {
+    return [[DefaultBrowserAndroidSwitcherScreenViewController alloc] init];
+  }
+  return [[DefaultBrowserScreenViewController alloc] init];
 }
 
 - (void)finishPresenting {
@@ -251,9 +257,9 @@
 // Shows the UMA dialog so the user can manage metric reporting.
 - (void)showUMADialog {
   DCHECK(!_UMACoordinator);
-  CHECK(_staticViewController);
+  CHECK(_viewController);
   _UMACoordinator = [[UMACoordinator alloc]
-      initWithBaseViewController:_staticViewController
+      initWithBaseViewController:_viewController
                          browser:self.browser
                UMAReportingValue:_mediator.UMAReportingUserChoice];
   _UMACoordinator.delegate = self;

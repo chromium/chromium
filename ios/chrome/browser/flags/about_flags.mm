@@ -3028,6 +3028,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAppBarDisableLongPressName,
      flag_descriptions::kAppBarDisableLongPressDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kAppBarDisableLongPress)},
+    {"android-switcher-default-browser-promo-in-fre",
+     flag_descriptions::kAndroidSwitcherDefaultBrowserPromoInFREName,
+     flag_descriptions::kAndroidSwitcherDefaultBrowserPromoInFREDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(first_run::kAndroidSwitcherDefaultBrowserPromoInFRE)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

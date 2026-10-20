@@ -15,6 +15,8 @@ source_set("coordinator") {
     "//components/metrics",
     "//components/metrics:metrics_pref_names",
     "//components/prefs",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/web_resource",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/strings:ios_branded_strings",
@@ -39,8 +41,36 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "default_browser_screen_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/base",
+    "//ios/chrome/browser/first_run/default_browser/ui",
+    "//ios/chrome/browser/first_run/public:constants",
+    "//ios/chrome/browser/first_run/public:features",
+    "//ios/chrome/browser/first_run/public:screen_delegate",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
 }
