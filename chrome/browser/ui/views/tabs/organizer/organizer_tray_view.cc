@@ -159,7 +159,8 @@ void OrganizerTrayView::UpdatePanelClipAndShadow() {
   // be by how close the lower trailing corner is to its full size.
   const double key_corner =
       base::i18n::IsRTL() ? corners.lower_left() : corners.lower_right();
-  shadow_frame_->SetShadowOpacity(key_corner / bg->default_radius());
+  shadow_frame_->SetShadowOpacity(
+      std::min(1.0, key_corner / bg->default_radius()));
 }
 
 bool OrganizerTrayView::IsPositionInWindowCaption(const gfx::Point& point) {
@@ -291,7 +292,7 @@ void OrganizerTrayView::Layout(PassKey) {
   double opacity = 1.0;
   const int exclusion_width = top_leading_exclusion_.width();
   const int actual_width = width();
-  if (exclusion_width > 0 && actual_width < target_width_) {
+  if (actual_width < target_width_) {
     const int controls_preferred_width =
         controls_view_->GetPreferredSize().width();
     const int required_width =

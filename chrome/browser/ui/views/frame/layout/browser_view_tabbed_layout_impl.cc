@@ -1804,10 +1804,27 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
           corners[CornerOrientation::kBottomTrailing].radius = bottom_corner;
         }
       } else {
+        // Try not to overlap the corners, but do not shrink them either.
+        const int radius =
+            std::max(background->default_radius(),
+                     std::min(delegate().GetRestoredWindowCornerRadius(),
+                              views().organizer_tray->width() / 2));
         corners[CornerOrientation::kTopTrailing].type =
             CustomCornersBackground::CornerType::kRounded;
+        corners[CornerOrientation::kTopTrailing].radius = radius;
         corners[CornerOrientation::kBottomTrailing].type =
             CustomCornersBackground::CornerType::kRounded;
+        corners[CornerOrientation::kBottomTrailing].radius = radius;
+        // Update the leading corners if they are rounded; do not update them if
+        // they're not.
+        if (auto& corner = corners[CornerOrientation::kTopLeading];
+            corner.radius > 0) {
+          corner.radius = radius;
+        }
+        if (auto& corner = corners[CornerOrientation::kBottomLeading];
+            corner.radius > 0) {
+          corner.radius = radius;
+        }
       }
       background->SetCorners(corners);
       background->SetUseBackgroundBlur(blur);

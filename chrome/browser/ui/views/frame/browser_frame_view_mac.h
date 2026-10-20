@@ -55,6 +55,11 @@ class BrowserFrameViewMac : public BrowserFrameView,
   views::LayoutAlignment GetWindowTitleAlignment() const override;
   gfx::RoundedCornersF GetWindowRoundedCorners() const override;
 
+  // `GetWindowRoundedCorners()` does not return consistent values for
+  // historical resasons. This method returns a best guess at the version-
+  // specific corner radius when the window isn't fullscreen.
+  int GetRestoredWindowCornerRadius() const override;
+
   // views::FrameView:
   gfx::Rect GetBoundsForClientView() const override;
   gfx::Rect GetWindowBoundsForClientBounds(

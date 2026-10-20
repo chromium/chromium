@@ -14,6 +14,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -182,6 +183,10 @@ views::LayoutAlignment BrowserFrameView::GetWindowTitleAlignment() const {
 
 gfx::RoundedCornersF BrowserFrameView::GetWindowRoundedCorners() const {
   return gfx::RoundedCornersF();
+}
+
+int BrowserFrameView::GetRestoredWindowCornerRadius() const {
+  return GetLayoutConstant(LayoutConstant::kToolbarCornerRadius);
 }
 
 void BrowserFrameView::UpdateFullscreenTopUI() {}

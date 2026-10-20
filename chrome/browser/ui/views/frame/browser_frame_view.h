@@ -104,6 +104,12 @@ class BrowserFrameView : public views::FrameView {
   // as needed.
   virtual gfx::RoundedCornersF GetWindowRoundedCorners() const;
 
+  // Gets the corner radius that would be used when the window is restored
+  // (unlike GetWindowRoundedCorners(), which returns the current radii). This
+  // may be an empirical value/best guess on some systems, and not all corners
+  // may match this value in all cases.
+  virtual int GetRestoredWindowCornerRadius() const;
+
   // Returns the inset from the top of the window to the top of the client
   // view. For a tabbed browser, this is the space occupied by the tab strip.
   // For popup windows, this is the toolbar. For app windows, this is the

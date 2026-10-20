@@ -364,6 +364,14 @@ gfx::RoundedCornersF BrowserFrameViewMac::GetWindowRoundedCorners() const {
   return gfx::RoundedCornersF();
 }
 
+int BrowserFrameViewMac::GetRestoredWindowCornerRadius() const {
+  // These values are determined empirically.
+  if (@available(macOS 26, *)) {
+    return 20;
+  }
+  return 16;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameViewMac, views::FrameView implementation:
 

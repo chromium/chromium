@@ -69,6 +69,7 @@ class BrowserViewLayoutDelegate {
   virtual base::CallbackListSubscription AddOnGlassModeChangedCallback(
       base::RepeatingCallback<void(bool)> callback,
       bool* current_state_out) = 0;
+  virtual int GetRestoredWindowCornerRadius() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_DELEGATE_H_
