@@ -262,10 +262,10 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // exists, or else the existing one (which might be shared with other
   // NavigationEntries) is updated or replaced (based on |update_policy|) with
   // the given parameters.
-  // Does nothing if there is no entry already and |url| is about:blank, since
-  // that does not count as a real commit.
+  // Returns the added or updated FrameNavigationEntry, or nullptr if the
+  // parent TreeNode could not be found.
   enum class UpdatePolicy { kUpdate, kReplace };
-  void AddOrUpdateFrameEntry(
+  FrameNavigationEntry* AddOrUpdateFrameEntry(
       FrameTreeNode* frame_tree_node,
       UpdatePolicy update_policy,
       int64_t item_sequence_number,

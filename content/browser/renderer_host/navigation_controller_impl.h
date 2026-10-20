@@ -350,16 +350,25 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // provisional load starts.
   void SetPendingEntry(std::unique_ptr<NavigationEntryImpl> entry);
 
+  struct CommitResult {
+    bool did_navigate = false;
+    scoped_refptr<FrameNavigationEntry> frame_entry;
+  };
+
   // Handles updating the navigation state after the renderer has navigated.
   // This is used by the WebContentsImpl.
   //
-  // If a new entry is created, it will return true and will have filled the
-  // given details structure and broadcast the NOTIFY_NAV_ENTRY_COMMITTED
-  // notification. The caller can then use the details without worrying about
-  // listening for the notification.
+  // If a new entry is created, it will return a CommitResult with
+  // `did_navigate` = true and will have filled the given details structure and
+  // broadcast the NOTIFY_NAV_ENTRY_COMMITTED notification. The caller can then
+  // use the details without worrying about listening for the notification.
   //
   // In the case that nothing has changed, the details structure is undefined
-  // and it will return false.
+  // and it will return a CommitResult with `did_navigate` = false.
+  //
+  // The CommitResult's `frame_entry` is the FrameNavigationEntry committed in
+  // `rfh`, set either way. It can be null (see
+  // RenderFrameHostImpl::last_committed_frame_entry).
   //
   // |was_on_initial_empty_document| indicates whether the document being
   // navigated away from was an initial empty document.
@@ -379,7 +388,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // the new NavigationEntry, which will further determine whether these entries
   // should be skipped due to the back-to-ad intervention during back/forward UI
   // navigation.
-  bool RendererDidNavigate(
+  CommitResult RendererDidNavigate(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       LoadCommittedDetails* details,
@@ -827,7 +836,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // replace the current one (e.g., for location.replace or successful loads
   // after net errors), in contrast to updating a NavigationEntry in place
   // (e.g., for history.replaceState).
-  void RendererDidNavigateToNewEntry(
+  //
+  // Each returns the FrameNavigationEntry committed in `rfh`. These return a
+  // scoped_refptr, unlike UpdateNavigationEntryDetails(), because
+  // RendererDidNavigateNewSubframe() can create a FrameNavigationEntry that no
+  // NavigationEntry holds, if CloneAndReplace() can't place it in the tree (see
+  // https://crbug.com/607205).
+  scoped_refptr<FrameNavigationEntry> RendererDidNavigateToNewEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
@@ -837,7 +852,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       NavigationRequest* request,
       LoadCommittedDetails* details,
       ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
-  void RendererDidNavigateToExistingEntry(
+  scoped_refptr<FrameNavigationEntry> RendererDidNavigateToExistingEntry(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
@@ -847,7 +862,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool keep_pending_entry,
       LoadCommittedDetails* details,
       ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
-  void RendererDidNavigateNewSubframe(
+  scoped_refptr<FrameNavigationEntry> RendererDidNavigateNewSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
@@ -857,7 +872,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       NavigationRequest* request,
       LoadCommittedDetails* details,
       ScopedDeferredNavigationStateChangeNotifier* deferred_notifier);
-  bool RendererDidNavigateAutoSubframe(
+  // `did_navigate` is false if no commit notification is needed.
+  CommitResult RendererDidNavigateAutoSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,
       bool is_same_document,
@@ -1065,8 +1081,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                                               const GURL& url);
 
   // Adds details from a committed navigation to `entry` and the
-  // FrameNavigationEntry corresponding to `rfh`.
-  void UpdateNavigationEntryDetails(
+  // FrameNavigationEntry corresponding to `rfh`, and returns that
+  // FrameNavigationEntry, which `entry` holds. Returns null if it couldn't be
+  // added.
+  FrameNavigationEntry* UpdateNavigationEntryDetails(
       NavigationEntryImpl* entry,
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,

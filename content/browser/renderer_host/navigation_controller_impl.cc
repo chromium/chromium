@@ -1838,7 +1838,8 @@ bool NavigationControllerImpl::PendingEntryMatchesRequest(
          pending_entry_->GetUniqueID() == request->nav_entry_id();
 }
 
-bool NavigationControllerImpl::RendererDidNavigate(
+NavigationControllerImpl::CommitResult
+NavigationControllerImpl::RendererDidNavigate(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     LoadCommittedDetails* details,
@@ -2041,34 +2042,47 @@ bool NavigationControllerImpl::RendererDidNavigate(
       navigation_type == NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY &&
       pending_entry_ && !PendingEntryMatchesRequest(navigation_request);
 
+  CommitResult result;
   switch (navigation_type) {
     case NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY:
-      RendererDidNavigateToNewEntry(
-          rfh, params, details->is_same_document, details->did_replace_entry,
-          previous_document_had_history_intervention_activation, caused_by_ad,
-          navigation_request, details, &deferred_notifier);
+      result = {
+          .did_navigate = true,
+          .frame_entry = RendererDidNavigateToNewEntry(
+              rfh, params, details->is_same_document,
+              details->did_replace_entry,
+              previous_document_had_history_intervention_activation,
+              caused_by_ad, navigation_request, details, &deferred_notifier),
+      };
       break;
     case NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY:
-      RendererDidNavigateToExistingEntry(
-          rfh, params, details->is_same_document, was_restored, caused_by_ad,
-          navigation_request, keep_pending_entry, details, &deferred_notifier);
+      result = {
+          .did_navigate = true,
+          .frame_entry = RendererDidNavigateToExistingEntry(
+              rfh, params, details->is_same_document, was_restored,
+              caused_by_ad, navigation_request, keep_pending_entry, details,
+              &deferred_notifier),
+      };
       break;
     case NAVIGATION_TYPE_NEW_SUBFRAME:
-      RendererDidNavigateNewSubframe(
-          rfh, params, details->is_same_document, details->did_replace_entry,
-          previous_document_had_history_intervention_activation, caused_by_ad,
-          navigation_request, details, &deferred_notifier);
+      result = {
+          .did_navigate = true,
+          .frame_entry = RendererDidNavigateNewSubframe(
+              rfh, params, details->is_same_document,
+              details->did_replace_entry,
+              previous_document_had_history_intervention_activation,
+              caused_by_ad, navigation_request, details, &deferred_notifier),
+      };
       break;
     case NAVIGATION_TYPE_AUTO_SUBFRAME:
-      if (!RendererDidNavigateAutoSubframe(
-              rfh, params, details->is_same_document,
-              was_on_initial_empty_document, navigation_request, details,
-              &deferred_notifier)) {
+      result = RendererDidNavigateAutoSubframe(
+          rfh, params, details->is_same_document, was_on_initial_empty_document,
+          navigation_request, details, &deferred_notifier);
+      if (!result.did_navigate) {
         // We don't send a notification about auto-subframe PageState during
         // UpdateStateForFrame, since it looks like nothing has changed.  Send
         // it here at commit time instead.
         NotifyEntryChanged(GetLastCommittedEntry());
-        return false;
+        return result;
       }
       break;
     case NAVIGATION_TYPE_UNKNOWN:
@@ -2209,7 +2223,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
     // length and index together with that.
   }
 
-  return true;
+  return result;
   // `deferred_notifier` deleted here.
 }
 
@@ -2330,7 +2344,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
   return NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY;
 }
 
-void NavigationControllerImpl::UpdateNavigationEntryDetails(
+FrameNavigationEntry* NavigationControllerImpl::UpdateNavigationEntryDetails(
     NavigationEntryImpl* entry,
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
@@ -2340,7 +2354,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
     LoadCommittedDetails* commit_details) {
   // Update the FrameNavigationEntry.
   std::vector<GURL> redirects;
-  entry->AddOrUpdateFrameEntry(
+  FrameNavigationEntry* frame_entry = entry->AddOrUpdateFrameEntry(
       rfh->frame_tree_node(), update_policy, params.item_sequence_number,
       params.document_sequence_number, params.navigation_api_key,
       rfh->GetSiteInstance(), nullptr, params.url,
@@ -2357,7 +2371,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
 
   if (rfh->GetParent()) {
     // Only modify the NavigationEntry for main frame navigations.
-    return;
+    return frame_entry;
   }
   if (entry->update_virtual_url_with_url()) {
     UpdateVirtualURLToURL(entry, params.url);
@@ -2413,6 +2427,7 @@ void NavigationControllerImpl::UpdateNavigationEntryDetails(
     DCHECK(!entry->site_instance() || !entry->GetRedirectChain().empty() ||
            entry->site_instance() == rfh->GetSiteInstance());
   }
+  return frame_entry;
 }
 
 void NavigationControllerImpl::CreateInitialEntry() {
@@ -2446,17 +2461,20 @@ void NavigationControllerImpl::CreateInitialEntry() {
       std::u16string() /* title */, ui::PAGE_TRANSITION_TYPED,
       false /* renderer_initiated */, nullptr /* blob_url_loader_factory */,
       true /* is_initial_entry */);
-  UpdateNavigationEntryDetails(
+  // The initial entry doesn't go through Navigator::DidNavigate(), so update
+  // the RenderFrameHost here.
+  rfh->set_last_committed_frame_entry(UpdateNavigationEntryDetails(
       new_entry.get(), rfh, *params, nullptr /* request */,
       NavigationEntryImpl::UpdatePolicy::kUpdate, true /* is_new_entry */,
-      nullptr /* commit_details */);
+      nullptr /* commit_details */));
 
   InsertOrReplaceEntry(std::move(new_entry), false /* replace_entry */,
                        false /* was_post_commit_error */,
                        is_in_fenced_frame_tree);
 }
 
-void NavigationControllerImpl::RendererDidNavigateToNewEntry(
+scoped_refptr<FrameNavigationEntry>
+NavigationControllerImpl::RendererDidNavigateToNewEntry(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
@@ -2512,6 +2530,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     CHECK(!frame_entry->HasOneRef() && frame_entry->HasAtLeastOneRef());
   }
 
+  scoped_refptr<FrameNavigationEntry> committed_frame_entry;
   // If this is an activation navigation from a prerendered page, transfer the
   // new entry from an entry already created and stored in the
   // NavigationRequest. |new_entry| will not have been set prior to this as
@@ -2522,6 +2541,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
     DCHECK(!new_entry);
     new_entry = request->TakePrerenderNavigationEntry();
     DCHECK(new_entry);
+    committed_frame_entry = new_entry->root_node()->frame_entry;
   }
 
   // Only make a copy of the pending entry if it is appropriate for the new
@@ -2587,9 +2607,10 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   // Unlike BFCache, prerendering creates a new NavigationEntry rather than
   // using an existing one.
   if (!request->IsPrerenderedPageActivation()) {
-    UpdateNavigationEntryDetails(new_entry.get(), rfh, params, request,
-                                 NavigationEntryImpl::UpdatePolicy::kUpdate,
-                                 true /* is_new_entry */, commit_details);
+    committed_frame_entry =
+        UpdateNavigationEntryDetails(new_entry.get(), rfh, params, request,
+                                     NavigationEntryImpl::UpdatePolicy::kUpdate,
+                                     true /* is_new_entry */, commit_details);
 
     // history.pushState() is classified as a navigation to a new page, but sets
     // is_same_document to true. In this case, we already have the title and
@@ -2659,9 +2680,11 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
   InsertOrReplaceEntry(std::move(new_entry), replace_entry,
                        was_post_commit_error, rfh->IsNestedWithinFencedFrame(),
                        deferred_notifier);
+  return committed_frame_entry;
 }
 
-void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
+scoped_refptr<FrameNavigationEntry>
+NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
@@ -2770,9 +2793,10 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   }
   DCHECK(entry);
 
-  UpdateNavigationEntryDetails(entry, rfh, params, request,
-                               NavigationEntryImpl::UpdatePolicy::kUpdate,
-                               false /* is_new_entry */, commit_details);
+  scoped_refptr<FrameNavigationEntry> committed_frame_entry =
+      UpdateNavigationEntryDetails(entry, rfh, params, request,
+                                   NavigationEntryImpl::UpdatePolicy::kUpdate,
+                                   false /* is_new_entry */, commit_details);
 
   // We determine if this is a replace operation (e.g., history.replaceState)
   // by checking if we are reusing the current entry. This distinguishes it from
@@ -2826,9 +2850,11 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   if (!keep_pending_entry) {
     DiscardNonCommittedEntriesInternal(deferred_notifier);
   }
+  return committed_frame_entry;
 }
 
-void NavigationControllerImpl::RendererDidNavigateNewSubframe(
+scoped_refptr<FrameNavigationEntry>
+NavigationControllerImpl::RendererDidNavigateNewSubframe(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
@@ -2895,9 +2921,9 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       std::move(policy_container_policies), protect_url_in_navigation_api);
 
   std::unique_ptr<NavigationEntryImpl> new_entry =
-      GetLastCommittedEntry()->CloneAndReplace(
-          std::move(frame_entry), is_same_document, rfh->frame_tree_node(),
-          frame_tree_->root());
+      GetLastCommittedEntry()->CloneAndReplace(frame_entry, is_same_document,
+                                               rfh->frame_tree_node(),
+                                               frame_tree_->root());
 
   SetShouldSkipOnBackForwardUIIfNeeded(
       replace_entry, previous_document_had_history_intervention_activation,
@@ -2908,16 +2934,17 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
       *new_entry, is_same_document, caused_by_ad, /*is_append=*/!replace_entry,
       /*is_replace=*/replace_entry, /*is_main_frame=*/false);
 
-  // TODO(creis): Update this to add the frame_entry if we can't find the one
-  // to replace, which can happen due to a unique name change. See
-  // https://crbug.com/607205. For now, the call to CloneAndReplace() will
-  // delete the |frame_entry| when the function exits if it doesn't get used.
+  // TODO(creis): Update CloneAndReplace() to add the frame_entry if we can't
+  // find the one to replace, which can happen due to a unique name change. See
+  // https://crbug.com/607205.
 
   InsertOrReplaceEntry(std::move(new_entry), replace_entry, false,
                        rfh->IsNestedWithinFencedFrame(), deferred_notifier);
+  return frame_entry;
 }
 
-bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
+NavigationControllerImpl::CommitResult
+NavigationControllerImpl::RendererDidNavigateAutoSubframe(
     RenderFrameHostImpl* rfh,
     const mojom::DidCommitProvisionalLoadParams& params,
     bool is_same_document,
@@ -3010,11 +3037,14 @@ bool NavigationControllerImpl::RendererDidNavigateAutoSubframe(
     update_policy = NavigationEntryImpl::UpdatePolicy::kReplace;
   }
 
-  UpdateNavigationEntryDetails(last_committed, rfh, params, request,
-                               update_policy, false /* is_new_entry */,
-                               commit_details);
+  FrameNavigationEntry* frame_entry = UpdateNavigationEntryDetails(
+      last_committed, rfh, params, request, update_policy,
+      false /* is_new_entry */, commit_details);
 
-  return send_commit_notification;
+  return {
+      .did_navigate = send_commit_notification,
+      .frame_entry = frame_entry,
+  };
 }
 
 int NavigationControllerImpl::GetIndexOfEntry(

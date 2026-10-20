@@ -4463,12 +4463,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // cases when a FrameTree embeds another FrameTree are not reflected here.
   const unsigned int depth_ = 0u;
 
-  // The FrameNavigationEntry for the current document in this RenderFrameHost,
-  // shared with any NavigationEntries that reference it. Updated after every
+  // The FrameNavigationEntry for the document currently committed in this
+  // RenderFrameHost, shared with any NavigationEntries that reference it.
+  // Updated when the initial NavigationEntry is created and after every
   // commit.
-  // For now, there are cases when this can be null (e.g., initial state, or
-  // cases from https://crbug.com/608402 when the FrameNavigationEntry is
-  // missing for a frame).
+  //
+  // This can differ from `GetLastCommittedEntry()->GetFrameEntry()` during a
+  // multi-frame history navigation: as soon as the first frame commits,
+  // `GetLastCommittedEntry()` advances to the target NavigationEntry, so for
+  // frames whose navigation is still pending, `GetLastCommittedEntry()` holds
+  // the target FrameNavigationEntry while `last_committed_frame_entry_` still
+  // reflects the currently committed document.
+  //
+  // For now, there are cases when this can be null (e.g., before the first
+  // commit in a subframe, or cases from https://crbug.com/608402 when the
+  // FrameNavigationEntry is missing for a frame).
   // TODO(crbug.com/40217743): Ensure this is always set, and use it to
   // avoid separately storing the last committed URL and origin here.
   scoped_refptr<FrameNavigationEntry> last_committed_frame_entry_;

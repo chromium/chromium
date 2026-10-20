@@ -403,6 +403,15 @@ TEST_F(NavigationControllerTest, Defaults) {
   EXPECT_FALSE(controller.CanGoForward());
 }
 
+// The initial RenderFrameHost tracks the FrameNavigationEntry of the initial
+// NavigationEntry.
+TEST_F(NavigationControllerTest, InitialEntrySetsLastCommittedFrameEntry) {
+  NavigationControllerImpl& controller = controller_impl();
+  ASSERT_TRUE(controller.GetLastCommittedEntry()->IsInitialEntry());
+  EXPECT_EQ(controller.GetLastCommittedEntry()->root_node()->frame_entry.get(),
+            main_test_rfh()->last_committed_frame_entry());
+}
+
 TEST_F(NavigationControllerTest, GoToOffset) {
   NavigationControllerImpl& controller = controller_impl();
 

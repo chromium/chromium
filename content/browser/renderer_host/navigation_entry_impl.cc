@@ -1163,7 +1163,7 @@ const NavigationEntryImpl::TreeNode* NavigationEntryImpl::GetTreeNode(
   return nullptr;
 }
 
-void NavigationEntryImpl::AddOrUpdateFrameEntry(
+FrameNavigationEntry* NavigationEntryImpl::AddOrUpdateFrameEntry(
     FrameTreeNode* frame_tree_node,
     UpdatePolicy update_policy,
     int64_t item_sequence_number,
@@ -1225,7 +1225,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
           method, post_id, std::move(blob_url_loader_factory),
           std::move(policy_container_policies), protect_url_in_navigation_api);
     }
-    return;
+    return root_node()->frame_entry.get();
   }
 
   // We should already have a TreeNode for the parent node by the time this node
@@ -1235,7 +1235,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
   if (!parent_node) {
     // The renderer should not send a commit for a subframe before its parent.
     // TODO(creis): Kill the renderer if we get here.
-    return;
+    return nullptr;
   }
 
   // Now check whether we have a TreeNode for the node itself.
@@ -1262,7 +1262,7 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
           redirect_chain, page_state, method, post_id,
           std::move(blob_url_loader_factory),
           std::move(policy_container_policies), protect_url_in_navigation_api);
-      return;
+      return child->frame_entry.get();
     }
   }
 
@@ -1275,9 +1275,11 @@ void NavigationEntryImpl::AddOrUpdateFrameEntry(
       origin, referrer, initiator_origin, initiator_base_url, redirect_chain,
       page_state, method, post_id, std::move(blob_url_loader_factory),
       std::move(policy_container_policies), protect_url_in_navigation_api);
+  FrameNavigationEntry* result = frame_entry.get();
   parent_node->children.push_back(
       std::make_unique<NavigationEntryImpl::TreeNode>(parent_node,
                                                       std::move(frame_entry)));
+  return result;
 }
 
 const FrameNavigationEntry* NavigationEntryImpl::GetFrameEntry(
