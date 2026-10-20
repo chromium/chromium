@@ -2419,7 +2419,7 @@ bool ChildProcessSecurityPolicyImpl::MatchesCommittedOriginForTesting(
 }
 
 CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
-    int child_id,
+    ChildProcessId child_id,
     const IsolationContext& isolation_context,
     const UrlInfo& url_info) {
   CHECK(url_info.origin.has_value(), base::NotFatalUntil::M159);
@@ -2442,11 +2442,9 @@ CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(
     // the universal access check, but in practice no apps in the wild seem to
     // be failing any other types of validation, so doing it here is a narrower
     // exemption.) See https://crbug.com/326250356.
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
     bool exempt_due_to_webview_universal_access =
         (origin.scheme() == url::kFileScheme) &&
-        HasOriginCheckExemptionForWebView(
-            ChildProcessId::FromUnsafeValue(child_id), origin);
+        HasOriginCheckExemptionForWebView(child_id, origin);
     if (!exempt_due_to_webview_universal_access) {
       return CanCommitStatus::CANNOT_COMMIT_URL;
     }
