@@ -11,6 +11,7 @@
 
 #include "base/notreached.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -271,12 +272,6 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(
       request_type(), GetPermissionActionString(button),
       record_host_always_active_value());
-  // `GetBrowser()` can be null for hosts that are not backed by a Browser, such
-  // as a standalone Document Picture-in-Picture window. Guard against it since
-  // `GetBrowserViewForBrowser()` dereferences its argument.
-  auto* browser = GetBrowser();
-  BrowserView* browser_view =
-      browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
   // `PERMISSION_SMART_CARD` is essentially a chooser permission without an
   // actual chooser - thus, there is no blocklist of devices and no real
@@ -285,13 +280,12 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   const bool is_deny_supported =
       request_type() != permissions::RequestTypeForUma::PERMISSION_SMART_CARD;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  if (browser_view && browser_view->GetLocationBar()->GetChipController() &&
-      browser_view->GetLocationBar()
-          ->GetChipController()
-          ->IsPermissionPromptChipVisible() &&
-      browser_view->GetLocationBar()->GetChipController()->IsBubbleShowing()) {
-    ChipController* chip_controller =
-        browser_view->GetLocationBar()->GetChipController();
+  LocationBar* location_bar =
+      location_bar::GetLocationBarForWebContents(web_contents());
+  ChipController* chip_controller =
+      location_bar ? location_bar->GetChipController() : nullptr;
+  if (chip_controller && chip_controller->IsPermissionPromptChipVisible() &&
+      chip_controller->IsBubbleShowing()) {
     switch (button) {
       case PermissionDialogButton::kAccept:
         chip_controller->PromptDecided(permissions::PermissionAction::GRANTED);

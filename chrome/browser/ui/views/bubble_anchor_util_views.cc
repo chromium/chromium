@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
+#include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
@@ -130,7 +131,7 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
           : webui::GetBrowserWindowInterface(web_contents);
   if (browser) {
     LocationBar* location_bar =
-        BrowserWindow::FromBrowser(browser)->GetLocationBar();
+        location_bar::GetLocationBarForWebContents(web_contents);
     ChipController* chip_controller =
         location_bar ? location_bar->GetChipController() : nullptr;
     if (chip_controller && chip_controller->IsPermissionPromptChipVisible()) {
@@ -138,6 +139,16 @@ AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
         return *chip_anchor;
       }
     }
+    if (location_bar && location_bar->IsDrawn() &&
+        location_bar::LocationBarOverrideData::FromWebContents(web_contents)) {
+      if (ui::TrackedElement* element = location_bar->GetAnchorOrNull()) {
+        return {views::BubbleAnchor(element), std::nullopt,
+                views::BubbleBorder::TOP_LEFT};
+      }
+    }
+    // TODO(crbug.com/565828687): Clean up location bar anchor resolution so
+    // there is a single source of truth between this and
+    // `GetPageInfoAnchorConfiguration()`.
     return GetPageInfoAnchorConfiguration(browser);
   }
 
