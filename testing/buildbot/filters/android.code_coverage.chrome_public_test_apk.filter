@@ -1,0 +1,7 @@
+# Tests excluded from chrome_public_test_apk on android-code-coverage
+# (Pixel 2, Java coverage instrumentation).
+
+# b/575823388: Saving to the public Download directory fails
+# (FILE_MOVE_FAILED) on this configuration.
+-org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testDownloadPage
+-org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
