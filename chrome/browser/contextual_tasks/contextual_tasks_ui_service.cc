@@ -3674,7 +3674,7 @@ void ContextualTasksUiService::InitSidePanelWithGhostLoader(
   // If the side panel is already open for a task, do nothing. The ghost
   // loader will be shown whenever the URL navigation is transferred to the
   // embedded page.
-  if (panel_contents || controller->IsPanelOpenForContextualTask()) {
+  if (panel_contents && controller->IsPanelOpenForContextualTask()) {
     return;
   }
 

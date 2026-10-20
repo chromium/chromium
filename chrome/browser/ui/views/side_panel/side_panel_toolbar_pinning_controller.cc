@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_helper.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "components/contextual_tasks/public/features.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/view_utils.h"
 
@@ -151,7 +152,8 @@ void SidePanelToolbarPinningController::UpdatePinState(
 
 bool SidePanelToolbarPinningController::ShouldShowActiveInToolbar(
     const SidePanelEntry* entry) {
-  if (entry && entry->key().id() == SidePanelEntryId::kContextualTasks) {
+  if (entry && entry->key().id() == SidePanelEntryId::kContextualTasks &&
+      !contextual_tasks::IsContextualTasksPinningV2Enabled()) {
     auto* contextual_tasks_controller =
         contextual_tasks::ContextualTasksPanelController::From(&*browser_);
     if (contextual_tasks_controller &&
@@ -186,7 +188,8 @@ void SidePanelToolbarPinningController::UpdateActiveState(
     if (target_id == SidePanelEntryId::kContextualTasks) {
       auto* contextual_tasks_controller =
           contextual_tasks::ContextualTasksPanelController::From(&*browser_);
-      if (contextual_tasks_controller &&
+      if (!contextual_tasks::IsContextualTasksPinningV2Enabled() &&
+          contextual_tasks_controller &&
           contextual_tasks_controller->GetActiveEntrySource() ==
               contextual_tasks::ContextualTasksPanelController::EntrySource::
                   kLensOverlay) {
