@@ -18,7 +18,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/watchdog.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -176,6 +175,7 @@ class WebrtcTransportTest : public testing::Test {
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     network_settings_ =
         NetworkSettings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
+    WebrtcTransport::SetDataChannelPollingIntervalForTests(base::TimeDelta());
   }
 
   void TearDown() override {
@@ -289,7 +289,12 @@ class WebrtcTransportTest : public testing::Test {
     EXPECT_EQ(name, kChannelName);
     client_message_pipe_ = std::move(pipe);
     client_message_pipe_->Start(&client_message_pipe_event_handler_);
+    client_message_pipe_event_handler_.set_open_callback(
+        base::BindRepeating(&WebrtcTransportTest::OnClientChannelConnected,
+                            base::Unretained(this)));
+  }
 
+  void OnClientChannelConnected() {
     if (run_loop_ && host_message_pipe_event_handler_.is_open()) {
       run_loop_->Quit();
     }
@@ -359,13 +364,7 @@ class WebrtcTransportTest : public testing::Test {
   WebrtcTransport::SendTransportInfoCallback host_transport_info_cb_;
 };
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Connects DISABLED_Connects
-#else
-#define MAYBE_Connects Connects
-#endif
-TEST_F(WebrtcTransportTest, MAYBE_Connects) {
+TEST_F(WebrtcTransportTest, Connects) {
   InitializeConnection();
   StartConnection();
   WaitUntilConnected();
@@ -382,13 +381,7 @@ TEST_F(WebrtcTransportTest, InvalidAuthKey) {
   EXPECT_EQ(client_error_, ErrorCode::AUTHENTICATION_FAILED);
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DataStream DISABLED_DataStream
-#else
-#define MAYBE_DataStream DataStream
-#endif
-TEST_F(WebrtcTransportTest, MAYBE_DataStream) {
+TEST_F(WebrtcTransportTest, DataStream) {
   client_event_handler_.set_connecting_callback(base::BindRepeating(
       &WebrtcTransportTest::ExpectClientDataStream, base::Unretained(this)));
   host_event_handler_.set_connecting_callback(base::BindRepeating(
@@ -401,7 +394,9 @@ TEST_F(WebrtcTransportTest, MAYBE_DataStream) {
   run_loop_->Run();
 
   EXPECT_TRUE(client_message_pipe_);
+  EXPECT_TRUE(client_message_pipe_event_handler_.is_open());
   EXPECT_TRUE(host_message_pipe_);
+  EXPECT_TRUE(host_message_pipe_event_handler_.is_open());
 
   TextEvent message;
   message.set_text("Hello");
@@ -419,14 +414,8 @@ TEST_F(WebrtcTransportTest, MAYBE_DataStream) {
   EXPECT_EQ(received_message->text(), message.text());
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DataStreamLate DISABLED_DataStreamLate
-#else
-#define MAYBE_DataStreamLate DataStreamLate
-#endif
 // Verify that data streams can be created after connection has been initiated.
-TEST_F(WebrtcTransportTest, MAYBE_DataStreamLate) {
+TEST_F(WebrtcTransportTest, DataStreamLate) {
   InitializeConnection();
   StartConnection();
   WaitUntilConnected();
@@ -438,16 +427,12 @@ TEST_F(WebrtcTransportTest, MAYBE_DataStreamLate) {
   run_loop_->Run();
 
   EXPECT_TRUE(client_message_pipe_);
+  EXPECT_TRUE(client_message_pipe_event_handler_.is_open());
   EXPECT_TRUE(host_message_pipe_);
+  EXPECT_TRUE(host_message_pipe_event_handler_.is_open());
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_TerminateDataChannel DISABLED_TerminateDataChannel
-#else
-#define MAYBE_TerminateDataChannel TerminateDataChannel
-#endif
-TEST_F(WebrtcTransportTest, MAYBE_TerminateDataChannel) {
+TEST_F(WebrtcTransportTest, TerminateDataChannel) {
   InitializeConnection();
   StartConnection();
   WaitUntilConnected();
@@ -459,7 +444,9 @@ TEST_F(WebrtcTransportTest, MAYBE_TerminateDataChannel) {
   run_loop_->Run();
 
   EXPECT_TRUE(client_message_pipe_);
+  EXPECT_TRUE(client_message_pipe_event_handler_.is_open());
   EXPECT_TRUE(host_message_pipe_);
+  EXPECT_TRUE(host_message_pipe_event_handler_.is_open());
 
   destroy_on_error_ = true;
 
@@ -480,16 +467,8 @@ TEST_F(WebrtcTransportTest, MAYBE_TerminateDataChannel) {
   EXPECT_FALSE(host_message_pipe_);
 }
 
-// crbug.com/1224862: Tests are flaky on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DestroyOnFailedPendingCandidateInOnLocalDescriptionSet \
-  DISABLED_DestroyOnFailedPendingCandidateInOnLocalDescriptionSet
-#else
-#define MAYBE_DestroyOnFailedPendingCandidateInOnLocalDescriptionSet \
-  DestroyOnFailedPendingCandidateInOnLocalDescriptionSet
-#endif
 TEST_F(WebrtcTransportTest,
-       MAYBE_DestroyOnFailedPendingCandidateInOnLocalDescriptionSet) {
+       DestroyOnFailedPendingCandidateInOnLocalDescriptionSet) {
   InitializeConnection();
   StartConnection();
   WaitUntilConnected();
