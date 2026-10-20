@@ -106,6 +106,9 @@
       <message name="IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT" desc="The text shown in the anchored message bubble for the Indigo page action." translateable="false">
         Indigo is available for this page
       </message>
+      <message name="IDS_INDIGO_CONTEXT_MENU_TEXT" desc="The text of the context menu item which triggers Indigo." translateable="false">
+        Indigo
+      </message>
 
       <!-- Overlay UI -->
       <message name="IDS_INDIGO_TITLE" desc="Title for the Indigo page." translateable="false">

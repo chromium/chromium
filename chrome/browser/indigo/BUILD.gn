@@ -110,6 +110,7 @@ source_set("impl") {
     "//components/signin/public/identity_manager",
     "//components/skills/public",
     "//components/variations/service",
+    "//components/vector_icons",
     "//content/public/browser",
     "//google_apis/common",
     "//net",
@@ -118,6 +119,9 @@ source_set("impl") {
     "//services/network/public/mojom",
     "//third_party/blink/public/common",
   ]
+  if (is_chrome_branded) {
+    deps += [ "//chrome/browser/indigo/resources:vector_icons" ]
+  }
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components/install_attributes" ]
   }

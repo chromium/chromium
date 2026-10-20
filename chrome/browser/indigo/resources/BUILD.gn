@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/locales.gni")
+import("//components/vector_icons/vector_icons.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(!is_android)
@@ -46,4 +47,21 @@ grit("grit") {
 source_set("browser_resources") {
   public_deps = [ ":grit" ]
   deps = [ "//base" ]
+}
+
+if (is_chrome_branded) {
+  aggregate_vector_icons("indigo_vector_icons") {
+    icon_directory = "."
+    sources = [ "internal/face_retouch.icon" ]
+  }
+
+  source_set("vector_icons") {
+    sources = get_target_outputs(":indigo_vector_icons")
+    deps = [
+      ":indigo_vector_icons",
+      "//base",
+      "//skia",
+      "//ui/gfx",
+    ]
+  }
 }

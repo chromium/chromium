@@ -18,6 +18,7 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -57,6 +58,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -71,6 +73,10 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/indigo/resources/vector_icons.h"
+#endif
 
 namespace indigo {
 
@@ -169,6 +175,15 @@ IndigoPageActionController* IndigoPageActionController::From(
     return nullptr;
   }
   return Get(tab->GetUnownedUserDataHost());
+}
+
+// static
+const gfx::VectorIcon& IndigoPageActionController::GetEntryPointVectorIcon() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return kFaceRetouchIcon;
+#else
+  return vector_icons::kButtonMagicIcon;
+#endif
 }
 
 void IndigoPageActionController::InvokeAction(EntryPoint entry_point) {

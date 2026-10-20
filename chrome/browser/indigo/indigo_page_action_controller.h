@@ -33,6 +33,10 @@ class OptimizationMetadata;
 
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -80,6 +84,11 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Retrieves an IndigoPageActionController from the given tab, or nullptr if
   // it does not exist.
   static IndigoPageActionController* From(tabs::TabInterface* tab);
+
+  // Returns the vector icon used for Indigo entry points (such as the context
+  // menu and settings page). Handled by the controller so external callers do
+  // not need direct dependencies on branded internal vector icon targets.
+  static const gfx::VectorIcon& GetEntryPointVectorIcon();
 
   void InvokeAction(EntryPoint entry_point);
   void DeleteOriginalPhoto();
