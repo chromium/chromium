@@ -82,7 +82,9 @@ bool IsFullScreenMode(content::WebContents* web_contents) {
 //      page where the user needs to press on a microphone icon to get a
 //      permission request.
 //    - The Lens Overlay is open covering the context. We suppress permission
-//      prompts until the Lens Overlay is closed.
+//      prompts until the Lens Overlay is closed, except for secondary UI
+//      surfaces with their own location bar (such as the Contextual Tasks side
+//      panel).
 bool ShouldIgnorePermissionRequest(
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
@@ -102,16 +104,18 @@ bool ShouldIgnorePermissionRequest(
             ->user_input_in_progress());
 
   BrowserWindowInterface* browser = GetBrowser(web_contents);
-  if (browser) {
+  if (tabs::TabInterface* active_tab =
+          browser ? browser->GetTabStripModel()->GetActiveTab() : nullptr) {
     LensOverlayController* lens_overlay_controller =
-        browser->GetTabStripModel()
-            ->GetActiveTab()
-            ->GetTabFeatures()
-            ->lens_overlay_controller();
-    // Don't show prompt if Lens Overlay is showing
+        active_tab->GetTabFeatures()->lens_overlay_controller();
+    // Don't show prompt while the Lens Overlay is showing, except for
+    // secondary UI surfaces with their own location bar (such as the
+    // Contextual Tasks side panel) that are not covered by the overlay.
     // TODO(b/331940245): Refactor to be decoupled from LensOverlayController
     if (lens_overlay_controller &&
-        lens_overlay_controller->IsOverlayShowing()) {
+        lens_overlay_controller->IsOverlayShowing() &&
+        !::location_bar::LocationBarOverrideData::FromWebContents(
+            web_contents)) {
       can_display_prompt = false;
     }
   }

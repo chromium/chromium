@@ -35,6 +35,9 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/companion/text_finder/text_highlighter.h"
 #include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
 #include "chrome/browser/lens/core/mojom/lens_side_panel.mojom.h"
@@ -104,6 +107,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/permissions/permission_request_manager_test_api.h"
 #include "components/base32/base32.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -124,6 +128,8 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility_api.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -240,14 +246,6 @@ constexpr char kCheckSearchboxInput[] =
     "root.getElementById('searchbox').shadowRoot.getElementById('input')."
     "shadowRoot.getElementById('input').value "
     "  === $1; return  searchboxInputLoaded;})();";
-
-constexpr char kRequestNotificationsScript[] = R"(
-      new Promise(resolve => {
-        Notification.requestPermission().then(function (permission) {
-          resolve(permission);
-        });
-      })
-      )";
 
 constexpr char kCheckSidePanelResultsLoadedScript[] =
     "(function() {const root = "
@@ -1618,43 +1616,106 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       [&]() { return controller->state() == State::kOff; }));
 }
 
-// TODO(crbug.com/341383805): Enable once flakiness is fixed on all platforms.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       DISABLED_DelayPermissionsPrompt) {
-  // Navigate to a page so we can request permissions
+// Opens the Contextual Tasks side panel next to the overlay. With the side
+// panel rearchitecture, the side panel loads its page directly instead of
+// chrome://contextual-tasks, so its permission prompts aren't exempted by
+// `ShouldShowPermissionPromptEvenIfOmniboxEditedOrEmpty()`.
+class LensOverlayControllerContextualTasksSidePanelBrowserTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay,
+          {{"results-search-url", kResultsSearchBaseUrl}}},
+         // Routes Lens results to the Contextual Tasks side panel. Otherwise,
+         // the overlay closes when that side panel opens.
+         {lens::features::kLensSidePanelUnification,
+          {{"allow-signed-out", "true"}}},
+         {contextual_tasks::kContextualTasks, {}},
+         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
+         {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}}},
+        /*disabled_features=*/{
+            lens::features::kLensOverlayNonBlockingPrivacyNotice});
+  }
+
+  // Opens the Contextual Tasks side panel on `url` and returns its
+  // WebContents, or nullptr if it fails to open or load.
+  content::WebContents* OpenContextualTasksSidePanel(const GURL& url) {
+    contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+        browser()->GetProfile())
+        ->StartTaskUiInSidePanel(browser(), browser()->GetActiveTabInterface(),
+                                 url, /*session_handle=*/nullptr);
+    auto* panel_controller =
+        contextual_tasks::ContextualTasksPanelController::From(browser());
+    if (!base::test::RunUntil([&]() {
+          return panel_controller->IsPanelOpenForContextualTask();
+        })) {
+      return nullptr;
+    }
+    content::WebContents* panel_contents =
+        panel_controller->GetActiveWebContents();
+    if (!panel_contents || !content::WaitForLoadStop(panel_contents)) {
+      return nullptr;
+    }
+    return panel_contents;
+  }
+};
+
+// While the overlay is showing, permission prompts for the tab under it are
+// suppressed until the overlay closes, but prompts for the side panel show.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualTasksSidePanelBrowserTest,
+                       SuppressesPermissionPromptsOnlyForTabUnderOverlay) {
   WaitForPaint();
+  content::WebContents* tab_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(tab_contents);
 
-  // State should start in off.
   auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should change the state to screenshot and eventually to overlay.
   OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-  ASSERT_EQ(controller->state(), State::kScreenshot);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return controller->state() == State::kOverlay; }));
 
-  content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
-  ASSERT_TRUE(contents);
+  // Like Lens does when it shows results, open the side panel while the
+  // overlay is showing. The test page stands in for the AI page that the side
+  // panel loads.
+  content::WebContents* panel_contents = OpenContextualTasksSidePanel(
+      embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(panel_contents);
+  ASSERT_NE(panel_contents, tab_contents);
+  ASSERT_EQ(panel_contents->GetLastCommittedURL().path(), "/title1.html");
+  ASSERT_TRUE(controller->IsOverlayShowing());
 
-  permissions::PermissionRequestObserver observer(contents);
+  // A prompt for the tab under the overlay is suppressed, but the request
+  // stays pending.
+  auto* tab_manager =
+      permissions::PermissionRequestManager::FromWebContents(tab_contents);
+  ASSERT_TRUE(tab_manager);
+  permissions::PermissionRequestObserver tab_observer(tab_contents);
+  test::PermissionRequestManagerTestApi(tab_manager)
+      .AddSimpleRequest(tab_contents->GetPrimaryMainFrame(),
+                        permissions::RequestType::kGeolocation);
+  tab_observer.Wait();
+  EXPECT_FALSE(tab_observer.request_shown());
+  EXPECT_TRUE(tab_observer.is_view_recreate_failed());
+  EXPECT_TRUE(tab_manager->IsRequestInProgress());
 
-  // Request permission in tab under overlay.
-  EXPECT_TRUE(content::ExecJs(
-      contents->GetPrimaryMainFrame(), kRequestNotificationsScript,
-      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+  // A prompt for the side panel shows while the overlay is showing.
+  auto* panel_manager =
+      permissions::PermissionRequestManager::FromWebContents(panel_contents);
+  ASSERT_TRUE(panel_manager);
+  permissions::PermissionRequestObserver panel_observer(panel_contents);
+  test::PermissionRequestManagerTestApi(panel_manager)
+      .AddSimpleRequest(panel_contents->GetPrimaryMainFrame(),
+                        permissions::RequestType::kGeolocation);
+  panel_observer.Wait();
+  EXPECT_TRUE(controller->IsOverlayShowing());
+  EXPECT_TRUE(panel_observer.request_shown());
 
-  // Verify no prompt was shown
-  observer.Wait();
-  EXPECT_FALSE(observer.request_shown());
-
-  // Close overlay
+  // Once the overlay closes, the tab's prompt is no longer suppressed.
   CloseOverlayAndWaitForOff(controller,
                             LensOverlayDismissalSource::kOverlayCloseButton);
-
-  // Verify a prompt was shown
-  ASSERT_TRUE(base::test::RunUntil([&]() { return observer.request_shown(); }));
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return tab_observer.request_shown(); }));
 }
 
 // TODO(b/335801964): Test flaky on Mac.
