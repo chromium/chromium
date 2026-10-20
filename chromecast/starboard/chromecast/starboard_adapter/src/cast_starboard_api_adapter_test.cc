@@ -125,6 +125,7 @@ class CastStarboardApiAdapterTest : public ::testing::Test {
     auto* adapter = CastStarboardApiAdapterImpl::GetInstance();
     base::AutoLock autolock(adapter->lock_);
     adapter->subscribers_.clear();
+    adapter->window_ = kSbWindowInvalid;
     adapter->initialized_ = false;
     adapter->released_ = false;
     adapter->at_exit_ran_ = false;
@@ -288,6 +289,55 @@ TEST_F(CastStarboardApiAdapterTest, StarboardIsNotRestartedAfterAtExit) {
   adapter->ReleaseForAtExit();
 
   EXPECT_CHECK_DEATH(adapter->EnsureInitialized());
+}
+
+// When active subscribers remain during AtExitManager teardown, Starboard
+// remains running and late callers can still call GetWindow() without crashing.
+TEST_F(CastStarboardApiAdapterTest,
+       GetWindowSucceedsDuringTeardownWithSubscribers) {
+  auto* adapter = CastStarboardApiAdapterImpl::GetInstance();
+  SbEventHandleCallback sb_callback;
+  EXPECT_CALL(cast_starboard_api_, SbRunStarboardMain(_, _, _))
+      .Times(1)
+      .WillOnce([&](int, char**, SbEventHandleCallback callback) {
+        sb_callback = callback;
+        sb_callback(&fake_start_);
+        return 0;
+      });
+  EXPECT_CALL(cast_starboard_api_, SbWindowCreate(_))
+      .Times(1)
+      .WillOnce(testing::Return(reinterpret_cast<SbWindow>(0x1234)));
+  EXPECT_CALL(cast_starboard_api_, SbSystemRequestStop(0))
+      .Times(1)
+      .WillOnce([&](int) { sb_callback(&fake_stop_); });
+
+  void* context1 = reinterpret_cast<void*>(0x1);
+  adapter->Subscribe(context1, nullptr);
+
+  // AtExitManager runs while there is still an active subscriber.
+  // Release() defers stopping Starboard because subscribers_ is not empty.
+  adapter->ReleaseForAtExit();
+
+  // A nested subscriber (e.g. StarboardDrmWrapper initialized by media
+  // pipeline) subscribes while Starboard is still running during teardown,
+  // and the original subscriber unsubscribes before GetWindow() is called.
+  void* context2 = reinterpret_cast<void*>(0x2);
+  adapter->Subscribe(context2, nullptr);
+  adapter->Unsubscribe(context1);
+
+  // A late thread (e.g. media pipeline / CreatePlayer) requests the window.
+  // Before the fix, EnsureInitialized() unconditionally CHECKed
+  // (!at_exit_ran_), causing a SIGTRAP crash here.
+  SbWindow window = adapter->GetWindow(nullptr);
+  EXPECT_EQ(window, reinterpret_cast<SbWindow>(0x1234));
+
+  // When the final subscriber unsubscribes, Starboard is cleanly stopped.
+  adapter->Unsubscribe(context2);
+
+  // Once Starboard is actually stopped, attempting to re-initialize it after
+  // AtExit has run is forbidden and aborts.
+  EXPECT_CHECK_DEATH(adapter->EnsureInitialized());
+  EXPECT_CHECK_DEATH(adapter->Subscribe(context1, nullptr));
 }
 #endif  // SB_API_VERSION >= 15
 

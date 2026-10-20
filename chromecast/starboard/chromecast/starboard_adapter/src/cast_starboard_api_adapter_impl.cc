@@ -100,57 +100,60 @@ void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
 }
 
 void CastStarboardApiAdapterImpl::EnsureInitialized() {
-  bool need_to_start_starboard = false;
+  bool already_initialized = false;
   {
     base::AutoLock autolock(lock_);
-    CHECK(!at_exit_ran_)
-        << "Starboard should not be re-initialized after the AtExitManager "
-           "has run.";
-    if (!initialized_) {
-      need_to_start_starboard = true;
+    if (initialized_) {
+      already_initialized = true;
+    } else {
+      CHECK(!at_exit_ran_)
+          << "Starboard should not be re-initialized after the AtExitManager "
+             "has run.";
+      initialized_ = true;
     }
-    initialized_ = true;
   }
 
-  if (need_to_start_starboard) {
-    LOG(INFO) << "Starting starboard";
-    CHROMECAST_TIMING_TRACKER;
+  if (already_initialized) {
+    // If starboard was started earlier, this will return immediately. If
+    // another thread started starboard but starboard has not yet sent the
+    // kSbEventTypeStart event, we still need to wait for it outside lock_.
+    starboard_started_.Wait();
+    return;
+  }
+
+  LOG(INFO) << "Starting starboard";
+  CHROMECAST_TIMING_TRACKER;
 
 #if SB_API_VERSION >= 15
-    using SbRunStarboardMainFn = int (*)(int, char**, void (*)(const SbEvent*));
-    auto run_main = reinterpret_cast<SbRunStarboardMainFn>(
-        dlsym(RTLD_DEFAULT, "SbRunStarboardMain"));
-    if (run_main) {
-      LOG(INFO) << "Initializing Starboard via SbRunStarboardMain (SB15+).";
-      // SbRunStarboardMain only returns once Starboard has stopped, so the
-      // thread is detached and never joined.
-      std::thread(run_main, /*argc=*/0, /*argv=*/nullptr,
-                  &CastStarboardApiAdapterImpl::SbEventHandle)
-          .detach();
-    } else {
-      LOG(FATAL) << "Failed to find SbRunStarboardMain for Starboard 15+";
-    }
-#else
-    using CastStarboardApiInitializeFn =
-        int (*)(int, char**, void (*)(const SbEvent*));
-    auto init_fn = reinterpret_cast<CastStarboardApiInitializeFn>(
-        dlsym(RTLD_DEFAULT, "CastStarboardApiInitialize"));
-    if (init_fn) {
-      LOG(INFO)
-          << "Initializing Starboard via CastStarboardApiInitialize (Legacy).";
-      init_fn(/*argc=*/0, /*argv=*/nullptr,
-              &CastStarboardApiAdapterImpl::SbEventHandle);
-    } else {
-      LOG(FATAL)
-          << "Failed to find CastStarboardApiInitialize for Legacy Starboard";
-    }
-#endif
+  using SbRunStarboardMainFn = int (*)(int, char**, void (*)(const SbEvent*));
+  auto run_main = reinterpret_cast<SbRunStarboardMainFn>(
+      dlsym(RTLD_DEFAULT, "SbRunStarboardMain"));
+  if (run_main) {
+    LOG(INFO) << "Initializing Starboard via SbRunStarboardMain (SB15+).";
+    // SbRunStarboardMain only returns once Starboard has stopped, so the
+    // thread is detached and never joined.
+    std::thread(run_main, /*argc=*/0, /*argv=*/nullptr,
+                &CastStarboardApiAdapterImpl::SbEventHandle)
+        .detach();
+  } else {
+    LOG(FATAL) << "Failed to find SbRunStarboardMain for Starboard 15+";
   }
+#else
+  using CastStarboardApiInitializeFn =
+      int (*)(int, char**, void (*)(const SbEvent*));
+  auto init_fn = reinterpret_cast<CastStarboardApiInitializeFn>(
+      dlsym(RTLD_DEFAULT, "CastStarboardApiInitialize"));
+  if (init_fn) {
+    LOG(INFO)
+        << "Initializing Starboard via CastStarboardApiInitialize (Legacy).";
+    init_fn(/*argc=*/0, /*argv=*/nullptr,
+            &CastStarboardApiAdapterImpl::SbEventHandle);
+  } else {
+    LOG(FATAL)
+        << "Failed to find CastStarboardApiInitialize for Legacy Starboard";
+  }
+#endif
 
-  // If starboard was started earlier, this will return immediately. Regardless
-  // of whether we start starboard in this function call, we still need to call
-  // this (e.g. if another thread started starboard but starboard has not yet
-  // sent the kSbEventTypeStart event).
   starboard_started_.Wait();
 }
 
@@ -175,6 +178,7 @@ void CastStarboardApiAdapterImpl::Release() {
       need_to_stop_starboard = true;
     }
     initialized_ = false;
+    window_ = kSbWindowInvalid;
   }
 
   if (need_to_stop_starboard) {
