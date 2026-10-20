@@ -405,16 +405,13 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         var tab = mResponsivePageStation.getTab();
         var webContents = tab.getWebContents();
         assertNotNull(webContents);
-        int originalWebContentsWidth = ThreadUtils.runOnUiThreadBlocking(webContents::getWidth);
 
         var coordinator = getSidePanelContainerCoordinator();
         showPanel(tab);
-        waitForContainerViewOpen(coordinator);
+        int sidePanelWidth = waitForContainerViewOpen(coordinator).getWidth();
 
-        // WebContents#getWidth() returns a value in dp, whereas View#getWidth() and
-        // getWindowWidth() return px; compare against originalWebContentsWidth in dp.
         CriteriaHelper.pollUiThread(
-                () -> webContents.getWidth() < originalWebContentsWidth,
+                () -> webContents.getWidth() + sidePanelWidth <= getWindowWidth(activity),
                 "WebContents isn't resized to accommodate side panel.");
 
         // Act: Change the theme.
@@ -423,10 +420,10 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Assert:
         // (1) Wait for the SidePanelContainerCoordinator in the new Activity to be initialized,
         // then
-        // (2) Verify the WebContents's width in the new Activity remains narrowed for the side
-        // panel.
+        // (2) Verify the WebContents's width in the new Activity matches the width before theme
+        // change.
         var newCoordinator = waitForSidePanelContainerCoordinator(activityInNewTheme);
-        waitForContainerViewOpen(newCoordinator);
+        int newSidePanelWidth = waitForContainerViewOpen(newCoordinator).getWidth();
         CriteriaHelper.pollUiThread(
                 () -> {
                     var newTab = activityInNewTheme.getActivityTabProvider().get();
@@ -439,7 +436,8 @@ public class SidePanelContainerCoordinatorIntegrationTest {
                         return false;
                     }
 
-                    return newWebContents.getWidth() < originalWebContentsWidth;
+                    return newWebContents.getWidth() + newSidePanelWidth
+                            <= getWindowWidth(activityInNewTheme);
                 },
                 "WebContents isn't resized to accommodate side panel.");
     }

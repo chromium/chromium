@@ -267,11 +267,9 @@ public class NavigateTest {
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.body.textContent");
         // Note: |content| is JSON, hence lots of escaping.
-        String arch = System.getProperty("os.arch", "");
-        String expectedArch = (arch.startsWith("arm") || arch.startsWith("aarch")) ? "arm" : "x86";
         Assert.assertEquals(
                 "Proper headers",
-                "\"\\\"" + expectedArch + "\\\"\\n" + "?0\\n" + "\\\"\\\"\\n" + "\\\"Linux\\\"\"",
+                "\"\\\"x86\\\"\\n" + "?0\\n" + "\\\"\\\"\\n" + "\\\"Linux\\\"\"",
                 content);
     }
 
@@ -291,9 +289,7 @@ public class NavigateTest {
         String[] versionNameParts = packageVersionName.split("\\.");
         Assert.assertTrue(versionNameParts.length > 0);
         String packageMajorVersionName = versionNameParts[0];
-        String arch = System.getProperty("os.arch", "");
-        String expectedArch = (arch.startsWith("arm") || arch.startsWith("aarch")) ? "arm" : "x86";
-        clientHints.put("sec-ch-ua-arch", "\\\"" + expectedArch + "\\\"");
+        clientHints.put("sec-ch-ua-arch", "\\\"x86\\\"");
         clientHints.put("sec-ch-ua-platform", "\\\"Linux\\\"");
         clientHints.put("sec-ch-ua-platform-version", "\\\"\\\"");
         clientHints.put("sec-ch-ua-model", "\\\"\\\"");

@@ -199,17 +199,7 @@ public class SettingsPageTest {
                         });
 
         // 1. Simulate opening the side panel (shrinking container width to narrow).
-        final int narrowWidth =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () ->
-                                Math.min(
-                                        ViewUtils.dpToPx(
-                                                mActivityTestRule
-                                                        .getActivity()
-                                                        .getResources()
-                                                        .getDisplayMetrics(),
-                                                500),
-                                        originalWidth - 200));
+        final int narrowWidth = Math.min(800, originalWidth - 200);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var activity = mActivityTestRule.getActivity();
