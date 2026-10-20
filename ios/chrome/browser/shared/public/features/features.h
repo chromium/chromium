@@ -1043,4 +1043,12 @@ BASE_DECLARE_FEATURE(kAppBarStaticSymbolWhenHidden);
 // Returns true if the AppBarStaticSymbolWhenHidden feature is enabled.
 bool IsAppBarStaticSymbolWhenHiddenEnabled();
 
+// Feature flag (acting as kill switch) to clear window rootViewController after
+// disconnecting scene state to avoid UIKit focus system exceptions.
+BASE_DECLARE_FEATURE(kClearRootViewControllerAfterSceneDisconnect);
+
+// Returns true if the ClearRootViewControllerAfterSceneDisconnect feature is
+// enabled.
+bool IsClearRootViewControllerAfterSceneDisconnectEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

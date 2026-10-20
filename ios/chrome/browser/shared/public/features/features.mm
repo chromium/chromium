@@ -1268,3 +1268,11 @@ BASE_FEATURE(kAppBarStaticSymbolWhenHidden, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsAppBarStaticSymbolWhenHiddenEnabled() {
   return base::FeatureList::IsEnabled(kAppBarStaticSymbolWhenHidden);
 }
+
+BASE_FEATURE(kClearRootViewControllerAfterSceneDisconnect,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsClearRootViewControllerAfterSceneDisconnectEnabled() {
+  return base::FeatureList::IsEnabled(
+      kClearRootViewControllerAfterSceneDisconnect);
+}
