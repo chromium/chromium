@@ -37,6 +37,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerBridge;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerBridgeJni;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -58,6 +60,7 @@ public class FreManagementNoticeDialogHelperTest {
     @Mock private SigninFlowTimestampsLogger mTimestampLogger;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private FullscreenSigninCoordinator.Delegate mHost;
+    @Mock private EnterpriseSignalsDisclaimerBridge.Natives mDisclaimerBridgeNatives;
     @Mock private Context mContext;
 
     private final CoreAccountInfo mCoreAccountInfo =
@@ -69,6 +72,7 @@ public class FreManagementNoticeDialogHelperTest {
 
     @Before
     public void setUp() {
+        EnterpriseSignalsDisclaimerBridgeJni.setInstanceForTesting(mDisclaimerBridgeNatives);
         when(mSigninManager.extractDomainName(mCoreAccountInfo.getEmail()))
                 .thenReturn("domain.com");
 
@@ -286,6 +290,8 @@ public class FreManagementNoticeDialogHelperTest {
         assertTrue(mSignInCompleted);
         assertFalse(mSignInAborted);
         verify(mSigninManager).setUserAcceptedAccountManagement(true);
+        verify(mDisclaimerBridgeNatives)
+                .setAccountAcknowledgedSignalsDisclaimer(mCoreAccountInfo.getGaiaId());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }
 
@@ -308,6 +314,34 @@ public class FreManagementNoticeDialogHelperTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
+    public void testNewNotice_SigninAborted_DisclaimerStaysAcknowledged() {
+        mIsAccountManaged = true;
+        GaiaId gaiaId = mCoreAccountInfo.getGaiaId();
+        boolean[] acknowledged = {false};
+        doAnswer(
+                        (args) -> {
+                            acknowledged[0] = true;
+                            return null;
+                        })
+                .when(mDisclaimerBridgeNatives)
+                .setAccountAcknowledgedSignalsDisclaimer(gaiaId);
+        when(mDisclaimerBridgeNatives.hasAccountAcknowledgedSignalsDisclaimer(gaiaId))
+                .thenAnswer((args) -> acknowledged[0]);
+        respondToHostNotice(/* accept= */ true);
+        respondToSignin(/* succeed= */ false);
+
+        checkAccountManagementAndSignIn();
+
+        assertFalse(mSignInCompleted);
+        assertTrue(mSignInAborted);
+        verify(mSigninManager).setUserAcceptedAccountManagement(false);
+        assertTrue(
+                EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(gaiaId));
+        verify(mDisclaimerBridgeNatives).setAccountAcknowledgedSignalsDisclaimer(gaiaId);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE)
     public void testNewNotice_AccountManagementRejected() {
         mIsAccountManaged = true;
         respondToHostNotice(/* accept= */ false);
@@ -318,6 +352,7 @@ public class FreManagementNoticeDialogHelperTest {
         assertTrue(mSignInAborted);
         verify(mSigninManager, never()).setUserAcceptedAccountManagement(true);
         verify(mSigninManager, never()).signin(any(), anyInt(), any());
+        verify(mDisclaimerBridgeNatives, never()).setAccountAcknowledgedSignalsDisclaimer(any());
         verify(mModalDialogManager, never()).showDialog(any(), anyInt());
     }
 

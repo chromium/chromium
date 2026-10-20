@@ -190,7 +190,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
 
         verify(mDelegate).onAccept();
         // Acknowledging the disclaimer is the embedder's responsibility, not the mediator's.
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any(), any());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test
@@ -202,7 +202,7 @@ public class EnterpriseSignalsDisclaimerMediatorUnitTest {
         model.get(EnterpriseSignalsDisclaimerProperties.ON_CANCEL_CLICKED).onClick(null);
 
         verify(mDelegate).onDecline();
-        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any(), any());
+        verify(mBridgeNativesMock, never()).setAccountAcknowledgedSignalsDisclaimer(any());
     }
 
     @Test

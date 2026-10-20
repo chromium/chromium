@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger;
 import org.chromium.chrome.browser.signin.services.SigninFlowTimestampsLogger.Event;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
+import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerBridge;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -185,6 +186,13 @@ final class FreManagementNoticeDialogHelper {
                     public void onConfirm() {
                         signinFlowLogger.onManagementNoticeAccepted();
                         signinManager.setUserAcceptedAccountManagement(true);
+                        if (useNewNotice) {
+                            // Acknowledge before signing in, so the post-sign-in disclaimer
+                            // controller doesn't show the disclaimer again.
+                            EnterpriseSignalsDisclaimerBridge
+                                    .setAccountAcknowledgedSignalsDisclaimer(
+                                            coreAccountInfo.getGaiaId());
+                        }
                         recordFREEvent(FRESigninEvents.SIGNING_IN_MANAGED);
                         signinManager.signin(coreAccountInfo, accessPoint, wrappedCallback);
                     }

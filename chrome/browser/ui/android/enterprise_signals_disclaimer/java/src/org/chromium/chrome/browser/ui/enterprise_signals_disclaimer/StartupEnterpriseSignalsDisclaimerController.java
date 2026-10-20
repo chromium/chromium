@@ -25,6 +25,7 @@ import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -121,14 +122,9 @@ public class StartupEnterpriseSignalsDisclaimerController
         if (ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                 ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER,
                 ChromeFeatureList.ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT)) {
-            // Clears the acknowledgment for the primary account, so the disclaimer is shown again
-            // on each startup.
-            final CoreAccountInfo primaryAccountInfo =
-                    mSigninManager.getIdentityManager().getPrimaryAccountInfo();
-            if (primaryAccountInfo != null) {
-                EnterpriseSignalsDisclaimerBridge.clearAccountAcknowledgedSignalsDisclaimer(
-                        mProfile, primaryAccountInfo.getGaiaId());
-            }
+            // Passing an empty list of known accounts clears the acknowledgment for every
+            // account, so the disclaimer is shown again on each startup.
+            EnterpriseSignalsDisclaimerBridge.removeUnknownAccounts(List.of());
         }
 
         return maybeShow(ShownOn.STARTUP);
@@ -156,8 +152,11 @@ public class StartupEnterpriseSignalsDisclaimerController
         }
 
         final GaiaId gaiaId = primaryAccountInfo.getGaiaId();
-        if (EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(
-                mProfile, gaiaId)) {
+        if (gaiaId.toString().isEmpty()) {
+            // If this happens something is very wrong.
+            return false;
+        }
+        if (EnterpriseSignalsDisclaimerBridge.hasAccountAcknowledgedSignalsDisclaimer(gaiaId)) {
             return false;
         }
 
@@ -200,7 +199,7 @@ public class StartupEnterpriseSignalsDisclaimerController
     private void onDisclaimerAccepted(CoreAccountInfo account) {
         assert !account.getGaiaId().toString().isEmpty();
         EnterpriseSignalsDisclaimerBridge.setAccountAcknowledgedSignalsDisclaimer(
-                mProfile, account.getGaiaId());
+                account.getGaiaId());
     }
 
     private void onDisclaimerDeclined() {
