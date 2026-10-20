@@ -48,13 +48,16 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_client_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -183,6 +186,7 @@ SharedWorker* SharedWorker::CreateImpl(
           ? mojom::blink::SharedWorkerSameSiteCookies::kAll
           : mojom::blink::SharedWorkerSameSiteCookies::kNone;
   bool extended_lifetime = false;
+  String allow_string = g_empty_string;
   switch (name_or_options->GetContentType()) {
     case V8UnionSharedWorkerOptionsOrString::ContentType::kString:
       options->name = name_or_options->GetAsString();
@@ -232,9 +236,17 @@ SharedWorker* SharedWorker::CreateImpl(
                             WebFeature::kSharedWorkerExtendedLifetimeIsTrue);
         }
       }
+      if (worker_options->hasAllow()) {
+        allow_string = worker_options->allow();
+      }
       break;
     }
   }
+  network::PermissionsPolicyFeaturesBitset parsed_permissions_policy =
+      worker->ParsePermissionsPolicy(script_url, allow_string);
+  // TODO(https://crbug.com/562705553): Plumb the parsed_permissions_policy to
+  // the browser process.
+
   DCHECK(!options->name.IsNull());
   if (options->type == mojom::blink::ScriptType::kClassic)
     UseCounter::Count(window, WebFeature::kClassicSharedWorker);
@@ -250,6 +262,29 @@ SharedWorker* SharedWorker::CreateImpl(
 }
 
 SharedWorker::~SharedWorker() = default;
+
+network::PermissionsPolicyFeaturesBitset SharedWorker::ParsePermissionsPolicy(
+    const KURL& script_url,
+    const String& allow) {
+  if (!RuntimeEnabledFeatures::PermissionsPolicyForSharedWorkersEnabled()) {
+    return network::PermissionsPolicyFeaturesBitset();
+  }
+  const SecurityOrigin* self_origin =
+      GetExecutionContext()->GetSecurityOrigin();
+  scoped_refptr<const SecurityOrigin> src_origin =
+      SecurityOrigin::Create(script_url);
+  PolicyParserMessageBuffer logger;
+  network::PermissionsPolicyFeaturesBitset parsed_permissions_policy =
+      PermissionsPolicyParser::ParseAllowForWorkers(
+          allow, *self_origin, *src_origin, logger, GetExecutionContext());
+  for (const auto& message : logger.GetMessages()) {
+    GetExecutionContext()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther, message.level,
+            message.content));
+  }
+  return parsed_permissions_policy;
+}
 
 const AtomicString& SharedWorker::InterfaceName() const {
   return event_target_names::kSharedWorker;

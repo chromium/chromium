@@ -1812,4 +1812,65 @@ TEST_F(PermissionsPolicyParserTest,
                      /*matches_opaque_src=*/false)));
 }
 
+TEST_F(PermissionsPolicyParserTest,
+       ParseAllowForWorkersEmptyDisallowsAllFeatures) {
+  PolicyParserMessageBuffer logger;
+  network::PermissionsPolicyFeaturesBitset result =
+      PermissionsPolicyParser::ParseAllowForWorkers(g_empty_string, *origin_a_,
+                                                    *origin_a_, logger);
+  EXPECT_EQ(result, network::PermissionsPolicyFeaturesBitset());
+}
+
+TEST_F(PermissionsPolicyParserTest,
+       ParseAllowForWorkersEnablesOnlyFeaturesAllowlistedForSrc) {
+  PolicyParserMessageBuffer logger;
+  network::PermissionsPolicyFeaturesBitset result =
+      PermissionsPolicyParser::ParseAllowForWorkers(
+          "geolocation; camera 'self'; microphone " ORIGIN_A
+          "; fullscreen 'none'; payment " ORIGIN_B "; usb *",
+          *origin_a_, *origin_a_, logger);
+
+  EXPECT_TRUE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kGeolocation));
+  EXPECT_TRUE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kCamera));
+  EXPECT_TRUE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kMicrophone));
+  EXPECT_TRUE(result.Contains(network::mojom::PermissionsPolicyFeature::kUsb));
+
+  // Features declared for 'none' or another origin (not matching src_origin)
+  // are disabled.
+  EXPECT_FALSE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kFullscreen));
+  EXPECT_FALSE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kPayment));
+
+  // Undeclared features are also disabled.
+  EXPECT_FALSE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kSerial));
+}
+
+TEST_F(PermissionsPolicyParserTest, ParseAllowForWorkersOpaqueSrc) {
+  PolicyParserMessageBuffer logger;
+  scoped_refptr<const SecurityOrigin> opaque_src =
+      SecurityOrigin::CreateUniqueOpaque();
+  network::PermissionsPolicyFeaturesBitset result =
+      PermissionsPolicyParser::ParseAllowForWorkers(
+          "geolocation; camera 'src'; microphone 'self'; fullscreen " ORIGIN_A
+          "; usb *",
+          *origin_a_, *opaque_src, logger);
+
+  EXPECT_TRUE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kGeolocation));
+  EXPECT_TRUE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kCamera));
+  EXPECT_TRUE(result.Contains(network::mojom::PermissionsPolicyFeature::kUsb));
+
+  // 'self' and explicit tuple origins do not match an opaque src_origin.
+  EXPECT_FALSE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kMicrophone));
+  EXPECT_FALSE(
+      result.Contains(network::mojom::PermissionsPolicyFeature::kFullscreen));
+}
+
 }  // namespace blink

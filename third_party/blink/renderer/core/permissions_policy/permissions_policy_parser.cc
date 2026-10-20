@@ -755,6 +755,35 @@ network::ParsedPermissionsPolicy PermissionsPolicyParser::ParseAttribute(
       .ParseFeaturePolicy(policy);
 }
 
+network::PermissionsPolicyFeaturesBitset
+PermissionsPolicyParser::ParseAllowForWorkers(
+    const String& policy,
+    const SecurityOrigin& self_origin,
+    const SecurityOrigin& src_origin,
+    PolicyParserMessageBuffer& logger,
+    ExecutionContext* execution_context) {
+  bool is_isolated_context =
+      execution_context && execution_context->IsIsolatedContext();
+  const FeatureNameMap& feature_names =
+      GetDefaultFeatureNameMap(is_isolated_context);
+  network::ParsedPermissionsPolicy parsed_policy =
+      ParsingContext(logger, self_origin, &src_origin, feature_names,
+                     execution_context)
+          .ParseFeaturePolicy(policy);
+  const url::Origin src_url_origin = src_origin.ToUrlOrigin();
+  network::PermissionsPolicyFeaturesBitset allowed_features;
+  for (const auto& decl : parsed_policy) {
+    // The 'allow' parameter for workers determines the feature->boolean mapping
+    // of whether each feature is enabled or not in the worker. Since workers
+    // cannot be navigated away, we can just check here whether the worker's
+    // origin (which is immutable) is allowed or not.
+    if (decl.Contains(src_url_origin)) {
+      allowed_features.Add(decl.feature);
+    }
+  }
+  return allowed_features;
+}
+
 network::ParsedPermissionsPolicy PermissionsPolicyParser::ParsePolicyFromNode(
     PermissionsPolicyParser::Node& policy,
     const SecurityOrigin& origin,

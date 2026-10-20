@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_features_bitset.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/permissions_policy/policy_helper.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -93,6 +94,15 @@ class CORE_EXPORT PermissionsPolicyParser {
   // permissions policy string:
   //     "vibrate a.com 'src'; fullscreen 'none'; payment 'self', payment *".
   static network::ParsedPermissionsPolicy ParseAttribute(
+      const String& policy,
+      const SecurityOrigin& self_origin,
+      const SecurityOrigin& src_origin,
+      PolicyParserMessageBuffer& logger,
+      ExecutionContext* = nullptr);
+
+  // Parses the `allow` option for a worker into a bitset of features that are
+  // explicitly allowlisted for `src_origin` in `policy`.
+  static network::PermissionsPolicyFeaturesBitset ParseAllowForWorkers(
       const String& policy,
       const SecurityOrigin& self_origin,
       const SecurityOrigin& src_origin,
