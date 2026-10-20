@@ -159,16 +159,22 @@ TEST(LanguagePacksUtil, ResolveLocaleHandwriting) {
 
 TEST(LanguagePacksUtil, ResolveLocaleTts) {
   // For these locales we keep the region.
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "bn-IN"), "bn-in");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "bn-in"), "bn-in");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-AU"), "en-au");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-au"), "en-au");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-GB"), "en-gb");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-gb"), "en-gb");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-IN"), "en-in");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-in"), "en-in");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-US"), "en-us");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "en-us"), "en-us");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-ES"), "es-es");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-es"), "es-es");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-US"), "es-us");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "es-us"), "es-us");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "fr-CA"), "fr-ca");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "fr-ca"), "fr-ca");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "pt-BR"), "pt-br");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "pt-br"), "pt-br");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "pt-PT"), "pt-pt");
@@ -177,6 +183,7 @@ TEST(LanguagePacksUtil, ResolveLocaleTts) {
   // For all other locales we only keep the language.
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "bn-bd"), "bn");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "fil-ph"), "fil");
+  EXPECT_EQ(ResolveLocale(kTtsFeatureId, "fr-fr"), "fr");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "it-it"), "it");
   EXPECT_EQ(ResolveLocale(kTtsFeatureId, "ja-jp"), "ja");
 }

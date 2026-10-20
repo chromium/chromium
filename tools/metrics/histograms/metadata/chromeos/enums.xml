@@ -1282,6 +1282,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
     at chromeos/ash/components/language/language_packs/metrics_unittest.cc.
   </summary>
   <int value="-1954182822" label="et"/>
+  <int value="-1915308934" label="en-in"/>
   <int value="-1902856059" label="tr"/>
   <int value="-1858573686" label="ga"/>
   <int value="-1840989837" label="ar"/>
@@ -1294,6 +1295,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="-1688219359" label="pt-br"/>
   <int value="-1667118147" label="bg"/>
   <int value="-1660178764" label="bn"/>
+  <int value="-1613183516" label="fr-ca"/>
   <int value="-1391374456" label="ur"/>
   <int value="-1373851596" label="zh-HK"/>
   <int value="-1340196252" label="en-gb"/>
@@ -1355,6 +1357,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="1652267726" label="ja"/>
   <int value="1840739667" label="ti"/>
   <int value="1889238869" label="pa"/>
+  <int value="1900098192" label="bn-in"/>
   <int value="1938425968" label="ro"/>
   <int value="2017029213" label="sr"/>
   <int value="2026210505" label="da"/>

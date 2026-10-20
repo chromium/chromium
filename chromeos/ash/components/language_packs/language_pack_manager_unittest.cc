@@ -100,9 +100,11 @@ DlcState CreateTtsInstalledState(const std::string& locale) {
   DlcState output;
   output.set_state(dlcservice::DlcState_State_INSTALLED);
   if (locale == "en-us") {
-    // Note that en-US has ID ending in "-d" while all other TTS DLCs have
-    // ID ending in "-c".
+    // Note that en-US has ID ending in "-d", initial v1 locales (bn-in, en-in,
+    // fr-ca) end in "-b", and all other TTS DLCs end in "-c".
     output.set_id("tts-en-us-d");
+  } else if (locale == "bn-in" || locale == "en-in" || locale == "fr-ca") {
+    output.set_id(base::StrCat({"tts-", locale, "-b"}));
   } else {
     output.set_id(base::StrCat({"tts-", locale, "-c"}));
   }
@@ -505,11 +507,11 @@ TEST_F(LanguagePackManagerTest, CheckAllLocalesAvailable) {
 
   // TTS.
   const std::vector<std::string> tts({
-      "bn-bd", "cs-cz", "da-dk", "de-de", "el-gr",  "en-au", "en-gb",
-      "en-us", "es-es", "es-us", "fi-fi", "fil-ph", "fr-fr", "hi-in",
-      "hu-hu", "id-id", "it-it", "ja-jp", "km-kh",  "ko-kr", "nb-no",
-      "ne-np", "nl-nl", "pl-pl", "pt-br", "si-lk",  "sk-sk", "sv-se",
-      "th-th", "tr-tr", "uk-ua", "vi-vn", "yue-hk",
+      "bn-bd", "bn-in", "cs-cz", "da-dk",  "de-de", "el-gr",  "en-au", "en-gb",
+      "en-in", "en-us", "es-es", "es-us",  "fi-fi", "fil-ph", "fr-ca", "fr-fr",
+      "hi-in", "hu-hu", "id-id", "it-it",  "ja-jp", "km-kh",  "ko-kr", "nb-no",
+      "ne-np", "nl-nl", "pl-pl", "pt-br",  "si-lk", "sk-sk",  "sv-se", "th-th",
+      "tr-tr", "uk-ua", "vi-vn", "yue-hk",
   });
   for (const auto& locale : tts) {
     EXPECT_TRUE(LanguagePackManager::IsPackAvailable(kTtsFeatureId, locale));
@@ -662,6 +664,55 @@ TEST_F(LanguagePackManagerTest, UpdatePacksForOobeSuccess2Test) {
                                      0);
 }
 
+TEST_F(LanguagePackManagerTest, UpdatePacksForOobeRegionalTtsLocalesTest) {
+  session_manager_->SetSessionState(session_manager::SessionState::OOBE);
+
+  dlcservice_client_.set_install_error(dlcservice::kErrorNone);
+  dlcservice_client_.set_install_root_path("/path");
+
+  struct TestCase {
+    std::string_view input_locale;
+    std::string_view expected_language_code;
+  };
+  static constexpr TestCase kTestCases[] = {
+      // Regional TTS locales that preserve their country/region subtag.
+      {"bn-IN", "bn-in"},
+      {"en-AU", "en-au"},
+      {"en-GB", "en-gb"},
+      {"en-IN", "en-in"},
+      {"en-US", "en-us"},
+      {"es-ES", "es-es"},
+      {"es-US", "es-us"},
+      {"fr-CA", "fr-ca"},
+      {"pt-BR", "pt-br"},
+      {"pt-PT", "pt-pt"},
+      // TTS locales that resolve to their base language subtag.
+      {"bn-BD", "bn"},
+      {"de-DE", "de"},
+      {"fr-FR", "fr"},
+      {"hi-IN", "hi"},
+      {"it-IT", "it"},
+      {"ja-JP", "ja"},
+      {"yue-HK", "yue"},
+  };
+  for (const TestCase& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.input_locale);
+    pack_result_ = PackResult();
+
+    LanguagePackManager::UpdatePacksForOobe(
+        std::string(test_case.input_locale),
+        base::BindOnce(&LanguagePackManagerTest::OobeTestCallback,
+                       base::Unretained(this)));
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_EQ(pack_result_.operation_error, PackResult::ErrorCode::kNone);
+    EXPECT_EQ(pack_result_.pack_state, PackResult::StatusCode::kInstalled);
+    EXPECT_EQ(pack_result_.path, "/path");
+    EXPECT_EQ(pack_result_.feature_id, kTtsFeatureId);
+    EXPECT_EQ(pack_result_.language_code, test_case.expected_language_code);
+  }
+}
+
 TEST_F(LanguagePackManagerTest, UpdatePacksForOobeWrongLocaleTest) {
   session_manager_->SetSessionState(session_manager::SessionState::OOBE);
 
@@ -717,7 +768,10 @@ INSTANTIATE_TEST_SUITE_P(,
                          LanguagePackManagerTtsTest,
                          ::testing::Values(TestCase("en-us", "en-us"),
                                            TestCase("yue-hk", "yue"),
-                                           TestCase("bn-bd", "bn")));
+                                           TestCase("bn-bd", "bn"),
+                                           TestCase("bn-in", "bn-in"),
+                                           TestCase("en-in", "en-in"),
+                                           TestCase("fr-ca", "fr-ca")));
 
 TEST_P(LanguagePackManagerTtsTest, InstallTtsObserverTest) {
   LanguagePackManager manager;
