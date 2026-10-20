@@ -231,6 +231,8 @@ source_set("unit_tests") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:test_support",
+      "//chrome/browser/ui/browser_window/test:test_support",
+      "//components/sessions:session_id",
       "//components/tabs:public",
     ]
   } else {

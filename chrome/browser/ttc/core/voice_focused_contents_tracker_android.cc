@@ -10,6 +10,8 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ttc {
@@ -17,12 +19,17 @@ namespace ttc {
 // static
 std::unique_ptr<VoiceFocusedContentsTracker>
 VoiceFocusedContentsTracker::Create(Profile& profile) {
-  return std::make_unique<VoiceFocusedContentsTrackerAndroid>(profile);
+  return std::make_unique<VoiceFocusedContentsTrackerAndroid>(
+      profile, ProfileBrowserCollection::GetForProfile(&profile));
 }
 
 VoiceFocusedContentsTrackerAndroid::VoiceFocusedContentsTrackerAndroid(
-    Profile& profile)
+    Profile& profile,
+    BrowserCollection* browsers)
     : profile_(profile) {
+  if (browsers) {
+    browser_collection_observation_.Observe(browsers);
+  }
   TabModelList::AddObserver(this);
   for (TabModel* tab_model : TabModelList::models()) {
     OnTabModelAdded(tab_model);
@@ -38,6 +45,16 @@ content::WebContents* VoiceFocusedContentsTrackerAndroid::GetActiveWebContents()
   return bound_tab_model_ ? bound_tab_model_->GetActiveWebContents() : nullptr;
 }
 
+void VoiceFocusedContentsTrackerAndroid::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
+  UpdateBoundTabModel();
+}
+
+void VoiceFocusedContentsTrackerAndroid::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  UpdateBoundTabModel();
+}
+
 void VoiceFocusedContentsTrackerAndroid::OnTabModelAdded(TabModel* tab_model) {
   // Only standard models back a window with live tabs. Headless models (for
   // persisted windows that aren't open, registered asynchronously on desktop
@@ -50,9 +67,7 @@ void VoiceFocusedContentsTrackerAndroid::OnTabModelAdded(TabModel* tab_model) {
   if (!tab_model_observations_.IsObservingSource(tab_model)) {
     tab_model_observations_.AddObservation(tab_model);
   }
-  if (tab_model->IsActiveModel()) {
-    BindToTabModel(tab_model);
-  }
+  UpdateBoundTabModel();
 }
 
 void VoiceFocusedContentsTrackerAndroid::OnTabModelRemoved(
@@ -61,7 +76,9 @@ void VoiceFocusedContentsTrackerAndroid::OnTabModelRemoved(
 }
 
 void VoiceFocusedContentsTrackerAndroid::DidSelectTab(TabAndroid* tab) {
-  MaybeBindTabModelForTab(tab);
+  // TabModelSelectorBase.initialize() activates the first TabModel without
+  // firing OnDidActiveStateChange, so it may first become bindable here.
+  UpdateBoundTabModel();
   UpdateActiveState();
 }
 
@@ -91,11 +108,7 @@ void VoiceFocusedContentsTrackerAndroid::TabRemoved(TabAndroid* tab) {
 void VoiceFocusedContentsTrackerAndroid::OnDidActiveStateChange(
     TabModel& tab_model,
     bool active) {
-  if (active) {
-    BindToTabModel(&tab_model);
-  } else if (bound_tab_model_ == &tab_model) {
-    BindToTabModel(FindActiveTabModel());
-  }
+  UpdateBoundTabModel();
 }
 
 void VoiceFocusedContentsTrackerAndroid::OnTabModelDestroyed(
@@ -107,25 +120,13 @@ void VoiceFocusedContentsTrackerAndroid::OnInitWebContents(TabAndroid* tab) {
   UpdateActiveState();
 }
 
-void VoiceFocusedContentsTrackerAndroid::BindToTabModel(TabModel* tab_model) {
+void VoiceFocusedContentsTrackerAndroid::UpdateBoundTabModel() {
+  TabModel* tab_model = FindFocusedTabModel();
   if (bound_tab_model_ == tab_model) {
     return;
   }
   bound_tab_model_ = tab_model;
   UpdateActiveState();
-}
-
-void VoiceFocusedContentsTrackerAndroid::MaybeBindTabModelForTab(
-    TabAndroid* tab) {
-  // Clank's TabModelSelectorBase.initialize() activates the initial TabModel
-  // without firing OnDidActiveStateChange, and selecting a tab in another
-  // window's active TabModel also does not fire OnDidActiveStateChange. Rebind
-  // whenever DidSelectTab fires for the active tab of an observed active model.
-  if (TabModel* tab_model = TabModelList::GetTabModelForTabAndroid(tab);
-      tab_model && tab_model_observations_.IsObservingSource(tab_model) &&
-      tab_model->IsActiveModel() && tab_model->GetActiveTab() == tab) {
-    BindToTabModel(tab_model);
-  }
 }
 
 void VoiceFocusedContentsTrackerAndroid::RemoveTabModel(TabModel* tab_model) {
@@ -136,7 +137,7 @@ void VoiceFocusedContentsTrackerAndroid::RemoveTabModel(TabModel* tab_model) {
     tab_model_observations_.RemoveObservation(tab_model);
   }
   if (bound_tab_model_ == tab_model) {
-    BindToTabModel(FindActiveTabModel());
+    UpdateBoundTabModel();
   }
 }
 
@@ -191,11 +192,18 @@ void VoiceFocusedContentsTrackerAndroid::ResetActiveTabObservation() {
   active_tab_observation_.Reset();
 }
 
-TabModel* VoiceFocusedContentsTrackerAndroid::FindActiveTabModel() const {
+TabModel* VoiceFocusedContentsTrackerAndroid::FindFocusedTabModel() {
+  BrowserWindowInterface* browser =
+      browser_collection_observation_.IsObserving()
+          ? browser_collection_observation_.GetSource()->GetLastActiveBrowser()
+          : nullptr;
+  if (!browser) {
+    return nullptr;
+  }
   for (TabModel* tab_model : TabModelList::models()) {
-    if (tab_model && tab_model->GetProfile() == &profile_.get() &&
+    if (tab_model_observations_.IsObservingSource(tab_model) &&
         tab_model->IsActiveModel() &&
-        tab_model_observations_.IsObservingSource(tab_model)) {
+        tab_model->GetSessionId() == browser->GetSessionID()) {
       return tab_model;
     }
   }

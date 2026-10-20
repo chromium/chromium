@@ -18,29 +18,35 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/tabs/public/tab_interface.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace ttc {
 
-// Android implementation of VoiceFocusedContentsTracker, which binds to the
-// active TabModel of the profile and follows window/model and tab switches
-// through TabModelObserver and TabAndroid::Observer. In multi-window mode
-// (where multiple regular TabModels report IsActiveModel() == true), switching
-// window focus without selecting a tab does not fire a TabModelObserver
-// callback, so the tracker rebinds when a tab is selected in the other window
-// (DidSelectTab).
+// Android implementation of VoiceFocusedContentsTracker. Binds to the active
+// TabModel of the profile's last active window (matched by SessionID), and
+// follows window, model and tab switches.
 class VoiceFocusedContentsTrackerAndroid : public VoiceFocusedContentsTracker,
+                                           public BrowserCollectionObserver,
                                            public TabModelListObserver,
                                            public TabModelObserver,
                                            public TabAndroid::Observer {
  public:
-  explicit VoiceFocusedContentsTrackerAndroid(Profile& profile);
+  // `browsers` is the profile's window collection, and may be null.
+  VoiceFocusedContentsTrackerAndroid(Profile& profile,
+                                     BrowserCollection* browsers);
   ~VoiceFocusedContentsTrackerAndroid() override;
 
   // VoiceFocusedContentsTracker:
   content::WebContents* GetActiveWebContents() const override;
+
+  // BrowserCollectionObserver:
+  void OnBrowserClosed(BrowserWindowInterface* browser) override;
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
   // TabModelListObserver:
   void OnTabModelAdded(TabModel* tab_model) override;
@@ -60,19 +66,18 @@ class VoiceFocusedContentsTrackerAndroid : public VoiceFocusedContentsTracker,
   void OnInitWebContents(TabAndroid* tab) override;
 
  private:
-  void BindToTabModel(TabModel* tab_model);
-  void MaybeBindTabModelForTab(TabAndroid* tab);
+  void UpdateBoundTabModel();
   void RemoveTabModel(TabModel* tab_model);
   void UpdateActiveState();
   void OnActiveTabWillDetach(tabs::TabInterface* tab,
                              tabs::TabInterface::DetachReason reason);
   void ResetActiveTabObservation();
-  TabModel* FindActiveTabModel() const;
+  TabModel* FindFocusedTabModel();
 
   const raw_ref<Profile> profile_;
 
-  // The TabModel this tracker is currently bound to. Null if no TabModel of
-  // `profile_` is active.
+  // The TabModel this tracker is currently bound to. Null if the last active
+  // window has no active TabModel of `profile_`.
   raw_ptr<TabModel> bound_tab_model_ = nullptr;
 
   // Tracks the last reported active WebContents. `WasInvalidated()` detects
@@ -89,6 +94,8 @@ class VoiceFocusedContentsTrackerAndroid : public VoiceFocusedContentsTracker,
   base::CallbackListSubscription active_tab_will_detach_subscription_;
   base::ScopedMultiSourceObservation<TabModel, TabModelObserver>
       tab_model_observations_{this};
+  base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 }  // namespace ttc

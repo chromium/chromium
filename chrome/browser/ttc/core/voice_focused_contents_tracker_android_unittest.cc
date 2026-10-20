@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/android/tab_android.h"
@@ -18,7 +19,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "chrome/browser/ui/browser_window/test/fake_global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -244,6 +248,8 @@ class FakeTabModel : public OwningTestTabModel {
                       std::vector<TabAndroid*>{});
   }
 
+  void SetWindowId(SessionID window_id) { SetSessionId(window_id); }
+
  private:
   bool all_tabs_pending_closure_ = false;
   std::unique_ptr<TabAndroid> deferred_tab_;
@@ -251,21 +257,45 @@ class FakeTabModel : public OwningTestTabModel {
   base::ObserverList<TabModelObserver>::Unchecked observers_;
 };
 
+// A window whose TabModels share its SessionID.
+class FakeWindow {
+ public:
+  explicit FakeWindow(FakeGlobalBrowserCollection& browsers)
+      : browsers_(browsers) {
+    ON_CALL(browser_, GetSessionID())
+        .WillByDefault(::testing::ReturnRef(session_id_));
+    browsers_->SimulateBrowserCreated(&browser_);
+  }
+  ~FakeWindow() { browsers_->SimulateBrowserClosed(&browser_); }
+
+  void Add(FakeTabModel& tab_model) { tab_model.SetWindowId(session_id_); }
+  void Activate() { browsers_->SimulateBrowserActivated(&browser_); }
+
+ private:
+  const raw_ref<FakeGlobalBrowserCollection> browsers_;
+  const SessionID session_id_ = SessionID::NewUnique();
+  ::testing::NiceMock<MockBrowserWindowInterface> browser_;
+};
+
 class VoiceFocusedContentsTrackerAndroidTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
+  FakeGlobalBrowserCollection browsers_;
+  // The focused window, unless a test activates another one.
+  FakeWindow window_{browsers_};
 };
 
 // When created with an active TabModel that already has an active tab, the
 // tracker immediately returns its WebContents and resolves its TabInterface.
 TEST_F(VoiceFocusedContentsTrackerAndroidTest, ActiveTabAtCreation) {
   FakeTabModel model(&profile_);
+  window_.Add(model);
   model.SetIsActiveModel(true);
   TabAndroid* tab = model.AddWebContentsTab(&profile_);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   EXPECT_EQ(tracker.GetActiveWebContents(), tab->web_contents());
   EXPECT_EQ(
       tabs::TabInterface::MaybeGetFromContents(tracker.GetActiveWebContents()),
@@ -275,9 +305,10 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest, ActiveTabAtCreation) {
 // When no TabModel of the profile is active, GetActiveWebContents() is null.
 TEST_F(VoiceFocusedContentsTrackerAndroidTest, NullWhenNoActiveTabModel) {
   FakeTabModel inactive_model(&profile_);
+  window_.Add(inactive_model);
   inactive_model.AddWebContentsTab(&profile_);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   EXPECT_EQ(tracker.GetActiveWebContents(), nullptr);
 }
 
@@ -286,12 +317,13 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest, NullWhenNoActiveTabModel) {
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
        SwitchingTabsNotifiesAndUpdatesActiveWebContents) {
   FakeTabModel model(&profile_);
+  window_.Add(model);
   model.SetIsActiveModel(true);
   TabAndroid* tab0 = model.AddWebContentsTab(&profile_, /*select=*/true);
   TabAndroid* tab1 = model.AddWebContentsTab(&profile_, /*select=*/false);
   ASSERT_EQ(model.GetActiveWebContents(), tab0->web_contents());
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), tab0->web_contents());
 
@@ -317,6 +349,7 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
        SwitchingTabModelsFollowsActiveModel) {
   FakeTabModel model1(&profile_);
+  window_.Add(model1);
   model1.SetIsActiveModel(true);
   TabAndroid* model1_tab0 =
       model1.AddWebContentsTab(&profile_, /*select=*/true);
@@ -324,10 +357,11 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
       model1.AddWebContentsTab(&profile_, /*select=*/false);
 
   FakeTabModel model2(&profile_);
+  window_.Add(model2);
   TabAndroid* model2_tab0 =
       model2.AddWebContentsTab(&profile_, /*select=*/true);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), model1_tab0->web_contents());
 
@@ -359,49 +393,81 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
   EXPECT_THAT(observer.TakeChanges(), ::testing::ElementsAre(nullptr));
 }
 
-// Covers TabModelSelectorBase.initialize() (which sets IsActiveModel(true)
-// after OnTabModelAdded without firing OnDidActiveStateChange) and multi-window
-// regular TabModels (where multiple models have IsActiveModel() == true and
-// selecting a tab in another window rebinds the tracker).
+// Covers TabModelSelectorBase.initialize(), which sets IsActiveModel(true)
+// after OnTabModelAdded without firing OnDidActiveStateChange.
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
-       DidSelectTabBindsUnboundAndMultiWindowActiveModels) {
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+       DidSelectTabBindsSilentlyActivatedModel) {
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), nullptr);
 
   // Model is added while inactive (as in TabModelSelectorImpl), then marked
   // active without OnDidActiveStateChange before its first tab is selected.
-  FakeTabModel window1_model(&profile_);
-  window1_model.SetIsActiveModel(true);
-  TabAndroid* window1_tab0 =
-      window1_model.AddWebContentsTab(&profile_, /*select=*/true);
-  EXPECT_EQ(tracker.GetActiveWebContents(), window1_tab0->web_contents());
+  FakeTabModel model(&profile_);
+  window_.Add(model);
+  model.SetIsActiveModel(true);
+  TabAndroid* tab = model.AddWebContentsTab(&profile_, /*select=*/true);
+  EXPECT_EQ(tracker.GetActiveWebContents(), tab->web_contents());
   EXPECT_THAT(observer.TakeChanges(),
-              ::testing::ElementsAre(window1_tab0->web_contents()));
+              ::testing::ElementsAre(tab->web_contents()));
+}
 
-  // A second regular window's TabModel also has IsActiveModel() == true.
-  // Adding a background tab to window2_model does not steal focus from
-  // window1_model, but selecting a tab in window2_model rebinds the tracker.
-  FakeTabModel window2_model(&profile_);
-  window2_model.SetIsActiveModel(true);
-  TabAndroid* window2_tab0 =
-      window2_model.AddWebContentsTab(&profile_, /*select=*/true);
-  EXPECT_EQ(tracker.GetActiveWebContents(), window2_tab0->web_contents());
+// Voice focus follows window activation, since every window's TabModel is
+// active on desktop Android.
+TEST_F(VoiceFocusedContentsTrackerAndroidTest, FollowsWindowActivation) {
+  FakeTabModel model_a(&profile_);
+  window_.Add(model_a);
+  model_a.SetIsActiveModel(true);
+  TabAndroid* tab_a = model_a.AddWebContentsTab(&profile_);
+
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
+  RecordingObserver observer(tracker);
+  ASSERT_EQ(tracker.GetActiveWebContents(), tab_a->web_contents());
+
+  // A new window takes voice focus once it's activated.
+  FakeTabModel model_b(&profile_);
+  FakeWindow window_b(browsers_);
+  window_b.Add(model_b);
+  model_b.SetIsActiveModel(true);
+  TabAndroid* tab_b = model_b.AddWebContentsTab(&profile_);
+  EXPECT_EQ(tracker.GetActiveWebContents(), tab_a->web_contents());
+  window_b.Activate();
   EXPECT_THAT(observer.TakeChanges(),
-              ::testing::ElementsAre(window2_tab0->web_contents()));
+              ::testing::ElementsAre(tab_b->web_contents()));
 
-  // Adding a background tab to window1_model does not rebind away from
-  // window2_model.
-  TabAndroid* window1_tab1 =
-      window1_model.AddWebContentsTab(&profile_, /*select=*/false);
-  EXPECT_EQ(tracker.GetActiveWebContents(), window2_tab0->web_contents());
-  EXPECT_THAT(observer.TakeChanges(), ::testing::IsEmpty());
-
-  // Selecting window1_tab1 in window1_model rebinds to window1_model.
-  window1_model.SetActiveIndex(1);
-  EXPECT_EQ(tracker.GetActiveWebContents(), window1_tab1->web_contents());
+  // Refocusing the first window takes it back, and selecting a tab in the
+  // background window doesn't take it away again.
+  window_.Activate();
+  model_b.AddWebContentsTab(&profile_, /*select=*/true);
+  EXPECT_EQ(tracker.GetActiveWebContents(), tab_a->web_contents());
   EXPECT_THAT(observer.TakeChanges(),
-              ::testing::ElementsAre(window1_tab1->web_contents()));
+              ::testing::ElementsAre(tab_a->web_contents()));
+
+  // If the focused window switches away from the profile (e.g. to incognito),
+  // voice focus is cleared instead of moving to the other window.
+  model_a.ActivateModel(false);
+  EXPECT_EQ(tracker.GetActiveWebContents(), nullptr);
+  EXPECT_THAT(observer.TakeChanges(), ::testing::ElementsAre(nullptr));
+}
+
+// Closing the focused window moves voice focus to the previously active one.
+TEST_F(VoiceFocusedContentsTrackerAndroidTest,
+       ClosingFocusedWindowFocusesPreviousWindow) {
+  FakeTabModel model_a(&profile_);
+  window_.Add(model_a);
+  model_a.SetIsActiveModel(true);
+  TabAndroid* tab_a = model_a.AddWebContentsTab(&profile_);
+
+  FakeTabModel model_b(&profile_);
+  auto window_b = std::make_unique<FakeWindow>(browsers_);
+  window_b->Add(model_b);
+  model_b.SetIsActiveModel(true);
+  model_b.AddWebContentsTab(&profile_);
+  window_b->Activate();
+
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
+  window_b.reset();
+  EXPECT_EQ(tracker.GetActiveWebContents(), tab_a->web_contents());
 }
 
 // TabModels belonging to a different profile or an incognito/OTR profile are
@@ -409,10 +475,11 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
        IgnoresOtherProfileAndIncognitoTabModels) {
   FakeTabModel main_model(&profile_);
+  window_.Add(main_model);
   main_model.SetIsActiveModel(true);
   TabAndroid* main_tab = main_model.AddWebContentsTab(&profile_);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), main_tab->web_contents());
 
@@ -435,10 +502,11 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
 // IsActiveModel.
 TEST_F(VoiceFocusedContentsTrackerAndroidTest, IgnoresNonStandardTabModels) {
   FakeTabModel main_model(&profile_);
+  window_.Add(main_model);
   main_model.SetIsActiveModel(true);
   TabAndroid* main_tab = main_model.AddWebContentsTab(&profile_);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), main_tab->web_contents());
 
@@ -459,11 +527,12 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest, IgnoresNonStandardTabModels) {
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
        ClosingActiveTabSwitchesToRemainingTabOrNull) {
   FakeTabModel model(&profile_);
+  window_.Add(model);
   model.SetIsActiveModel(true);
   TabAndroid* tab0 = model.AddWebContentsTab(&profile_, /*select=*/true);
   TabAndroid* tab1 = model.AddWebContentsTab(&profile_, /*select=*/false);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), tab0->web_contents());
   content::WebContents* tab1_contents = tab1->web_contents();
@@ -485,10 +554,11 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
 // (TabClosureUndone / OnTabCloseUndone) or committed (TabClosureCommitted).
 TEST_F(VoiceFocusedContentsTrackerAndroidTest, PendingTabClosureAndUndo) {
   FakeTabModel model(&profile_);
+  window_.Add(model);
   model.SetIsActiveModel(true);
   TabAndroid* tab = model.AddWebContentsTab(&profile_, /*select=*/true);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), tab->web_contents());
 
@@ -533,9 +603,10 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest, PendingTabClosureAndUndo) {
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
        DeferredWebContentsInitializationOnTab) {
   FakeTabModel model(&profile_);
+  window_.Add(model);
   model.SetIsActiveModel(true);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), nullptr);
 
@@ -581,9 +652,10 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
        WillDetachForReparentDropsObservation) {
   FakeTabModel model(&profile_);
+  window_.Add(model);
   model.SetIsActiveModel(true);
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
 
   model.SelectUnloadedTab(&profile_);
@@ -605,18 +677,20 @@ TEST_F(VoiceFocusedContentsTrackerAndroidTest,
 }
 
 // Removing or destroying the bound TabModel falls back to another active
-// TabModel of the profile if one exists, or to nullptr otherwise.
+// TabModel of the window if one exists, or to nullptr otherwise.
 TEST_F(VoiceFocusedContentsTrackerAndroidTest,
        RemovingOrDestroyingActiveTabModelFallsBackOrNull) {
   auto model1 = std::make_unique<FakeTabModel>(&profile_);
+  window_.Add(*model1);
   model1->SetIsActiveModel(true);
   TabAndroid* tab1 = model1->AddWebContentsTab(&profile_);
 
   auto model2 = std::make_unique<FakeTabModel>(&profile_);
+  window_.Add(*model2);
   TabAndroid* tab2 = model2->AddWebContentsTab(&profile_);
   content::WebContents* tab2_contents = tab2->web_contents();
 
-  VoiceFocusedContentsTrackerAndroid tracker(profile_);
+  VoiceFocusedContentsTrackerAndroid tracker(profile_, &browsers_);
   RecordingObserver observer(tracker);
   ASSERT_EQ(tracker.GetActiveWebContents(), tab1->web_contents());
 
