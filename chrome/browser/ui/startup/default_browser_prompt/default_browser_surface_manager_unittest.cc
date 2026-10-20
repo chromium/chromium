@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/default_browser/default_browser_controller.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
@@ -50,6 +51,8 @@ class TestDefaultBrowserSurfaceManager : public DefaultBrowserSurfaceManager {
 class DefaultBrowserSurfaceManagerTest : public testing::Test {
  protected:
   void SetUp() override {
+    // Stops the setter run by `HandleAccept()` from opening Windows Settings.
+    shell_integration::DefaultBrowserWorker::DisableSetAsDefaultForTesting();
     profile_ = TestingProfile::Builder().Build();
     browser_window_interface_ =
         std::make_unique<::testing::NiceMock<MockBrowserWindowInterface>>();

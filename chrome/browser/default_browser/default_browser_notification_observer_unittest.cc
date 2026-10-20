@@ -9,7 +9,6 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/default_browser/default_browser_features.h"
@@ -42,7 +41,6 @@ class DefaultBrowserNotificationObserverTest : public testing::Test {
             base::BindLambdaForTesting([&](BrowserProcess& browser_process) {
               auto fake_delegate = std::make_unique<FakeShellDelegate>();
               fake_delegate->set_default_state(shell_integration::IS_DEFAULT);
-              fake_shell_delegate_ptr_ = fake_delegate.get();
               return std::make_unique<DefaultBrowserManager>(
                   TestingBrowserProcess::GetGlobal(), std::move(fake_delegate),
                   base::BindLambdaForTesting(
@@ -102,7 +100,6 @@ class DefaultBrowserNotificationObserverTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
   ui::UserDataFactory::ScopedOverride global_feature_override_;
-  raw_ptr<FakeShellDelegate> fake_shell_delegate_ptr_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 

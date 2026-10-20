@@ -51,12 +51,12 @@ DefaultBrowserNotificationObserver::DefaultBrowserNotificationObserver(
       std::move(register_callback)
           .Run(base::BindRepeating(
               &DefaultBrowserNotificationObserver::OnDefaultBrowserStateChanged,
-              base::Unretained(this)));
+              weak_ptr_factory_.GetWeakPtr()));
 
   std::move(initial_state_check_callback)
       .Run(base::BindOnce(
           &DefaultBrowserNotificationObserver::OnDefaultBrowserStateChanged,
-          base::Unretained(this)));
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 DefaultBrowserNotificationObserver::~DefaultBrowserNotificationObserver() =

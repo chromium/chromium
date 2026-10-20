@@ -197,6 +197,13 @@ void GlobalFeatures::PostBrowserProcessInit() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  default_browser_manager_ =
+      GetUserDataFactory()
+          .CreateInstance<default_browser::DefaultBrowserManager>(
+              *g_browser_process, g_browser_process,
+              default_browser::DefaultBrowserManager::CreateDefaultDelegate(),
+              base::BindRepeating(&ProfileManager::GetLastUsedProfile));
+
   if (base::FeatureList::IsEnabled(features::kScheduledRestart)) {
     scheduled_restart_manager_ = CreateScheduledRestartManager();
     scheduled_restart_bubble_controller_ =
@@ -226,13 +233,6 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
   // TODO(crbug.com/463742800): Migrate WhatsNewRegistry (and other non-core
   // features) to Init().
   whats_new_registry_ = CreateWhatsNewRegistry();
-
-  default_browser_manager_ =
-      GetUserDataFactory()
-          .CreateInstance<default_browser::DefaultBrowserManager>(
-              *g_browser_process, g_browser_process,
-              default_browser::DefaultBrowserManager::CreateDefaultDelegate(),
-              base::BindRepeating(&ProfileManager::GetLastUsedProfile));
 #endif
 
   application_locale_storage_ = std::make_unique<ApplicationLocaleStorage>();
@@ -338,6 +338,7 @@ void GlobalFeatures::PostMainMessageLoopRun() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
       DefaultBrowserPromptManager::CloseReason::kDismiss);
+  default_browser_manager_.reset();
 #endif
 }
 

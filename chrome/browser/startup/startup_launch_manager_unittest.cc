@@ -17,12 +17,12 @@
 #include "chrome/installer/util/auto_launch_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
 
 using auto_launch_util::StartupLaunchMode;
-using base::test::TaskEnvironment;
 
 namespace {
 
@@ -128,7 +128,8 @@ class StartupLaunchManagerTestBase : public testing::Test {
   }
 
  protected:
-  TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   ui::UserDataFactory::ScopedOverride scoped_override_;
