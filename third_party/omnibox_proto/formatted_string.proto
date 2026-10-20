@@ -54,5 +54,11 @@ message FormattedString {
     COLOR_ON_SURFACE_DEEMPHASIS = 11;
     COLOR_OUTLINE_DEFAULT = 12;
     COLOR_SUBTITLE_TEXT = 13;
+    // The query text of a suggestion, typed or suggested.
+    COLOR_SUGGEST_QUERY_TEXT = 14;
+    // Secondary text of a suggestion, such as a subtitle.
+    COLOR_SUGGEST_HINT_TEXT = 15;
+    // A high-emphasis action or update in a suggestion.
+    COLOR_SUGGEST_ACTION_HIGH = 16;
   }
 }
