@@ -177,40 +177,6 @@ public class SafetyHubMagicStackMediatorTest {
     }
 
     @Test
-    public void testNotificationPermissionsDisplayed() {
-        MagicStackEntry entry =
-                MagicStackEntry.create(
-                        DESCRIPTION, MagicStackEntry.ModuleType.NOTIFICATION_PERMISSIONS);
-        doReturn(entry).when(mMagicStackBridge).getModuleToShow();
-        mMediator.showModule();
-
-        verify(mModuleDelegate).onDataReady(eq(ModuleType.SAFETY_HUB), eq(mModel));
-        assertEquals(
-                mModel.get(SafetyHubMagicStackViewProperties.HEADER),
-                mContext.getString(R.string.safety_hub_magic_stack_module_name));
-        assertEquals(
-                mModel.get(SafetyHubMagicStackViewProperties.TITLE),
-                mContext.getString(R.string.safety_hub_magic_stack_notifications_title));
-        assertEquals(DESCRIPTION, mModel.get(SafetyHubMagicStackViewProperties.SUMMARY));
-        assertEquals(
-                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_TEXT),
-                mContext.getString(R.string.safety_hub_magic_stack_safe_state_button_text));
-        assertEquals(
-                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_CONTENT_DESCRIPTION),
-                mContext.getString(
-                        R.string.safety_hub_magic_stack_safe_state_button_content_description));
-        assertEquals(
-                shadowOf(mModel.get(SafetyHubMagicStackViewProperties.ICON_DRAWABLE))
-                        .getCreatedFromResId(),
-                R.drawable.safety_hub_notifications_icon);
-
-        OnClickListener onClickListener =
-                mModel.get(SafetyHubMagicStackViewProperties.BUTTON_ON_CLICK_LISTENER);
-        onClickListener.onClick(mView);
-        verify(mSettingsNavigation).startSettings(eq(mContext), eq(SafetyHubFragment.class));
-    }
-
-    @Test
     public void testCompromisedPasswordsDisplayed() throws PendingIntent.CanceledException {
         mSafetyHubTestRule.setPasswordManagerAvailable(true);
         MagicStackEntry entry =

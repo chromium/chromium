@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.user_prefs.UserPrefs;
 
@@ -52,7 +51,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     private static final String PREF_LOCAL_PASSWORDS = "passwords_local";
     private static final String PREF_UPDATE = "update_check";
     private static final String PREF_UNUSED_PERMISSIONS = "permissions";
-    private static final String PREF_NOTIFICATIONS_REVIEW = "notifications_review";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
     private static final String PREF_BROWSER_STATE_INDICATOR = "browser_state_indicator";
     private static final String PREF_SAFETY_TIPS_SAFETY_TOOLS = "safety_tips_safety_tools";
@@ -119,14 +117,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 updateCheckModuleMediator,
                                 permissionsRevocationModuleMediator,
                                 safeBrowsingModuleMediator));
-        if (shouldShowNotificationModule()) {
-            SafetyHubModuleMediator notificationsModuleMediator =
-                    new SafetyHubNotificationsModuleMediator(
-                            findPreference(PREF_NOTIFICATIONS_REVIEW),
-                            this,
-                            NotificationPermissionReviewBridge.getForProfile(getProfile()));
-            mModuleMediators.add(notificationsModuleMediator);
-        }
 
         SafetyHubAccountPasswordsDataSource accountPasswordsDataSource =
                 new SafetyHubAccountPasswordsDataSource(
@@ -178,11 +168,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
         for (SafetyHubModuleMediator moduleMediator : mModuleMediators) {
             moduleMediator.setUpModule();
         }
-    }
-
-    private static boolean shouldShowNotificationModule() {
-        return !ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SAFETY_HUB_DISRUPTIVE_NOTIFICATION_REVOCATION);
     }
 
     private static boolean shouldShowUnifiedPasswords() {
@@ -248,11 +233,6 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     @Override
     public void startSettingsForModule(Class<? extends Fragment> fragment) {
         startSettings(fragment);
-    }
-
-    @Override
-    public void launchSiteSettingsActivityForModule(@SiteSettingsCategory.Type int category) {
-        launchSiteSettingsActivity(category);
     }
 
     @Override

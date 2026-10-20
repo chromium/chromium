@@ -52,11 +52,6 @@ found in the LICENSE file.
     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
         android:key="permissions"
         android:title="@string/safety_hub_permissions_ok_title" />
-    <!-- Notification review -->
-    <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
-        android:key="notifications_review"
-        android:title="@string/safety_hub_notifications_review_ok_title"
-        app:isPreferenceVisible="false" />
     </org.chromium.components.browser_ui.settings.ChromeBasePreferenceCategory>
 
     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreferenceCategory

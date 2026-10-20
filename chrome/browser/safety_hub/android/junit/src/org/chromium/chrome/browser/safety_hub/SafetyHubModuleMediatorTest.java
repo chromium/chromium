@@ -90,8 +90,7 @@ public class SafetyHubModuleMediatorTest {
                         ModuleOption.UPDATE_CHECK,
                         ModuleOption.ACCOUNT_PASSWORDS,
                         ModuleOption.SAFE_BROWSING,
-                        ModuleOption.UNUSED_PERMISSIONS,
-                        ModuleOption.NOTIFICATION_REVIEW
+                        ModuleOption.UNUSED_PERMISSIONS
                     });
         }
 
@@ -291,19 +290,13 @@ public class SafetyHubModuleMediatorTest {
                             ModuleState.SAFE,
                             /* isManaged= */ false,
                             ModuleOption.UNUSED_PERMISSIONS);
-            SafetyHubModuleMediatorImpl notificationReviewMediator =
-                    new SafetyHubModuleMediatorImpl(
-                            ModuleState.SAFE,
-                            /* isManaged= */ false,
-                            ModuleOption.NOTIFICATION_REVIEW);
 
             int[] actualOrder =
                     new int[] {
                         updateCheckMediator.getOrder(),
                         accountPasswordsMediator.getOrder(),
                         safeBrowsingMediator.getOrder(),
-                        unusedPermissionsMediator.getOrder(),
-                        notificationReviewMediator.getOrder()
+                        unusedPermissionsMediator.getOrder()
                     };
             Arrays.sort(actualOrder);
 
@@ -314,8 +307,7 @@ public class SafetyHubModuleMediatorTest {
                         updateCheckMediator.getOrder(),
                         accountPasswordsMediator.getOrder(),
                         safeBrowsingMediator.getOrder(),
-                        unusedPermissionsMediator.getOrder(),
-                        notificationReviewMediator.getOrder()
+                        unusedPermissionsMediator.getOrder()
                     });
         }
     }

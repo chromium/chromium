@@ -22,7 +22,6 @@
 namespace {
 
 constexpr char kSafeBrowsing[] = "safe_browsing";
-constexpr char kNotificationPermissions[] = "notification_permissions";
 constexpr char kRevokedPermissions[] = "revoked_permissions";
 constexpr char kPasswords[] = "passwords";
 
@@ -30,8 +29,6 @@ std::string ModuleTypeToString(safety_hub::SafetyHubModuleType module) {
   switch (module) {
     case safety_hub::SafetyHubModuleType::SAFE_BROWSING:
       return kSafeBrowsing;
-    case safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS:
-      return kNotificationPermissions;
     case safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS:
       return kRevokedPermissions;
     case safety_hub::SafetyHubModuleType::PASSWORDS:

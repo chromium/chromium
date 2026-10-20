@@ -46,8 +46,8 @@ public class Snackbar {
     /**
      * Snackbars that need to persist until acknowledged. These snackbars are stored in a queue and
      * are lower priority than both {@link #TYPE_ACTION}, and {@link #TYPE_NOTIFICATION}. These must
-     * be dismissed one by one via a click. As such, snackbars of this type MUST call
-     * {@link #setAction(String, Object)} so that there is a way to remove them.
+     * be dismissed one by one via a click. As such, snackbars of this type MUST call {@link
+     * #setAction(String, Object)} so that there is a way to remove them.
      */
     public static final int TYPE_PERSISTENT = 2;
 
@@ -125,8 +125,8 @@ public class Snackbar {
     public static final int UMA_SINGLE_TAB_GROUP_DELETE_UNDO = 66;
     public static final int UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION = 67;
     public static final int UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS = 68;
-    public static final int UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS = 69;
-    public static final int UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS = 70;
+    // Obsolete; don't use: UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS = 69;
+    // Obsolete; don't use: UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS = 70;
     public static final int UMA_SETTINGS_BATCH_UPLOAD = 71;
     public static final int UMA_REVOKE_FILE_EDIT_GRANT = 72;
     public static final int UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION = 73;

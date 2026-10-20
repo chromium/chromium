@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
   <int value="453432714" label="AboutChromeSettings"/>
   <int value="455040669" label="EmptyFragment"/>
   <int value="460038414" label="PreloadPagesSettingsFragment"/>
-  <int value="461783669" label="SafetyHubNotificationsFragment"/>
+  <int value="461783669" label="(Obsolete) SafetyHubNotificationsFragment"/>
   <int value="493474121" label="StandardProtectionSettingsFragment"/>
   <int value="513483078" label="DoNotTrackSettings"/>
   <int value="590543987" label="StorageAccessSubpageSettings"/>

@@ -30,10 +30,6 @@ public class SafetyHubMetricUtils {
             "Settings.SafetyCheck.UnusedSitePermissionsModuleInteractions";
 
     @VisibleForTesting
-    public static final String NOTIFICATIONS_INTERACTIONS_HISTOGRAM_NAME =
-            "Settings.SafetyHub.NotificationPermissionsModule.Interactions";
-
-    @VisibleForTesting
     public static final String DASHBOARD_INTERACTIONS_HISTOGRAM_NAME =
             "Settings.SafetyHub.Dashboard.Interactions";
 
@@ -76,7 +72,6 @@ public class SafetyHubMetricUtils {
         DashboardModuleType.UNIFIED_PASSWORDS,
         DashboardModuleType.SAFE_BROWSING,
         DashboardModuleType.REVOKED_PERMISSIONS,
-        DashboardModuleType.NOTIFICATION_REVIEW,
         DashboardModuleType.BROWSER_STATE
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -87,7 +82,6 @@ public class SafetyHubMetricUtils {
         String UNIFIED_PASSWORDS = "UnifiedPasswords";
         String SAFE_BROWSING = "SafeBrowsing";
         String REVOKED_PERMISSIONS = "RevokedPermissions";
-        String NOTIFICATION_REVIEW = "NotificationReview";
         String BROWSER_STATE = "BrowserState";
     }
 
@@ -131,43 +125,8 @@ public class SafetyHubMetricUtils {
     }
 
     /**
-     * All user interactions that can happen in the notifications review subpage or the
-     * notifications review dashboard module. Must be kipe in sync with
-     * SafetyCheckNotificationsModuleInteractions in settings/enums.xml.
-     */
-    @IntDef({
-        NotificationsModuleInteractions.BLOCK,
-        NotificationsModuleInteractions.BLOCK_ALL,
-        NotificationsModuleInteractions.IGNORE,
-        NotificationsModuleInteractions.MINIMIZE,
-        NotificationsModuleInteractions.RESET,
-        NotificationsModuleInteractions.UNDO_BLOCK,
-        NotificationsModuleInteractions.UNDO_IGNORE,
-        NotificationsModuleInteractions.UNDO_RESET,
-        NotificationsModuleInteractions.OPEN_UI_REVIEW,
-        NotificationsModuleInteractions.UNDO_BLOCK_ALL,
-        NotificationsModuleInteractions.GO_TO_SETTINGS,
-        NotificationsModuleInteractions.MAX_VALUE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    @interface NotificationsModuleInteractions {
-        int BLOCK = 0;
-        int BLOCK_ALL = 1;
-        int IGNORE = 2;
-        int MINIMIZE = 3;
-        int RESET = 4;
-        int UNDO_BLOCK = 5;
-        int UNDO_IGNORE = 6;
-        int UNDO_RESET = 7;
-        int OPEN_UI_REVIEW = 8;
-        int UNDO_BLOCK_ALL = 9;
-        int GO_TO_SETTINGS = 10;
-        int MAX_VALUE = GO_TO_SETTINGS;
-    }
-
-    /**
      * All user interactions that can happen in the Safety Hub dashboard, excluding the permissions
-     * and notifications review modules. Must be kept in sync with SafetyHubDashboardInteractions in
+     * review module. Must be kept in sync with SafetyHubDashboardInteractions in
      * settings/enums.xml.
      */
     @IntDef({
@@ -229,8 +188,6 @@ public class SafetyHubMetricUtils {
                 return DashboardModuleType.SAFE_BROWSING;
             case ModuleOption.UNUSED_PERMISSIONS:
                 return DashboardModuleType.REVOKED_PERMISSIONS;
-            case ModuleOption.NOTIFICATION_REVIEW:
-                return DashboardModuleType.NOTIFICATION_REVIEW;
             default:
                 throw new IllegalArgumentException();
         }
@@ -277,13 +234,6 @@ public class SafetyHubMetricUtils {
                 PERMISSIONS_INTERACTIONS_HISTOGRAM_NAME,
                 value,
                 PermissionsModuleInteractions.MAX_VALUE + 1);
-    }
-
-    static void recordNotificationsInteraction(@NotificationsModuleInteractions int value) {
-        RecordHistogram.recordEnumeratedHistogram(
-                NOTIFICATIONS_INTERACTIONS_HISTOGRAM_NAME,
-                value,
-                NotificationsModuleInteractions.MAX_VALUE + 1);
     }
 
     static void recordDashboardInteractions(@DashboardInteractions int value) {

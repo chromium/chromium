@@ -1529,27 +1529,6 @@ Your Google account may have other forms of browsing history like searches and a
         =1 {Permissions reviewed for 1 site}
         other {Permissions reviewed for # sites}}
       </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_OK_TITLE" desc="Title for the notifications module in the Safety Hub dashboard. It is displayed when the user has no notification permissions that need to be reviewed.">
-        Notifications look good
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_WARNING_TITLE" desc="Title for the notifications module in the Safety Hub dashboard. It is displayed when the user has some notification permissions that need to be reviewed.">
-        {NUM_SITES, plural, =1 {1 site recently sent a lot of notifications} other {# sites recently sent a lot of notifications}}
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_TITLE" desc="Page title for the Safety Hub notifications review subpage, allowing users to revoke notification permissions from sites that send a lot of notifications.">
-        Review notifications
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_PAGE_HEADER" desc="Header text shown at the very top of the Safety Hub notifications review subpage. Further educates the user about the contents of the page.">
-        You can review sites that send a lot of notifications and stop them from sending more in the future
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_SUBLABEL" desc="Description text shown below a site name, when it is identified as a site that sends a lot of notifications and has low user interaction.">
-        {NUM_SITES, plural, =1 {About 1 notification a day} other {About # notifications a day}}
-      </message>
-      <message name="IDS_SAFETY_HUB_RESET_NOTIFICATIONS_MENU_ITEM" desc="Menu item displayed when the user clicks the 3-dot menu icon, displayed to the right of a site that sends a lot of notifications. If clicked, it unsubscribes the user from receiving more notifications from that site.">
-        Unsubscribe notifications from this site
-      </message>
-      <message name="IDS_SAFETY_HUB_ALLOW_NOTIFICATIONS_MENU_ITEM" desc="Menu item displayed when the user clicks the 3-dot menu icon, displayed to the right of a site that sends a lot of notifications. If clicked, it removes the site from the notifications review list.">
-        Always allow notifications from this site
-      </message>
       <message name="IDS_SAFETY_HUB_SAFETY_MODULES_SECTION_HEADER" desc="Title for top level section of Safety Hub page. It includes a safety overview of several modules that Safety Hub periodically checks.">
         Safety at a glance
       </message>
@@ -1558,9 +1537,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SAFETY_HUB_DESCRIPTION" desc="Description at the top of the Safey Check page. It informs the user that safety check will run checkups periodically for several modules and display the results on this page.">
         Chrome regularly checks to make sure your browser has the safest settings. We'll let you know if anything needs review.
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_ALL_BUTTON" desc="Text found on the primary button of the notifications module warning state. When clicked it will unsubscribe the user from all sites that send a lot of notifications.">
-        Unsubscribe all
       </message>
       <message name="IDS_SAFETY_HUB_REMOVED_ONE_PERMISSION_SUBLABEL" desc="Description text shown below a site name, when a single permission, excluding notification permissions, was automatically revoked for that site.">
         <ph name="PERMISSION">%1$s<ex>Location</ex></ph> <ph name="SEPARATOR">•</ph> Chrome removed these permissions because you haven’t visited recently
@@ -1579,17 +1555,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SAFETY_HUB_SUSPICIOUS_NOTIFICATION_PERMISSIONS_SUBLABEL" desc="Description text shown below a site name, when notification permissions were automatically revoked for that site due to suspicious content.">
          Notifications <ph name="SEPARATOR">•</ph> Chrome removed these permissions because of spam or deceptive contents
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_RESET_SNACKBAR" desc="Snackbar text displayed when the user clicks the Unsubscribe button for a site which sends a lot of notifications. Informs the user for which site the notifications were unsubscribed.">
-       Unsubscribed from <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>. You'll be asked again on your next visit.
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ALLOW_SNACKBAR" desc="Snackbar text displayed when the user clicks the Allow button for a site which sends a lot of notifications. Informs the user for which site the notifications were allowed.">
-        Notifications allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_RESET_SNACKBAR" desc="Snackbar text displayed when the user click the 'Unsubscribe all' button at the bottom of the notifications review subpage or in the notifications review module of the dashboard. Informs the user about the number of sites for which the notifications were unsubscribed.">
-        {NUM_SITES, plural,
-        =1 {Unsubscribed from 1 site}
-        other {Unsubscribed from # sites}}
       </message>
       <message name="IDS_SAFETY_HUB_SAFE_BROWSING_ON_TITLE" desc="Title for the Safe Browsing check row in the Safety Check page indicating that the user currently has Safe Browsing turned on and is getting the standard level of protection.">
         Safe Browsing is on
@@ -1657,9 +1622,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_GO_TO_SITE_SETTINGS_BUTTON" desc="Text that appears when the user clicks the three dots at the top right of the permissions review subpage, or in the good state of the revoked permissions dashboard module. Upon clicking on the text the user will be redirected to 'Site settings'">
         Go to site settings
       </message>
-      <message name="IDS_SAFETY_HUB_GO_TO_NOTIFICATION_SETTINGS_BUTTON" desc="Text that appears when the user clicks the 3-dot icon at the top right of the notifications review subpage, or in the good state of notifications review dashboard module. Upon clicking on the text the user will be redirected to the Notifications settings page.">
-        Go to notification settings
-      </message>
       <message name="IDS_SAFETY_HUB_AUTOREVOCATION_TOGGLE_TITLE" desc="Title for a setting located in the 'Site settings' page. It toggles the automatic revocation of unused site permissions.">
         Automatically remove permissions
       </message>
@@ -1719,14 +1681,6 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_SAFETY_HUB_UPDATE_UNAVAILABLE_TITLE" desc="Title for the update check row in the Safety Check page indicating that Safety Check could not check Chrome for updates and that it does not know whether the current version is the latest.">
         Can’t check Chrome version
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_OK_SUMMARY" desc="Summary for the notifications module in the Safety Hub dashboard. It is displayed when the user has no notification permissions that need to be reviewed.">
-        Chrome will let you know about sites that may be sending too many notifications
-      </message>
-      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_REVIEW_WARNING_SUMMARY" desc="Summary for the notifications module in the Safety Hub dashboard. It is displayed when the user has some notification permissions that need to be reviewed.">
-        {NUM_SITES, plural,
-        =1 {You can stop this site from sending future notifications}
-        other {You can stop these sites from sending future notifications}}
       </message>
       <message name="IDS_SAFETY_HUB_PERMISSIONS_OK_SUMMARY" desc="Summary for the permissions module in the Safety Hub dashboard. It is displayed when the user has no automatically revoked permissions that need to be reviewed.">
         Chrome automatically removes permissions from sites that abuse notifications or that you haven’t visited recently

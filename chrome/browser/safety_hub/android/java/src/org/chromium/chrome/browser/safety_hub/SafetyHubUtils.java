@@ -122,10 +122,6 @@ class SafetyHubUtils {
         return (sitesWithUnusedPermissionsCount > 0) ? ModuleState.INFO : ModuleState.SAFE;
     }
 
-    static @ModuleState int getNotificationModuleState(int notificationPermissionsForReviewCount) {
-        return (notificationPermissionsForReviewCount > 0) ? ModuleState.INFO : ModuleState.SAFE;
-    }
-
     static @ModuleState int getSafeBrowsingModuleState(@SafeBrowsingState int safeBrowsingState) {
         return (safeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING)
                 ? ModuleState.WARNING
