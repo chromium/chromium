@@ -5,6 +5,7 @@
 #include "partition_alloc/scheduler_loop_quarantine.h"
 
 #include <atomic>
+#include <optional>
 
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/internal/partition_root_internal.h"
@@ -159,7 +160,8 @@ namespace {
 // Releases a single dequarantined slot for `PurgeInternal()`: into the thread
 // cache if it takes it, otherwise batched in `queue`.
 //
-// `queue` amortizes the root lock over `kQueueSize` slots and is never null.
+// `queue` amortizes the root lock over `kQueueSize` slots and is constructed
+// lazily on first use.
 // `tcache` is the cache owning this branch, and is null unless `thread_bound`.
 template <bool thread_bound, QuarantineTarget quarantine_target>
 PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
@@ -167,7 +169,7 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     UntaggedSlotStart slot_start,
     size_t bucket_index,
     size_t slot_size,
-    BatchFreeQueue<quarantine_target>* queue,
+    std::optional<BatchFreeQueue<quarantine_target>>& queue,
     ThreadCache* tcache) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   root->RetagSlotIfNeeded(slot_start, slot_size);
@@ -175,6 +177,9 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
   if constexpr (!thread_bound) {
     // Assuming that ThreadCache is not available as this is not thread-bound.
     // Going to `RawFree()` directly.
+    if (!queue.has_value()) {
+      queue.emplace(root);
+    }
     queue->Queue(slot_start);
     return;
   } else {
@@ -202,6 +207,9 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     // it.
     const size_t usable_size = root->AdjustSizeForExtrasSubtract(slot_size);
     tcache->RecordDeallocation(usable_size);
+    if (!queue.has_value()) {
+      queue.emplace(root);
+    }
     queue->Queue(slot_start);
   }
 }
@@ -444,10 +452,21 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
     return;
   }
 
+  // This is the common case when called from `Quarantine()` while the branch
+  // is not full, or at the end of a task that didn't quarantine anything.
+  // Return early, to not pay for the (atomic) stats updates below.
+  if (branch_size_in_bytes_ <= target_size_in_bytes) {
+    return;
+  }
+
   int64_t freed_count = 0;
   int64_t freed_size_in_bytes = 0;
 
-  BatchFreeQueue<quarantine_target> queue(allocator_root_);
+  // Only needed for entries that the thread cache doesn't take: all entries of
+  // a global branch, and entries larger than the thread cache's size limit for
+  // a thread-bound branch. Constructed lazily, as constructing it
+  // zero-initializes its storage.
+  std::optional<BatchFreeQueue<quarantine_target>> queue;
 
   // Dequarantine some entries as required.
   while (target_size_in_bytes < branch_size_in_bytes_) {
@@ -480,7 +499,7 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
     }
 
     ReleaseDequarantinedSlot<kThreadBound, quarantine_target>(
-        allocator_root_, slot_start.Untag(), bucket_index, slot_size, &queue,
+        allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
         tcache_);
   }
 
