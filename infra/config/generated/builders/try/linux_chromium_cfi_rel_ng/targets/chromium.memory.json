@@ -587,8 +587,6 @@
           "--use-gpu-in-tests",
           "--no-xvfb"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

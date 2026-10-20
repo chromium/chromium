@@ -2,8 +2,6 @@
   "Mac Retina Release (Apple M2)": {
     "gtest_tests": [
       {
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -37,8 +35,6 @@
           "--use-gl=angle",
           "--use-gpu-in-tests"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -72,8 +68,6 @@
           "--git-revision=${got_revision}",
           "--bypass-skia-gold-functionality"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -119,8 +113,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -169,8 +161,6 @@
           "${buildername}",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -219,8 +209,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -264,8 +252,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -313,8 +299,6 @@
           "0",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -363,8 +347,6 @@
           "${buildername}",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -414,8 +396,6 @@
           "--dont-restore-color-profile-after-test",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -459,8 +439,6 @@
           "--enforce-browser-version",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -506,8 +484,6 @@
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_mac_runtimes.json",
           "--jobs=4"
         ],
-        "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
