@@ -34,8 +34,10 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,11 +75,12 @@ class TestListComputer extends Computer {
 
     private String computeConfig(
             Description description,
-            Set<String> instrumentedPackages,
-            Set<String> instrumentedClasses) {
+            Map<String, Set<String>> instrumentedPackagesByConfig,
+            Map<String, Set<String>> instrumentedClassesByConfig) {
         // Cache key for the ClassLoaders is in SandboxFactory.getSdkEnvironment:
         // https://cs.android.com/android/platform/superproject/main/+/main:external/robolectric-shadows/robolectric/src/main/java/org/robolectric/internal/SandboxFactory.java?q=symbol%3A%5Cborg.robolectric.internal.SandboxFactory.getSdkEnvironment%5Cb%20case%3Ayes
         List<Class<?>> shadows = new ArrayList<>();
+        List<String> packages = new ArrayList<>();
         LooperMode.Mode looperMode = Mode.PAUSED;
         GraphicsMode.Mode graphicsMode = GraphicsMode.Mode.LEGACY;
         ArrayList<Annotation> allAnnotations = new ArrayList<>();
@@ -88,24 +91,11 @@ class TestListComputer extends Computer {
                 shadows.addAll(Arrays.asList(sandboxConfig.shadows()));
             } else if (annotation instanceof Config config) {
                 shadows.addAll(Arrays.asList(config.shadows()));
-                instrumentedPackages.addAll(Arrays.asList(config.instrumentedPackages()));
+                packages.addAll(Arrays.asList(config.instrumentedPackages()));
             } else if (annotation instanceof LooperMode mode) {
                 looperMode = mode.value();
             } else if (annotation instanceof GraphicsMode mode) {
                 graphicsMode = mode.value();
-            }
-        }
-        for (var clazz : shadows) {
-            Implements annotation = clazz.getAnnotation(Implements.class);
-            if (annotation != null) {
-                String className = annotation.className();
-                if (className.isEmpty()) {
-                    className = annotation.value().getName();
-                }
-                if (!mShadowsAllowlist.allow(className)) {
-                    throwShadowException(clazz.getName(), className);
-                }
-                instrumentedClasses.add(className);
             }
         }
         String methodName = description.getMethodName();
@@ -119,7 +109,28 @@ class TestListComputer extends Computer {
                 sdkSuffix = methodName.substring(startIdx, endIdx + 1);
             }
         }
-        return graphicsMode + "/" + looperMode + sdkSuffix;
+        String configName = graphicsMode + "/" + looperMode + sdkSuffix;
+        if (!packages.isEmpty()) {
+            instrumentedPackagesByConfig
+                    .computeIfAbsent(configName, k -> new TreeSet<>())
+                    .addAll(packages);
+        }
+        for (var clazz : shadows) {
+            Implements annotation = clazz.getAnnotation(Implements.class);
+            if (annotation != null) {
+                String className = annotation.className();
+                if (className.isEmpty()) {
+                    className = annotation.value().getName();
+                }
+                if (!mShadowsAllowlist.allow(className)) {
+                    throwShadowException(clazz.getName(), className);
+                }
+                instrumentedClassesByConfig
+                        .computeIfAbsent(configName, k -> new TreeSet<>())
+                        .add(className);
+            }
+        }
+        return configName;
     }
 
     private void throwShadowException(String shadowClass, String shadowingClass) {
@@ -231,8 +242,8 @@ class TestListComputer extends Computer {
     }
 
     JSONObject createJson() throws JSONException {
-        var instrumentedPackages = new TreeSet<String>();
-        var instrumentedClasses = new TreeSet<String>();
+        Map<String, Set<String>> instrumentedPackagesByConfig = new HashMap<>();
+        Map<String, Set<String>> instrumentedClassesByConfig = new HashMap<>();
         JSONObject root = new JSONObject();
 
         JSONObject configsObj = new JSONObject();
@@ -250,7 +261,8 @@ class TestListComputer extends Computer {
                 // Happens when @Ignore is set on the class and --run-disabled is not used.
                 continue;
             }
-            String config = computeConfig(d, instrumentedPackages, instrumentedClasses);
+            String config =
+                    computeConfig(d, instrumentedPackagesByConfig, instrumentedClassesByConfig);
 
             Set<String> seenDescriptions =
                     seenDescriptionsByConfig.computeIfAbsent(config, k -> new HashSet<>());
@@ -261,22 +273,31 @@ class TestListComputer extends Computer {
                         "Duplicate test entry found: " + displayName + " in config " + config);
             }
 
-            JSONObject targetConfigsObj = info.isDisabled ? disabledObj : configsObj;
-            JSONObject configObj = getOrNewObject(targetConfigsObj, config);
-            JSONArray methodsArr = getOrNewArray(configObj, d.getClassName());
-            methodsArr.put(methodName);
+            if (info.isDisabled) {
+                JSONObject configObj = getOrNewObject(disabledObj, config);
+                JSONArray methodsArr = getOrNewArray(configObj, d.getClassName());
+                methodsArr.put(methodName);
+            } else {
+                JSONObject configObj = getOrNewObject(configsObj, config);
+                JSONObject methodsObj = getOrNewObject(configObj, "methods");
+                JSONArray methodsArr = getOrNewArray(methodsObj, d.getClassName());
+                methodsArr.put(methodName);
+            }
         }
 
-        JSONArray arr = new JSONArray();
-        root.put("instrumentedPackages", arr);
-        for (String s : instrumentedPackages) {
-            arr.put(s);
-        }
-
-        arr = new JSONArray();
-        root.put("instrumentedClasses", arr);
-        for (String s : instrumentedClasses) {
-            arr.put(s);
+        for (Iterator<String> it = configsObj.keys(); it.hasNext(); ) {
+            String config = it.next();
+            JSONObject configObj = configsObj.getJSONObject(config);
+            JSONArray packagesArr = getOrNewArray(configObj, "instrumentedPackages");
+            for (String s :
+                    instrumentedPackagesByConfig.getOrDefault(config, Collections.emptySet())) {
+                packagesArr.put(s);
+            }
+            JSONArray classesArr = getOrNewArray(configObj, "instrumentedClasses");
+            for (String s :
+                    instrumentedClassesByConfig.getOrDefault(config, Collections.emptySet())) {
+                classesArr.put(s);
+            }
         }
         return root;
     }

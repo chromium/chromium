@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.LooperMode;
 
 import java.util.Collections;
 import java.util.List;
@@ -50,9 +51,10 @@ public class TestListComputerTest {
         core.run(Request.classes(computer, classes));
         String expected =
                 """
-                {"configs":{"LEGACY\\/PAUSED":{"org.chromium.testing.local.TestListComputerTest$FakeTestClass":\
-                ["someTest"]}},"disabled":{},"instrumentedPackages":[],"instrumentedClasses":\
-                ["org.chromium.testing.local.TestListComputerTest"]}\
+                {"configs":{"LEGACY\\/PAUSED":{"methods":\
+                {"org.chromium.testing.local.TestListComputerTest$FakeTestClass":["someTest"]},\
+                "instrumentedPackages":[],"instrumentedClasses":\
+                ["org.chromium.testing.local.TestListComputerTest"]}},"disabled":{}}\
                 """;
         Assert.assertEquals(expected, computer.createJson().toString());
     }
@@ -72,10 +74,47 @@ public class TestListComputerTest {
         String expected =
                 """
                 {"configs":{},"disabled":{"LEGACY\\/PAUSED":{"org.chromium.testing.local.\
-                TestListComputerTest$DisabledTestClass":["ignoredTest"]}},"instrumentedPackages":[],\
-                "instrumentedClasses":[]}\
+                TestListComputerTest$DisabledTestClass":["ignoredTest"]}}}\
                 """;
         Assert.assertEquals(expected, computer.createJson().toString());
+    }
+
+    @Config(instrumentedPackages = {"org.example.pkg"})
+    @LooperMode(LooperMode.Mode.LEGACY)
+    @RunWith(BlockJUnit4ClassRunner.class)
+    public static class InstrumentedPackageTestClass {
+        @Test
+        public void pkgTest() {}
+    }
+
+    @Test
+    public void testPerConfigInstrumentation() throws Exception {
+        JUnitCore core = new JUnitCore();
+        TestListComputer computer =
+                new TestListComputer(Allowlist.fromLines("mockfile", Collections.emptyList()));
+        Class[] classes = {FakeTestClass.class, InstrumentedPackageTestClass.class};
+        core.run(Request.classes(computer, classes));
+        var configs = computer.createJson().getJSONObject("configs");
+        Assert.assertEquals(
+                "[\"org.example.pkg\"]",
+                configs.getJSONObject("LEGACY/LEGACY")
+                        .getJSONArray("instrumentedPackages")
+                        .toString());
+        Assert.assertEquals(
+                "[]",
+                configs.getJSONObject("LEGACY/PAUSED")
+                        .getJSONArray("instrumentedPackages")
+                        .toString());
+        Assert.assertEquals(
+                "[\"org.chromium.testing.local.TestListComputerTest\"]",
+                configs.getJSONObject("LEGACY/PAUSED")
+                        .getJSONArray("instrumentedClasses")
+                        .toString());
+        Assert.assertEquals(
+                "[]",
+                configs.getJSONObject("LEGACY/LEGACY")
+                        .getJSONArray("instrumentedClasses")
+                        .toString());
     }
 
     @Test(expected = RuntimeException.class)

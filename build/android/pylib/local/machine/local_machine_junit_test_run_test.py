@@ -18,12 +18,16 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
         json_config = {
             'configs': {
                 'config1': {
-                    'class1': ['m1', 'm2'],
-                    'class2': ['m1', 'm2'],
-                    'class3': ['m1', 'm2'],
+                    'methods': {
+                        'class1': ['m1', 'm2'],
+                        'class2': ['m1', 'm2'],
+                        'class3': ['m1', 'm2'],
+                    },
                 },
                 'config2': {
-                    'class1': ['m3', 'm4', 'm5'],
+                    'methods': {
+                        'class1': ['m3', 'm4', 'm5'],
+                    },
                 },
             }
         }
@@ -175,6 +179,53 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
             patch('psutil.virtual_memory', return_value=mock_vm_64gb),
         ):
             self.assertEqual(obj._ChooseNumWorkers(32), 16)
+
+    def testMakeJobScopesInstrumentationToConfig(self):
+        test_instance = MagicMock()
+        test_instance.suite = 'chrome_junit_tests'
+        test_instance.debug_socket = None
+        test_instance.coverage_dir = None
+        test_instance.run_disabled = False
+        test_instance.robolectric_runtime_deps_dir = '/tmp/deps'
+        test_instance.native_libs_dir = '/tmp/libs'
+        obj = local_machine_junit_test_run.LocalMachineJunitTestRun(
+            MagicMock(), test_instance
+        )
+        json_config = {
+            'configs': {
+                'LEGACY/PAUSED[33]': {
+                    'methods': {'ClassA': ['m1']},
+                    'instrumentedPackages': [],
+                    'instrumentedClasses': ['android.app.Activity'],
+                },
+                'LEGACY/PAUSED[35]': {
+                    'methods': {'ClassB': ['m2']},
+                    'instrumentedPackages': ['androidx.fragment.app'],
+                    'instrumentedClasses': ['android.view.View'],
+                },
+            },
+        }
+        group_33 = local_machine_junit_test_run._TestGroup(
+            config='LEGACY/PAUSED[33]',
+            methods_by_class={'ClassA': ['m1']},
+        )
+        with (
+            patch('builtins.open', unittest.mock.mock_open()),
+            patch('pylib.constants.GetOutDirectory', return_value='/tmp/out'),
+        ):
+            job = obj._MakeJob(
+                0, '/tmp', group_33, '/tmp/props.jar', json_config
+            )
+        self.assertEqual(
+            job.json_config['configs'],
+            {
+                'LEGACY/PAUSED[33]': {
+                    'methods': {'ClassA': ['m1']},
+                    'instrumentedPackages': [],
+                    'instrumentedClasses': ['android.app.Activity'],
+                },
+            },
+        )
 
 
 if __name__ == '__main__':

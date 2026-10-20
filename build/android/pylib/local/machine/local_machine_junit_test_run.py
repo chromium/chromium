@@ -259,8 +259,11 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         new_configs = {}
         for group in selected_groups:
             if group.config not in new_configs:
-                new_configs[group.config] = {}
-            new_configs[group.config].update(group.methods_by_class)
+                new_configs[group.config] = {
+                    **json_config['configs'][group.config],
+                    'methods': {},
+                }
+            new_configs[group.config]['methods'].update(group.methods_by_class)
 
         return {**json_config, 'configs': new_configs}
 
@@ -304,7 +307,10 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         job_json_config_path = os.path.join(temp_dir, f'config{shard_id}.json')
         job_json_config = json_config.copy()
         job_json_config['configs'] = {
-            test_group.config: test_group.methods_by_class
+            test_group.config: {
+                **json_config['configs'][test_group.config],
+                'methods': test_group.methods_by_class,
+            }
         }
         with open(job_json_config_path, 'w', encoding='utf-8') as f:
             json.dump(job_json_config, f)
@@ -348,7 +354,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         json_config = self._ApplyExternalSharding(json_config)
         ret = []
         for config in json_config['configs'].values():
-            for class_name, methods in config.items():
+            for class_name, methods in config['methods'].items():
                 ret.extend(f'{class_name}.{method}' for method in methods)
         for config in json_config.get('disabled', {}).values():
             for class_name, methods in config.items():
@@ -380,7 +386,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         # Merge them into the main "configs".
         if self._test_instance.run_disabled:
             for config, classes in json_config.get('disabled', {}).items():
-                target_classes = json_config['configs'].setdefault(config, {})
+                config_obj = json_config['configs'].setdefault(
+                    config,
+                    {
+                        'methods': {},
+                        'instrumentedPackages': [],
+                        'instrumentedClasses': [],
+                    },
+                )
+                target_classes = config_obj.setdefault('methods', {})
                 for class_name, methods in classes.items():
                     target_methods = target_classes.setdefault(class_name, [])
                     target_methods.extend(methods)
@@ -511,8 +525,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         num_actual = len(test_run_results.GetAll())
         num_expected = sum(
             len(methods)
-            for classes in json_config['configs'].values()
-            for methods in classes.values()
+            for config_obj in json_config['configs'].values()
+            for methods in config_obj['methods'].values()
         )
 
         # Check that all tests actually ran that we expected to run.
@@ -523,8 +537,8 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                 'Missing results for:',
             ]
             actual_test_names = {r.GetName() for r in test_run_results.GetAll()}
-            for config, classes in json_config['configs'].items():
-                for class_name, methods in classes.items():
+            for config, config_obj in json_config['configs'].items():
+                for class_name, methods in config_obj['methods'].items():
                     for method in methods:
                         test_name = f'{class_name}#{method}'
                         if test_name not in actual_test_names:
@@ -566,10 +580,10 @@ def GroupTests(json_config, target_tests_per_job):
       Returns a list of _TestGroup.
     """
     ret = []
-    for config, methods_by_class in json_config['configs'].items():
+    for config, config_obj in json_config['configs'].items():
         size = 0
         group = {}
-        for class_name, methods in methods_by_class.items():
+        for class_name, methods in config_obj['methods'].items():
             # There is some per-class overhead, so do not splits tests from one
             # class across multiple shards (unless configs differ).
             group[class_name] = methods

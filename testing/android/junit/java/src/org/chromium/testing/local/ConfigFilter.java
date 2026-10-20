@@ -27,7 +27,8 @@ class ConfigFilter extends Filter {
             throw new RuntimeException(
                     "JSON Config had " + configsObj.length() + " entries: " + configsObj.keySet());
         }
-        JSONObject classesObj = configsObj.getJSONObject(configsObj.keys().next());
+        JSONObject classesObj =
+                configsObj.getJSONObject(configsObj.keys().next()).getJSONObject("methods");
         Iterator<String> classNames = classesObj.keys();
         while (classNames.hasNext()) {
             String className = classNames.next();
@@ -48,7 +49,8 @@ class ConfigFilter extends Filter {
             throw new RuntimeException(
                     "JSON Config had " + configsObj.length() + " entries: " + configsObj.keySet());
         }
-        JSONObject classesObj = configsObj.getJSONObject(configsObj.keys().next());
+        JSONObject classesObj =
+                configsObj.getJSONObject(configsObj.keys().next()).getJSONObject("methods");
         Class[] ret = new Class[classesObj.length()];
         int i = 0;
         Iterator<String> classNames = classesObj.keys();
