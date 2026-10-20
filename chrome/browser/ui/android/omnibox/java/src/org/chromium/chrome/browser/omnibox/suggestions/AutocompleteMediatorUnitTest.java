@@ -1499,6 +1499,7 @@ public class AutocompleteMediatorUnitTest {
         verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
         assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
+        assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().isRecentlyClosedTab);
 
         // Verify the callback.
         mOmniboxLoadUrlParamsCaptor
@@ -1535,6 +1536,20 @@ public class AutocompleteMediatorUnitTest {
         assertEquals(mOmniboxLoadUrlParamsCaptor.getValue().url, url.getSpec());
         assertFalse(mOmniboxLoadUrlParamsCaptor.getValue().openInNewTab);
         assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().openInNewWindow);
+    }
+
+    @Test
+    public void onSuggestionClicked_recentlyClosedTab() {
+        mMediator.beginInput(createEmptySession());
+        GURL url = JUnitTestGURLs.BLUE_1;
+        var match =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.RECENTLY_CLOSED_TAB)
+                        .setUrl(url)
+                        .build();
+
+        mMediator.onSuggestionClicked(match, 0, url, /* modifiers= */ 0);
+        verify(mAutocompleteDelegate).loadUrl(mOmniboxLoadUrlParamsCaptor.capture());
+        assertTrue(mOmniboxLoadUrlParamsCaptor.getValue().isRecentlyClosedTab);
     }
 
     @Test

@@ -289,6 +289,9 @@ AutocompleteMatch RecentlyClosedTabsProvider::CreateRecentlyClosedTabMatch(
   match.fill_into_edit = base::UTF8ToUTF16(url.spec());
   match.allowed_to_be_default_match = true;
   match.suggestion_group_id = omnibox::GROUP_RECENTLY_CLOSED_TABS;
+  // Restore the closed tab rather than switching to an open tab with the same
+  // URL.
+  match.has_tab_match = false;
 
   // Elide all optional parts of the URL, matching open tab suggestions.
   match.contents = url_formatter::FormatUrl(

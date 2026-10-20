@@ -62,6 +62,9 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
+import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
@@ -101,6 +104,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.ui.text.EmptyTextWatcher;
 import org.chromium.url.GURL;
 
@@ -143,7 +147,8 @@ public class TabSearchOverlayCoordinator
         TabSearchDismissalReason.TAB_SELECTED,
         TabSearchDismissalReason.TAB_GROUP_SELECTED,
         TabSearchDismissalReason.URL_LOADED,
-        TabSearchDismissalReason.WINDOW_RESIZED
+        TabSearchDismissalReason.WINDOW_RESIZED,
+        TabSearchDismissalReason.TAB_RESTORED
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabSearchDismissalReason {
@@ -155,7 +160,8 @@ public class TabSearchOverlayCoordinator
         int TAB_GROUP_SELECTED = 5;
         int URL_LOADED = 6;
         int WINDOW_RESIZED = 7;
-        int NUM_ENTRIES = 8;
+        int TAB_RESTORED = 8;
+        int NUM_ENTRIES = 9;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TabSearchDismissalReason)
@@ -645,6 +651,11 @@ public class TabSearchOverlayCoordinator
     private boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
         if (params.url == null) return false;
 
+        if (params.isRecentlyClosedTab && restoreRecentlyClosedTab(params.url)) {
+            hide(TabSearchDismissalReason.TAB_RESTORED);
+            return true;
+        }
+
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.url));
         intent.setComponent(
                 new ComponentName(mActivity.getApplicationContext(), ChromeLauncherActivity.class));
@@ -677,6 +688,40 @@ public class TabSearchOverlayCoordinator
 
         hide(TabSearchDismissalReason.URL_LOADED);
         return true;
+    }
+
+    /**
+     * Restores the most recently closed tab with the given URL, including its navigation history
+     * and position, into the regular tab model.
+     *
+     * @param url The URL of the recently closed tab.
+     * @return Whether the tab was restored.
+     */
+    private boolean restoreRecentlyClosedTab(String url) {
+        Profile profile = mProfileSupplier.get();
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (profile == null || selector == null) return false;
+
+        RecentlyClosedBridge bridge = new RecentlyClosedBridge(profile, selector);
+        try {
+            // TabRestoreService caps its entries, so this fetches all of them.
+            List<RecentlyClosedEntry> entries =
+                    bridge.getRecentlyClosedEntries(/* maxEntryCount= */ Integer.MAX_VALUE);
+            if (entries == null) return false;
+
+            // Entries are ordered from most to least recently closed.
+            for (RecentlyClosedEntry entry : entries) {
+                if (entry instanceof RecentlyClosedTab tab && tab.getUrl().getSpec().equals(url)) {
+                    return bridge.openRecentlyClosedTab(
+                            selector.getModel(/* incognito= */ false),
+                            tab,
+                            WindowOpenDisposition.NEW_FOREGROUND_TAB);
+                }
+            }
+            return false;
+        } finally {
+            bridge.destroy();
+        }
     }
 
     private void bringTabToFront(TabWindowInfo tabWindowInfo, GURL url) {

@@ -122,6 +122,7 @@ TEST_F(RecentlyClosedTabsProviderTest, ZeroSuggest) {
     EXPECT_EQ(omnibox::GROUP_RECENTLY_CLOSED_TABS, match.suggestion_group_id);
     EXPECT_TRUE(match.allowed_to_be_default_match);
     EXPECT_EQ(u"Title " + base::NumberToString16(i), match.description);
+    EXPECT_EQ(false, match.has_tab_match);
   }
 }
 

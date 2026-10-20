@@ -1826,6 +1826,9 @@ class AutocompleteMediator
                             .setOpenInBackground(openInBackground)
                             .setExtraHeaders(suggestion.getExtraHeaders())
                             .setAutocompleteLoadCallback(autocompleteLoadCallback)
+                            .setIsRecentlyClosedTab(
+                                    suggestion.getType()
+                                            == OmniboxSuggestionType.RECENTLY_CLOSED_TAB)
                             .build());
 
             mHandler.post(this::finishInteraction);

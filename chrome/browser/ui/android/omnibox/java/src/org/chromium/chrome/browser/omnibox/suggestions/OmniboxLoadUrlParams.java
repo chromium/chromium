@@ -23,6 +23,7 @@ public class OmniboxLoadUrlParams {
     public final byte @Nullable [] postData;
     public final Map<String, String> extraHeaders;
     public final @Nullable AutocompleteLoadCallback callback;
+    public final boolean isRecentlyClosedTab;
 
     private OmniboxLoadUrlParams(
             String url,
@@ -33,7 +34,8 @@ public class OmniboxLoadUrlParams {
             boolean openInBackground,
             byte @Nullable [] postData,
             Map<String, String> extraHeaders,
-            @Nullable AutocompleteLoadCallback callback) {
+            @Nullable AutocompleteLoadCallback callback,
+            boolean isRecentlyClosedTab) {
         this.url = url;
         this.transitionType = transitionType;
         this.inputStartTimestamp = inputStartTimestamp;
@@ -43,6 +45,7 @@ public class OmniboxLoadUrlParams {
         this.postData = postData;
         this.extraHeaders = extraHeaders;
         this.callback = callback;
+        this.isRecentlyClosedTab = isRecentlyClosedTab;
     }
 
     /** The builder class for {@link OmniboxLoadUrlParams}. */
@@ -56,6 +59,7 @@ public class OmniboxLoadUrlParams {
         public byte @Nullable [] postData;
         public Map<String, String> extraHeaders = Map.of();
         public @Nullable AutocompleteLoadCallback callback;
+        public boolean isRecentlyClosedTab;
 
         /**
          * @param url the URL will be loaded.
@@ -142,6 +146,18 @@ public class OmniboxLoadUrlParams {
             return this;
         }
 
+        /**
+         * Set whether the URL belongs to a recently closed tab, which the embedder may restore
+         * instead of loading the URL.
+         *
+         * @param isRecentlyClosedTab Whether the URL belongs to a recently closed tab.
+         * @return This builder instance.
+         */
+        public Builder setIsRecentlyClosedTab(boolean isRecentlyClosedTab) {
+            this.isRecentlyClosedTab = isRecentlyClosedTab;
+            return this;
+        }
+
         /** Builds the OmniboxLoadUrlParams. */
         public OmniboxLoadUrlParams build() {
             return new OmniboxLoadUrlParams(
@@ -153,7 +169,8 @@ public class OmniboxLoadUrlParams {
                     openInBackground,
                     postData,
                     extraHeaders,
-                    callback);
+                    callback,
+                    isRecentlyClosedTab);
         }
     }
 }

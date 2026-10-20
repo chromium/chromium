@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
@@ -77,6 +79,10 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
+import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
+import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.OverrideUrlLoadingDelegate;
@@ -87,8 +93,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.searchwidget.SearchActivitySession;
 import org.chromium.chrome.browser.profiles.TestProfile;
+import org.chromium.chrome.browser.searchwidget.SearchActivitySession;
 import org.chromium.chrome.browser.searchwidget.SearchUiCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -116,6 +122,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.List;
@@ -124,6 +131,9 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link TabSearchOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSearchOverlayCoordinatorUnitTest {
+    private static final long NATIVE_BRIDGE = 1L;
+    private static final String RECENTLY_CLOSED_URL = "https://www.example.com/";
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Activity mActivity;
@@ -160,6 +170,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private InsetObserver mInsetObserver;
+    @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
 
     private final OneshotSupplierImpl<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier =
             new OneshotSupplierImpl<>();
@@ -192,6 +203,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         mProfileSupplier.set(mProfile);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
+        RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
         mTabGroupUiActionHandlerSupplier.set(mTabGroupUiActionHandler);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mTabModel);
@@ -479,6 +491,7 @@ public class TabSearchOverlayCoordinatorUnitTest {
         watcher.assertExpected();
         assertTrue(handled);
         assertFalse(mCoordinator.isVisible());
+        verify(mRecentlyClosedBridgeJni, never()).init(any(), any());
 
         Intent intent = Shadows.shadowOf(mActivity).getNextStartedActivity();
         assertNotNull(intent);
@@ -552,6 +565,43 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertEquals(
                 Integer.valueOf(TabLaunchType.FROM_OMNIBOX),
                 IntentHandler.getTabLaunchType(intent));
+    }
+
+    @Test
+    public void testLoadUrl_restoresMostRecentlyClosedTabWithUrl() {
+        showOverlay();
+        verifySearchUiCoordinatorInitialized();
+        setRecentlyClosedTabs(
+                createRecentlyClosedTab(/* sessionId= */ 1, "https://other.com/"),
+                createRecentlyClosedTab(/* sessionId= */ 2, RECENTLY_CLOSED_URL),
+                createRecentlyClosedTab(/* sessionId= */ 3, RECENTLY_CLOSED_URL));
+        when(mRecentlyClosedBridgeJni.openRecentlyClosedTab(
+                        NATIVE_BRIDGE, mTabModel, 2, WindowOpenDisposition.NEW_FOREGROUND_TAB))
+                .thenReturn(true);
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.TAB_RESTORED);
+        assertTrue(loadRecentlyClosedTab());
+        watcher.assertExpected();
+        assertNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
+        verify(mRecentlyClosedBridgeJni).destroy(NATIVE_BRIDGE);
+    }
+
+    @Test
+    public void testLoadUrl_recentlyClosedTabNotFound_loadsUrl() {
+        showOverlay();
+        verifySearchUiCoordinatorInitialized();
+        setRecentlyClosedTabs(createRecentlyClosedTab(/* sessionId= */ 1, "https://other.com/"));
+
+        var watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.TabSearch.DismissalReason", TabSearchDismissalReason.URL_LOADED);
+        assertTrue(loadRecentlyClosedTab());
+        watcher.assertExpected();
+        verify(mRecentlyClosedBridgeJni, never())
+                .openRecentlyClosedTab(anyLong(), any(), anyInt(), anyInt());
+        assertNotNull(Shadows.shadowOf(mActivity).getNextStartedActivity());
     }
 
     @Test
@@ -669,6 +719,33 @@ public class TabSearchOverlayCoordinatorUnitTest {
         assertNotNull(mCoordinator.getPopupWindowForTesting());
         assertFalse(mCoordinator.getPopupWindowForTesting().isShowing());
         verify(mLocationBarCoordinator).clearOmniboxFocus();
+    }
+
+    private static RecentlyClosedTab createRecentlyClosedTab(int sessionId, String url) {
+        return new RecentlyClosedTab(
+                sessionId, /* timestamp= */ 0, "Title", new GURL(url), /* tabGroupId= */ null);
+    }
+
+    private void setRecentlyClosedTabs(RecentlyClosedTab... tabs) {
+        when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(NATIVE_BRIDGE);
+        doAnswer(
+                        invocation -> {
+                            List<RecentlyClosedEntry> entries = invocation.getArgument(1);
+                            entries.addAll(List.of(tabs));
+                            return true;
+                        })
+                .when(mRecentlyClosedBridgeJni)
+                .getRecentlyClosedEntries(eq(NATIVE_BRIDGE), any(), anyInt());
+    }
+
+    private boolean loadRecentlyClosedTab() {
+        OmniboxLoadUrlParams params =
+                new OmniboxLoadUrlParams.Builder(RECENTLY_CLOSED_URL, PageTransition.TYPED)
+                        .setIsRecentlyClosedTab(true)
+                        .build();
+        return mOverrideUrlLoadingDelegateCaptor
+                .getValue()
+                .willHandleLoadUrlWithPostData(params, /* incognito= */ false);
     }
 
     private void verifySearchUiCoordinatorInitialized() {
