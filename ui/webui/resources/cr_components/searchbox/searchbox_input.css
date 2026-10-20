@@ -59,6 +59,29 @@
    * the selection colors rather than the mirror's (possibly low-contrast)
    * emphasis colors. */
   z-index: 99;
+  /* Only used for the ellipsis (see below); the text itself is colored by the
+   * spans. */
+  color: var(--color-omnibox-text);
+}
+
+/* The input's own text is transparent (see below), and so is the ellipsis
+ * that it elides overflowing text with while it isn't focused. So the #mirror
+ * must elide its text the same way. Blink only applies an <input>'s
+ * text-overflow while it isn't the focused element (see
+ * TextControlElement::ValueForTextOverflow()). #mirrorContainer only contains
+ * the input and the (non-focusable) #mirror, so this matches that. For the
+ * ellipsis to land on the end edge, an unfocused input must be scrolled to its
+ * start (onInputScroll_() copies its scroll offset to the #mirror). Blink does
+ * that on blur, but code that scrolls the input to show its caret must not do
+ * so while it's unfocused (see selectRange() in omnibox_popup_searchbox.ts). */
+#mirrorContainer:not(:focus-within) #mirror {
+  text-overflow: ellipsis;
+}
+
+/* The ellipsis is painted in the #mirror's own color. updateMirror_() marks the
+ * #mirror as dimmed if its trailing text is. */
+#mirror.dimmed {
+  color: var(--color-omnibox-text-dimmed);
 }
 
 #mirror span:not(.dimmed) {

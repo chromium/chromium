@@ -620,6 +620,7 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
     }
 
     mirror.textContent = '';
+    mirror.classList.remove('dimmed');
     // Combine user-entered text with inline autocomplete.
     const fullText = this.lastInput_.text + this.lastInput_.inline;
     if (!fullText) {
@@ -707,6 +708,14 @@ export class SearchboxInputElement extends SearchboxInputElementBase {
       // Normal search queries (non-URL text) render as a single undimmed span.
       createSpan(fullText, /*emphasize=*/ true);
     }
+
+    // The ellipsis that elides overflowing text while the input is unfocused
+    // (see searchbox_input.css) is painted in the #mirror's own color. Style it
+    // like the trailing text, matching `gfx::RenderText::Elide()`. `fullText`
+    // isn't empty, so there's always a trailing span.
+    const lastSpan = mirror.lastElementChild;
+    assert(lastSpan);
+    mirror.classList.toggle('dimmed', lastSpan.classList.contains('dimmed'));
 
     // Synchronize horizontal scroll position between <input> and #mirror for
     // long text.

@@ -5877,6 +5877,99 @@ suite('OmniboxPopupSearchboxTest', function() {
        });
  });
 
+ // The popup stays open, but unfocused, when the user edits the text and then
+ // clicks into the page. Like the input (whose own text is transparent), the
+ // #mirror must then elide its overflowing end with an ellipsis, at the same
+ // scroll offset and within the same box as the input.
+ test('MirrorElidesOverflowingTextWhenUnfocused', async () => {
+   const text = 'https://example.com/' +
+       'foo/bar/baz/eggs/spam/'.repeat(20);
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text,
+     urlEmphasis: {
+       deemphasisMode: UrlDeemphasisMode.kAllButHost,
+       textIsUrl: true,
+       schemeRange: {start: 0, end: 5},
+       hostRange: {start: 8, end: 19},
+       schemeStrikeThrough: false,
+       schemeDangerous: false,
+     },
+     selection: {start: text.length, end: text.length},
+     userInputInProgress: true,
+     isFocused: true,
+   }));
+   await microtasksFinished();
+
+   const input = searchbox.$.input.inputElement;
+   const mirror = $$<HTMLElement>(searchbox.$.input, '#mirror');
+   assertTrue(!!mirror);
+   assertTrue(isVisible(mirror));
+   assertTrue(input.scrollWidth > input.clientWidth, 'text should overflow');
+
+   // While focused, the text scrolls with the caret, so it must not be elided.
+   assertTrue(mirror.parentElement!.matches(':focus-within'));
+   assertTrue(input.scrollLeft > 0, 'focused input should be scrolled');
+   assertEquals('clip', getComputedStyle(mirror).textOverflow);
+
+   callbackRouter.setFocus(false, /*queryZps=*/ false, /*selectAll=*/ false);
+   await microtasksFinished();
+   // Blink scrolls the input back to its start on blur, and the #mirror
+   // follows on the input's (asynchronous) scroll event.
+   await new Promise(resolve => requestAnimationFrame(resolve));
+   assertFalse(mirror.parentElement!.matches(':focus-within'));
+   assertFalse(isVisible(searchbox.$.composeButton));
+   assertEquals(text, input.value);
+   assertEquals(0, input.scrollLeft);
+   assertEquals(0, mirror.scrollLeft);
+   assertEquals('ellipsis', getComputedStyle(mirror).textOverflow);
+   // The ellipsis is styled like the trailing (de-emphasized) path.
+   const lastSpan = mirror.lastElementChild!;
+   assertTrue(lastSpan.classList.contains('dimmed'));
+   assertEquals(
+       getComputedStyle(lastSpan).color, getComputedStyle(mirror).color);
+   const inputRect = input.getBoundingClientRect();
+   const mirrorRect = mirror.getBoundingClientRect();
+   assertEquals(inputRect.left, mirrorRect.left);
+   assertEquals(inputRect.right, mirrorRect.right);
+
+   // Refocusing stops eliding the text again.
+   callbackRouter.setFocus(true, /*queryZps=*/ false, /*selectAll=*/ false);
+   await microtasksFinished();
+   assertTrue(mirror.parentElement!.matches(':focus-within'));
+   assertEquals('clip', getComputedStyle(mirror).textOverflow);
+ });
+
+ // Switching to a tab whose omnibox has an unfocused draft restores it with
+ // the caret at its end. The input isn't focused, so it must show the start of
+ // the text, with the #mirror eliding the end (rather than scrolling the
+ // ellipsis out of view).
+ test('MirrorElidesUnfocusedDraftAfterTabSwitch', async () => {
+   callbackRouter.setInputState(
+       createDefaultOmniboxInputState({text: 'https://example.org/'}));
+   await microtasksFinished();
+   const input = searchbox.$.input.inputElement;
+   const mirror = $$<HTMLElement>(searchbox.$.input, '#mirror');
+   assertTrue(!!mirror);
+   assertEquals(0, input.scrollLeft);
+
+   // `OnTabChanged()` restores an unfocused draft with the caret at its end.
+   const text = 'https://example.com/' +
+       'foo/bar/baz/eggs/spam/'.repeat(20);
+   callbackRouter.setInputState(createDefaultOmniboxInputState({
+     text,
+     selection: {start: text.length, end: text.length},
+     userInputInProgress: true,
+     isTabSwitch: true,
+   }));
+   await microtasksFinished();
+   // The #mirror follows on the input's (asynchronous) scroll event.
+   await new Promise(resolve => requestAnimationFrame(resolve));
+   assertTrue(input.scrollWidth > input.clientWidth, 'text should overflow');
+   assertEquals('ellipsis', getComputedStyle(mirror).textOverflow);
+   assertEquals(0, input.scrollLeft);
+   assertEquals(0, mirror.scrollLeft);
+ });
+
  test('UpdatesUrlEmphasisFromAutocompleteMatchOnTextInput', async () => {
    const matchEmphasis: UrlEmphasis = {
      deemphasisMode: UrlDeemphasisMode.kAllButHost,
