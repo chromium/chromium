@@ -1227,19 +1227,24 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
     return;
   }
 
-  if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled() ||
-      base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksHideMenuOnAiPage)) {
+  if (!contextual_tasks::IsContextualTasksPinningV2Enabled() ||
+      !contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          profile)) {
     return;
   }
 
   // 1. Verify we are still in AI Mode (or on the SRP when pinning on SRP is
-  // enabled).
+  // enabled), and not in zero state (at least a first-turn query has been
+  // submitted).
   const GURL& inner_frame_url = GetInnerFrameUrl();
   bool is_ai_page = ui_service_ && ui_service_->IsAiUrl(inner_frame_url);
   bool is_srp = contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled() &&
                 ui_service_ && ui_service_->IsSearchResultsUrl(inner_frame_url);
   if (!is_ai_page && !is_srp) {
+    return;
+  }
+  if (is_ai_page &&
+      ContextualTasksUI::IsZeroState(inner_frame_url, ui_service_)) {
     return;
   }
 

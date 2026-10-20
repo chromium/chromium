@@ -199,6 +199,7 @@ class FakeContextualTasksEligibilityManager
   }
 
   bool IsEligibleWithoutIdentity() const override { return is_eligible_; }
+  bool IsSidePanelAvailable() const override { return is_eligible_; }
 
  protected:
   bool CalculateEligibility() const override { return is_eligible_; }
@@ -334,10 +335,20 @@ class TestContextualTasksUI : public ContextualTasksUI {
     return ContextualTasksUI::GetBrowser();
   }
 
+  void set_inner_frame_url(const GURL& url) { inner_frame_url_ = url; }
+
+  const GURL& GetInnerFrameUrl() const override {
+    if (inner_frame_url_.has_value()) {
+      return *inner_frame_url_;
+    }
+    return ContextualTasksUI::GetInnerFrameUrl();
+  }
+
  private:
   raw_ptr<contextual_tasks::ContextualTasksPanelController> panel_controller_ =
       nullptr;
   raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
+  std::optional<GURL> inner_frame_url_;
 };
 
 }  // namespace
@@ -3798,10 +3809,15 @@ TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_Success) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+      {contextual_tasks::kContextualTasksPinningV2,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
        feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
       /*disabled_features=*/{
           contextual_tasks::kContextualTasksHideMenuOnAiPage});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
 
   // Set the post-onboarding session count to meet the default threshold (2).
   profile_->GetPrefs()->SetInteger(
@@ -3823,10 +3839,12 @@ TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_Success) {
   TestContextualTasksUI controller(&web_ui);
   controller.set_panel_controller(&mock_panel_controller);
   controller.set_browser_window(&mock_browser_window);
+  controller.set_inner_frame_url(
+      GURL("https://www.google.com/search?udm=50&q=test"));
 
   EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
       .WillOnce(Return(true));
-  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillOnce(Return(true));
+  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillRepeatedly(Return(true));
 
   // The pinning promo is expected to be tried.
   EXPECT_CALL(
@@ -3840,16 +3858,182 @@ TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_Success) {
   actions::ActionIdMap::ResetMapsForTesting();
 }
 
-TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_SrpWithFlagEnabled) {
+TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_ZeroState) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kContextualTasksPinningV2,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasksHideMenuOnAiPage});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding, 2);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(window_user_data_host));
+  ON_CALL(mock_browser_window, GetProfile()).WillByDefault(Return(profile_));
+
+  MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+  controller.set_browser_window(&mock_browser_window);
+  controller.set_inner_frame_url(GURL("https://www.google.com/search?udm=50"));
+
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillRepeatedly(Return(true));
+
+  // The pinning promo is NOT expected to be tried when in zero state (before
+  // the user submits at least a first-turn query).
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .Times(0);
+
+  controller.MaybeTriggerPinningPromo();
+
+  // Once the user exits zero state (e.g. after submitting a first-turn query),
+  // the pinning promo should be attempted.
+  controller.set_inner_frame_url(
+      GURL("https://www.google.com/search?udm=50&q=test"));
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .WillOnce(Return(true));
+
+  controller.MaybeTriggerPinningPromo();
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
+TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_PinningV2Disabled) {
   InitializeActionIdStringMapping();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
+      /*disabled_features=*/{contextual_tasks::kContextualTasksPinningV2});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding, 2);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(window_user_data_host));
+  ON_CALL(mock_browser_window, GetProfile()).WillByDefault(Return(profile_));
+
+  MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+  controller.set_browser_window(&mock_browser_window);
+
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+
+  // The pinning promo is NOT expected to be tried when kContextualTasksPinningV2
+  // is disabled.
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .Times(0);
+
+  controller.MaybeTriggerPinningPromo();
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
+TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_NotPinningEligible) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kContextualTasksPinningV2,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
+      /*disabled_features=*/{});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  eligibility_manager.SetIsEligible(false);
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding, 2);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(window_user_data_host));
+  ON_CALL(mock_browser_window, GetProfile()).WillByDefault(Return(profile_));
+
+  MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+  controller.set_browser_window(&mock_browser_window);
+
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillOnce(Return(true));
+
+  // The pinning promo is NOT expected to be tried when IsPinningEligible is
+  // false.
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .Times(0);
+
+  controller.MaybeTriggerPinningPromo();
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
+TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_SrpWithFlagEnabled) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kContextualTasksPinningV2,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
        contextual_tasks::kEnableContextualTasksPinButtonOnSrp,
        feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
       /*disabled_features=*/{
           contextual_tasks::kContextualTasksHideMenuOnAiPage});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
 
   profile_->GetPrefs()->SetInteger(
       contextual_tasks::kContextualTasksSessionCountPostOnboarding, 2);
@@ -3893,10 +4077,15 @@ TEST_F(ContextualTasksUiTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
-      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+      {contextual_tasks::kContextualTasksPinningV2,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
        feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
       /*disabled_features=*/{
           contextual_tasks::kContextualTasksHideMenuOnAiPage});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
 
   // Set the count to 1 (less than the default threshold of 2).
   profile_->GetPrefs()->SetInteger(
@@ -3916,10 +4105,12 @@ TEST_F(ContextualTasksUiTest,
   TestContextualTasksUI controller(&web_ui);
   controller.set_panel_controller(&mock_panel_controller);
   controller.set_browser_window(&mock_browser_window);
+  controller.set_inner_frame_url(
+      GURL("https://www.google.com/search?udm=50&q=test"));
 
   EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
       .WillOnce(Return(true));
-  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillOnce(Return(true));
+  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillRepeatedly(Return(true));
 
   // The pinning promo is NOT expected to be tried because threshold (2) is not
   // met.
@@ -3940,10 +4131,15 @@ TEST_F(ContextualTasksUiTest,
   base::test::ScopedFeatureList test_features;
   test_features.InitWithFeatures(
       /*enabled_features=*/
-      {contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+      {contextual_tasks::kContextualTasksPinningV2,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
        feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
        contextual_tasks::kContextualTasksHideMenuOnAiPage},
       /*disabled_features=*/{});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
 
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
   ui::UnownedUserDataHost window_user_data_host;
@@ -3959,16 +4155,23 @@ TEST_F(ContextualTasksUiTest,
   TestContextualTasksUI controller(&web_ui);
   controller.set_panel_controller(&mock_panel_controller);
   controller.set_browser_window(&mock_browser_window);
+  controller.set_inner_frame_url(
+      GURL("https://www.google.com/search?udm=50&q=test"));
 
   EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
       .WillOnce(Return(true));
+  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillRepeatedly(Return(true));
 
-  // The pinning promo is not expected to be tried.
+  profile_->GetPrefs()->SetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding, 2);
+
+  // The pinning promo is expected to be tried even when the WebUI menu is
+  // hidden on the AI page, since it now anchors to the ephemeral pin button.
   EXPECT_CALL(
       mock_user_education,
       MaybeShowFeaturePromo(
           testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
-      .Times(0);
+      .WillOnce(Return(true));
 
   controller.MaybeTriggerPinningPromo();
 

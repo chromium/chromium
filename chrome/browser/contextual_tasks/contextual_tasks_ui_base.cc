@@ -78,10 +78,13 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_layout_css_helper.h"
 #include "chrome/grit/webui_toolbar_shared_resources.h"
 #include "chrome/grit/webui_toolbar_shared_resources_map.h"
+#include "components/contextual_tasks/public/prefs.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -594,10 +597,54 @@ void ContextualTasksUIBase::CreateNewThread() {
 }
 
 void ContextualTasksUIBase::MaybeTriggerPinningPromo() {
-  // TODO(b/560292506): The AI-Mode precondition uses
-  // ui_service_->IsAiUrl(web_ui_controller_->GetInnerFrameUrl()).
-  // GetInnerFrameUrl() is webview-specific and has no panel-controller
-  // equivalent, so the precondition cannot be evaluated post-rearchitecture.
+#if !BUILDFLAG(IS_ANDROID)
+  auto* panel_controller = GetPanelController();
+  if (!panel_controller || !panel_controller->IsPanelOpenForContextualTask()) {
+    return;
+  }
+
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return;
+  }
+
+  if (!contextual_tasks::IsContextualTasksPinningV2Enabled() ||
+      !contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
+          profile)) {
+    return;
+  }
+
+  if (!IsAiPage()) {
+    return;
+  }
+
+  if (auto* active_contents = panel_controller->GetActiveWebContents()) {
+    if (auto* ui_service = GetUiService();
+        ui_service && ContextualTasksUI::IsZeroState(
+                          active_contents->GetLastCommittedURL(), ui_service)) {
+      return;
+    }
+  }
+
+  if (contextual_tasks::GetEffectivePinState(profile)) {
+    return;
+  }
+
+  int post_onboarding_sessions = profile->GetPrefs()->GetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding);
+  if (post_onboarding_sessions <
+      contextual_tasks::GetContextualTasksNumSessionsBeforeRequestPinPromo()) {
+    return;
+  }
+
+  BrowserWindowInterface* browser_window = GetBrowser();
+  if (!browser_window) {
+    return;
+  }
+  BrowserUserEducationInterface::From(browser_window)
+      ->MaybeShowFeaturePromo(
+          feature_engagement::kIPHSidePanelContextualTasksPinnableFeature);
+#endif
 }
 
 void ContextualTasksUIBase::BindInterface(

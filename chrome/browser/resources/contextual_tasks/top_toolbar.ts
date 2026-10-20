@@ -279,6 +279,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
     super.updated(changedProperties);
 
     if (changedProperties.has('isAiPage') ||
+        changedProperties.has('title') ||
         changedProperties.has('onboardingTooltipShowing')) {
       this.hideOverflowMenuButton_ =
           this.isAiPage && this.hideOverflowMenuOnAiPageEnabled_;

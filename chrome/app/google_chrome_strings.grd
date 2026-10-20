@@ -2111,6 +2111,9 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH" desc="The body text of the IPH describing that the Contextual Tasks side panel is pinnable.">
           You can pin Google Search in side panel to ask questions as you browse
         </message>
+        <message name="IDS_SIDE_PANEL_CONTEXTUAL_TASKS_PINNABLE_IPH_PIN_SHORTCUT" desc="The text on the button to pin the Contextual Tasks shortcut in the pinnable IPH.">
+          Pin Shortcut
+        </message>
         <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_TOOLBAR_BUTTON_IPH" desc="The body text of the IPH describing that the Contextual Tasks ephemeral toolbar button can be used to reopen Google Search in side panel.">
           You can reopen Google Search in side panel to ask questions while you browse
         </message>
