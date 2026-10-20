@@ -527,6 +527,13 @@ bool IsBestOfAppBestFeaturesEnabled();
 // Whether the `kDefaultBrowserPromoPropensityModel` feature is enabled.
 bool IsDefaultBrowserPromoPropensityModelEnabled();
 
+// Whether `kDefaultBrowserPromoPropensityModel` is configured to log the model
+// result without suppressing promo display.
+bool IsLogDefaultBrowserPromoPropensityModelResultAndShowPromoEnabled();
+
+// Returns the propensity score threshold for default browser promo.
+double GetDefaultBrowserPromoPropensityScoreCutoff();
+
 // Feature flag to enable the trusted vault provisional notification.
 BASE_DECLARE_FEATURE(kIOSTrustedVaultNotification);
 

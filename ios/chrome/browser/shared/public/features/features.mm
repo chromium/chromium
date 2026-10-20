@@ -629,6 +629,20 @@ bool IsDefaultBrowserPromoPropensityModelEnabled() {
       segmentation_platform::features::kDefaultBrowserPromoPropensityModel);
 }
 
+bool IsLogDefaultBrowserPromoPropensityModelResultAndShowPromoEnabled() {
+  return base::FeatureList::IsEnabled(
+             segmentation_platform::features::
+                 kDefaultBrowserPromoPropensityModel) &&
+         segmentation_platform::features::
+             kDefaultBrowserPromoPropensityModelLogModelResultAndShowPromo
+                 .Get();
+}
+
+double GetDefaultBrowserPromoPropensityScoreCutoff() {
+  return segmentation_platform::features::
+      kDefaultBrowserPromoPropensityModelScoreThreshold.Get();
+}
+
 BASE_FEATURE(kIOSTrustedVaultNotification, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIOSTrustedVaultNotificationEnabled() {
