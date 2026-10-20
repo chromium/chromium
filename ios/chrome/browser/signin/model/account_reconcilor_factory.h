@@ -7,32 +7,20 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class AccountReconcilor;
-class ProfileIOS;
+#import "components/signin/core/browser/account_reconcilor.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 
 // Singleton that owns all AccountReconcilors and associates them with browser
 // states.
-class AccountReconcilorFactory : public ProfileKeyedServiceFactoryIOS {
+class AccountReconcilorFactory
+    : public TypedProfileKeyedServiceFactoryIOS<AccountReconcilorFactory,
+                                                AccountReconcilor> {
  public:
-  // Returns the instance of AccountReconcilor associated with this profile
-  // (creating one if none exists). Returns null if this profile cannot have an
-  // GaiaCookieManagerService (for example, if it is incognito).
-  static AccountReconcilor* GetForProfile(ProfileIOS* profile);
-
-  // Returns an instance of the factory singleton.
-  static AccountReconcilorFactory* GetInstance();
+  explicit AccountReconcilorFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<AccountReconcilorFactory>;
-
-  AccountReconcilorFactory();
-  ~AccountReconcilorFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

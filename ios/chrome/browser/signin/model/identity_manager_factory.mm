@@ -8,7 +8,6 @@
 #import <utility>
 
 #import "base/check_deref.h"
-#import "base/no_destructor.h"
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -31,26 +30,11 @@ void IdentityManagerFactory::RegisterProfilePrefs(
   signin::IdentityManager::RegisterProfilePrefs(registry);
 }
 
-IdentityManagerFactory::IdentityManagerFactory()
-    : ProfileKeyedServiceFactoryIOS("IdentityManager") {
+IdentityManagerFactory::IdentityManagerFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "IdentityManager") {
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
   DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
-}
-
-IdentityManagerFactory::~IdentityManagerFactory() {}
-
-// static
-signin::IdentityManager* IdentityManagerFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<signin::IdentityManager>(
-      profile, /*create=*/true);
-}
-
-// static
-IdentityManagerFactory* IdentityManagerFactory::GetInstance() {
-  static base::NoDestructor<IdentityManagerFactory> instance;
-  return instance.get();
 }
 
 std::unique_ptr<KeyedService> IdentityManagerFactory::BuildServiceInstanceFor(

@@ -7,34 +7,26 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-class AuthenticationService;
-
 // Singleton that owns all `AuthenticationServices` and associates them with
 // profiles. Listens for the profile's destruction notification and cleans up
 // the associated `AuthenticationService`.
-class AuthenticationServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class AuthenticationServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<AuthenticationServiceFactory,
+                                                AuthenticationService> {
  public:
-  static AuthenticationService* GetForProfile(ProfileIOS* profile);
-  static AuthenticationServiceFactory* GetInstance();
+  explicit AuthenticationServiceFactory(PassKey key);
 
   // Returns the default factory, useful in tests.
   static TestingFactory GetDefaultFactory();
 
  private:
-  friend class base::NoDestructor<AuthenticationServiceFactory>;
-
-  AuthenticationServiceFactory();
-  ~AuthenticationServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

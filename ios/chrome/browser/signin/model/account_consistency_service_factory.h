@@ -7,31 +7,20 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class AccountConsistencyService;
-class ProfileIOS;
+#import "components/signin/ios/browser/account_consistency_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 namespace ios {
 // Singleton that creates the AccountConsistencyService(s) and associates those
 // services  with profiles.
-class AccountConsistencyServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class AccountConsistencyServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          AccountConsistencyServiceFactory,
+          AccountConsistencyService> {
  public:
-  // Returns the instance of AccountConsistencyService associated with this
-  // profile (creating one if none exists). Returns null if this profile cannot
-  // have an AccountConsistencyService (for example, if it is incognito).
-  static AccountConsistencyService* GetForProfile(ProfileIOS* profile);
-
-  // Returns an instance of the factory singleton.
-  static AccountConsistencyServiceFactory* GetInstance();
+  explicit AccountConsistencyServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<AccountConsistencyServiceFactory>;
-
-  AccountConsistencyServiceFactory();
-  ~AccountConsistencyServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

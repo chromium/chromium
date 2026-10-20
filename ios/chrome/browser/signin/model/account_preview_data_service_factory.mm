@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/model/account_preview_data_service_factory.h"
 
 #import "base/feature_list.h"
-#import "base/no_destructor.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_preview_data_service.h"
@@ -22,32 +21,16 @@
 #import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
-// static
-signin::AccountPreviewDataService*
-AccountPreviewDataServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()
-      ->GetServiceForProfileAs<signin::AccountPreviewDataService>(
-          profile, /*create=*/true);
-}
-
-// static
-AccountPreviewDataServiceFactory*
-AccountPreviewDataServiceFactory::GetInstance() {
-  static base::NoDestructor<AccountPreviewDataServiceFactory> instance;
-  return instance.get();
-}
-
-AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AccountPreviewDataService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "AccountPreviewDataService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(SigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
-
-AccountPreviewDataServiceFactory::~AccountPreviewDataServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 AccountPreviewDataServiceFactory::BuildServiceInstanceFor(

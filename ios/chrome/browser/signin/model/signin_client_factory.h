@@ -7,25 +7,18 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "components/signin/public/base/signin_client.h"
-#include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class SigninClient;
+#include "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that owns all SigninClients and associates them with
 // ProfileIOS.
-class SigninClientFactory : public ProfileKeyedServiceFactoryIOS {
+class SigninClientFactory
+    : public TypedProfileKeyedServiceFactoryIOS<SigninClientFactory,
+                                                SigninClient> {
  public:
-  static SigninClient* GetForProfile(ProfileIOS* profile);
-  static SigninClientFactory* GetInstance();
+  explicit SigninClientFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SigninClientFactory>;
-
-  SigninClientFactory();
-  ~SigninClientFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

@@ -7,23 +7,17 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class SigninMetricsService;
+#import "components/signin/core/browser/signin_metrics_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // Singleton that manages the `SigninMetricsService` service per profile.
-class SigninMetricsServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class SigninMetricsServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<SigninMetricsServiceFactory,
+                                                SigninMetricsService> {
  public:
-  static SigninMetricsService* GetForProfile(ProfileIOS* profile);
-  static SigninMetricsServiceFactory* GetInstance();
+  explicit SigninMetricsServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<SigninMetricsServiceFactory>;
-
-  SigninMetricsServiceFactory();
-  ~SigninMetricsServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;

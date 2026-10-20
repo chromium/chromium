@@ -14,27 +14,13 @@
 
 namespace ios {
 
-AboutSigninInternalsFactory::AboutSigninInternalsFactory()
-    : ProfileKeyedServiceFactoryIOS("AboutSigninInternals") {
+AboutSigninInternalsFactory::AboutSigninInternalsFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "AboutSigninInternals") {
   DependsOn(ios::AccountReconcilorFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());
-}
-
-AboutSigninInternalsFactory::~AboutSigninInternalsFactory() = default;
-
-// static
-AboutSigninInternals* AboutSigninInternalsFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AboutSigninInternals>(
-      profile, /*create=*/true);
-}
-
-// static
-AboutSigninInternalsFactory* AboutSigninInternalsFactory::GetInstance() {
-  static base::NoDestructor<AboutSigninInternalsFactory> instance;
-  return instance.get();
 }
 
 std::unique_ptr<KeyedService>

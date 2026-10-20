@@ -8,7 +8,6 @@
 
 #import "base/check.h"
 #import "base/feature_list.h"
-#import "base/no_destructor.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -46,34 +45,21 @@ std::unique_ptr<KeyedService> BuildAuthenticationServiceForTesting(
 }  // namespace
 
 // static
-AuthenticationService* AuthenticationServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AuthenticationService>(
-      profile, /*create=*/true);
-}
-
-// static
-AuthenticationServiceFactory* AuthenticationServiceFactory::GetInstance() {
-  static base::NoDestructor<AuthenticationServiceFactory> instance;
-  return instance.get();
-}
-
-// static
 AuthenticationServiceFactory::TestingFactory
 AuthenticationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAuthenticationServiceForTesting);
 }
 
-AuthenticationServiceFactory::AuthenticationServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AuthenticationService",
-                                    ProfileSelection::kNoInstanceInIncognito,
-                                    TestingCreation::kNoServiceForTests) {
+AuthenticationServiceFactory::AuthenticationServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "AuthenticationService",
+          ProfileSelection::kNoInstanceInIncognito,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
-
-AuthenticationServiceFactory::~AuthenticationServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 AuthenticationServiceFactory::BuildServiceInstanceFor(

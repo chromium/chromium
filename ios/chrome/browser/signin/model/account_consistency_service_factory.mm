@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
 
 #import "base/functional/bind.h"
-#import "base/no_destructor.h"
 #import "components/signin/ios/browser/account_consistency_service.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/account_reconcilor_factory.h"
@@ -13,28 +12,13 @@
 
 namespace ios {
 
-AccountConsistencyServiceFactory::AccountConsistencyServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("AccountConsistencyService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+AccountConsistencyServiceFactory::AccountConsistencyServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "AccountConsistencyService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(ios::AccountReconcilorFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
-}
-
-AccountConsistencyServiceFactory::~AccountConsistencyServiceFactory() {}
-
-// static
-AccountConsistencyService* AccountConsistencyServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AccountConsistencyService>(
-      profile, /*create=*/true);
-}
-
-// static
-AccountConsistencyServiceFactory*
-AccountConsistencyServiceFactory::GetInstance() {
-  static base::NoDestructor<AccountConsistencyServiceFactory> instance;
-  return instance.get();
 }
 
 std::unique_ptr<KeyedService>

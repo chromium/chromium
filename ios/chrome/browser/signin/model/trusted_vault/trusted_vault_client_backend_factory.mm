@@ -11,24 +11,9 @@
 #import "ios/chrome/browser/signin/model/trusted_vault/trusted_vault_configuration.h"
 #import "ios/public/provider/chrome/browser/signin/trusted_vault_api.h"
 
-// static
-TrustedVaultClientBackend* TrustedVaultClientBackendFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<TrustedVaultClientBackend>(
-      profile, /*create=*/true);
-}
-
-// static
-TrustedVaultClientBackendFactory*
-TrustedVaultClientBackendFactory::GetInstance() {
-  static base::NoDestructor<TrustedVaultClientBackendFactory> instance;
-  return instance.get();
-}
-
-TrustedVaultClientBackendFactory::TrustedVaultClientBackendFactory()
-    : ProfileKeyedServiceFactoryIOS("TrustedVaultClientBackend") {}
-
-TrustedVaultClientBackendFactory::~TrustedVaultClientBackendFactory() = default;
+TrustedVaultClientBackendFactory::TrustedVaultClientBackendFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "TrustedVaultClientBackend") {}
 
 std::unique_ptr<KeyedService>
 TrustedVaultClientBackendFactory::BuildServiceInstanceFor(

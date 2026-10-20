@@ -13,27 +13,13 @@
 
 namespace ios {
 
-// static
-AccountInvestigatorFactory* AccountInvestigatorFactory::GetInstance() {
-  static base::NoDestructor<AccountInvestigatorFactory> instance;
-  return instance.get();
-}
-
-// static
-AccountInvestigator* AccountInvestigatorFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AccountInvestigator>(
-      profile, /*create=*/true);
-}
-
-AccountInvestigatorFactory::AccountInvestigatorFactory()
-    : ProfileKeyedServiceFactoryIOS("AccountInvestigator",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+AccountInvestigatorFactory::AccountInvestigatorFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "AccountInvestigator",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
-
-AccountInvestigatorFactory::~AccountInvestigatorFactory() = default;
 
 std::unique_ptr<KeyedService>
 AccountInvestigatorFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/mirror_account_reconcilor_delegate.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -15,25 +14,10 @@
 
 namespace ios {
 
-AccountReconcilorFactory::AccountReconcilorFactory()
-    : ProfileKeyedServiceFactoryIOS("AccountReconcilor") {
+AccountReconcilorFactory::AccountReconcilorFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "AccountReconcilor") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SigninClientFactory::GetInstance());
-}
-
-AccountReconcilorFactory::~AccountReconcilorFactory() {}
-
-// static
-AccountReconcilor* AccountReconcilorFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<AccountReconcilor>(
-      profile, /*create=*/true);
-}
-
-// static
-AccountReconcilorFactory* AccountReconcilorFactory::GetInstance() {
-  static base::NoDestructor<AccountReconcilorFactory> instance;
-  return instance.get();
 }
 
 std::unique_ptr<KeyedService> AccountReconcilorFactory::BuildServiceInstanceFor(

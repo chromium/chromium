@@ -6,7 +6,6 @@
 
 #import <utility>
 
-#import "base/no_destructor.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/signin/core/browser/signin_metrics_service.h"
 #import "ios/chrome/browser/metrics/model/ios_profile_metrics_service_factory.h"
@@ -15,28 +14,14 @@
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
-// static
-SigninMetricsService* SigninMetricsServiceFactory::GetForProfile(
-    ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<SigninMetricsService>(
-      profile, /*create=*/true);
-}
-
-// static
-SigninMetricsServiceFactory* SigninMetricsServiceFactory::GetInstance() {
-  static base::NoDestructor<SigninMetricsServiceFactory> instance;
-  return instance.get();
-}
-
-SigninMetricsServiceFactory::SigninMetricsServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("SigninMetricsService",
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+SigninMetricsServiceFactory::SigninMetricsServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key),
+                                         "SigninMetricsService",
+                                         ServiceCreation::kCreateWithProfile,
+                                         TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(IOSProfileMetricsServiceFactory::GetInstance());
 }
-
-SigninMetricsServiceFactory::~SigninMetricsServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 SigninMetricsServiceFactory::BuildServiceInstanceFor(

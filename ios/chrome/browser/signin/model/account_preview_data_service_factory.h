@@ -7,33 +7,19 @@
 
 #import <memory>
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ProfileIOS;
-
-namespace signin {
-class AccountPreviewDataService;
-}
+#import "components/signin/core/browser/account_preview_data_service.h"
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
 
 // KeyedService factory that creates the Profile-associated
 // `AccountPreviewDataService`.
-class AccountPreviewDataServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class AccountPreviewDataServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<
+          AccountPreviewDataServiceFactory,
+          signin::AccountPreviewDataService> {
  public:
-  // Returns the AccountPreviewDataService instance associated with this
-  // profile (creating one if it does not exist). Returns null if `profile`
-  // is incognito or signin is disabled.
-  static signin::AccountPreviewDataService* GetForProfile(ProfileIOS* profile);
-
-  // Returns an instance of the factory singleton.
-  static AccountPreviewDataServiceFactory* GetInstance();
+  explicit AccountPreviewDataServiceFactory(PassKey key);
 
  private:
-  friend class base::NoDestructor<AccountPreviewDataServiceFactory>;
-
-  AccountPreviewDataServiceFactory();
-  ~AccountPreviewDataServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
