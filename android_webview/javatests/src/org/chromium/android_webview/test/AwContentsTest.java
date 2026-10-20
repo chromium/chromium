@@ -70,6 +70,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
@@ -82,6 +83,7 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -407,6 +409,7 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/575643007
     public void testBackgroundColorInDarkMode() throws Throwable {
         AwDarkMode.enableLegacyDarkMode();
         try {

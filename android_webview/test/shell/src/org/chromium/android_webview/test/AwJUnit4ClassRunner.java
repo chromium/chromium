@@ -14,8 +14,11 @@ import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.test.OnlyRunIn.ProcessMode;
 import org.chromium.base.CommandLine;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisableIfSkipCheck;
+import org.chromium.base.test.util.SkipCheck;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.ui.test.util.DeviceRestriction;
+import org.chromium.ui.test.util.UiDisableIfSkipCheck;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +71,19 @@ public class AwJUnit4ClassRunner extends BaseJUnit4ClassRunner {
     protected List<TestHook> getPreTestHooks() {
         return addToList(
                 super.getPreTestHooks(), Policies.getRegistrationHook(), mWebViewMultiProcessHook);
+    }
+
+    @CallSuper
+    @Override
+    protected List<SkipCheck> getSkipChecks() {
+        List<SkipCheck> checks = new ArrayList<>();
+        for (SkipCheck check : super.getSkipChecks()) {
+            if (check.getClass() != DisableIfSkipCheck.class) {
+                checks.add(check);
+            }
+        }
+        checks.add(new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()));
+        return checks;
     }
 
     private ProcessMode processModeForMethod(FrameworkMethod method) {
