@@ -3849,5 +3849,61 @@ TEST_F(PopupViewViewsTest, SubPopupMaxWidth) {
             PopupViewViews::kAutofillAiSubPopupMaxWidth);
 }
 
+TEST_F(PopupViewViewsTest, SourceAttributionSubPopupKeyboardNavigation) {
+  Suggestion attribution_suggestion(
+      u"From Gemini and connected apps · Gmail\u00A0[1]\u00A0[2]",
+      SuggestionType::kAutofillAiSourceAttribution);
+  attribution_suggestion.icon = Suggestion::Icon::kSpark;
+  attribution_suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
+  attribution_suggestion.payload = Suggestion::AutofillAiPayload(
+      EntityInstance::EntityId("test-guid"),
+      {Suggestion::PersonalContextSourceCitation(
+           GURL("https://mail.google.com/1"), gfx::Range(39, 42)),
+       Suggestion::PersonalContextSourceCitation(
+           GURL("https://mail.google.com/2"), gfx::Range(43, 46))});
+
+  Suggestion remove_suggestion(u"Remove info",
+                               SuggestionType::kRemoveAutofillAi);
+  remove_suggestion.icon = Suggestion::Icon::kClose;
+
+  std::vector<Suggestion> sub_suggestions = {
+      attribution_suggestion, Suggestion(SuggestionType::kSeparator),
+      remove_suggestion};
+
+  controller().set_suggestions(
+      {Suggestion(u"Main", SuggestionType::kAddressEntry)});
+  CreateAndShowView();
+
+  auto [sub_controller, sub_view] =
+      OpenSubView(view(), sub_suggestions, FillingProduct::kAutofillAi);
+
+  // VKEY_RIGHT captures keyboard focus in the sub-popup and selects the first
+  // selectable suggestion: row 0 (kAutofillAiSourceAttribution).
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT, *sub_view));
+  EXPECT_EQ(sub_view->GetSelectedCell(),
+            (CellIndex{0u, PopupRowView::CellType::kContent}));
+
+  // VKEY_DOWN skips the separator and moves to row 2 (kRemoveAutofillAi).
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_DOWN, *sub_view));
+  EXPECT_EQ(sub_view->GetSelectedCell(),
+            (CellIndex{2u, PopupRowView::CellType::kContent}));
+
+  // VKEY_UP moves back to row 0 (kAutofillAiSourceAttribution).
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_UP, *sub_view));
+  EXPECT_EQ(sub_view->GetSelectedCell(),
+            (CellIndex{0u, PopupRowView::CellType::kContent}));
+
+  // VKEY_RIGHT focuses citation links inside row 0.
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT, *sub_view));
+  EXPECT_EQ(sub_view->GetSelectedCell(),
+            (CellIndex{0u, PopupRowView::CellType::kContent}));
+
+  // VKEY_LEFT steps back to row 0.
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT, *sub_view));
+  EXPECT_EQ(sub_view->GetSelectedCell(),
+            (CellIndex{0u, PopupRowView::CellType::kContent}));
+}
+
 }  // namespace
 }  // namespace autofill

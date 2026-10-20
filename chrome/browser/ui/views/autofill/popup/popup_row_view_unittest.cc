@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -38,6 +39,10 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
@@ -697,6 +702,83 @@ TEST_F(PopupRowViewAcceptGuardEnabledTest,
       "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", 1, 1);
 }
 #endif  // !BUILDFLAG(IS_MAC)
+
+TEST_F(PopupRowViewTest, AutofillAiSourceAttributionLinkFocusNavigation) {
+  Suggestion suggestion(
+      u"From Gemini and connected apps · Gmail\u00A0[1]\u00A0[2]",
+      SuggestionType::kAutofillAiSourceAttribution);
+  suggestion.icon = Suggestion::Icon::kSpark;
+  suggestion.acceptability =
+      Suggestion::Acceptability::kSelectableButUnacceptable;
+  suggestion.payload = Suggestion::AutofillAiPayload(
+      EntityInstance::EntityId("test-guid"),
+      {Suggestion::PersonalContextSourceCitation(
+           GURL("https://mail.google.com/1"), gfx::Range(39, 42)),
+       Suggestion::PersonalContextSourceCitation(
+           GURL("https://mail.google.com/2"), gfx::Range(43, 46))});
+
+  ShowView(/*line_number=*/0, {suggestion});
+
+  std::vector<views::Link*> links;
+  for (views::View* child : row_view().GetContentView().children()) {
+    if (views::StyledLabel* styled_label =
+            views::AsViewClass<views::StyledLabel>(child)) {
+      for (views::View* label_child : styled_label->children()) {
+        if (views::Link* link = views::AsViewClass<views::Link>(label_child)) {
+          links.push_back(link);
+        }
+      }
+    }
+  }
+  ASSERT_EQ(links.size(), 2u);
+  views::Link* link1 = links[0];
+  views::Link* link2 = links[1];
+
+  // Selecting CellType::kContent marks the row selected for a11y and no link is
+  // focused.
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(row_view())));
+  row_view().SetSelectedCell(CellType::kContent);
+  EXPECT_FALSE(views::FocusRing::Get(link1)->ShouldPaintForTesting());
+  EXPECT_FALSE(views::FocusRing::Get(link2)->ShouldPaintForTesting());
+
+  // Pressing VKEY_RIGHT focuses [1].
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(*link1)));
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_TRUE(views::FocusRing::Get(link1)->ShouldPaintForTesting());
+
+  // Pressing VKEY_RIGHT again focuses [2].
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(*link2)));
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_FALSE(views::FocusRing::Get(link1)->ShouldPaintForTesting());
+  EXPECT_TRUE(views::FocusRing::Get(link2)->ShouldPaintForTesting());
+
+  // Pressing VKEY_RIGHT at the last link returns false and keeps [2] focused.
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RIGHT));
+
+  // Pressing VKEY_LEFT moves back to [1].
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(*link1)));
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_TRUE(views::FocusRing::Get(link1)->ShouldPaintForTesting());
+  EXPECT_FALSE(views::FocusRing::Get(link2)->ShouldPaintForTesting());
+
+  // Pressing VKEY_LEFT again returns focus to the row.
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(row_view())));
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_FALSE(views::FocusRing::Get(link1)->ShouldPaintForTesting());
+  ui::AXNodeData row_node_data;
+  row_view().GetViewAccessibility().GetAccessibleNodeData(&row_node_data);
+  EXPECT_TRUE(
+      row_node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  // Pressing VKEY_LEFT when no link is focused returns false.
+  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
+
+  // Pressing VKEY_RETURN when a citation link is focused activates the link.
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(*link1)));
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_CALL(controller(), GetWebContents()).WillOnce(Return(nullptr));
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
 
 }  // namespace
 }  // namespace autofill

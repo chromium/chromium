@@ -47,11 +47,15 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/link.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace autofill {
 
@@ -294,6 +298,29 @@ PopupRowView::PopupRowView(
 
 PopupRowView::~PopupRowView() = default;
 
+void PopupRowView::ViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
+  PopupInteractiveRowView::ViewHierarchyChanged(details);
+  // Citation badges are `views::Link`s that the `views::StyledLabel` inside
+  // `content_view_` creates lazily during its layout. Configure their focus
+  // rings once they are inserted.
+  views::Link* link = views::AsViewClass<views::Link>(details.child);
+  if (!details.is_add || !link) {
+    return;
+  }
+  views::FocusRing* focus_ring = views::FocusRing::Get(link);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetHaloInset(0);
+  // `Unretained` is safe: the focus ring is owned by the link, the link by the
+  // StyledLabel inside `content_view_`, which this row owns. The predicate is
+  // therefore destroyed strictly before `this`.
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const PopupRowView* row_view, const views::View* view) {
+        return row_view->GetFocusedLink() == view;
+      },
+      base::Unretained(this)));
+}
+
 bool PopupRowView::OnMouseDragged(const ui::MouseEvent& event) {
   // Return `true` to be informed about subsequent `OnMouseReleased` events.
   return true;
@@ -381,6 +408,11 @@ std::optional<PopupRowView::CellType> PopupRowView::GetSelectedCell() const {
 void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
   if (!controller_) {
     return;
+  }
+
+  if (focused_link_index_) {
+    focused_link_index_ = std::nullopt;
+    RefreshLinkFocusRings();
   }
 
   if (new_cell == selected_cell_ || (new_cell && !IsSelectable())) {
@@ -482,10 +514,22 @@ bool PopupRowView::HandleKeyPressEvent(
   CHECK(GetSelectedCell());
 
   switch (event.windows_key_code) {
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT: {
+      const bool is_forward =
+          (event.windows_key_code == ui::VKEY_RIGHT) != base::i18n::IsRTL();
+      return is_forward ? FocusNextLink() : FocusPreviousLink();
+    }
     case ui::VKEY_RETURN: {
       const bool kHasKeyModifierPressed =
           event.GetModifiers() & blink::WebInputEvent::kKeyModifiers;
       if (*GetSelectedCell() == CellType::kContent && !kHasKeyModifierPressed) {
+        if (views::Link* focused_link = GetFocusedLink()) {
+          // Synthesize Space because Return does not activate links on macOS
+          // (`PlatformStyle::kReturnClicksFocusedControl` is false).
+          return focused_link->OnKeyPressed(ui::KeyEvent(
+              ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
+        }
         return Accept(AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
       }
       return false;
@@ -558,6 +602,84 @@ bool PopupRowView::IsViewVisibleEnough() const {
       "Autofill.AcceptedSuggestionDesktopRowViewVisibleEnough", visible_enough);
 
   return visible_enough;
+}
+
+views::Link* PopupRowView::GetFocusedLink() const {
+  if (!focused_link_index_) {
+    return nullptr;
+  }
+  std::vector<views::Link*> links = GetLinks();
+  return *focused_link_index_ < links.size() ? links[*focused_link_index_]
+                                             : nullptr;
+}
+
+std::vector<views::Link*> PopupRowView::GetLinks() const {
+  std::vector<views::Link*> links;
+  for (views::View* child : content_view_->children()) {
+    if (views::StyledLabel* styled_label =
+            views::AsViewClass<views::StyledLabel>(child)) {
+      for (views::View* label_child : styled_label->children()) {
+        if (views::Link* link = views::AsViewClass<views::Link>(label_child);
+            link && !link->GetViewAccessibility().GetIsIgnored()) {
+          links.push_back(link);
+        }
+      }
+    }
+  }
+  return links;
+}
+
+bool PopupRowView::FocusNextLink() {
+  if (selected_cell_ != CellType::kContent) {
+    return false;
+  }
+  const size_t next_index = focused_link_index_ ? *focused_link_index_ + 1 : 0u;
+  if (next_index >= GetLinks().size()) {
+    return false;
+  }
+  SetFocusedLink(next_index);
+  return true;
+}
+
+bool PopupRowView::FocusPreviousLink() {
+  if (selected_cell_ != CellType::kContent || !focused_link_index_) {
+    return false;
+  }
+  SetFocusedLink(*focused_link_index_ > 0u
+                     ? std::optional<size_t>(*focused_link_index_ - 1)
+                     : std::nullopt);
+  return true;
+}
+
+void PopupRowView::SetFocusedLink(std::optional<size_t> link_index) {
+  if (focused_link_index_ == link_index) {
+    return;
+  }
+  focused_link_index_ = link_index;
+  views::Link* current_link = GetFocusedLink();
+
+  RefreshLinkFocusRings();
+
+  views::View& row_a11y_view = suggestion_is_acceptable_
+                                   ? static_cast<views::View&>(*content_view_)
+                                   : static_cast<views::View&>(*this);
+  if (current_link) {
+    row_a11y_view.GetViewAccessibility().SetIsSelected(false);
+    GetA11ySelectionDelegate().NotifyAXSelection(*current_link);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
+  } else if (selected_cell_ == CellType::kContent) {
+    GetA11ySelectionDelegate().NotifyAXSelection(row_a11y_view);
+    row_a11y_view.GetViewAccessibility().SetIsSelected(true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
+  }
+}
+
+void PopupRowView::RefreshLinkFocusRings() {
+  for (views::Link* link : GetLinks()) {
+    views::FocusRing::Get(link)->Refresh();
+  }
 }
 
 BEGIN_METADATA(PopupRowView)

@@ -679,7 +679,7 @@ std::optional<Suggestion> CreatePersonalContextSourceAttributionSuggestion(
                          SuggestionType::kAutofillAiSourceAttribution);
   source_info.icon = Suggestion::Icon::kSpark;
   source_info.acceptability =
-      Suggestion::Acceptability::kUnselectableAndUnacceptable;
+      Suggestion::Acceptability::kSelectableButUnacceptable;
   source_info.payload = Suggestion::AutofillAiPayload(
       entity.guid(), std::move(attribution_data->citations));
   return source_info;

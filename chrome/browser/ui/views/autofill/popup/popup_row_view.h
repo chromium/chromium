@@ -23,6 +23,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
+namespace views {
+class Link;
+}
+
 namespace autofill {
 
 class AutofillPopupController;
@@ -78,6 +82,8 @@ class PopupRowView : public PopupInteractiveRowView,
   ~PopupRowView() override;
 
   // views::View:
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -144,6 +150,16 @@ class PopupRowView : public PopupInteractiveRowView,
   // what these "enough"s mean.
   bool IsViewVisibleEnough() const;
 
+  // Helpers for traversing and focusing inline `views::Link` children inside
+  // `content_view_`. `FocusNextLink()` and `FocusPreviousLink()` return `true`
+  // if link focus changed, or `false` if the caller should handle the key.
+  views::Link* GetFocusedLink() const;
+  std::vector<views::Link*> GetLinks() const;
+  bool FocusNextLink();
+  bool FocusPreviousLink();
+  void SetFocusedLink(std::optional<size_t> link_index);
+  void RefreshLinkFocusRings();
+
   // The delegate used for accessibility announcements (implemented by the
   // parent view).
   const raw_ref<AccessibilitySelectionDelegate> a11y_selection_delegate_;
@@ -204,6 +220,10 @@ class PopupRowView : public PopupInteractiveRowView,
   // suggestion. If `false` the content part is not highlighted separately,
   // but the whole row is highlighted instead as for the control view.
   const bool suggestion_is_acceptable_;
+
+  // Index of the currently focused link in `GetLinks()`, or `std::nullopt`
+  // when no individual link is focused.
+  std::optional<size_t> focused_link_index_;
 };
 
 }  // namespace autofill

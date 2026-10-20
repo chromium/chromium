@@ -26,6 +26,8 @@ TEST(SuggestionTest, IsAcceptable) {
           .IsAcceptable());
   EXPECT_FALSE(
       Suggestion(SuggestionType::kAtMemorySourceAttribution).IsAcceptable());
+  EXPECT_FALSE(
+      Suggestion(SuggestionType::kAutofillAiSourceAttribution).IsAcceptable());
 
   // Non-kSelectableAndAcceptable acceptability states return false for
   // acceptable types.

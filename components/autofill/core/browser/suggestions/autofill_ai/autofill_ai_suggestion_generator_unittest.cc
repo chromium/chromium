@@ -695,14 +695,16 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                                  Suggestion::AutofillAiPayload(
                                      passport_personal_context.guid())),
                 ChildrenAre(
-                    EqualsSuggestion(
-                        SuggestionType::kAutofillAiSourceAttribution,
-                        expected_source_label, Suggestion::Icon::kSpark,
-                        Suggestion::AutofillAiPayload(
-                            passport_personal_context.guid(),
-                            {Suggestion::PersonalContextSourceCitation(
-                                GURL("https://photos.example.com"),
-                                gfx::Range(40, 43))})),
+                    AllOf(EqualsSuggestion(
+                              SuggestionType::kAutofillAiSourceAttribution,
+                              expected_source_label, Suggestion::Icon::kSpark,
+                              Suggestion::AutofillAiPayload(
+                                  passport_personal_context.guid(),
+                                  {Suggestion::PersonalContextSourceCitation(
+                                      GURL("https://photos.example.com"),
+                                      gfx::Range(40, 43))})),
+                          HasAcceptability(Suggestion::Acceptability::
+                                               kSelectableButUnacceptable)),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
