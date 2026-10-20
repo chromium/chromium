@@ -33,7 +33,9 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/browser_view/model/browser_view_visibility_notifier_browser_agent.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
+#import "ios/chrome/browser/bubble/model/tab_based_iph_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
@@ -275,6 +277,7 @@ class AppBarMediatorTest : public PlatformTest,
                      forProtocol:@protocol(QRScannerCommands)];
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(regular_browser_.get());
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(incognito_browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(regular_browser_.get());
 
     url_loader_ = FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
@@ -319,6 +322,12 @@ class AppBarMediatorTest : public PlatformTest,
             lens::prefs::LensOverlaySettingsPolicyValue::kDisabled));
     WebNavigationBrowserAgent::CreateForBrowser(regular_browser_.get());
     WebNavigationBrowserAgent::CreateForBrowser(incognito_browser_.get());
+    BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(
+        regular_browser_.get());
+    BrowserViewVisibilityNotifierBrowserAgent::CreateForBrowser(
+        incognito_browser_.get());
+    TabBasedIPHBrowserAgent::CreateForBrowser(regular_browser_.get());
+    TabBasedIPHBrowserAgent::CreateForBrowser(incognito_browser_.get());
 
     mediator_ = [[AppBarMediator alloc]
                initWithRegularWebStateList:regular_web_state_list_.get()
@@ -335,6 +344,10 @@ class AppBarMediatorTest : public PlatformTest,
               WebNavigationBrowserAgent::FromBrowser(regular_browser_.get())
         incognitoWebNavigationBrowserAgent:
             WebNavigationBrowserAgent::FromBrowser(incognito_browser_.get())
+                   regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                               regular_browser_.get())
+                 incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                               incognito_browser_.get())
                       regularActionFactory:regular_action_factory_
                     incognitoActionFactory:incognito_action_factory_
                                    profile:regular_profile_.get()
@@ -535,6 +548,10 @@ class AppBarMediatorTest : public PlatformTest,
               WebNavigationBrowserAgent::FromBrowser(regular_browser_.get())
         incognitoWebNavigationBrowserAgent:
             WebNavigationBrowserAgent::FromBrowser(incognito_browser_.get())
+                   regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                               regular_browser_.get())
+                 incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                               incognito_browser_.get())
                       regularActionFactory:regular_action_factory
                     incognitoActionFactory:incognito_action_factory
                                    profile:regular_profile_.get()
@@ -1691,6 +1708,10 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensWhenIneligibleSignedIn) {
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory
                                  profile:regular_profile_.get()
@@ -1955,6 +1976,10 @@ TEST_F(AppBarMediatorTest, TestGeminiEligibilityChangeUpdatesAssistantButton) {
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory
                                  profile:regular_profile_.get()
@@ -2036,6 +2061,10 @@ TEST_F(AppBarMediatorTest, TestAimEligibilityChangeUpdatesAssistantButton) {
         regularWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory
@@ -2271,6 +2300,10 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_Lens) {
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory
                                  profile:regular_profile_.get()
@@ -2341,6 +2374,10 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_Account) {
         regularWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory
@@ -2419,6 +2456,10 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateOnLoadMetric_AIM) {
         regularWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory
@@ -2514,6 +2555,10 @@ TEST_F(AppBarMediatorTest,
         regularWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory
@@ -2640,6 +2685,10 @@ TEST_F(AppBarMediatorTest,
         regularWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
                                              regular_browser_.get())
       incognitoWebNavigationBrowserAgent:WebNavigationBrowserAgent::FromBrowser(
+                                             incognito_browser_.get())
+                 regularTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
+                                             regular_browser_.get())
+               incognitoTabBasedIPHAgent:TabBasedIPHBrowserAgent::FromBrowser(
                                              incognito_browser_.get())
                     regularActionFactory:regular_action_factory
                   incognitoActionFactory:incognito_action_factory

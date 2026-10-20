@@ -42,6 +42,9 @@ NSString* const kAppBarTabGridButtonIdentifier =
     @"kAppBarTabGridButtonIdentifier";
 NSString* const kAppBarNewTabButtonIdentifier =
     @"kAppBarNewTabButtonIdentifier";
+NSString* const kAppBarBackButtonIdentifier = @"kAppBarBackButtonIdentifier";
+NSString* const kAppBarForwardButtonIdentifier =
+    @"kAppBarForwardButtonIdentifier";
 
 const char kAppBarAssistantButtonTappedHistogram[] =
     "IOS.AppBar.AssistantButtonTapped";

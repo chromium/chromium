@@ -9,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h",
   "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
   "+ios/chrome/browser/authentication/ui_bundled/signin",
+  "+ios/chrome/browser/bubble/model",
   "+ios/chrome/browser/cobrowse/model",
   "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/public",
