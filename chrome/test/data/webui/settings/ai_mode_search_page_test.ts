@@ -206,8 +206,9 @@ suite('AiModeSearchSubpage', function() {
 
     const dialogAddButton2 = addDialog2.$.add;
     assertFalse(dialogAddButton2.hasAttribute('disabled'));
+    const closePromise2 = eventToPromise('close', addDialog2);
     dialogAddButton2.click();
-    await microtasksFinished();
+    await Promise.all([closePromise2, microtasksFinished()]);
 
     // Check list sorted
     items = siteList.querySelectorAll('.list-item');
