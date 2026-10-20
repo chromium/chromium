@@ -659,11 +659,6 @@ void InputMethodAsh::UpdateContextFocusState() {
   }
 
   IMEBridge::Get()->SetCurrentInputContext(GetInputContext());
-
-  TextInputClient* client = GetTextInputClient();
-  focused_url_ = client && !IsPasswordOrNoneInputFieldFocused()
-                     ? client->GetTextEditingContext().page_url
-                     : GURL();
 }
 
 ui::EventDispatchDetails InputMethodAsh::ProcessKeyEventPostIME(

@@ -408,9 +408,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
       const gfx::Range& range,
       const std::u16string& active_composition_text,
       bool is_composition_committed) = 0;
-#endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   struct EditingContext {
     // Contains the active web content's URL.
     GURL page_url;
@@ -420,7 +418,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
 
   // Notifies TSF when a frame with a committed Url receives focus.
   virtual void NotifyOnFrameFocusChanged() {}
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
   // Called before ui::InputMethod dispatches a not-consumed event to PostIME
   // phase. This method gives TextInputClient a chance to intercept event

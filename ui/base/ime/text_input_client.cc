@@ -53,13 +53,11 @@ bool TextInputClient::SupportsAlwaysConfirmComposition() {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
 ui::TextInputClient::EditingContext TextInputClient::GetTextEditingContext() {
   return {};
 }
-#endif
 
-#if BUILDFLAG(IS_WIN)
 std::ostream& operator<<(std::ostream& os, ui::IndexFromPointFlags flags) {
   switch (flags) {
     case ui::IndexFromPointFlags::kNone:

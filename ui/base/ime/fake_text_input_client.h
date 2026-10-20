@@ -120,15 +120,13 @@ class FakeTextInputClient : public TextInputClient {
   void GetActiveTextInputControlLayoutBounds(
       std::optional<gfx::Rect>* control_bounds,
       std::optional<gfx::Rect>* selection_bounds) override;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  ui::TextInputClient::EditingContext GetTextEditingContext() override;
-#endif
 #if BUILDFLAG(IS_WIN)
+  ui::TextInputClient::EditingContext GetTextEditingContext() override;
   void SetActiveCompositionForAccessibility(
       const gfx::Range& range,
       const std::u16string& active_composition_text,
       bool is_composition_committed) override;
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   raw_ptr<ui::InputMethod> input_method_ = nullptr;
