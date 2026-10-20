@@ -214,7 +214,7 @@ void SetAllowRunningInsecureContent(
 
 constexpr UrlIdentity::TypeSet allowed_types = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
-    UrlIdentity::Type::kIsolatedWebApp};
+    UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
 
 std::u16string GetUrlForDisplay(
     Profile* profile,
