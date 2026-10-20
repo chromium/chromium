@@ -527,7 +527,7 @@ bool IOSChromeMetricsServiceClient::RegisterForProfileEvents(
     ProfileIOS* profile) {
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::IMPLICIT_ACCESS);
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* sync = SyncServiceFactory::GetForProfile(profile);
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
   if (!history_service || !sync || !browser_list) {

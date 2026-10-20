@@ -10,6 +10,7 @@
 #import "components/history/core/browser/history_constants.h"
 #import "components/history/core/browser/history_service.h"
 #import "components/history/core/browser/history_types.h"
+#import "components/history/core/common/pref_names.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/translate/core/common/language_detection_details.h"
@@ -357,6 +358,10 @@ history::HistoryService* HistoryTabHelper::GetHistoryService() {
     return nullptr;
   }
 
+  if (profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
+    return nullptr;
+  }
+
   return ios::HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::IMPLICIT_ACCESS);
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
 }

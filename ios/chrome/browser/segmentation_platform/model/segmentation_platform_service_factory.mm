@@ -122,7 +122,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->profile_id = profile->GetProfileName();
   params->history_service = ios::HistoryServiceFactory::GetForProfile(
-      profile, ServiceAccessType::IMPLICIT_ACCESS);
+      profile, ServiceAccessType::EXPLICIT_ACCESS);
   params->task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   params->storage_dir =

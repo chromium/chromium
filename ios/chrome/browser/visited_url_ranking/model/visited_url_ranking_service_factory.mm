@@ -57,7 +57,7 @@ VisitedURLRankingServiceFactory::BuildServiceInstanceFor(
   }
   history::HistoryService* history_service =
       ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::IMPLICIT_ACCESS);
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
   if (history_service) {
     syncer::DeviceInfoSyncService* device_info_sync_service =
         DeviceInfoSyncServiceFactory::GetForProfile(profile);

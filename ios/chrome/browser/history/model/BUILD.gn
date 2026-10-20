@@ -73,6 +73,7 @@ source_set("tab_helper") {
     ":model",
     "//base",
     "//components/history/core/browser",
+    "//components/history/core/common",
     "//components/strings",
     "//components/translate/core/browser",
     "//components/translate/core/common",

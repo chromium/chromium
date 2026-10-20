@@ -24,11 +24,10 @@ std::unique_ptr<KeyedService> BuildInMemoryURLIndex(ProfileIOS* profile) {
   SchemeSet allowed_schemes;
   allowed_schemes.insert(kChromeUIScheme);
 
-  // Do not force creation of the HistoryService if saving history is disabled.
   std::unique_ptr<InMemoryURLIndex> in_memory_url_index(new InMemoryURLIndex(
       ios::BookmarkModelFactory::GetForProfile(profile),
       ios::HistoryServiceFactory::GetForProfile(
-          profile, ServiceAccessType::IMPLICIT_ACCESS),
+          profile, ServiceAccessType::EXPLICIT_ACCESS),
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       profile->GetStatePath(), allowed_schemes));
   in_memory_url_index->Init();
