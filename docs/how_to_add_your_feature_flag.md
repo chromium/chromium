@@ -18,6 +18,20 @@ See also the following for definitions:
 **NOTE:** All files mentioned in Step 1 require the features to be listed in alphabetical order.
 ***
 
+Declare your feature in the `.h` file using `BASE_DECLARE_FEATURE` and define it
+in the `.cc` file using the 2-argument `BASE_FEATURE` macro (which derives the
+string name `"MyFeature"` from `kMyFeature`), placing the descriptive comment in
+the `.cc` file:
+
+```cpp
+// In the .h file:
+BASE_DECLARE_FEATURE(kMyFeature);
+
+// In the .cc file:
+// Enables ...
+BASE_FEATURE(kMyFeature, base::FEATURE_DISABLED_BY_DEFAULT);
+```
+
 This step would be different depending on where you want to use the flag:
 
 ### To use the Flag in `content/` and its embedders

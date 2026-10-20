@@ -72,9 +72,7 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kDCheckIsFatalFeature);
 // The basic use case is for any feature that can be toggled (e.g. through
 // command-line or an experiment) to have a defined Feature struct, e.g.:
 //
-//   const base::Feature kMyGreatFeature {
-//     "MyGreatFeature", base::FEATURE_ENABLED_BY_DEFAULT
-//   };
+//   BASE_FEATURE(kMyGreatFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 //
 // Then, client code that wishes to query the state of the feature would check:
 //

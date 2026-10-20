@@ -122,7 +122,7 @@ BASE_DECLARE_FEATURE(kMyFeatureJourney);
 And in `chrome/browser/metrics/critical_user_journeys/features.cc`:
 
 ```cpp
-BASE_FEATURE(kMyFeatureJourney, "MyFeatureJourney", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMyFeatureJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 ```
 
 ### 3. Create the Journey Definition

@@ -61,6 +61,15 @@ orient yourself before diving into specific component code.
     `base::OnceCallback`, `base::RepeatingCallback`, `base::Bind`):**
     *   Consult `docs/callback.md`.
 
+### **Topic: Adding a Feature Flag (`base::Feature`)**
+
+*   **For questions or tasks involving adding a `base::Feature` or feature flag:**
+    *   Consult `docs/how_to_add_your_feature_flag.md` and
+        `docs/flag_guarding_guidelines.md`, and always use the 2-argument
+        `BASE_FEATURE(kMyFeature, ...)` macro (and 4-argument
+        `BASE_FEATURE_PARAM` / 5-argument `BASE_FEATURE_ENUM_PARAM` macros)
+        with the feature's descriptive comment in the `.cc` file.
+
 ### **Topic: Adding a User Preference (Pref)**
 
 *   **For questions about user preferences or settings (e.g., mentioning

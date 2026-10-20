@@ -46,6 +46,13 @@ When using `tools/autotest.py`:
   required to achieve your given task.
 * Add code comments sparingly: Focus on *why* something is done, not *what* is
   done.
+* When defining a `base::Feature` or `base::FeatureParam`, always use the
+  2-argument `BASE_FEATURE(kMyFeature, base::FEATURE_DISABLED_BY_DEFAULT)`
+  macro (and 4-argument `BASE_FEATURE_PARAM` / 5-argument
+  `BASE_FEATURE_ENUM_PARAM` macros) where the string name is automatically
+  derived from the `k`-prefixed identifier, and place the feature's descriptive
+  comment above `BASE_FEATURE` in the `.cc` file rather than in the `.h` file
+  (unless the header specifies otherwise).
 
 ## Presubmit Checks
 

@@ -168,9 +168,9 @@ disabled-by-default for another). Example:
 
 ```c++
 #if defined(...)
-BASE_FEATURE(kMyFeature, "MyFeature", base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kMyFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kMyFeature, "MyFeature", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMyFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 ```
 
@@ -181,14 +181,12 @@ simple. Rewrite the definition to only use directives around the enabled state:
 
 ```c++
 BASE_FEATURE(kMyFeature,
-             "MyFeature",
 #if defined(...)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
-
+);
 ```
 
 
