@@ -21,22 +21,6 @@
 // NOTE: Within each of the following sections, the IDs are ordered roughly by
 // how they appear in the GUI/menus (left to right, top to bottom, etc.).
 
-// LINT.IfChange
-// =============================================================================
-// When adding a new IDC_* command below, you MUST also create
-// a corresponding declarative ActionItem in the modern Actions framework.
-// (Pure ActionItems added without legacy IDC_* commands are allowed).
-//
-// NOTE: For non-actionable structural menu containers or submenus that do not
-// trigger actions, do not add an ActionItem. Instead, add a positive
-// placeholder IDC_* command mapping at the bottom of this file growing
-// downwards.
-//
-// Quick Guide:
-// 1. Map ID in //chrome/browser/ui/actions/chrome_action_id.h: E(kActionFoo, IDC_FOO)
-// 2. Wire callback in BrowserActions::Initialize...() (browser_actions.cc).
-// =============================================================================
-
 // Navigation commands
 // TODO: Reorder to be in visible order; collapse holes
 #define IDC_BACK                        33000
@@ -589,7 +573,6 @@
 // each other, by only using every Nth id (where N is the number of unbounded
 // menus).
 #define IDC_FIRST_UNBOUNDED_MENU COMMAND_ID_FIRST_UNBOUNDED
-// LINT.ThenChange(//chrome/browser/ui/actions/chrome_action_id.h)
 
 // -----------------------------------------------------------------------------
 // Centralized Placeholder Command IDs for Non-Actionable Menu Containers
