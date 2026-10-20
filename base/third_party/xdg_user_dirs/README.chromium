@@ -1,7 +1,7 @@
 Name: xdg-user-dirs
 URL: https://gitlab.freedesktop.org/xdg/xdg-user-dirs
 Version: N/A
-Revision: 2f28f353ec3cf9288da70bab3ca963f2144808f0
+Revision: c5fd5852751a20ced25536730f17a616eaa31dd5
 Update Mechanism: Manual
 Date: 2009-02-26
 License: MIT
@@ -14,3 +14,8 @@ from xdg-user-dirs 0.10. We made xdg_user_dir_lookup() non-static and added a
 xdg_user_dir_lookup.h.
 
 - Added include xdg_user_dir_lookup.h from xdg_user_dir_lookup.cc
+
+Update instructions:
+Update commit hashes in crowbar.txtpb, then run from
+this directory:
+crowbar build --no-dry-run ./

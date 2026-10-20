@@ -1,0 +1,19 @@
+Include base/third_party/xdg_user_dirs/xdg_user_dir_lookup.h, the
+Chromium header that declares xdg_user_dir_lookup().
+
+Chromium commit 301bd400a69c8
+(https://codereview.chromium.org/2191513002). Upstream has included its
+own xdg-user-dir-lookup.h since d5559e0 (v0.20).
+
+diff --git a/src/xdg_user_dir_lookup.cc b/src/xdg_user_dir_lookup.cc
+--- a/src/xdg_user_dir_lookup.cc
++++ b/src/xdg_user_dir_lookup.cc
+@@ -25,6 +25,8 @@
+   SOFTWARE.
+ */
+ 
++#include "base/third_party/xdg_user_dirs/xdg_user_dir_lookup.h"
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
