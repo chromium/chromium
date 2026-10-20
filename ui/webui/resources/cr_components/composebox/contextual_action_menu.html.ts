@@ -18,6 +18,31 @@ export function getHtml(this: ContextualActionMenuElement) {
         ${(this.tabSuggestions?.length > 0 || this.smartTabSharingActive) &&
           this.isInputTypeAllowed_(InputType.kBrowserTab) ? html`
           ${this.contextManagementInComposeboxEnabled ? html`
+            ${this.shouldShowSingleTabItem_() ? html`
+              <button id="singleTabItem" class="dropdown-item"
+                  role="${this.enableMultiTabSelection_ ?
+                      'menuitemcheckbox' : 'menuitem'}"
+                  aria-checked="${this.enableMultiTabSelection_ &&
+                      this.isTabSelected_(this.singleTab_!)}"
+                  title="${this.singleTab_!.title}"
+                  data-index="${this.singleTabIndex_}"
+                  aria-label="
+                    ${this.getInputTypeLabel_(InputType.kBrowserTab)}
+                    : ${this.singleTab_!.title}"
+                  ?disabled="${this.isTabDisabled_(this.singleTab_!)}"
+                  @click="${this.onTabClick_}">
+                <cr-composebox-tab-favicon .url="${this.singleTab_!.url}"
+                    .tabId="${this.singleTab_!.tabId}"
+                    .isSubmitted="${this.isTabSelected_(this.singleTab_!)}">
+                </cr-composebox-tab-favicon>
+                <span class="tab-title">${this.singleTab_!.title}</span>
+                ${(this.enableMultiTabSelection_ &&
+                    this.isTabSelected_(this.singleTab_!)) ? html`
+                  <cr-icon class="share-tabs-check" icon="cr:check">
+                    </cr-icon>
+                ` : ''}
+              </button>
+            ` : ''}
             <div class="share-tabs-container" role="presentation">
               ${this.smartTabSharingVisible &&
                   this.smartTabSharingActive ? html`
