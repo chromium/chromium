@@ -72,6 +72,10 @@ command = [
     "--python",
 ]
 # LINT.ThenChange(//tools/jj/config.toml:git-cl-format-windows)
+# Lets `jj fix` format only the modified lines. clang-format,
+# google-java-format, ktfmt and the Python formatter honor these ranges. The
+# other formatters still format the whole file.
+line-range-args = ["--lines=$first:$last"]
 patterns = [
     "glob:'**/*.cc'",
     "glob:'**/*.cpp'",
