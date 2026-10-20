@@ -19,18 +19,6 @@
 #import "ios/web/public/extension/extension_controller.h"
 #import "ios/web/public/web_client.h"
 
-// static
-ExtensionService* ExtensionServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ExtensionService>(
-      profile, /*create=*/true);
-}
-
-// static
-ExtensionServiceFactory* ExtensionServiceFactory::GetInstance() {
-  static base::NoDestructor<ExtensionServiceFactory> instance;
-  return instance.get();
-}
-
 namespace {
 
 std::unique_ptr<KeyedService> BuildExtensionService(ProfileIOS* profile) {
@@ -76,15 +64,15 @@ ExtensionServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildExtensionService);
 }
 
-ExtensionServiceFactory::ExtensionServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("ExtensionService",
-                                    ProfileSelection::kRedirectedInIncognito,
-                                    ServiceCreation::kCreateWithProfile,
-                                    TestingCreation::kNoServiceForTests) {
+ExtensionServiceFactory::ExtensionServiceFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(
+          std::move(key),
+          "ExtensionService",
+          ProfileSelection::kRedirectedInIncognito,
+          ServiceCreation::kCreateWithProfile,
+          TestingCreation::kNoServiceForTests) {
   DependsOn(universal_optout::UniversalOptOutServiceFactory::GetInstance());
 }
-
-ExtensionServiceFactory::~ExtensionServiceFactory() = default;
 
 std::unique_ptr<KeyedService> ExtensionServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

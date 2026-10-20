@@ -4,25 +4,10 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_model_factory.h"
 
-#import "base/no_destructor.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_model.h"
 
-// static
-ReaderModeModel* ReaderModeModelFactory::GetForProfile(ProfileIOS* profile) {
-  return GetInstance()->GetServiceForProfileAs<ReaderModeModel>(
-      profile, /*create=*/true);
-}
-
-// static
-ReaderModeModelFactory* ReaderModeModelFactory::GetInstance() {
-  static base::NoDestructor<ReaderModeModelFactory> instance;
-  return instance.get();
-}
-
-ReaderModeModelFactory::ReaderModeModelFactory()
-    : ProfileKeyedServiceFactoryIOS("ReaderModeModel") {}
-
-ReaderModeModelFactory::~ReaderModeModelFactory() = default;
+ReaderModeModelFactory::ReaderModeModelFactory(PassKey key)
+    : TypedProfileKeyedServiceFactoryIOS(std::move(key), "ReaderModeModel") {}
 
 std::unique_ptr<KeyedService> ReaderModeModelFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {

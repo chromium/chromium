@@ -5,33 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_WEB_EXTENSION_MODEL_EXTENSION_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_WEB_EXTENSION_MODEL_EXTENSION_SERVICE_FACTORY_H_
 
-#import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
-
-class ExtensionService;
-class ProfileIOS;
+#import "ios/chrome/browser/shared/model/profile/typed_profile_keyed_service_factory_ios.h"
+#import "ios/chrome/browser/web_extension/model/extension_service.h"
 
 // Factory for creating `ExtensionService` for a profile on iOS.
-class ExtensionServiceFactory : public ProfileKeyedServiceFactoryIOS {
+class ExtensionServiceFactory
+    : public TypedProfileKeyedServiceFactoryIOS<ExtensionServiceFactory,
+                                                ExtensionService> {
  public:
-  // Returns the `ExtensionService` for `profile`, creating one if needed.
-  static ExtensionService* GetForProfile(ProfileIOS* profile);
-
-  // Returns the singleton instance of `ExtensionServiceFactory`.
-  static ExtensionServiceFactory* GetInstance();
+  explicit ExtensionServiceFactory(PassKey key);
 
   // Returns the default factory used to build `ExtensionService`.
   static TestingFactory GetDefaultFactory();
 
-  ExtensionServiceFactory(const ExtensionServiceFactory&) = delete;
-  ExtensionServiceFactory& operator=(const ExtensionServiceFactory&) = delete;
-
  private:
-  friend class base::NoDestructor<ExtensionServiceFactory>;
-
-  ExtensionServiceFactory();
-  ~ExtensionServiceFactory() override;
-
   // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       ProfileIOS* profile) const override;
