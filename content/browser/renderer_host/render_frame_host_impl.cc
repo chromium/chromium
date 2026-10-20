@@ -7950,6 +7950,19 @@ void RenderFrameHostImpl::ClosePage(
     return;
   }
 
+  if (source == ClosePageSource::kBrowser && owner_) {
+    // Browser (but not renderer)-initiated page closures should not
+    // be canceled by a navigation that can destroy `this` and wipe out
+    // `page_close_state_`.
+    // Therefore, cancel the main frame navigation, including the case where
+    // it has been already moved to the speculative RFH. However, we are not
+    // dropping the NavigationRequest here, so that a navigation that was sent
+    // to the renderer to commit can reply successfully (crbug.com/559040906).
+    NavigationDiscardReason reason = NavigationDiscardReason::kWillRemoveFrame;
+    owner_->CancelNavigation(reason);
+    owner_->GetRenderFrameHostManager().DiscardSpeculativeRFH(reason);
+  }
+
   page_close_state_ = PageCloseState::kRunningUnloadHandlers;
 
   if (IsRenderFrameLive() && !IsPageReadyToBeClosed()) {

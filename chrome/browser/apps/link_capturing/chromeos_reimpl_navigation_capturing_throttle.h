@@ -60,8 +60,6 @@ class ChromeOsReimplNavigationCapturingThrottle
   base::DictValue debug_data_;
 
   raw_ref<Profile> profile_;
-  base::WeakPtrFactory<ChromeOsReimplNavigationCapturingThrottle>
-      weak_ptr_factory_{this};
 };
 
 }  // namespace apps

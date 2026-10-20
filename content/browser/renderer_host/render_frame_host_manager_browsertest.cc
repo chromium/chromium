@@ -28,10 +28,12 @@
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
@@ -53,6 +55,7 @@
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_discard_reason.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_process_host.h"
@@ -1847,6 +1850,170 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // Because of navigation queueing, the first reload's speculative RFH will be
   // kept.
   EXPECT_TRUE(root->render_manager()->speculative_frame_host());
+}
+
+// Records the NavigationDiscardReason of the last navigation that finished
+// without committing.
+class NavigationDiscardReasonObserver : public WebContentsObserver {
+ public:
+  explicit NavigationDiscardReasonObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  // WebContentsObserver:
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->HasCommitted()) {
+      discard_reason_ = navigation_handle->GetNavigationDiscardReason();
+    }
+  }
+
+  const std::optional<NavigationDiscardReason>& discard_reason() const {
+    return discard_reason_;
+  }
+
+ private:
+  std::optional<NavigationDiscardReason> discard_reason_;
+};
+
+// Ensures that a browser-initiated page close is not lost when it races a
+// navigation that is pending commit. With RenderDocument, even a same-site
+// reload commits into a new RenderFrameHost, so the RenderFrameHost that is
+// running the unload handlers gets replaced and destroyed - taking the pending
+// ClosePage() reply callback and its timeout monitor with it. The page would
+// then stay open forever, even though the close was requested.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       ClosePageWithNavigationPendingCommit) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+
+  const GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Start a reload and let it run until the RenderFrameHost that will commit it
+  // has been picked.
+  TestNavigationManager reload(web_contents, url);
+  EXPECT_TRUE(ExecJs(web_contents, "location.reload();"));
+  EXPECT_TRUE(reload.WaitForResponse());
+
+  // With RenderDocument the reload commits in a new RenderFrameHost; otherwise
+  // the current one is reused.
+  RenderFrameHostImplWrapper commit_rfh(
+      root->render_manager()->speculative_frame_host()
+          ? root->render_manager()->speculative_frame_host()
+          : root->current_frame_host());
+
+  // Let the renderer commit the reload, but pause before the browser processes
+  // the commit, so that the navigation is pending commit.
+  CommitNavigationPauser commit_pauser(commit_rfh.get());
+  reload.ResumeNavigation();
+  commit_pauser.WaitForCommitAndPause();
+  EXPECT_TRUE(commit_rfh->HasPendingCommitNavigation());
+
+  // Closing the page has to win over the pending commit.
+  NavigationDiscardReasonObserver discard_reason_observer(web_contents);
+  WebContentsDestroyedWatcher destroyed_watcher(web_contents);
+  web_contents->ClosePage();
+
+  EXPECT_FALSE(root->render_manager()->speculative_frame_host());
+  if (commit_rfh.get() == root->current_frame_host()) {
+    // A navigation pending commit in the current RenderFrameHost cannot
+    // replace it, so it is kept: the renderer has already committed it, and
+    // discarding it would drop the commit reply (crbug.com/559040906).
+    EXPECT_TRUE(root->current_frame_host()->HasPendingCommitNavigation());
+    EXPECT_FALSE(discard_reason_observer.discard_reason().has_value());
+  } else {
+    // The speculative RenderFrameHost owning the pending commit is discarded,
+    // and its navigation ends up labeled with the destruction reason,
+    // unfortunately.
+    EXPECT_FALSE(root->current_frame_host()->HasPendingCommitNavigation());
+    EXPECT_EQ(discard_reason_observer.discard_reason(),
+              NavigationDiscardReason::kRenderFrameHostDestruction);
+  }
+  destroyed_watcher.Wait();
+}
+
+// A browser-initiated ClosePage() must not discard a navigation that is pending
+// commit in the current RenderFrameHost. When the renderer commits, it has to
+// notify the browser over NavigationClient pipe to avoid state
+// desynchronization, which in turn can lead to unnecessary renderer kills. See
+// https://crbug.com/559040906 for more details.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       ClosePageKeepsNavigationPendingCommitInCurrentFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Open a window that stays on the initial empty document, so that the
+  // browser has no URL and no real origin for its main frame.
+  Shell* new_shell = Shell::CreateNewWindow(
+      shell()->web_contents()->GetBrowserContext(), GURL(),
+      /*site_instance=*/nullptr, gfx::Size());
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  FrameTreeNode* root = web_contents->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* rfh = root->current_frame_host();
+  ASSERT_TRUE(rfh->GetLastCommittedURL().is_empty());
+  ASSERT_TRUE(rfh->GetLastCommittedOrigin().opaque());
+
+  // Start a browser-initiated navigation and let it run until the
+  // RenderFrameHost that will commit it has been picked. A navigation out of
+  // the initial empty document reuses the current RenderFrameHost, even with
+  // RenderDocument enabled, because the frame has not committed any navigation
+  // yet.
+  const GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  TestNavigationManager nav(web_contents, url);
+  new_shell->LoadURL(url);
+  ASSERT_TRUE(nav.WaitForResponse());
+  ASSERT_FALSE(root->render_manager()->speculative_frame_host());
+
+  // Let the renderer commit the document, but pause just before the browser
+  // processes the commit. At this point the renderer has a real document and
+  // the browser has not updated any of its per-document state yet.
+  CommitNavigationPauser commit_pauser(rfh);
+  nav.ResumeNavigation();
+  commit_pauser.WaitForCommitAndPause();
+  ASSERT_TRUE(rfh->HasPendingCommitNavigation());
+
+  // Install a same-document navigation in a `pagehide` handler, and confirm via
+  // the round trip that the renderer really is running the new document.
+  // (`unload` is not used: it is blocked by permissions policy by default.)
+  EXPECT_EQ(url::Origin::Create(url).Serialize(), EvalJs(rfh, R"(
+      (() => {
+        window.addEventListener('pagehide', () => {
+          history.pushState({}, '', '#fragment');
+        });
+        return self.origin;
+      })();
+  )"));
+
+  // Watch for the bad message kill.
+  base::HistogramTester histogram_tester;
+  RenderProcessHostWatcher exit_watcher(
+      rfh->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+
+  // Browser-initiated close.
+  WebContentsDestroyedWatcher destroyed_watcher(web_contents);
+  web_contents->ClosePage();
+
+  // The navigation that is pending commit in `rfh` must survive the close.
+  ASSERT_TRUE(rfh->HasPendingCommitNavigation());
+  EXPECT_TRUE(rfh->IsActive());
+
+  // Deliver the commit that the renderer already performed. The browser now
+  // agrees with the renderer about the document.
+  commit_pauser.ResumePausedCommit();
+  EXPECT_EQ(url, rfh->GetLastCommittedURL());
+  EXPECT_EQ(url::Origin::Create(url), rfh->GetLastCommittedOrigin());
+
+  // The `pagehide` handler now runs a same-document navigation, which reports
+  // the origin of the document the renderer committed. This must match what the
+  // browser knows and must not kill the renderer.
+  exit_watcher.Wait();
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Stability.BadMessageTerminated.Content"),
+      testing::IsEmpty());
+
+  // The close itself must still complete.
+  destroyed_watcher.Wait();
 }
 
 // Test for crbug.com/9682.  We should not show the URL for a pending renderer-
