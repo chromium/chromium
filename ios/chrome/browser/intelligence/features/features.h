@@ -368,12 +368,6 @@ BASE_DECLARE_FEATURE(kPageContextPdf);
 // Returns true if the PageContextPdf feature is enabled.
 bool IsPageContextPDFEnabled();
 
-// Enables the GeminiClientMigration feature.
-BASE_DECLARE_FEATURE(kGeminiClientMigration);
-
-// Returns true if the GeminiClientMigration feature is enabled.
-bool IsGeminiClientMigrationEnabled();
-
 // Enables the GeminiMultiTabContext feature.
 BASE_DECLARE_FEATURE(kGeminiMultiTabContext);
 

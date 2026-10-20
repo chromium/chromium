@@ -113,7 +113,7 @@ class ActorTaskBackgroundWorkerTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     scoped_feature_list_.InitWithFeatures(
-        {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor,
+        {kPageActionMenu, kActorTools, kGeminiActor,
          kEnableBackgroundContinuedProcessing},
         {});
     if (!IsGeminiActorBackgroundingEnabled()) {

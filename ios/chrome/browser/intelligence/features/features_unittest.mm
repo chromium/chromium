@@ -303,7 +303,7 @@ TEST_F(ActorFeaturesTest, IsGeminiExperimentalGuidedOnboardingEnabled) {
 TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor}, {});
+      {kPageActionMenu, kActorTools, kGeminiActor}, {});
 
   EXPECT_EQ(IsBackgroundContinuedProcessingEnabled(),
             IsGeminiActorBackgroundingEnabled());
@@ -316,11 +316,7 @@ TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingDisabled) {
   base::FieldTrialParams params;
   params[kGeminiActorBackgroundingParam] = "false";
   scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kPageActionMenu, {}},
-       {kActorTools, {}},
-       {kGeminiClientMigration, {}},
-       {kGeminiActor, params}},
-      {});
+      {{kPageActionMenu, {}}, {kActorTools, {}}, {kGeminiActor, params}}, {});
   EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
 }
 
@@ -329,7 +325,7 @@ TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingDisabled) {
 TEST_F(ActorFeaturesTest, TestGeminiActorBackgroundingKillswitchDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor},
+      {kPageActionMenu, kActorTools, kGeminiActor},
       {kEnableBackgroundContinuedProcessing});
   EXPECT_FALSE(IsGeminiActorBackgroundingEnabled());
 }

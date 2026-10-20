@@ -285,8 +285,7 @@ class ActorTaskTest : public PlatformTest {
     // the repeating heartbeat timer. `ActorTaskBackgroundingTest` re-enables
     // it.
     scoped_feature_list_.InitWithFeatures(
-        {kPageActionMenu, kActorTools, kActorOriginGating,
-         kGeminiClientMigration, kGeminiActor},
+        {kPageActionMenu, kActorTools, kActorOriginGating, kGeminiActor},
         {kEnableBackgroundContinuedProcessing});
     profile_ = TestProfileIOS::Builder().Build();
     journal_ = std::make_unique<AggregatedJournal>();

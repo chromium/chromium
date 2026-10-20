@@ -944,11 +944,6 @@ inline constexpr char kGeminiBinaryMigrationName[] = "Gemini Binary Migration";
 inline constexpr char kGeminiBinaryMigrationDescription[] =
     "Enables the binary network migration for Gemini.";
 
-inline constexpr char kGeminiClientMigrationName[] = "Gemini Client Migration";
-inline constexpr char kGeminiClientMigrationDescription[] =
-    "Enables the client migration for Gemini, adding the infrastructure for "
-    "several key features that render more than just text.";
-
 inline constexpr char kGeminiContextualSuggestionsCuesName[] =
     "Gemini Contextual Suggestions Cues";
 inline constexpr char kGeminiContextualSuggestionsCuesDescription[] =

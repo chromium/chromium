@@ -206,7 +206,7 @@ class ActorServiceTest : public PlatformTest {
     // Backgrounding is disabled so that these tests do not exercise it; the
     // worker and profile agent tests cover it.
     scoped_feature_list_.InitWithFeatures(
-        {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor},
+        {kPageActionMenu, kActorTools, kGeminiActor},
         {kEnableBackgroundContinuedProcessing});
 
     static_cast<web::FakeWebClient*>(web_client_.Get())

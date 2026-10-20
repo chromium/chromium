@@ -706,8 +706,7 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    base::Seconds(4));
 
 bool IsGeminiActorEnabled() {
-  if (!IsPageActionMenuEnabled() || !IsActorEnabled() ||
-      !IsGeminiClientMigrationEnabled()) {
+  if (!IsPageActionMenuEnabled() || !IsActorEnabled()) {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeminiActor);
@@ -761,15 +760,6 @@ BASE_FEATURE(kPageContextPdf, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPageContextPDFEnabled() {
   return base::FeatureList::IsEnabled(kPageContextPdf);
-}
-
-BASE_FEATURE(kGeminiClientMigration, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsGeminiClientMigrationEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kGeminiClientMigration);
 }
 
 BASE_FEATURE(kGeminiMultiTabContext, base::FEATURE_ENABLED_BY_DEFAULT);

@@ -100,7 +100,7 @@ class ActorProfileAgentTest : public PlatformTest {
   ActorProfileAgentTest()
       : web_client_(std::make_unique<web::FakeWebClient>()) {
     scoped_feature_list_.InitWithFeatures(
-        {kPageActionMenu, kActorTools, kGeminiClientMigration, kGeminiActor,
+        {kPageActionMenu, kActorTools, kGeminiActor,
          kEnableBackgroundContinuedProcessing},
         {});
     actor::ActorServiceFactory::GetInstance();
