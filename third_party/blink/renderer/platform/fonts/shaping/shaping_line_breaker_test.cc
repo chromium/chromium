@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shaping_line_breaker.h"
 
 #include <unicode/uscript.h>
+
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -12,6 +13,8 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -37,7 +40,27 @@ class HarfBuzzShapingLineBreaker : public ShapingLineBreaker {
   ShapeResult* Shape(wtf_size_t start,
                      wtf_size_t end,
                      ShapeOptions options) final {
-    return shaper_->Shape(font_, GetShapeResult().Direction(), start, end);
+    const TextDirection direction = GetShapeResult().Direction();
+    if (!shaper_->GetText().Is8Bit()) {
+      Vector<RunSegmenter::RunSegmenterRange> ranges;
+      RunSegmenter run_segmenter(shaper_->GetText().Span16(),
+                                 font_->GetFontDescription().Orientation());
+      RunSegmenter::RunSegmenterRange segment_range;
+      while (run_segmenter.Consume(&segment_range)) {
+        if (start < segment_range.end && end > segment_range.start) {
+          ranges.push_back(RunSegmenter::RunSegmenterRange{
+              std::max(start, segment_range.start),
+              std::min(end, segment_range.end), segment_range.script,
+              segment_range.render_orientation,
+              segment_range.font_fallback_priority});
+        }
+        if (segment_range.end >= end) {
+          break;
+        }
+      }
+      return shaper_->Shape(font_, direction, start, end, ranges, options);
+    }
+    return shaper_->Shape(font_, direction, start, end);
   }
 
   const HarfBuzzShaper* shaper_;
@@ -321,27 +344,60 @@ TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
 TEST_F(ShapingLineBreakerTest, HanKerningCloseUnsafe) {
   // Create a condition where all of the following are true:
   // 1. `ShouldTrimEnd(text_spacing_trim_)` (default).
-  // 2. The candidate break is `Character::MaybeHanKerningClose`; e.g., U+FF09.
+  // 2. The candidate break is `unicode::MaybeHanKerningClose`; e.g., U+FF09.
   // 3. After the candidate break is breakable.
   Font* font = MakeGarbageCollected<Font>(font_description);
-  String string{u"x\uFF09\u3042"};
-  HarfBuzzShaper shaper(string);
-  ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
-  // 4. `ShapeResult::StartIndex` isn't 0.
-  const wtf_size_t start_offset = 1;
-  ShapeResult* sub_result = result->SubRange(start_offset, result->EndIndex());
-  // 5. The candidate break isn't safe to break.
-  const wtf_size_t unsafe_offsets[]{1};
-  sub_result->AddUnsafeToBreak(unsafe_offsets);
-  const LayoutUnit available_width =
-      LayoutUnit::FromFloatFloor(sub_result->PositionForOffset(1)) - 1;
+  for (const String string : {u"x\uFF09\u3042", u"x\uFF09"}) {
+    HarfBuzzShaper shaper(string);
+    ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+    const wtf_size_t start_offset = 1;
+    // 5. The candidate break isn't safe to break.
+    const wtf_size_t unsafe_offsets[]{1};
+    result->AddUnsafeToBreak(unsafe_offsets);
 
-  LazyLineBreakIterator break_iterator(string);
-  HarfBuzzShapingLineBreaker breaker(&shaper, font, sub_result, &break_iterator,
-                                     nullptr);
-  wtf_size_t break_offset = 0;
-  ShapeLine(&breaker, start_offset, available_width, &break_offset);
-  EXPECT_EQ(break_offset, 2u);
+    // Test when `ShapeResult::StartIndex()` is 0 (< `start_offset`,
+    // crbug.com/568304685) and when it is `start_offset` (crbug.com/329677645).
+    ShapeResult* sub_result =
+        result->SubRange(start_offset, result->EndIndex());
+    sub_result->AddUnsafeToBreak(unsafe_offsets);
+    const LayoutUnit available_width =
+        LayoutUnit::FromFloatFloor(sub_result->PositionForOffset(1)) - 1;
+
+    LazyLineBreakIterator break_iterator(string);
+    for (const ShapeResult* target_result : {result, sub_result}) {
+      HarfBuzzShapingLineBreaker breaker(&shaper, font, target_result,
+                                         &break_iterator, nullptr);
+      wtf_size_t break_offset = 0;
+      const ShapeResultView* line =
+          ShapeLine(&breaker, start_offset, available_width, &break_offset);
+      EXPECT_EQ(break_offset, 2u);
+      EXPECT_EQ(line->NumCharacters(), 1u);
+    }
+  }
+}
+
+TEST_F(ShapingLineBreakerTest, HanKerningEndAtUnsafeStart) {
+  Font* font = test::CreateTestFont(
+      AtomicString("Noto Sans CJK"),
+      test::BlinkWebTestsFontsTestDataPath(
+          "noto/cjk/NotoSansCJKjp-Regular-subset-halt.otf"),
+      16.0);
+  for (const String string : {u"\u3002\uFF09", u"\u3002\uFF09\u56FD"}) {
+    HarfBuzzShaper shaper(string);
+    const ShapeResult* result = shaper.Shape(font, TextDirection::kLtr);
+    LazyLineBreakIterator break_iterator(string);
+    for (const wtf_size_t line_start : {0u, 1u}) {
+      HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
+                                         nullptr);
+      breaker.SetLineStart(line_start);
+      wtf_size_t break_offset = 0;
+      const ShapeResultView* line =
+          ShapeLine(&breaker, 1, LayoutUnit(8), &break_offset);
+      EXPECT_EQ(break_offset, 2u);
+      EXPECT_EQ(line->NumCharacters(), 1u);
+      EXPECT_EQ(line->Width(), 8);
+    }
+  }
 }
 
 struct BreakOpportunityTestData {

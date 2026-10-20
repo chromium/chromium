@@ -351,14 +351,24 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
     const wtf_size_t adjusted_candidate_break = candidate_break + 1;
     if (break_iterator_->IsBreakable(adjusted_candidate_break)) {
       last_safe = result_->CachedPreviousSafeToBreakOffset(candidate_break);
-      line_end_result =
-          Shape(last_safe, adjusted_candidate_break, {.han_kerning_end = true});
+      ShapeOptions options{.han_kerning_end = true};
+      if (last_safe < first_safe.offset &&
+          RuntimeEnabledFeatures::LineBreakerHanKerningEndEnabled())
+          [[unlikely]] {
+        last_safe = start;
+        options.is_line_start = first_safe.offset != start;
+        options.han_kerning_start = first_safe.han_kerning;
+      }
+      line_end_result = Shape(last_safe, adjusted_candidate_break, options);
       const LayoutUnit last_safe_position =
           result_->CachedPositionForOffset(last_safe - range_start);
       const LayoutUnit width_to_last_safe =
           FlipRtl<kDirection>(last_safe_position - start_position);
       if (width_to_last_safe + line_end_result->Width() <= available_space) {
         candidate_break = adjusted_candidate_break;
+        if (options.is_line_start) [[unlikely]] {
+          line_start_result = nullptr;
+        }
       } else {
         line_end_result = nullptr;
       }
@@ -504,6 +514,12 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
     DCHECK_NE(first_safe.offset, start);
     SetBreakOffset(break_opportunity, text, result_out);
     CheckBreakOffset(result_out->break_offset, start, range_end);
+    if (line_end_result &&
+        RuntimeEnabledFeatures::LineBreakerHanKerningEndEnabled()) {
+      DCHECK_EQ(break_opportunity.offset - start,
+                line_end_result->NumCharacters());
+      return ShapeResultView::Create(line_end_result);
+    }
     return ShapeResultView::Create(Shape(
         start, break_opportunity.offset,
         {.is_line_start = true, .han_kerning_start = first_safe.han_kerning}));
