@@ -190,7 +190,9 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
                                   weak_factory_.GetWeakPtr(), 0));
     }
 
-    CHECK_GT(pending_task_count_, 0, base::NotFatalUntil::M159);
+    // TODO(crbug.com/573027744): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK_GT(pending_task_count_, 0);
   }
 
  private:
