@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/containers/adapters.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
@@ -285,10 +286,20 @@ void ContextualTasksExtensionHandler::GetLensCropPreview(
     GetLensCropPreviewCallback callback) {
   auto model = GetOrCreateInputStateModel();
   if (!model) {
+    base::UmaHistogramBoolean("ContextualTasks.LensRegionChip.PreviewLoaded",
+                              false);
     std::move(callback).Run(std::nullopt);
     return;
   }
-  std::move(callback).Run(model->GetLensCrop());
+  auto crop = model->GetLensCrop();
+  base::UmaHistogramBoolean("ContextualTasks.LensRegionChip.PreviewLoaded",
+                            crop.has_value());
+  if (crop.has_value()) {
+    base::RecordAction(
+        base::UserMetricsAction("ContextualTasks.LensRegionChip.Shown"));
+    base::UmaHistogramBoolean("ContextualTasks.LensRegionChip.Shown", true);
+  }
+  std::move(callback).Run(std::move(crop));
 }
 
 void ContextualTasksExtensionHandler::RemoveLensCrop() {

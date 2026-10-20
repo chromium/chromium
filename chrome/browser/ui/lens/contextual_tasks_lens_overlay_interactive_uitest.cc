@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -2371,13 +2372,29 @@ class ContextualTasksLensRegionChipInteractiveUiTest
           }
         }));
   }
-
   InteractiveTestApi::MultiStep SubmitQueryFromAim(
       ui::ElementIdentifier side_panel_contents_id) {
     const DeepQuery kPathToSubmitButton{"#submitQueryButton"};
     return Steps(EnsurePresent(side_panel_contents_id, kPathToSubmitButton),
                  MoveMouseTo(side_panel_contents_id, kPathToSubmitButton),
                  ClickMouse());
+  }
+
+  InteractiveTestApi::MultiStep VerifyLensChipMetrics(
+      const base::HistogramTester* histogram_tester,
+      const base::UserActionTester* user_action_tester) {
+    return Steps(Do([histogram_tester, user_action_tester]() {
+      histogram_tester->ExpectBucketCount(
+          "ContextualTasks.LensRegionChip.Shown", true, 1);
+      histogram_tester->ExpectBucketCount(
+          "ContextualTasks.LensRegionChip.PreviewLoaded", true, 1);
+      histogram_tester->ExpectBucketCount(
+          "ContextualTasks.LensRegionChip.Dismissed", true, 1);
+      EXPECT_EQ(1, user_action_tester->GetActionCount(
+                       "ContextualTasks.LensRegionChip.Shown"));
+      EXPECT_EQ(1, user_action_tester->GetActionCount(
+                       "ContextualTasks.LensRegionChip.Dismissed"));
+    }));
   }
 };
 
@@ -2430,6 +2447,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,
   content::RenderFrameHost* chip_rfh = nullptr;
   std::string first_crop_uri;
 
+  base::HistogramTester histogram_tester;
+  base::UserActionTester user_action_tester;
   RunTestSequence(
       NavigateToTabWithImage(kActiveTab, tab_url),
       OpenContextualTasksSidePanelViaToolbarButton(kSidePanelWebContentsId),
@@ -2441,7 +2460,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,
       SelectNewRegionOnOverlay(kOverlayId),
       VerifyLensChipUpdatedInPlace(&chip_rfh, &first_crop_uri),
       ClickLensChipCloseButton(&chip_rfh),
-      VerifyLensChipUnmountedAndOverlayClosed(kSidePanelWebContentsId));
+      VerifyLensChipUnmountedAndOverlayClosed(kSidePanelWebContentsId),
+      VerifyLensChipMetrics(&histogram_tester, &user_action_tester));
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksLensRegionChipInteractiveUiTest,

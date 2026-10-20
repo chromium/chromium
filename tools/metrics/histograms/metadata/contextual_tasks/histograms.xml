@@ -398,6 +398,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.LensRegionChip.Dismissed" enum="Boolean"
+    expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user dismisses the Lens region chip in the Contextual
+    Tasks composebox plate. Always recorded as true.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.LensRegionChip.PreviewLoaded" enum="Boolean"
+    expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the Lens region chip attempts to fetch the crop preview from
+    the InputStateModel. Records true if the preview was successfully found, or
+    false if not found.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.LensRegionChip.PreviewLoadLatency" units="ms"
+    expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the Lens region chip extension successfully fetches the crop
+    preview over Mojo. Records the time taken in milliseconds.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.LensRegionChip.Shown" enum="Boolean"
+    expires_after="2027-06-18">
+  <owner>nguyenbryan@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the Lens region chip is shown in the Contextual Tasks
+    composebox plate. Always recorded as true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.OAuth.Latency.{OAuthTrigger}" units="ms"
     expires_after="2027-03-07">
   <owner>mercerd@chromium.org</owner>

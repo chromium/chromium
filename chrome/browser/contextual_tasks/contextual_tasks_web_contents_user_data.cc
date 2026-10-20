@@ -11,6 +11,9 @@
 #include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -976,6 +979,10 @@ void ContextualTasksWebContentsUserData::RemoveLensCrop() {
   if (!model || !model->lens_crop().has_value()) {
     return;
   }
+
+  base::RecordAction(
+      base::UserMetricsAction("ContextualTasks.LensRegionChip.Dismissed"));
+  base::UmaHistogramBoolean("ContextualTasks.LensRegionChip.Dismissed", true);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (auto* controller = GetLensSearchController()) {
